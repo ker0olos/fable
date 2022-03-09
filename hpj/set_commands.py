@@ -1,12 +1,12 @@
 import sys
 import requests
 
-APP_ID = '890282812748472380'
-GUILD_ID = '514280909537542158'
+APP_ID = "890282812748472380"
+GUILD_ID = "514280909537542158"
 
 if not sys.argv[1]:
-  print('BOT_TOKEN missing')
-  sys.exit(1)
+    print("BOT_TOKEN missing")
+    sys.exit(1)
 
 BOT_TOKEN = sys.argv[1]
 
@@ -18,50 +18,52 @@ BOOLEAN = 5
 USER = 6
 CHANNEL = 7
 ROLE = 8
-MENTIONABLE = 9 # Includes users and roles
-NUMBER = 10 # Any double between -2^53 and 2^53
+MENTIONABLE = 9  # Includes users and roles
+NUMBER = 10  # Any double between -2^53 and 2^53
 
 # guild commands update instantly
-url = f'https://discord.com/api/v8/applications/{APP_ID}/guilds/{GUILD_ID}/commands'
+url = f"https://discord.com/api/v8/applications/{APP_ID}/guilds/{GUILD_ID}/commands"
+
 
 def set_commands(commands):
-  for command in commands:
-    response = requests.post(url, headers={
-      'Authorization': f'Bot {BOT_TOKEN}'
-    }, json=command)
-    print(response.json())
-    if 'default_permission' in command and command['default_permission'] is False:
-      set_command_permission(response.json())
+    for command in commands:
+        response = requests.post(
+            url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=command
+        )
+        print(response.json())
+        if "default_permission" in command and command["default_permission"] is False:
+            set_command_permission(response.json())
 
-def set_command_permission(command, permission_id = '541714482649366585'):
-  command_id=command['id']
-  command_name=command['name']
 
-  response = requests.put(f'{url}/{command_id}/permissions', headers={
-    'Authorization': f'Bot {BOT_TOKEN}'
-  }, json={
-    'permissions': [
-      {
-        'type': 1,
-        'permission': True,
-        'id': permission_id
-      }
-    ]
-  })
+def set_command_permission(command, permission_id="541714482649366585"):
+    command_id = command["id"]
+    command_name = command["name"]
 
-  print(f'Setting command "{command_name}" permissions to "Moderator": {response.status_code}')
+    response = requests.put(
+        f"{url}/{command_id}/permissions",
+        headers={"Authorization": f"Bot {BOT_TOKEN}"},
+        json={"permissions": [{"type": 1, "permission": True, "id": permission_id}]},
+    )
+
+    print(
+        f'Setting command "{command_name}" permissions to "Moderator": {response.status_code}'
+    )
+
 
 def delete_command(command_id):
-  response = requests.delete(f'{url}/{command_id}', headers={
-    'Authorization': f'Bot {BOT_TOKEN}'
-  })
+    response = requests.delete(
+        f"{url}/{command_id}", headers={"Authorization": f"Bot {BOT_TOKEN}"}
+    )
 
-  print(f'deleted command "{command_id}": {response.status_code}')
+    print(f'deleted command "{command_id}": {response.status_code}')
 
-set_commands([
-  {
-    'name': 'token',
-    'description': 'Get a token for an interaction.',
-    'default_permission': False
-  }
-])
+
+set_commands(
+    [
+        {
+            "name": "token",
+            "description": "Get a token for an interaction.",
+            "default_permission": False,
+        }
+    ]
+)
