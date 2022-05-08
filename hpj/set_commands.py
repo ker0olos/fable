@@ -1,4 +1,6 @@
 import sys
+from time import sleep
+
 import requests
 
 APP_ID = "890282812748472380"
@@ -31,23 +33,7 @@ def set_commands(commands):
             url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=command
         )
         print(response.json())
-        if "default_permission" in command and command["default_permission"] is False:
-            set_command_permission(response.json())
-
-
-def set_command_permission(command, permission_id="541714482649366585"):
-    command_id = command["id"]
-    command_name = command["name"]
-
-    response = requests.put(
-        f"{url}/{command_id}/permissions",
-        headers={"Authorization": f"Bot {BOT_TOKEN}"},
-        json={"permissions": [{"type": 1, "permission": True, "id": permission_id}]},
-    )
-
-    print(
-        f'Setting command "{command_name}" permissions to "Moderator": {response.status_code}'
-    )
+        sleep(1)
 
 
 def delete_command(command_id):
@@ -58,12 +44,4 @@ def delete_command(command_id):
     print(f'deleted command "{command_id}": {response.status_code}')
 
 
-set_commands(
-    [
-        {
-            "name": "token",
-            "description": "Get a token for an interaction.",
-            "default_permission": False,
-        }
-    ]
-)
+set_commands([{"name": "token", "description": "Get a token for an interaction."}])
