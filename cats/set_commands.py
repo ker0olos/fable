@@ -3,8 +3,8 @@ from time import sleep
 
 import requests
 
-APP_ID = "888522539054301264"
-GUILD_ID = "514280909537542158"
+APP_ID = "994920973927186463"
+GUILD_ID = "992416714497212518"
 
 if not sys.argv[1]:
     print("BOT_TOKEN missing")

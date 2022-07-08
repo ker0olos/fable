@@ -1,4 +1,8 @@
-import { json, serve, validateRequest } from 'https://deno.land/x/sift/mod.ts';
+import {
+  json,
+  serve,
+  validateRequest,
+} from 'https://deno.land/x/sift@0.5.0/mod.ts';
 
 import nacl from 'https://cdn.skypack.dev/tweetnacl@v1.0.3?dts';
 
