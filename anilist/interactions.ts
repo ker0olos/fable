@@ -54,28 +54,41 @@ async function handler(request: Request): Promise<Response> {
   console.log(type, data, token, member);
 
   if (type === 2 && data.name === 'search') {
-    return await search({ _q: data.options[0].value });
+    return await search({ search: data.options[0].value });
   }
 
   return json({ error: 'bad request' }, { status: 400 });
 }
 
-async function search({ _q }: { _q: string }): Promise<Response> {
+async function search({ search }: { search: string }): Promise<Response> {
   const query = gql`
-      query ($id: Int) { # Define which variables will be used in the query (id)
-        Media (id: $id, type: ANIME) { # Insert our variables into the query arguments (id) (type: ANIME is hard-coded in the query)
-          id
+    query ($page: Int, $search: String) {
+      Page(page: $page, perPage: 1) {
+        pageInfo {
+          total
+          currentPage
+          lastPage
+          hasNextPage
+          perPage
+        }
+        media(search: $search) {
+          type,
+          coverImage {
+            large
+            medium
+            color
+          },
           title {
             romaji
             english
-            native
           }
         }
       }
+    }
   `;
 
   const variables = {
-    id: 15125,
+    search,
   };
 
   const data = await client.request(query, variables);
@@ -85,10 +98,9 @@ async function search({ _q }: { _q: string }): Promise<Response> {
   return json({
     type: 4,
     data: {
-      content: JSON.stringify(data),
+      content: `\`${JSON.stringify(data)}\``,
     },
   });
 }
 
 serve(handler);
-// await search({ _q: 'a' });
