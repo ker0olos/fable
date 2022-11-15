@@ -129,34 +129,38 @@ async function handler(request: Request): Promise<Response> {
 // }
 
 async function nextEpisode({ search }: { search: string }) {
-  const anime = await anilist.getAnime({ search });
+  try {
+    const anime = await anilist.getAnime({ search });
 
-  if (!anime) {
-    return json({
-      type: NEW_MESSAGE,
-      data: {
-        content: `Found no anime matching that name!`,
-      },
-    });
-  }
+    if (!anime.nextAiringEpisode) {
+      return json({
+        type: NEW_MESSAGE,
+        data: {
+          content:
+            `\`${anime.title.english}\` is currently not airing anymore episodes.`,
+        },
+      });
+    }
 
-  if (!anime.nextAiringEpisode) {
     return json({
       type: NEW_MESSAGE,
       data: {
         content:
-          `\`${anime.title.english}\` is currently not airing anymore episodes.`,
+          `The next episode of \`${anime.title.english}\` is <t:${anime.nextAiringEpisode.airingAt}:R>.`,
       },
     });
-  }
+  } catch (err) {
+    if (err.response.status === 404) {
+      return json({
+        type: NEW_MESSAGE,
+        data: {
+          content: `Found no anime matching that name!`,
+        },
+      });
+    }
 
-  return json({
-    type: NEW_MESSAGE,
-    data: {
-      content:
-        `The next episode of \`${anime.title.english}\` is <t:${anime.nextAiringEpisode.airingAt}:R>.`,
-    },
-  });
+    return json({ errors: err.errors }, { status: err.response.status });
+  }
 }
 
 serve(handler);
