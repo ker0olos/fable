@@ -48,12 +48,12 @@ type Media = {
 //   return await client.request(query, variables);
 // }
 
-export async function getAnime(
+export async function getNextAiring(
   variables: { search: string },
 ): Promise<Media> {
   const query = gql`
     query ($search: String) {
-      Media(search: $search, type: ANIME, sort:POPULARITY_DESC) {
+      Media(search: $search, type: ANIME, sort:[STATUS_DESC, POPULARITY_DESC]) {
         title {
           english
         }

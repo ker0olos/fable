@@ -130,7 +130,7 @@ async function handler(request: Request): Promise<Response> {
 
 async function nextEpisode({ search }: { search: string }) {
   try {
-    const anime = await anilist.getAnime({ search });
+    const anime = await anilist.getNextAiring({ search });
 
     if (!anime.nextAiringEpisode) {
       return json({
