@@ -58,6 +58,18 @@ set_commands(
                     "required": True,
                 }
             ],
-        }
+        },
+        {
+            "name": "next_episode",
+            "description": "Find when is the next episode for an anime",
+            "options": [
+                {
+                    "type": STRING,
+                    "name": "anime",
+                    "description": "Approx of the anime name",
+                    "required": True,
+                }
+            ],
+        },
     ]
 )

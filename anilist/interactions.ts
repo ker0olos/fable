@@ -6,12 +6,18 @@ import {
   verifySignature,
 } from 'https://raw.githubusercontent.com/ker0olos/bots/main/index.ts';
 
-import {
-  gql,
-  GraphQLClient,
-} from 'https://raw.githubusercontent.com/ker0olos/graphql-request/main/mod.ts';
+import * as anilist from './api.ts';
 
-const client = new GraphQLClient('https://graphql.anilist.co');
+const NEW_MESSAGE = 4;
+const UPDATE_MESSAGE = 7;
+
+const ACTION_ROW = 1;
+const BUTTON = 2;
+
+const BLUE = 1;
+const GREY = 2;
+const GREEN = 3;
+const RED = 4;
 
 async function handler(request: Request): Promise<Response> {
   const { error } = await validateRequest(request, {
@@ -40,10 +46,10 @@ async function handler(request: Request): Promise<Response> {
 
   const {
     type = 0,
-    token = '',
-    message = { embeds: [] },
+    // token = '',
+    // message = { embeds: [] },
     data = { options: [] },
-    member = { user: { id: '' } },
+    // member = { user: { id: '' } },
   } = JSON.parse(body);
 
   if (type === 1) {
@@ -52,23 +58,23 @@ async function handler(request: Request): Promise<Response> {
     });
   }
 
-  console.log(type, data, token, member);
+  // console.log(type, data, token, member);
 
   // slash command
   if (type === 2) {
     switch (data.name) {
-      case 'search':
-        return await search({ search: data.options[0].value });
-      case 'test_next':
-        return send_test_button();
+      // case 'search':
+      //   return await search({ search: data.options[0].value });
+      case 'next_episode':
+        return await nextEpisode({ search: data.options[0].value });
       default:
         break;
     }
     // components (buttons)
   } else if (type === 3) {
     switch (data.custom_id) {
-      case 'row_0_button_0':
-        return edit_test_button();
+      // case 'row_0_button_0':
+      //   return edit_test_button();
       default:
         break;
     }
@@ -77,77 +83,79 @@ async function handler(request: Request): Promise<Response> {
   return json({ error: 'bad request' }, { status: 400 });
 }
 
-function send_test_button() {
+// function send_test_button() {
+//   return json({
+//     type: NEW_MESSAGE,
+//     data: {
+//       content: `Unclicked`,
+//       components: [
+//         {
+//           type: ACTION_ROW,
+//           components: [
+//             {
+//               style: GREY,
+//               type: BUTTON,
+//               label: `Click`,
+//               custom_id: `row_0_button_0`,
+//             },
+//           ],
+//         },
+//       ],
+//     },
+//   });
+// }
+
+// function edit_test_button() {
+//   return json({
+//     type: UPDATE_MESSAGE,
+//     data: {
+//       content: `clicked`,
+//       components: [],
+//     },
+//   });
+// }
+
+// async function search({ search }: { search: string }): Promise<Response> {
+//   const data = await anilist.search({ search });
+
+//   // console.log(data);
+
+//   return json({
+//     type: NEW_MESSAGE,
+//     data: {
+//       content: `\`${JSON.stringify(data)}\``,
+//     },
+//   });
+// }
+
+async function nextEpisode({ search }: { search: string }) {
+  const data = await anilist.getAnime({ search });
+  const body = await data.json();
+
+  if (!body.Media) {
+    return json({
+      type: NEW_MESSAGE,
+      data: {
+        content: `Anime not found`,
+      },
+    });
+  }
+
+  if (!body.Media.nextAiringEpisode) {
+    return json({
+      type: NEW_MESSAGE,
+      data: {
+        content:
+          `\`${body.Media.title.english}\` is currently not airing anymore episodes.`,
+      },
+    });
+  }
+
   return json({
-    type: 4,
+    type: NEW_MESSAGE,
     data: {
-      content: `Unclicked`,
-      components: [
-        {
-          type: 1,
-          components: [
-            {
-              type: 2,
-              style: 2,
-              label: `Click`,
-              custom_id: `row_0_button_0`,
-            },
-          ],
-        },
-      ],
-    },
-  });
-}
-
-function edit_test_button() {
-  return json({
-    type: 7,
-    data: {
-      content: `clicked`,
-      components: [],
-    },
-  });
-}
-
-async function search({ search }: { search: string }): Promise<Response> {
-  const query = gql`
-    query ($page: Int, $search: String) {
-      Page(page: $page, perPage: 1) {
-        pageInfo {
-          total
-          currentPage
-          lastPage
-          hasNextPage
-          perPage
-        }
-        media(search: $search) {
-          type,
-          coverImage {
-            large
-            medium
-            color
-          },
-          title {
-            romaji
-            english
-          }
-        }
-      }
-    }
-  `;
-
-  const variables = {
-    search,
-  };
-
-  const data = await client.request(query, variables);
-
-  console.log(data);
-
-  return json({
-    type: 4,
-    data: {
-      content: `\`${JSON.stringify(data)}\``,
+      content:
+        `The next episode of \`${body.Media.title.english}\` is <t:${body.Media.nextAiringEpisode.airingAt}:R>.`,
     },
   });
 }
