@@ -41,6 +41,7 @@ async function handler(request: Request): Promise<Response> {
   const {
     type = 0,
     token = '',
+    message = { embeds: [] },
     data = { options: [] },
     member = { user: { id: '' } },
   } = JSON.parse(body);
@@ -53,11 +54,59 @@ async function handler(request: Request): Promise<Response> {
 
   console.log(type, data, token, member);
 
-  if (type === 2 && data.name === 'search') {
-    return await search({ search: data.options[0].value });
+  // slash command
+  if (type === 2) {
+    switch (data.name) {
+      case 'search':
+        return await search({ search: data.options[0].value });
+      case 'test_next':
+        return send_test_button();
+      default:
+        break;
+    }
+    // components (buttons)
+  } else if (type === 3) {
+    switch (data.custom_id) {
+      case 'row_0_button_0':
+        return edit_test_button();
+      default:
+        break;
+    }
   }
 
   return json({ error: 'bad request' }, { status: 400 });
+}
+
+function send_test_button() {
+  return json({
+    type: 4,
+    data: {
+      content: `Unclicked`,
+      'components': [
+        {
+          'type': 1,
+          'components': [
+            {
+              'type': 2,
+              'style': 2,
+              'label': `Click`,
+              'custom_id': `row_0_button_0`,
+              'disabled': false,
+            },
+          ],
+        },
+      ],
+    },
+  });
+}
+
+function edit_test_button() {
+  return json({
+    type: 7,
+    data: {
+      content: `clicked`,
+    },
+  });
 }
 
 async function search({ search }: { search: string }): Promise<Response> {
