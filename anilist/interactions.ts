@@ -9,7 +9,7 @@ import {
 import {
   gql,
   GraphQLClient,
-} from 'https://deno.land/x/graphql_request@v4.1.0/mod.ts';
+} from 'https://raw.githubusercontent.com/ker0olos/graphql-request/main/mod.ts';
 
 const client = new GraphQLClient('https://graphql.anilist.co');
 
