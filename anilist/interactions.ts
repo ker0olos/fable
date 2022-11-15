@@ -80,7 +80,12 @@ async function search({ _q }: { _q: string }): Promise<Response> {
 
   const data = await client.request(query, variables);
 
-  return json(data);
+  return json({
+    type: 4,
+    data: {
+      ...data,
+    },
+  });
 }
 
 serve(handler);
