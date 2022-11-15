@@ -82,16 +82,15 @@ function send_test_button() {
     type: 4,
     data: {
       content: `Unclicked`,
-      'components': [
+      components: [
         {
-          'type': 1,
-          'components': [
+          type: 1,
+          components: [
             {
-              'type': 2,
-              'style': 2,
-              'label': `Click`,
-              'custom_id': `row_0_button_0`,
-              'disabled': false,
+              type: 2,
+              style: 2,
+              label: `Click`,
+              custom_id: `row_0_button_0`,
             },
           ],
         },
@@ -105,6 +104,7 @@ function edit_test_button() {
     type: 7,
     data: {
       content: `clicked`,
+      components: [],
     },
   });
 }
