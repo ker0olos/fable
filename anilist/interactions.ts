@@ -80,12 +80,15 @@ async function search({ _q }: { _q: string }): Promise<Response> {
 
   const data = await client.request(query, variables);
 
+  console.log(data);
+
   return json({
     type: 4,
     data: {
-      ...data,
+      content: JSON.stringify(data),
     },
   });
 }
 
-serve(handler);
+// serve(handler);
+await search({ _q: 'a' });
