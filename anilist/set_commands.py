@@ -3,7 +3,7 @@ from time import sleep
 
 import requests
 
-APP_ID = "994920973927186463"
+APP_ID = "1041970851559522304"
 GUILD_ID = "992416714497212518"
 
 if not sys.argv[1]:
@@ -48,16 +48,9 @@ def delete_command(command_id):
 set_commands(
     [
         {
-            "name": "roll",
-            "description": "Roll a ten-sided dice.",
-            "options": [
-                {
-                    "type": 4,
-                    "name": "amount",
-                    "description": "The amount of dice to roll.",
-                    "required": True,
-                }
-            ],
+            "name": "ping",
+            "description": "test",
+            "options": [],
         }
     ]
 )
