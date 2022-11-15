@@ -48,9 +48,16 @@ def delete_command(command_id):
 set_commands(
     [
         {
-            "name": "ping",
-            "description": "test",
-            "options": [],
+            "name": "search",
+            "description": "Search for an anime/manga on AniList",
+            "options": [
+                {
+                    "type": STRING,
+                    "name": "query",
+                    "description": "Search for an anime/manga",
+                    "required": True,
+                }
+            ],
         }
     ]
 )

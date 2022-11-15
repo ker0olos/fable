@@ -1,6 +1,10 @@
 import { serve } from 'https://deno.land/std@0.130.0/http/server.ts';
 
-import { json, validateRequest, verifySignature } from '../index.ts';
+import {
+  json,
+  validateRequest,
+  verifySignature,
+} from 'https://raw.githubusercontent.com/ker0olos/bots/main/index.ts';
 
 async function handler(request: Request): Promise<Response> {
   const { error } = await validateRequest(request, {

@@ -52,9 +52,9 @@ set_commands(
             "description": "Roll a ten-sided dice.",
             "options": [
                 {
-                    "type": 4,
+                    "type": INTEGER,
                     "name": "amount",
-                    "description": "The amount of dice to roll.",
+                    "description": "The number of dices to roll",
                     "required": True,
                 }
             ],
