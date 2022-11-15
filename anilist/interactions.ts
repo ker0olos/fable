@@ -90,5 +90,5 @@ async function search({ _q }: { _q: string }): Promise<Response> {
   });
 }
 
-// serve(handler);
-await search({ _q: 'a' });
+serve(handler);
+// await search({ _q: 'a' });
