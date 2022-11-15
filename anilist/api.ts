@@ -5,6 +5,17 @@ import {
 
 const client = new GraphQLClient('https://graphql.anilist.co');
 
+type Media = {
+  title: {
+    romaji: string;
+    english: string;
+    native: string;
+  };
+  nextAiringEpisode: {
+    airingAt: number;
+  };
+};
+
 // export async function search(
 //   variables: { search: string; page: number },
 // ): Promise<Response> {
@@ -39,7 +50,7 @@ const client = new GraphQLClient('https://graphql.anilist.co');
 
 export async function getAnime(
   variables: { search: string },
-): Promise<Response> {
+): Promise<Media> {
   const query = gql`
     query ($search: String) {
       Media(search: $search, type: ANIME, sort:POPULARITY_DESC) {
@@ -53,5 +64,5 @@ export async function getAnime(
     }
   `;
 
-  return await client.request(query, variables);
+  return (await client.request(query, variables)).Media;
 }

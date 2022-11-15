@@ -129,24 +129,23 @@ async function handler(request: Request): Promise<Response> {
 // }
 
 async function nextEpisode({ search }: { search: string }) {
-  const data = await anilist.getAnime({ search });
-  const body = await data.json();
+  const anime = await anilist.getAnime({ search });
 
-  if (!body.Media) {
+  if (!anime) {
     return json({
       type: NEW_MESSAGE,
       data: {
-        content: `Anime not found`,
+        content: `Found no anime matching that name!`,
       },
     });
   }
 
-  if (!body.Media.nextAiringEpisode) {
+  if (!anime.nextAiringEpisode) {
     return json({
       type: NEW_MESSAGE,
       data: {
         content:
-          `\`${body.Media.title.english}\` is currently not airing anymore episodes.`,
+          `\`${anime.title.english}\` is currently not airing anymore episodes.`,
       },
     });
   }
@@ -155,7 +154,7 @@ async function nextEpisode({ search }: { search: string }) {
     type: NEW_MESSAGE,
     data: {
       content:
-        `The next episode of \`${body.Media.title.english}\` is <t:${body.Media.nextAiringEpisode.airingAt}:R>.`,
+        `The next episode of \`${anime.title.english}\` is <t:${anime.nextAiringEpisode.airingAt}:R>.`,
     },
   });
 }
