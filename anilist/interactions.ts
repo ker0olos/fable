@@ -86,8 +86,8 @@ async function handler(request: Request): Promise<Response> {
     //
 
     switch (data.custom_id) {
-      // case 'row_0_button_0':
-      //   return edit_test_button();
+      case 'row_0_button_0':
+        return await nextSearchPage();
       default:
         break;
     }
@@ -96,79 +96,14 @@ async function handler(request: Request): Promise<Response> {
   return json({ error: 'bad request' }, { status: 400 });
 }
 
-// function send_test_button() {
-//   return json({
-//     type: NEW_MESSAGE,
-//     data: {
-//       content: `Unclicked`,
-//       components: [
-//         {
-//           type: ACTION_ROW,
-//           components: [
-//             {
-//               style: GREY,
-//               type: BUTTON,
-//               label: `Click`,
-//               custom_id: `row_0_button_0`,
-//             },
-//           ],
-//         },
-//       ],
-//     },
-//   });
-// }
-
-// function edit_test_button() {
-//   return json({
-//     type: UPDATE_MESSAGE,
-//     data: {
-//       content: `clicked`,
-//       components: [],
-//     },
-//   });
-// }
-
-// async function search({ search }: { search: string }): Promise<Response> {
-//   const data = await anilist.search({ search });
-
-//   // console.log(data);
-
-//   return json({
-//     type: NEW_MESSAGE,
-//     data: {
-//       content: `\`${JSON.stringify(data)}\``,
-//     },
-//   });
-// }
-
-async function translate(
-  { search, lang }: { search: string; lang: 'english' | 'romaji' | 'native' },
-) {
-  try {
-    const results = await anilist.search({ search, page: 1 });
-
-    if (!results.media.length) {
-      throw new Error('404');
-    }
-
-    return json({
-      type: NEW_MESSAGE,
-      data: {
-        content: `${results.media[0].title[lang]}`,
-      },
-    });
-  } catch (err) {
-    if (err?.response?.status === 404 || err?.message === '404') {
-      return json({
-        type: NEW_MESSAGE,
-        data: {
-          content: `Found nothing matching that name!`,
-        },
-      });
-    }
-
-    return json({ errors: err.errors }, { status: err.response.status });
-  }
+async function nextSearchPage() {
+  return json({
+    type: UPDATE_MESSAGE,
+    data: {
+      content: `Clicked`,
+      components: [],
+    },
+  });
 }
 
 async function searchPage({ search, page }: { search: string; page: number }) {
@@ -183,6 +118,19 @@ async function searchPage({ search, page }: { search: string; page: number }) {
       type: NEW_MESSAGE,
       data: {
         content: `${results.media[0].title.english}`,
+        components: [
+          {
+            type: ACTION_ROW,
+            components: [
+              {
+                style: GREY,
+                type: BUTTON,
+                label: `Next`,
+                custom_id: `next-search-result`,
+              },
+            ],
+          },
+        ],
       },
     });
   } catch (err) {
@@ -226,6 +174,36 @@ async function nextEpisode({ search }: { search: string }) {
         type: NEW_MESSAGE,
         data: {
           content: `Found no anime matching that name!`,
+        },
+      });
+    }
+
+    return json({ errors: err.errors }, { status: err.response.status });
+  }
+}
+
+async function translate(
+  { search, lang }: { search: string; lang: 'english' | 'romaji' | 'native' },
+) {
+  try {
+    const results = await anilist.search({ search, page: 1 });
+
+    if (!results.media.length) {
+      throw new Error('404');
+    }
+
+    return json({
+      type: NEW_MESSAGE,
+      data: {
+        content: `${results.media[0].title[lang]}`,
+      },
+    });
+  } catch (err) {
+    if (err?.response?.status === 404 || err?.message === '404') {
+      return json({
+        type: NEW_MESSAGE,
+        data: {
+          content: `Found nothing matching that name!`,
         },
       });
     }
