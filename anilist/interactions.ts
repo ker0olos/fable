@@ -132,7 +132,7 @@ async function nextEpisode({ search }: { search: string }) {
   try {
     const anime = await anilist.getNextAiring({ search });
 
-    if (!anime.nextAiringEpisode) {
+    if (!anime.nextAiringEpisode || !anime.title.english) {
       return json({
         type: NEW_MESSAGE,
         data: {

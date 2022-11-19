@@ -53,7 +53,7 @@ export async function getNextAiring(
 ): Promise<Media> {
   const query = gql`
     query ($search: String) {
-      Media(search: $search, type: ANIME, sort:[STATUS_DESC, POPULARITY_DESC]) {
+      Media(search: $search, type: ANIME, sort:[TRENDING_DESC]) {
         title {
           english
         }
