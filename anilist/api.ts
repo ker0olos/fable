@@ -47,7 +47,7 @@ export async function search(
           hasNextPage
           perPage
         }
-        media(search: $search) {
+        media(search: $search, sort:[POPULARITY_DESC]) {
           type
           description
           coverImage {
@@ -73,7 +73,7 @@ export async function getNextAiring(
 ): Promise<Media> {
   const query = gql`
     query ($search: String) {
-      Media(search: $search, type: ANIME, sort:[TRENDING_DESC]) {
+      Media(search: $search, type: ANIME, sort:[TRENDING_DESC, POPULARITY_DESC]) {
         title {
           english
         }
