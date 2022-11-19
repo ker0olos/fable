@@ -19,6 +19,10 @@ const GREY = 2;
 const GREEN = 3;
 const RED = 4;
 
+const COMPONENTS = {
+  nextPage: 'next-page-results',
+};
+
 async function handler(request: Request): Promise<Response> {
   const { error } = await validateRequest(request, {
     POST: {
@@ -86,7 +90,7 @@ async function handler(request: Request): Promise<Response> {
     //
 
     switch (data.custom_id) {
-      case 'row_0_button_0':
+      case COMPONENTS.nextPage:
         return await nextSearchPage();
       default:
         break;
@@ -126,7 +130,7 @@ async function searchPage({ search, page }: { search: string; page: number }) {
                 style: GREY,
                 type: BUTTON,
                 label: `Next`,
-                custom_id: `next-search-result`,
+                custom_id: COMPONENTS.nextPage,
               },
             ],
           },
