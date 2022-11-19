@@ -7,46 +7,65 @@ const client = new GraphQLClient('https://graphql.anilist.co');
 
 type Media = {
   title: {
-    romaji: string;
     english: string;
-    native: string;
+    romaji?: string;
+    native?: string;
   };
-  nextAiringEpisode: {
-    airingAt: number;
+  nextAiringEpisode?: {
+    airingAt?: number;
+  };
+  type?: 'ANIME' | 'MANGA';
+  description?: string;
+  coverImage?: {
+    large?: string;
+    medium?: string;
+    color?: string;
   };
 };
 
-// export async function search(
-//   variables: { search: string; page: number },
-// ): Promise<Response> {
-//   const query = gql`
-//     query ($page: Int, $search: String) {
-//       Page(page: $page, perPage: 1) {
-//         pageInfo {
-//           total
-//           currentPage
-//           lastPage
-//           hasNextPage
-//           perPage
-//         }
-//         media(search: $search) {
-//           type,
-//           coverImage {
-//             large
-//             medium
-//             color
-//           },
-//           title {
-//             romaji
-//             english
-//           }
-//         }
-//       }
-//     }
-//   `;
+type Page = {
+  pageInfo: {
+    total: number;
+    currentPage: number;
+    lastPage: number;
+    hasNextPage: boolean;
+    perPage: number;
+  };
+  media: Media[];
+};
 
-//   return await client.request(query, variables);
-// }
+export async function search(
+  variables: { search: string; page: number },
+): Promise<Page> {
+  const query = gql`
+    query ($page: Int, $search: String) {
+      Page(page: $page, perPage: 1) {
+        pageInfo {
+          total
+          currentPage
+          lastPage
+          hasNextPage
+          perPage
+        }
+        media(search: $search) {
+          type
+          description
+          coverImage {
+            large
+            medium
+            color
+          }
+          title {
+            romaji
+            english
+          }
+        }
+      }
+    }
+  `;
+
+  return (await client.request(query, variables)).Page;
+}
 
 export async function getNextAiring(
   variables: { search: string },

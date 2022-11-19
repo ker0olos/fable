@@ -63,8 +63,8 @@ async function handler(request: Request): Promise<Response> {
   // slash command
   if (type === 2) {
     switch (data.name) {
-      // case 'search':
-      //   return await search({ search: data.options[0].value });
+      case 'search':
+        return await searchPage({ search: data.options[0].value, page: 1 });
       case 'next_episode':
         return await nextEpisode({ search: data.options[0].value });
       default:
@@ -128,16 +128,31 @@ async function handler(request: Request): Promise<Response> {
 //   });
 // }
 
+async function searchPage({ search, page }: { search: string; page: number }) {
+  try {
+    const results = await anilist.search({ search, page });
+
+    return json({
+      type: NEW_MESSAGE,
+      data: {
+        content: `${results.media[0].title.english}`,
+      },
+    });
+  } catch (err) {
+    return json({ errors: err.errors }, { status: err.response.status });
+  }
+}
+
 async function nextEpisode({ search }: { search: string }) {
   try {
     const anime = await anilist.getNextAiring({ search });
 
-    if (!anime.nextAiringEpisode || !anime.title.english) {
+    if (!anime.nextAiringEpisode?.airingAt || !anime.title?.english) {
       return json({
         type: NEW_MESSAGE,
         data: {
           content:
-            `\`${anime.title.english}\` is currently not airing anymore episodes.`,
+            `\`${anime.title.english}\` is currently not airing any episodes.`,
         },
       });
     }
