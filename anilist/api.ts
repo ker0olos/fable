@@ -58,6 +58,7 @@ export async function search(
           title {
             romaji
             english
+            native
           }
         }
       }

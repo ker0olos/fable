@@ -71,5 +71,41 @@ set_commands(
                 }
             ],
         },
+        {
+            "name": "english",
+            "description": "Translate an anime title to english",
+            "options": [
+                {
+                    "type": STRING,
+                    "name": "anime",
+                    "description": "Approx of the anime name in romaji or japanese",
+                    "required": True,
+                }
+            ],
+        },
+        {
+            "name": "romaji",
+            "description": "Translate an anime title to romaji",
+            "options": [
+                {
+                    "type": STRING,
+                    "name": "anime",
+                    "description": "Approx of the anime name in english or japanese",
+                    "required": True,
+                }
+            ],
+        },
+        {
+            "name": "japanese",
+            "description": "Translate an anime title to japanese",
+            "options": [
+                {
+                    "type": STRING,
+                    "name": "anime",
+                    "description": "Approx of the anime name in english or romaji",
+                    "required": True,
+                }
+            ],
+        },
     ]
 )

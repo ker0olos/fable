@@ -63,6 +63,11 @@ async function handler(request: Request): Promise<Response> {
   // slash command
   if (type === 2) {
     switch (data.name) {
+      case 'native' || 'english' || 'romaji':
+        return await translate({
+          search: data.options[0].value,
+          lang: data.name,
+        });
       case 'search':
         return await searchPage({ search: data.options[0].value, page: 1 });
       case 'next_episode':
@@ -128,9 +133,43 @@ async function handler(request: Request): Promise<Response> {
 //   });
 // }
 
+async function translate(
+  { search, lang }: { search: string; lang: 'english' | 'romaji' | 'native' },
+) {
+  try {
+    const results = await anilist.search({ search, page: 1 });
+
+    if (!results.media.length) {
+      throw new Error('404');
+    }
+
+    return json({
+      type: NEW_MESSAGE,
+      data: {
+        content: `${results.media[0].title[lang]}`,
+      },
+    });
+  } catch (err) {
+    if (err?.response?.status === 404 || err?.message === '404') {
+      return json({
+        type: NEW_MESSAGE,
+        data: {
+          content: `Found no anime matching that name!`,
+        },
+      });
+    }
+
+    return json({ errors: err.errors }, { status: err.response.status });
+  }
+}
+
 async function searchPage({ search, page }: { search: string; page: number }) {
   try {
     const results = await anilist.search({ search, page });
+
+    if (!results.media.length) {
+      throw new Error('404');
+    }
 
     return json({
       type: NEW_MESSAGE,
@@ -139,6 +178,15 @@ async function searchPage({ search, page }: { search: string; page: number }) {
       },
     });
   } catch (err) {
+    if (err?.response?.status === 404 || err?.message === '404') {
+      return json({
+        type: NEW_MESSAGE,
+        data: {
+          content: `Found no anime matching that name!`,
+        },
+      });
+    }
+
     return json({ errors: err.errors }, { status: err.response.status });
   }
 }
@@ -165,7 +213,7 @@ async function nextEpisode({ search }: { search: string }) {
       },
     });
   } catch (err) {
-    if (err.response.status === 404) {
+    if (err?.response?.status === 404 || err?.message === '404') {
       return json({
         type: NEW_MESSAGE,
         data: {
