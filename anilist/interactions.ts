@@ -60,10 +60,15 @@ async function handler(request: Request): Promise<Response> {
 
   // console.log(type, data, token, member);
 
-  // slash command
   if (type === 2) {
+    //
+    // SLASH COMMANDS
+    //
+
     switch (data.name) {
-      case 'native' || 'english' || 'romaji':
+      case 'native':
+      case 'english':
+      case 'romaji':
         return await translate({
           search: data.options[0].value,
           lang: data.name,
@@ -75,8 +80,11 @@ async function handler(request: Request): Promise<Response> {
       default:
         break;
     }
-    // components (buttons)
   } else if (type === 3) {
+    //
+    // COMPONENTS
+    //
+
     switch (data.custom_id) {
       // case 'row_0_button_0':
       //   return edit_test_button();
@@ -154,7 +162,7 @@ async function translate(
       return json({
         type: NEW_MESSAGE,
         data: {
-          content: `Found no anime matching that name!`,
+          content: `Found nothing matching that name!`,
         },
       });
     }
@@ -182,7 +190,7 @@ async function searchPage({ search, page }: { search: string; page: number }) {
       return json({
         type: NEW_MESSAGE,
         data: {
-          content: `Found no anime matching that name!`,
+          content: `Found nothing matching that name!`,
         },
       });
     }
