@@ -85,7 +85,7 @@ export async function searchPage(
                   custom_id: componentsIds.prevPage,
                   label: 'Prev',
                 }
-                : null,
+                : {},
               next
                 ? {
                   style: colors.grey,
@@ -93,7 +93,7 @@ export async function searchPage(
                   custom_id: componentsIds.nextPage,
                   label: 'Next',
                 }
-                : null,
+                : {},
             ],
           },
         ],
