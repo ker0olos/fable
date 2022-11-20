@@ -78,18 +78,22 @@ export async function searchPage(
           {
             type: componentTypes.GROUP,
             components: [
-              {
-                style: colors.grey,
-                type: componentTypes.BUTTON,
-                custom_id: componentsIds.prevPage,
-                label: 'Prev',
-              },
-              {
-                style: colors.grey,
-                type: componentTypes.BUTTON,
-                custom_id: componentsIds.nextPage,
-                label: 'Next',
-              },
+              prev
+                ? {
+                  style: colors.grey,
+                  type: componentTypes.BUTTON,
+                  custom_id: componentsIds.prevPage,
+                  label: 'Prev',
+                }
+                : null,
+              next
+                ? {
+                  style: colors.grey,
+                  type: componentTypes.BUTTON,
+                  custom_id: componentsIds.nextPage,
+                  label: 'Next',
+                }
+                : null,
             ],
           },
         ],
