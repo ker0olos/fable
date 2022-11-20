@@ -60,24 +60,22 @@ export async function searchPage(
             //   },
             // ],
             image: {
-              url: results.media[0].coverImage?.large,
-              width: 0,
-              height: 0,
+              url: results.media[0].coverImage?.extraLarge,
             },
             footer: {
               text: [
                 results.media[0].title.romaji,
                 results.media[0].title.native,
               ].filter(Boolean).join(' - '),
-              // icon_url: '-',
-              // proxy_icon_url: '-',
+              icon_url: '-',
+              proxy_icon_url: '-',
             },
           },
         ],
         components: [
           {
             type: componentTypes.GROUP,
-            components: [],
+            components: [/** Next and Prev buttons */],
           },
         ],
       },

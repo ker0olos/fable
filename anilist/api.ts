@@ -17,6 +17,7 @@ type Media = {
   type?: 'ANIME' | 'MANGA';
   description?: string;
   coverImage?: {
+    extraLarge?: string;
     large?: string;
     medium?: string;
     color?: string;
@@ -51,6 +52,7 @@ export async function search(
           type
           description
           coverImage {
+            extraLarge
             large
             medium
             color
