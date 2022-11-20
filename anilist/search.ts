@@ -74,20 +74,20 @@ export async function searchPage(
       },
     };
 
-    media.characters?.edges.slice(0, 2).forEach((char) => {
+    media.characters?.edges.slice(0, 2).forEach((character) => {
       response.data.embeds?.push({
         type: 'rich',
         title: '**MAIN**',
         color: embedColorInt,
-        description: char.node.name.full,
+        description: character.node.name.full,
         // footer: char.node.description
         //   ? {
         //     text: char.node.description,
         //   }
         //   : undefined,
-        thumbnail: char.node.image?.large
+        thumbnail: character.node.image?.large
           ? {
-            url: char.node.image?.large,
+            url: character.node.image?.large,
           }
           : undefined,
       });
@@ -102,14 +102,14 @@ export async function searchPage(
     //   });
     // }
 
-    // if (next) {
-    //   response.data.components![0].components!.push({
-    //     type: anilist.COMPONENT_TYPE.BUTTON,
-    //     style: anilist.BUTTON_COLOR.GREY,
-    //     custom_id: componentsIds.nextPage,
-    //     label: 'Next',
-    //   });
-    // }
+    if (next) {
+      response.data.components![0].components!.push({
+        type: anilist.COMPONENT_TYPE.BUTTON,
+        style: anilist.BUTTON_COLOR.GREY,
+        custom_id: componentsIds.nextPage,
+        label: 'Next',
+      });
+    }
 
     return json(response);
   } catch (err) {
