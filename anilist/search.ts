@@ -62,36 +62,32 @@ export async function searchPage(
             image: {
               url: results.media[0].coverImage?.large,
             },
-            footer: {
-              text: [
-                results.media[0].title.romaji,
-                results.media[0].title.native,
-              ].filter(Boolean).join(' - '),
-              // icon_url: '-',
-              // proxy_icon_url: '-',
-            },
+            // footer: {
+            //   text: [
+            //     results.media[0].title.romaji,
+            //     results.media[0].title.native,
+            //   ].filter(Boolean).join(' - '),
+            //   // icon_url: '-',
+            //   // proxy_icon_url: '-',
+            // },
           },
         ],
         components: [
           {
             type: componentTypes.GROUP,
             components: [
-              prev
-                ? {
-                  style: colors.grey,
-                  type: componentTypes.BUTTON,
-                  custom_id: componentsIds.prevPage,
-                  label: 'Prev',
-                }
-                : null,
-              next
-                ? {
-                  style: colors.grey,
-                  type: componentTypes.BUTTON,
-                  custom_id: componentsIds.nextPage,
-                  label: 'Next',
-                }
-                : null,
+              {
+                style: colors.grey,
+                type: componentTypes.BUTTON,
+                custom_id: componentsIds.prevPage,
+                label: 'Prev',
+              },
+              {
+                style: colors.grey,
+                type: componentTypes.BUTTON,
+                custom_id: componentsIds.nextPage,
+                label: 'Next',
+              },
             ],
           },
         ],
