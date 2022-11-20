@@ -7,6 +7,7 @@ import {
   colors,
   componentsIds,
   componentTypes,
+  hexToInt,
   NEW_MESSAGE,
   UPDATE_MESSAGE,
 } from './meta.ts';
@@ -52,7 +53,7 @@ export async function searchPage(
             type: 'rich',
             title: results.media[0].title.english,
             description: results.media[0].description,
-            // color: results.media[0].coverImage?.color,
+            color: hexToInt(results.media[0].coverImage?.color),
             // fields: [
             //   {
             //     name: '',
