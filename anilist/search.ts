@@ -44,7 +44,7 @@ export async function searchPage(
       throw new Error('404');
     }
 
-    return json({
+    let response = {
       type: NEW_MESSAGE,
       data: {
         embeds: [
@@ -77,28 +77,31 @@ export async function searchPage(
         components: [
           {
             type: componentTypes.GROUP,
-            components: [
-              prev
-                ? {
-                  style: colors.grey,
-                  type: componentTypes.BUTTON,
-                  custom_id: componentsIds.prevPage,
-                  label: 'Prev',
-                }
-                : {},
-              next
-                ? {
-                  style: colors.grey,
-                  type: componentTypes.BUTTON,
-                  custom_id: componentsIds.nextPage,
-                  label: 'Next',
-                }
-                : {},
-            ],
+            components: [],
           },
         ],
       },
-    });
+    };
+
+    if (prev) {
+      response.data.components[0].components.push({
+        style: colors.grey,
+        type: componentTypes.BUTTON,
+        custom_id: componentsIds.prevPage,
+        label: 'Prev',
+      } as never);
+    }
+
+    if (next) {
+      response.data.components[0].components.push({
+        style: colors.grey,
+        type: componentTypes.BUTTON,
+        custom_id: componentsIds.nextPage,
+        label: 'Next',
+      } as never);
+    }
+
+    return json(response);
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
       return json({
