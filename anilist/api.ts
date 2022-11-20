@@ -48,6 +48,7 @@ type Character = {
     name: {
       full: string;
     };
+    description?: string;
     gender?: string;
     age?: string;
     image: {
@@ -125,11 +126,12 @@ export async function search(
             edges {
               role
               node {
+                age
+                gender
+                description
                 name {
                   full
                 }
-                gender
-                age
                 image {
                   large
                 }

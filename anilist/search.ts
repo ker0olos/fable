@@ -67,7 +67,7 @@ export async function searchPage(
         ],
         components: [
           {
-            type: 1,
+            type: anilist.COMPONENT_TYPE.GROUP,
             components: [/** Next and Prev Buttons */],
           },
         ],
@@ -77,9 +77,14 @@ export async function searchPage(
     media.characters?.edges.slice(0, 2).forEach((char) => {
       response.data.embeds?.push({
         type: 'rich',
-        color: embedColorInt,
         title: '**MAIN**',
+        color: embedColorInt,
         description: char.node.name.full,
+        footer: char.node.description
+          ? {
+            text: char.node.description,
+          }
+          : undefined,
         thumbnail: char.node.image?.large
           ? {
             url: char.node.image?.large,
@@ -88,23 +93,23 @@ export async function searchPage(
       });
     });
 
-    if (prev) {
-      response.data.components![0].components!.push({
-        type: 2,
-        style: 4,
-        custom_id: componentsIds.prevPage,
-        label: 'Prev',
-      });
-    }
+    // if (prev) {
+    //   response.data.components![0].components!.push({
+    //     type: anilist.COMPONENT_TYPE.BUTTON,
+    //     style: anilist.BUTTON_COLOR.GREY,
+    //     custom_id: componentsIds.prevPage,
+    //     label: 'Prev',
+    //   });
+    // }
 
-    if (next) {
-      response.data.components![0].components!.push({
-        type: 2,
-        style: 4,
-        custom_id: componentsIds.nextPage,
-        label: 'Next',
-      });
-    }
+    // if (next) {
+    //   response.data.components![0].components!.push({
+    //     type: anilist.COMPONENT_TYPE.BUTTON,
+    //     style: anilist.BUTTON_COLOR.GREY,
+    //     custom_id: componentsIds.nextPage,
+    //     label: 'Next',
+    //   });
+    // }
 
     return json(response);
   } catch (err) {
