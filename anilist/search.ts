@@ -51,8 +51,8 @@ export async function searchPage(
           {
             type: 'rich',
             title: results.media[0].title.english,
-            // description: results.media[0].description,
-            // color: results.media[0].coverImage?.color,
+            description: results.media[0].description,
+            color: results.media[0].coverImage?.color,
             // fields: [
             //   {
             //     name: '',
