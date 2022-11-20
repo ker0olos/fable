@@ -74,24 +74,24 @@ export async function searchPage(
       },
     };
 
-    media.characters?.edges.slice(0, 2).forEach((character) => {
-      response.data.embeds?.push({
-        type: 'rich',
-        title: '**MAIN**',
-        color: embedColorInt,
-        description: character.node.name.full,
-        footer: character.node.description
-          ? {
-            text: character.node.description,
-          }
-          : undefined,
-        thumbnail: character.node.image?.large
-          ? {
-            url: character.node.image?.large,
-          }
-          : undefined,
-      });
-    });
+    // media.characters?.edges.slice(0, 2).forEach((character) => {
+    //   response.data.embeds?.push({
+    //     type: 'rich',
+    //     title: '**MAIN**',
+    //     color: embedColorInt,
+    //     description: character.node.name.full,
+    //     // footer: character.node.description
+    //     //   ? {
+    //     //     text: character.node.description,
+    //     //   }
+    //     //   : undefined,
+    //     thumbnail: character.node.image?.large
+    //       ? {
+    //         url: character.node.image?.large,
+    //       }
+    //       : undefined,
+    //   });
+    // });
 
     if (prev) {
       response.data.components![0].components!.push({
