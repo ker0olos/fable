@@ -47,12 +47,11 @@ export async function searchPage(
     return json({
       type: NEW_MESSAGE,
       data: {
-        content: `${results.media[0].title.english}`,
         embeds: [
           {
             type: 'rich',
             title: results.media[0].title.english,
-            description: results.media[0].description,
+            description: results.media[0].description?.replaceAll('<br>', '\n'),
             color: hexToInt(results.media[0].coverImage?.color),
             // fields: [
             //   {
@@ -62,35 +61,37 @@ export async function searchPage(
             // ],
             image: {
               url: results.media[0].coverImage?.large,
-              // height: 0,
-              // width: 0,
             },
-            // footer: {
-            //   text: [
-            //     results.media[0].title.romaji,
-            //     results.media[0].title.native,
-            //   ].filter(Boolean).join(' - '),
-            //   // icon_url: '-',
-            //   // proxy_icon_url: '-',
-            // },
+            footer: {
+              text: [
+                results.media[0].title.romaji,
+                results.media[0].title.native,
+              ].filter(Boolean).join(' - '),
+              // icon_url: '-',
+              // proxy_icon_url: '-',
+            },
           },
         ],
         components: [
           {
             type: componentTypes.GROUP,
             components: [
-              {
-                style: colors.grey,
-                type: componentTypes.BUTTON,
-                custom_id: componentsIds.prevPage,
-                label: 'Prev',
-              },
-              {
-                style: colors.grey,
-                type: componentTypes.BUTTON,
-                custom_id: componentsIds.nextPage,
-                label: 'Next',
-              },
+              prev
+                ? {
+                  style: colors.grey,
+                  type: componentTypes.BUTTON,
+                  custom_id: componentsIds.prevPage,
+                  label: 'Prev',
+                }
+                : null,
+              next
+                ? {
+                  style: colors.grey,
+                  type: componentTypes.BUTTON,
+                  custom_id: componentsIds.nextPage,
+                  label: 'Next',
+                }
+                : null,
             ],
           },
         ],
