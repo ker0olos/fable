@@ -8,8 +8,8 @@
   "fmt": {
     "options": {
       "useTabs": false,
-      "indentWidth": 2,
-      "singleQuote": true
+      "singleQuote": true,
+      "indentWidth": 2
     }
   }
 }

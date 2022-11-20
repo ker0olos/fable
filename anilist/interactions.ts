@@ -6,22 +6,15 @@ import {
   verifySignature,
 } from 'https://raw.githubusercontent.com/ker0olos/bots/main/index.ts';
 
-import * as anilist from './api.ts';
-
-const NEW_MESSAGE = 4;
-const UPDATE_MESSAGE = 7;
-
-const ACTION_ROW = 1;
-const BUTTON = 2;
-
-const BLUE = 1;
-const GREY = 2;
-const GREEN = 3;
-const RED = 4;
+import { translate } from './translate.ts';
+import { nextEpisode } from './schedule.ts';
+import { nextSearchPage, searchPage } from './search.ts';
 
 const COMPONENTS = {
   nextPage: 'next-page-results',
 };
+
+const DISCORD_PUBLIC_KEY = Deno.env.get('DISCORD_PUBLIC_KEY')!;
 
 async function handler(request: Request): Promise<Response> {
   const { error } = await validateRequest(request, {
@@ -36,7 +29,7 @@ async function handler(request: Request): Promise<Response> {
 
   const { valid, body } = await verifySignature(
     request,
-    Deno.env.get('DISCORD_PUBLIC_KEY')!,
+    DISCORD_PUBLIC_KEY,
   );
 
   if (!valid) {
@@ -51,7 +44,7 @@ async function handler(request: Request): Promise<Response> {
   const {
     type = 0,
     // token = '',
-    // message = { embeds: [] },
+    message = { embeds: [] },
     data = { options: [] },
     // member = { user: { id: '' } },
   } = JSON.parse(body);
@@ -78,7 +71,12 @@ async function handler(request: Request): Promise<Response> {
           lang: data.name,
         });
       case 'search':
-        return await searchPage({ search: data.options[0].value, page: 1 });
+        return await searchPage({
+          search: data.options[0].value,
+          page: 1,
+          next: true,
+          prev: false,
+        });
       case 'next_episode':
         return await nextEpisode({ search: data.options[0].value });
       default:
@@ -91,129 +89,13 @@ async function handler(request: Request): Promise<Response> {
 
     switch (data.custom_id) {
       case COMPONENTS.nextPage:
-        return await nextSearchPage();
+        return await nextSearchPage(message);
       default:
         break;
     }
   }
 
   return json({ error: 'bad request' }, { status: 400 });
-}
-
-async function nextSearchPage() {
-  return json({
-    type: UPDATE_MESSAGE,
-    data: {
-      content: `Clicked`,
-      components: [],
-    },
-  });
-}
-
-async function searchPage({ search, page }: { search: string; page: number }) {
-  try {
-    const results = await anilist.search({ search, page });
-
-    if (!results.media.length) {
-      throw new Error('404');
-    }
-
-    return json({
-      type: NEW_MESSAGE,
-      data: {
-        content: `${results.media[0].title.english}`,
-        components: [
-          {
-            type: ACTION_ROW,
-            components: [
-              {
-                style: GREY,
-                type: BUTTON,
-                label: `Next`,
-                custom_id: COMPONENTS.nextPage,
-              },
-            ],
-          },
-        ],
-      },
-    });
-  } catch (err) {
-    if (err?.response?.status === 404 || err?.message === '404') {
-      return json({
-        type: NEW_MESSAGE,
-        data: {
-          content: `Found nothing matching that name!`,
-        },
-      });
-    }
-
-    return json({ errors: err.errors }, { status: err.response.status });
-  }
-}
-
-async function nextEpisode({ search }: { search: string }) {
-  try {
-    const anime = await anilist.getNextAiring({ search });
-
-    if (!anime.nextAiringEpisode?.airingAt || !anime.title?.english) {
-      return json({
-        type: NEW_MESSAGE,
-        data: {
-          content:
-            `\`${anime.title.english}\` is currently not airing any episodes.`,
-        },
-      });
-    }
-
-    return json({
-      type: NEW_MESSAGE,
-      data: {
-        content:
-          `The next episode of \`${anime.title.english}\` is <t:${anime.nextAiringEpisode.airingAt}:R>.`,
-      },
-    });
-  } catch (err) {
-    if (err?.response?.status === 404 || err?.message === '404') {
-      return json({
-        type: NEW_MESSAGE,
-        data: {
-          content: `Found no anime matching that name!`,
-        },
-      });
-    }
-
-    return json({ errors: err.errors }, { status: err.response.status });
-  }
-}
-
-async function translate(
-  { search, lang }: { search: string; lang: 'english' | 'romaji' | 'native' },
-) {
-  try {
-    const results = await anilist.search({ search, page: 1 });
-
-    if (!results.media.length) {
-      throw new Error('404');
-    }
-
-    return json({
-      type: NEW_MESSAGE,
-      data: {
-        content: `${results.media[0].title[lang]}`,
-      },
-    });
-  } catch (err) {
-    if (err?.response?.status === 404 || err?.message === '404') {
-      return json({
-        type: NEW_MESSAGE,
-        data: {
-          content: `Found nothing matching that name!`,
-        },
-      });
-    }
-
-    return json({ errors: err.errors }, { status: err.response.status });
-  }
 }
 
 serve(handler);
