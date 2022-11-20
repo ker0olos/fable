@@ -53,16 +53,24 @@ export async function searchPage(
             title: results.media[0].title.english,
             description: results.media[0].description,
             color: results.media[0].coverImage?.color,
+            // fields: [
+            //   {
+            //     name: '',
+            //     value: '',
+            //   },
+            // ],
             image: {
               url: results.media[0].coverImage?.large,
+              // height: 0,
+              // width: 0,
             },
             footer: {
               text: [
                 results.media[0].title.romaji,
                 results.media[0].title.native,
               ].filter(Boolean).join(' - '),
-              icon_url: '-',
-              proxy_icon_url: '-',
+              // icon_url: '-',
+              // proxy_icon_url: '-',
             },
           },
         ],
