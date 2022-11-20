@@ -80,11 +80,11 @@ export async function searchPage(
         title: '**MAIN**',
         color: embedColorInt,
         description: char.node.name.full,
-        footer: char.node.description
-          ? {
-            text: char.node.description,
-          }
-          : undefined,
+        // footer: char.node.description
+        //   ? {
+        //     text: char.node.description,
+        //   }
+        //   : undefined,
         thumbnail: char.node.image?.large
           ? {
             url: char.node.image?.large,
