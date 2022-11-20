@@ -36,6 +36,11 @@ export async function nextEpisode({ search }: { search: string }) {
       });
     }
 
-    return json({ errors: err.errors }, { status: err.response.status });
+    return json({
+      type: NEW_MESSAGE,
+      data: {
+        content: JSON.stringify(err),
+      },
+    });
   }
 }
