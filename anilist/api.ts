@@ -5,6 +5,23 @@ import {
 
 const client = new GraphQLClient('https://graphql.anilist.co');
 
+export enum COMPONENT_TYPE {
+  GROUP = 1,
+  BUTTON = 2,
+}
+
+export enum MESSAGE_TYPE {
+  NEW = 4,
+  UPDATE = 7,
+}
+
+export enum BUTTON_COLOR {
+  BLUE = 1,
+  GREY = 2,
+  GREEN = 3,
+  RED = 4,
+}
+
 type Media = {
   title: {
     english: string;
@@ -16,11 +33,26 @@ type Media = {
   };
   type?: 'ANIME' | 'MANGA';
   description?: string;
+  characters?: { edges: Character[] };
   coverImage?: {
-    extraLarge?: string;
-    large?: string;
-    medium?: string;
+    extraLarge: string;
+    large: string;
+    medium: string;
     color?: string;
+  };
+};
+
+type Character = {
+  role: string;
+  node: {
+    name: {
+      full: string;
+    };
+    gender?: string;
+    age?: string;
+    image: {
+      large?: string;
+    };
   };
 };
 
@@ -33,6 +65,44 @@ type Page = {
     perPage: number;
   };
   media: Media[];
+};
+
+export type Response = {
+  type: MESSAGE_TYPE;
+  data: {
+    content?: string;
+    embeds?: Embed[];
+    components?: Component[];
+  };
+};
+
+type Component = {
+  type: COMPONENT_TYPE;
+  style?: BUTTON_COLOR;
+  // deno-lint-ignore camelcase
+  custom_id?: string;
+  label?: string;
+  components?: Component[];
+};
+
+type Embed = {
+  type: 'rich';
+  title: string;
+  description?: string;
+  color?: number;
+  fields?: {
+    name: string;
+    value: string;
+  }[];
+  thumbnail?: {
+    url: string;
+  };
+  image?: {
+    url: string;
+  };
+  footer?: {
+    text: string;
+  };
 };
 
 export async function search(
@@ -48,13 +118,27 @@ export async function search(
           hasNextPage
           perPage
         }
-        media(search: $search, sort:[POPULARITY_DESC]) {
+        media(search: $search, sort: [POPULARITY_DESC]) {
           type
           description
+          characters(sort: [RELEVANCE], role: MAIN) {
+            edges {
+              role
+              node {
+                name {
+                  full
+                }
+                gender
+                age
+                image {
+                  large
+                }
+              }
+            }
+          }
           coverImage {
             extraLarge
             large
-            medium
             color
           }
           title {

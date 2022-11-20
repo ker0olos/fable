@@ -3,19 +3,12 @@ import {
 } from 'https://raw.githubusercontent.com/ker0olos/bots/main/index.ts';
 
 import * as anilist from './api.ts';
-import {
-  colors,
-  componentsIds,
-  componentTypes,
-  hexToInt,
-  NEW_MESSAGE,
-  UPDATE_MESSAGE,
-} from './meta.ts';
+import { componentsIds, hexToInt } from './meta.ts';
 
 // deno-lint-ignore no-explicit-any
 export async function nextSearchPage({ embeds }: { embeds: any[] }) {
-  return json({
-    type: UPDATE_MESSAGE,
+  const response: anilist.Response = {
+    type: anilist.MESSAGE_TYPE.UPDATE,
     data: {
       components: [],
       embeds: [
@@ -26,7 +19,9 @@ export async function nextSearchPage({ embeds }: { embeds: any[] }) {
         },
       ],
     },
-  });
+  };
+
+  return json(response);
 }
 
 export async function searchPage(
@@ -44,66 +39,78 @@ export async function searchPage(
       throw new Error('404');
     }
 
-    let response = {
-      type: NEW_MESSAGE,
+    const media = results.media[0];
+    const embedColorInt = hexToInt(media.coverImage?.color);
+
+    const response: anilist.Response = {
+      type: anilist.MESSAGE_TYPE.NEW,
       data: {
         embeds: [
           {
             type: 'rich',
-            title: results.media[0].title.english,
-            description: results.media[0].description?.replaceAll('<br>', '\n'),
-            color: hexToInt(results.media[0].coverImage?.color),
-            // fields: [
-            //   {
-            //     name: '',
-            //     value: '',
-            //   },
-            // ],
-            image: {
-              url: results.media[0].coverImage?.extraLarge,
-            },
+            title: media.title.english,
+            description: media.description?.replaceAll('<br>', '\n'),
+            color: embedColorInt,
+            fields: [/**2 Main Characters*/],
+            image: media.coverImage?.extraLarge
+              ? {
+                url: media.coverImage.extraLarge,
+              }
+              : undefined,
             footer: {
               text: [
-                results.media[0].title.romaji,
-                results.media[0].title.native,
+                media.title.romaji,
+                media.title.native,
               ].filter(Boolean).join(' - '),
-              icon_url: '-',
-              proxy_icon_url: '-',
             },
           },
         ],
         components: [
           {
-            type: componentTypes.GROUP,
-            components: [/** Next and Prev buttons */],
+            type: 1,
+            components: [/** Next and Prev Buttons */],
           },
         ],
       },
     };
 
+    media.characters?.edges.slice(0, 2).forEach((char) => {
+      response.data.embeds?.push({
+        type: 'rich',
+        color: embedColorInt,
+        title: '**MAIN**',
+        description: char.node.name.full,
+        thumbnail: char.node.image?.large
+          ? {
+            url: char.node.image?.large,
+          }
+          : undefined,
+      });
+    });
+
     if (prev) {
-      response.data.components[0].components.push({
-        style: colors.grey,
-        type: componentTypes.BUTTON,
+      response.data.components![0].components!.push({
+        type: 2,
+        style: 4,
         custom_id: componentsIds.prevPage,
         label: 'Prev',
-      } as never);
+      });
     }
 
     if (next) {
-      response.data.components[0].components.push({
-        style: colors.grey,
-        type: componentTypes.BUTTON,
+      response.data.components![0].components!.push({
+        type: 2,
+        style: 4,
         custom_id: componentsIds.nextPage,
         label: 'Next',
-      } as never);
+      });
     }
 
     return json(response);
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
       return json({
-        type: NEW_MESSAGE,
+        type: anilist.MESSAGE_TYPE.NEW,
         data: {
           content: 'Found nothing matching that name!',
         },
@@ -111,7 +118,7 @@ export async function searchPage(
     }
 
     return json({
-      type: NEW_MESSAGE,
+      type: anilist.MESSAGE_TYPE.NEW,
       data: {
         content: JSON.stringify(err),
       },

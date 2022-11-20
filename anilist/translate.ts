@@ -3,7 +3,6 @@ import {
 } from 'https://raw.githubusercontent.com/ker0olos/bots/main/index.ts';
 
 import * as anilist from './api.ts';
-import { NEW_MESSAGE } from './meta.ts';
 
 export async function translate(
   { search, lang }: { search: string; lang: 'english' | 'romaji' | 'native' },
@@ -15,16 +14,18 @@ export async function translate(
       throw new Error('404');
     }
 
-    return json({
-      type: NEW_MESSAGE,
+    const response: anilist.Response = {
+      type: anilist.MESSAGE_TYPE.NEW,
       data: {
         content: `${results.media[0].title[lang]}`,
       },
-    });
+    };
+
+    return json(response);
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
       return json({
-        type: NEW_MESSAGE,
+        type: anilist.MESSAGE_TYPE.NEW,
         data: {
           content: `Found nothing matching that name!`,
         },
@@ -32,7 +33,7 @@ export async function translate(
     }
 
     return json({
-      type: NEW_MESSAGE,
+      type: anilist.MESSAGE_TYPE.NEW,
       data: {
         content: JSON.stringify(err),
       },
