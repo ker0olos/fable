@@ -80,11 +80,11 @@ export async function searchPage(
         title: '**MAIN**',
         color: embedColorInt,
         description: character.node.name.full,
-        // footer: char.node.description
-        //   ? {
-        //     text: char.node.description,
-        //   }
-        //   : undefined,
+        footer: char.node.description
+          ? {
+            text: char.node.description,
+          }
+          : undefined,
         thumbnail: character.node.image?.large
           ? {
             url: character.node.image?.large,
@@ -93,14 +93,14 @@ export async function searchPage(
       });
     });
 
-    // if (prev) {
-    //   response.data.components![0].components!.push({
-    //     type: anilist.COMPONENT_TYPE.BUTTON,
-    //     style: anilist.BUTTON_COLOR.GREY,
-    //     custom_id: componentsIds.prevPage,
-    //     label: 'Prev',
-    //   });
-    // }
+    if (prev) {
+      response.data.components![0].components!.push({
+        type: anilist.COMPONENT_TYPE.BUTTON,
+        style: anilist.BUTTON_COLOR.GREY,
+        custom_id: componentsIds.prevPage,
+        label: 'Prev',
+      });
+    }
 
     if (next) {
       response.data.components![0].components!.push({
@@ -109,6 +109,10 @@ export async function searchPage(
         custom_id: componentsIds.nextPage,
         label: 'Next',
       });
+    }
+
+    if (!prev && !next) {
+      throw new Error('404');
     }
 
     return json(response);
