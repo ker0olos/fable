@@ -42,14 +42,19 @@ export async function searchPage(
     const media = results.media[0];
     const embedColorInt = hexToInt(media.coverImage?.color);
 
+    const titles = [
+      media.title.english,
+      media.title.romaji,
+      media.title.native,
+    ].filter(Boolean);
+
     const response: anilist.Response = {
       type: anilist.MESSAGE_TYPE.NEW,
       data: {
         embeds: [
           {
             type: 'rich',
-            title: media.title.english || media.title.romaji ||
-              media.title.native,
+            title: titles.shift(),
             description: decodeDescription(media.description),
             color: embedColorInt,
             fields: [/**2 Main Characters*/],
@@ -59,10 +64,7 @@ export async function searchPage(
               }
               : undefined,
             footer: {
-              text: [
-                media.title.romaji,
-                media.title.native,
-              ].filter(Boolean).join(' - '),
+              text: titles.join(' - '),
             },
           },
         ],
