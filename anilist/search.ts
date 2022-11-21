@@ -6,23 +6,23 @@ import * as anilist from './api.ts';
 import { componentsIds, decodeDescription, hexToInt } from './meta.ts';
 
 // deno-lint-ignore no-explicit-any
-export async function nextSearchPage({ embeds }: { embeds: any[] }) {
-  const response: anilist.Response = {
-    type: anilist.MESSAGE_TYPE.UPDATE,
-    data: {
-      components: [],
-      embeds: [
-        {
-          type: 'rich',
-          title: 'Unimplemented',
-          description: JSON.stringify(embeds[0].footer),
-        },
-      ],
-    },
-  };
+// export async function nextSearchPage({ embeds }: { embeds: any[] }) {
+//   const response: anilist.Response = {
+//     type: anilist.MESSAGE_TYPE.UPDATE,
+//     data: {
+//       components: [],
+//       embeds: [
+//         {
+//           type: 'rich',
+//           title: 'Unimplemented',
+//           description: JSON.stringify(embeds[0].footer),
+//         },
+//       ],
+//     },
+//   };
 
-  return json(response);
-}
+//   return json(response);
+// }
 
 export async function searchPage(
   { search, page, next, prev }: {
@@ -68,12 +68,12 @@ export async function searchPage(
             },
           },
         ],
-        components: [
-          {
-            type: anilist.COMPONENT_TYPE.GROUP,
-            components: [/** Next and Prev Buttons */],
-          },
-        ],
+        // components: [
+        //   {
+        //     type: anilist.COMPONENT_TYPE.GROUP,
+        //     components: [/** Next and Prev Buttons */],
+        //   },
+        // ],
       },
     };
 
@@ -96,27 +96,27 @@ export async function searchPage(
       });
     });
 
-    if (prev) {
-      response.data.components![0].components!.push({
-        type: anilist.COMPONENT_TYPE.BUTTON,
-        style: anilist.BUTTON_COLOR.GREY,
-        custom_id: componentsIds.prevPage,
-        label: 'Prev',
-      });
-    }
+    // if (prev) {
+    //   response.data.components![0].components!.push({
+    //     type: anilist.COMPONENT_TYPE.BUTTON,
+    //     style: anilist.BUTTON_COLOR.GREY,
+    //     custom_id: componentsIds.prevPage,
+    //     label: 'Prev',
+    //   });
+    // }
 
-    if (next) {
-      response.data.components![0].components!.push({
-        type: anilist.COMPONENT_TYPE.BUTTON,
-        style: anilist.BUTTON_COLOR.GREY,
-        custom_id: componentsIds.nextPage,
-        label: 'Next',
-      });
-    }
+    // if (next) {
+    //   response.data.components![0].components!.push({
+    //     type: anilist.COMPONENT_TYPE.BUTTON,
+    //     style: anilist.BUTTON_COLOR.GREY,
+    //     custom_id: componentsIds.nextPage,
+    //     label: 'Next',
+    //   });
+    // }
 
-    if (!prev && !next) {
-      throw new Error('404');
-    }
+    // if (!prev && !next) {
+    //   throw new Error('404');
+    // }
 
     return json(response);
   } catch (err) {
