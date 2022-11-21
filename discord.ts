@@ -40,6 +40,7 @@ export class Component {
 
   setUrl(url: string) {
     this._data.url = url;
+    this._data.style = 5;
   }
 
   setId(id: string) {
