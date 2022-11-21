@@ -91,9 +91,9 @@ export async function searchPage(
           : undefined,
         footer: {
           text: [
-            character.node.gender,
             character.node.age,
-          ].filter(Boolean).join(' • '),
+            character.node.gender,
+          ].filter(Boolean).join(' '),
         },
       });
     });
