@@ -18,7 +18,7 @@ export function hexToInt(hex?: string): number | undefined {
 }
 
 export function capitalize(s: string): string {
-  return s[0].toUpperCase() + s.slice(1);
+  return s[0].toUpperCase() + s.slice(1).toLowerCase();
 }
 
 export function decodeDescription(s?: string): string | undefined {

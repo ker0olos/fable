@@ -84,14 +84,17 @@ export async function searchPage(
         title: character.node.name.full,
         color: embedColorInt,
         description: decodeDescription(character.node.description),
-        author: {
-          name: 'Main',
-        },
         thumbnail: character.node.image?.large
           ? {
             url: character.node.image?.large,
           }
           : undefined,
+        footer: {
+          text: [
+            character.node.gender,
+            character.node.age,
+          ].filter(Boolean).join(' • '),
+        },
       });
     });
 
