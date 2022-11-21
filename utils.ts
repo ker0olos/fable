@@ -35,12 +35,15 @@ export function decodeDescription(s?: string): string | undefined {
   s = s.replaceAll('&lt;', '<');
   s = s.replaceAll('&gt;', '>');
 
-  s = s.replaceAll(/<br>|<\/br>\s+/gm, '\n');
   s = s.replaceAll(/~!.+!~/gm, '');
 
-  s = s.replace(/<a.*?href="(.*?)".*?>(.*?)<\/a>/g, '[$2]($1)');
+  s = s.replace(/<i>(.*?)<\/i>/g, '*$1*');
+  s = s.replace(/<b>(.*?)<\/b>/g, '**$1**');
+  s = s.replace(/<strike>(.*?)<\/strike>/g, '~~$1~~');
 
-  // s = s.replaceAll(/\n+/gm, '\n');
+  s = s.replaceAll(/<br>|<hr>|<\/br>|<\/hr>/gm, '\n');
+
+  s = s.replace(/<a.*?href="(.*?)".*?>(.*?)<\/a>/g, '[$2]($1)');
 
   return s;
 }
