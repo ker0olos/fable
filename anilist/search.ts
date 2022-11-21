@@ -65,7 +65,6 @@ export async function searchPage(
       const component = new discord.Component()
         .setStyle(discord.BUTTON_COLOR.GREY)
         .setLabel(relation.relationType);
-
       group.push(component);
     });
 

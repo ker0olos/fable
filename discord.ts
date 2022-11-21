@@ -15,6 +15,7 @@ export enum BUTTON_COLOR {
 
 export class Component {
   _data: {
+    type: number;
     custom_id: string;
     style?: BUTTON_COLOR;
     label?: string;
@@ -22,6 +23,7 @@ export class Component {
 
   constructor() {
     this._data = {
+      type: 2,
       custom_id: (Math.random() + 1).toString(36).substring(7),
     };
   }
@@ -149,8 +151,10 @@ export class Message {
   _type: MESSAGE_TYPE;
   _data: {
     content?: string;
-    embeds: Embed[];
-    components: Component[][];
+    // deno-lint-ignore no-explicit-any
+    embeds: any[];
+    // deno-lint-ignore no-explicit-any
+    components: any[];
   };
 
   constructor(type: MESSAGE_TYPE) {
@@ -183,13 +187,16 @@ export class Message {
   }
 
   addEmbed(embed: Embed): Message {
-    this._data.embeds.push(embed);
+    this._data.embeds.push(embed._done());
     return this;
   }
 
   addComponent(...components: Component[]): Message {
     if (components.length > 0) {
-      this._data.components.push(components);
+      this._data.components.push({
+        type: 1,
+        components: components.map((component) => component._done()),
+      });
     }
     return this;
   }
@@ -199,11 +206,8 @@ export class Message {
       type: this._type,
       data: {
         content: this._data.content,
-        embeds: this._data.embeds.map((embeds) => embeds._done()),
-        components: this._data.components.map((component_group) => ({
-          type: 1,
-          components: component_group.map((component) => component._done()),
-        })),
+        embeds: this._data.embeds,
+        components: this._data.components,
       },
     });
   }
