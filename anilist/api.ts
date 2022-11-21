@@ -31,7 +31,26 @@ type Media = {
   nextAiringEpisode?: {
     airingAt?: number;
   };
+  id?: number;
   type?: 'ANIME' | 'MANGA';
+  format?:
+    | 'TV'
+    | 'TV_SHORT'
+    | 'MOVIE'
+    | 'SPECIAL'
+    | 'OVA'
+    | 'ONA'
+    | 'MUSIC'
+    | 'MANGA'
+    | 'NOVEL'
+    | 'ONE_SHOT';
+  status:
+    | 'FINISHED'
+    | 'RELEASING'
+    | 'NOT_YET_RELEASED'
+    | 'CANCELLED'
+    | 'HIATUS';
+  relations: { nodes: Media[] };
   description?: string;
   characters?: { edges: Character[] };
   coverImage?: {
@@ -124,8 +143,10 @@ export async function search(
         }
         media(search: $search, sort: [POPULARITY_DESC]) {
           type
+          format
+          status
           description
-          characters(sort: [RELEVANCE], role: MAIN) {
+          characters(sort: [RELEVANCE]) {
             edges {
               role
               node {
@@ -165,6 +186,7 @@ export async function getNextAiring(
   const query = gql`
     query ($search: String) {
       Media(search: $search, type: ANIME, sort:[TRENDING_DESC, POPULARITY_DESC]) {
+        status
         title {
           english
         }

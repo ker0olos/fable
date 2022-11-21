@@ -17,6 +17,10 @@ export function hexToInt(hex?: string): number | undefined {
   return parseInt(`${R}${G}${B}`, 16);
 }
 
+export function capitalize(s: string): string {
+  return s[0].toUpperCase() + s.slice(1);
+}
+
 export function decodeDescription(s?: string): string | undefined {
   if (!s) {
     return undefined;

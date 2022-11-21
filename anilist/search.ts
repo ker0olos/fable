@@ -3,7 +3,7 @@ import {
 } from 'https://raw.githubusercontent.com/ker0olos/bots/main/index.ts';
 
 import * as anilist from './api.ts';
-import { decodeDescription, hexToInt } from './meta.ts';
+import { capitalize, decodeDescription, hexToInt } from './meta.ts';
 
 // export async function nextSearchPage({ embeds }: { embeds: any[] }) {
 //   const response: anilist.Response = {
@@ -54,36 +54,39 @@ export async function searchPage(
             title: titles.shift(),
             description: decodeDescription(media.description),
             color: embedColorInt,
-            fields: [/**2 Main Characters*/],
+            fields: [],
             image: media.coverImage?.extraLarge
               ? {
                 url: media.coverImage.extraLarge,
               }
               : undefined,
             author: {
-              name: 'Main',
+              name: capitalize(media.type!),
             },
             footer: {
               text: titles.join(' • '),
             },
           },
         ],
+        // TODO
         // components: [
         //   {
         //     type: anilist.COMPONENT_TYPE.GROUP,
-        //     components: [/** Next and Prev Buttons */],
+        //     components: [],
         //   },
         // ],
       },
     };
 
     media.characters?.edges.slice(0, 2).forEach((character) => {
-      // TODO add extra info in author
       response.data.embeds?.push({
         type: 'rich',
         title: character.node.name.full,
         color: embedColorInt,
         description: decodeDescription(character.node.description),
+        author: {
+          name: 'Main',
+        },
         thumbnail: character.node.image?.large
           ? {
             url: character.node.image?.large,
@@ -108,10 +111,6 @@ export async function searchPage(
     //     custom_id: componentsIds.nextPage,
     //     label: 'Next',
     //   });
-    // }
-
-    // if (!prev && !next) {
-    //   throw new Error('404');
     // }
 
     return json(response);
