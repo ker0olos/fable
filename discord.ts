@@ -38,6 +38,11 @@ export class Component {
     return this;
   }
 
+  setId(id: string) {
+    this._data.custom_id = id;
+    return this;
+  }
+
   // deno-lint-ignore no-explicit-any
   _done(): any {
     return this._data;

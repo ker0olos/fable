@@ -64,11 +64,20 @@ export async function searchPage(
     media.relations?.edges.forEach((relation) => {
       const component = new discord.Component()
         .setStyle(discord.BUTTON_COLOR.GREY)
-        .setLabel(
-          relation.relationType === anilist.RELATION_TYPE.OTHER
-            ? capitalize(relation.node.format!)
-            : capitalize(relation.relationType!),
-        );
+        .setId(`${relation.node.id!}`);
+
+      switch (relation.relationType) {
+        case anilist.RELATION_TYPE.PREQUEL:
+        case anilist.RELATION_TYPE.SEQUEL:
+        case anilist.RELATION_TYPE.SIDE_STORY:
+        case anilist.RELATION_TYPE.SPIN_OFF:
+          component.setLabel(capitalize(relation.relationType!));
+          break;
+        default:
+          component.setLabel(capitalize(relation.node.format!));
+          break;
+      }
+
       group.push(component);
     });
 

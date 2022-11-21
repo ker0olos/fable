@@ -17,7 +17,9 @@ export function random(min: number, max: number) {
 }
 
 export function capitalize(s: string): string {
-  return s[0].toUpperCase() + s.slice(1).toLowerCase();
+  const sa = s.split('_').filter(Boolean);
+  return sa.map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(' ')
+    .trim();
 }
 
 export function decodeDescription(s?: string): string | undefined {
@@ -38,3 +40,5 @@ export function decodeDescription(s?: string): string | undefined {
 
   return s;
 }
+
+console.log(capitalize('SIDE_STORY'));
