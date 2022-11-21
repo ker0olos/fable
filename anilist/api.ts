@@ -128,6 +128,7 @@ export async function search(
               relationType
               node {
                 id
+                type
                 format
                 externalLinks {
                   site

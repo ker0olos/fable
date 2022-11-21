@@ -139,7 +139,7 @@ export class Embed {
     return this;
   }
 
-  setFooter(text?: string, suffix?: string) {
+  setFooter(text?: string, suffix = '') {
     if (text) {
       this._data.footer = {
         text: text + suffix,

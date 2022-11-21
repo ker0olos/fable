@@ -50,10 +50,9 @@ export async function searchPage(
         .setThumbnail(character.node.image?.large)
         .setFooter(
           [
-            character.node.gender,
             character.node.age,
-          ].filter(Boolean).join('. '),
-          '.',
+            character.node.gender,
+          ].filter(Boolean).join(' '),
         );
 
       message.addEmbed(embed);
@@ -71,6 +70,9 @@ export async function searchPage(
         case anilist.RELATION_TYPE.SIDE_STORY:
         case anilist.RELATION_TYPE.SPIN_OFF:
           component.setLabel(capitalize(relation.relationType!));
+          break;
+        case anilist.RELATION_TYPE.ADAPTATION:
+          component.setLabel(capitalize(relation.node.type!));
           break;
         default:
           component.setLabel(capitalize(relation.node.format!));
