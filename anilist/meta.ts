@@ -17,4 +17,20 @@ export function hexToInt(hex?: string): number | undefined {
   return parseInt(`${R}${G}${B}`, 16);
 }
 
+export function decodeDescription(s?: string): string | undefined {
+  if (!s) {
+    return undefined;
+  }
+
+  s = s?.replaceAll('&amp;', '&');
+  s = s?.replaceAll('&quot;', '"');
+  s = s?.replaceAll('&#039;', '\'');
+  s = s?.replaceAll('&lt;', '<');
+  s = s?.replaceAll('&gt;', '>');
+
+  s = s?.replaceAll('<br>', '\n');
+
+  s = s?.replaceAll(/!~.+~!/gm, '');
+}
+
 export { componentsIds };

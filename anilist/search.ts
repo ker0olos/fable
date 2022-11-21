@@ -3,7 +3,7 @@ import {
 } from 'https://raw.githubusercontent.com/ker0olos/bots/main/index.ts';
 
 import * as anilist from './api.ts';
-import { componentsIds, hexToInt } from './meta.ts';
+import { componentsIds, decodeDescription, hexToInt } from './meta.ts';
 
 // deno-lint-ignore no-explicit-any
 export async function nextSearchPage({ embeds }: { embeds: any[] }) {
@@ -48,8 +48,9 @@ export async function searchPage(
         embeds: [
           {
             type: 'rich',
-            title: media.title.english,
-            description: media.description?.replaceAll('<br>', '\n'),
+            title: media.title.english || media.title.romaji ||
+              media.title.native,
+            description: decodeDescription(media.description),
             color: embedColorInt,
             fields: [/**2 Main Characters*/],
             image: media.coverImage?.extraLarge
@@ -74,24 +75,24 @@ export async function searchPage(
       },
     };
 
-    // media.characters?.edges.slice(0, 2).forEach((character) => {
-    //   response.data.embeds?.push({
-    //     type: 'rich',
-    //     title: '**MAIN**',
-    //     color: embedColorInt,
-    //     description: character.node.name.full,
-    //     // footer: character.node.description
-    //     //   ? {
-    //     //     text: character.node.description,
-    //     //   }
-    //     //   : undefined,
-    //     thumbnail: character.node.image?.large
-    //       ? {
-    //         url: character.node.image?.large,
-    //       }
-    //       : undefined,
-    //   });
-    // });
+    media.characters?.edges.slice(0, 2).forEach((character) => {
+      response.data.embeds?.push({
+        type: 'rich',
+        title: character.node.name.full,
+        color: embedColorInt,
+        description: 'Main',
+        footer: character.node.description
+          ? {
+            text: decodeDescription(character.node.description)!,
+          }
+          : undefined,
+        thumbnail: character.node.image?.large
+          ? {
+            url: character.node.image?.large,
+          }
+          : undefined,
+      });
+    });
 
     if (prev) {
       response.data.components![0].components!.push({

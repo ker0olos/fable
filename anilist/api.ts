@@ -24,7 +24,7 @@ export enum BUTTON_COLOR {
 
 type Media = {
   title: {
-    english: string;
+    english?: string;
     romaji?: string;
     native?: string;
   };
@@ -88,7 +88,7 @@ type Component = {
 
 type Embed = {
   type: 'rich';
-  title: string;
+  title?: string;
   description?: string;
   color?: number;
   fields?: {
