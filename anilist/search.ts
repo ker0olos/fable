@@ -59,13 +59,17 @@ export async function searchPage(
       message.addEmbed(embed);
     });
 
-    media.relations?.edges.slice(0, 5).forEach((relation) => {
-      const component = new discord.Component(discord.COMPONENT_TYPE.BUTTON)
+    const group: discord.Component[] = [];
+
+    media.relations?.edges.slice(0, 3).forEach((relation) => {
+      const component = new discord.Component()
         .setStyle(discord.BUTTON_COLOR.GREY)
         .setLabel(relation.relationType);
 
-      message.addComponent(component);
+      group.push(component);
     });
+
+    message.addComponent(...group);
 
     return json(message.done());
   } catch (err) {

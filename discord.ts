@@ -6,11 +6,6 @@ export enum MESSAGE_TYPE {
   UPDATE = 7,
 }
 
-export enum COMPONENT_TYPE {
-  GROUP = 1,
-  BUTTON = 2,
-}
-
 export enum BUTTON_COLOR {
   BLUE = 1,
   GREY = 2,
@@ -21,15 +16,12 @@ export enum BUTTON_COLOR {
 export class Component {
   _data: {
     custom_id: string;
-    type: COMPONENT_TYPE;
     style?: BUTTON_COLOR;
     label?: string;
-    components?: Component[];
   };
 
-  constructor(type: COMPONENT_TYPE) {
+  constructor() {
     this._data = {
-      type,
       custom_id: (Math.random() + 1).toString(36).substring(7),
     };
   }
@@ -44,20 +36,9 @@ export class Component {
     return this;
   }
 
-  addComponent(component: Component) {
-    if (!this._data.components) {
-      this._data.components = [];
-    }
-    this._data.components.push(component);
-    return this;
-  }
-
   // deno-lint-ignore no-explicit-any
   _done(): any {
-    return {
-      ...this._data,
-      components: this._data.components?.map((component) => component._done()),
-    };
+    return this._data;
   }
 }
 
@@ -157,7 +138,10 @@ export class Embed {
 
   // deno-lint-ignore no-explicit-any
   _done(): any {
-    return this._data;
+    return {
+      ...this._data,
+      type: 2,
+    };
   }
 }
 
@@ -166,7 +150,7 @@ export class Message {
   _data: {
     content?: string;
     embeds: Embed[];
-    components: Component[];
+    components: Component[][];
   };
 
   constructor(type: MESSAGE_TYPE) {
@@ -203,8 +187,10 @@ export class Message {
     return this;
   }
 
-  addComponent(component: Component): Message {
-    this._data.components.push(component);
+  addComponent(...components: Component[]): Message {
+    if (components.length > 0) {
+      this._data.components.push(components);
+    }
     return this;
   }
 
@@ -214,7 +200,10 @@ export class Message {
       data: {
         content: this._data.content,
         embeds: this._data.embeds.map((embeds) => embeds._done()),
-        components: this._data.components.map((component) => component._done()),
+        components: this._data.components.map((component_group) => ({
+          type: 1,
+          components: component_group.map((component) => component._done()),
+        })),
       },
     });
   }
