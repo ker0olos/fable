@@ -28,18 +28,18 @@ export async function nextEpisode({ search }: { search: string }) {
         break;
       case 'NOT_YET_RELEASED':
         message.setContent(
-          `${titles.shift()} is coming soon.`,
+          `\`${titles.shift()}\` is coming soon.`,
         );
         break;
       case 'HIATUS':
         message.setContent(
-          `${titles.shift()} is taking a short break.`,
+          `\`${titles.shift()}\` is taking a short break.`,
         );
         break;
       case 'FINISHED':
       case 'CANCELLED':
         message.setContent(
-          `Unfortunately, ${titles.shift()} has already aired its final episode.`,
+          `Unfortunately, \`${titles.shift()}\` has already aired its final episode.`,
         );
         break;
       default:

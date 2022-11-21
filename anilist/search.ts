@@ -6,24 +6,6 @@ import * as discord from '../discord.ts';
 
 import * as anilist from './api.ts';
 
-// export async function nextSearchPage({ embeds }: { embeds: any[] }) {
-//   const response: anilist.Response = {
-//     type: anilist.MESSAGE_TYPE.UPDATE,
-//     data: {
-//       components: [],
-//       embeds: [
-//         {
-//           type: 'rich',
-//           title: 'Unimplemented',
-//           description: JSON.stringify(embeds[0].footer),
-//         },
-//       ],
-//     },
-//   };
-
-//   return json(response);
-// }
-
 export async function searchPage(
   { search, page }: {
     search: string;
@@ -77,23 +59,13 @@ export async function searchPage(
       message.addEmbed(embed);
     });
 
-    // if (prev) {
-    //   response.data.components![0].components!.push({
-    //     type: anilist.COMPONENT_TYPE.BUTTON,
-    //     style: anilist.BUTTON_COLOR.GREY,
-    //     custom_id: componentsIds.prevPage,
-    //     label: 'Prev',
-    //   });
-    // }
+    media.relations?.edges.slice(0, 5).forEach((relation) => {
+      const component = new discord.Component(discord.COMPONENT_TYPE.BUTTON)
+        .setStyle(discord.BUTTON_COLOR.GREY)
+        .setLabel(relation.relationType);
 
-    // if (next) {
-    //   response.data.components![0].components!.push({
-    //     type: anilist.COMPONENT_TYPE.BUTTON,
-    //     style: anilist.BUTTON_COLOR.GREY,
-    //     custom_id: componentsIds.nextPage,
-    //     label: 'Next',
-    //   });
-    // }
+      message.addComponent(component);
+    });
 
     return json(message.done());
   } catch (err) {
