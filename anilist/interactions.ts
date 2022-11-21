@@ -80,7 +80,7 @@ async function handler(request: Request): Promise<Response> {
 
     return await searchPage({
       id: parseInt(data.custom_id),
-    });
+    }, discord.MESSAGE_TYPE.UPDATE);
   }
 
   return json(JSON.stringify({ error: 'bad request' }), { status: 400 });

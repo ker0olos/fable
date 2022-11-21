@@ -37,9 +37,9 @@ export function decodeDescription(s?: string): string | undefined {
 
   s = s.replaceAll(/~!.+!~/gm, '');
 
-  s = s.replace(/<i>(.*?)<\/i>/g, '*$1*');
-  s = s.replace(/<b>(.*?)<\/b>/g, '**$1**');
-  s = s.replace(/<strike>(.*?)<\/strike>/g, '~~$1~~');
+  s = s.replace(/<i.*?>((.|\n)*?)<\/i>/g, '*$1*');
+  s = s.replace(/<b.*?>((.|\n)*?)<\/b>/g, '**$1**');
+  s = s.replace(/<strike.*?>((.|\n)*?)<\/strike>/g, '~~$1~~');
 
   s = s.replaceAll(/<br>|<hr>|<\/br>|<\/hr>/gm, '\n');
 
