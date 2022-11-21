@@ -31,6 +31,8 @@ export function decodeDescription(s?: string): string | undefined {
   s = s?.replaceAll('<br>', '\n');
 
   s = s?.replaceAll(/!~.+~!/gm, '');
+
+  return s;
 }
 
 export { componentsIds };
