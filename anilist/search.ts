@@ -51,9 +51,10 @@ export async function searchPage(
         .setThumbnail(character.node.image?.large)
         .setFooter(
           [
-            character.node.age,
             character.node.gender,
-          ].filter(Boolean).join(' '),
+            character.node.age,
+          ].filter(Boolean).join('. '),
+          '.',
         );
 
       message.addEmbed(embed);
