@@ -79,12 +79,12 @@ export async function searchPage(
         type: 'rich',
         title: character.node.name.full,
         color: embedColorInt,
-        description: 'Main',
-        footer: character.node.description
-          ? {
-            text: decodeDescription(character.node.description)!,
-          }
-          : undefined,
+        description: decodeDescription(character.node.description),
+        // footer: character.node.description
+        //   ? {
+        //     text: decodeDescription(character.node.description)!,
+        //   }
+        //   : undefined,
         thumbnail: character.node.image?.large
           ? {
             url: character.node.image?.large,

@@ -22,13 +22,13 @@ export function decodeDescription(s?: string): string | undefined {
     return undefined;
   }
 
-  s = s?.replaceAll('&amp;', '&');
-  s = s?.replaceAll('&quot;', '"');
-  s = s?.replaceAll('&#039;', '\'');
-  s = s?.replaceAll('&lt;', '<');
-  s = s?.replaceAll('&gt;', '>');
+  // s = s?.replaceAll('&amp;', '&');
+  // s = s?.replaceAll('&quot;', '"');
+  // s = s?.replaceAll('&#039;', '\'');
+  // s = s?.replaceAll('&lt;', '<');
+  // s = s?.replaceAll('&gt;', '>');
 
-  s = s?.replaceAll('<br>', '\n');
+  // s = s?.replaceAll('<br>', '\n');
 
   s = s?.replaceAll(/~!.+!~/gm, '');
 
