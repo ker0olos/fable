@@ -74,6 +74,10 @@ type Media = {
     medium: string;
     color?: string;
   };
+  externalLinks?: {
+    site: string;
+    url: string;
+  }[];
 };
 
 type Character = {
@@ -126,7 +130,10 @@ export async function search(
               node {
                 id
                 format
-                description
+                externalLinks {
+                  site
+                  url
+                }
                 title {
                   romaji
                   english

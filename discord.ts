@@ -16,15 +16,15 @@ export enum BUTTON_COLOR {
 export class Component {
   _data: {
     type: number;
-    custom_id: string;
+    custom_id?: string;
     style?: BUTTON_COLOR;
     label?: string;
+    url?: string;
   };
 
   constructor() {
     this._data = {
       type: 2,
-      custom_id: (Math.random() + 1).toString(36).substring(7),
     };
   }
 
@@ -36,6 +36,10 @@ export class Component {
   setLabel(label: string) {
     this._data.label = label;
     return this;
+  }
+
+  setUrl(url: string) {
+    this._data.url = url;
   }
 
   setId(id: string) {

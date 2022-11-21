@@ -78,6 +78,19 @@ export async function searchPage(
           break;
       }
 
+      switch (relation.node.format) {
+        case anilist.FORMAT.MUSIC:
+          component.setLabel(
+            (relation.node.title.english || relation.node.title.romaji ||
+              relation.node.title.native)!,
+          );
+          component.setUrl(relation.node.externalLinks?.shift()?.url!);
+          break;
+        default:
+          component.setId(`${relation.node.id!}`);
+          break;
+      }
+
       group.push(component);
     });
 
