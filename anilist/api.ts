@@ -106,6 +106,21 @@ export async function search(
           format
           status
           description
+          relations {
+            edges {
+              relationType
+              node {
+                id
+                format
+                description
+                title {
+                  romaji
+                  english
+                  native
+                }
+              }
+            }
+          }
           characters(sort: [RELEVANCE]) {
             edges {
               role
