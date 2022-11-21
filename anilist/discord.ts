@@ -51,11 +51,12 @@ export class Component {
     return this;
   }
 
-  done(): string {
-    return JSON.stringify({
+  // deno-lint-ignore no-explicit-any
+  _done(): any {
+    return {
       ...this._data,
-      components: this._data.components?.map((component) => component.done()),
-    });
+      components: this._data.components?.map((component) => component._done()),
+    };
   }
 }
 
@@ -153,8 +154,9 @@ export class Embed {
     return this;
   }
 
-  done(): string {
-    return JSON.stringify(this._data);
+  // deno-lint-ignore no-explicit-any
+  _done(): any {
+    return this._data;
   }
 }
 
@@ -194,8 +196,8 @@ export class Message {
       type: this._type,
       data: {
         content: this._data.content,
-        embeds: this._data.embeds.map((embeds) => embeds.done()),
-        components: this._data.components.map((component) => component.done()),
+        embeds: this._data.embeds.map((embeds) => embeds._done()),
+        components: this._data.components.map((component) => component._done()),
       },
     });
   }
