@@ -1,6 +1,6 @@
 export function hexToInt(hex?: string): number | undefined {
   if (!hex) {
-    return undefined;
+    return;
   }
 
   const color = hex.substring(1);
@@ -24,23 +24,23 @@ export function capitalize(s: string): string {
 
 export function decodeDescription(s?: string): string | undefined {
   if (!s) {
-    return undefined;
+    return;
   }
 
-  // TODO FIX <a></a> links are not decoded
+  s = decodeURI(s);
 
-  s = s?.replaceAll('&amp;', '&');
-  s = s?.replaceAll('&quot;', '"');
-  s = s?.replaceAll('&#039;', '\'');
-  s = s?.replaceAll('&lt;', '<');
-  s = s?.replaceAll('&gt;', '>');
+  s = s.replaceAll('&amp;', '&');
+  s = s.replaceAll('&quot;', '"');
+  s = s.replaceAll('&#039;', '\'');
+  s = s.replaceAll('&lt;', '<');
+  s = s.replaceAll('&gt;', '>');
 
-  s = s?.replaceAll(/<br>|<\/br>\s+/gm, '\n');
-  s = s?.replaceAll(/~!.+!~/gm, '');
+  s = s.replaceAll(/<br>|<\/br>\s+/gm, '\n');
+  s = s.replaceAll(/~!.+!~/gm, '');
 
-  // s = s?.replaceAll(/\n+/gm, '\n');
+  s = s.replace(/<a.*?href="(.*?)".*?>(.*?)<\/a>/g, '[$2]($1)');
+
+  // s = s.replaceAll(/\n+/gm, '\n');
 
   return s;
 }
-
-console.log(capitalize('SIDE_STORY'));
