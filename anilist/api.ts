@@ -5,23 +5,6 @@ import {
 
 const client = new GraphQLClient('https://graphql.anilist.co');
 
-export enum COMPONENT_TYPE {
-  GROUP = 1,
-  BUTTON = 2,
-}
-
-export enum MESSAGE_TYPE {
-  NEW = 4,
-  UPDATE = 7,
-}
-
-export enum BUTTON_COLOR {
-  BLUE = 1,
-  GREY = 2,
-  GREEN = 3,
-  RED = 4,
-}
-
 type Media = {
   title: {
     english?: string;
@@ -50,7 +33,25 @@ type Media = {
     | 'NOT_YET_RELEASED'
     | 'CANCELLED'
     | 'HIATUS';
-  relations: { nodes: Media[] };
+  relations: {
+    edges: {
+      relationType:
+        | 'ADAPTATION'
+        | 'PREQUEL'
+        | 'SEQUEL'
+        | 'PARENT'
+        | 'SIDE_STORY'
+        | 'CHARACTER'
+        | 'SUMMARY'
+        | 'ALTERNATIVE'
+        | 'SPIN_OFF'
+        | 'OTHER'
+        | 'SOURCE'
+        | 'COMPILATION'
+        | 'CONTAINS';
+      node: Media;
+    }[];
+  };
   description?: string;
   characters?: { edges: Character[] };
   coverImage?: {
@@ -85,47 +86,6 @@ type Page = {
     perPage: number;
   };
   media: Media[];
-};
-
-export type Response = {
-  type: MESSAGE_TYPE;
-  data: {
-    content?: string;
-    embeds?: Embed[];
-    components?: Component[];
-  };
-};
-
-type Component = {
-  type: COMPONENT_TYPE;
-  style?: BUTTON_COLOR;
-  // deno-lint-ignore camelcase
-  custom_id?: string;
-  label?: string;
-  components?: Component[];
-};
-
-type Embed = {
-  type: 'rich';
-  title?: string;
-  description?: string;
-  color?: number;
-  fields?: {
-    name: string;
-    value: string;
-  }[];
-  thumbnail?: {
-    url: string;
-  };
-  image?: {
-    url: string;
-  };
-  author?: {
-    name: string;
-  };
-  footer?: {
-    text: string;
-  };
 };
 
 export async function search(

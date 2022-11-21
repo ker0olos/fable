@@ -1,10 +1,6 @@
 import { serve } from 'https://deno.land/std@0.130.0/http/server.ts';
 
-import {
-  json,
-  validateRequest,
-  verifySignature,
-} from 'https://raw.githubusercontent.com/ker0olos/bots/main/index.ts';
+import { json, validateRequest, verifySignature } from '../index.ts';
 
 async function handler(request: Request): Promise<Response> {
   const { error } = await validateRequest(request, {
@@ -14,7 +10,9 @@ async function handler(request: Request): Promise<Response> {
   });
 
   if (error) {
-    return json({ error: error.message }, { status: error.status });
+    return json(JSON.stringify({ error: error.message }), {
+      status: error.status,
+    });
   }
 
   const { valid, body } = await verifySignature(
@@ -24,7 +22,7 @@ async function handler(request: Request): Promise<Response> {
 
   if (!valid) {
     return json(
-      { error: 'Invalid request' },
+      JSON.stringify({ error: 'Invalid request' }),
       {
         status: 401,
       },
@@ -39,9 +37,9 @@ async function handler(request: Request): Promise<Response> {
   } = JSON.parse(body);
 
   if (type === 1) {
-    return json({
+    return json(JSON.stringify({
       type: 1,
-    });
+    }));
   }
 
   console.log(type, data, token, member);
@@ -49,15 +47,15 @@ async function handler(request: Request): Promise<Response> {
   if (type === 2 && data.name === 'roll') {
     const rolledNumber = roll({ amount: data.options[0].value });
 
-    return json({
+    return json(JSON.stringify({
       type: 4,
       data: {
         content: `<@${member.user.id}> ${rolledNumber}`,
       },
-    });
+    }));
   }
 
-  return json({ error: 'bad request' }, { status: 400 });
+  return json(JSON.stringify({ error: 'bad request' }), { status: 400 });
 }
 
 function random(min: number, max: number) {
