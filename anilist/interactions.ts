@@ -8,11 +8,7 @@ import {
 
 import { translate } from './translate.ts';
 import { nextEpisode } from './schedule.ts';
-import { nextSearchPage, searchPage } from './search.ts';
-
-const COMPONENTS = {
-  nextPage: 'next-page-results',
-};
+import { searchPage } from './search.ts';
 
 const DISCORD_PUBLIC_KEY = Deno.env.get('DISCORD_PUBLIC_KEY')!;
 
@@ -44,7 +40,7 @@ async function handler(request: Request): Promise<Response> {
   const {
     type = 0,
     // token = '',
-    message = { embeds: [] },
+    // message = { embeds: [] },
     data = { options: [] },
     // member = { user: { id: '' } },
   } = JSON.parse(body);
@@ -74,8 +70,6 @@ async function handler(request: Request): Promise<Response> {
         return await searchPage({
           search: data.options[0].value,
           page: 1,
-          next: true,
-          prev: false,
         });
       case 'next_episode':
         return await nextEpisode({ search: data.options[0].value });
@@ -88,8 +82,8 @@ async function handler(request: Request): Promise<Response> {
     //
 
     switch (data.custom_id) {
-      case COMPONENTS.nextPage:
-        return await nextSearchPage(message);
+      // case COMPONENTS.nextPage:
+      //   return await nextSearchPage(message);
       default:
         break;
     }

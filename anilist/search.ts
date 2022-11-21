@@ -3,9 +3,8 @@ import {
 } from 'https://raw.githubusercontent.com/ker0olos/bots/main/index.ts';
 
 import * as anilist from './api.ts';
-import { componentsIds, decodeDescription, hexToInt } from './meta.ts';
+import { decodeDescription, hexToInt } from './meta.ts';
 
-// deno-lint-ignore no-explicit-any
 // export async function nextSearchPage({ embeds }: { embeds: any[] }) {
 //   const response: anilist.Response = {
 //     type: anilist.MESSAGE_TYPE.UPDATE,
@@ -25,11 +24,9 @@ import { componentsIds, decodeDescription, hexToInt } from './meta.ts';
 // }
 
 export async function searchPage(
-  { search, page, next, prev }: {
+  { search, page }: {
     search: string;
     page: number;
-    next: boolean;
-    prev: boolean;
   },
 ) {
   try {
