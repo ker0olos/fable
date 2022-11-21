@@ -34,7 +34,7 @@ export async function searchPage(
     message.addEmbed(
       new discord.Embed()
         .setTitle(titles.shift()!)
-        .setAuthor(capitalize(media.type!.toString()))
+        .setAuthor(capitalize(media.type!))
         .setDescription(media.description)
         .setColor(media.coverImage?.color)
         .setImage(
@@ -66,8 +66,8 @@ export async function searchPage(
         .setStyle(discord.BUTTON_COLOR.GREY)
         .setLabel(
           relation.relationType === anilist.RELATION_TYPE.OTHER
-            ? capitalize(relation.node.format!.toString())
-            : capitalize(relation.relationType!.toString()),
+            ? capitalize(relation.node.format!)
+            : capitalize(relation.relationType!),
         );
       group.push(component);
     });

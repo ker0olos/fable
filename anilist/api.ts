@@ -6,45 +6,45 @@ import {
 const client = new GraphQLClient('https://graphql.anilist.co');
 
 export enum TYPE {
-  'ANIME',
-  'MANGA',
+  'ANIME' = 'ANIME',
+  'MANGA' = 'MANGA',
 }
 
 export enum RELATION_TYPE {
-  'ADAPTATION',
-  'PREQUEL',
-  'SEQUEL',
-  'PARENT',
-  'SIDE_STORY',
-  'CHARACTER',
-  'SUMMARY',
-  'ALTERNATIVE',
-  'SPIN_OFF',
-  'OTHER',
-  'SOURCE',
-  'COMPILATION',
-  'CONTAINS',
+  'ADAPTATION' = 'ADAPTATION',
+  'PREQUEL' = 'PREQUEL',
+  'SEQUEL' = 'SEQUEL',
+  'PARENT' = 'PARENT',
+  'SIDE_STORY' = 'SIDE_STORY',
+  'CHARACTER' = 'CHARACTER',
+  'SUMMARY' = 'SUMMARY',
+  'ALTERNATIVE' = 'ALTERNATIVE',
+  'SPIN_OFF' = 'SPIN_OFF',
+  'OTHER' = 'OTHER',
+  'SOURCE' = 'SOURCE',
+  'COMPILATION' = 'COMPILATION',
+  'CONTAINS' = 'CONTAINS',
 }
 
 export enum STATUS {
-  'FINISHED',
-  'RELEASING',
-  'NOT_YET_RELEASED',
-  'CANCELLED',
-  'HIATUS',
+  'FINISHED' = 'FINISHED',
+  'RELEASING' = 'RELEASING',
+  'NOT_YET_RELEASED' = 'NOT_YET_RELEASED',
+  'CANCELLED' = 'CANCELLED',
+  'HIATUS' = 'HIATUS',
 }
 
 export enum FORMAT {
-  'TV',
-  'TV_SHORT',
-  'MOVIE',
-  'SPECIAL',
-  'OVA',
-  'ONA',
-  'MUSIC',
-  'MANGA',
-  'NOVEL',
-  'ONE_SHOT',
+  'TV' = 'TV',
+  'TV_SHORT' = 'TV_SHORT',
+  'MOVIE' = 'MOVIE',
+  'SPECIAL' = 'SPECIAL',
+  'OVA' = 'OVA',
+  'ONA' = 'ONA',
+  'MUSIC' = 'MUSIC',
+  'MANGA' = 'MANGA',
+  'NOVEL' = 'NOVEL',
+  'ONE_SHOT' = 'ONE_SHOT',
 }
 
 type Media = {
