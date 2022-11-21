@@ -31,7 +31,7 @@ export function decodeDescription(s?: string): string | undefined {
   s = s?.replaceAll(/<br>|<\/br>\s+/gm, '\n');
   s = s?.replaceAll(/~!.+!~/gm, '');
 
-  s = s?.replaceAll(/\n+/gm, '\n');
+  // s = s?.replaceAll(/\n+/gm, '\n');
 
   return s;
 }
