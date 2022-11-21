@@ -7,13 +7,14 @@ import * as discord from '../discord.ts';
 import * as anilist from './api.ts';
 
 export async function searchPage(
-  { search, page }: {
-    search: string;
-    page: number;
+  { id, search }: {
+    id?: string;
+    search?: string;
   },
+  type = discord.MESSAGE_TYPE.NEW,
 ) {
   try {
-    const results = await anilist.search({ search, page });
+    const results = await anilist.search(id ? { id } : { search });
 
     if (!results.media.length) {
       throw new Error('404');
@@ -27,9 +28,7 @@ export async function searchPage(
       media.title.native,
     ].filter(Boolean);
 
-    const message: discord.Message = new discord.Message(
-      discord.MESSAGE_TYPE.NEW,
-    );
+    const message: discord.Message = new discord.Message(type);
 
     message.addEmbed(
       new discord.Embed()
@@ -100,7 +99,7 @@ export async function searchPage(
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
       return json(JSON.stringify({
-        type: discord.MESSAGE_TYPE.NEW,
+        type,
         data: {
           content: 'Found nothing matching that name!',
         },
@@ -108,7 +107,7 @@ export async function searchPage(
     }
 
     return json(JSON.stringify({
-      type: discord.MESSAGE_TYPE.NEW,
+      type,
       data: {
         content: JSON.stringify(err),
       },

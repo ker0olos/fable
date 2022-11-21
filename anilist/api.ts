@@ -107,7 +107,7 @@ type Page = {
 };
 
 export async function search(
-  variables: { search: string; page: number },
+  variables: { id?: string; search?: string; page?: number },
 ): Promise<Page> {
   const query = gql`
     query ($page: Int, $search: String) {
@@ -173,7 +173,10 @@ export async function search(
     }
   `;
 
-  return (await client.request(query, variables)).Page;
+  return (await client.request(query, {
+    page: 1,
+    ...variables,
+  })).Page;
 }
 
 export async function getNextAiring(

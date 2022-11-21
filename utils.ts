@@ -27,6 +27,8 @@ export function decodeDescription(s?: string): string | undefined {
     return undefined;
   }
 
+  // TODO FIX <a></a> links are not decoded
+
   s = s?.replaceAll('&amp;', '&');
   s = s?.replaceAll('&quot;', '"');
   s = s?.replaceAll('&#039;', '\'');

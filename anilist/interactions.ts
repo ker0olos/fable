@@ -67,7 +67,6 @@ async function handler(request: Request): Promise<Response> {
       case 'search':
         return await searchPage({
           search: data.options[0].value,
-          page: 1,
         });
       case 'next_episode':
         return await nextEpisode({ search: data.options[0].value });
@@ -79,12 +78,9 @@ async function handler(request: Request): Promise<Response> {
     // COMPONENTS
     //
 
-    switch (data.custom_id) {
-      // case componentIds.nextPage:
-      //   return await nextSearchPage(message);
-      default:
-        break;
-    }
+    return await searchPage({
+      id: data.custom_id,
+    });
   }
 
   return json(JSON.stringify({ error: 'bad request' }), { status: 400 });
