@@ -80,11 +80,6 @@ export async function searchPage(
         title: character.node.name.full,
         color: embedColorInt,
         description: decodeDescription(character.node.description),
-        // footer: character.node.description
-        //   ? {
-        //     text: decodeDescription(character.node.description)!,
-        //   }
-        //   : undefined,
         thumbnail: character.node.image?.large
           ? {
             url: character.node.image?.large,
