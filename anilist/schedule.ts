@@ -1,6 +1,7 @@
 import { json } from '../index.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '../discord.ts';
+
 import * as anilist from './api.ts';
 
 export async function nextEpisode({ search }: { search: string }) {
@@ -32,19 +33,9 @@ export async function nextEpisode({ search }: { search: string }) {
     return json(message.done());
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
-      return json(JSON.stringify({
-        type: discord.MESSAGE_TYPE.NEW,
-        data: {
-          content: `Found no anime matching that name!`,
-        },
-      }));
+      return json(discord.Message.error('Found no anime matching that name!'));
     }
 
-    return json(JSON.stringify({
-      type: discord.MESSAGE_TYPE.NEW,
-      data: {
-        content: JSON.stringify(err),
-      },
-    }));
+    return json(discord.Message.error(err));
   }
 }

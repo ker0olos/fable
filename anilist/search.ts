@@ -2,7 +2,8 @@ import { json } from '../index.ts';
 
 import { capitalize } from '../utils.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '../discord.ts';
+
 import * as anilist from './api.ts';
 
 // export async function nextSearchPage({ embeds }: { embeds: any[] }) {

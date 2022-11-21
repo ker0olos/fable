@@ -1,7 +1,8 @@
-import { decodeDescription, hexToInt } from '../utils.ts';
+import { decodeDescription, hexToInt } from './utils.ts';
 
 export enum MESSAGE_TYPE {
   NEW = 4,
+  PING = 1,
   UPDATE = 7,
 }
 
@@ -174,6 +175,22 @@ export class Message {
       embeds: [],
       components: [],
     };
+  }
+
+  static ping() {
+    return JSON.stringify({
+      type: 1,
+    });
+  }
+
+  // deno-lint-ignore no-explicit-any
+  static error(err: any) {
+    return JSON.stringify({
+      type: MESSAGE_TYPE.NEW,
+      data: {
+        content: typeof err === 'string' ? err : JSON.stringify(err),
+      },
+    });
   }
 
   setContent(content: string): Message {

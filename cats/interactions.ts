@@ -2,6 +2,12 @@ import { serve } from 'https://deno.land/std@0.130.0/http/server.ts';
 
 import { json, validateRequest, verifySignature } from '../index.ts';
 
+import { random } from '../utils.ts';
+
+import * as discord from '../discord.ts';
+
+const DISCORD_PUBLIC_KEY = Deno.env.get('DISCORD_PUBLIC_KEY')!;
+
 async function handler(request: Request): Promise<Response> {
   const { error } = await validateRequest(request, {
     POST: {
@@ -17,7 +23,7 @@ async function handler(request: Request): Promise<Response> {
 
   const { valid, body } = await verifySignature(
     request,
-    Deno.env.get('DISCORD_PUBLIC_KEY')!,
+    DISCORD_PUBLIC_KEY,
   );
 
   if (!valid) {
@@ -31,35 +37,38 @@ async function handler(request: Request): Promise<Response> {
 
   const {
     type = 0,
-    token = '',
+    // token = '',
     data = { options: [] },
     member = { user: { id: '' } },
   } = JSON.parse(body);
 
   if (type === 1) {
-    return json(JSON.stringify({
-      type: 1,
-    }));
+    return json(discord.Message.ping());
   }
 
-  console.log(type, data, token, member);
+  // console.log(type, data, token, member);
 
-  if (type === 2 && data.name === 'roll') {
-    const rolledNumber = roll({ amount: data.options[0].value });
+  if (type === 2) {
+    //
+    // SLASH COMMANDS
+    //
 
-    return json(JSON.stringify({
-      type: 4,
-      data: {
-        content: `<@${member.user.id}> ${rolledNumber}`,
-      },
-    }));
+    switch (data.name) {
+      case 'roll': {
+        const rolledNumber = roll({ amount: data.options[0].value });
+
+        const message: discord.Message = new discord.Message(
+          discord.MESSAGE_TYPE.NEW,
+        ).setContent(`<@${member.user.id}> ${rolledNumber}`);
+
+        return json(message.done());
+      }
+      default:
+        break;
+    }
   }
 
   return json(JSON.stringify({ error: 'bad request' }), { status: 400 });
-}
-
-function random(min: number, max: number) {
-  return Math.floor((Math.random()) * (max - min + 1)) + min;
 }
 
 function roll({ amount }: { amount: number }) {

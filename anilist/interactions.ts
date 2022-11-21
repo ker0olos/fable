@@ -2,6 +2,8 @@ import { serve } from 'https://deno.land/std@0.130.0/http/server.ts';
 
 import { json, validateRequest, verifySignature } from '../index.ts';
 
+import * as discord from '../discord.ts';
+
 import { translate } from './translate.ts';
 import { nextEpisode } from './schedule.ts';
 import { searchPage } from './search.ts';
@@ -44,9 +46,7 @@ async function handler(request: Request): Promise<Response> {
   } = JSON.parse(body);
 
   if (type === 1) {
-    return json(JSON.stringify({
-      type: 1,
-    }));
+    return json(discord.Message.ping());
   }
 
   // console.log(type, data, token, member);

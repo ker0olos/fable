@@ -1,6 +1,7 @@
 import { json } from '../index.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '../discord.ts';
+
 import * as anilist from './api.ts';
 
 export async function translate(
@@ -20,19 +21,11 @@ export async function translate(
     return json(message.done());
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
-      return json(JSON.stringify({
-        type: discord.MESSAGE_TYPE.NEW,
-        data: {
-          content: `Found nothing matching that name!`,
-        },
-      }));
+      if (err?.response?.status === 404 || err?.message === '404') {
+        return json(discord.Message.error('Found nothing matching that name!'));
+      }
     }
 
-    return json(JSON.stringify({
-      type: discord.MESSAGE_TYPE.NEW,
-      data: {
-        content: JSON.stringify(err),
-      },
-    }));
+    return json(discord.Message.error(err));
   }
 }
