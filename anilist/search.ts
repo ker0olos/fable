@@ -8,7 +8,7 @@ import * as anilist from './api.ts';
 
 export async function searchPage(
   { id, search }: {
-    id?: string;
+    id?: number;
     search?: string;
   },
   type = discord.MESSAGE_TYPE.NEW,

@@ -107,10 +107,10 @@ type Page = {
 };
 
 export async function search(
-  variables: { id?: string; search?: string; page?: number },
+  variables: { id?: number; search?: string; page?: number },
 ): Promise<Page> {
   const query = gql`
-    query ($page: Int, $search: String) {
+    query ($page: Int, $id: Int, $search: String) {
       Page(page: $page, perPage: 1) {
         pageInfo {
           total
@@ -119,10 +119,9 @@ export async function search(
           hasNextPage
           perPage
         }
-        media(search: $search, sort: [POPULARITY_DESC]) {
+        media(search: $search, id: $id, sort: [POPULARITY_DESC]) {
           type
           format
-          status
           description
           relations {
             edges {

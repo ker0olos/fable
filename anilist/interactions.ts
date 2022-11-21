@@ -79,7 +79,7 @@ async function handler(request: Request): Promise<Response> {
     //
 
     return await searchPage({
-      id: data.custom_id,
+      id: parseInt(data.custom_id),
     });
   }
 
