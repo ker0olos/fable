@@ -60,8 +60,11 @@ export async function searchPage(
                 url: media.coverImage.extraLarge,
               }
               : undefined,
+            author: {
+              name: 'Main',
+            },
             footer: {
-              text: titles.join(' - '),
+              text: titles.join(' • '),
             },
           },
         ],
@@ -75,6 +78,7 @@ export async function searchPage(
     };
 
     media.characters?.edges.slice(0, 2).forEach((character) => {
+      // TODO add extra info in author
       response.data.embeds?.push({
         type: 'rich',
         title: character.node.name.full,

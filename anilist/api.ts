@@ -101,6 +101,9 @@ type Embed = {
   image?: {
     url: string;
   };
+  author?: {
+    name: string;
+  };
   footer?: {
     text: string;
   };
