@@ -5,6 +5,48 @@ import {
 
 const client = new GraphQLClient('https://graphql.anilist.co');
 
+export enum TYPE {
+  'ANIME',
+  'MANGA',
+}
+
+export enum RELATION_TYPE {
+  'ADAPTATION',
+  'PREQUEL',
+  'SEQUEL',
+  'PARENT',
+  'SIDE_STORY',
+  'CHARACTER',
+  'SUMMARY',
+  'ALTERNATIVE',
+  'SPIN_OFF',
+  'OTHER',
+  'SOURCE',
+  'COMPILATION',
+  'CONTAINS',
+}
+
+export enum STATUS {
+  'FINISHED',
+  'RELEASING',
+  'NOT_YET_RELEASED',
+  'CANCELLED',
+  'HIATUS',
+}
+
+export enum FORMAT {
+  'TV',
+  'TV_SHORT',
+  'MOVIE',
+  'SPECIAL',
+  'OVA',
+  'ONA',
+  'MUSIC',
+  'MANGA',
+  'NOVEL',
+  'ONE_SHOT',
+}
+
 type Media = {
   title: {
     english?: string;
@@ -15,40 +57,12 @@ type Media = {
     airingAt?: number;
   };
   id?: number;
-  type?: 'ANIME' | 'MANGA';
-  format?:
-    | 'TV'
-    | 'TV_SHORT'
-    | 'MOVIE'
-    | 'SPECIAL'
-    | 'OVA'
-    | 'ONA'
-    | 'MUSIC'
-    | 'MANGA'
-    | 'NOVEL'
-    | 'ONE_SHOT';
-  status:
-    | 'FINISHED'
-    | 'RELEASING'
-    | 'NOT_YET_RELEASED'
-    | 'CANCELLED'
-    | 'HIATUS';
+  type?: TYPE;
+  format?: FORMAT;
+  status: STATUS;
   relations: {
     edges: {
-      relationType:
-        | 'ADAPTATION'
-        | 'PREQUEL'
-        | 'SEQUEL'
-        | 'PARENT'
-        | 'SIDE_STORY'
-        | 'CHARACTER'
-        | 'SUMMARY'
-        | 'ALTERNATIVE'
-        | 'SPIN_OFF'
-        | 'OTHER'
-        | 'SOURCE'
-        | 'COMPILATION'
-        | 'CONTAINS';
+      relationType: RELATION_TYPE;
       node: Media;
     }[];
   };

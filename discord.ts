@@ -205,8 +205,8 @@ export class Message {
     return JSON.stringify({
       type: this._type,
       data: {
-        content: this._data.content,
         embeds: this._data.embeds,
+        content: this._data.content,
         components: this._data.components,
       },
     });

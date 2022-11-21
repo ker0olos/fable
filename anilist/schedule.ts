@@ -19,25 +19,25 @@ export async function nextEpisode({ search }: { search: string }) {
     );
 
     switch (anime.status) {
-      case 'RELEASING':
+      case anilist.STATUS.RELEASING:
         message.setContent(
           `The next episode of \`${titles.shift()}\` is <t:${
             anime.nextAiringEpisode!.airingAt
           }:R>.`,
         );
         break;
-      case 'NOT_YET_RELEASED':
+      case anilist.STATUS.NOT_YET_RELEASED:
         message.setContent(
           `\`${titles.shift()}\` is coming soon.`,
         );
         break;
-      case 'HIATUS':
+      case anilist.STATUS.HIATUS:
         message.setContent(
           `\`${titles.shift()}\` is taking a short break.`,
         );
         break;
-      case 'FINISHED':
-      case 'CANCELLED':
+      case anilist.STATUS.FINISHED:
+      case anilist.STATUS.CANCELLED:
         message.setContent(
           `Unfortunately, \`${titles.shift()}\` has already aired its final episode.`,
         );
