@@ -1,12 +1,3 @@
-const componentsIds = {
-  nextPage: 'next-page-results',
-  prevPage: 'prev-page-results',
-};
-
-export function random(min: number, max: number) {
-  return Math.floor((Math.random()) * (max - min + 1)) + min;
-}
-
 export function hexToInt(hex?: string): number | undefined {
   if (!hex) {
     return undefined;
@@ -19,6 +10,10 @@ export function hexToInt(hex?: string): number | undefined {
   const B = color.substring(4, 6);
 
   return parseInt(`${R}${G}${B}`, 16);
+}
+
+export function random(min: number, max: number) {
+  return Math.floor((Math.random()) * (max - min + 1)) + min;
 }
 
 export function capitalize(s: string): string {
@@ -43,5 +38,3 @@ export function decodeDescription(s?: string): string | undefined {
 
   return s;
 }
-
-export { componentsIds };

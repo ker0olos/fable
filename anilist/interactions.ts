@@ -80,7 +80,7 @@ async function handler(request: Request): Promise<Response> {
     //
 
     switch (data.custom_id) {
-      // case COMPONENTS.nextPage:
+      // case componentIds.nextPage:
       //   return await nextSearchPage(message);
       default:
         break;
