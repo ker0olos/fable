@@ -63,8 +63,7 @@ export async function searchPage(
 
     media.relations?.edges.forEach((relation) => {
       const component = new discord.Component()
-        .setStyle(discord.BUTTON_COLOR.GREY)
-        .setId(`${relation.node.id!}`);
+        .setStyle(discord.BUTTON_COLOR.GREY);
 
       switch (relation.relationType) {
         case anilist.RELATION_TYPE.PREQUEL:
