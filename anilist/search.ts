@@ -18,6 +18,8 @@ export async function search(
       throw new Error('404');
     }
 
+    console.log(media);
+
     const titles = [
       media.title.english,
       media.title.romaji,
@@ -146,13 +148,11 @@ export async function songs(
   type = discord.MESSAGE_TYPE.NEW,
 ) {
   try {
-    const results = await anilist.search({ search });
+    const { media } = await anilist.search({ search });
 
-    if (!results.Media) {
+    if (!media) {
       throw new Error('404');
     }
-
-    const media = results.Media;
 
     const message: discord.Message = new discord.Message(type);
 
