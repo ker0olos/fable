@@ -128,7 +128,7 @@ export async function searchPage(
       ...[
         ...mainGroup,
         ...secondaryGroup,
-        // ...additionalGroup,
+        ...additionalGroup,
       ],
     );
 

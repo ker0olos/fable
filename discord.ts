@@ -204,7 +204,7 @@ export class Message {
       data: {
         embeds: this._data.embeds,
         content: this._data.content,
-        components: this._data.components.slice(0, 5),
+        components: this._data.components.slice(0, 4),
       },
     });
   }
