@@ -49,12 +49,24 @@ set_commands(
     [
         {
             "name": "search",
-            "description": "Search for an anime/manga on AniList",
+            "description": "Search for an anime/manga",
             "options": [
                 {
                     "type": STRING,
                     "name": "query",
                     "description": "Search for an anime/manga",
+                    "required": True,
+                }
+            ],
+        },
+        {
+            "name": "songs",
+            "description": "Search for the theme songs of an anime",
+            "options": [
+                {
+                    "type": STRING,
+                    "name": "anime",
+                    "description": "Approx of the anime name",
                     "required": True,
                 }
             ],

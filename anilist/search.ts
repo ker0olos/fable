@@ -58,16 +58,16 @@ export async function searchPage(
       message.addEmbed(embed);
     });
 
-    const main_group: discord.Component[] = [];
-    const secondary_group: discord.Component[] = [];
-    const additional_group: discord.Component[] = [];
+    const mainGroup: discord.Component[] = [];
+    const secondaryGroup: discord.Component[] = [];
+    const additionalGroup: discord.Component[] = [];
 
     if (media.trailer?.site === 'youtube') {
       const component = new discord.Component()
         .setLabel('Trailer')
         .setUrl(`https://www.youtube.com/watch?v=${media.trailer?.id}`);
 
-      main_group.push(component);
+      mainGroup.push(component);
     }
 
     media.externalLinks?.forEach((link) => {
@@ -79,7 +79,7 @@ export async function searchPage(
         .setLabel(link.site)
         .setUrl(link.url);
 
-      main_group.push(component);
+      mainGroup.push(component);
     });
 
     media.relations?.edges.toReversed().forEach((relation) => {
@@ -96,7 +96,7 @@ export async function searchPage(
             .setId(
               `id:${relation.node.id!}`,
             );
-          secondary_group.push(component);
+          secondaryGroup.push(component);
           break;
         case anilist.RELATION_TYPE.ADAPTATION:
           component
@@ -104,7 +104,7 @@ export async function searchPage(
             .setId(
               `id:${relation.node.id!}`,
             );
-          secondary_group.push(component);
+          secondaryGroup.push(component);
           break;
         default:
           break;
@@ -118,7 +118,8 @@ export async function searchPage(
                 relation.node.title.native)!,
             )
             .setUrl(relation.node.externalLinks?.shift()?.url!);
-          additional_group.push(component);
+
+          additionalGroup.push(component);
           break;
         default:
           break;
@@ -127,28 +128,58 @@ export async function searchPage(
 
     message.addComponent(
       ...[
-        ...main_group,
-        ...secondary_group,
-        ...additional_group,
-      ].slice(0, 5),
+        ...mainGroup,
+        ...secondaryGroup,
+        ...additionalGroup,
+      ],
     );
 
     return json(message.done());
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
-      return json(JSON.stringify({
-        type,
-        data: {
-          content: 'Found nothing matching that name!',
-        },
-      }));
+      return json(discord.Message.error('Found no anime matching that name!'));
     }
 
-    return json(JSON.stringify({
-      type,
-      data: {
-        content: JSON.stringify(err),
-      },
-    }));
+    return json(discord.Message.error(err));
+  }
+}
+
+export async function songs(
+  { search }: {
+    search?: string;
+  },
+  type = discord.MESSAGE_TYPE.NEW,
+) {
+  try {
+    const results = await anilist.search({ search });
+
+    if (!results.media.length) {
+      throw new Error('404');
+    }
+
+    const media = results.media[0];
+
+    const message: discord.Message = new discord.Message(type);
+
+    media.relations?.edges.forEach((relation) => {
+      if (relation.node.format === anilist.FORMAT.MUSIC) {
+        const component = new discord.Component()
+          .setLabel(
+            (relation.node.title.english || relation.node.title.romaji ||
+              relation.node.title.native)!,
+          )
+          .setUrl(relation.node.externalLinks?.shift()?.url!);
+
+        message.addComponent(component);
+      }
+    });
+
+    return json(message.done());
+  } catch (err) {
+    if (err?.response?.status === 404 || err?.message === '404') {
+      return json(discord.Message.error('Found no anime matching that name!'));
+    }
+
+    return json(discord.Message.error(err));
   }
 }

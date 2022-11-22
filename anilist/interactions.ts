@@ -68,6 +68,8 @@ async function handler(request: Request): Promise<Response> {
         return await searchPage({
           search: data.options[0].value,
         });
+      case 'songs':
+        break;
       case 'next_episode':
         return await nextEpisode({ search: data.options[0].value });
       default:
