@@ -130,7 +130,7 @@ export async function searchPage(
         ...main_group,
         ...secondary_group,
         ...additional_group,
-      ].slice(0, 5).toReversed(),
+      ].slice(0, 5),
     );
 
     return json(message.done());
