@@ -174,6 +174,10 @@ export async function songs(
       }
     });
 
+    if (message._data.components.length <= 0) {
+      throw new Error('Couldn\'t find any songs for that anime!');
+    }
+
     return json(message.done());
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
