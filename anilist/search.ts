@@ -34,21 +34,23 @@ export async function search(
     }
 
     const titles = [
-      media.title.english,
-      media.title.romaji,
-      media.title.native,
+      media?.title.english,
+      media?.title.romaji,
+      media?.title.native,
     ].filter(Boolean);
 
     const message: discord.Message = new discord.Message(type);
 
     const characterExactMatch = [
       character.name.full,
-      character.name.native ?? '',
-      ...character.name.alternative ?? [],
-      ...character.name.alternativeSpoiler ?? [],
-    ].some((name) => name === search);
+      character.name.native!,
+      ...character.name.alternative!,
+      ...character.name.alternativeSpoiler!,
+    ].some((name) => name.toLowerCase() === search?.toLowerCase());
 
-    const mediaExactMatch = titles.some((title) => title === search);
+    const mediaExactMatch = titles.some((title) =>
+      title?.toLowerCase() === search?.toLowerCase()
+    );
 
     // if search is exact match for a character's name
     // respond with only the character embed
@@ -223,5 +225,3 @@ export async function songs(
     return discord.Message.error(err);
   }
 }
-
-console.log(await search({ search: 'chainsaw' }));
