@@ -175,10 +175,12 @@ export async function songs(
     });
 
     if (message._data.components.length <= 0) {
-      throw new Error('Couldn\'t find any songs for that anime!');
+      return json(
+        discord.Message.error('Couldn\'t find any songs for that anime!'),
+      );
+    } else {
+      return json(message.done());
     }
-
-    return json(message.done());
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
       return json(discord.Message.error('Found no anime matching that name!'));
