@@ -12,14 +12,11 @@ export async function search(
   type = discord.MESSAGE_TYPE.NEW,
 ) {
   try {
-    const results = await anilist.search(id ? { id } : { search });
+    const { media, character } = await anilist.search(id ? { id } : { search });
 
-    if (!results.Media && !results.Character) {
+    if (!media && !character) {
       throw new Error('404');
     }
-
-    const media = results.Media;
-    const character = results.Character;
 
     const titles = [
       media.title.english,

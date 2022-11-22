@@ -101,20 +101,9 @@ type Character = {
 
 export async function search(
   variables: { id?: number; search?: string },
-): Promise<{ Media: Media; Character: Character }> {
-  const query = gql`
+): Promise<{ media: Media; character: Character }> {
+  const media = gql`
     query ($id: Int, $search: String) {
-      Character(search: $search, sort: [SEARCH_MATCH]) {
-        age
-        gender
-        description
-        name {
-          full
-        }
-        image {
-          large
-        }
-      }
       Media(search: $search, id: $id, sort: [POPULARITY_DESC]) {
         type
         format
@@ -176,7 +165,31 @@ export async function search(
     }
   `;
 
-  return await client.request(query, variables);
+  const character = gql`
+    query ($search: String) {
+      Character(search: $search, sort: [SEARCH_MATCH]) {
+        age
+        gender
+        description
+        name {
+          full
+        }
+        image {
+          large
+        }
+      }
+    }
+  `;
+
+  const promises = await Promise.all([
+    client.request(media, variables).catch(() => undefined),
+    client.request(character, variables).catch(() => undefined),
+  ]);
+
+  return {
+    media: promises[0] as Media,
+    character: promises[1] as Character,
+  };
 }
 
 export async function getNextAiring(
