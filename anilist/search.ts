@@ -65,6 +65,7 @@ export async function search(
         ].filter(Boolean);
 
         const component = new discord.Component()
+          .setStyle(discord.BUTTON_COLOR.GREY)
           .setLabel(`${titles.shift()} (${capitalize(media.type)})`)
           .setId(
             `id:${media.id!}`,
