@@ -222,7 +222,7 @@ export class Message {
     return json({
       type: MESSAGE_TYPE.NEW,
       data: {
-        content: typeof err === 'string' ? err : JSON.stringify(err),
+        content: err?.message ?? err,
       },
     });
   }

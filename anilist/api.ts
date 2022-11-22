@@ -187,8 +187,8 @@ export async function search(
   ]);
 
   return {
-    media: promises[0] as Media,
-    character: promises[1] as Character,
+    media: promises[0]?.Media as Media,
+    character: promises[1]?.Character as Character,
   };
 }
 

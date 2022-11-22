@@ -18,8 +18,6 @@ export async function search(
       throw new Error('404');
     }
 
-    console.log(media);
-
     const titles = [
       media.title.english,
       media.title.romaji,
@@ -181,3 +179,5 @@ export async function songs(
     return discord.Message.error(err);
   }
 }
+
+console.log(await search({ search: 'chainsaw' }));
