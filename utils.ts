@@ -17,7 +17,7 @@ export function random(min: number, max: number) {
 }
 
 export function capitalize(s: string): string {
-  const sa = s.split('_').filter(Boolean);
+  const sa = s.split('_');
   return sa.map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(' ')
     .trim();
 }

@@ -81,18 +81,42 @@ export async function searchPage(
 
       switch (relation.node.format) {
         case anilist.FORMAT.MUSIC:
-          component.setLabel(
-            (relation.node.title.english || relation.node.title.romaji ||
-              relation.node.title.native)!,
-          );
-          component.setUrl(relation.node.externalLinks?.shift()?.url!);
+          component
+            .setLabel(
+              (relation.node.title.english || relation.node.title.romaji ||
+                relation.node.title.native)!,
+            )
+            .setUrl(relation.node.externalLinks?.shift()?.url!);
           break;
         default:
-          component.setId(`${relation.node.id!}`);
+          component.setId(`id:${relation.node.id!}`);
           break;
       }
 
       group.push(component);
+    });
+
+    if (media.trailer?.site === 'youtube') {
+      const component = new discord.Component()
+        .setLabel('Trailer')
+        .setUrl(`https://www.youtube.com/watch?v=${media.trailer?.id}`);
+      group.push(component);
+    }
+
+    if (media.trailer?.site === 'youtube') {
+      const component = new discord.Component()
+        .setLabel('Trailer')
+        .setUrl(`https://www.youtube.com/watch?v=${media.trailer?.id}`);
+      group.push(component);
+    }
+
+    media.externalLinks?.forEach((link) => {
+      if (link.site === 'Crunchyroll') {
+        const component = new discord.Component()
+          .setLabel('Crunchyroll')
+          .setUrl(link.url);
+        group.push(component);
+      }
     });
 
     message.addComponent(...group);

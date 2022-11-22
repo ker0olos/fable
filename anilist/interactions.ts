@@ -78,9 +78,16 @@ async function handler(request: Request): Promise<Response> {
     // COMPONENTS
     //
 
-    return await searchPage({
-      id: parseInt(data.custom_id),
-    }, discord.MESSAGE_TYPE.UPDATE);
+    const [type, id] = data.custom_id.split(':');
+
+    switch (type) {
+      case 'id':
+        return await searchPage({
+          id: parseInt(id),
+        }, discord.MESSAGE_TYPE.UPDATE);
+      default:
+        break;
+    }
   }
 
   return json(JSON.stringify({ error: 'bad request' }), { status: 400 });

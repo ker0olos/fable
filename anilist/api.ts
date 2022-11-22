@@ -48,17 +48,21 @@ export enum FORMAT {
 }
 
 type Media = {
+  type: TYPE;
+  format: FORMAT;
   title: {
     english?: string;
     romaji?: string;
     native?: string;
   };
+  externalLinks: {
+    site: string;
+    url: string;
+  }[];
   nextAiringEpisode?: {
     airingAt?: number;
   };
   id?: number;
-  type?: TYPE;
-  format?: FORMAT;
   status: STATUS;
   relations: {
     edges: {
@@ -74,10 +78,10 @@ type Media = {
     medium: string;
     color?: string;
   };
-  externalLinks?: {
+  trailer?: {
+    id: string;
     site: string;
-    url: string;
-  }[];
+  };
 };
 
 type Character = {
@@ -130,14 +134,14 @@ export async function search(
                 id
                 type
                 format
-                externalLinks {
-                  site
-                  url
-                }
                 title {
                   romaji
                   english
                   native
+                }
+                externalLinks {
+                  site
+                  url
                 }
               }
             }
@@ -158,15 +162,23 @@ export async function search(
               }
             }
           }
+          title {
+            romaji
+            english
+            native
+          }
           coverImage {
             extraLarge
             large
             color
           }
-          title {
-            romaji
-            english
-            native
+          externalLinks {
+            site
+            url
+          }
+          trailer {
+            id
+            site
           }
         }
       }
