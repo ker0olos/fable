@@ -6,7 +6,7 @@ import * as discord from '../discord.ts';
 
 import { translate } from './translate.ts';
 import { nextEpisode } from './schedule.ts';
-import { searchPage } from './search.ts';
+import { searchPage, songs } from './search.ts';
 
 const DISCORD_PUBLIC_KEY = Deno.env.get('DISCORD_PUBLIC_KEY')!;
 
@@ -69,7 +69,9 @@ async function handler(request: Request): Promise<Response> {
           search: data.options[0].value,
         });
       case 'songs':
-        break;
+        return await songs({
+          search: data.options[0].value,
+        });
       case 'next_episode':
         return await nextEpisode({ search: data.options[0].value });
       default:
