@@ -103,13 +103,6 @@ export async function searchPage(
       group.push(component);
     }
 
-    if (media.trailer?.site === 'youtube') {
-      const component = new discord.Component()
-        .setLabel('Trailer')
-        .setUrl(`https://www.youtube.com/watch?v=${media.trailer?.id}`);
-      group.push(component);
-    }
-
     media.externalLinks?.forEach((link) => {
       if (link.site === 'Crunchyroll') {
         const component = new discord.Component()
