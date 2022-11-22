@@ -99,17 +99,6 @@ type Character = {
   };
 };
 
-type Page = {
-  pageInfo: {
-    total: number;
-    currentPage: number;
-    lastPage: number;
-    hasNextPage: boolean;
-    perPage: number;
-  };
-  media: Media[];
-};
-
 export async function search(
   variables: { id?: number; search?: string },
 ): Promise<{ Media: Media; Character: Character }> {
