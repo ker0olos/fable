@@ -112,7 +112,7 @@ export async function searchPage(
       group.push(component);
     });
 
-    message.addComponent(...group.toReversed().slice(0, 5));
+    message.addComponent(...group.slice(0, 5).toReversed());
 
     return json(message.done());
   } catch (err) {
