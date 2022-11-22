@@ -60,52 +60,49 @@ export async function searchPage(
 
     const group: discord.Component[] = [];
 
-    media.relations?.edges.forEach((relation) => {
-      const component = new discord.Component()
-        .setStyle(discord.BUTTON_COLOR.GREY);
-
-      switch (relation.relationType) {
-        case anilist.RELATION_TYPE.PREQUEL:
-        case anilist.RELATION_TYPE.SEQUEL:
-        case anilist.RELATION_TYPE.SIDE_STORY:
-        case anilist.RELATION_TYPE.SPIN_OFF:
-          component.setLabel(capitalize(relation.relationType!));
-          break;
-        case anilist.RELATION_TYPE.ADAPTATION:
-          component.setLabel(capitalize(relation.node.type!));
-          break;
-        default:
-          component.setLabel(capitalize(relation.node.format!));
-          break;
-      }
-
-      switch (relation.node.format) {
-        case anilist.FORMAT.MUSIC:
-          component
-            .setLabel(
-              (relation.node.title.english || relation.node.title.romaji ||
-                relation.node.title.native)!,
-            )
-            .setUrl(relation.node.externalLinks?.shift()?.url!);
-          break;
-        default:
-          component.setId(`id:${relation.node.id!}`);
-          break;
-      }
-
-      group.push(component);
-    });
-
-    // if (media.trailer?.site === 'youtube') {
+    // media.relations?.edges.forEach((relation) => {
     //   const component = new discord.Component()
-    //     .setLabel('Trailer')
-    //     .setUrl(`https://www.youtube.com/watch?v=${media.trailer?.id}`);
+    //     .setStyle(discord.BUTTON_COLOR.GREY);
+
+    //   switch (relation.relationType) {
+    //     case anilist.RELATION_TYPE.PREQUEL:
+    //     case anilist.RELATION_TYPE.SEQUEL:
+    //     case anilist.RELATION_TYPE.SIDE_STORY:
+    //     case anilist.RELATION_TYPE.SPIN_OFF:
+    //       component.setLabel(capitalize(relation.relationType!));
+    //       break;
+    //     case anilist.RELATION_TYPE.ADAPTATION:
+    //       component.setLabel(capitalize(relation.node.type!));
+    //       break;
+    //     default:
+    //       component.setLabel(capitalize(relation.node.format!));
+    //       break;
+    //   }
+
+    //   switch (relation.node.format) {
+    //     case anilist.FORMAT.MUSIC:
+    //       component
+    //         .setLabel(
+    //           (relation.node.title.english || relation.node.title.romaji ||
+    //             relation.node.title.native)!,
+    //         )
+    //         .setUrl(relation.node.externalLinks?.shift()?.url!);
+    //       break;
+    //     default:
+    //       component.setId(`id:${relation.node.id!}`);
+    //       break;
+    //   }
+
     //   group.push(component);
-    // }
+    // });
 
-    message.addComponent(...group);
+    if (media.trailer?.site === 'youtube') {
+      const component = new discord.Component()
+        .setLabel('Trailer')
+        .setUrl(`https://www.youtube.com/watch?v=${media.trailer?.id}`);
+      group.push(component);
+    }
 
-    const group2: discord.Component[] = [];
     media.externalLinks?.forEach((link) => {
       if (link.site === 'Crunchyroll') {
         const component = new discord.Component()
@@ -114,7 +111,8 @@ export async function searchPage(
         group.push(component);
       }
     });
-    message.addComponent(...group2);
+
+    message.addComponent(...group);
 
     return json(message.done());
   } catch (err) {
