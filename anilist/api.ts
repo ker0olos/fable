@@ -87,6 +87,9 @@ export type Media = {
 export type Character = {
   name: {
     full: string;
+    native?: string;
+    alternative?: string[];
+    alternativeSpoiler?: string[];
   };
   description?: string;
   gender?: string;
@@ -173,6 +176,9 @@ export async function search(
         description
         name {
           full
+          native
+          alternative
+          alternativeSpoiler
         }
         image {
           large

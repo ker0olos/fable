@@ -42,7 +42,14 @@ export async function search(
     const message: discord.Message = new discord.Message(type);
 
     // respond with only the character
-    if (titles.some((title) => title === search)) {
+    if (
+      [
+        character.name.full,
+        character.name.native ?? '',
+        ...character.name.alternative ?? [],
+        ...character.name.alternativeSpoiler ?? [],
+      ].some((name) => name === search)
+    ) {
       const embed = embedCharacter(media, character);
 
       // const group: discord.Component[] = [];
