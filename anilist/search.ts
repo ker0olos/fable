@@ -58,22 +58,28 @@ export async function searchPage(
       message.addEmbed(embed);
     });
 
-    const group: discord.Component[] = [];
+    const main_group: discord.Component[] = [];
+    const secondary_group: discord.Component[] = [];
+    const additional_group: discord.Component[] = [];
 
     if (media.trailer?.site === 'youtube') {
       const component = new discord.Component()
         .setLabel('Trailer')
         .setUrl(`https://www.youtube.com/watch?v=${media.trailer?.id}`);
-      group.push(component);
+
+      main_group.push(component);
     }
 
     media.externalLinks?.forEach((link) => {
-      if (link.site === 'Crunchyroll') {
-        const component = new discord.Component()
-          .setLabel('Crunchyroll')
-          .setUrl(link.url);
-        group.push(component);
+      if (link.site !== 'Crunchyroll') {
+        return;
       }
+
+      const component = new discord.Component()
+        .setLabel(link.site)
+        .setUrl(link.url);
+
+      main_group.push(component);
     });
 
     media.relations?.edges.toReversed().forEach((relation) => {
@@ -85,13 +91,22 @@ export async function searchPage(
         case anilist.RELATION_TYPE.SEQUEL:
         case anilist.RELATION_TYPE.SIDE_STORY:
         case anilist.RELATION_TYPE.SPIN_OFF:
-          component.setLabel(capitalize(relation.relationType!));
+          component
+            .setLabel(capitalize(relation.relationType!))
+            .setId(
+              `id:${relation.node.id!}`,
+            );
+          secondary_group.push(component);
           break;
         case anilist.RELATION_TYPE.ADAPTATION:
-          component.setLabel(capitalize(relation.node.type!));
+          component
+            .setLabel(capitalize(relation.node.type!))
+            .setId(
+              `id:${relation.node.id!}`,
+            );
+          secondary_group.push(component);
           break;
         default:
-          component.setLabel(capitalize(relation.node.format!));
           break;
       }
 
@@ -103,16 +118,20 @@ export async function searchPage(
                 relation.node.title.native)!,
             )
             .setUrl(relation.node.externalLinks?.shift()?.url!);
+          additional_group.push(component);
           break;
         default:
-          component.setId(`id:${relation.node.id!}`);
           break;
       }
-
-      group.push(component);
     });
 
-    message.addComponent(...group.slice(0, 5).toReversed());
+    message.addComponent(
+      ...[
+        ...main_group,
+        ...secondary_group,
+        ...additional_group,
+      ].slice(0, 5).toReversed(),
+    );
 
     return json(message.done());
   } catch (err) {
