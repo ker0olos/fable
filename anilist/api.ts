@@ -111,84 +111,83 @@ type Page = {
 };
 
 export async function search(
-  variables: { id?: number; search?: string; page?: number },
-): Promise<Page> {
+  variables: { id?: number; search?: string },
+): Promise<{ Media: Media; Character: Character }> {
   const query = gql`
-    query ($page: Int, $id: Int, $search: String) {
-      Page(page: $page, perPage: 1) {
-        pageInfo {
-          total
-          currentPage
-          lastPage
-          hasNextPage
-          perPage
+    query ($id: Int, $search: String) {
+      Character(search: $search, sort: [SEARCH_MATCH]) {
+        age
+        gender
+        description
+        name {
+          full
         }
-        media(search: $search, id: $id, sort: [POPULARITY_DESC]) {
-          type
-          format
-          description
-          relations {
-            edges {
-              relationType
-              node {
-                id
-                type
-                format
-                title {
-                  romaji
-                  english
-                  native
-                }
-                externalLinks {
-                  site
-                  url
-                }
+        image {
+          large
+        }
+      }
+      Media(search: $search, id: $id, sort: [POPULARITY_DESC]) {
+        type
+        format
+        description
+        relations {
+          edges {
+            relationType
+            node {
+              id
+              type
+              format
+              title {
+                romaji
+                english
+                native
+              }
+              externalLinks {
+                site
+                url
               }
             }
           }
-          characters(sort: [RELEVANCE]) {
-            edges {
-              role
-              node {
-                age
-                gender
-                description
-                name {
-                  full
-                }
-                image {
-                  large
-                }
+        }
+        characters(sort: [RELEVANCE]) {
+          edges {
+            role
+            node {
+              age
+              gender
+              description
+              name {
+                full
+              }
+              image {
+                large
               }
             }
           }
-          title {
-            romaji
-            english
-            native
-          }
-          coverImage {
-            extraLarge
-            large
-            color
-          }
-          externalLinks {
-            site
-            url
-          }
-          trailer {
-            id
-            site
-          }
+        }
+        title {
+          romaji
+          english
+          native
+        }
+        coverImage {
+          extraLarge
+          large
+          color
+        }
+        externalLinks {
+          site
+          url
+        }
+        trailer {
+          id
+          site
         }
       }
     }
   `;
 
-  return (await client.request(query, {
-    page: 1,
-    ...variables,
-  })).Page;
+  return await client.request(query, variables);
 }
 
 export async function getNextAiring(

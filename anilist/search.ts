@@ -4,7 +4,7 @@ import * as discord from '../discord.ts';
 
 import * as anilist from './api.ts';
 
-export async function searchPage(
+export async function search(
   { id, search }: {
     id?: number;
     search?: string;
@@ -14,11 +14,12 @@ export async function searchPage(
   try {
     const results = await anilist.search(id ? { id } : { search });
 
-    if (!results.media.length) {
+    if (!results.Media && !results.Character) {
       throw new Error('404');
     }
 
-    const media = results.media[0];
+    const media = results.Media;
+    const character = results.Character;
 
     const titles = [
       media.title.english,
@@ -150,11 +151,11 @@ export async function songs(
   try {
     const results = await anilist.search({ search });
 
-    if (!results.media.length) {
+    if (!results.Media) {
       throw new Error('404');
     }
 
-    const media = results.media[0];
+    const media = results.Media;
 
     const message: discord.Message = new discord.Message(type);
 
