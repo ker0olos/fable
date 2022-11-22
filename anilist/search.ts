@@ -60,42 +60,6 @@ export async function searchPage(
 
     const group: discord.Component[] = [];
 
-    // media.relations?.edges.forEach((relation) => {
-    //   const component = new discord.Component()
-    //     .setStyle(discord.BUTTON_COLOR.GREY);
-
-    //   switch (relation.relationType) {
-    //     case anilist.RELATION_TYPE.PREQUEL:
-    //     case anilist.RELATION_TYPE.SEQUEL:
-    //     case anilist.RELATION_TYPE.SIDE_STORY:
-    //     case anilist.RELATION_TYPE.SPIN_OFF:
-    //       component.setLabel(capitalize(relation.relationType!));
-    //       break;
-    //     case anilist.RELATION_TYPE.ADAPTATION:
-    //       component.setLabel(capitalize(relation.node.type!));
-    //       break;
-    //     default:
-    //       component.setLabel(capitalize(relation.node.format!));
-    //       break;
-    //   }
-
-    //   switch (relation.node.format) {
-    //     case anilist.FORMAT.MUSIC:
-    //       component
-    //         .setLabel(
-    //           (relation.node.title.english || relation.node.title.romaji ||
-    //             relation.node.title.native)!,
-    //         )
-    //         .setUrl(relation.node.externalLinks?.shift()?.url!);
-    //       break;
-    //     default:
-    //       component.setId(`id:${relation.node.id!}`);
-    //       break;
-    //   }
-
-    //   group.push(component);
-    // });
-
     if (media.trailer?.site === 'youtube') {
       const component = new discord.Component()
         .setLabel('Trailer')
@@ -112,7 +76,43 @@ export async function searchPage(
       }
     });
 
-    message.addComponent(...group);
+    media.relations?.edges.toReversed().forEach((relation) => {
+      const component = new discord.Component()
+        .setStyle(discord.BUTTON_COLOR.GREY);
+
+      switch (relation.relationType) {
+        case anilist.RELATION_TYPE.PREQUEL:
+        case anilist.RELATION_TYPE.SEQUEL:
+        case anilist.RELATION_TYPE.SIDE_STORY:
+        case anilist.RELATION_TYPE.SPIN_OFF:
+          component.setLabel(capitalize(relation.relationType!));
+          break;
+        case anilist.RELATION_TYPE.ADAPTATION:
+          component.setLabel(capitalize(relation.node.type!));
+          break;
+        default:
+          component.setLabel(capitalize(relation.node.format!));
+          break;
+      }
+
+      switch (relation.node.format) {
+        case anilist.FORMAT.MUSIC:
+          component
+            .setLabel(
+              (relation.node.title.english || relation.node.title.romaji ||
+                relation.node.title.native)!,
+            )
+            .setUrl(relation.node.externalLinks?.shift()?.url!);
+          break;
+        default:
+          component.setId(`id:${relation.node.id!}`);
+          break;
+      }
+
+      group.push(component);
+    });
+
+    message.addComponent(...group.toReversed().slice(0, 5));
 
     return json(message.done());
   } catch (err) {
