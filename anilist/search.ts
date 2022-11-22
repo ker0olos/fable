@@ -1,5 +1,3 @@
-import { json } from '../index.ts';
-
 import { capitalize } from '../utils.ts';
 
 import * as discord from '../discord.ts';
@@ -134,13 +132,13 @@ export async function searchPage(
       ],
     );
 
-    return json(message.done());
+    return message.json();
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
-      return json(discord.Message.error('Found no anime matching that name!'));
+      return discord.Message.error('Found no anime matching that name!');
     }
 
-    return json(discord.Message.error(err));
+    return discord.Message.error(err);
   }
 }
 
@@ -175,17 +173,15 @@ export async function songs(
     });
 
     if (message._data.components.length <= 0) {
-      return json(
-        discord.Message.error('Couldn\'t find any songs for that anime!'),
-      );
-    } else {
-      return json(message.done());
-    }
-  } catch (err) {
-    if (err?.response?.status === 404 || err?.message === '404') {
-      return json(discord.Message.error('Found no anime matching that name!'));
+      return discord.Message.error('Couldn\'t find any songs for that anime!');
     }
 
-    return json(discord.Message.error(err));
+    return message.json();
+  } catch (err) {
+    if (err?.response?.status === 404 || err?.message === '404') {
+      return discord.Message.error('Found no anime matching that name!');
+    }
+
+    return discord.Message.error(err);
   }
 }

@@ -1,3 +1,5 @@
+import { json } from './index.ts';
+
 import { decodeDescription, hexToInt } from './utils.ts';
 
 export enum MESSAGE_TYPE {
@@ -176,22 +178,6 @@ export class Message {
     };
   }
 
-  static ping() {
-    return JSON.stringify({
-      type: 1,
-    });
-  }
-
-  // deno-lint-ignore no-explicit-any
-  static error(err: any) {
-    return JSON.stringify({
-      type: MESSAGE_TYPE.NEW,
-      data: {
-        content: typeof err === 'string' ? err : JSON.stringify(err),
-      },
-    });
-  }
-
   setContent(content: string): Message {
     this._data.content = content;
     return this;
@@ -212,13 +198,29 @@ export class Message {
     return this;
   }
 
-  done(): string {
-    return JSON.stringify({
+  json(): Response {
+    return json({
       type: this._type,
       data: {
         embeds: this._data.embeds,
         content: this._data.content,
         components: this._data.components.slice(0, 5),
+      },
+    });
+  }
+
+  static pong() {
+    return json({
+      type: 1,
+    });
+  }
+
+  // deno-lint-ignore no-explicit-any
+  static error(err: any) {
+    return json({
+      type: MESSAGE_TYPE.NEW,
+      data: {
+        content: typeof err === 'string' ? err : JSON.stringify(err),
       },
     });
   }

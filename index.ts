@@ -14,7 +14,7 @@ export interface RequestTerms {
 }
 
 export function json(
-  obj: string,
+  jsobj: Parameters<typeof JSON.stringify>[0],
   init?: ResponseInit,
 ): Response {
   const headers = init?.headers instanceof Headers
@@ -24,7 +24,7 @@ export function json(
   if (!headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json; charset=utf-8');
   }
-  return new Response(obj + '\n', {
+  return new Response(JSON.stringify(jsobj) + '\n', {
     statusText: init?.statusText ?? STATUS_TEXT.get(init?.status ?? Status.OK),
     status: init?.status ?? Status.OK,
     headers,

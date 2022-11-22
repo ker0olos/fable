@@ -16,9 +16,10 @@ async function handler(request: Request): Promise<Response> {
   });
 
   if (error) {
-    return json(JSON.stringify({ error: error.message }), {
-      status: error.status,
-    });
+    return json(
+      { error: error.message },
+      { status: error.status },
+    );
   }
 
   const { valid, body } = await verifySignature(
@@ -28,10 +29,8 @@ async function handler(request: Request): Promise<Response> {
 
   if (!valid) {
     return json(
-      JSON.stringify({ error: 'Invalid request' }),
-      {
-        status: 401,
-      },
+      { error: 'Invalid request' },
+      { status: 401 },
     );
   }
 
@@ -43,7 +42,7 @@ async function handler(request: Request): Promise<Response> {
   } = JSON.parse(body);
 
   if (type === 1) {
-    return json(discord.Message.ping());
+    return discord.Message.pong();
   }
 
   // console.log(type, data, token, member);
@@ -61,7 +60,7 @@ async function handler(request: Request): Promise<Response> {
           discord.MESSAGE_TYPE.NEW,
         ).setContent(`<@${member.user.id}> ${rolledNumber}`);
 
-        return json(message.done());
+        return message.json();
       }
       default:
         break;
