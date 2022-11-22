@@ -128,7 +128,7 @@ export async function searchPage(
       ...[
         ...mainGroup,
         ...secondaryGroup,
-        ...additionalGroup,
+        // ...additionalGroup,
       ],
     );
 
@@ -137,7 +137,6 @@ export async function searchPage(
     if (err?.response?.status === 404 || err?.message === '404') {
       return discord.Message.error('Found no anime matching that name!');
     }
-
     return discord.Message.error(err);
   }
 }
@@ -181,7 +180,6 @@ export async function songs(
     if (err?.response?.status === 404 || err?.message === '404') {
       return discord.Message.error('Found no anime matching that name!');
     }
-
     return discord.Message.error(err);
   }
 }

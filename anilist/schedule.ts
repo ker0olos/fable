@@ -49,7 +49,6 @@ export async function nextEpisode({ search }: { search: string }) {
     if (err?.response?.status === 404 || err?.message === '404') {
       return discord.Message.error('Found no anime matching that name!');
     }
-
     return discord.Message.error(err);
   }
 }

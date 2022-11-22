@@ -23,7 +23,6 @@ export async function translate(
         return discord.Message.error('Found nothing matching that name!');
       }
     }
-
     return discord.Message.error(err);
   }
 }
