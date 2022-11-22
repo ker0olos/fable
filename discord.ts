@@ -188,7 +188,7 @@ export class Message {
     return this;
   }
 
-  addComponent(...components: Component[]): Message {
+  addComponents(components: Component[]): Message {
     if (components.length > 0) {
       this._data.components.push({
         type: 1,
@@ -204,7 +204,7 @@ export class Message {
       data: {
         embeds: this._data.embeds,
         content: this._data.content,
-        components: this._data.components.slice(0, 4),
+        components: this._data.components.slice(0, 5),
       },
     });
   }

@@ -88,7 +88,7 @@ export async function searchPage(
         case anilist.RELATION_TYPE.PREQUEL:
         case anilist.RELATION_TYPE.SEQUEL:
         case anilist.RELATION_TYPE.SIDE_STORY:
-        case anilist.RELATION_TYPE.SPIN_OFF:
+        case anilist.RELATION_TYPE.SPIN_OFF: {
           component
             .setLabel(capitalize(relation.relationType!))
             .setId(
@@ -96,20 +96,23 @@ export async function searchPage(
             );
           secondaryGroup.push(component);
           break;
-        case anilist.RELATION_TYPE.ADAPTATION:
+        }
+        case anilist.RELATION_TYPE.ADAPTATION: {
           component
             .setLabel(capitalize(relation.node.type!))
             .setId(
               `id:${relation.node.id!}`,
             );
+
           secondaryGroup.push(component);
           break;
+        }
         default:
           break;
       }
 
       switch (relation.node.format) {
-        case anilist.FORMAT.MUSIC:
+        case anilist.FORMAT.MUSIC: {
           component
             .setLabel(
               (relation.node.title.english || relation.node.title.romaji ||
@@ -119,18 +122,15 @@ export async function searchPage(
 
           additionalGroup.push(component);
           break;
+        }
         default:
           break;
       }
     });
 
-    message.addComponent(
-      ...[
-        ...mainGroup,
-        ...secondaryGroup,
-        ...additionalGroup,
-      ],
-    );
+    message.addComponents(mainGroup);
+    message.addComponents(secondaryGroup);
+    message.addComponents(additionalGroup);
 
     return message.json();
   } catch (err) {
@@ -167,7 +167,7 @@ export async function songs(
           )
           .setUrl(relation.node.externalLinks?.shift()?.url!);
 
-        message.addComponent(component);
+        message.addComponents([component]);
       }
     });
 
