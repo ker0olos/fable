@@ -103,6 +103,9 @@ export async function searchPage(
     //   group.push(component);
     // }
 
+    message.addComponent(...group);
+
+    const group2: discord.Component[] = [];
     media.externalLinks?.forEach((link) => {
       if (link.site === 'Crunchyroll') {
         const component = new discord.Component()
@@ -111,8 +114,7 @@ export async function searchPage(
         group.push(component);
       }
     });
-
-    message.addComponent(...group);
+    message.addComponent(...group2);
 
     return json(message.done());
   } catch (err) {
