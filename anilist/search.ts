@@ -41,24 +41,41 @@ export async function search(
 
     const message: discord.Message = new discord.Message(type);
 
-    // respond with only the character
-    if (
-      [
-        character.name.full,
-        character.name.native ?? '',
-        ...character.name.alternative ?? [],
-        ...character.name.alternativeSpoiler ?? [],
-      ].some((name) => name === search)
-    ) {
+    const characterExactMatch = [
+      character.name.full,
+      character.name.native ?? '',
+      ...character.name.alternative ?? [],
+      ...character.name.alternativeSpoiler ?? [],
+    ].some((name) => name === search);
+
+    const mediaExactMatch = titles.some((title) => title === search);
+
+    // if search is exact match for a character's name
+    // respond with only the character embed
+    if (!mediaExactMatch && characterExactMatch) {
       const embed = embedCharacter(media, character);
 
-      // const group: discord.Component[] = [];
+      const group: discord.Component[] = [];
 
-      // character?.media?.nodes.forEach((media) => {
+      character?.media?.nodes.forEach((media) => {
+        const titles = [
+          media.title.english,
+          media.title.romaji,
+          media.title.native,
+        ].filter(Boolean);
 
-      // });
+        const component = new discord.Component()
+          .setLabel(`${titles.shift()} (${capitalize(media.type)})`)
+          .setId(
+            `id:${media.id!}`,
+          );
+
+        group.push(component);
+      });
 
       message.addEmbed(embed);
+
+      message.addComponents(group);
 
       return message.json();
     }
