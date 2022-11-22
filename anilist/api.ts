@@ -47,7 +47,7 @@ export enum FORMAT {
   'ONE_SHOT' = 'ONE_SHOT',
 }
 
-type Media = {
+export type Media = {
   type: TYPE;
   format: FORMAT;
   title: {
@@ -71,7 +71,7 @@ type Media = {
     }[];
   };
   description?: string;
-  characters?: { edges: Character[] };
+  characters?: { edges: { role: string; node: Character }[] };
   coverImage?: {
     extraLarge: string;
     large: string;
@@ -84,18 +84,18 @@ type Media = {
   };
 };
 
-type Character = {
-  role: string;
-  node: {
-    name: {
-      full: string;
-    };
-    description?: string;
-    gender?: string;
-    age?: string;
-    image: {
-      large?: string;
-    };
+export type Character = {
+  name: {
+    full: string;
+  };
+  description?: string;
+  gender?: string;
+  age?: string;
+  image?: {
+    large: string;
+  };
+  media?: {
+    nodes: Media[];
   };
 };
 
@@ -176,6 +176,18 @@ export async function search(
         }
         image {
           large
+        }
+        media {
+          nodes {
+            id
+            type
+            format
+            title {
+              romaji
+              english
+              native
+            }
+          }
         }
       }
     }

@@ -4,6 +4,21 @@ import * as discord from '../discord.ts';
 
 import * as anilist from './api.ts';
 
+function embedCharacter(media: anilist.Media, character: anilist.Character) {
+  const embed = new discord.Embed()
+    .setTitle(character.name.full)
+    .setDescription(character.description)
+    .setColor(media.coverImage?.color)
+    .setThumbnail(character.image?.large)
+    .setFooter(
+      [
+        character.age,
+        character.gender,
+      ].filter(Boolean).join(' '),
+    );
+  return embed;
+}
+
 export async function search(
   { id, search }: {
     id?: number;
@@ -26,6 +41,21 @@ export async function search(
 
     const message: discord.Message = new discord.Message(type);
 
+    // respond with only the character
+    if (titles.some((title) => title === search)) {
+      const embed = embedCharacter(media, character);
+
+      // const group: discord.Component[] = [];
+
+      // character?.media?.nodes.forEach((media) => {
+
+      // });
+
+      message.addEmbed(embed);
+
+      return message.json();
+    }
+
     message.addEmbed(
       new discord.Embed()
         .setTitle(titles.shift()!)
@@ -39,18 +69,7 @@ export async function search(
     );
 
     media.characters?.edges.slice(0, 2).forEach((character) => {
-      const embed = new discord.Embed()
-        .setTitle(character.node.name.full)
-        .setDescription(character.node.description)
-        .setColor(media.coverImage?.color)
-        .setThumbnail(character.node.image?.large)
-        .setFooter(
-          [
-            character.node.age,
-            character.node.gender,
-          ].filter(Boolean).join(' '),
-        );
-
+      const embed = embedCharacter(media, character.node);
       message.addEmbed(embed);
     });
 
