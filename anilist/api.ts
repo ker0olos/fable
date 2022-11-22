@@ -104,7 +104,7 @@ export type Character = {
 
 export async function search(
   variables: { id?: number; search?: string },
-): Promise<{ media: Media; character: Character }> {
+): Promise<{ media?: Media; character?: Character }> {
   const media = gql`
     query ($id: Int, $search: String) {
       Media(search: $search, id: $id, sort: [POPULARITY_DESC]) {

@@ -4,16 +4,16 @@ import * as discord from '../discord.ts';
 
 import * as anilist from './api.ts';
 
-function embedCharacter(media: anilist.Media, character: anilist.Character) {
+function embedCharacter(media?: anilist.Media, character?: anilist.Character) {
   const embed = new discord.Embed()
-    .setTitle(character.name.full)
-    .setDescription(character.description)
-    .setColor(media.coverImage?.color)
-    .setThumbnail(character.image?.large)
+    .setTitle(character!.name.full)
+    .setDescription(character!.description)
+    .setColor(media?.coverImage?.color)
+    .setThumbnail(character!.image?.large)
     .setFooter(
       [
-        character.age,
-        character.gender,
+        character!.age,
+        character!.gender,
       ].filter(Boolean).join(' '),
     );
   return embed;
@@ -42,11 +42,11 @@ export async function search(
     const message: discord.Message = new discord.Message(type);
 
     const characterExactMatch = [
-      character.name.full,
-      character.name.native!,
-      ...character.name.alternative!,
-      ...character.name.alternativeSpoiler!,
-    ].some((name) => name.toLowerCase() === search?.toLowerCase());
+      character?.name.full,
+      character?.name.native!,
+      ...character?.name.alternative!,
+      ...character?.name.alternativeSpoiler!,
+    ].some((name) => name!.toLowerCase() === search?.toLowerCase());
 
     const mediaExactMatch = titles.some((title) =>
       title?.toLowerCase() === search?.toLowerCase()
@@ -81,6 +81,10 @@ export async function search(
       message.addComponents(group);
 
       return message.json();
+    }
+
+    if (!media) {
+      throw new Error('404');
     }
 
     message.addEmbed(
@@ -225,3 +229,5 @@ export async function songs(
     return discord.Message.error(err);
   }
 }
+
+console.log(await search({ search: 'chainsaw devil' }));
