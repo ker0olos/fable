@@ -192,7 +192,9 @@ export class Message {
     if (components.length > 0) {
       this._data.components.push({
         type: 1,
-        components: components.map((component) => component._done()),
+        components: components.slice(0, 5).map((component) =>
+          component._done()
+        ),
       });
     }
     return this;
@@ -204,7 +206,7 @@ export class Message {
       data: {
         embeds: this._data.embeds,
         content: this._data.content,
-        components: this._data.components.slice(0, 5),
+        components: this._data.components,
       },
     });
   }

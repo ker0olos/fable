@@ -80,7 +80,7 @@ export async function searchPage(
       mainGroup.push(component);
     });
 
-    media.relations?.edges.toReversed().forEach((relation) => {
+    media.relations?.edges.forEach((relation) => {
       const component = new discord.Component()
         .setStyle(discord.BUTTON_COLOR.GREY);
 
