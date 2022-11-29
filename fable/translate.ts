@@ -6,15 +6,15 @@ export async function translate(
   { search, lang }: { search: string; lang: 'english' | 'romaji' | 'native' },
 ) {
   try {
-    const results = await anilist.search({ search, page: 1 });
+    const results = await anilist.search({ search });
 
-    if (!results.media.length) {
+    if (!results.media) {
       throw new Error('404');
     }
 
     const message: discord.Message = new discord.Message(
       discord.MESSAGE_TYPE.NEW,
-    ).setContent(`${results.media[0].title[lang]}`);
+    ).setContent(`${results.media.title[lang]}`);
 
     return message.json();
   } catch (err) {

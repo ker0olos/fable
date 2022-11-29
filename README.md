@@ -2,6 +2,6 @@
 
 Responsible for any Alley Cats specific commands like rolling dice.
 
-### AniList
+### Fable
 
-Responsible for any AniList specific commands like showing info about a specific anime/manga.
+Responsible for some AniList-specific commands like showing info about a specific anime/manga, and some minigames related to anime/manga.
