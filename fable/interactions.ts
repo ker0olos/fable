@@ -48,7 +48,7 @@ async function handler(request: Request): Promise<Response> {
     return discord.Message.pong();
   }
 
-  // console.log(type, data, token, member);
+  console.log(type, data);
 
   if (type === 2) {
     //
@@ -56,23 +56,23 @@ async function handler(request: Request): Promise<Response> {
     //
 
     switch (data.name) {
-      case 'native':
-      case 'english':
-      case 'romaji':
-        return await translate({
-          search: data.options[0].value,
-          lang: data.name,
-        });
+      // case 'native':
+      // case 'english':
+      // case 'romaji':
+      //   return await translate({
+      //     search: data.options[0].value,
+      //     lang: data.name,
+      //   });
       case 'search':
         return await search({
           search: data.options[0].value,
         });
-      case 'songs':
-        return await songs({
-          search: data.options[0].value,
-        });
-      case 'next_episode':
-        return await nextEpisode({ search: data.options[0].value });
+      // case 'songs':
+      //   return await songs({
+      //     search: data.options[0].value,
+      //   });
+      // case 'next_episode':
+      //   return await nextEpisode({ search: data.options[0].value });
       default:
         break;
     }
@@ -81,16 +81,16 @@ async function handler(request: Request): Promise<Response> {
     // COMPONENTS
     //
 
-    const [type, id] = data.custom_id.split(':');
+    // const [type, id] = data.custom_id.split(':');
 
-    switch (type) {
-      case 'id':
-        return await search({
-          id: parseInt(id),
-        }, discord.MESSAGE_TYPE.UPDATE);
-      default:
-        break;
-    }
+    // switch (type) {
+    //   case 'id':
+    //     return await search({
+    //       id: parseInt(id),
+    //     }, discord.MESSAGE_TYPE.UPDATE);
+    //   default:
+    //     break;
+    // }
   }
 
   return json({ error: 'bad request' }, { status: 400 });
