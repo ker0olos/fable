@@ -34,7 +34,7 @@ def set_commands(commands):
         )
         print(response.json())
         # avoids the rate limit
-        sleep(1)
+        sleep(5)
 
 
 def delete_command(command_id):

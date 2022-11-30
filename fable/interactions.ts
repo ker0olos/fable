@@ -4,9 +4,9 @@ import { json, validateRequest, verifySignature } from '../index.ts';
 
 import * as discord from '../discord.ts';
 
-// import { translate } from './translate.ts';
-// import { nextEpisode } from './schedule.ts';
-// import { search } from './search.ts';
+import { translate } from './translate.ts';
+import { nextEpisode } from './schedule.ts';
+import { search, songs } from './search.ts';
 
 const DISCORD_PUBLIC_KEY = Deno.env.get('DISCORD_PUBLIC_KEY')!;
 
@@ -48,53 +48,52 @@ async function handler(request: Request): Promise<Response> {
     return discord.Message.pong();
   }
 
-  console.log(type, data);
+  // console.log(type, data);
 
-  // if (type === 2) {
-  //   //
-  //   // SLASH COMMANDS
-  //   //
+  if (type === 2) {
+    //
+    // SLASH COMMANDS
+    //
 
-  //   switch (data.name) {
-  //     // case 'native':
-  //     // case 'english':
-  //     // case 'romaji':
-  //     //   return await translate({
-  //     //     search: data.options[0].value,
-  //     //     lang: data.name,
-  //     //   });
-  //     case 'search':
-  //       return await search({
-  //         search: data.options[0].value,
-  //       });
-  //     // case 'songs':
-  //     //   return await songs({
-  //     //     search: data.options[0].value,
-  //     //   });
-  //     // case 'next_episode':
-  //     //   return await nextEpisode({ search: data.options[0].value });
-  //     default:
-  //       break;
-  //   }
-  // } else if (type === 3) {
-  //   //
-  //   // COMPONENTS
-  //   //
+    switch (data.name) {
+      case 'native':
+      case 'english':
+      case 'romaji':
+        return await translate({
+          search: data.options[0].value,
+          lang: data.name,
+        });
+      case 'search':
+        return await search({
+          search: data.options[0].value,
+        });
+      case 'songs':
+        return await songs({
+          search: data.options[0].value,
+        });
+      case 'next_episode':
+        return await nextEpisode({ search: data.options[0].value });
+      default:
+        break;
+    }
+  } else if (type === 3) {
+    //
+    // COMPONENTS
+    //
 
-  //   // const [type, id] = data.custom_id.split(':');
+    const [type, id] = data.custom_id.split(':');
 
-  //   // switch (type) {
-  //   //   case 'id':
-  //   //     return await search({
-  //   //       id: parseInt(id),
-  //   //     }, discord.MESSAGE_TYPE.UPDATE);
-  //   //   default:
-  //   //     break;
-  //   // }
-  // }
+    switch (type) {
+      case 'id':
+        return await search({
+          id: parseInt(id),
+        }, discord.MESSAGE_TYPE.UPDATE);
+      default:
+        break;
+    }
+  }
 
-  return discord.Message.error('error');
-  // return json({ error: 'bad request' }, { status: 400 });
+  return json({ error: 'bad request' }, { status: 400 });
 }
 
 serve(handler);
