@@ -4,9 +4,9 @@ import { json, validateRequest, verifySignature } from '../index.ts';
 
 import * as discord from '../discord.ts';
 
-import { translate } from './translate.ts';
-import { nextEpisode } from './schedule.ts';
-import { search, songs } from './search.ts';
+// import { translate } from './translate.ts';
+// import { nextEpisode } from './schedule.ts';
+import { search } from './search.ts';
 
 const DISCORD_PUBLIC_KEY = Deno.env.get('DISCORD_PUBLIC_KEY')!;
 

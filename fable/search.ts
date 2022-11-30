@@ -229,5 +229,3 @@ export async function songs(
     return discord.Message.error(err);
   }
 }
-
-console.log(await search({ search: 'chainsaw devil' }));
