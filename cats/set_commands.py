@@ -1,16 +1,7 @@
-import sys
+import os
 from time import sleep
 
 import requests
-
-APP_ID = "994920973927186463"
-GUILD_ID = "992416714497212518"
-
-if not sys.argv[1]:
-    print("BOT_TOKEN missing")
-    sys.exit(1)
-
-BOT_TOKEN = sys.argv[1]
 
 SUB_COMMAND = 1
 SUB_COMMAND_GROUP = 2
@@ -23,8 +14,16 @@ ROLE = 8
 MENTIONABLE = 9  # Includes users and roles
 NUMBER = 10  # Any double between -2^53 and 2^53
 
+APP_ID = "994920973927186463"
+GUILD_ID = "992416714497212518"
+
+BOT_TOKEN = os.getenv("CATS_BOT_TOKEN")
+
 # guild commands update instantly
 url = f"https://discord.com/api/v8/applications/{APP_ID}/guilds/{GUILD_ID}/commands"
+
+# global commands are cached and only update every hour
+# url = f"https://discord.com/api/v8/applications/{APP_ID}/commands"
 
 
 def set_commands(commands):

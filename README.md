@@ -2,6 +2,8 @@
 
 Responsible for any Alley Cats specific commands like rolling dice.
 
-### Fable
+### [Fable](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
 
-Responsible for some AniList-specific commands like showing info about a specific anime/manga, and some minigames related to anime/manga.
+Responsible for commands like showing info about a specific anime/manga, and mini-games related to anime/manga.
+
+Heavily powered by [AniList](https://anilist.co/) APIs.
