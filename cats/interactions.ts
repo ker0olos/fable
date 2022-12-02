@@ -1,12 +1,11 @@
-import { serve } from 'https://deno.land/std@0.130.0/http/server.ts';
-
-import { json, validateRequest, verifySignature } from '../index.ts';
+import { json, serve, validateRequest, verifySignature } from '../net.ts';
 
 import { random } from '../utils.ts';
 
 import * as discord from '../discord.ts';
 
-const DISCORD_PUBLIC_KEY = Deno.env.get('DISCORD_PUBLIC_KEY')!;
+const APP_PUBLIC_KEY =
+  'e1d358df7edf4d74bead5b91d82fa58a596b2d4054264824c49fad6e9c520361';
 
 async function handler(request: Request): Promise<Response> {
   const { error } = await validateRequest(request, {
@@ -24,7 +23,7 @@ async function handler(request: Request): Promise<Response> {
 
   const { valid, body } = await verifySignature(
     request,
-    DISCORD_PUBLIC_KEY,
+    APP_PUBLIC_KEY,
   );
 
   if (!valid) {
@@ -47,27 +46,34 @@ async function handler(request: Request): Promise<Response> {
 
   // console.log(type, data, token, member);
 
-  if (type === 2) {
-    //
-    // SLASH COMMANDS
-    //
+  try {
+    if (type === 2) {
+      //
+      // SLASH COMMANDS
+      //
 
-    switch (data.name) {
-      case 'roll': {
-        const rolledNumber = roll({ amount: data.options[0].value });
+      switch (data.name) {
+        case 'roll': {
+          const rolledNumber = roll({ amount: data.options[0].value });
 
-        const message: discord.Message = new discord.Message(
-          discord.MESSAGE_TYPE.NEW,
-        ).setContent(`<@${member.user.id}> ${rolledNumber}`);
+          const message: discord.Message = new discord.Message(
+            discord.MESSAGE_TYPE.NEW,
+          ).setContent(`<@${member.user.id}> ${rolledNumber}`);
 
-        return message.json();
+          return message.json();
+        }
+        default:
+          break;
       }
-      default:
-        break;
     }
+  } catch (err) {
+    if (err?.response?.status === 404 || err?.message === '404') {
+      return discord.Message.error('Found nothing matching that name!');
+    }
+    return discord.Message.error(err);
   }
 
-  return json(JSON.stringify({ error: 'bad request' }), { status: 400 });
+  return discord.Message.error('bad request');
 }
 
 function roll({ amount }: { amount: number }) {

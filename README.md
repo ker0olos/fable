@@ -1,4 +1,4 @@
-### Alley Cats
+### [Alley Cats](https://discord.com/api/oauth2/authorize?client_id=994920973927186463&scope=applications.commands)
 
 Responsible for any Alley Cats specific commands like rolling dice.
 

@@ -1,4 +1,4 @@
-import { json } from './index.ts';
+import { json } from './net.ts';
 
 import { decodeDescription, hexToInt } from './utils.ts';
 

@@ -1,5 +1,7 @@
 import nacl from 'https://cdn.skypack.dev/tweetnacl@v1.0.3?dts';
 
+import { serve } from 'https://deno.land/std@0.130.0/http/server.ts';
+
 import {
   Status,
   STATUS_TEXT,
@@ -144,3 +146,5 @@ export async function validateRequest(
 
   return { body };
 }
+
+export { serve };

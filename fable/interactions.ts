@@ -1,6 +1,4 @@
-import { serve } from 'https://deno.land/std@0.130.0/http/server.ts';
-
-import { json, validateRequest, verifySignature } from '../index.ts';
+import { json, serve, validateRequest, verifySignature } from '../net.ts';
 
 import * as discord from '../discord.ts';
 
@@ -8,7 +6,8 @@ import { translate } from './translate.ts';
 import { nextEpisode } from './schedule.ts';
 import { search, songs } from './search.ts';
 
-const DISCORD_PUBLIC_KEY = Deno.env.get('DISCORD_PUBLIC_KEY')!;
+const APP_PUBLIC_KEY =
+  '90e9e47e0f67aa24cb058b592ae359c54c42709919e2f0bb73ef388e6c9a1152';
 
 async function handler(request: Request): Promise<Response> {
   const { error } = await validateRequest(request, {
@@ -26,7 +25,7 @@ async function handler(request: Request): Promise<Response> {
 
   const { valid, body } = await verifySignature(
     request,
-    DISCORD_PUBLIC_KEY,
+    APP_PUBLIC_KEY,
   );
 
   if (!valid) {
@@ -50,50 +49,59 @@ async function handler(request: Request): Promise<Response> {
 
   // console.log(type, data);
 
-  if (type === 2) {
-    //
-    // SLASH COMMANDS
-    //
+  try {
+    if (type === 2) {
+      //
+      // SLASH COMMANDS
+      //
 
-    switch (data.name) {
-      case 'native':
-      case 'english':
-      case 'romaji':
-        return await translate({
-          search: data.options[0].value,
-          lang: data.name,
-        });
-      case 'search':
-        return await search({
-          search: data.options[0].value,
-        });
-      case 'songs':
-        return await songs({
-          search: data.options[0].value,
-        });
-      case 'next_episode':
-        return await nextEpisode({ search: data.options[0].value });
-      default:
-        break;
+      switch (data.name) {
+        case 'native':
+        case 'english':
+        case 'romaji':
+          return await translate({
+            search: data.options[0].value,
+            lang: data.name,
+          });
+        case 'search':
+          return await search({
+            search: data.options[0].value,
+          });
+        case 'songs':
+          return await songs({
+            search: data.options[0].value,
+          });
+        case 'next_episode':
+          return await nextEpisode({ search: data.options[0].value });
+        case 'gacha':
+          throw new Error('Unimplemented');
+        default:
+          break;
+      }
+    } else if (type === 3) {
+      //
+      // COMPONENTS
+      //
+
+      const [type, id] = data.custom_id.split(':');
+
+      switch (type) {
+        case 'id':
+          return await search({
+            id: parseInt(id),
+          }, discord.MESSAGE_TYPE.UPDATE);
+        default:
+          break;
+      }
     }
-  } else if (type === 3) {
-    //
-    // COMPONENTS
-    //
-
-    const [type, id] = data.custom_id.split(':');
-
-    switch (type) {
-      case 'id':
-        return await search({
-          id: parseInt(id),
-        }, discord.MESSAGE_TYPE.UPDATE);
-      default:
-        break;
+  } catch (err) {
+    if (err?.response?.status === 404 || err?.message === '404') {
+      return discord.Message.error('Found nothing matching that name!');
     }
+    return discord.Message.error(err);
   }
 
-  return json({ error: 'bad request' }, { status: 400 });
+  return discord.Message.error('bad request');
 }
 
 serve(handler);

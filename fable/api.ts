@@ -47,6 +47,20 @@ export enum FORMAT {
   'ONE_SHOT' = 'ONE_SHOT',
 }
 
+export enum CHARACTER_ROLE {
+  'MAIN' = 'MAIN',
+  'SUPPORTING' = 'SUPPORTING',
+  'BACKGROUND' = 'BACKGROUND',
+}
+
+export type PageInfo = {
+  total: number;
+  currentPage: number;
+  lastPage: number;
+  hasNextPage: boolean;
+  perPage: number;
+};
+
 export type Media = {
   type: TYPE;
   format: FORMAT;
@@ -70,8 +84,12 @@ export type Media = {
       node: Media;
     }[];
   };
+  popularity?: number;
   description?: string;
-  characters?: { edges: { role: string; node: Character }[] };
+  characters?: {
+    nodes?: Character[];
+    edges?: { role: CHARACTER_ROLE; node: Character }[];
+  };
   coverImage?: {
     extraLarge: string;
     large: string;
@@ -91,6 +109,7 @@ export type Character = {
     alternative?: string[];
     alternativeSpoiler?: string[];
   };
+  id?: number;
   description?: string;
   gender?: string;
   age?: string;
@@ -98,7 +117,8 @@ export type Character = {
     large: string;
   };
   media?: {
-    nodes: Media[];
+    nodes?: Media[];
+    edges?: { characterRole: CHARACTER_ROLE; node: Media }[];
   };
 };
 
