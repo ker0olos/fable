@@ -6,6 +6,7 @@ export enum MESSAGE_TYPE {
   NEW = 4,
   PING = 1,
   UPDATE = 7,
+  LOADING = 5,
 }
 
 export enum BUTTON_COLOR {

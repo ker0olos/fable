@@ -12,8 +12,19 @@ export function hexToInt(hex?: string): number | undefined {
   return parseInt(`${R}${G}${B}`, 16);
 }
 
-export function random(min: number, max: number) {
-  return Math.floor((Math.random()) * (max - min + 1)) + min;
+export function shuffle(array: number[]) {
+  for (
+    let i = 0, length = array.length, swap = 0, temp = null;
+    i < length;
+    i++
+  ) {
+    swap = Math.floor(Math.random() * (i + 1));
+    temp = array[swap];
+    array[swap] = array[i];
+    array[i] = temp;
+  }
+
+  return array;
 }
 
 export function capitalize(s: string): string {

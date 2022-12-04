@@ -1,3 +1,8 @@
+import {
+  captureException,
+  init,
+} from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
+
 import { json, serve, validateRequest, verifySignature } from '../net.ts';
 
 import * as discord from '../discord.ts';
@@ -98,10 +103,17 @@ async function handler(request: Request): Promise<Response> {
     if (err?.response?.status === 404 || err?.message === '404') {
       return discord.Message.error('Found nothing matching that name!');
     }
-    return discord.Message.error(err);
+    captureException(err);
+    return discord.Message.error(
+      'An Internal Error occurred and was reported. Sorry for the inconvenience',
+    );
   }
 
   return discord.Message.error('bad request');
 }
+
+init({
+  dsn: Deno.env.get('SENTRY_DNS'),
+});
 
 serve(handler);

@@ -122,6 +122,12 @@ export type Character = {
   };
 };
 
+type Pull = {
+  media: Media;
+  character: Character;
+  role: CHARACTER_ROLE;
+};
+
 export async function search(
   variables: { id?: number; search?: string },
 ): Promise<{ media?: Media; character?: Character }> {
@@ -248,4 +254,116 @@ export async function getNextAiring(
   `;
 
   return (await client.request(query, variables)).Media;
+}
+
+export async function pool(
+  variables: {
+    popularity_greater: number;
+    popularity_lesser?: number;
+    role: CHARACTER_ROLE;
+  },
+): Promise<Pull[]> {
+  const results: {
+    [character_id: number]: Pull;
+  } = {};
+
+  // TODO FIXME only requests the first page
+
+  const query = gql`
+    query ($page: Int = 1, $role: CharacterRole!, $popularity_greater: Int!, $popularity_lesser: Int) {
+      Page(page: $page, perPage: 50) {
+        pageInfo {
+          total
+          currentPage
+          lastPage
+          hasNextPage
+          perPage
+        }
+        # fixed to query characters that only appear in anime, movies, and manga
+        media(popularity_greater: $popularity_greater, popularity_lesser: $popularity_lesser, sort: [POPULARITY], format_in: [TV, MOVIE, MANGA]) {
+          # characters after 50 are mostly irrelevant (safe to ignore if they exists)
+          characters(sort: RELEVANCE, role: $role, page: 1, perPage: 50) {
+            nodes {
+              # the character themselves
+              id
+              age
+              gender
+              description
+              name {
+                full
+                native
+                alternative
+                alternativeSpoiler
+              }
+              image {
+                large
+              }
+              media(sort: POPULARITY_DESC) { # always return the hightest popularity first
+                edges {
+                  characterRole # the character role in the media
+                  node {
+                    # the media itself
+                    type
+                    format
+                    popularity
+                    title {
+                      romaji
+                      english
+                      native
+                    }
+                    coverImage {
+                      extraLarge
+                      large
+                      color
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const response: {
+    page: PageInfo;
+    media: {
+      characters: {
+        nodes: Character[];
+      };
+    }[];
+  } = (await client.request(query, variables)).Page;
+
+  // query asks for media with popularity_greater than variable
+  // but a character in that media might be the MAIN in a [more] popular alterative media
+  // therefor we ignore the parent media and only operate
+  // on the list of characters it has and their media list
+
+  // the parent media is only used as a wrapper to get list of popular media
+
+  response.media!.forEach(({ characters }) => {
+    characters.nodes.forEach((character) => {
+      const {
+        node,
+        characterRole,
+        // the first [0] is always the most popular media
+        // the character stars in (according to the query)
+      } = character.media?.edges![0]!;
+
+      // only overwrite the entry if we found the character
+      // in a media with higher popularity than existing
+      if (results[character.id!]?.media?.popularity! >= node.popularity!) {
+        return;
+      }
+
+      results[character.id!] = {
+        character,
+        media: node!,
+        role: characterRole!,
+      };
+    });
+  });
+
+  return Object.values(results);
 }

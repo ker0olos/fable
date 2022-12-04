@@ -1,7 +1,5 @@
 import { json, serve, validateRequest, verifySignature } from '../net.ts';
 
-import { random } from '../utils.ts';
-
 import * as discord from '../discord.ts';
 
 const APP_PUBLIC_KEY =
@@ -74,6 +72,10 @@ async function handler(request: Request): Promise<Response> {
   }
 
   return discord.Message.error('bad request');
+}
+
+function random(min: number, max: number) {
+  return Math.floor((Math.random()) * (max - min + 1)) + min;
 }
 
 function roll({ amount }: { amount: number }) {
