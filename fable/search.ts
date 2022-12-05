@@ -96,7 +96,7 @@ export async function search(
       .setImage(
         media.coverImage?.extraLarge,
       )
-      .setFooter(titles.join(' - ')),
+      .setFooter(media.title.native),
   );
 
   media.characters?.edges!.slice(0, 2).forEach((character) => {

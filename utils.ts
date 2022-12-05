@@ -12,7 +12,7 @@ export function hexToInt(hex?: string): number | undefined {
   return parseInt(`${R}${G}${B}`, 16);
 }
 
-export function shuffle(array: number[]) {
+export function shuffle<T>(array: T[]) {
   for (
     let i = 0, length = array.length, swap = 0, temp = null;
     i < length;
@@ -52,7 +52,7 @@ export function decodeDescription(s?: string): string | undefined {
   s = s.replace(/<b.*?>((.|\n)*?)<\/b>/g, '**$1**');
   s = s.replace(/<strike.*?>((.|\n)*?)<\/strike>/g, '~~$1~~');
 
-  s = s.replaceAll(/<br>|<hr>|<\/br>|<\/hr>/gm, '\n');
+  s = s.replaceAll(/<br>|<\/br>|<br\/>|<hr>|<\/hr>/gm, '\n');
 
   s = s.replace(/<a.*?href="(.*?)".*?>(.*?)<\/a>/g, '[$2]($1)');
 
