@@ -11,6 +11,8 @@ import { translate } from './translate.ts';
 import { nextEpisode } from './schedule.ts';
 import { search, songs } from './search.ts';
 
+import * as gacha from './gacha.ts';
+
 const APP_PUBLIC_KEY =
   '90e9e47e0f67aa24cb058b592ae359c54c42709919e2f0bb73ef388e6c9a1152';
 
@@ -42,7 +44,7 @@ async function handler(request: Request): Promise<Response> {
 
   const {
     type = 0,
-    // token = '',
+    token = '',
     // message = { embeds: [] },
     data = { options: [] },
     // member = { user: { id: '' } },
@@ -79,16 +81,12 @@ async function handler(request: Request): Promise<Response> {
         case 'next_episode':
           return await nextEpisode({ search: data.options[0].value });
         case 'gacha': {
+          // gacha.testUpdateRoll(token);
+          // return gacha.loading();
           const message: discord.Message = new discord.Message(
             discord.MESSAGE_TYPE.NEW,
           );
-          message.addEmbed(
-            new discord.Embed()
-              .setColor('#feb500')
-              .setImage(
-                'https://i.imgur.com/E2imRSx.gif',
-              ),
-          );
+          message.setContent(token);
           return message.json();
         }
         // throw new Error('Unimplemented');
