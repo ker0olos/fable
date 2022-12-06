@@ -54,9 +54,9 @@ async function handler(request: Request): Promise<Response> {
         case 'roll': {
           const rolledNumber = roll({ amount: data.options[0].value });
 
-          const message: discord.Message = new discord.Message(
-            discord.MESSAGE_TYPE.NEW,
-          ).setContent(`<@${member.user.id}> ${rolledNumber}`);
+          const message = new discord.Message().setContent(
+            `<@${member.user.id}> ${rolledNumber}`,
+          );
 
           return message.json();
         }

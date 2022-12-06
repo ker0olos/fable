@@ -81,15 +81,9 @@ async function handler(request: Request): Promise<Response> {
         case 'next_episode':
           return await nextEpisode({ search: data.options[0].value });
         case 'gacha': {
-          // gacha.testUpdateRoll(token);
-          // return gacha.loading();
-          const message: discord.Message = new discord.Message(
-            discord.MESSAGE_TYPE.NEW,
-          );
-          message.setContent(token);
-          return message.json();
+          gacha.testPatch(token);
+          return gacha.spinner();
         }
-        // throw new Error('Unimplemented');
         default:
           break;
       }

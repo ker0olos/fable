@@ -2,6 +2,10 @@ import { json } from './net.ts';
 
 import { decodeDescription, hexToInt } from './utils.ts';
 
+const APP_ID = Deno.env.get('APP_ID');
+
+const API = `https://discord.com/api/v8`;
+
 export enum MESSAGE_TYPE {
   NEW = 4,
   PING = 1,
@@ -52,8 +56,7 @@ export class Component {
     return this;
   }
 
-  // deno-lint-ignore no-explicit-any
-  _done(): any {
+  _done(): unknown {
     return this._data;
   }
 }
@@ -152,8 +155,7 @@ export class Embed {
     return this;
   }
 
-  // deno-lint-ignore no-explicit-any
-  _done(): any {
+  _done(): unknown {
     return {
       ...this._data,
       type: 2,
@@ -162,16 +164,14 @@ export class Embed {
 }
 
 export class Message {
-  _type: MESSAGE_TYPE;
+  _type?: MESSAGE_TYPE;
   _data: {
     content?: string;
-    // deno-lint-ignore no-explicit-any
-    embeds: any[];
-    // deno-lint-ignore no-explicit-any
-    components: any[];
+    embeds: unknown[];
+    components: unknown[];
   };
 
-  constructor(type: MESSAGE_TYPE) {
+  constructor(type: MESSAGE_TYPE = MESSAGE_TYPE.NEW) {
     this._type = type;
     this._data = {
       embeds: [],
@@ -209,6 +209,22 @@ export class Message {
         content: this._data.content,
         components: this._data.components,
       },
+    });
+  }
+
+  async patch(token: string): Promise<Response> {
+    const url = `${API}/webhooks/${APP_ID}/${token}/messages/@original`;
+
+    return await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        embeds: this._data.embeds,
+        content: this._data.content,
+        components: this._data.components,
+      }),
     });
   }
 

@@ -11,9 +11,9 @@ export async function translate(
     throw new Error('404');
   }
 
-  const message: discord.Message = new discord.Message(
-    discord.MESSAGE_TYPE.NEW,
-  ).setContent(`${results.media.title[lang]}`);
+  const message = new discord.Message().setContent(
+    `${results.media.title[lang]}`,
+  );
 
   return message.json();
 }

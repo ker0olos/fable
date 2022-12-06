@@ -39,7 +39,7 @@ export async function search(
     media?.title.native,
   ].filter(Boolean);
 
-  const message: discord.Message = new discord.Message(type);
+  const message = new discord.Message(type);
 
   const characterExactMatch = [
     character?.name.full,
@@ -187,7 +187,6 @@ export async function songs(
   { search }: {
     search?: string;
   },
-  type = discord.MESSAGE_TYPE.NEW,
 ) {
   const { media } = await anilist.search({ search });
 
@@ -195,7 +194,7 @@ export async function songs(
     throw new Error('404');
   }
 
-  const message: discord.Message = new discord.Message(type);
+  const message = new discord.Message();
 
   media.relations?.edges.forEach((relation) => {
     if (relation.node.format === anilist.FORMAT.MUSIC) {
