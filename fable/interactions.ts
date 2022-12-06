@@ -78,8 +78,20 @@ async function handler(request: Request): Promise<Response> {
           });
         case 'next_episode':
           return await nextEpisode({ search: data.options[0].value });
-        case 'gacha':
-          throw new Error('Unimplemented');
+        case 'gacha': {
+          const message: discord.Message = new discord.Message(
+            discord.MESSAGE_TYPE.NEW,
+          );
+          message.addEmbed(
+            new discord.Embed()
+              .setColor('#feb500')
+              .setImage(
+                'https://i.imgur.com/E2imRSx.gif',
+              ),
+          );
+          return message.json();
+        }
+        // throw new Error('Unimplemented');
         default:
           break;
       }
