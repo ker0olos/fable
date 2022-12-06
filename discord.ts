@@ -4,7 +4,7 @@ import { decodeDescription, hexToInt } from './utils.ts';
 
 const APP_ID = Deno.env.get('APP_ID');
 
-const API = `https://discord.com/api/v8`;
+const API = `https://discord.com/api/v10`;
 
 export enum MESSAGE_TYPE {
   NEW = 4,

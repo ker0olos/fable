@@ -81,7 +81,7 @@ async function handler(request: Request): Promise<Response> {
         case 'next_episode':
           return await nextEpisode({ search: data.options[0].value });
         case 'gacha': {
-          gacha.testPatch(token);
+          // TODO
           return gacha.spinner();
         }
         default:

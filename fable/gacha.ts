@@ -146,13 +146,6 @@ export function spinner() {
   return message.json();
 }
 
-export function testPatch(token: string) {
-  setTimeout(async () => {
-    const message = new discord.Message().setContent('Updated After 1500ms');
-    await message.patch(token);
-  }, 1500);
-}
-
 // await roll('');
 
 // for (let i = 0; i < 20; i++) {
