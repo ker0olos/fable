@@ -344,12 +344,18 @@ export async function pool(
 
   response.media!.forEach(({ characters }) => {
     characters.nodes.forEach((character) => {
+      // some characters can be MAIN in their own spinoffs series
+      // prefer less popular series if character is MAIN
+      const mainIndex = character.media?.edges!.findIndex((edges) =>
+        edges.characterRole === CHARACTER_ROLE.MAIN
+      )!;
+
       const {
         node,
         characterRole,
         // the first [0] is always the most popular media
         // the character stars in (according to the query)
-      } = character.media?.edges![0]!;
+      } = character.media?.edges![mainIndex !== -1 ? mainIndex : 0]!;
 
       // only overwrite the entry if we found the character
       // in a media with higher popularity than existing
