@@ -76,9 +76,8 @@ async function handler(request: Request): Promise<Response> {
           });
         case 'next_episode':
           return await nextEpisode({ search: options!['anime'].value });
-        case 'gacha': {
+        case 'gacha':
           return gacha.start();
-        }
         default:
           break;
       }

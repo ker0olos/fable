@@ -350,7 +350,7 @@ export class Interaction<Options> {
       case InteractionType.SlashCommandAutocomplete: {
         this.name = data!.name;
         this.options = {};
-        data!.options!.forEach((option) => {
+        data!.options?.forEach((option) => {
           this.options![option.name] = {
             type: option.type,
             value: option.value as Options,
