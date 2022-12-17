@@ -31,31 +31,22 @@ async function handler(request: Request): Promise<Response> {
     );
   }
 
-  const {
-    type = 0,
-    // token = '',
-    data = { options: [] },
-    member = { user: { id: '' } },
-  } = JSON.parse(body);
+  const { name, type, member, options } = new discord.Interaction<number>(body);
 
-  if (type === 1) {
+  if (type === discord.InteractionType.Ping) {
     return discord.Message.pong();
   }
 
   // console.log(type, data, token, member);
 
   try {
-    if (type === 2) {
-      //
-      // SLASH COMMANDS
-      //
-
-      switch (data.name) {
+    if (type === discord.InteractionType.SlashCommand) {
+      switch (name) {
         case 'roll': {
-          const rolledNumber = roll({ amount: data.options[0].value });
+          const rolledNumber = roll({ amount: options!['amount'].value });
 
           const message = new discord.Message().setContent(
-            `<@${member.user.id}> ${rolledNumber}`,
+            `<@${member!.user.id}> ${rolledNumber}`,
           );
 
           return message.json();
@@ -65,9 +56,6 @@ async function handler(request: Request): Promise<Response> {
       }
     }
   } catch (err) {
-    if (err?.response?.status === 404 || err?.message === '404') {
-      return discord.Message.error('Found nothing matching that name!');
-    }
     return discord.Message.error(err);
   }
 

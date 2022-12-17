@@ -25,7 +25,7 @@ export async function search(
     id?: number;
     search?: string;
   },
-  type = discord.MESSAGE_TYPE.NEW,
+  type = discord.MessageType.New,
 ) {
   const { media, character } = await anilist.search(id ? { id } : { search });
 
@@ -67,7 +67,7 @@ export async function search(
       ].filter(Boolean);
 
       const component = new discord.Component()
-        .setStyle(discord.BUTTON_COLOR.GREY)
+        .setStyle(discord.ButtonColor.Grey)
         .setLabel(`${titles.shift()} (${capitalize(media.type)})`)
         .setId(
           `id:${media.id!}`,
@@ -130,7 +130,7 @@ export async function search(
 
   media.relations?.edges.forEach((relation) => {
     const component = new discord.Component()
-      .setStyle(discord.BUTTON_COLOR.GREY);
+      .setStyle(discord.ButtonColor.Grey);
 
     switch (relation.relationType) {
       case anilist.RELATION_TYPE.PREQUEL:

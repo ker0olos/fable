@@ -6,36 +6,55 @@ const APP_ID = Deno.env.get('APP_ID');
 
 const API = `https://discord.com/api/v10`;
 
-export enum MESSAGE_TYPE {
-  NEW = 4,
-  PING = 1,
-  UPDATE = 7,
-  LOADING = 5,
+export enum MessageType {
+  New = 4,
+  Ping = 1,
+  Update = 7,
+  Loading = 5,
 }
 
-export enum BUTTON_COLOR {
-  BLUE = 1,
-  GREY = 2,
-  GREEN = 3,
-  RED = 4,
+export enum InteractionType {
+  Ping = 1,
+  SlashCommand = 2,
+  Component = 3,
+  SlashCommandAutocomplete = 4,
+  Modal = 5,
+}
+
+export enum ComponentType {
+  ActionRow = 1,
+  Button = 2,
+  StringSelect = 3,
+  TextInput = 4,
+  UserSelect = 5,
+  RoleSelect = 6,
+  MentionableSelect = 7,
+  ChannelSelect = 8,
+}
+
+export enum ButtonColor {
+  Blue = 1,
+  Grey = 2,
+  Green = 3,
+  Red = 4,
 }
 
 export class Component {
   _data: {
     type: number;
     custom_id?: string;
-    style?: BUTTON_COLOR;
+    style?: ButtonColor;
     label?: string;
     url?: string;
   };
 
-  constructor() {
+  constructor(type: ComponentType = ComponentType.Button) {
     this._data = {
-      type: 2,
+      type,
     };
   }
 
-  setStyle(style: BUTTON_COLOR) {
+  setStyle(style: ButtonColor) {
     this._data.style = style;
     return this;
   }
@@ -164,14 +183,14 @@ export class Embed {
 }
 
 export class Message {
-  _type?: MESSAGE_TYPE;
+  _type?: MessageType;
   _data: {
     content?: string;
     embeds: unknown[];
     components: unknown[];
   };
 
-  constructor(type: MESSAGE_TYPE = MESSAGE_TYPE.NEW) {
+  constructor(type: MessageType = MessageType.New) {
     this._type = type;
     this._data = {
       embeds: [],
@@ -237,10 +256,116 @@ export class Message {
   // deno-lint-ignore no-explicit-any
   static error(err: any) {
     return json({
-      type: MESSAGE_TYPE.NEW,
+      type: MessageType.New,
       data: {
         content: err?.message ?? err,
       },
     });
+  }
+}
+
+type User = {
+  id: string;
+  username: string;
+  discriminator: string;
+  avatar: string;
+  banner?: string;
+};
+
+export class Interaction<Options> {
+  id: string;
+  token: string;
+  type: InteractionType;
+
+  guild_id?: string;
+  channel_id?: string;
+
+  message?: unknown;
+  data?: unknown;
+
+  name?: string;
+  options?: {
+    [key: string]: {
+      type: number;
+      value: Options;
+    };
+  };
+
+  customType?: string;
+  customValue?: string;
+
+  /** user is sent when invoked in a DM */
+  // user?: User;
+
+  /** member is sent when the interaction is invoked in a guild */
+  member?: {
+    avatar: string;
+    user: User;
+  };
+
+  /** available on all interaction types except PING */
+  locale?: string;
+
+  /** guild's preferred locale (if invoked in a guild) */
+  guild_locale?: string;
+
+  constructor(body: string) {
+    const obj = JSON.parse(body);
+
+    this.id = obj.id;
+    this.type = obj.type;
+    this.token = obj.token;
+
+    this.guild_id = obj.guild_id;
+    this.channel_id = obj.channel_id;
+
+    const data: {
+      id: string;
+      name: string;
+      type: string;
+      target_id?: string;
+      resolved?: unknown[];
+      options?: {
+        type: number;
+        name: string;
+        focused: boolean;
+        value: unknown;
+      }[];
+    } & {
+      custom_id: string;
+      component_type: ComponentType;
+      values?: unknown[];
+    } = this.data = obj.data;
+
+    // this.message = obj?.message
+
+    // this.user = obj.user;
+    this.member = obj.member;
+
+    this.locale = obj.locale;
+    this.guild_locale = obj.guild_locale;
+
+    switch (this.type) {
+      case InteractionType.SlashCommand:
+      case InteractionType.SlashCommandAutocomplete: {
+        this.name = data!.name;
+        this.options = {};
+        data!.options!.forEach((option) => {
+          this.options![option.name] = {
+            type: option.type,
+            value: option.value as Options,
+          };
+        });
+        break;
+      }
+      case InteractionType.Component: {
+        const custom = data!.custom_id.split(':');
+        this.customType = custom[0];
+        this.customValue = custom[1];
+        break;
+      }
+      default:
+        break;
+    }
   }
 }

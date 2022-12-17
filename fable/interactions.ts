@@ -43,62 +43,55 @@ async function handler(request: Request): Promise<Response> {
   }
 
   const {
-    type = 0,
-    token = '',
-    // message = { embeds: [] },
-    data = { options: [] },
-    // member = { user: { id: '' } },
-  } = JSON.parse(body);
+    name,
+    type,
+    options,
+    customType,
+    customValue,
+  } = new discord.Interaction<string>(body);
 
-  if (type === 1) {
+  if (type === discord.InteractionType.Ping) {
     return discord.Message.pong();
   }
 
-  // console.log(type, data);
+  // console.log(type, data, token, member);
 
   try {
-    if (type === 2) {
-      //
-      // SLASH COMMANDS
-      //
-
-      switch (data.name) {
+    if (type === discord.InteractionType.SlashCommand) {
+      switch (name) {
         case 'native':
         case 'english':
         case 'romaji':
           return await translate({
-            search: data.options[0].value,
-            lang: data.name,
+            lang: name,
+            search: options!['title'].value,
           });
         case 'search':
           return await search({
-            search: data.options[0].value,
+            search: options!['query'].value,
           });
         case 'songs':
           return await songs({
-            search: data.options[0].value,
+            search: options!['anime'].value,
           });
         case 'next_episode':
-          return await nextEpisode({ search: data.options[0].value });
+          return await nextEpisode({ search: options!['anime'].value });
         case 'gacha': {
-          // TODO
-          return gacha.spinner();
+          return gacha.start();
         }
         default:
           break;
       }
-    } else if (type === 3) {
+    } else if (type === discord.InteractionType.Component) {
       //
       // COMPONENTS
       //
 
-      const [type, id] = data.custom_id.split(':');
-
-      switch (type) {
+      switch (customType) {
         case 'id':
           return await search({
-            id: parseInt(id),
-          }, discord.MESSAGE_TYPE.UPDATE);
+            id: parseInt(customValue!),
+          }, discord.MessageType.Update);
         default:
           break;
       }
@@ -107,7 +100,9 @@ async function handler(request: Request): Promise<Response> {
     if (err?.response?.status === 404 || err?.message === '404') {
       return discord.Message.error('Found nothing matching that name!');
     }
+
     captureException(err);
+
     return discord.Message.error(
       'An Internal Error occurred and was reported. Sorry for the inconvenience',
     );

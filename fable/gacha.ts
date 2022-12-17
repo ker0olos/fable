@@ -134,7 +134,7 @@ function rng<T>(dict: { [chance: number]: T }): T {
   return pool[_[0]];
 }
 
-export function spinner() {
+export function start() {
   const message = new discord.Message()
     .addEmbed(
       new discord.Embed()
@@ -143,8 +143,18 @@ export function spinner() {
           'https://i.imgur.com/E2imRSx.gif',
         ),
     );
+
+  // TODO
+
   return message.json();
 }
+
+// export function testPatch(token: string) {
+//   setTimeout(async () => {
+//     const message = new discord.Message().setContent('Updated After 1500ms');
+//     await message.patch(token);
+//   }, 1500);
+// }
 
 // await roll('');
 
