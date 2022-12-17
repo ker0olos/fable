@@ -1,5 +1,4 @@
 import os
-from time import sleep
 
 import requests
 
@@ -21,7 +20,7 @@ GUILD_ID = "992416714497212518"
 BOT_TOKEN = os.getenv("CATS_BOT_TOKEN")
 
 # guild commands update instantly
-url = f"https://discord.com/api/v8/applications/{APP_ID}/guilds/{GUILD_ID}/commands"
+url = f"https://discord.com/api/v10/applications/{APP_ID}/guilds/{GUILD_ID}/commands"
 
 # global commands are cached and only update every hour
 # url = f"https://discord.com/api/v8/applications/{APP_ID}/commands"
@@ -33,13 +32,10 @@ def print_commands():
 
 
 def set_commands(commands):
-    for command in commands:
-        response = requests.post(
-            url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=command
-        )
-        print(response.json())
-        # avoids the rate limit
-        sleep(1)
+    response = requests.put(
+        url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=commands
+    )
+    print(response.json())
 
 
 def delete_command(command_id):

@@ -11,9 +11,7 @@ export async function nextEpisode({ search }: { search: string }) {
     anime.title.native,
   ].filter(Boolean);
 
-  const message: discord.Message = new discord.Message(
-    discord.MESSAGE_TYPE.NEW,
-  );
+  const message = new discord.Message();
 
   switch (anime.status) {
     case anilist.STATUS.RELEASING:

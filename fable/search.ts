@@ -25,7 +25,7 @@ export async function search(
     id?: number;
     search?: string;
   },
-  type = discord.MESSAGE_TYPE.NEW,
+  type = discord.MessageType.New,
 ) {
   const { media, character } = await anilist.search(id ? { id } : { search });
 
@@ -39,49 +39,49 @@ export async function search(
     media?.title.native,
   ].filter(Boolean);
 
-  const message: discord.Message = new discord.Message(type);
+  const message = new discord.Message(type);
 
-  const characterExactMatch = [
-    character?.name.full,
-    character?.name.native!,
-    ...character?.name.alternative!,
-    ...character?.name.alternativeSpoiler!,
-  ].some((name) => name!.toLowerCase() === search?.toLowerCase());
+  // const characterExactMatch = [
+  //   character?.name.full,
+  //   character?.name.native!,
+  //   ...character?.name.alternative!,
+  //   ...character?.name.alternativeSpoiler!,
+  // ].some((name) => name!.toLowerCase() === search?.toLowerCase());
 
-  const mediaExactMatch = titles.some((title) =>
-    title?.toLowerCase() === search?.toLowerCase()
-  );
+  // const mediaExactMatch = titles.some((title) =>
+  //   title?.toLowerCase() === search?.toLowerCase()
+  // );
 
-  // if search is exact match for a character's name
-  // respond with only the character embed
-  if (!mediaExactMatch && characterExactMatch) {
-    const embed = embedCharacter(media, character);
+  // // if search is exact match for a character's name
+  // // respond with only the character embed
+  // if (!mediaExactMatch && characterExactMatch) {
+  //   const embed = embedCharacter(media, character);
 
-    const group: discord.Component[] = [];
+  //   const group: discord.Component[] = [];
 
-    character?.media?.nodes!.forEach((media) => {
-      const titles = [
-        media.title.english,
-        media.title.romaji,
-        media.title.native,
-      ].filter(Boolean);
+  //   character?.media?.nodes!.forEach((media) => {
+  //     const titles = [
+  //       media.title.english,
+  //       media.title.romaji,
+  //       media.title.native,
+  //     ].filter(Boolean);
 
-      const component = new discord.Component()
-        .setStyle(discord.BUTTON_COLOR.GREY)
-        .setLabel(`${titles.shift()} (${capitalize(media.type)})`)
-        .setId(
-          `id:${media.id!}`,
-        );
+  //     const component = new discord.Component()
+  //       .setStyle(discord.ButtonColor.Grey)
+  //       .setLabel(`${titles.shift()} (${capitalize(media.type)})`)
+  //       .setId(
+  //         `id:${media.id!}`,
+  //       );
 
-      group.push(component);
-    });
+  //     group.push(component);
+  //   });
 
-    message.addEmbed(embed);
+  //   message.addEmbed(embed);
 
-    message.addComponents(group);
+  //   message.addComponents(group);
 
-    return message.json();
-  }
+  //   return message.json();
+  // }
 
   if (!media) {
     throw new Error('404');
@@ -130,7 +130,7 @@ export async function search(
 
   media.relations?.edges.forEach((relation) => {
     const component = new discord.Component()
-      .setStyle(discord.BUTTON_COLOR.GREY);
+      .setStyle(discord.ButtonColor.Grey);
 
     switch (relation.relationType) {
       case anilist.RELATION_TYPE.PREQUEL:
@@ -147,7 +147,7 @@ export async function search(
       }
       case anilist.RELATION_TYPE.ADAPTATION: {
         component
-          .setLabel(capitalize(relation.node.type!))
+          .setLabel(capitalize(relation.node.format!))
           .setId(
             `id:${relation.node.id!}`,
           );
@@ -187,7 +187,6 @@ export async function songs(
   { search }: {
     search?: string;
   },
-  type = discord.MESSAGE_TYPE.NEW,
 ) {
   const { media } = await anilist.search({ search });
 
@@ -195,7 +194,7 @@ export async function songs(
     throw new Error('404');
   }
 
-  const message: discord.Message = new discord.Message(type);
+  const message = new discord.Message();
 
   media.relations?.edges.forEach((relation) => {
     if (relation.node.format === anilist.FORMAT.MUSIC) {
@@ -211,7 +210,7 @@ export async function songs(
   });
 
   if (message._data.components.length <= 0) {
-    throw new Error('Couldn\'t find any songs for that anime!');
+    throw new Error('404');
   }
 
   return message.json();
