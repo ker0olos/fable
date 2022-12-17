@@ -100,10 +100,14 @@ async function handler(request: Request): Promise<Response> {
       return discord.Message.error('Found nothing matching that name!');
     }
 
-    captureException(err);
+    captureException(err, {
+      extra: {
+        body,
+      },
+    });
 
     return discord.Message.error(
-      'An Internal Error occurred and was reported. Sorry for the inconvenience',
+      'An Internal Error occurred and was reported. Sorry for the inconvenience!',
     );
   }
 

@@ -41,47 +41,47 @@ export async function search(
 
   const message = new discord.Message(type);
 
-  const characterExactMatch = [
-    character?.name.full,
-    character?.name.native!,
-    ...character?.name.alternative!,
-    ...character?.name.alternativeSpoiler!,
-  ].some((name) => name!.toLowerCase() === search?.toLowerCase());
+  // const characterExactMatch = [
+  //   character?.name.full,
+  //   character?.name.native!,
+  //   ...character?.name.alternative!,
+  //   ...character?.name.alternativeSpoiler!,
+  // ].some((name) => name!.toLowerCase() === search?.toLowerCase());
 
-  const mediaExactMatch = titles.some((title) =>
-    title?.toLowerCase() === search?.toLowerCase()
-  );
+  // const mediaExactMatch = titles.some((title) =>
+  //   title?.toLowerCase() === search?.toLowerCase()
+  // );
 
-  // if search is exact match for a character's name
-  // respond with only the character embed
-  if (!mediaExactMatch && characterExactMatch) {
-    const embed = embedCharacter(media, character);
+  // // if search is exact match for a character's name
+  // // respond with only the character embed
+  // if (!mediaExactMatch && characterExactMatch) {
+  //   const embed = embedCharacter(media, character);
 
-    const group: discord.Component[] = [];
+  //   const group: discord.Component[] = [];
 
-    character?.media?.nodes!.forEach((media) => {
-      const titles = [
-        media.title.english,
-        media.title.romaji,
-        media.title.native,
-      ].filter(Boolean);
+  //   character?.media?.nodes!.forEach((media) => {
+  //     const titles = [
+  //       media.title.english,
+  //       media.title.romaji,
+  //       media.title.native,
+  //     ].filter(Boolean);
 
-      const component = new discord.Component()
-        .setStyle(discord.ButtonColor.Grey)
-        .setLabel(`${titles.shift()} (${capitalize(media.type)})`)
-        .setId(
-          `id:${media.id!}`,
-        );
+  //     const component = new discord.Component()
+  //       .setStyle(discord.ButtonColor.Grey)
+  //       .setLabel(`${titles.shift()} (${capitalize(media.type)})`)
+  //       .setId(
+  //         `id:${media.id!}`,
+  //       );
 
-      group.push(component);
-    });
+  //     group.push(component);
+  //   });
 
-    message.addEmbed(embed);
+  //   message.addEmbed(embed);
 
-    message.addComponents(group);
+  //   message.addComponents(group);
 
-    return message.json();
-  }
+  //   return message.json();
+  // }
 
   if (!media) {
     throw new Error('404');
@@ -147,7 +147,7 @@ export async function search(
       }
       case anilist.RELATION_TYPE.ADAPTATION: {
         component
-          .setLabel(capitalize(relation.node.type!))
+          .setLabel(capitalize(relation.node.format!))
           .setId(
             `id:${relation.node.id!}`,
           );
@@ -210,7 +210,7 @@ export async function songs(
   });
 
   if (message._data.components.length <= 0) {
-    throw new Error('Couldn\'t find any songs for that anime!');
+    throw new Error('404');
   }
 
   return message.json();
