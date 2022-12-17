@@ -1,5 +1,4 @@
 import os
-from time import sleep
 
 import requests
 
@@ -33,20 +32,16 @@ def print_commands():
 
 
 def set_commands(commands):
-    for command in commands:
-        response = requests.post(
-            url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=command
-        )
-        print(response.json())
-        # avoids the rate limit
-        sleep(5)
+    response = requests.put(
+        url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=commands
+    )
+    print(response.json())
 
 
 def delete_command(command_id):
     response = requests.delete(
         f"{url}/{command_id}", headers={"Authorization": f"Bot {BOT_TOKEN}"}
     )
-
     print(f'deleted command "{command_id}": {response.status_code}')
 
 
@@ -59,19 +54,20 @@ set_commands(
                 {
                     "type": STRING,
                     "name": "query",
-                    "description": "Search for an anime/manga",
+                    "description": "The title for an anime/manga",
                     "required": True,
                 }
             ],
         },
+        {"type": 3, "name": "Add Sauce"},
         {
             "name": "songs",
             "description": "Search for the theme songs of an anime",
             "options": [
                 {
                     "type": STRING,
-                    "name": "anime",
-                    "description": "Approx of the anime name",
+                    "name": "query",
+                    "description": "The title of an anime/manga",
                     "required": True,
                 }
             ],
@@ -83,7 +79,7 @@ set_commands(
                 {
                     "type": STRING,
                     "name": "anime",
-                    "description": "Approx of the anime name",
+                    "description": "The title of an anime",
                     "required": True,
                 }
             ],
@@ -100,7 +96,7 @@ set_commands(
                 {
                     "type": STRING,
                     "name": "title",
-                    "description": "Approx of the anime/manga name in romaji or native",
+                    "description": "The title of an anime/manga name in romaji or native",
                     "required": True,
                 }
             ],
@@ -112,7 +108,7 @@ set_commands(
                 {
                     "type": STRING,
                     "name": "title",
-                    "description": "Approx of the anime/manga name in english or native",
+                    "description": "The title of an anime/manga name in english or native",
                     "required": True,
                 }
             ],
@@ -124,7 +120,7 @@ set_commands(
                 {
                     "type": STRING,
                     "name": "title",
-                    "description": "Approx of the anime/manga name in english or romaji",
+                    "description": "The title of an anime/manga name in english or romaji",
                     "required": True,
                 }
             ],

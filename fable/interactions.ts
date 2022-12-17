@@ -72,8 +72,10 @@ async function handler(request: Request): Promise<Response> {
           });
         case 'songs':
           return await songs({
-            search: options!['anime'].value,
+            search: options!['query'].value,
           });
+        case 'add_sauce':
+          return new discord.Message().setContent('Unimplemented').json();
         case 'next_episode':
           return await nextEpisode({ search: options!['anime'].value });
         case 'gacha':

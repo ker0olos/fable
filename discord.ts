@@ -7,10 +7,12 @@ const APP_ID = Deno.env.get('APP_ID');
 const API = `https://discord.com/api/v10`;
 
 export enum MessageType {
-  New = 4,
   Ping = 1,
-  Update = 7,
+  New = 4,
   Loading = 5,
+  Update = 7,
+  AutocompleteResult = 8,
+  Modal = 9,
 }
 
 export enum InteractionType {
@@ -188,6 +190,7 @@ export class Message {
     content?: string;
     embeds: unknown[];
     components: unknown[];
+    choices?: string[];
   };
 
   constructor(type: MessageType = MessageType.New) {
@@ -220,14 +223,27 @@ export class Message {
     return this;
   }
 
+  addChoices(...choices: string[]): Message {
+    if (choices.length > 0) {
+      this._type = MessageType.AutocompleteResult;
+      if (!this._data.choices) {
+        this._data.choices = [];
+      }
+      this._data.choices.push(...choices);
+    }
+    return this;
+  }
+
   json(): Response {
     return json({
       type: this._type,
-      data: {
-        embeds: this._data.embeds,
-        content: this._data.content,
-        components: this._data.components,
-      },
+      data: this._type === MessageType.AutocompleteResult
+        ? { choices: this._data.choices }
+        : {
+          embeds: this._data.embeds,
+          content: this._data.content,
+          components: this._data.components,
+        },
     });
   }
 
@@ -348,7 +364,7 @@ export class Interaction<Options> {
     switch (this.type) {
       case InteractionType.SlashCommand:
       case InteractionType.SlashCommandAutocomplete: {
-        this.name = data!.name;
+        this.name = data!.name.replaceAll(' ', '_').toLowerCase();
         this.options = {};
         data!.options?.forEach((option) => {
           this.options![option.name] = {

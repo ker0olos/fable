@@ -1,5 +1,4 @@
 import os
-from time import sleep
 
 import requests
 
@@ -33,13 +32,10 @@ def print_commands():
 
 
 def set_commands(commands):
-    for command in commands:
-        response = requests.post(
-            url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=command
-        )
-        print(response.json())
-        # avoids the rate limit
-        sleep(1)
+    response = requests.put(
+        url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=commands
+    )
+    print(response.json())
 
 
 def delete_command(command_id):
