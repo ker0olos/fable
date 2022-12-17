@@ -37,7 +37,7 @@ async function handler(request: Request): Promise<Response> {
     return discord.Message.pong();
   }
 
-  // console.log(type, data, token, member);
+  console.log(name, type, options);
 
   try {
     if (type === discord.InteractionType.SlashCommand) {
@@ -59,7 +59,7 @@ async function handler(request: Request): Promise<Response> {
     return discord.Message.error(err);
   }
 
-  return discord.Message.error('bad request');
+  return discord.Message.error('Unimplemented');
 }
 
 function random(min: number, max: number) {

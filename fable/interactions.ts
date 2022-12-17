@@ -54,7 +54,7 @@ async function handler(request: Request): Promise<Response> {
     return discord.Message.pong();
   }
 
-  // console.log(type, data, token, member);
+  console.log(name, type, options, customType, customValue);
 
   try {
     if (type === discord.InteractionType.SlashCommand) {
@@ -74,8 +74,6 @@ async function handler(request: Request): Promise<Response> {
           return await songs({
             search: options!['query'].value,
           });
-        case 'add_sauce':
-          return new discord.Message().setContent('Unimplemented').json();
         case 'next_episode':
           return await nextEpisode({ search: options!['anime'].value });
         case 'gacha':
@@ -113,7 +111,7 @@ async function handler(request: Request): Promise<Response> {
     );
   }
 
-  return discord.Message.error('bad request');
+  return discord.Message.error(`Unimplemented`);
 }
 
 init({
