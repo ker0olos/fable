@@ -40,20 +40,24 @@ async function handler(request: Request): Promise<Response> {
   console.log(name, type, options);
 
   try {
-    if (type === discord.InteractionType.SlashCommand) {
-      switch (name) {
-        case 'roll': {
-          const rolledNumber = roll({ amount: options!['amount'].value });
+    switch (type) {
+      case discord.InteractionType.Command:
+        switch (name) {
+          case 'roll': {
+            const rolledNumber = roll({ amount: options!['amount'].value });
 
-          const message = new discord.Message().setContent(
-            `<@${member!.user.id}> ${rolledNumber}`,
-          );
+            const message = new discord.Message().setContent(
+              `<@${member!.user.id}> ${rolledNumber}`,
+            );
 
-          return message.json();
+            return message.send();
+          }
+          default:
+            break;
         }
-        default:
-          break;
-      }
+        break;
+      default:
+        break;
     }
   } catch (err) {
     return discord.Message.error(err);

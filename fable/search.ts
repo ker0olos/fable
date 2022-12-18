@@ -25,7 +25,6 @@ export async function search(
     id?: number;
     search?: string;
   },
-  type = discord.MessageType.New,
 ) {
   const { media, character } = await anilist.search(id ? { id } : { search });
 
@@ -39,7 +38,7 @@ export async function search(
     media?.title.native,
   ].filter(Boolean);
 
-  const message = new discord.Message(type);
+  const message = new discord.Message();
 
   // const characterExactMatch = [
   //   character?.name.full,
@@ -67,7 +66,7 @@ export async function search(
   //     ].filter(Boolean);
 
   //     const component = new discord.Component()
-  //       .setStyle(discord.ButtonColor.Grey)
+  //       .setStyle(discord.ButtonStyle.Grey)
   //       .setLabel(`${titles.shift()} (${capitalize(media.type)})`)
   //       .setId(
   //         `id:${media.id!}`,
@@ -130,7 +129,7 @@ export async function search(
 
   media.relations?.edges.forEach((relation) => {
     const component = new discord.Component()
-      .setStyle(discord.ButtonColor.Grey);
+      .setStyle(discord.ButtonStyle.Grey);
 
     switch (relation.relationType) {
       case anilist.RELATION_TYPE.PREQUEL:
@@ -180,7 +179,7 @@ export async function search(
   message.addComponents(secondaryGroup);
   message.addComponents(additionalGroup);
 
-  return message.json();
+  return message;
 }
 
 export async function songs(
@@ -213,5 +212,5 @@ export async function songs(
     throw new Error('404');
   }
 
-  return message.json();
+  return message;
 }

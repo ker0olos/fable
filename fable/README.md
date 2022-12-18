@@ -1,4 +1,4 @@
-# [Fable](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
+# Fable
 
 ### A free, open-source alternative to Mudae
 

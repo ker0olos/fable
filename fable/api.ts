@@ -126,7 +126,42 @@ type Pull = {
   media: Media;
   character: Character;
   role: CHARACTER_ROLE;
+  rating: number;
 };
+
+function rate(role: CHARACTER_ROLE, popularity: number) {
+  if (role === CHARACTER_ROLE.BACKGROUND || popularity < 50_000) {
+    return 1;
+  }
+
+  if (popularity < 200_000) {
+    if (role === CHARACTER_ROLE.MAIN) {
+      return 3;
+    }
+
+    return 2;
+  }
+
+  if (popularity < 400_000) {
+    if (role === CHARACTER_ROLE.MAIN) {
+      return 4;
+    }
+
+    return 3;
+  }
+
+  if (popularity > 400_000) {
+    if (role === CHARACTER_ROLE.MAIN) {
+      return 5;
+    }
+
+    return 4;
+  }
+
+  throw new Error(
+    `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
+  );
+}
 
 export async function search(
   variables: { id?: number; search?: string },
@@ -367,6 +402,7 @@ export async function pool(
         character,
         media: node!,
         role: characterRole!,
+        rating: rate(characterRole!, node!.popularity!),
       };
     });
   });

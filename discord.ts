@@ -3,13 +3,13 @@ import { json } from './net.ts';
 import { decodeDescription, hexToInt } from './utils.ts';
 
 const APP_ID = Deno.env.get('APP_ID');
+// const BOT_TOKEN = Deno.env.get('BOT_TOKEN');
 
 const API = `https://discord.com/api/v10`;
 
 export enum MessageType {
   Ping = 1,
   New = 4,
-  Loading = 5,
   Update = 7,
   AutocompleteResult = 8,
   Modal = 9,
@@ -17,9 +17,9 @@ export enum MessageType {
 
 export enum InteractionType {
   Ping = 1,
-  SlashCommand = 2,
+  Command = 2,
   Component = 3,
-  SlashCommandAutocomplete = 4,
+  CommandAutocomplete = 4,
   Modal = 5,
 }
 
@@ -34,19 +34,150 @@ export enum ComponentType {
   ChannelSelect = 8,
 }
 
-export enum ButtonColor {
+export enum ButtonStyle {
   Blue = 1,
   Grey = 2,
   Green = 3,
   Red = 4,
 }
 
+export enum TextInputStyle {
+  Short = 1,
+  Multiline = 2,
+}
+
+export type User = {
+  id: string;
+  username: string;
+  discriminator: string;
+  avatar: string;
+  banner?: string;
+};
+
+export class Interaction<Options> {
+  id: string;
+  token: string;
+  type: InteractionType;
+
+  guildId?: string;
+  channelId?: string;
+  targetId?: string;
+
+  message?: unknown;
+  data?: unknown;
+
+  name?: string;
+  options?: {
+    [key: string]: {
+      type: number;
+      value: Options;
+    };
+  };
+
+  customType?: string;
+  customValues?: string[];
+
+  /** user is sent when invoked in a DM */
+  // user?: User;
+
+  /** member is sent when the interaction is invoked in a guild */
+  member?: {
+    avatar: string;
+    user: User;
+  };
+
+  /** available on all interaction types except PING */
+  locale?: string;
+
+  /** guild's preferred locale (if invoked in a guild) */
+  guildLocale?: string;
+
+  constructor(body: string) {
+    const obj = JSON.parse(body);
+    const data: {
+      id: string;
+      name: string;
+      type: string;
+      target_id?: string;
+      resolved?: unknown[];
+      options?: {
+        type: number;
+        name: string;
+        focused: boolean;
+        value: unknown;
+      }[];
+    } & { // Message Component
+      custom_id: string;
+      component_type: ComponentType;
+      values?: unknown[];
+    } & { // Modal Submit
+      custom_id: string;
+      components: { type: 1; components: unknown[] }[];
+    } = this.data = obj.data;
+
+    this.id = obj.id;
+    this.type = obj.type;
+    this.token = obj.token;
+
+    this.guildId = obj.guild_id;
+    this.channelId = obj.channel_id;
+
+    // this.user = obj.user;
+    // this.message = obj?.message
+    this.member = obj.member;
+
+    this.locale = obj.locale;
+    this.guildLocale = obj.guild_locale;
+
+    this.options = {};
+
+    switch (this.type) {
+      case InteractionType.Command:
+      case InteractionType.CommandAutocomplete: {
+        this.targetId = data!.target_id;
+        this.name = data!.name.replaceAll(' ', '_').toLowerCase();
+
+        data!.options?.forEach((option) => {
+          this.options![option.name] = {
+            type: option.type,
+            value: option.value as Options,
+          };
+        });
+
+        break;
+      }
+      case InteractionType.Modal:
+      case InteractionType.Component: {
+        const custom = data!.custom_id.split(':');
+
+        this.customType = custom[0];
+        this.customValues = custom.slice(1);
+
+        if (data.components) {
+          // deno-lint-ignore no-explicit-any
+          data.components[0].components.forEach((component: any) => {
+            this.options![component.custom_id] = {
+              type: component.type,
+              value: component.value as Options,
+            };
+          });
+        }
+
+        break;
+      }
+      default:
+        break;
+    }
+  }
+}
+
 export class Component {
   _data: {
     type: number;
     custom_id?: string;
-    style?: ButtonColor;
+    style?: ButtonStyle | TextInputStyle;
     label?: string;
+    placeholder?: string;
     url?: string;
   };
 
@@ -56,7 +187,12 @@ export class Component {
     };
   }
 
-  setStyle(style: ButtonColor) {
+  setId(id: string) {
+    this._data.custom_id = id;
+    return this;
+  }
+
+  setStyle(style: ButtonStyle | TextInputStyle) {
     this._data.style = style;
     return this;
   }
@@ -66,14 +202,15 @@ export class Component {
     return this;
   }
 
-  setUrl(url: string) {
-    this._data.url = url;
-    this._data.style = 5;
+  setPlaceholder(placeholder: string) {
+    this._data.type = ComponentType.TextInput;
+    this._data.placeholder = placeholder;
     return this;
   }
 
-  setId(id: string) {
-    this._data.custom_id = id;
+  setUrl(url: string) {
+    this._data.url = url;
+    this._data.style = 5;
     return this;
   }
 
@@ -190,7 +327,11 @@ export class Message {
     content?: string;
     embeds: unknown[];
     components: unknown[];
+    //
     choices?: string[];
+    //
+    title?: string;
+    custom_id?: string;
   };
 
   constructor(type: MessageType = MessageType.New) {
@@ -201,17 +342,33 @@ export class Message {
     };
   }
 
-  setContent(content: string): Message {
+  setType(type: MessageType) {
+    this._type = type;
+    return this;
+  }
+
+  setContent(content: string) {
     this._data.content = content;
     return this;
   }
 
-  addEmbed(embed: Embed): Message {
+  setId(id: string) {
+    this._data.custom_id = id;
+    return this;
+  }
+
+  setTitle(title: string) {
+    this._type = MessageType.Modal;
+    this._data.title = title;
+    return this;
+  }
+
+  addEmbed(embed: Embed) {
     this._data.embeds.push(embed._done());
     return this;
   }
 
-  addComponents(components: Component[]): Message {
+  addComponents(components: Component[]) {
     if (components.length > 0) {
       this._data.components.push({
         type: 1,
@@ -223,7 +380,7 @@ export class Message {
     return this;
   }
 
-  addChoices(...choices: string[]): Message {
+  addChoices(...choices: string[]) {
     if (choices.length > 0) {
       this._type = MessageType.AutocompleteResult;
       if (!this._data.choices) {
@@ -234,16 +391,32 @@ export class Message {
     return this;
   }
 
-  json(): Response {
-    return json({
-      type: this._type,
-      data: this._type === MessageType.AutocompleteResult
-        ? { choices: this._data.choices }
-        : {
+  send(): Response {
+    let data;
+
+    switch (this._type) {
+      case MessageType.AutocompleteResult:
+        data = { choices: this._data.choices };
+        break;
+      case MessageType.Modal:
+        data = {
+          title: this._data.title,
+          custom_id: this._data.custom_id,
+          components: this._data.components,
+        };
+        break;
+      default:
+        data = {
           embeds: this._data.embeds,
           content: this._data.content,
           components: this._data.components,
-        },
+        };
+        break;
+    }
+
+    return json({
+      type: this._type,
+      data,
     });
   }
 
@@ -253,7 +426,7 @@ export class Message {
     return await fetch(url, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
       },
       body: JSON.stringify({
         embeds: this._data.embeds,
@@ -263,9 +436,41 @@ export class Message {
     });
   }
 
+  // async reply(channel: string, target: string): Promise<Response> {
+  //   const url = `${API}/channels/${channel}/messages`;
+
+  //   return await fetch(url, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json; charset=utf-8',
+  //       'Authorization': `Bot ${BOT_TOKEN}`,
+  //     },
+  //     body: JSON.stringify({
+  //       embeds: this._data.embeds,
+  //       content: this._data.content,
+  //       components: this._data.components,
+  //       message_reference: {
+  //         message_id: target,
+  //       },
+  //     }),
+  //   });
+  // }
+
   static pong() {
     return json({
       type: 1,
+    });
+  }
+
+  static loading() {
+    return json({
+      type: 5,
+    });
+  }
+
+  static deferred() {
+    return json({
+      type: 6,
     });
   }
 
@@ -277,111 +482,5 @@ export class Message {
         content: err?.message ?? err,
       },
     });
-  }
-}
-
-type User = {
-  id: string;
-  username: string;
-  discriminator: string;
-  avatar: string;
-  banner?: string;
-};
-
-export class Interaction<Options> {
-  id: string;
-  token: string;
-  type: InteractionType;
-
-  guild_id?: string;
-  channel_id?: string;
-
-  message?: unknown;
-  data?: unknown;
-
-  name?: string;
-  options?: {
-    [key: string]: {
-      type: number;
-      value: Options;
-    };
-  };
-
-  customType?: string;
-  customValue?: string;
-
-  /** user is sent when invoked in a DM */
-  // user?: User;
-
-  /** member is sent when the interaction is invoked in a guild */
-  member?: {
-    avatar: string;
-    user: User;
-  };
-
-  /** available on all interaction types except PING */
-  locale?: string;
-
-  /** guild's preferred locale (if invoked in a guild) */
-  guild_locale?: string;
-
-  constructor(body: string) {
-    const obj = JSON.parse(body);
-
-    this.id = obj.id;
-    this.type = obj.type;
-    this.token = obj.token;
-
-    this.guild_id = obj.guild_id;
-    this.channel_id = obj.channel_id;
-
-    const data: {
-      id: string;
-      name: string;
-      type: string;
-      target_id?: string;
-      resolved?: unknown[];
-      options?: {
-        type: number;
-        name: string;
-        focused: boolean;
-        value: unknown;
-      }[];
-    } & {
-      custom_id: string;
-      component_type: ComponentType;
-      values?: unknown[];
-    } = this.data = obj.data;
-
-    // this.message = obj?.message
-
-    // this.user = obj.user;
-    this.member = obj.member;
-
-    this.locale = obj.locale;
-    this.guild_locale = obj.guild_locale;
-
-    switch (this.type) {
-      case InteractionType.SlashCommand:
-      case InteractionType.SlashCommandAutocomplete: {
-        this.name = data!.name.replaceAll(' ', '_').toLowerCase();
-        this.options = {};
-        data!.options?.forEach((option) => {
-          this.options![option.name] = {
-            type: option.type,
-            value: option.value as Options,
-          };
-        });
-        break;
-      }
-      case InteractionType.Component: {
-        const custom = data!.custom_id.split(':');
-        this.customType = custom[0];
-        this.customValue = custom[1];
-        break;
-      }
-      default:
-        break;
-    }
   }
 }

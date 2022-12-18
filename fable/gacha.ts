@@ -1,6 +1,6 @@
 // import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
-import { capitalize, shuffle } from '../utils.ts';
+import { shuffle } from '../utils.ts';
 
 import * as discord from '../discord.ts';
 
@@ -12,98 +12,6 @@ const colors = {
   gold: '#feb500',
   yellow: '#fed33c',
 };
-
-export async function roll(_token: string) {
-  // const message = new discord.Message();
-
-  const variables = {
-    role: rng({
-      10: anilist.CHARACTER_ROLE.MAIN, // 10% for Main
-      70: anilist.CHARACTER_ROLE.SUPPORTING, // 65% for Supporting
-      20: anilist.CHARACTER_ROLE.BACKGROUND, // 25% for Background
-    }),
-    range: rng({
-      6: [0, 50_000], // 6% for 0 -> 50K
-      50: [50_000, 100_000], // 50% for 50K -> 100K
-      40: [100_000, 200_000], // 40% for 100K -> 200K
-      3: [200_000, 400_000], // 3% for 200K -> 400K
-      1: [400_000, undefined], // 1% for 400K -> ...
-    }),
-  };
-
-  // workaround edge cases that fail
-  // some media in that rage only include information about main characters
-  // which cases the pool to return empty
-  if (variables.range[0]! === 0) {
-    variables.role = anilist.CHARACTER_ROLE.MAIN;
-  }
-
-  const pool = await anilist.pool({
-    role: variables.role,
-    popularity_greater: variables.range[0]!,
-    popularity_lesser: variables.range[1],
-  });
-
-  if (!pool?.length) {
-    throw new Error(
-      `failed to create a pool with ${JSON.stringify(variables)}`,
-    );
-  }
-
-  const pulled = pool[Math.floor(Math.random() * pool.length)];
-  const stars = rate(pulled.role, pulled.media.popularity!);
-
-  console.log(`pool length: ${pool.length}`);
-  console.log(`pool variables: ${JSON.stringify(variables)}`);
-
-  const titles = [
-    pulled.media.title.english,
-    pulled.media.title.romaji,
-    pulled.media.title.native,
-  ].filter(Boolean);
-
-  console.log(
-    `${pulled.character.name.full} - ${stars}* - ${titles.shift()}(${pulled.media.popularity}) - ${
-      capitalize(pulled.role)
-    }`,
-  );
-
-  // return message.json();
-}
-
-function rate(role: anilist.CHARACTER_ROLE, popularity: number) {
-  if (role === anilist.CHARACTER_ROLE.BACKGROUND || popularity < 50_000) {
-    return 1;
-  }
-
-  if (popularity < 200_000) {
-    if (role === anilist.CHARACTER_ROLE.MAIN) {
-      return 3;
-    }
-
-    return 2;
-  }
-
-  if (popularity < 400_000) {
-    if (role === anilist.CHARACTER_ROLE.MAIN) {
-      return 4;
-    }
-
-    return 3;
-  }
-
-  if (popularity > 400_000) {
-    if (role === anilist.CHARACTER_ROLE.MAIN) {
-      return 5;
-    }
-
-    return 4;
-  }
-
-  throw new Error(
-    `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
-  );
-}
 
 function rng<T>(dict: { [chance: number]: T }): T {
   const pool = Object.values(dict);
@@ -134,6 +42,63 @@ function rng<T>(dict: { [chance: number]: T }): T {
   return pool[_[0]];
 }
 
+export async function roll() {
+  const variables = {
+    role: rng({
+      10: anilist.CHARACTER_ROLE.MAIN, // 10% for Main
+      70: anilist.CHARACTER_ROLE.SUPPORTING, // 65% for Supporting
+      20: anilist.CHARACTER_ROLE.BACKGROUND, // 25% for Background
+    }),
+    range: rng({
+      6: [0, 50_000], // 6% for 0 -> 50K
+      50: [50_000, 100_000], // 50% for 50K -> 100K
+      40: [100_000, 200_000], // 40% for 100K -> 200K
+      3: [200_000, 400_000], // 3% for 200K -> 400K
+      1: [400_000, undefined], // 1% for 400K -> ...
+    }),
+  };
+
+  // NOTE this is a workaround an edge case
+  // most media in that range only include information about main characters
+  // which cases the pool to return empty
+  if (variables.range[0]! === 0) {
+    variables.role = anilist.CHARACTER_ROLE.MAIN;
+  }
+
+  const pool = await anilist.pool({
+    role: variables.role,
+    popularity_greater: variables.range[0]!,
+    popularity_lesser: variables.range[1],
+  });
+
+  if (!pool?.length) {
+    throw new Error(
+      `failed to create a pool with ${JSON.stringify(variables)}`,
+    );
+  }
+
+  const pull = pool[Math.floor(Math.random() * pool.length)];
+
+  // console.log(`pool length: ${pool.length}`);
+  // console.log(`pool variables: ${JSON.stringify(variables)}`);
+
+  // const titles = [
+  //   pull.media.title.english,
+  //   pull.media.title.romaji,
+  //   pull.media.title.native,
+  // ].filter(Boolean);
+
+  // console.log(
+  //   `${pulled.character.name.full} - ${stars}* - ${titles.shift()}(${pulled.media.popularity}) - ${
+  //     capitalize(pulled.role)
+  //   }`,
+  // );
+
+  // return message.json();
+
+  return pull;
+}
+
 export function start() {
   const message = new discord.Message()
     .addEmbed(
@@ -146,7 +111,7 @@ export function start() {
 
   // TODO
 
-  return message.json();
+  return message;
 }
 
 // export function testPatch(token: string) {

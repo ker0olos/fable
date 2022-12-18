@@ -46,54 +46,93 @@ async function handler(request: Request): Promise<Response> {
     name,
     type,
     options,
+    targetId,
+    channelId,
     customType,
-    customValue,
+    customValues,
   } = new discord.Interaction<string>(body);
 
   if (type === discord.InteractionType.Ping) {
     return discord.Message.pong();
   }
 
-  console.log(name, type, options, customType, customValue);
+  console.log(name, type, options, customType, customValues);
 
   try {
-    if (type === discord.InteractionType.SlashCommand) {
-      switch (name) {
-        case 'native':
-        case 'english':
-        case 'romaji':
-          return await translate({
-            lang: name,
-            search: options!['title'].value,
-          });
-        case 'search':
-          return await search({
-            search: options!['query'].value,
-          });
-        case 'songs':
-          return await songs({
-            search: options!['query'].value,
-          });
-        case 'next_episode':
-          return await nextEpisode({ search: options!['anime'].value });
-        case 'gacha':
-          return gacha.start();
-        default:
-          break;
-      }
-    } else if (type === discord.InteractionType.Component) {
-      //
-      // COMPONENTS
-      //
+    switch (type) {
+      case discord.InteractionType.Command:
+        switch (name) {
+          case 'native':
+          case 'english':
+          case 'romaji':
+            return (await translate({
+              lang: name,
+              search: options!['title'].value,
+            })).send();
+          case 'search':
+            return (await search({
+              search: options!['query'].value,
+            })).send();
+          case 'songs':
+            return (await songs({
+              search: options!['query'].value,
+            })).send();
+          case 'add_sauce': {
+            const modal = new discord.Message()
+              .setId(`sauce:${channelId}:${targetId}`)
+              .setTitle('Add Sauce');
 
-      switch (customType) {
-        case 'id':
-          return await search({
-            id: parseInt(customValue!),
-          }, discord.MessageType.Update);
-        default:
-          break;
-      }
+            const component = new discord.Component()
+              .setId('title')
+              .setLabel('Title')
+              .setStyle(discord.TextInputStyle.Short)
+              .setPlaceholder('The title of an anime/manga');
+
+            modal.addComponents([component]);
+
+            return modal.send();
+          }
+          case 'next_episode':
+            return (await nextEpisode({ search: options!['anime'].value }))
+              .send();
+          case 'gacha':
+            return gacha.start().send();
+          default:
+            break;
+        }
+        break;
+      case discord.InteractionType.Component:
+      case discord.InteractionType.Modal:
+        switch (customType) {
+          case 'id':
+            return (await search({
+              id: parseInt(customValues![0]),
+            })).setType(discord.MessageType.Update).send();
+          case 'sauce': {
+            // const response = new discord.Message().setContent('Hello, world!').reply(
+            //   customValues![0],
+            //   customValues![1],
+            // );
+
+            // const response = await search({
+            //   search: options!['title'].value,
+            // })
+            //   .then((msg) =>
+            //     msg.reply(customValues![0], customValues![1])
+            //   );
+
+            // if (response.status !== 200) {
+            //   throw new Error(response.statusText);
+            // }
+
+            break;
+          }
+          default:
+            break;
+        }
+        break;
+      default:
+        break;
     }
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
@@ -102,7 +141,7 @@ async function handler(request: Request): Promise<Response> {
 
     captureException(err, {
       extra: {
-        body,
+        ...new discord.Interaction<string>(body),
       },
     });
 

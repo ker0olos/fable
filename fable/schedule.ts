@@ -41,5 +41,5 @@ export async function nextEpisode({ search }: { search: string }) {
       throw new Error('404');
   }
 
-  return message.json();
+  return message;
 }

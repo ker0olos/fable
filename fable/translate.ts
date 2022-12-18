@@ -15,5 +15,5 @@ export async function translate(
     `${results.media.title[lang]}`,
   );
 
-  return message.json();
+  return message;
 }
