@@ -4,83 +4,21 @@ import * as discord from '../discord.ts';
 
 import * as anilist from './api.ts';
 
-const embedCharacter = (
-  media?: anilist.Media,
-  character?: anilist.Character,
-) =>
-  new discord.Embed()
-    .setTitle(character!.name.full)
-    .setDescription(character!.description)
-    .setColor(media?.coverImage?.color)
-    .setThumbnail(character!.image?.large)
-    .setFooter(
-      [
-        character!.age,
-        character!.gender,
-      ].filter(Boolean).join(' '),
-    );
-
 export async function search(
   { id, search }: {
     id?: number;
     search?: string;
   },
 ) {
-  const { media, character } = await anilist.search(id ? { id } : { search });
+  const media = await anilist.search(id ? { id } : { search });
 
-  if (!media && !character) {
+  if (!media) {
     throw new Error('404');
   }
 
-  const titles = [
-    media?.title.english,
-    media?.title.romaji,
-    media?.title.native,
-  ].filter(Boolean);
+  const titles = anilist.titles(media);
 
   const message = new discord.Message();
-
-  // const characterExactMatch = [
-  //   character?.name.full,
-  //   character?.name.native!,
-  //   ...character?.name.alternative!,
-  //   ...character?.name.alternativeSpoiler!,
-  // ].some((name) => name!.toLowerCase() === search?.toLowerCase());
-
-  // const mediaExactMatch = titles.some((title) =>
-  //   title?.toLowerCase() === search?.toLowerCase()
-  // );
-
-  // // if search is exact match for a character's name
-  // // respond with only the character embed
-  // if (!mediaExactMatch && characterExactMatch) {
-  //   const embed = embedCharacter(media, character);
-
-  //   const group: discord.Component[] = [];
-
-  //   character?.media?.nodes!.forEach((media) => {
-  //     const titles = [
-  //       media.title.english,
-  //       media.title.romaji,
-  //       media.title.native,
-  //     ].filter(Boolean);
-
-  //     const component = new discord.Component()
-  //       .setStyle(discord.ButtonStyle.Grey)
-  //       .setLabel(`${titles.shift()} (${capitalize(media.type)})`)
-  //       .setId(
-  //         `id:${media.id!}`,
-  //       );
-
-  //     group.push(component);
-  //   });
-
-  //   message.addEmbed(embed);
-
-  //   message.addComponents(group);
-
-  //   return message.json();
-  // }
 
   if (!media) {
     throw new Error('404');
@@ -99,7 +37,18 @@ export async function search(
   );
 
   media.characters?.edges!.slice(0, 2).forEach((character) => {
-    const embed = embedCharacter(media, character.node);
+    const embed = new discord.Embed()
+      .setTitle(character.node!.name.full)
+      .setDescription(character.node!.description)
+      .setColor(media?.coverImage?.color)
+      .setThumbnail(character.node!.image?.large)
+      .setFooter(
+        [
+          character.node!.gender,
+          character.node!.age,
+        ].filter(Boolean).join(', '),
+      );
+
     message.addEmbed(embed);
   });
 
@@ -109,8 +58,8 @@ export async function search(
 
   if (media.trailer?.site === 'youtube') {
     const component = new discord.Component()
-      .setLabel('Trailer')
-      .setUrl(`https://www.youtube.com/watch?v=${media.trailer?.id}`);
+      .setUrl(`https://youtu.be/${media.trailer?.id}`)
+      .setLabel('Trailer');
 
     mainGroup.push(component);
   }
@@ -187,7 +136,7 @@ export async function songs(
     search?: string;
   },
 ) {
-  const { media } = await anilist.search({ search });
+  const media = await anilist.search({ search });
 
   if (!media) {
     throw new Error('404');

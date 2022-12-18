@@ -5,11 +5,7 @@ import * as anilist from './api.ts';
 export async function nextEpisode({ search }: { search: string }) {
   const anime = await anilist.getNextAiring({ search });
 
-  const titles = [
-    anime.title.english,
-    anime.title.romaji,
-    anime.title.native,
-  ].filter(Boolean);
+  const titles = anilist.titles(anime);
 
   const message = new discord.Message();
 

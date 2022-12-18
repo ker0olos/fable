@@ -59,7 +59,6 @@ set_commands(
                 }
             ],
         },
-        {"type": 3, "name": "Add Sauce"},
         {
             "name": "songs",
             "description": "Search for the theme songs of an anime",

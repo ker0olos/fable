@@ -119,15 +119,15 @@ export class Interaction<Options> {
     this.type = obj.type;
     this.token = obj.token;
 
-    this.guildId = obj.guild_id;
-    this.channelId = obj.channel_id;
+    // this.guildId = obj.guild_id;
+    // this.channelId = obj.channel_id;
 
     // this.user = obj.user;
     // this.message = obj?.message
     this.member = obj.member;
 
-    this.locale = obj.locale;
-    this.guildLocale = obj.guild_locale;
+    // this.locale = obj.locale;
+    // this.guildLocale = obj.guild_locale;
 
     this.options = {};
 
@@ -136,7 +136,6 @@ export class Interaction<Options> {
       case InteractionType.CommandAutocomplete: {
         this.targetId = data!.target_id;
         this.name = data!.name.replaceAll(' ', '_').toLowerCase();
-
         data!.options?.forEach((option) => {
           this.options![option.name] = {
             type: option.type,

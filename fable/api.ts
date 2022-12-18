@@ -165,7 +165,7 @@ function rate(role: CHARACTER_ROLE, popularity: number) {
 
 export async function search(
   variables: { id?: number; search?: string },
-): Promise<{ media?: Media; character?: Character }> {
+): Promise<Media | undefined> {
   const media = gql`
     query ($id: Int, $search: String) {
       Media(search: $search, id: $id, sort: [POPULARITY_DESC]) {
@@ -229,46 +229,38 @@ export async function search(
     }
   `;
 
-  const character = gql`
-    query ($search: String) {
-      Character(search: $search, sort: [SEARCH_MATCH]) {
-        age
-        gender
-        description
-        name {
-          full
-          native
-          alternative
-          alternativeSpoiler
-        }
-        image {
-          large
-        }
-        media {
-          nodes {
-            id
-            type
-            format
-            title {
-              romaji
-              english
-              native
-            }
-          }
-        }
-      }
-    }
-  `;
+  // const character = gql`
+  //   query ($search: String) {
+  //     Character(search: $search, sort: [SEARCH_MATCH]) {
+  //       age
+  //       gender
+  //       description
+  //       name {
+  //         full
+  //         native
+  //         alternative
+  //         alternativeSpoiler
+  //       }
+  //       image {
+  //         large
+  //       }
+  //       media {
+  //         nodes {
+  //           id
+  //           type
+  //           format
+  //           title {
+  //             romaji
+  //             english
+  //             native
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // `;
 
-  const promises = await Promise.all([
-    client.request(media, variables).catch(() => undefined),
-    client.request(character, variables).catch(() => undefined),
-  ]);
-
-  return {
-    media: promises[0]?.Media as Media,
-    character: promises[1]?.Character as Character,
-  };
+  return await client.request(media, variables).catch(() => undefined);
 }
 
 export async function getNextAiring(
@@ -408,4 +400,14 @@ export async function pool(
   });
 
   return Object.values(results);
+}
+
+export function titles(media: Media): string[] {
+  const titles = [
+    media.title.english,
+    media.title.romaji,
+    media.title.native,
+  ].filter(Boolean);
+
+  return titles as string[];
 }

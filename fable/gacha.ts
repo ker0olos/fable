@@ -42,7 +42,7 @@ function rng<T>(dict: { [chance: number]: T }): T {
   return pool[_[0]];
 }
 
-export async function roll() {
+async function roll() {
   const variables = {
     role: rng({
       10: anilist.CHARACTER_ROLE.MAIN, // 10% for Main
@@ -79,27 +79,14 @@ export async function roll() {
 
   const pull = pool[Math.floor(Math.random() * pool.length)];
 
-  // console.log(`pool length: ${pool.length}`);
-  // console.log(`pool variables: ${JSON.stringify(variables)}`);
-
-  // const titles = [
-  //   pull.media.title.english,
-  //   pull.media.title.romaji,
-  //   pull.media.title.native,
-  // ].filter(Boolean);
-
-  // console.log(
-  //   `${pulled.character.name.full} - ${stars}* - ${titles.shift()}(${pulled.media.popularity}) - ${
-  //     capitalize(pulled.role)
-  //   }`,
-  // );
-
-  // return message.json();
+  console.log(
+    `pool length: ${pool.length}\npool variables: ${JSON.stringify(variables)}`,
+  );
 
   return pull;
 }
 
-export function start() {
+export function start(token: string) {
   const message = new discord.Message()
     .addEmbed(
       new discord.Embed()
@@ -109,24 +96,31 @@ export function start() {
         ),
     );
 
-  // TODO
+  roll().then((pull) => {
+    const titles = anilist.titles(pull.media);
+
+    const message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setTitle(titles.shift()!)
+          .setColor(pull.media.coverImage?.color)
+          .setImage(
+            pull.media.coverImage?.large,
+          ),
+      )
+      .addEmbed(
+        new discord.Embed()
+          .setAuthor('Debugging (Will be removed)')
+          .setTitle(pull.character.name.full)
+          .setFooter(`${pull.rating}* -> ${pull.role}`)
+          .setColor(pull.media.coverImage?.color)
+          .setThumbnail(
+            pull.character.image?.large,
+          ),
+      );
+
+    return message.patch(token);
+  });
 
   return message;
 }
-
-// export function testPatch(token: string) {
-//   setTimeout(async () => {
-//     const message = new discord.Message().setContent('Updated After 1500ms');
-//     await message.patch(token);
-//   }, 1500);
-// }
-
-// await roll('');
-
-// for (let i = 0; i < 20; i++) {
-//   console.log(rng({
-//     10: anilist.CHARACTER_ROLE.MAIN,
-//     65: anilist.CHARACTER_ROLE.SUPPORTING,
-//     25: anilist.CHARACTER_ROLE.BACKGROUND,
-//   }));
-// }

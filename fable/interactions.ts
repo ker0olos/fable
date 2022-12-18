@@ -45,9 +45,8 @@ async function handler(request: Request): Promise<Response> {
   const {
     name,
     type,
+    token,
     options,
-    targetId,
-    channelId,
     customType,
     customValues,
   } = new discord.Interaction<string>(body);
@@ -77,56 +76,21 @@ async function handler(request: Request): Promise<Response> {
             return (await songs({
               search: options!['query'].value,
             })).send();
-          case 'add_sauce': {
-            const modal = new discord.Message()
-              .setId(`sauce:${channelId}:${targetId}`)
-              .setTitle('Add Sauce');
-
-            const component = new discord.Component()
-              .setId('title')
-              .setLabel('Title')
-              .setStyle(discord.TextInputStyle.Short)
-              .setPlaceholder('The title of an anime/manga');
-
-            modal.addComponents([component]);
-
-            return modal.send();
-          }
           case 'next_episode':
             return (await nextEpisode({ search: options!['anime'].value }))
               .send();
           case 'gacha':
-            return gacha.start().send();
+            return gacha.start(token).send();
           default:
             break;
         }
         break;
       case discord.InteractionType.Component:
-      case discord.InteractionType.Modal:
         switch (customType) {
           case 'id':
             return (await search({
               id: parseInt(customValues![0]),
             })).setType(discord.MessageType.Update).send();
-          case 'sauce': {
-            // const response = new discord.Message().setContent('Hello, world!').reply(
-            //   customValues![0],
-            //   customValues![1],
-            // );
-
-            // const response = await search({
-            //   search: options!['title'].value,
-            // })
-            //   .then((msg) =>
-            //     msg.reply(customValues![0], customValues![1])
-            //   );
-
-            // if (response.status !== 200) {
-            //   throw new Error(response.statusText);
-            // }
-
-            break;
-          }
           default:
             break;
         }
