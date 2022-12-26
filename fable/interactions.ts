@@ -3,7 +3,13 @@ import {
   init,
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
 
-import { json, serve, validateRequest, verifySignature } from '../net.ts';
+import {
+  json,
+  serve,
+  validateRequest,
+} from 'https://deno.land/x/sift@0.6.0/mod.ts';
+
+import { verifySignature } from '../utils.ts';
 
 import * as discord from '../discord.ts';
 
@@ -121,4 +127,6 @@ init({
   dsn: Deno.env.get('SENTRY_DNS'),
 });
 
-serve(handler);
+serve({
+  '/': handler,
+});

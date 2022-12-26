@@ -1,4 +1,10 @@
-import { json, serve, validateRequest, verifySignature } from '../net.ts';
+import {
+  json,
+  serve,
+  validateRequest,
+} from 'https://deno.land/x/sift@0.6.0/mod.ts';
+
+import { verifySignature } from '../utils.ts';
 
 import * as discord from '../discord.ts';
 
@@ -93,4 +99,6 @@ function roll({ amount }: { amount: number }) {
   return `\`${amount}d${dieSize}>=${minSuccess}\` \n = [ ${equation} ] \n = **${successes}** ${plural}`;
 }
 
-serve(handler);
+serve({
+  '/': handler,
+});
