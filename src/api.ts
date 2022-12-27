@@ -260,7 +260,7 @@ export async function search(
   //   }
   // `;
 
-  return await client.request(media, variables).catch(() => undefined);
+  return (await client.request(media, variables).catch(() => undefined))?.Media;
 }
 
 export async function getNextAiring(

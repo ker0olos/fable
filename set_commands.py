@@ -60,7 +60,7 @@ set_commands(
             ],
         },
         {
-            "name": "roll",
+            "name": "dice",
             "description": "Roll a ten-sided dice.",
             "options": [
                 {

@@ -1,5 +1,9 @@
 import nacl from 'https://cdn.skypack.dev/tweetnacl@v1.0.3?dts';
 
+export function range(min: number, max: number) {
+  return Math.floor((Math.random()) * (max - min + 1)) + min;
+}
+
 export function hexToInt(hex?: string): number | undefined {
   if (!hex) {
     return;

@@ -1,8 +1,6 @@
-import * as discord from './discord.ts';
+import { range } from './utils.ts';
 
-function random(min: number, max: number) {
-  return Math.floor((Math.random()) * (max - min + 1)) + min;
-}
+import * as discord from './discord.ts';
 
 export function roll({ id, amount }: { id: string; amount: number }) {
   const rolls = [];
@@ -13,7 +11,7 @@ export function roll({ id, amount }: { id: string; amount: number }) {
   let successes = 0;
 
   for (let i = 0; i < amount; i++) {
-    const roll = random(1, dieSize);
+    const roll = range(1, dieSize);
 
     successes += roll >= minSuccess ? 1 : 0;
 

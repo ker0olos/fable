@@ -115,7 +115,7 @@ async function handler(request: Request): Promise<Response> {
     }
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
-      return discord.Message.error('Found nothing matching that name!');
+      return discord.Message.error('Found __nothing__ matching that name!');
     }
 
     captureException(err, {
@@ -125,7 +125,7 @@ async function handler(request: Request): Promise<Response> {
     });
 
     return discord.Message.error(
-      'An Internal Error occurred and was reported. Sorry for the inconvenience!',
+      '**Sorry!** An Internal Error occurred and was reported.',
     );
   }
 
