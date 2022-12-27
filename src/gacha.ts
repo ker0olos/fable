@@ -1,8 +1,8 @@
 // import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
-import { shuffle } from '../utils.ts';
+import { shuffle } from './utils.ts';
 
-import * as discord from '../discord.ts';
+import * as discord from './discord.ts';
 
 import * as anilist from './api.ts';
 
@@ -15,6 +15,7 @@ const colors = {
 
 function rng<T>(dict: { [chance: number]: T }): T {
   const pool = Object.values(dict);
+
   const chances = Object.keys(dict).map((n) => parseInt(n));
 
   const sum = chances.reduce((a, b) => a + b);
@@ -23,7 +24,7 @@ function rng<T>(dict: { [chance: number]: T }): T {
     throw new Error(`Sum of ${chances} is ${sum} when it should be 100`);
   }
 
-  let _ = [];
+  const _ = [];
 
   for (let i = 0; i < chances.length; i++) {
     // if chance is 5 - add 5 items to the array
@@ -36,7 +37,7 @@ function rng<T>(dict: { [chance: number]: T }): T {
 
   // shuffle the generated chances array
   // which is the RNG part of this function
-  _ = shuffle(_);
+  shuffle(_);
 
   // use the first item from the shuffled array on the pool
   return pool[_[0]];
@@ -54,7 +55,7 @@ async function roll() {
       50: [50_000, 100_000], // 50% for 50K -> 100K
       40: [100_000, 200_000], // 40% for 100K -> 200K
       3: [200_000, 400_000], // 3% for 200K -> 400K
-      1: [400_000, undefined], // 1% for 400K -> ...
+      1: [400_000, undefined], // 1% for 400K -> inf
     }),
   };
 
@@ -70,6 +71,8 @@ async function roll() {
     popularity_greater: variables.range[0]!,
     popularity_lesser: variables.range[1],
   });
+
+  // TODO allow custom repos
 
   if (!pool?.length) {
     throw new Error(

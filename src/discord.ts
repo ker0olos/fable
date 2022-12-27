@@ -1,8 +1,9 @@
-import { json } from './net.ts';
+import { json } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
 import { decodeDescription, hexToInt } from './utils.ts';
 
 const APP_ID = Deno.env.get('APP_ID');
+
 // const BOT_TOKEN = Deno.env.get('BOT_TOKEN');
 
 const API = `https://discord.com/api/v10`;

@@ -308,7 +308,7 @@ export async function pool(
         }
         # fixed to query characters that only appear in anime, movies, and manga
         media(popularity_greater: $popularity_greater, popularity_lesser: $popularity_lesser, sort: [POPULARITY], format_in: [TV, MOVIE, MANGA]) {
-          # characters after 50 are mostly irrelevant (safe to ignore if they exists)
+          # TODO FIXME only requests the first page
           characters(sort: RELEVANCE, role: $role, page: 1, perPage: 50) {
             nodes {
               # the character themselves

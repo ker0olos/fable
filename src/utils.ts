@@ -25,8 +25,6 @@ export function shuffle<T>(array: T[]) {
     array[swap] = array[i];
     array[i] = temp;
   }
-
-  return array;
 }
 
 export function capitalize(s: string): string {

@@ -9,14 +9,15 @@ import {
   validateRequest,
 } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
-import { verifySignature } from '../utils.ts';
+import { verifySignature } from './utils.ts';
 
-import * as discord from '../discord.ts';
+import * as discord from './discord.ts';
 
 import { translate } from './translate.ts';
 import { nextEpisode } from './schedule.ts';
 import { search, songs } from './search.ts';
 
+import * as dice from './dice.ts';
 import * as gacha from './gacha.ts';
 
 const APP_PUBLIC_KEY =
@@ -52,10 +53,11 @@ async function handler(request: Request): Promise<Response> {
     name,
     type,
     token,
+    member,
     options,
     customType,
     customValues,
-  } = new discord.Interaction<string>(body);
+  } = new discord.Interaction<string | number>(body);
 
   if (type === discord.InteractionType.Ping) {
     return discord.Message.pong();
@@ -72,19 +74,26 @@ async function handler(request: Request): Promise<Response> {
           case 'romaji':
             return (await translate({
               lang: name,
-              search: options!['title'].value,
+              search: options!['title'].value as string,
             })).send();
           case 'search':
             return (await search({
-              search: options!['query'].value,
+              search: options!['query'].value as string,
             })).send();
           case 'songs':
             return (await songs({
-              search: options!['query'].value,
+              search: options!['query'].value as string,
             })).send();
           case 'next_episode':
-            return (await nextEpisode({ search: options!['anime'].value }))
+            return (await nextEpisode({
+              search: options!['anime'].value as string,
+            }))
               .send();
+          case 'dice':
+            return dice.roll({
+              id: member!.user.id,
+              amount: options!['amount'].value as number,
+            }).send();
           case 'gacha':
             return gacha.start(token).send();
           default:

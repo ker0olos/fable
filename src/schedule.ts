@@ -1,4 +1,4 @@
-import * as discord from '../discord.ts';
+import * as discord from './discord.ts';
 
 import * as anilist from './api.ts';
 
