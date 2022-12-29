@@ -1,6 +1,7 @@
 name: Update the last page value for each possible query  
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0' # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
 
