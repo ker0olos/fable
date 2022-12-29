@@ -2,7 +2,7 @@ import { capitalize } from './utils.ts';
 
 import * as discord from './discord.ts';
 
-import * as anilist from './api.ts';
+import * as anilist from './anilist.ts';
 
 export async function search(
   { id, search }: {

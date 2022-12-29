@@ -294,22 +294,13 @@ export async function pool(
     [character_id: number]: Pull;
   } = {};
 
-  // TODO FIXME only requests the first page
-
   const query = gql`
-    query ($page: Int = 1, $role: CharacterRole!, $popularity_greater: Int!, $popularity_lesser: Int) {
+    query ($page: Int!, $role: CharacterRole!, $popularity_greater: Int!, $popularity_lesser: Int) {
       Page(page: $page, perPage: 50) {
-        pageInfo {
-          total
-          currentPage
-          lastPage
-          hasNextPage
-          perPage
-        }
         # fixed to query characters that only appear in anime, movies, and manga
         media(popularity_greater: $popularity_greater, popularity_lesser: $popularity_lesser, sort: [POPULARITY], format_in: [TV, MOVIE, MANGA]) {
-          # TODO FIXME only requests the first page
-          characters(sort: RELEVANCE, role: $role, page: 1, perPage: 50) {
+          # FIXME only requests the first page
+          characters(sort: RELEVANCE, role: $role, perPage: 25) {
             nodes {
               # the character themselves
               id
@@ -354,7 +345,7 @@ export async function pool(
   `;
 
   const response: {
-    page: PageInfo;
+    pageInfo: PageInfo;
     media: {
       characters: {
         nodes: Character[];

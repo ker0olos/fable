@@ -31,6 +31,39 @@ export function shuffle<T>(array: T[]) {
   }
 }
 
+export const sleep = (secs: number) =>
+  new Promise((resolve) => setTimeout(resolve, secs * 1000));
+
+export function rng<T>(dict: { [chance: number]: T }): T {
+  const pool = Object.values(dict);
+
+  const chances = Object.keys(dict).map((n) => parseInt(n));
+
+  const sum = chances.reduce((a, b) => a + b);
+
+  if (sum !== 100) {
+    throw new Error(`Sum of ${chances} is ${sum} when it should be 100`);
+  }
+
+  const _ = [];
+
+  for (let i = 0; i < chances.length; i++) {
+    // if chance is 5 - add 5 items to the array
+    // if chance is 90 - add 90 items to the array
+    for (let y = 0; y < chances[i]; y++) {
+      // push the index of the item not it's value
+      _.push(i);
+    }
+  }
+
+  // shuffle the generated chances array
+  // which is the RNG part of this function
+  shuffle(_);
+
+  // use the first item from the shuffled array on the pool
+  return pool[_[0]];
+}
+
 export function capitalize(s: string): string {
   const sa = s.split('_');
   return sa.map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(' ')

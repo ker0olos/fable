@@ -1,6 +1,6 @@
 import * as discord from './discord.ts';
 
-import * as anilist from './api.ts';
+import * as anilist from './anilist.ts';
 
 export async function translate(
   { search, lang }: { search: string; lang: 'english' | 'romaji' | 'native' },

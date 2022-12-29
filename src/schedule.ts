@@ -1,6 +1,6 @@
 import * as discord from './discord.ts';
 
-import * as anilist from './api.ts';
+import * as anilist from './anilist.ts';
 
 export async function nextEpisode({ search }: { search: string }) {
   const anime = await anilist.getNextAiring({ search });

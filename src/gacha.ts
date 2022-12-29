@@ -1,10 +1,10 @@
 // import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
-import { shuffle } from './utils.ts';
+import { rng } from './utils.ts';
 
 import * as discord from './discord.ts';
 
-import * as anilist from './api.ts';
+import * as anilist from './anilist.ts';
 
 const colors = {
   background: '#2b2d42',
@@ -13,63 +13,37 @@ const colors = {
   yellow: '#fed33c',
 };
 
-function rng<T>(dict: { [chance: number]: T }): T {
-  const pool = Object.values(dict);
-
-  const chances = Object.keys(dict).map((n) => parseInt(n));
-
-  const sum = chances.reduce((a, b) => a + b);
-
-  if (sum !== 100) {
-    throw new Error(`Sum of ${chances} is ${sum} when it should be 100`);
-  }
-
-  const _ = [];
-
-  for (let i = 0; i < chances.length; i++) {
-    // if chance is 5 - add 5 items to the array
-    // if chance is 90 - add 90 items to the array
-    for (let y = 0; y < chances[i]; y++) {
-      // push the index of the item not it's value
-      _.push(i);
-    }
-  }
-
-  // shuffle the generated chances array
-  // which is the RNG part of this function
-  shuffle(_);
-
-  // use the first item from the shuffled array on the pool
-  return pool[_[0]];
-}
+export const variables = {
+  roles: {
+    10: anilist.CHARACTER_ROLE.MAIN, // 10% for Main
+    70: anilist.CHARACTER_ROLE.SUPPORTING, // 65% for Supporting
+    20: anilist.CHARACTER_ROLE.BACKGROUND, // 25% for Background
+  },
+  ranges: {
+    6: [0, 50_000], // 6% for 0 -> 50K
+    50: [50_000, 100_000], // 50% for 50K -> 100K
+    40: [100_000, 200_000], // 40% for 100K -> 200K
+    3: [200_000, 400_000], // 3% for 200K -> 400K
+    1: [400_000, undefined], // 1% for 400K -> inf
+  },
+};
 
 async function roll() {
-  const variables = {
-    role: rng({
-      10: anilist.CHARACTER_ROLE.MAIN, // 10% for Main
-      70: anilist.CHARACTER_ROLE.SUPPORTING, // 65% for Supporting
-      20: anilist.CHARACTER_ROLE.BACKGROUND, // 25% for Background
-    }),
-    range: rng({
-      6: [0, 50_000], // 6% for 0 -> 50K
-      50: [50_000, 100_000], // 50% for 50K -> 100K
-      40: [100_000, 200_000], // 40% for 100K -> 200K
-      3: [200_000, 400_000], // 3% for 200K -> 400K
-      1: [400_000, undefined], // 1% for 400K -> inf
-    }),
-  };
+  let role = rng(variables.roles);
+
+  const range = rng(variables.ranges);
 
   // NOTE this is a workaround an edge case
   // most media in that range only include information about main characters
   // which cases the pool to return empty
-  if (variables.range[0]! === 0) {
-    variables.role = anilist.CHARACTER_ROLE.MAIN;
+  if (range[0]! === 0) {
+    role = anilist.CHARACTER_ROLE.MAIN;
   }
 
   const pool = await anilist.pool({
-    role: variables.role,
-    popularity_greater: variables.range[0]!,
-    popularity_lesser: variables.range[1],
+    role,
+    popularity_greater: range[0]!,
+    popularity_lesser: range[1],
   });
 
   // TODO allow custom repos

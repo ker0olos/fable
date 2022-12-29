@@ -1,0 +1,28 @@
+name: Update the last page value for each possible query  
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - runs: deno run --allow-all ./anilist.lastPage.ts
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: 'Updated "anilist.lastPage.json'
+          commit-message: Updated "anilist.lastPage.json"
+          branch: bot/anilist-workarounds/last-page
+          delete-branch: true
+          body: |
+            Update the last page value for each possible query.
+            Workaround AniList API's invalid page info (See #9)
+          labels: |
+            anilist
+            
