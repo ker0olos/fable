@@ -20,9 +20,9 @@ export const variables = {
     20: anilist.CHARACTER_ROLE.BACKGROUND, // 25% for Background
   },
   ranges: {
-    6: [0, 50_000], // 6% for 0 -> 50K
-    50: [50_000, 100_000], // 50% for 50K -> 100K
-    40: [100_000, 200_000], // 40% for 100K -> 200K
+    65: [0, 50_000], // 65% for 0 -> 50K
+    22: [50_000, 100_000], // 22% for 50K -> 100K
+    9: [100_000, 200_000], // 9% for 100K -> 200K
     3: [200_000, 400_000], // 3% for 200K -> 400K
     1: [400_000, undefined], // 1% for 400K -> inf
   },

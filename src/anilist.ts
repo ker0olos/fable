@@ -3,6 +3,10 @@ import {
   GraphQLClient,
 } from 'https://raw.githubusercontent.com/ker0olos/graphql-request/main/mod.ts';
 
+import { randint } from './utils.ts';
+
+import lastPage from '../anilist.lastPage.json' assert { type: 'json' };
+
 const client = new GraphQLClient('https://graphql.anilist.co');
 
 export enum TYPE {
@@ -294,12 +298,24 @@ export async function pool(
     [character_id: number]: Pull;
   } = {};
 
+  const key = JSON.stringify([
+    variables.popularity_greater,
+    variables.popularity_lesser,
+  ]) as keyof typeof lastPage;
+
+  // select a random page between the first and last
+  const page = randint(1, lastPage[key]);
+
   const query = gql`
-    query ($page: Int!, $role: CharacterRole!, $popularity_greater: Int!, $popularity_lesser: Int) {
-      Page(page: $page, perPage: 50) {
+    query ($role: CharacterRole!, $popularity_greater: Int!, $popularity_lesser: Int) {
+      Page(page: ${page}, perPage: 50) {
         # fixed to query characters that only appear in anime, movies, and manga
         media(popularity_greater: $popularity_greater, popularity_lesser: $popularity_lesser, sort: [POPULARITY], format_in: [TV, MOVIE, MANGA]) {
           # FIXME only requests the first page
+          # nearly impossible to fix, given the fact that
+          # we're using a workaround for the same issue on media
+          # which is only possible because that was a series of predictable queries
+          # (see https://github.com/ker0olos/fable/issues/9)
           characters(sort: RELEVANCE, role: $role, perPage: 25) {
             nodes {
               # the character themselves
@@ -318,7 +334,8 @@ export async function pool(
               }
               media(sort: POPULARITY_DESC) { # always return the hightest popularity first
                 edges {
-                  characterRole # the character role in the media
+                  # the character role in the media
+                  characterRole
                   node {
                     # the media itself
                     type
@@ -345,7 +362,6 @@ export async function pool(
   `;
 
   const response: {
-    pageInfo: PageInfo;
     media: {
       characters: {
         nodes: Character[];

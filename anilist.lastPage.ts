@@ -3,8 +3,6 @@ import {
   GraphQLClient,
 } from 'https://raw.githubusercontent.com/ker0olos/graphql-request/main/mod.ts';
 
-import { readJson, writeJson } from 'https://deno.land/x/jsonfile@1.0.0/mod.ts';
-
 import { sleep } from './src/utils.ts';
 
 import { PageInfo } from './src/anilist.ts';
@@ -21,7 +19,9 @@ const ranges = Object.values(variables.ranges);
 
 const data: Data = {};
 
-const previousData = await readJson(filePath) as Data;
+const previousData = (await import(filePath, {
+  assert: { type: 'json' },
+})).default as Data;
 
 async function query(
   variables: {
@@ -34,7 +34,7 @@ async function query(
   media: unknown[];
 }> {
   const query = gql`
-    query ($page: Int = 1, $popularity_greater: Int!, $popularity_lesser: Int) {
+    query ($page: Int!, $popularity_greater: Int!, $popularity_lesser: Int) {
       Page(page: $page, perPage: 50) {
         pageInfo {
           hasNextPage
@@ -57,9 +57,12 @@ async function query(
 for (const range of ranges) {
   const key = JSON.stringify(range);
 
+  // uses the previous data to find the last page faster
+  // by decreasing and increasing on the last known number
+  // instead of starting from 1 each run
   let page = previousData[key] || 1;
 
-  console.log(`${key}:\nprevious page is ${previousData[key]}`);
+  console.log(`${key}:\nprevious page is: ${previousData[key]}`);
 
   while (true) {
     try {
@@ -76,6 +79,7 @@ for (const range of ranges) {
       if (pageInfo.hasNextPage) {
         page += 1;
         continue;
+        // pages with no media is not a valid page
       } else if (!pageInfo.hasNextPage && 0 >= media.length) {
         page -= 1;
         continue;
@@ -83,6 +87,7 @@ for (const range of ranges) {
 
       break;
     } catch (e) {
+      // handle the rate limits
       if (e.message?.includes('Too Many Requests')) {
         console.log('sleeping for a minute...');
         await sleep(60);
@@ -101,9 +106,8 @@ for (const range of ranges) {
 }
 
 if (JSON.stringify(previousData) !== JSON.stringify(data)) {
-  console.log('found changes in data');
-  await writeJson(filePath, data, { spaces: 2 });
+  await Deno.writeTextFile(filePath, JSON.stringify(data, null, 2));
+  console.log('written changes to disk');
 } else {
   console.log('no changes were found');
-  Deno.exit(1);
 }
