@@ -115,6 +115,8 @@ export function start(token: string) {
             pull.character.image?.large,
           ),
       );
+
+    await message.patch(token);
   });
 
   return message;
