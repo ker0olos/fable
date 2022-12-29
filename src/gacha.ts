@@ -92,7 +92,7 @@ export function start(token: string) {
 
     await message.patch(token);
 
-    await sleep(1.5);
+    await sleep(4);
 
     message = new discord.Message()
       .addEmbed(
@@ -104,13 +104,13 @@ export function start(token: string) {
 
     await message.patch(token);
 
-    await sleep(2);
+    await sleep(5);
 
     message = new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setAuthor(emotes.star.repeat(pull.rating))
           .setTitle(pull.character.name.full)
+          .setDescription(emotes.star.repeat(pull.rating))
           .setImage(
             pull.character.image?.large,
           ),
