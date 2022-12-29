@@ -65,8 +65,10 @@ async function roll() {
 
 export function start(_token: string) {
   const message = new discord.Message()
-    .setContent(
-      'https://raw.githubusercontent.com/ker0olos/fable/main/assets/spinner.gif',
+    .addEmbed(
+      new discord.Embed('image').setImage(
+        'https://raw.githubusercontent.com/ker0olos/fable/main/assets/spinner.gif',
+      ),
     );
 
   // roll().then((pull) => {
