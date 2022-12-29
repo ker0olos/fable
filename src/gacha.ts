@@ -63,41 +63,37 @@ async function roll() {
   return pull;
 }
 
-export function start(token: string) {
+export function start(_token: string) {
   const message = new discord.Message()
-    .addEmbed(
-      new discord.Embed()
-        .setColor(colors.gold)
-        .setImage(
-          'https://i.imgur.com/E2imRSx.gif',
-        ),
+    .setContent(
+      'https://raw.githubusercontent.com/ker0olos/fable/main/assets/spinner.gif',
     );
 
-  roll().then((pull) => {
-    const titles = anilist.titles(pull.media);
+  // roll().then((pull) => {
+  //   const titles = anilist.titles(pull.media);
 
-    const message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setTitle(titles.shift()!)
-          .setColor(pull.media.coverImage?.color)
-          .setImage(
-            pull.media.coverImage?.large,
-          ),
-      )
-      .addEmbed(
-        new discord.Embed()
-          .setAuthor('Debugging (Will be removed)')
-          .setTitle(pull.character.name.full)
-          .setFooter(`${pull.rating}* -> ${pull.role}`)
-          .setColor(pull.media.coverImage?.color)
-          .setThumbnail(
-            pull.character.image?.large,
-          ),
-      );
+  //   const message = new discord.Message()
+  //     .addEmbed(
+  //       new discord.Embed()
+  //         .setTitle(titles.shift()!)
+  //         .setColor(pull.media.coverImage?.color)
+  //         .setImage(
+  //           pull.media.coverImage?.large,
+  //         ),
+  //     )
+  //     .addEmbed(
+  //       new discord.Embed()
+  //         .setAuthor('Debugging (Will be removed)')
+  //         .setTitle(pull.character.name.full)
+  //         .setFooter(`${pull.rating}* -> ${pull.role}`)
+  //         .setColor(pull.media.coverImage?.color)
+  //         .setThumbnail(
+  //           pull.character.image?.large,
+  //         ),
+  //     );
 
-    return message.patch(token);
-  });
+  //   return message.patch(token);
+  // });
 
   return message;
 }
