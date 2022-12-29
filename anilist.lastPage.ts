@@ -87,7 +87,8 @@ for (const range of ranges) {
 
       break;
     } catch (e) {
-      // handle the rate limits
+      // handle the rate limit
+      // (see https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting)
       if (e.message?.includes('Too Many Requests')) {
         console.log('sleeping for a minute...');
         await sleep(60);

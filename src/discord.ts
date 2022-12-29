@@ -244,7 +244,7 @@ export class Embed {
     };
   };
 
-  constructor(type: string = 'rich') {
+  constructor(type: 'rich' | 'image' = 'rich') {
     this._data = {
       type,
     };

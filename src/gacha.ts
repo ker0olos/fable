@@ -1,16 +1,20 @@
-// import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
-
-import { rng } from './utils.ts';
+import { rng, sleep } from './utils.ts';
 
 import * as discord from './discord.ts';
 
 import * as anilist from './anilist.ts';
 
-const colors = {
-  background: '#2b2d42',
-  purple: '#6b3ebd',
-  gold: '#feb500',
-  yellow: '#fed33c',
+const URL = 'https://raw.githubusercontent.com/ker0olos/fable/main/assets';
+
+// const colors = {
+//   background: '#2b2d42',
+//   purple: '#6b3ebd',
+//   gold: '#feb500',
+//   yellow: '#fed33c',
+// };
+
+const emotes = {
+  star: '<:fable_star:1058059570305585303>',
 };
 
 export const variables = {
@@ -20,6 +24,8 @@ export const variables = {
     20: anilist.CHARACTER_ROLE.BACKGROUND, // 25% for Background
   },
   ranges: {
+    // whether you get from the far end or the near end
+    // of those ranges is up to total RNG
     65: [0, 50_000], // 65% for 0 -> 50K
     22: [50_000, 100_000], // 22% for 50K -> 100K
     9: [100_000, 200_000], // 9% for 100K -> 200K
@@ -63,39 +69,53 @@ async function roll() {
   return pull;
 }
 
-export function start(_token: string) {
+/** start the roll's animation */
+export function start(token: string) {
   const message = new discord.Message()
     .addEmbed(
       new discord.Embed('image').setImage(
-        'https://raw.githubusercontent.com/ker0olos/fable/main/assets/spinner.gif',
+        `${URL}/spinner.gif`,
       ),
     );
 
-  // roll().then((pull) => {
-  //   const titles = anilist.titles(pull.media);
+  roll().then(async (pull) => {
+    const titles = anilist.titles(pull.media);
 
-  //   const message = new discord.Message()
-  //     .addEmbed(
-  //       new discord.Embed()
-  //         .setTitle(titles.shift()!)
-  //         .setColor(pull.media.coverImage?.color)
-  //         .setImage(
-  //           pull.media.coverImage?.large,
-  //         ),
-  //     )
-  //     .addEmbed(
-  //       new discord.Embed()
-  //         .setAuthor('Debugging (Will be removed)')
-  //         .setTitle(pull.character.name.full)
-  //         .setFooter(`${pull.rating}* -> ${pull.role}`)
-  //         .setColor(pull.media.coverImage?.color)
-  //         .setThumbnail(
-  //           pull.character.image?.large,
-  //         ),
-  //     );
+    let message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setTitle(titles.shift()!)
+          .setImage(
+            pull.media.coverImage?.large,
+          ),
+      );
 
-  //   return message.patch(token);
-  // });
+    await message.patch(token);
+
+    await sleep(1.5);
+
+    message = new discord.Message()
+      .addEmbed(
+        new discord.Embed('image')
+          .setImage(
+            `${URL}/${pull.rating}stars.gif`,
+          ),
+      );
+
+    await message.patch(token);
+
+    await sleep(2);
+
+    message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setAuthor(emotes.star.repeat(pull.rating))
+          .setTitle(pull.character.name.full)
+          .setImage(
+            pull.character.image?.large,
+          ),
+      );
+  });
 
   return message;
 }
