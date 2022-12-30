@@ -111,11 +111,11 @@ export function start(token: string) {
           //   emotes.star.repeat(pull.rating) +
           //     emotes.noStar.repeat(5 - pull.rating),
           // )
-          .addField({ name: pull.character.name.full })
           .addField({
             name: emotes.star.repeat(pull.rating) +
               emotes.noStar.repeat(5 - pull.rating),
           })
+          .addField({ name: pull.character.name.full })
           .setImage(
             pull.character.image?.large,
           ),
