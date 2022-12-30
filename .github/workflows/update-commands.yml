@@ -13,4 +13,12 @@ jobs:
           python-version: "3.x"
           cache: "pip"
       - run: pip install -r requirements.txt
-      - run: python update_commands.py
+      - shell: bash
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          CANARY_ID: ${{ secrets.CANARY_ID }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CANARY_TOKEN: ${{ secrets.CANARY_TOKEN }}
+          GUILD_ID: ${{ secrets.GUILD_ID }}
+        run: |
+          python update_commands.py
