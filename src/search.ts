@@ -168,7 +168,7 @@ export async function character(
       .setStyle(discord.ButtonStyle.Grey)
       .setLabel(
         `${anilist.titles(relation.node).shift()!} (${
-          capitalize(relation.characterRole!)
+          capitalize(relation.node.format!)
         })`,
       ).setId(
         `animanga:${relation.node.id!}`,
