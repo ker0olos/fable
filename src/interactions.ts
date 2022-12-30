@@ -93,7 +93,7 @@ async function handler(request: Request): Promise<Response> {
             })).send();
           case 'next_episode':
             return (await nextEpisode({
-              search: options!['anime'].value as string,
+              search: options!['title'].value as string,
             }))
               .send();
           case 'dice':
@@ -101,6 +101,8 @@ async function handler(request: Request): Promise<Response> {
               id: member!.user.id,
               amount: options!['amount'].value as number,
             }).send();
+          case 'w':
+          case 'pull':
           case 'gacha':
             return gacha.start(token).send();
           default:

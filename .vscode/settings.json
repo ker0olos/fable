@@ -8,7 +8,7 @@
   "python.languageServer": "Pylance",
   "python.linting.enabled": true,
   "python.linting.flake8Enabled": true,
-  "python.analysis.typeCheckingMode": "off",
+  "python.analysis.typeCheckingMode": "basic",
   "python.formatting.provider": "black",
   "[typescript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
