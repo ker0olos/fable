@@ -20,15 +20,13 @@ import * as search from './search.ts';
 import * as dice from './dice.ts';
 import * as gacha from './gacha.ts';
 
-import { appPublicKey, dsn } from './vars.ts';
+import { appPublicKey, dsn, setCanary } from './vars.ts';
 
 async function handler(
   request: Request,
   canary = false,
 ): Promise<Response> {
-  if (canary) {
-    Deno.env.set('CANARY', '1')!;
-  }
+  setCanary(canary);
 
   const { error } = await validateRequest(request, {
     POST: {
