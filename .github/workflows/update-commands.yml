@@ -8,7 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.10' 
-      - run: python set_commands.py
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        cache: 'pip' 
+    - run: pip install requests
+    - run: python set_commands.py
