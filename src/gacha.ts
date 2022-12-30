@@ -115,8 +115,8 @@ export function start(token: string) {
             name: `${
               emotes.star.repeat(pull.rating) +
               emotes.noStar.repeat(5 - pull.rating)
-            }\n\n`,
-            value: `**${pull.character.name.full}**`,
+            }`,
+            value: `\n\n**${pull.character.name.full}**`,
           })
           .setImage(
             pull.character.image?.large,
