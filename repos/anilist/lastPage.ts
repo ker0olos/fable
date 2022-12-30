@@ -1,7 +1,4 @@
-import {
-  gql,
-  GraphQLClient,
-} from 'https://raw.githubusercontent.com/ker0olos/graphql-request/main/mod.ts';
+import { gql, request } from './graphql.ts';
 
 import { sleep } from '../../src/utils.ts';
 
@@ -10,8 +7,6 @@ import { variables } from '../../src/gacha.ts';
 type Data = { [key: string]: number };
 
 const filePath = './lastPage.json';
-
-const client = new GraphQLClient('https://graphql.anilist.co');
 
 const ranges = Object.values(variables.ranges);
 
@@ -55,7 +50,7 @@ async function query(
   const response: {
     pageInfo: PageInfo;
     media: unknown[];
-  } = (await client.request(query, variables)).Page;
+  } = (await request(query, variables)).Page;
 
   return response;
 }

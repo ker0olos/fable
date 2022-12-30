@@ -7,7 +7,7 @@ import * as discord from './discord.ts';
 import * as anilist from '../repos/anilist/index.ts';
 
 export async function nextEpisode({ search }: { search: string }) {
-  const anime = await anilist.getNextAiring({ search });
+  const anime = await anilist.nextEpisode({ search });
 
   const titles = titlesToArray(anime);
 

@@ -1,17 +1,12 @@
-import {
-  gql,
-  GraphQLClient,
-} from 'https://raw.githubusercontent.com/ker0olos/graphql-request/main/mod.ts';
-
 import { randint } from '../../src/utils.ts';
 
-import { Character, CharacterRole, Media } from '../../src/interface.ts';
+import { Character, CharacterRole, Media } from '../../src/repo.interface.ts';
+
+import { gql, request } from './graphql.ts';
 
 import lastPage from './lastPage.json' assert {
   type: 'json',
 };
-
-const client = new GraphQLClient('https://graphql.anilist.co');
 
 export async function media(
   variables: { id?: number; search?: string },
@@ -86,7 +81,9 @@ export async function media(
     Page: {
       media: Media[];
     };
-  } = await client.request(query, variables);
+  } = await request(query, variables);
+
+  console.log(media);
 
   if (!prioritize) {
     return media.Page.media[0];
@@ -139,12 +136,12 @@ export async function character(
     Page: {
       characters: Character[];
     };
-  } = await client.request(query, variables);
+  } = await request(query, variables);
 
   return character.Page.characters[0];
 }
 
-export async function getNextAiring(
+export async function nextEpisode(
   variables: { search: string },
 ): Promise<Media> {
   const query = gql`
@@ -161,7 +158,7 @@ export async function getNextAiring(
     }
   `;
 
-  return (await client.request(query, variables)).Media;
+  return (await request(query, variables)).Media;
 }
 
 export async function pool(
@@ -245,7 +242,7 @@ export async function pool(
         nodes: Character[];
       };
     }[];
-  } = (await client.request(query, variables)).Page;
+  } = (await request(query, variables)).Page;
 
   // query asks for media with popularity_greater than variable
   // but a character in that media might be the MAIN in a [more] popular alterative media
