@@ -226,8 +226,8 @@ export class Embed {
     description?: string;
     color?: number;
     fields?: {
-      name: string;
-      value: string;
+      name?: string;
+      value?: string;
       inline: boolean;
     }[];
     thumbnail?: {
@@ -283,7 +283,7 @@ export class Embed {
     return this;
   }
 
-  addField(name: string, value: string, inline = false) {
+  addField({ name, value }: { name?: string; value?: string }, inline = false) {
     if (!this._data.fields) {
       this._data.fields = [];
     }

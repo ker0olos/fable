@@ -106,11 +106,16 @@ export function start(token: string) {
     message = new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setTitle(pull.character.name.full)
-          .setDescription(
-            emotes.star.repeat(pull.rating) +
+          // .setTitle(pull.character.name.full)
+          // .setDescription(
+          //   emotes.star.repeat(pull.rating) +
+          //     emotes.noStar.repeat(5 - pull.rating),
+          // )
+          .addField({ name: pull.character.name.full })
+          .addField({
+            name: emotes.star.repeat(pull.rating) +
               emotes.noStar.repeat(5 - pull.rating),
-          )
+          })
           .setImage(
             pull.character.image?.large,
           ),
