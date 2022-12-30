@@ -1,5 +1,7 @@
 import nacl from 'https://cdn.skypack.dev/tweetnacl@v1.0.3?dts';
 
+import { Media } from './interface.ts';
+
 export function randint(min: number, max: number) {
   return Math.floor((Math.random()) * (max - min + 1)) + min;
 }
@@ -94,6 +96,16 @@ export function decodeDescription(s?: string): string | undefined {
   s = s.replace(/<a.*?href="(.*?)".*?>(.*?)<\/a>/g, '[$2]($1)');
 
   return s;
+}
+
+export function titlesToArray(media: Media): string[] {
+  const titles = [
+    media.title.english,
+    media.title.romaji,
+    media.title.native,
+  ].filter(Boolean);
+
+  return titles as string[];
 }
 
 export async function verifySignature(

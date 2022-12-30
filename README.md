@@ -2,14 +2,9 @@
 
 ##### [Invite to server](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
 
-> **Note** A work in progress
+> **Note** Bot is still work in progress (Not ready for production)
 
-A free, open-source alternative to Mudae
-
-Responsible for commands like showing info about a specific anime/manga, and
-minigames related to anime/manga.
-
-Heavily powered by [AniList](https://anilist.co/) APIs.
+A free, open-source anime gacha app, alternative to Mudae.
 
 ### Credits
 

@@ -3,21 +3,27 @@ import {
   GraphQLClient,
 } from 'https://raw.githubusercontent.com/ker0olos/graphql-request/main/mod.ts';
 
-import { sleep } from './src/utils.ts';
+import { sleep } from '../../src/utils.ts';
 
-import { PageInfo } from './src/anilist.ts';
-
-import { variables } from './src/gacha.ts';
+import { variables } from '../../src/gacha.ts';
 
 type Data = { [key: string]: number };
 
-const filePath = './anilist.lastPage.json';
+const filePath = './lastPage.json';
 
 const client = new GraphQLClient('https://graphql.anilist.co');
 
 const ranges = Object.values(variables.ranges);
 
 const data: Data = {};
+
+type PageInfo = {
+  total: number;
+  currentPage: number;
+  lastPage: number;
+  hasNextPage: boolean;
+  perPage: number;
+};
 
 const previousData = (await import(filePath, {
   assert: { type: 'json' },

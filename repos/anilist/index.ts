@@ -3,171 +3,17 @@ import {
   GraphQLClient,
 } from 'https://raw.githubusercontent.com/ker0olos/graphql-request/main/mod.ts';
 
-import { randint } from './utils.ts';
+import { randint } from '../../src/utils.ts';
 
-import lastPage from '../anilist.lastPage.json' assert { type: 'json' };
+import { Character, CHARACTER_ROLE, Media } from '../../src/interface.ts';
+
+import lastPage from './lastPage.json' assert {
+  type: 'json',
+};
 
 const client = new GraphQLClient('https://graphql.anilist.co');
 
-export enum TYPE {
-  'ANIME' = 'ANIME',
-  'MANGA' = 'MANGA',
-}
-
-export enum RELATION_TYPE {
-  'ADAPTATION' = 'ADAPTATION',
-  'PREQUEL' = 'PREQUEL',
-  'SEQUEL' = 'SEQUEL',
-  'PARENT' = 'PARENT',
-  'SIDE_STORY' = 'SIDE_STORY',
-  'CHARACTER' = 'CHARACTER',
-  'SUMMARY' = 'SUMMARY',
-  'ALTERNATIVE' = 'ALTERNATIVE',
-  'SPIN_OFF' = 'SPIN_OFF',
-  'OTHER' = 'OTHER',
-  'SOURCE' = 'SOURCE',
-  'COMPILATION' = 'COMPILATION',
-  'CONTAINS' = 'CONTAINS',
-}
-
-export enum STATUS {
-  'FINISHED' = 'FINISHED',
-  'RELEASING' = 'RELEASING',
-  'NOT_YET_RELEASED' = 'NOT_YET_RELEASED',
-  'CANCELLED' = 'CANCELLED',
-  'HIATUS' = 'HIATUS',
-}
-
-export enum FORMAT {
-  'TV' = 'TV',
-  'TV_SHORT' = 'TV_SHORT',
-  'MOVIE' = 'MOVIE',
-  'SPECIAL' = 'SPECIAL',
-  'OVA' = 'OVA',
-  'ONA' = 'ONA',
-  'MUSIC' = 'MUSIC',
-  'MANGA' = 'MANGA',
-  'NOVEL' = 'NOVEL',
-  'ONE_SHOT' = 'ONE_SHOT',
-}
-
-export enum CHARACTER_ROLE {
-  'MAIN' = 'MAIN',
-  'SUPPORTING' = 'SUPPORTING',
-  'BACKGROUND' = 'BACKGROUND',
-}
-
-export type PageInfo = {
-  total: number;
-  currentPage: number;
-  lastPage: number;
-  hasNextPage: boolean;
-  perPage: number;
-};
-
-export type Media = {
-  type: TYPE;
-  format: FORMAT;
-  title: {
-    english?: string;
-    romaji?: string;
-    native?: string;
-  };
-  externalLinks: {
-    site: string;
-    url: string;
-  }[];
-  nextAiringEpisode?: {
-    airingAt?: number;
-  };
-  id?: number;
-  status: STATUS;
-  relations: {
-    edges: {
-      relationType: RELATION_TYPE;
-      node: Media;
-    }[];
-  };
-  popularity?: number;
-  description?: string;
-  characters?: {
-    nodes?: Character[];
-    edges?: { role: CHARACTER_ROLE; node: Character }[];
-  };
-  coverImage?: {
-    extraLarge: string;
-    large: string;
-    medium: string;
-    color?: string;
-  };
-  trailer?: {
-    id: string;
-    site: string;
-  };
-};
-
-export type Character = {
-  name: {
-    full: string;
-    native?: string;
-    alternative?: string[];
-    alternativeSpoiler?: string[];
-  };
-  id?: number;
-  description?: string;
-  gender?: string;
-  age?: string;
-  image?: {
-    large: string;
-  };
-  media?: {
-    nodes?: Media[];
-    edges?: { characterRole: CHARACTER_ROLE; node: Media }[];
-  };
-};
-
-type Pull = {
-  media: Media;
-  character: Character;
-  role: CHARACTER_ROLE;
-  rating: number;
-};
-
-function rate(role: CHARACTER_ROLE, popularity: number) {
-  if (role === CHARACTER_ROLE.BACKGROUND || popularity < 50_000) {
-    return 1;
-  }
-
-  if (popularity < 200_000) {
-    if (role === CHARACTER_ROLE.MAIN) {
-      return 3;
-    }
-
-    return 2;
-  }
-
-  if (popularity < 400_000) {
-    if (role === CHARACTER_ROLE.MAIN) {
-      return 4;
-    }
-
-    return 3;
-  }
-
-  if (popularity > 400_000) {
-    if (role === CHARACTER_ROLE.MAIN) {
-      return 5;
-    }
-
-    return 4;
-  }
-
-  throw new Error(
-    `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
-  );
-}
-
-export async function animanga(
+export async function media(
   variables: { id?: number; search?: string },
   prioritize?: 'anime' | 'manga',
 ): Promise<Media | undefined> {
@@ -325,9 +171,9 @@ export async function pool(
     role: CHARACTER_ROLE;
   },
   retry = 1,
-): Promise<Pull[]> {
+): Promise<Character[]> {
   const results: {
-    [character_id: number]: Pull;
+    [character_id: number]: Character;
   } = {};
 
   const key = JSON.stringify([
@@ -346,7 +192,7 @@ export async function pool(
           # FIXME only requests the first page
           # nearly impossible to fix, given the fact that
           # we're using a workaround for the same issue on media
-          # which is only possible because that was a series of predictable queries
+          # which is only possible because that was a set of predictable queries
           # (see https://github.com/ker0olos/fable/issues/9)
           characters(sort: RELEVANCE, role: $role, perPage: 25) {
             nodes {
@@ -410,9 +256,9 @@ export async function pool(
 
   response.media!.forEach(({ characters }) => {
     characters.nodes.forEach((character) => {
-      // some characters can be MAIN in their own spinoffs series
-      // prefer less popular series if character is MAIN
-      const mainIndex = character.media?.edges!.findIndex((edges) =>
+      // some characters can be MAIN in their own spinoffs media
+      // prefer less popular media if character is MAIN
+      const index = character.media?.edges!.findIndex((edges) =>
         edges.characterRole === CHARACTER_ROLE.MAIN
       )!;
 
@@ -421,20 +267,24 @@ export async function pool(
         characterRole,
         // the first [0] is always the most popular media
         // the character stars in (according to the query)
-      } = character.media?.edges![mainIndex !== -1 ? mainIndex : 0]!;
+      } = character.media?.edges!.splice(index || 0, 1)[0]!;
 
       // only overwrite the entry if we found the character
       // in a media with higher popularity than existing
-      if (results[character.id!]?.media?.popularity! >= node.popularity!) {
+      if (
+        results[character.id!]?.media!.edges![0].node.popularity! >=
+          node.popularity!
+      ) {
         return;
       }
 
-      results[character.id!] = {
-        character,
-        media: node!,
-        role: characterRole!,
-        rating: rate(characterRole!, node!.popularity!),
-      };
+      character.media!.edges = [
+        {
+          characterRole: characterRole!,
+          node: node!,
+        },
+        ...character.media?.edges!,
+      ];
     });
   });
 
@@ -453,14 +303,4 @@ export async function pool(
   }
 
   return _;
-}
-
-export function titles(media: Media): string[] {
-  const titles = [
-    media.title.english,
-    media.title.romaji,
-    media.title.native,
-  ].filter(Boolean);
-
-  return titles as string[];
 }

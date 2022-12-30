@@ -13,7 +13,6 @@ import { verifySignature } from './utils.ts';
 
 import * as discord from './discord.ts';
 
-import { translate } from './translate.ts';
 import { nextEpisode } from './schedule.ts';
 
 import * as search from './search.ts';
@@ -70,16 +69,9 @@ async function handler(request: Request): Promise<Response> {
     switch (type) {
       case discord.InteractionType.Command:
         switch (name) {
-          case 'native':
-          case 'english':
-          case 'romaji':
-            return (await translate({
-              lang: name,
-              search: options!['title'].value as string,
-            })).send();
           case 'anime':
           case 'manga':
-            return (await search.animanga({
+            return (await search.media({
               search: options!['query'].value as string,
             }, name)).send();
           case 'character':
@@ -102,6 +94,7 @@ async function handler(request: Request): Promise<Response> {
               amount: options!['amount'].value as number,
             }).send();
           case 'w':
+          case 'roll':
           case 'pull':
           case 'gacha':
             return gacha.start(token).send();
@@ -111,8 +104,8 @@ async function handler(request: Request): Promise<Response> {
         break;
       case discord.InteractionType.Component:
         switch (customType) {
-          case 'animanga':
-            return (await search.animanga({
+          case 'media':
+            return (await search.media({
               id: parseInt(customValues![0]),
             })).setType(discord.MessageType.Update).send();
           default:

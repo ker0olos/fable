@@ -1,4 +1,4 @@
-name: Update last page values
+name: Update anilist last page cache
 
 on:
   workflow_dispatch:
@@ -13,18 +13,18 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno run --allow-all ./anilist.lastPage.ts
+      - run: deno run --allow-all ./repos/anilist/lastPage.ts
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          title: 'Updated "anilist.lastPage.json'
-          commit-message: Updated "anilist.lastPage.json"
-          branch: bot/anilist-workarounds/last-page
+          title: 'Updated "anilist/lastPage.json'
+          commit-message: Updated "anilist/lastPage.json"
+          branch: anilist/last-page
           delete-branch: true
           body: |
             Workaround AniList API's invalid page info (See #9)
 
-            Updated the last page values for each possible query
+            Updated the last page cache for each possible gacha query
           labels: |
             anilist
             

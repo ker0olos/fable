@@ -1,23 +1,25 @@
-import { capitalize } from './utils.ts';
+import { capitalize, titlesToArray } from './utils.ts';
+
+import { FORMAT, RELATION_TYPE } from './interface.ts';
 
 import * as discord from './discord.ts';
 
-import * as anilist from './anilist.ts';
+import * as anilist from '../repos/anilist/index.ts';
 
-export async function animanga(
+export async function media(
   { id, search }: {
     id?: number;
     search?: string;
   },
   prioritize?: 'anime' | 'manga',
 ) {
-  const media = await anilist.animanga(id ? { id } : { search }, prioritize);
+  const media = await anilist.media(id ? { id } : { search }, prioritize);
 
   if (!media) {
     throw new Error('404');
   }
 
-  const titles = anilist.titles(media);
+  const titles = titlesToArray(media);
 
   const message = new discord.Message();
 
@@ -78,30 +80,30 @@ export async function animanga(
       .setStyle(discord.ButtonStyle.Grey);
 
     switch (relation.relationType) {
-      case anilist.RELATION_TYPE.PREQUEL:
-      case anilist.RELATION_TYPE.SEQUEL:
-      case anilist.RELATION_TYPE.SIDE_STORY:
-      case anilist.RELATION_TYPE.SPIN_OFF: {
+      case RELATION_TYPE.PREQUEL:
+      case RELATION_TYPE.SEQUEL:
+      case RELATION_TYPE.SIDE_STORY:
+      case RELATION_TYPE.SPIN_OFF: {
         component
           .setLabel(
-            `${anilist.titles(relation.node).shift()!} (${
+            `${titlesToArray(relation.node).shift()!} (${
               capitalize(relation.relationType!)
             })`,
           ).setId(
-            `animanga:${relation.node.id!}`,
+            `media:${relation.node.id!}`,
           );
         secondaryGroup.push(component);
         break;
       }
-      case anilist.RELATION_TYPE.ADAPTATION: {
+      case RELATION_TYPE.ADAPTATION: {
         component
           .setLabel(
-            `${anilist.titles(relation.node).shift()!} (${
+            `${titlesToArray(relation.node).shift()!} (${
               capitalize(relation.node.format!)
             })`,
           )
           .setId(
-            `animanga:${relation.node.id!}`,
+            `media:${relation.node.id!}`,
           );
 
         secondaryGroup.push(component);
@@ -112,7 +114,7 @@ export async function animanga(
     }
 
     switch (relation.node.format) {
-      case anilist.FORMAT.MUSIC: {
+      case FORMAT.MUSIC: {
         component
           .setLabel(
             (relation.node.title.english || relation.node.title.romaji ||
@@ -167,11 +169,11 @@ export async function character(
     const component = new discord.Component()
       .setStyle(discord.ButtonStyle.Grey)
       .setLabel(
-        `${anilist.titles(relation.node).shift()!} (${
+        `${titlesToArray(relation.node).shift()!} (${
           capitalize(relation.node.format!)
         })`,
       ).setId(
-        `animanga:${relation.node.id!}`,
+        `media:${relation.node.id!}`,
       );
 
     group.push(component);
@@ -187,7 +189,7 @@ export async function themes(
     search?: string;
   },
 ) {
-  const media = await anilist.animanga({ search });
+  const media = await anilist.media({ search });
 
   if (!media) {
     throw new Error('404');
@@ -196,7 +198,7 @@ export async function themes(
   const message = new discord.Message();
 
   media.relations?.edges.forEach((relation) => {
-    if (relation.node.format === anilist.FORMAT.MUSIC) {
+    if (relation.node.format === FORMAT.MUSIC) {
       const component = new discord.Component()
         .setLabel(
           (relation.node.title.english || relation.node.title.romaji ||

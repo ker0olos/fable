@@ -78,95 +78,64 @@ def delete_command(command_id):
 
 set_commands(
     make_command(
-        "anime",
-        "Search for an anime/manga",
+        name="anime",
+        desc="Search for an anime/manga",
         aliases=["manga"],
         options=[
             Option(
-                "query",
-                "The title for an anime/manga",
+                name="query",
+                desc="The title for an anime/manga",
                 type=Type.STRING,
             )
         ],
     )
     + make_command(
-        "character",
-        "Search for a character",
+        name="character",
+        desc="Search for a character",
         options=[
             Option(
-                "query",
-                "The title of the character",
+                name="query",
+                desc="The title of the character",
                 type=Type.STRING,
             )
         ],
     )
     + make_command(
-        "songs",
-        "Search for the OP/ED and theme songs of an anime",
+        name="songs",
+        desc="Search for the OP/ED and theme songs of an anime",
         aliases=["themes"],
         options=[
             Option(
-                "query",
-                "The title for an anime/manga",
+                name="query",
+                desc="The title for an anime/manga",
                 type=Type.STRING,
             )
         ],
     )
     + make_command(
-        "next_episode",
-        "Find when is the next episode for an anime",
+        name="next_episode",
+        desc="Find when is the next episode for an anime",
         options=[
             Option(
-                "title",
-                "The title for an anime",
+                name="title",
+                desc="The title for an anime",
                 type=Type.STRING,
             )
         ],
     )
     + make_command(
-        "dice",
-        "Roll a ten-sided dice",
+        name="gacha",
+        desc="An experimental/ephemeral gacha command",
+        aliases=["w", "pull", "roll"],
+    )
+    + make_command(
+        name="dice",
+        desc="Roll a ten-sided dice",
         options=[
             Option(
-                "amount",
-                "The number of dices to roll",
+                name="amount",
+                desc="The number of dices to roll",
                 type=Type.INTEGER,
-            )
-        ],
-    )
-    + make_command(
-        "gacha", "An experimental/ephemeral gacha command", aliases=["w", "pull"]
-    )
-    + make_command(
-        "english",
-        "Translate an anime/manga title to english",
-        options=[
-            Option(
-                "title",
-                "The title of an anime/manga name in romaji or native",
-                type=Type.STRING,
-            )
-        ],
-    )
-    + make_command(
-        "romaji",
-        "Translate an anime/manga title to romaji",
-        options=[
-            Option(
-                "title",
-                "The title of an anime/manga name in english or native",
-                type=Type.STRING,
-            )
-        ],
-    )
-    + make_command(
-        "native",
-        "Translate an anime/manga title to its native language",
-        options=[
-            Option(
-                "title",
-                "The title of an anime/manga name in english or romaji",
-                type=Type.STRING,
             )
         ],
     )

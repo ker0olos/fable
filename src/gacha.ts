@@ -1,8 +1,10 @@
-import { rng, sleep } from './utils.ts';
+import { rng, sleep, titlesToArray } from './utils.ts';
+
+import { CHARACTER_ROLE } from './interface.ts';
 
 import * as discord from './discord.ts';
 
-import * as anilist from './anilist.ts';
+import * as anilist from '../repos/anilist/index.ts';
 
 const URL = 'https://raw.githubusercontent.com/ker0olos/fable/main/assets';
 
@@ -20,9 +22,9 @@ const emotes = {
 
 export const variables = {
   roles: {
-    10: anilist.CHARACTER_ROLE.MAIN, // 10% for Main
-    70: anilist.CHARACTER_ROLE.SUPPORTING, // 65% for Supporting
-    20: anilist.CHARACTER_ROLE.BACKGROUND, // 25% for Background
+    10: CHARACTER_ROLE.MAIN, // 10% for Main
+    70: CHARACTER_ROLE.SUPPORTING, // 65% for Supporting
+    20: CHARACTER_ROLE.BACKGROUND, // 25% for Background
   },
   ranges: {
     // whether you get from the far end or the near end
@@ -44,7 +46,7 @@ async function roll() {
   // most media in that range only include information about main characters
   // which cases the pool to return empty
   if (range[0]! === 0) {
-    role = anilist.CHARACTER_ROLE.MAIN;
+    role = CHARACTER_ROLE.MAIN;
   }
 
   const pool = await anilist.pool({
@@ -76,14 +78,19 @@ export function start(token: string) {
     );
 
   roll().then(async (pull) => {
-    const titles = anilist.titles(pull.media);
+    const media = pull.media!.edges![0].node;
+    const role = pull.media!.edges![0].characterRole;
+
+    const titles = titlesToArray(media);
+
+    const rating = rate(role, media.popularity!);
 
     let message = new discord.Message()
       .addEmbed(
         new discord.Embed()
           .setTitle(titles[0]!)
           .setImage(
-            pull.media.coverImage?.large,
+            media.coverImage?.large,
           ),
       );
 
@@ -95,7 +102,7 @@ export function start(token: string) {
       .addEmbed(
         new discord.Embed('image')
           .setImage(
-            `${URL}/${pull.rating}stars.gif`,
+            `${URL}/${rating}stars.gif`,
           ),
       );
 
@@ -106,14 +113,12 @@ export function start(token: string) {
     message = new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setTitle(pull.character.name.full)
+          .setTitle(pull.name.full)
           .setDescription(
-            `${emotes.star.repeat(pull.rating)}${
-              emotes.noStar.repeat(5 - pull.rating)
-            }`,
+            `${emotes.star.repeat(rating)}${emotes.noStar.repeat(5 - rating)}`,
           )
           .setImage(
-            pull.character.image?.large,
+            pull.image?.large,
           ),
       );
 
@@ -121,4 +126,38 @@ export function start(token: string) {
   });
 
   return message;
+}
+
+function rate(role: CHARACTER_ROLE, popularity: number) {
+  if (role === CHARACTER_ROLE.BACKGROUND || popularity < 50_000) {
+    return 1;
+  }
+
+  if (popularity < 200_000) {
+    if (role === CHARACTER_ROLE.MAIN) {
+      return 3;
+    }
+
+    return 2;
+  }
+
+  if (popularity < 400_000) {
+    if (role === CHARACTER_ROLE.MAIN) {
+      return 4;
+    }
+
+    return 3;
+  }
+
+  if (popularity > 400_000) {
+    if (role === CHARACTER_ROLE.MAIN) {
+      return 5;
+    }
+
+    return 4;
+  }
+
+  throw new Error(
+    `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
+  );
 }
