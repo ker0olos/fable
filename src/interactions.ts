@@ -76,11 +76,13 @@ async function handler(request: Request): Promise<Response> {
               lang: name,
               search: options!['title'].value as string,
             })).send();
-          case 'search':
+          case 'anime':
+          case 'manga':
             return (await search({
               search: options!['query'].value as string,
             })).send();
           case 'songs':
+          case 'themes':
             return (await songs({
               search: options!['query'].value as string,
             })).send();

@@ -48,7 +48,19 @@ def delete_command(command_id):
 set_commands(
     [
         {
-            "name": "search",
+            "name": "anime",
+            "description": "Search for an anime/manga",
+            "options": [
+                {
+                    "type": STRING,
+                    "name": "query",
+                    "description": "The title for an anime/manga",
+                    "required": True,
+                }
+            ],
+        },
+        {
+            "name": "manga",
             "description": "Search for an anime/manga",
             "options": [
                 {
@@ -73,6 +85,18 @@ set_commands(
         },
         {
             "name": "songs",
+            "description": "Search for the theme songs of an anime",
+            "options": [
+                {
+                    "type": STRING,
+                    "name": "query",
+                    "description": "The title of an anime/manga",
+                    "required": True,
+                }
+            ],
+        },
+        {
+            "name": "themes",
             "description": "Search for the theme songs of an anime",
             "options": [
                 {
