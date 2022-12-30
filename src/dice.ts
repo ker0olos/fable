@@ -2,7 +2,7 @@ import { randint } from './utils.ts';
 
 import * as discord from './discord.ts';
 
-export function roll({ id, amount }: { id: string; amount: number }) {
+export function roll({ user, amount }: { user: discord.User; amount: number }) {
   const rolls = [];
 
   const dieSize = 10;
@@ -26,7 +26,7 @@ export function roll({ id, amount }: { id: string; amount: number }) {
     `\`${amount}d${dieSize}>=${minSuccess}\` \n = [ ${equation} ] \n = **${successes}** ${plural}`;
 
   const message = new discord.Message().setContent(
-    `<@${id}> ${rolledNumber}`,
+    `<@${user.id}> ${rolledNumber}`,
   );
 
   return message;

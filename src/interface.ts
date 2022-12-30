@@ -1,9 +1,9 @@
-export enum TYPE {
+export enum Type {
   'ANIME' = 'ANIME',
   'MANGA' = 'MANGA',
 }
 
-export enum RELATION_TYPE {
+export enum RelationType {
   'ADAPTATION' = 'ADAPTATION',
   'PREQUEL' = 'PREQUEL',
   'SEQUEL' = 'SEQUEL',
@@ -19,7 +19,7 @@ export enum RELATION_TYPE {
   'CONTAINS' = 'CONTAINS',
 }
 
-export enum STATUS {
+export enum Status {
   'FINISHED' = 'FINISHED',
   'RELEASING' = 'RELEASING',
   'NOT_YET_RELEASED' = 'NOT_YET_RELEASED',
@@ -27,7 +27,7 @@ export enum STATUS {
   'HIATUS' = 'HIATUS',
 }
 
-export enum FORMAT {
+export enum Format {
   'TV' = 'TV',
   'TV_SHORT' = 'TV_SHORT',
   'MOVIE' = 'MOVIE',
@@ -40,15 +40,15 @@ export enum FORMAT {
   'ONE_SHOT' = 'ONE_SHOT',
 }
 
-export enum CHARACTER_ROLE {
+export enum CharacterRole {
   'MAIN' = 'MAIN',
   'SUPPORTING' = 'SUPPORTING',
   'BACKGROUND' = 'BACKGROUND',
 }
 
 export type Media = {
-  type: TYPE;
-  format: FORMAT;
+  type: Type;
+  format: Format;
   title: {
     english?: string;
     romaji?: string;
@@ -62,10 +62,10 @@ export type Media = {
     airingAt?: number;
   };
   id?: number;
-  status: STATUS;
+  status: Status;
   relations: {
     edges: {
-      relationType: RELATION_TYPE;
+      relationType: RelationType;
       node: Media;
     }[];
   };
@@ -73,7 +73,7 @@ export type Media = {
   description?: string;
   characters?: {
     nodes?: Character[];
-    edges?: { role: CHARACTER_ROLE; node: Character }[];
+    edges?: { role: CharacterRole; node: Character }[];
   };
   coverImage?: {
     extraLarge: string;
@@ -103,6 +103,6 @@ export type Character = {
   };
   media?: {
     nodes?: Media[];
-    edges?: { characterRole: CHARACTER_ROLE; node: Media }[];
+    edges?: { characterRole: CharacterRole; node: Media }[];
   };
 };

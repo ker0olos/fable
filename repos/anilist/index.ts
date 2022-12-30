@@ -5,7 +5,7 @@ import {
 
 import { randint } from '../../src/utils.ts';
 
-import { Character, CHARACTER_ROLE, Media } from '../../src/interface.ts';
+import { Character, CharacterRole, Media } from '../../src/interface.ts';
 
 import lastPage from './lastPage.json' assert {
   type: 'json',
@@ -168,7 +168,7 @@ export async function pool(
   variables: {
     popularity_greater: number;
     popularity_lesser?: number;
-    role: CHARACTER_ROLE;
+    role: CharacterRole;
   },
   retry = 1,
 ): Promise<Character[]> {
@@ -259,7 +259,7 @@ export async function pool(
       // some characters can be MAIN in their own spinoffs media
       // prefer less popular media if character is MAIN
       const index = character.media?.edges!.findIndex((edges) =>
-        edges.characterRole === CHARACTER_ROLE.MAIN
+        edges.characterRole === CharacterRole.MAIN
       )!;
 
       const {

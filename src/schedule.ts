@@ -1,6 +1,6 @@
 import { titlesToArray } from './utils.ts';
 
-import { STATUS } from './interface.ts';
+import { Status } from './interface.ts';
 
 import * as discord from './discord.ts';
 
@@ -14,25 +14,25 @@ export async function nextEpisode({ search }: { search: string }) {
   const message = new discord.Message();
 
   switch (anime.status) {
-    case STATUS.RELEASING:
+    case Status.RELEASING:
       message.setContent(
         `The next episode of \`${titles.shift()}\` is <t:${
           anime.nextAiringEpisode!.airingAt
         }:R>.`,
       );
       break;
-    case STATUS.NOT_YET_RELEASED:
+    case Status.NOT_YET_RELEASED:
       message.setContent(
         `\`${titles.shift()}\` is coming soon.`,
       );
       break;
-    case STATUS.HIATUS:
+    case Status.HIATUS:
       message.setContent(
         `\`${titles.shift()}\` is taking a short break.`,
       );
       break;
-    case STATUS.FINISHED:
-    case STATUS.CANCELLED:
+    case Status.FINISHED:
+    case Status.CANCELLED:
       message.setContent(
         `Unfortunately, \`${titles.shift()}\` has already aired its final episode.`,
       );

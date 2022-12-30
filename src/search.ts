@@ -1,6 +1,6 @@
 import { capitalize, titlesToArray } from './utils.ts';
 
-import { FORMAT, RELATION_TYPE } from './interface.ts';
+import { Format, RelationType } from './interface.ts';
 
 import * as discord from './discord.ts';
 
@@ -80,10 +80,10 @@ export async function media(
       .setStyle(discord.ButtonStyle.Grey);
 
     switch (relation.relationType) {
-      case RELATION_TYPE.PREQUEL:
-      case RELATION_TYPE.SEQUEL:
-      case RELATION_TYPE.SIDE_STORY:
-      case RELATION_TYPE.SPIN_OFF: {
+      case RelationType.PREQUEL:
+      case RelationType.SEQUEL:
+      case RelationType.SIDE_STORY:
+      case RelationType.SPIN_OFF: {
         component
           .setLabel(
             `${titlesToArray(relation.node).shift()!} (${
@@ -95,7 +95,7 @@ export async function media(
         secondaryGroup.push(component);
         break;
       }
-      case RELATION_TYPE.ADAPTATION: {
+      case RelationType.ADAPTATION: {
         component
           .setLabel(
             `${titlesToArray(relation.node).shift()!} (${
@@ -114,7 +114,7 @@ export async function media(
     }
 
     switch (relation.node.format) {
-      case FORMAT.MUSIC: {
+      case Format.MUSIC: {
         component
           .setLabel(
             (relation.node.title.english || relation.node.title.romaji ||
@@ -198,7 +198,7 @@ export async function themes(
   const message = new discord.Message();
 
   media.relations?.edges.forEach((relation) => {
-    if (relation.node.format === FORMAT.MUSIC) {
+    if (relation.node.format === Format.MUSIC) {
       const component = new discord.Component()
         .setLabel(
           (relation.node.title.english || relation.node.title.romaji ||

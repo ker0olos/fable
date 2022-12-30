@@ -1,6 +1,6 @@
 import { rng, sleep, titlesToArray } from './utils.ts';
 
-import { CHARACTER_ROLE } from './interface.ts';
+import { CharacterRole } from './interface.ts';
 
 import * as discord from './discord.ts';
 
@@ -22,9 +22,9 @@ const emotes = {
 
 export const variables = {
   roles: {
-    10: CHARACTER_ROLE.MAIN, // 10% for Main
-    70: CHARACTER_ROLE.SUPPORTING, // 65% for Supporting
-    20: CHARACTER_ROLE.BACKGROUND, // 25% for Background
+    10: CharacterRole.MAIN, // 10% for Main
+    70: CharacterRole.SUPPORTING, // 65% for Supporting
+    20: CharacterRole.BACKGROUND, // 25% for Background
   },
   ranges: {
     // whether you get from the far end or the near end
@@ -46,7 +46,7 @@ async function roll() {
   // most media in that range only include information about main characters
   // which cases the pool to return empty
   if (range[0]! === 0) {
-    role = CHARACTER_ROLE.MAIN;
+    role = CharacterRole.MAIN;
   }
 
   const pool = await anilist.pool({
@@ -69,7 +69,7 @@ async function roll() {
 }
 
 /** start the roll's animation */
-export function start(token: string) {
+export function start({ token }: { token: string }) {
   const message = new discord.Message()
     .addEmbed(
       new discord.Embed('image').setImage(
@@ -128,13 +128,13 @@ export function start(token: string) {
   return message;
 }
 
-function rate(role: CHARACTER_ROLE, popularity: number) {
-  if (role === CHARACTER_ROLE.BACKGROUND || popularity < 50_000) {
+function rate(role: CharacterRole, popularity: number) {
+  if (role === CharacterRole.BACKGROUND || popularity < 50_000) {
     return 1;
   }
 
   if (popularity < 200_000) {
-    if (role === CHARACTER_ROLE.MAIN) {
+    if (role === CharacterRole.MAIN) {
       return 3;
     }
 
@@ -142,7 +142,7 @@ function rate(role: CHARACTER_ROLE, popularity: number) {
   }
 
   if (popularity < 400_000) {
-    if (role === CHARACTER_ROLE.MAIN) {
+    if (role === CharacterRole.MAIN) {
       return 4;
     }
 
@@ -150,7 +150,7 @@ function rate(role: CHARACTER_ROLE, popularity: number) {
   }
 
   if (popularity > 400_000) {
-    if (role === CHARACTER_ROLE.MAIN) {
+    if (role === CharacterRole.MAIN) {
       return 5;
     }
 

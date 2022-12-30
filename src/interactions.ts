@@ -90,14 +90,14 @@ async function handler(request: Request): Promise<Response> {
               .send();
           case 'dice':
             return dice.roll({
-              id: member!.user.id,
+              user: member!.user,
               amount: options!['amount'].value as number,
             }).send();
           case 'w':
           case 'roll':
           case 'pull':
           case 'gacha':
-            return gacha.start(token).send();
+            return gacha.start({ token }).send();
           default:
             break;
         }
