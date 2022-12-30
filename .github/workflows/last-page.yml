@@ -1,4 +1,4 @@
-name: Update the last page value for each possible query  
+name: Update last page values
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
     - cron: '0 0 * * 0' # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
 
 jobs:
-  update:
+  update-last-page:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -22,8 +22,9 @@ jobs:
           branch: bot/anilist-workarounds/last-page
           delete-branch: true
           body: |
-            Update the last page value for each possible query.
             Workaround AniList API's invalid page info (See #9)
+
+            Updated the last page values for each possible query
           labels: |
             anilist
             

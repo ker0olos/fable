@@ -293,6 +293,7 @@ export async function pool(
     popularity_lesser?: number;
     role: CHARACTER_ROLE;
   },
+  retry = 1,
 ): Promise<Pull[]> {
   const results: {
     [character_id: number]: Pull;
@@ -406,15 +407,21 @@ export async function pool(
     });
   });
 
-  const pool = Object.values(results);
+  const _ = Object.values(results);
 
-  if (!pool?.length) {
-    throw new Error(
-      `failed to create a pool with ${JSON.stringify({ ...variables, page })}`,
-    );
+  if (!_?.length) {
+    if (retry >= 3) {
+      throw new Error(
+        `failed to create a pool with ${
+          JSON.stringify({ ...variables, page })
+        }`,
+      );
+    } else {
+      return await pool(variables, retry + 1);
+    }
   }
 
-  return pool;
+  return _;
 }
 
 export function titles(media: Media): string[] {
