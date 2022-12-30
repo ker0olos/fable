@@ -106,14 +106,14 @@ export function start(token: string) {
     message = new discord.Message()
       .addEmbed(
         new discord.Embed()
-          // .setTitle(pull.character.name.full)
+          .setTitle(pull.character.name.full)
           // .setDescription(emotes.star.repeat(pull.rating))
           .addField(
-            pull.character.name.full,
+            '',
             emotes.star.repeat(pull.rating) +
               emotes.noStar.repeat(5 - pull.rating),
           )
-          .setAuthor(titles[0]!)
+          .setFooter(titles[0]!)
           .setImage(
             pull.character.image?.large,
           ),
