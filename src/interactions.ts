@@ -20,9 +20,16 @@ import * as search from './search.ts';
 import * as dice from './dice.ts';
 import * as gacha from './gacha.ts';
 
-const publicKey = Deno.env.get('APP_PUBLIC_KEY')!;
+import { appPublicKey, dsn } from './vars.ts';
 
-async function handler(request: Request): Promise<Response> {
+async function handler(
+  request: Request,
+  canary = false,
+): Promise<Response> {
+  if (canary) {
+    Deno.env.set('CANARY', '1')!;
+  }
+
   const { error } = await validateRequest(request, {
     POST: {
       headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
@@ -38,7 +45,7 @@ async function handler(request: Request): Promise<Response> {
 
   const { valid, body } = await verifySignature(
     request,
-    publicKey,
+    appPublicKey(),
   );
 
   if (!valid) {
@@ -134,9 +141,10 @@ async function handler(request: Request): Promise<Response> {
 }
 
 init({
-  dsn: Deno.env.get('SENTRY_DNS'),
+  dsn,
 });
 
 serve({
-  '/': handler,
+  '/': (r) => handler(r),
+  '/canary': (r) => handler(r, true),
 });

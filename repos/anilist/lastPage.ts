@@ -1,8 +1,8 @@
-import { gql, request } from './graphql.ts';
-
 import { sleep } from '../../src/utils.ts';
 
 import { variables } from '../../src/gacha.ts';
+
+import { gql, request } from './graphql.ts';
 
 type Data = { [key: string]: number };
 
