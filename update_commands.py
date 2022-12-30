@@ -1,4 +1,5 @@
 import os
+import sys
 from enum import Enum
 from typing import List
 
@@ -72,6 +73,8 @@ def make_command(
 
 
 def set_commands(commands):
+    print(os.getenv("GITHUB_REF_NAME"), APP_ID, GUILD_ID)
+
     if PROD:
         print("Updating global commands for production bot\n\n")
     else:
@@ -79,8 +82,12 @@ def set_commands(commands):
 
     response = requests.put(
         url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=commands
-    )
-    print(response.json())
+    ).json()
+
+    print(response)
+
+    if "code" in response:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

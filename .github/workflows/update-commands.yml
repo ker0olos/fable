@@ -13,4 +13,4 @@ jobs:
           python-version: "3.x"
           cache: "pip"
       - run: pip install -r requirements.txt
-      - run: python set_commands.py
+      - run: python update_commands.py
