@@ -4,13 +4,14 @@ import * as discord from './discord.ts';
 
 import * as anilist from './anilist.ts';
 
-export async function search(
+export async function animanga(
   { id, search }: {
     id?: number;
     search?: string;
   },
+  prioritize?: 'anime' | 'manga',
 ) {
-  const media = await anilist.search(id ? { id } : { search });
+  const media = await anilist.animanga(id ? { id } : { search }, prioritize);
 
   if (!media) {
     throw new Error('404');
@@ -19,10 +20,6 @@ export async function search(
   const titles = anilist.titles(media);
 
   const message = new discord.Message();
-
-  if (!media) {
-    throw new Error('404');
-  }
 
   message.addEmbed(
     new discord.Embed()
@@ -131,12 +128,41 @@ export async function search(
   return message;
 }
 
-export async function songs(
+export async function character(
+  { id, search }: {
+    id?: number;
+    search?: string;
+  },
+) {
+  const character = await anilist.character(id ? { id } : { search });
+
+  if (!character) {
+    throw new Error('404');
+  }
+
+  const message = new discord.Message()
+    .addEmbed(
+      new discord.Embed()
+        .setTitle(character.name.full)
+        .setDescription(character.description)
+        .setImage(character.image?.large)
+        .setFooter(
+          [
+            character.gender,
+            character!.age,
+          ].filter(Boolean).join(', '),
+        ),
+    );
+
+  return message;
+}
+
+export async function themes(
   { search }: {
     search?: string;
   },
 ) {
-  const media = await anilist.search({ search });
+  const media = await anilist.animanga({ search });
 
   if (!media) {
     throw new Error('404');

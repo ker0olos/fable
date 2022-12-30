@@ -167,19 +167,110 @@ function rate(role: CHARACTER_ROLE, popularity: number) {
   );
 }
 
-export async function search(
+export async function animanga(
   variables: { id?: number; search?: string },
+  prioritize?: 'anime' | 'manga',
 ): Promise<Media | undefined> {
-  const media = gql`
+  const query = gql`
     query ($id: Int, $search: String) {
-      Media(search: $search, id: $id, sort: [POPULARITY_DESC]) {
-        type
-        format
-        description
-        relations {
-          edges {
-            relationType
-            node {
+      Page {
+        media(search: $search, id: $id, sort: [POPULARITY_DESC]) {
+          type
+          format
+          description
+          relations {
+            edges {
+              relationType
+              node {
+                id
+                type
+                format
+                title {
+                  romaji
+                  english
+                  native
+                }
+                externalLinks {
+                  site
+                  url
+                }
+              }
+            }
+          }
+          characters(sort: [RELEVANCE]) {
+            edges {
+              role
+              node {
+                age
+                gender
+                description
+                name {
+                  full
+                }
+                image {
+                  large
+                }
+              }
+            }
+          }
+          title {
+            romaji
+            english
+            native
+          }
+          coverImage {
+            extraLarge
+            large
+            color
+          }
+          externalLinks {
+            site
+            url
+          }
+          trailer {
+            id
+            site
+          }
+        }
+      }
+    }
+  `;
+
+  const media: {
+    Page: {
+      media: Media[];
+    };
+  } = await client.request(query, variables);
+
+  if (!prioritize) {
+    return media.Page.media[0];
+  } else {
+    return media.Page.media.find((m) => m.type === prioritize.toUpperCase()) ??
+      media.Page.media[0];
+  }
+}
+
+export async function character(
+  variables: { id?: number; search?: string },
+): Promise<Character | undefined> {
+  const query = gql`
+    query ($id: Int, $search: String) {
+      Page {
+        characters(search: $search, id: $id, sort: [SEARCH_MATCH]) {
+          age
+          gender
+          description
+          name {
+            full
+            native
+            alternative
+            alternativeSpoiler
+          }
+          image {
+            large
+          }
+          media {
+            nodes {
               id
               type
               format
@@ -188,83 +279,20 @@ export async function search(
                 english
                 native
               }
-              externalLinks {
-                site
-                url
-              }
             }
           }
-        }
-        characters(sort: [RELEVANCE]) {
-          edges {
-            role
-            node {
-              age
-              gender
-              description
-              name {
-                full
-              }
-              image {
-                large
-              }
-            }
-          }
-        }
-        title {
-          romaji
-          english
-          native
-        }
-        coverImage {
-          extraLarge
-          large
-          color
-        }
-        externalLinks {
-          site
-          url
-        }
-        trailer {
-          id
-          site
         }
       }
     }
   `;
 
-  // const character = gql`
-  //   query ($search: String) {
-  //     Character(search: $search, sort: [SEARCH_MATCH]) {
-  //       age
-  //       gender
-  //       description
-  //       name {
-  //         full
-  //         native
-  //         alternative
-  //         alternativeSpoiler
-  //       }
-  //       image {
-  //         large
-  //       }
-  //       media {
-  //         nodes {
-  //           id
-  //           type
-  //           format
-  //           title {
-  //             romaji
-  //             english
-  //             native
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // `;
+  const character: {
+    Page: {
+      characters: Character[];
+    };
+  } = await client.request(query, variables);
 
-  return (await client.request(media, variables).catch(() => undefined))?.Media;
+  return character.Page.characters[0];
 }
 
 export async function getNextAiring(

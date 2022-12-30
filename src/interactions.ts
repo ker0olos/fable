@@ -15,7 +15,8 @@ import * as discord from './discord.ts';
 
 import { translate } from './translate.ts';
 import { nextEpisode } from './schedule.ts';
-import { search, songs } from './search.ts';
+
+import * as search from './search.ts';
 
 import * as dice from './dice.ts';
 import * as gacha from './gacha.ts';
@@ -78,12 +79,16 @@ async function handler(request: Request): Promise<Response> {
             })).send();
           case 'anime':
           case 'manga':
-            return (await search({
+            return (await search.animanga({
+              search: options!['query'].value as string,
+            }, name)).send();
+          case 'character':
+            return (await search.character({
               search: options!['query'].value as string,
             })).send();
           case 'songs':
           case 'themes':
-            return (await songs({
+            return (await search.themes({
               search: options!['query'].value as string,
             })).send();
           case 'next_episode':
@@ -105,7 +110,7 @@ async function handler(request: Request): Promise<Response> {
       case discord.InteractionType.Component:
         switch (customType) {
           case 'id':
-            return (await search({
+            return (await search.animanga({
               id: parseInt(customValues![0]),
             })).setType(discord.MessageType.Update).send();
           default:

@@ -72,13 +72,13 @@ set_commands(
             ],
         },
         {
-            "name": "dice",
-            "description": "Roll a ten-sided dice.",
+            "name": "character",
+            "description": "Search for a character",
             "options": [
                 {
-                    "type": INTEGER,
-                    "name": "amount",
-                    "description": "The number of dices to roll",
+                    "type": STRING,
+                    "name": "query",
+                    "description": "The name of the character",
                     "required": True,
                 }
             ],
@@ -115,6 +115,18 @@ set_commands(
                     "type": STRING,
                     "name": "anime",
                     "description": "The title of an anime",
+                    "required": True,
+                }
+            ],
+        },
+        {
+            "name": "dice",
+            "description": "Roll a ten-sided dice.",
+            "options": [
+                {
+                    "type": INTEGER,
+                    "name": "amount",
+                    "description": "The number of dices to roll",
                     "required": True,
                 }
             ],
