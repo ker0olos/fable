@@ -20,8 +20,7 @@ import * as search from './search.ts';
 import * as dice from './dice.ts';
 import * as gacha from './gacha.ts';
 
-const APP_PUBLIC_KEY =
-  '90e9e47e0f67aa24cb058b592ae359c54c42709919e2f0bb73ef388e6c9a1152';
+const publicKey = Deno.env.get('APP_PUBLIC_KEY')!;
 
 async function handler(request: Request): Promise<Response> {
   const { error } = await validateRequest(request, {
@@ -39,7 +38,7 @@ async function handler(request: Request): Promise<Response> {
 
   const { valid, body } = await verifySignature(
     request,
-    APP_PUBLIC_KEY,
+    publicKey,
   );
 
   if (!valid) {

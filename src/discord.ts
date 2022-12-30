@@ -2,7 +2,7 @@ import { json } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
 import { decodeDescription, hexToInt } from './utils.ts';
 
-const APP_ID = Deno.env.get('APP_ID');
+const id = Deno.env.get('APP_ID')!;
 
 // const BOT_TOKEN = Deno.env.get('BOT_TOKEN');
 
@@ -421,7 +421,7 @@ export class Message {
   }
 
   async patch(token: string): Promise<Response> {
-    const url = `${API}/webhooks/${APP_ID}/${token}/messages/@original`;
+    const url = `${API}/webhooks/${id}/${token}/messages/@original`;
 
     return await fetch(url, {
       method: 'PATCH',
