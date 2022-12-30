@@ -270,14 +270,17 @@ export async function character(
             large
           }
           media {
-            nodes {
-              id
-              type
-              format
-              title {
-                romaji
-                english
-                native
+            edges {
+              characterRole
+              node {
+                id
+                type
+                format
+                title {
+                  romaji
+                  english
+                  native
+                }
               }
             }
           }

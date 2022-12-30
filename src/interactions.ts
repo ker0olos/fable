@@ -109,7 +109,7 @@ async function handler(request: Request): Promise<Response> {
         break;
       case discord.InteractionType.Component:
         switch (customType) {
-          case 'id':
+          case 'animanga':
             return (await search.animanga({
               id: parseInt(customValues![0]),
             })).setType(discord.MessageType.Update).send();

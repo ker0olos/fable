@@ -83,18 +83,25 @@ export async function animanga(
       case anilist.RELATION_TYPE.SIDE_STORY:
       case anilist.RELATION_TYPE.SPIN_OFF: {
         component
-          .setLabel(capitalize(relation.relationType!))
-          .setId(
-            `id:${relation.node.id!}`,
+          .setLabel(
+            `${anilist.titles(relation.node).shift()!} (${
+              capitalize(relation.relationType!)
+            })`,
+          ).setId(
+            `animanga:${relation.node.id!}`,
           );
         secondaryGroup.push(component);
         break;
       }
       case anilist.RELATION_TYPE.ADAPTATION: {
         component
-          .setLabel(capitalize(relation.node.format!))
+          .setLabel(
+            `${anilist.titles(relation.node).shift()!} (${
+              capitalize(relation.node.format!)
+            })`,
+          )
           .setId(
-            `id:${relation.node.id!}`,
+            `animanga:${relation.node.id!}`,
           );
 
         secondaryGroup.push(component);
@@ -153,6 +160,24 @@ export async function character(
           ].filter(Boolean).join(', '),
         ),
     );
+
+  const group: discord.Component[] = [];
+
+  character.media?.edges?.forEach((relation) => {
+    const component = new discord.Component()
+      .setStyle(discord.ButtonStyle.Grey)
+      .setLabel(
+        `${anilist.titles(relation.node).shift()!} (${
+          capitalize(relation.characterRole!)
+        })`,
+      ).setId(
+        `animanga:${relation.node.id!}`,
+      );
+
+    group.push(component);
+  });
+
+  message.addComponents(group);
 
   return message;
 }
