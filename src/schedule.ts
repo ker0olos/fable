@@ -1,6 +1,6 @@
 import { titlesToArray } from './utils.ts';
 
-import { Status } from './interface.ts';
+import { Status } from './repo.interface.ts';
 
 import * as discord from './discord.ts';
 

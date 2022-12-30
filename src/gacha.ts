@@ -1,6 +1,6 @@
 import { rng, sleep, titlesToArray } from './utils.ts';
 
-import { CharacterRole } from './interface.ts';
+import { CharacterRole } from './repo.interface.ts';
 
 import * as discord from './discord.ts';
 
