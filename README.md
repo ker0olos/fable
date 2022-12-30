@@ -1,8 +1,8 @@
-### Fable
-
-##### [Invite to server](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
+# Fable
 
 > **Note** Bot is still work in progress (Not ready for production)
+
+##### [Invite to server](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
 
 A free, open-source anime gacha app, alternative to Mudae.
 

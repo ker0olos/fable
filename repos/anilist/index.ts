@@ -285,6 +285,8 @@ export async function pool(
         },
         ...character.media?.edges!,
       ];
+
+      results[character.id!] = character;
     });
   });
 
