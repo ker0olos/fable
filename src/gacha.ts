@@ -107,8 +107,10 @@ export function start(token: string) {
       .addEmbed(
         new discord.Embed()
           .setTitle(pull.character.name.full)
-          .setDescription(emotes.star.repeat(pull.rating))
-          .setFooter(titles[0]!)
+          .setDescription(
+            emotes.star.repeat(pull.rating) +
+              emotes.noStar.repeat(5 - pull.rating),
+          )
           .setImage(
             pull.character.image?.large,
           ),
