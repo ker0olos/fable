@@ -406,7 +406,15 @@ export async function pool(
     });
   });
 
-  return Object.values(results);
+  const pool = Object.values(results);
+
+  if (!pool?.length) {
+    throw new Error(
+      `failed to create a pool with ${JSON.stringify({ ...variables, page })}`,
+    );
+  }
+
+  return pool;
 }
 
 export function titles(media: Media): string[] {

@@ -15,6 +15,7 @@ const URL = 'https://raw.githubusercontent.com/ker0olos/fable/main/assets';
 
 const emotes = {
   star: '<:fable_star:1058059570305585303>',
+  noStar: '<:fable_no_star:1058182412963688548>',
 };
 
 export const variables = {
@@ -54,16 +55,12 @@ async function roll() {
 
   // TODO allow custom repos
 
-  if (!pool?.length) {
-    throw new Error(
-      `failed to create a pool with ${JSON.stringify(variables)}`,
-    );
-  }
-
   const pull = pool[Math.floor(Math.random() * pool.length)];
 
   console.log(
-    `pool length: ${pool.length}\npool variables: ${JSON.stringify(variables)}`,
+    `pool length: ${pool.length}\npool variables: ${
+      JSON.stringify({ role, range })
+    }`,
   );
 
   return pull;
@@ -84,7 +81,7 @@ export function start(token: string) {
     let message = new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setTitle(titles.shift()!)
+          .setTitle(titles[0]!)
           .setImage(
             pull.media.coverImage?.large,
           ),
@@ -109,8 +106,14 @@ export function start(token: string) {
     message = new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setTitle(pull.character.name.full)
-          .setDescription(emotes.star.repeat(pull.rating))
+          // .setTitle(pull.character.name.full)
+          // .setDescription(emotes.star.repeat(pull.rating))
+          .addField(
+            pull.character.name.full,
+            emotes.star.repeat(pull.rating) +
+              emotes.noStar.repeat(5 - pull.rating),
+          )
+          .setAuthor(titles[0]!)
           .setImage(
             pull.character.image?.large,
           ),

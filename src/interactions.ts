@@ -63,7 +63,7 @@ async function handler(request: Request): Promise<Response> {
     return discord.Message.pong();
   }
 
-  console.log(name, type, options, customType, customValues);
+  console.log(name, type, JSON.stringify(options), customType, customValues);
 
   try {
     switch (type) {
