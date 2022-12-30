@@ -43,8 +43,15 @@ class Option:
 
 
 def make_command(
-    name: str, desc: str, options: List[Option] = [], aliases: List[str] = []
+    name: str,
+    desc: str,
+    options: List[Option] = [],
+    aliases: List[str] = [],
+    canary_only: bool = False,
 ):
+    if PROD and canary_only:
+        return []
+
     commands = [
         {
             "name": name,
@@ -61,19 +68,8 @@ def make_command(
     return commands
 
 
-# def print_commands():
-#     response = requests.get(url, headers={"Authorization": f"Bot {BOT_TOKEN}"})
-#     print(response.json())
-
-# def delete_command(command_id):
-#     response = requests.delete(
-#         f"{url}/{command_id}", headers={"Authorization": f"Bot {BOT_TOKEN}"}
-#     )
-#     print(f'deleted command "{command_id}": {response.status_code}')
-
-
 def set_commands(commands):
-    print(os.getenv("GITHUB_REF_NAME"), APP_ID, GUILD_ID)
+    print(os.getenv("GITHUB_REF_NAME"))
 
     if PROD:
         print("Updating global commands for production bot\n\n")
@@ -142,6 +138,7 @@ if __name__ == "__main__":
             name="gacha",
             desc="An experimental/ephemeral gacha command",
             aliases=["w", "pull", "roll"],
+            canary_only=True,
         )
         + make_command(
             name="dice",
