@@ -419,7 +419,7 @@ export class Message {
   }
 
   async patch(token: string): Promise<Response> {
-    const url = `${API}/webhooks/${appId()}/${token}/messages/@original`;
+    const url = `${API}/webhooks/${appId}/${token}/messages/@original`;
 
     return await fetch(url, {
       method: 'PATCH',
