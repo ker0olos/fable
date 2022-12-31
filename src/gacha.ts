@@ -88,8 +88,6 @@ export function start({ token }: { token: string }) {
 
       const rating = rate(role, media.popularity!);
 
-      throw new Error('a');
-
       let message = new discord.Message()
         .addEmbed(
           new discord.Embed()
