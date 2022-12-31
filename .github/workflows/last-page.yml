@@ -3,7 +3,7 @@ name: Update anilist last page cache
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * 0' # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
+    - cron: "0 0 * * 0" # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
 
 jobs:
   update-last-page:
@@ -18,7 +18,7 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           title: 'Updated "anilist/lastPage.json'
-          commit-message: Updated "anilist/lastPage.json"
+          commit-message: '[bot] Updated "anilist/lastPage.json"'
           branch: anilist/last-page
           delete-branch: true
           body: |
@@ -27,4 +27,3 @@ jobs:
             Updated the last page cache for each possible gacha query
           labels: |
             anilist
-            

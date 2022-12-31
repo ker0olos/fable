@@ -15,12 +15,14 @@ jobs:
       - run: pip install -r requirements.txt
 
       - if: ${{ github.ref == 'refs/heads/main' }}
+        name: Update global slash commands on production
         env:
           APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: python update_commands.py
 
       - if: ${{ github.ref != 'refs/heads/main' }}
+        name: Update guild slash commands on canary
         env:
           APP_ID: ${{ secrets.CANARY_ID }}
           BOT_TOKEN: ${{ secrets.CANARY_TOKEN }}
