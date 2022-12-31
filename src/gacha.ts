@@ -1,3 +1,7 @@
+import {
+  captureException,
+} from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
+
 import { rng, sleep, titlesToArray } from './utils.ts';
 
 import { CharacterRole } from './repo.interface.ts';
@@ -75,53 +79,64 @@ export function start({ token }: { token: string }) {
       ),
     );
 
-  roll().then(async (pull) => {
-    const media = pull.media!.edges![0].node;
-    const role = pull.media!.edges![0].characterRole;
+  roll()
+    .then(async (pull) => {
+      const media = pull.media!.edges![0].node;
+      const role = pull.media!.edges![0].characterRole;
 
-    const titles = titlesToArray(media);
+      const titles = titlesToArray(media);
 
-    const rating = rate(role, media.popularity!);
+      const rating = rate(role, media.popularity!);
 
-    let message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setTitle(titles[0]!)
-          .setImage(
-            media.coverImage?.large,
-          ),
+      let message = new discord.Message()
+        .addEmbed(
+          new discord.Embed()
+            .setTitle(titles[0]!)
+            .setImage(
+              media.coverImage?.large,
+            ),
+        );
+
+      await message.patch(token);
+
+      await sleep(4);
+
+      message = new discord.Message()
+        .addEmbed(
+          new discord.Embed('image')
+            .setImage(
+              `${URL}/${rating}stars.gif`,
+            ),
+        );
+
+      await message.patch(token);
+
+      await sleep(5);
+
+      message = new discord.Message()
+        .addEmbed(
+          new discord.Embed()
+            .setTitle(pull.name.full)
+            .setDescription(
+              `${emotes.star.repeat(rating)}${
+                emotes.noStar.repeat(5 - rating)
+              }`,
+            )
+            .setImage(
+              pull.image?.large,
+            ),
+        );
+
+      await message.patch(token);
+    }).catch(async (err) => {
+      const message = new discord.Message().setContent(
+        '**Sorry!** An Internal Error occurred and was reported.',
       );
 
-    await message.patch(token);
+      captureException(err);
 
-    await sleep(4);
-
-    message = new discord.Message()
-      .addEmbed(
-        new discord.Embed('image')
-          .setImage(
-            `${URL}/${rating}stars.gif`,
-          ),
-      );
-
-    await message.patch(token);
-
-    await sleep(5);
-
-    message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setTitle(pull.name.full)
-          .setDescription(
-            `${emotes.star.repeat(rating)}${emotes.noStar.repeat(5 - rating)}`,
-          )
-          .setImage(
-            pull.image?.large,
-          ),
-      );
-
-    await message.patch(token);
-  });
+      await message.patch(token);
+    });
 
   return message;
 }

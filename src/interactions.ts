@@ -9,7 +9,7 @@ import {
   validateRequest,
 } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
-import { verifySignature } from './utils.ts';
+import { sleep, verifySignature } from './utils.ts';
 
 import * as discord from './discord.ts';
 
@@ -63,8 +63,6 @@ async function handler(
     customValues,
   } = new discord.Interaction<string | number | boolean>(body);
 
-  let patch = false;
-
   if (type === discord.InteractionType.Ping) {
     return discord.Message.pong();
   }
@@ -107,7 +105,6 @@ async function handler(
           case 'roll':
           case 'pull':
           case 'gacha':
-            patch = true;
             return gacha.start({ token }).send();
           default:
             break;
@@ -139,13 +136,9 @@ async function handler(
       },
     });
 
-    const message = new discord.Message().setContent(
+    return discord.Message.error(
       '**Sorry!** An Internal Error occurred and was reported.',
     );
-
-    return patch
-      ? await message.setType(discord.MessageType.Update).patch(token)
-      : message.send();
   }
 
   return discord.Message.error(`Unimplemented`);
