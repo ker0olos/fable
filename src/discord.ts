@@ -282,7 +282,7 @@ export class Embed {
   }
 
   addField(
-    { name, value }: { name?: string; value?: string | number },
+    { name, value }: { name?: string; value?: string },
     inline = false,
   ) {
     if (!this._data.fields) {
@@ -290,7 +290,7 @@ export class Embed {
     }
     this._data.fields.push({
       name,
-      value: JSON.stringify(value),
+      value,
       inline,
     });
     return this;

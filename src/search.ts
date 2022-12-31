@@ -155,7 +155,7 @@ export async function character(
       .addEmbed(
         new discord.Embed()
           .setTitle(character.name.full)
-          .addField({ name: 'ID', value: `${character.id}` })
+          .addField({ name: 'ID', value: `\`${character.id}\`` })
           .setThumbnail(character.image?.large),
       );
   }
