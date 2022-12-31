@@ -20,7 +20,7 @@ import * as search from './search.ts';
 import * as dice from './dice.ts';
 import * as gacha from './gacha.ts';
 
-import { appPublicKey, dsn, setCanary } from './vars.ts';
+import { dsn, publicKey, setCanary } from './vars.ts';
 
 async function handler(
   request: Request,
@@ -43,7 +43,7 @@ async function handler(
 
   const { valid, body } = await verifySignature(
     request,
-    appPublicKey(),
+    publicKey,
   );
 
   if (!valid) {

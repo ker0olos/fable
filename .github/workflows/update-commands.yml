@@ -5,6 +5,7 @@ on:
 
 jobs:
   update-commands:
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,9 +17,22 @@ jobs:
       - shell: bash
         env:
           APP_ID: ${{ secrets.APP_ID }}
-          CANARY_ID: ${{ secrets.CANARY_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          CANARY_TOKEN: ${{ secrets.CANARY_TOKEN }}
+        run: python update_commands.py
+
+  update-canary-commands:
+    if: ${{ github.ref != 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+      - shell: bash
+        env:
+          APP_ID: ${{ secrets.CANARY_ID }}
+          BOT_TOKEN: ${{ secrets.CANARY_TOKEN }}
           GUILD_ID: ${{ secrets.GUILD_ID }}
-        run: |
-          python update_commands.py
+        run: python update_commands.py

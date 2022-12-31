@@ -5,17 +5,15 @@ from typing import List
 
 import requests
 
-PROD = os.getenv("GITHUB_REF_NAME") == "main"
+APP_ID = os.getenv("APP_ID")
 
-APP_ID = os.getenv("APP_ID" if PROD else "CANARY_ID")
-
-BOT_TOKEN = os.getenv("BOT_TOKEN" if PROD else "CANARY_TOKEN")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 GUILD_ID = os.getenv("GUILD_ID")
 
 url = (
-    f"https://discord.com/api/v8/applications/{APP_ID}/commands"
-    if PROD
+    f"https://discord.com/api/v10/applications/{APP_ID}/commands"
+    if GUILD_ID is None
     else f"https://discord.com/api/v10/applications/{APP_ID}/guilds/{GUILD_ID}/commands"
 )
 
@@ -49,7 +47,7 @@ def make_command(
     aliases: List[str] = [],
     canary_only: bool = False,
 ):
-    if PROD and canary_only:
+    if (canary_only) and (GUILD_ID is None):
         return []
 
     commands = [
@@ -71,7 +69,7 @@ def make_command(
 def set_commands(commands):
     print(os.getenv("GITHUB_REF_NAME"))
 
-    if PROD:
+    if GUILD_ID is None:
         print("Updating global commands for production bot\n\n")
     else:
         print("Updating guild commands for canary bot\n\n")

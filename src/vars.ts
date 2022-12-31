@@ -1,14 +1,15 @@
-let prod = true;
-
-export function setCanary(canary: boolean) {
-  prod = !canary;
-}
-
-export const appPublicKey = () =>
-  prod ? Deno.env.get('APP_PUBLIC_KEY')! : Deno.env.get('CANARY_PUBLIC_KEY')!;
-
-export const appId = () =>
-  prod ? Deno.env.get('APP_ID')! : Deno.env.get('CANARY_ID')!;
+export let appId: string;
+export let publicKey: string;
 
 export const dsn = Deno.env.get('SENTRY_DSN')!;
 // export mongoUrl = Deno.env.get('MONGO_URL')!;
+
+export function setCanary(canary: boolean) {
+  if (canary) {
+    appId = Deno.env.get('CANARY_ID')!;
+    publicKey = Deno.env.get('CANARY_PUBLIC_KEY')!;
+  } else {
+    appId = Deno.env.get('APP_ID')!;
+    publicKey = Deno.env.get('APP_PUBLIC_KEY')!;
+  }
+}
