@@ -80,11 +80,11 @@ async function handler(
             return (await search.media({
               search: options!['query'].value as string,
             }, name)).send();
+          case 'debug':
           case 'character':
             return (await search.character({
-              debug: Boolean(options!['debug']?.value),
+              debug: name === 'debug',
               search: options!['query'].value as string,
-              id: parseInt(options!['id']?.value as string) || undefined,
             })).send();
           case 'songs':
           case 'themes':
@@ -127,7 +127,7 @@ async function handler(
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
       return discord.Message.error(
-        'Found __nothing__ matching those parameters!',
+        'Found __nothing__ matching that query!',
       );
     }
 

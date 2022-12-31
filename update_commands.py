@@ -89,7 +89,6 @@ if __name__ == "__main__":
         make_command(
             name="anime",
             desc="Search for an anime/manga",
-            aliases=["manga"],
             options=[
                 Option(
                     name="query",
@@ -97,6 +96,7 @@ if __name__ == "__main__":
                     type=Type.STRING,
                 )
             ],
+            aliases=["manga"],
         )
         + make_command(
             name="character",
@@ -107,24 +107,12 @@ if __name__ == "__main__":
                     desc="The title of the character",
                     type=Type.STRING,
                 ),
-                Option(
-                    name="id",
-                    desc="The id of the character",
-                    type=Type.STRING,
-                    required=False,
-                ),
-                Option(
-                    name="debug",
-                    desc="The title of the character",
-                    type=Type.BOOLEAN,
-                    required=False,
-                ),
             ],
+            aliases=["debug"],
         )
         + make_command(
             name="songs",
             desc="Search for the OP/ED and theme songs of an anime",
-            aliases=["themes"],
             options=[
                 Option(
                     name="query",
@@ -132,6 +120,7 @@ if __name__ == "__main__":
                     type=Type.STRING,
                 )
             ],
+            aliases=["themes"],
         )
         + make_command(
             name="next_episode",
