@@ -1,7 +1,8 @@
 import os
 import sys
+import json
+import typing
 from enum import Enum
-from typing import List
 
 import requests
 
@@ -43,8 +44,8 @@ class Option:
 def make_command(
     name: str,
     desc: str,
-    options: List[Option] = [],
-    aliases: List[str] = [],
+    options: typing.List[Option] = [],
+    aliases: typing.List[str] = [],
     canary_only: bool = False,
 ):
     if (canary_only) and (GUILD_ID is None):
@@ -62,6 +63,34 @@ def make_command(
         t = commands[0].copy()
         t["name"] = alias
         commands.append(t)
+
+    return commands
+
+
+def load_manifest(filepath: str):
+    with open(filepath + "/manifest.json", "r") as file:
+        data = file.read()
+
+    manifest = json.loads(data)
+
+    commands = []
+
+    for name in manifest["commands"]:
+        desc = manifest["commands"][name]["description"]
+        options = manifest["commands"][name]["options"]
+
+        commands += make_command(
+            name,
+            desc,
+            [
+                Option(
+                    name=opt["id"],
+                    desc=opt["description"],
+                    type=Type[opt["type"].upper()],
+                )
+                for opt in options
+            ],
+        )
 
     return commands
 
@@ -123,22 +152,12 @@ if __name__ == "__main__":
             aliases=["themes"],
         )
         + make_command(
-            name="next_episode",
-            desc="Find when is the next episode for an anime",
-            options=[
-                Option(
-                    name="title",
-                    desc="The title for an anime",
-                    type=Type.STRING,
-                )
-            ],
-        )
-        + make_command(
             name="gacha",
             desc="An experimental/ephemeral gacha command",
             aliases=["w", "pull", "roll"],
             canary_only=True,
         )
+        + load_manifest("./repos/anilist")
         + make_command(
             name="dice",
             desc="Roll a ten-sided dice",

@@ -13,14 +13,14 @@ import { verifySignature } from './utils.ts';
 
 import * as discord from './discord.ts';
 
-import { nextEpisode } from './schedule.ts';
-
 import * as search from './search.ts';
 
-import * as dice from './dice.ts';
+import * as extra from './extra.ts';
 import * as gacha from './gacha.ts';
 
 import { dsn, publicKey, setCanary } from './config.ts';
+
+import { nextEpisode } from '../repos/anilist/commands.ts';
 
 async function handler(
   request: Request,
@@ -71,6 +71,8 @@ async function handler(
 
   console.log(name, type, JSON.stringify(options), customType, customValues);
 
+  // TODO most of this should be managed by the some kind of repo management system
+
   try {
     switch (type) {
       case discord.InteractionType.Command:
@@ -78,28 +80,28 @@ async function handler(
           case 'anime':
           case 'manga':
             return (await search.media({
-              search: options!['query'].value as string,
+              search: options!['query'] as string,
             }, name)).send();
           case 'debug':
           case 'character':
             return (await search.character({
               debug: name === 'debug',
-              search: options!['query'].value as string,
+              search: options!['query'] as string,
             })).send();
           case 'songs':
           case 'themes':
             return (await search.themes({
-              search: options!['query'].value as string,
+              search: options!['query'] as string,
             })).send();
           case 'next_episode':
             return (await nextEpisode({
-              search: options!['title'].value as string,
+              search: options!['title'] as string,
             }))
               .send();
           case 'dice':
-            return dice.roll({
+            return extra.diceRoll({
               user: member!.user,
-              amount: options!['amount'].value as number,
+              amount: options!['amount'] as number,
             }).send();
           case 'w':
           case 'roll':

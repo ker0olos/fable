@@ -2,7 +2,9 @@ import { randint } from './utils.ts';
 
 import * as discord from './discord.ts';
 
-export function roll({ user, amount }: { user: discord.User; amount: number }) {
+export function diceRoll(
+  { user, amount }: { user: discord.User; amount: number },
+) {
   const rolls = [];
 
   const dieSize = 10;

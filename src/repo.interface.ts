@@ -19,14 +19,6 @@ export enum RelationType {
   'CONTAINS' = 'CONTAINS',
 }
 
-export enum Status {
-  'FINISHED' = 'FINISHED',
-  'RELEASING' = 'RELEASING',
-  'NOT_YET_RELEASED' = 'NOT_YET_RELEASED',
-  'CANCELLED' = 'CANCELLED',
-  'HIATUS' = 'HIATUS',
-}
-
 export enum Format {
   'TV' = 'TV',
   'TV_SHORT' = 'TV_SHORT',
@@ -46,7 +38,9 @@ export enum CharacterRole {
   'BACKGROUND' = 'BACKGROUND',
 }
 
-export type Media = {
+export interface Media {
+  // deno-lint-ignore no-explicit-any
+  [x: string]: any;
   type: Type;
   format: Format;
   title: {
@@ -58,11 +52,7 @@ export type Media = {
     site: string;
     url: string;
   }[];
-  nextAiringEpisode?: {
-    airingAt?: number;
-  };
   id?: number;
-  status: Status;
   relations: {
     edges: {
       relationType: RelationType;
@@ -85,9 +75,9 @@ export type Media = {
     id: string;
     site: string;
   };
-};
+}
 
-export type Character = {
+export interface Character {
   name: {
     full: string;
     native?: string;
@@ -105,4 +95,4 @@ export type Character = {
     nodes?: Media[];
     edges?: { characterRole: CharacterRole; node: Media }[];
   };
-};
+}

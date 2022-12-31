@@ -55,8 +55,6 @@ async function roll() {
     popularity_lesser: range[1],
   });
 
-  // TODO allow custom repos
-
   const pull = pool[Math.floor(Math.random() * pool.length)];
 
   console.log(

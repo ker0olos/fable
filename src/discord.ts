@@ -67,10 +67,7 @@ export class Interaction<Options> {
 
   name?: string;
   options?: {
-    [key: string]: {
-      type: number;
-      value: Options;
-    };
+    [key: string]: Options;
   };
 
   customType?: string;
@@ -136,10 +133,7 @@ export class Interaction<Options> {
         this.targetId = data!.target_id;
         this.name = data!.name.replaceAll(' ', '_').toLowerCase();
         data!.options?.forEach((option) => {
-          this.options![option.name] = {
-            type: option.type,
-            value: option.value as Options,
-          };
+          this.options![option.name] = option.value as Options;
         });
 
         break;
@@ -154,10 +148,7 @@ export class Interaction<Options> {
         if (data.components) {
           // deno-lint-ignore no-explicit-any
           data.components[0].components.forEach((component: any) => {
-            this.options![component.custom_id] = {
-              type: component.type,
-              value: component.value as Options,
-            };
+            this.options![component.custom_id] = component.value as Options;
           });
         }
 

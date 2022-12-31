@@ -1,13 +1,13 @@
-import { titlesToArray } from './utils.ts';
+import { titlesToArray } from '../../src/utils.ts';
 
-import { Status } from './repo.interface.ts';
+import * as discord from '../../src/discord.ts';
 
-import * as discord from './discord.ts';
+import { Status } from './interface.ts';
 
-import * as anilist from '../repos/anilist/index.ts';
+import * as api from './api.ts';
 
 export async function nextEpisode({ search }: { search: string }) {
-  const anime = await anilist.nextEpisode({ search });
+  const anime = await api.nextEpisode({ search });
 
   const titles = titlesToArray(anime);
 
