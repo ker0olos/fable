@@ -20,7 +20,7 @@ import * as search from './search.ts';
 import * as dice from './dice.ts';
 import * as gacha from './gacha.ts';
 
-import { dsn, publicKey, setCanary } from './vars.ts';
+import { dsn, publicKey, setCanary } from './config.ts';
 
 async function handler(
   request: Request,
@@ -80,8 +80,10 @@ async function handler(
             return (await search.media({
               search: options!['query'].value as string,
             }, name)).send();
+          case 'debug':
           case 'character':
             return (await search.character({
+              debug: name === 'debug',
               search: options!['query'].value as string,
             })).send();
           case 'songs':
@@ -137,13 +139,9 @@ async function handler(
       '**Sorry!** An Internal Error occurred and was reported.',
     );
 
-    if (patch) {
-      message.setType(discord.MessageType.Update);
-
-      return message.patch(token);
-    } else {
-      return message.send();
-    }
+    return patch
+      ? message.setType(discord.MessageType.Update).patch(token)
+      : message.send();
   }
 
   return discord.Message.error(`Unimplemented`);

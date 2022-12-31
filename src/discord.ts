@@ -2,7 +2,7 @@ import { json } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
 import { decodeDescription, hexToInt } from './utils.ts';
 
-import { appId } from './vars.ts';
+import { appId } from './config.ts';
 
 const API = `https://discord.com/api/v10`;
 

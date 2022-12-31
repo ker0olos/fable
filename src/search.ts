@@ -138,15 +138,26 @@ export async function media(
 }
 
 export async function character(
-  { id, search }: {
+  { id, search, debug }: {
     id?: number;
     search?: string;
+    debug?: boolean;
   },
 ) {
   const character = await anilist.character(id ? { id } : { search });
 
   if (!character) {
     throw new Error('404');
+  }
+
+  if (debug) {
+    return new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setTitle(character.name.full)
+          .setDescription(`\`id: ${character.id}\``)
+          .setThumbnail(character.image?.large),
+      );
   }
 
   const message = new discord.Message()

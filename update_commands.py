@@ -110,6 +110,17 @@ if __name__ == "__main__":
             ],
         )
         + make_command(
+            name="debug",
+            desc="Find the id of a character",
+            options=[
+                Option(
+                    name="query",
+                    desc="The title of the character",
+                    type=Type.STRING,
+                )
+            ],
+        )
+        + make_command(
             name="songs",
             desc="Search for the OP/ED and theme songs of an anime",
             aliases=["themes"],
