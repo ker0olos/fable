@@ -466,13 +466,18 @@ export class Message {
     });
   }
 
-  // deno-lint-ignore no-explicit-any
-  static error(err: any) {
+  static content(content: string) {
     return json({
       type: MessageType.New,
       data: {
-        content: err?.message ?? err,
+        content,
       },
     });
+  }
+
+  static internal(id: string) {
+    return new Message().setContent(
+      `An Internal Error occurred and was reported.\n\n\`\`\`ref_id: ${id}\`\`\``,
+    );
   }
 }

@@ -129,13 +129,9 @@ export function start({ token }: { token: string }) {
 
       await message.patch(token);
     }).catch(async (err) => {
-      const message = new discord.Message().setContent(
-        '**Sorry!** An Internal Error occurred and was reported.',
-      );
+      const refId = captureException(err);
 
-      captureException(err);
-
-      await message.patch(token);
+      await discord.Message.internal(refId).patch(token);
     });
 
   return message;

@@ -125,23 +125,21 @@ async function handler(
     }
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
-      return discord.Message.error(
+      return discord.Message.content(
         'Found __nothing__ matching that query!',
       );
     }
 
-    captureException(err, {
+    const refId = captureException(err, {
       extra: {
         ...new discord.Interaction<string>(body),
       },
     });
 
-    return discord.Message.error(
-      '**Sorry!** An Internal Error occurred and was reported.',
-    );
+    return discord.Message.internal(refId).send();
   }
 
-  return discord.Message.error(`Unimplemented`);
+  return discord.Message.content(`Unimplemented`);
 }
 
 init({
