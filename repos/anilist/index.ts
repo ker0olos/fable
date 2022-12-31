@@ -100,6 +100,7 @@ export async function character(
     query ($id: Int, $search: String) {
       Page {
         characters(search: $search, id: $id, sort: [SEARCH_MATCH]) {
+          id
           age
           gender
           description
