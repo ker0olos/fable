@@ -144,7 +144,7 @@ async function handler(
     );
 
     return patch
-      ? message.setType(discord.MessageType.Update).patch(token)
+      ? await message.setType(discord.MessageType.Update).patch(token)
       : message.send();
   }
 
