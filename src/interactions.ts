@@ -63,6 +63,8 @@ async function handler(
     customValues,
   } = new discord.Interaction<string | number>(body);
 
+  let patch = false;
+
   if (type === discord.InteractionType.Ping) {
     return discord.Message.pong();
   }
@@ -101,6 +103,7 @@ async function handler(
           case 'roll':
           case 'pull':
           case 'gacha':
+            patch = true;
             return gacha.start({ token }).send();
           default:
             break;
@@ -130,9 +133,17 @@ async function handler(
       },
     });
 
-    return discord.Message.error(
+    const message = new discord.Message().setContent(
       '**Sorry!** An Internal Error occurred and was reported.',
     );
+
+    if (patch) {
+      message.setType(discord.MessageType.Update);
+
+      return message.patch(token);
+    } else {
+      return message.send();
+    }
   }
 
   return discord.Message.error(`Unimplemented`);
