@@ -5,32 +5,22 @@ on:
 
 jobs:
   update-commands:
-    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.x"
           cache: "pip"
+          python-version: "3.x"
       - run: pip install -r requirements.txt
-      - shell: bash
+
+      - if: ${{ github.ref == 'refs/heads/main' }}
         env:
           APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: python update_commands.py
 
-  update-canary-commands:
-    if: ${{ github.ref != 'refs/heads/main' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-          cache: "pip"
-      - run: pip install -r requirements.txt
-      - shell: bash
+      - if: ${{ github.ref != 'refs/heads/main' }}
         env:
           APP_ID: ${{ secrets.CANARY_ID }}
           BOT_TOKEN: ${{ secrets.CANARY_TOKEN }}
