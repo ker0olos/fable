@@ -281,13 +281,16 @@ export class Embed {
     return this;
   }
 
-  addField({ name, value }: { name?: string; value?: string }, inline = false) {
+  addField(
+    { name, value }: { name?: string; value?: string | number },
+    inline = false,
+  ) {
     if (!this._data.fields) {
       this._data.fields = [];
     }
     this._data.fields.push({
       name,
-      value,
+      value: JSON.stringify(value),
       inline,
     });
     return this;
