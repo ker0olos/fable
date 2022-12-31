@@ -106,18 +106,19 @@ if __name__ == "__main__":
                     name="query",
                     desc="The title of the character",
                     type=Type.STRING,
-                )
-            ],
-        )
-        + make_command(
-            name="debug",
-            desc="Find the id of a character",
-            options=[
+                ),
                 Option(
-                    name="query",
-                    desc="The title of the character",
+                    name="id",
+                    desc="The id of the character",
                     type=Type.STRING,
-                )
+                    required=False,
+                ),
+                Option(
+                    name="debug",
+                    desc="The title of the character",
+                    type=Type.BOOLEAN,
+                    required=False,
+                ),
             ],
         )
         + make_command(

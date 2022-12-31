@@ -61,7 +61,7 @@ async function handler(
     options,
     customType,
     customValues,
-  } = new discord.Interaction<string | number>(body);
+  } = new discord.Interaction<string | number | boolean>(body);
 
   let patch = false;
 
@@ -80,11 +80,11 @@ async function handler(
             return (await search.media({
               search: options!['query'].value as string,
             }, name)).send();
-          case 'debug':
           case 'character':
             return (await search.character({
-              debug: name === 'debug',
+              debug: Boolean(options!['debug']?.value),
               search: options!['query'].value as string,
+              id: parseInt(options!['id']?.value as string) || undefined,
             })).send();
           case 'songs':
           case 'themes':
@@ -126,7 +126,9 @@ async function handler(
     }
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
-      return discord.Message.error('Found __nothing__ matching that name!');
+      return discord.Message.error(
+        'Found __nothing__ matching those parameters!',
+      );
     }
 
     captureException(err, {
