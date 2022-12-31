@@ -9,7 +9,7 @@ import {
   validateRequest,
 } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
-import { sleep, verifySignature } from './utils.ts';
+import { verifySignature } from './utils.ts';
 
 import * as discord from './discord.ts';
 
