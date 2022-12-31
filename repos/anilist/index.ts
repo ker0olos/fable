@@ -289,11 +289,12 @@ export async function pool(
 
   const _ = Object.values(results);
 
-  if (!_?.length) {
+  // minimal number of characters for the pool
+  if (15 >= _?.length) {
     if (retry >= 3) {
       throw new Error(
         `failed to create a pool with ${
-          JSON.stringify({ ...variables, page })
+          JSON.stringify({ ...variables, page, minimal_pool: 15 })
         }`,
       );
     } else {
