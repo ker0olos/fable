@@ -86,6 +86,7 @@ export function start({ token, id }: { token: string; id?: string }) {
   roll({ id })
     .then(async (pull) => {
       const media = pull.media!.edges![0].node;
+
       const role = pull.media!.edges![0].characterRole;
 
       const titles = titlesToArray(media);

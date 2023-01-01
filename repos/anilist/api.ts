@@ -124,6 +124,9 @@ export async function character(
                   english
                   native
                 }
+                coverImage {
+                  large
+                }
               }
             }
           }
@@ -222,9 +225,7 @@ export async function pool(
                       native
                     }
                     coverImage {
-                      extraLarge
                       large
-                      color
                     }
                   }
                 }
