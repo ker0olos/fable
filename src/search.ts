@@ -180,7 +180,7 @@ export async function character(
     const component = new discord.Component()
       .setStyle(discord.ButtonStyle.Grey)
       .setLabel(
-        `${titlesToArray(relation.node).shift()!} (${
+        `${titlesToArray(relation.node, 60).shift()!} (${
           capitalize(relation.node.format!)
         })`,
       ).setId(

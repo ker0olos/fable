@@ -66,6 +66,23 @@ export function rng<T>(dict: { [chance: number]: T }): T {
   return pool[_[0]];
 }
 
+export function truncate(
+  str: string | undefined,
+  n: number,
+): string | undefined {
+  if (!str) {
+    return str;
+  }
+
+  if (str.length > n) {
+    const s = str.substring(0, n - 3) + '...';
+    return s.slice(0, s.lastIndexOf(' ')) +
+      '...';
+  }
+
+  return str;
+}
+
 export function capitalize(s: string): string {
   const sa = s.split('_');
   return sa.map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(' ')
@@ -98,12 +115,14 @@ export function decodeDescription(s?: string): string | undefined {
   return s;
 }
 
-export function titlesToArray(media: Media): string[] {
+export function titlesToArray(media: Media, max?: number): string[] {
   const titles = [
     media.title.english,
     media.title.romaji,
     media.title.native,
-  ].filter(Boolean);
+  ]
+    .filter(Boolean)
+    .map((str) => max ? truncate(str, max) : str);
 
   return titles as string[];
 }

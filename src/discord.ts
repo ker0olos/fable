@@ -1,6 +1,6 @@
 import { json } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
-import { decodeDescription, hexToInt } from './utils.ts';
+import { decodeDescription, hexToInt, truncate } from './utils.ts';
 
 import { appId } from './config.ts';
 
@@ -364,9 +364,12 @@ export class Message {
     if (components.length > 0) {
       this._data.components.push({
         type: 1,
-        components: components.slice(0, 5).map((component) =>
-          component._done()
-        ),
+        components: components.slice(0, 5).map((component) => {
+          // labels have maximum of 80 characters
+          // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
+          component._data.label = truncate(component._data.label, 80);
+          return component._done();
+        }),
       });
     }
     return this;
