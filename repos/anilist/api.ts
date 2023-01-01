@@ -173,7 +173,7 @@ export async function pool(
   retry = 1,
   carry: { [id: number]: Character } = {},
 ): Promise<Character[]> {
-  const maxTries = 3;
+  const maxTries = 5;
   const minimalPool = 25;
 
   const results: {
