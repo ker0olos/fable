@@ -171,10 +171,14 @@ export async function pool(
     role: CharacterRole;
   },
   retry = 1,
+  carry: { [id: number]: Character } = {},
 ): Promise<Character[]> {
+  const maxTries = 3;
+  const minimalPool = 25;
+
   const results: {
-    [character_id: number]: Character;
-  } = {};
+    [id: number]: Character;
+  } = carry;
 
   const key = JSON.stringify([
     variables.popularity_greater,
@@ -288,21 +292,26 @@ export async function pool(
 
   const _ = Object.values(results);
 
-  // minimal number of characters for the pool
-  if (15 >= _?.length) {
-    if (retry >= 3) {
+  // ensure minimal number of characters for the pool
+  // (reduces chances of common dupes due to pages with smaller pools)
+  // (if one specific page has a pool of 1 character)
+  // (every time the page is rolled. the same character is also rolled)
+  if (minimalPool >= _?.length) {
+    if (retry >= maxTries) {
       throw new Error(
         `failed to create a pool with ${
           JSON.stringify({
             ...variables,
             page,
             current_pool: _?.length,
-            minimal_pool: 15,
+            minimal_pool: minimalPool,
           })
         }`,
       );
     } else {
-      return await pool(variables, retry + 1);
+      // carry over the current pool
+      // to increase the pool length over the minimal pool
+      return await pool(variables, retry + 1, results);
     }
   }
 
