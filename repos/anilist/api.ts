@@ -83,8 +83,6 @@ export async function media(
     };
   } = await request(query, variables);
 
-  console.log(media);
-
   if (!prioritize) {
     return media.Page.media[0];
   } else {
@@ -293,7 +291,12 @@ export async function pool(
     if (retry >= 3) {
       throw new Error(
         `failed to create a pool with ${
-          JSON.stringify({ ...variables, page, minimal_pool: 15 })
+          JSON.stringify({
+            ...variables,
+            page,
+            current_pool: _?.length,
+            minimal_pool: 15,
+          })
         }`,
       );
     } else {

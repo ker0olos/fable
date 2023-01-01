@@ -67,7 +67,7 @@ async function handler(
     return discord.Message.pong();
   }
 
-  console.log(name, type, JSON.stringify(options), customType, customValues);
+  // console.log(name, type, JSON.stringify(options), customType, customValues);
 
   // TODO most of this should be managed by the some kind of repo management system
 

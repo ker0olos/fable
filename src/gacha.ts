@@ -61,11 +61,11 @@ async function roll() {
 
   const pull = pool[Math.floor(Math.random() * pool.length)];
 
-  console.log(
-    `pool length: ${pool.length}\npool variables: ${
-      JSON.stringify({ role, range })
-    }`,
-  );
+  // console.log(
+  //   `pool length: ${pool.length}\npool variables: ${
+  //     JSON.stringify({ role, range })
+  //   }`,
+  // );
 
   return pull;
 }
