@@ -38,7 +38,10 @@ export async function commands(
   if (name in utilsMani.commands!) {
     const command = utilsMani.commands![name];
     // deno-lint-ignore no-explicit-any
-    return await (utilsAPI as any)[command.source](interaction.options!);
+    return await (utilsAPI as any)[command.source](
+      interaction.options!,
+      interaction,
+    );
   }
 
   return;
