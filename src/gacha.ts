@@ -111,7 +111,7 @@ export function start({ token }: { token: string }) {
 
       await message.patch(token);
 
-      await sleep(5);
+      await sleep(rating >= 5 ? 7 : 5);
 
       message = new discord.Message()
         .addEmbed(
