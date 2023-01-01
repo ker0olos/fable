@@ -1,0 +1,18 @@
+{
+  "id": "utils",
+  "title": "Utils",
+  "description": "A repository of common utilities",
+  "commands": {
+    "dice": {
+      "source": "roll",
+      "description": "Roll a ten-sided dice",
+      "options": [
+        {
+          "id": "amount",
+          "description": "The number of dices to roll",
+          "type": "integer"
+        }
+      ]
+    }
+  }
+}

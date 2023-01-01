@@ -1,4 +1,4 @@
-import { Character, CharacterRole, Media } from '../../src/repo.interface.ts';
+import { Character, CharacterRole, Media } from '../../src/repo.d.ts';
 
 export enum Status {
   'FINISHED' = 'FINISHED',

@@ -1,6 +1,6 @@
 import { randint } from '../../src/utils.ts';
 
-import { AniListMedia, Character, CharacterRole } from './interface.ts';
+import { AniListMedia, Character, CharacterRole } from './types.d.ts';
 
 import { gql, request } from './graphql.ts';
 

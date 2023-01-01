@@ -15,12 +15,11 @@ import * as discord from './discord.ts';
 
 import * as search from './search.ts';
 
-import * as extra from './extra.ts';
+import * as repo from './repo.ts';
+
 import * as gacha from './gacha.ts';
 
 import { dsn, publicKey, setCanary } from './config.ts';
-
-import { nextEpisode } from '../repos/anilist/commands.ts';
 
 async function handler(
   request: Request,
@@ -53,15 +52,16 @@ async function handler(
     );
   }
 
+  const interaction = new discord.Interaction<string | number | boolean>(body);
+
   const {
     name,
     type,
     token,
-    member,
     options,
     customType,
     customValues,
-  } = new discord.Interaction<string | number | boolean>(body);
+  } = interaction;
 
   if (type === discord.InteractionType.Ping) {
     return discord.Message.pong();
@@ -91,16 +91,6 @@ async function handler(
             return (await search.themes({
               search: options!['query'] as string,
             })).send();
-          case 'next_episode':
-            return (await nextEpisode({
-              search: options!['title'] as string,
-            }))
-              .send();
-          case 'dice':
-            return extra.diceRoll({
-              user: member!.user,
-              amount: options!['amount'] as number,
-            }).send();
           case 'w':
           case 'roll':
           case 'pull':
@@ -108,8 +98,16 @@ async function handler(
             return gacha.start({ token }).send();
           case 'force_pull':
             return gacha.start({ token, id: options!['id'] as string }).send();
-          default:
-            break;
+          default: {
+            // Non-standard (external) commands are handled by individual repos
+            const external = await repo.commands(name!, interaction);
+
+            if (external) {
+              return external.send();
+            } else {
+              break;
+            }
+          }
         }
         break;
       case discord.InteractionType.Component:

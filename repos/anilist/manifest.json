@@ -6,13 +6,13 @@
   "source": "./index.ts",
   "commands": {
     "next_episode": {
+      "source": "nextEpisode",
       "description": "Find when the next episode of an anime is airing",
       "options": [
         {
           "id": "title",
-          "type": "string",
           "description": "The title for an anime",
-          "source": "nextEpisode"
+          "type": "string"
         }
       ]
     }

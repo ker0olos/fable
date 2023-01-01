@@ -34,8 +34,8 @@ class Type(Enum):
 
 
 class Option:
-    def __init__(self, name: str, desc: str, type: Type, required: bool = True):
-        self.type = type.value
+    def __init__(self, name: str, desc: str, typ: Type, required: bool = True):
+        self.type = typ.value
         self.name = name
         self.description = desc
         self.required = required
@@ -44,8 +44,8 @@ class Option:
 def make_command(
     name: str,
     desc: str,
-    options: typing.List[Option] = [],
-    aliases: typing.List[str] = [],
+    options: typing.List[Option] | None = None,
+    aliases: typing.List[str] | None = None,
     canary_only: bool = False,
 ):
     if (canary_only) and (GUILD_ID is None):
@@ -58,20 +58,23 @@ def make_command(
         {
             "name": name,
             "description": desc,
-            "options": [option.__dict__ for option in options],
+            "options": [option.__dict__ for option in options]
+            if options is not None
+            else [],
         }
     ]
 
-    for alias in aliases:
-        t = commands[0].copy()
-        t["name"] = alias
-        commands.append(t)
+    if aliases is not None:
+        for alias in aliases:
+            copy = commands[0].copy()
+            copy["name"] = alias
+            commands.append(copy)
 
     return commands
 
 
 def load_manifest(filepath: str):
-    with open(filepath + "/manifest.json", "r") as file:
+    with open(filepath + "/manifest.json", "r", encoding="utf-8") as file:
         data = file.read()
 
     manifest = json.loads(data)
@@ -89,7 +92,7 @@ def load_manifest(filepath: str):
                 Option(
                     name=opt["id"],
                     desc=opt["description"],
-                    type=Type[opt["type"].upper()],
+                    typ=Type[opt["type"].upper()],
                 )
                 for opt in options
             ],
@@ -107,7 +110,7 @@ def set_commands(commands):
         print("Updating guild commands for canary bot\n\n")
 
     response = requests.put(
-        url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=commands
+        url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=commands, timeout=15000
     ).json()
 
     print(response)
@@ -125,7 +128,7 @@ if __name__ == "__main__":
                 Option(
                     name="query",
                     desc="The title for an anime/manga",
-                    type=Type.STRING,
+                    typ=Type.STRING,
                 )
             ],
             aliases=["manga"],
@@ -137,7 +140,7 @@ if __name__ == "__main__":
                 Option(
                     name="query",
                     desc="The title of the character",
-                    type=Type.STRING,
+                    typ=Type.STRING,
                 ),
             ],
             aliases=["debug"],
@@ -149,7 +152,7 @@ if __name__ == "__main__":
                 Option(
                     name="query",
                     desc="The title for an anime/manga",
-                    type=Type.STRING,
+                    typ=Type.STRING,
                 )
             ],
             aliases=["themes"],
@@ -167,21 +170,11 @@ if __name__ == "__main__":
                 Option(
                     name="id",
                     desc="The id of the character",
-                    type=Type.STRING,
+                    typ=Type.STRING,
                 )
             ],
             canary_only=True,
         )
         + load_manifest("./repos/anilist")
-        + make_command(
-            name="dice",
-            desc="Roll a ten-sided dice",
-            options=[
-                Option(
-                    name="amount",
-                    desc="The number of dices to roll",
-                    type=Type.INTEGER,
-                )
-            ],
-        )
+        + load_manifest("./repos/utils")
     )

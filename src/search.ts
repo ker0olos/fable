@@ -1,6 +1,6 @@
 import { capitalize, titlesToArray } from './utils.ts';
 
-import { Format, RelationType } from './repo.interface.ts';
+import { Format, RelationType } from './repo.d.ts';
 
 import * as discord from './discord.ts';
 

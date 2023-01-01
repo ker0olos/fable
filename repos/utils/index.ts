@@ -1,9 +1,10 @@
-import { randint } from './utils.ts';
+import { randint } from '../../src/utils.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '../../src/discord.ts';
 
-export function diceRoll(
-  { user, amount }: { user: discord.User; amount: number },
+export function roll(
+  { amount }: { user: discord.User; amount: number },
+  { member }: discord.Interaction<unknown>,
 ) {
   const rolls = [];
 
@@ -28,7 +29,7 @@ export function diceRoll(
     `\`${amount}d${dieSize}>=${minSuccess}\` \n = [ ${equation} ] \n = **${successes}** ${plural}`;
 
   const message = new discord.Message().setContent(
-    `<@${user.id}> ${rolledNumber}`,
+    `<@${member!.user.id}> ${rolledNumber}`,
   );
 
   return message;

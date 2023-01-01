@@ -2,12 +2,12 @@ import { titlesToArray } from '../../src/utils.ts';
 
 import * as discord from '../../src/discord.ts';
 
-import { Status } from './interface.ts';
+import { Status } from './types.d.ts';
 
 import * as api from './api.ts';
 
-export async function nextEpisode({ search }: { search: string }) {
-  const anime = await api.nextEpisode({ search });
+export async function nextEpisode({ title }: { title: string }) {
+  const anime = await api.nextEpisode({ search: title });
 
   const titles = titlesToArray(anime);
 

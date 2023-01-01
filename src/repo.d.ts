@@ -96,3 +96,27 @@ export interface Character {
     edges?: { characterRole: CharacterRole; node: Media }[];
   };
 }
+
+export type CommandDeclaration = {
+  source: string;
+  description: string;
+  options: {
+    id: string;
+    type: string;
+    description: string;
+  }[];
+};
+
+export type Manifest = {
+  id: string;
+  title: string;
+  description: string;
+  url?: string;
+  source?: string;
+  commands?: { [key: string]: CommandDeclaration };
+};
+
+declare module '*.json' {
+  const value: Manifest;
+  export default value;
+}
