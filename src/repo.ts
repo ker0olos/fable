@@ -1,3 +1,5 @@
+import { Manifest } from './repo.d.ts';
+
 import { Interaction, Message } from './discord.ts';
 
 import _anilist from '../repos/anilist/manifest.json' assert {
@@ -8,10 +10,12 @@ import _utils from '../repos/utils/manifest.json' assert {
   type: 'json',
 };
 
-import { Manifest } from './repo.d.ts';
+import * as utilsAPI from '../repos/utils/index.ts';
 
-const anilist = _anilist as Manifest;
-const utils = _utils as Manifest;
+import * as anilistAPI from '../repos/anilist/index.ts';
+
+const anilistMani = _anilist as Manifest;
+const utilsMani = _utils as Manifest;
 
 // TODO
 // Builtin > Community > Manual
@@ -25,16 +29,16 @@ export async function commands(
   name: string,
   interaction: Interaction<unknown>,
 ): Promise<Message | undefined> {
-  if (name in anilist.commands!) {
-    const api = await import(anilist.source!);
-    const command = anilist.commands![name];
-    return await api[command.source](interaction.options!);
+  if (name in anilistMani.commands!) {
+    const command = anilistMani.commands![name];
+    // deno-lint-ignore no-explicit-any
+    return await (anilistAPI as any)[command.source](interaction.options!);
   }
 
-  if (name in utils.commands!) {
-    const api = await import(utils.source!);
-    const command = utils.commands![name];
-    return await api[command.source](interaction.options!);
+  if (name in utilsMani.commands!) {
+    const command = utilsMani.commands![name];
+    // deno-lint-ignore no-explicit-any
+    return await (utilsAPI as any)[command.source](interaction.options!);
   }
 
   return;

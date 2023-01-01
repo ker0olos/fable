@@ -112,11 +112,5 @@ export type Manifest = {
   title: string;
   description: string;
   url?: string;
-  source?: string;
   commands?: { [key: string]: CommandDeclaration };
 };
-
-declare module '*.json' {
-  const value: Manifest;
-  export default value;
-}
