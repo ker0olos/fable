@@ -116,12 +116,12 @@ export function start({ token }: { token: string }) {
       message = new discord.Message()
         .addEmbed(
           new discord.Embed()
-            .setTitle(pull.name.full)
-            .setDescription(
+            .setTitle(
               `${emotes.star.repeat(rating)}${
                 emotes.noStar.repeat(5 - rating)
               }`,
             )
+            .addField(titles[0]!, `**${pull.name.full}**`)
             .setImage(
               pull.image?.large,
             ),

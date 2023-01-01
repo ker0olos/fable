@@ -126,7 +126,7 @@ async function handler(
   } catch (err) {
     if (err?.response?.status === 404 || err?.message === '404') {
       return discord.Message.content(
-        'Found __nothing__ matching that query!',
+        'Found _nothing_ matching that query!',
       );
     }
 

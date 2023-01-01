@@ -272,10 +272,7 @@ export class Embed {
     return this;
   }
 
-  addField(
-    { name, value }: { name?: string; value?: string },
-    inline = false,
-  ) {
+  addField(name: string, value: string, inline = false) {
     if (!this._data.fields) {
       this._data.fields = [];
     }
