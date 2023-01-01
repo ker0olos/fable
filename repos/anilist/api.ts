@@ -118,6 +118,7 @@ export async function character(
                 id
                 type
                 format
+                popularity
                 title {
                   romaji
                   english
