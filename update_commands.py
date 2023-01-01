@@ -51,6 +51,9 @@ def make_command(
     if (canary_only) and (GUILD_ID is None):
         return []
 
+    if canary_only:
+        name = f"{name} (canary only)"
+
     commands = [
         {
             "name": name,
@@ -155,6 +158,18 @@ if __name__ == "__main__":
             name="gacha",
             desc="An experimental/ephemeral gacha command",
             aliases=["w", "pull", "roll"],
+            canary_only=True,
+        )
+        + make_command(
+            name="force_pull",
+            desc="Force a gacha pull",
+            options=[
+                Option(
+                    name="id",
+                    desc="The id of the character",
+                    type=Type.STRING,
+                )
+            ],
             canary_only=True,
         )
         + load_manifest("./repos/anilist")

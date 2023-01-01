@@ -4,7 +4,7 @@ import {
 
 import { rng, sleep, titlesToArray } from './utils.ts';
 
-import { CharacterRole } from './repo.interface.ts';
+import { Character, CharacterRole } from './repo.interface.ts';
 
 import * as discord from './discord.ts';
 
@@ -41,7 +41,11 @@ export const variables = {
   },
 };
 
-async function roll() {
+async function roll({ id }: { id?: string }): Promise<Character> {
+  if (id) {
+    return (await anilist.character({ id: parseInt(id) }))!;
+  }
+
   let role = rng(variables.roles);
 
   const range = rng(variables.ranges);
@@ -71,7 +75,7 @@ async function roll() {
 }
 
 /** start the roll's animation */
-export function start({ token }: { token: string }) {
+export function start({ token, id }: { token: string; id?: string }) {
   const message = new discord.Message()
     .addEmbed(
       new discord.Embed('image').setImage(
@@ -79,7 +83,7 @@ export function start({ token }: { token: string }) {
       ),
     );
 
-  roll()
+  roll({ id })
     .then(async (pull) => {
       const media = pull.media!.edges![0].node;
       const role = pull.media!.edges![0].characterRole;

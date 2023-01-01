@@ -106,6 +106,8 @@ async function handler(
           case 'pull':
           case 'gacha':
             return gacha.start({ token }).send();
+          case 'force_pull':
+            return gacha.start({ token, id: options!['id'] as string }).send();
           default:
             break;
         }
