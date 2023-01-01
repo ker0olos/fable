@@ -52,7 +52,7 @@ def make_command(
         return []
 
     if canary_only:
-        name = f"{name} (canary only)"
+        desc = f"{desc} (canary only)"
 
     commands = [
         {
