@@ -11,7 +11,6 @@ import _utils from '../repos/utils/manifest.json' assert {
 };
 
 import * as utilsAPI from '../repos/utils/index.ts';
-
 import * as anilistAPI from '../repos/anilist/index.ts';
 
 const anilistMani = _anilist as Manifest;
@@ -32,7 +31,10 @@ export async function commands(
   if (name in anilistMani.commands!) {
     const command = anilistMani.commands![name];
     // deno-lint-ignore no-explicit-any
-    return await (anilistAPI as any)[command.source](interaction.options!);
+    return await (anilistAPI as any)[command.source](
+      interaction.options!,
+      interaction,
+    );
   }
 
   if (name in utilsMani.commands!) {
@@ -47,25 +49,25 @@ export async function commands(
   return;
 }
 
-export function context() {
-  return {
-    release: {
-      id: Deno.env.get('DENO_DEPLOYMENT_ID')!,
-    },
-    device: {
-      arch: Deno.build.arch,
-      processor_count: navigator.hardwareConcurrency,
-    },
-    os: Deno.build.os,
-    deno: {
-      version: Deno.version.deno,
-      target: Deno.build.target,
-    },
-    v8: Deno.version.v8,
-    typescript: Deno.version.typescript,
-    repositories: [
-      anilist,
-      utils,
-    ] as Manifest[],
-  };
-}
+// export function context() {
+//   return {
+//     release: {
+//       id: Deno.env.get('DENO_DEPLOYMENT_ID')!,
+//     },
+//     device: {
+//       arch: Deno.build.arch,
+//       processor_count: navigator.hardwareConcurrency,
+//     },
+//     os: Deno.build.os,
+//     deno: {
+//       version: Deno.version.deno,
+//       target: Deno.build.target,
+//     },
+//     v8: Deno.version.v8,
+//     typescript: Deno.version.typescript,
+//     repositories: [
+//       _anilist,
+//       _utils,
+//     ] as Manifest[],
+//   };
+// }

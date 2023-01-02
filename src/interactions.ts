@@ -111,6 +111,7 @@ async function handler(
         }
         break;
       case discord.InteractionType.Component:
+        // TODO repo external component #13
         switch (customType) {
           case 'media':
             return (await search.media({
@@ -131,9 +132,7 @@ async function handler(
     }
 
     const refId = captureException(err, {
-      extra: {
-        ...new discord.Interaction<string>(body),
-      },
+      extra: { ...interaction },
     });
 
     return discord.Message.internal(refId).send();
@@ -142,11 +141,9 @@ async function handler(
   return discord.Message.content(`Unimplemented`);
 }
 
-init({
-  dsn,
-});
+init({ dsn });
 
 serve({
-  '/': (r) => handler(r),
-  '/canary': (r) => handler(r, true),
+  '/': (_) => handler(_),
+  '/canary': (_) => handler(_, true),
 });

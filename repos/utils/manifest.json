@@ -1,7 +1,7 @@
 {
   "id": "utils",
   "title": "Utils",
-  "description": "A repository of common utilities",
+  "description": "A repository containing a set of extra utility commands",
   "commands": {
     "dice": {
       "source": "roll",

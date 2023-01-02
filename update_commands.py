@@ -91,7 +91,7 @@ def load_manifest(filepath: str):
             [
                 Option(
                     name=opt["id"],
-                    desc=opt["description"],
+                    desc=f'{opt["description"]} ({manifest["title"]})',
                     typ=Type[opt["type"].upper()],
                 )
                 for opt in options

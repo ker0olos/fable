@@ -79,6 +79,8 @@ export async function media(
     const component = new discord.Component()
       .setStyle(discord.ButtonStyle.Grey);
 
+    const label = titlesToArray(relation.node, 60)[0];
+
     switch (relation.relationType) {
       case RelationType.PREQUEL:
       case RelationType.SEQUEL:
@@ -86,9 +88,7 @@ export async function media(
       case RelationType.SPIN_OFF: {
         component
           .setLabel(
-            `${titlesToArray(relation.node).shift()!} (${
-              capitalize(relation.relationType!)
-            })`,
+            `${label} (${capitalize(relation.relationType!)})`,
           ).setId(
             `media:${relation.node.id!}`,
           );
@@ -98,9 +98,7 @@ export async function media(
       case RelationType.ADAPTATION: {
         component
           .setLabel(
-            `${titlesToArray(relation.node).shift()!} (${
-              capitalize(relation.node.format!)
-            })`,
+            `${label} (${capitalize(relation.node.format!)})`,
           )
           .setId(
             `media:${relation.node.id!}`,
@@ -116,11 +114,8 @@ export async function media(
     switch (relation.node.format) {
       case Format.MUSIC: {
         component
-          .setLabel(
-            (relation.node.title.english || relation.node.title.romaji ||
-              relation.node.title.native)!,
-          )
-          .setUrl(relation.node.externalLinks?.shift()?.url!);
+          .setLabel(label)
+          .setUrl(relation.node.externalLinks?.[0]?.url);
 
         additionalGroup.push(component);
         break;
@@ -177,12 +172,12 @@ export async function character(
   const group: discord.Component[] = [];
 
   character.media?.edges?.forEach((relation) => {
+    const label = titlesToArray(relation.node, 60)[0];
+
     const component = new discord.Component()
       .setStyle(discord.ButtonStyle.Grey)
       .setLabel(
-        `${titlesToArray(relation.node, 60).shift()!} (${
-          capitalize(relation.node.format!)
-        })`,
+        `${label} (${capitalize(relation.node.format!)})`,
       ).setId(
         `media:${relation.node.id!}`,
       );

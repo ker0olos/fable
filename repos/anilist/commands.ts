@@ -6,7 +6,10 @@ import { Status } from './types.d.ts';
 
 import * as api from './api.ts';
 
-export async function nextEpisode({ title }: { title: string }) {
+export async function nextEpisode(
+  { title }: { title: string },
+  // _: discord.Interaction<unknown>,
+) {
   const anime = await api.nextEpisode({ search: title });
 
   const titles = titlesToArray(anime);
