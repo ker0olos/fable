@@ -46,8 +46,7 @@ class Option:
         name: str,
         desc: str,
         type: Type,
-        required: bool = True,
-        default_permission: Permission = Permission.ALL
+        required: bool = True
         # options: typing.List | None = None,
     ):
         # if options is not None:
@@ -60,7 +59,6 @@ class Option:
         self.name = name
         self.description = desc
         self.required = required
-        self.default_member_permissions = default_permission.value
         # self.options = options
 
 
@@ -69,6 +67,7 @@ def make_command(
     desc: str | None = None,
     options: typing.List[Option] | None = None,
     aliases: typing.List[str] | None = None,
+    default_permission: Permission = Permission.ALL,
     canary_only: bool = False,
 ):
     if (canary_only) and (GUILD_ID is None):
@@ -81,6 +80,7 @@ def make_command(
         {
             "name": name,
             "description": desc,
+            "default_member_permissions": default_permission.value,
             "options": [option.__dict__ for option in options]
             if options is not None
             else [],
