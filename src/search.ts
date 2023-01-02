@@ -157,8 +157,12 @@ export async function character(
         new discord.Embed()
           .setTitle(character.name.full)
           .addField({ name: 'ID', value: `\`${character.id}\`` })
+          .addField({ name: 'Gender', value: `\`${character.gender}\`` })
+          .addField({ name: 'Age', value: `\`${character.age}\`` })
           .addField({ name: 'Media', value: `\`${media.id}\`` })
           .addField({ name: 'Role', value: `\`${capitalize(role)}\`` })
+          .addField({ name: 'Type', value: `\`${media.type}\`` })
+          .addField({ name: 'Format', value: `\`${media.format}\`` })
           .addField({ name: 'Popularity', value: `\`${media.popularity}\`` })
           .addField({ name: 'Rating', value: `\`${rating}\`` })
           .setThumbnail({ url: character.image?.large }),
