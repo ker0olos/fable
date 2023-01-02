@@ -52,7 +52,7 @@ export async function media(
             value: `${media.popularity}`,
             inline: true,
           })
-          .setThumbnail({ url: media.image?.large }),
+          .setThumbnail({ url: media.coverImage?.large }),
       );
   }
 
