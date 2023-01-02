@@ -1,5 +1,7 @@
 import { capitalize, titlesToArray } from './utils.ts';
 
+// TODO refactor
+// create a new class for Rating
 import { rate, ratingToEmote } from './gacha.ts';
 
 import { Format, RelationType } from './repo.d.ts';
@@ -148,6 +150,8 @@ export async function character(
   }
 
   if (debug) {
+    // TODO refactor
+
     const media = character.media!.edges![0].node;
 
     const role = character.media!.edges![0].characterRole;
@@ -157,7 +161,12 @@ export async function character(
       .addEmbed(
         new discord.Embed()
           .setTitle(character.name.full)
-          .addField({ name: 'ID', value: `\`${character.id}\`` })
+          .setDescription(character.name.alternative?.join('\n'))
+          .addField({ name: 'Id', value: `\`${character.id}\`` })
+          .addField({
+            name: 'Rating',
+            value: `${ratingToEmote(rating)}`,
+          })
           .addField({
             name: 'Gender',
             value: `${character.gender}`,
@@ -177,17 +186,12 @@ export async function character(
           })
           .addField({
             name: 'Format',
-            value: `\`${capitalize(media.format)}\``,
+            value: `${capitalize(media.format)}`,
             inline: true,
           })
           .addField({
             name: 'Popularity',
             value: `\`${media.popularity}\``,
-            inline: true,
-          })
-          .addField({
-            name: 'Rating',
-            value: `${ratingToEmote(rating)}`,
             inline: true,
           })
           .setThumbnail({ url: character.image?.large }),
