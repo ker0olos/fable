@@ -1,3 +1,5 @@
+// deno-lint-ignore-file camelcase
+
 export enum Type {
   'ANIME' = 'ANIME',
   'MANGA' = 'MANGA',
@@ -112,6 +114,7 @@ export type Manifest = {
   title: string;
   description: string;
   author?: string;
+  icon_url?: string;
   url?: string;
   commands?: { [key: string]: CommandDeclaration };
 };

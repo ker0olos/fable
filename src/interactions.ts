@@ -106,6 +106,7 @@ async function handler(
                 .setAuthor({ name: 'Fable' })
                 .setUrl(manifest.url)
                 .setDescription(manifest.description)
+                .setThumbnail({ url: manifest.icon_url })
                 .setTitle(manifest.title);
 
               message.addEmbed(embed);
