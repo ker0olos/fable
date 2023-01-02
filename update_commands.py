@@ -33,6 +33,13 @@ class Type(Enum):
     ATTACHMENT = 11  # attachment object
 
 
+class Permission(Enum):
+    ALL = None
+    OWNER = 0
+    ADMINISTRATORS = str(1 << 3)
+    MANAGE_GUILD = str(1 << 5)
+
+
 class Option:
     def __init__(
         self,
@@ -40,6 +47,7 @@ class Option:
         desc: str,
         type: Type,
         required: bool = True,
+        default_permission: Permission = Permission.ALL
         # options: typing.List | None = None,
     ):
         # if options is not None:
@@ -52,6 +60,7 @@ class Option:
         self.name = name
         self.description = desc
         self.required = required
+        self.default_member_permissions = default_permission
         # self.options = options
 
 
@@ -211,6 +220,7 @@ if __name__ == "__main__":
                 Option(
                     name="builtin",
                     desc="Show all built-in enabled-by-default repositories",
+                    default_permission=Permission.MANAGE_GUILD,
                     type=Type.SUB_COMMAND,
                     required=False,
                 )
