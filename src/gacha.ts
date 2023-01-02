@@ -129,7 +129,7 @@ export function start({ token, id }: { token: string; id?: string }) {
       await message.patch(token);
     }).catch(async (err) => {
       if (err?.response?.status === 404 || err?.message === '404') {
-        await new discord.Message().setContent(
+        return await new discord.Message().setContent(
           'Found _nothing_ matching that query!',
         ).patch(token);
       }
