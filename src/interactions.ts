@@ -101,6 +101,9 @@ async function handler(
           case 'repo': {
             const message = new discord.Message();
 
+            // FIXME build a pagination system into discord.ts
+            // and use it to page through the different repos
+            // (see https://github.com/ker0olos/fable/issues/14)
             for (const manifest of repo.builtin()) {
               const embed = new discord.Embed()
                 .setAuthor({ name: 'Fable' })
@@ -127,7 +130,8 @@ async function handler(
         }
         break;
       case discord.InteractionType.Component:
-        // TODO repo external component #13
+        // TODO repo external component
+        // (see https://github.com/ker0olos/fable/issues/13)
         switch (customType) {
           case 'media':
             return (await search.media({

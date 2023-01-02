@@ -83,6 +83,13 @@ export function truncate(
   return str;
 }
 
+export function wrap(text: string, width = 32) {
+  return text.replace(
+    new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'),
+    '$1\n',
+  );
+}
+
 export function capitalize(s: string): string {
   const sa = s.split('_');
   return sa.map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(' ')

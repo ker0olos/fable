@@ -195,13 +195,12 @@ if __name__ == "__main__":
         # repo management commands
         + make_command(
             name="repo",
-            desc="repository management commands",
             options=[
                 Option(
                     name="builtin",
                     desc="Show all built-in enabled-by-default repositories",
                     type=Type.SUB_COMMAND,
-                    required=False
+                    required=False,
                 )
             ],
             canary_only=True,

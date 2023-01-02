@@ -2,7 +2,7 @@ import {
   captureException,
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
 
-import { rng, sleep, titlesToArray } from './utils.ts';
+import { rng, sleep, titlesToArray, wrap } from './utils.ts';
 
 import { Character, CharacterRole } from './repo.d.ts';
 
@@ -96,7 +96,7 @@ export function start({ token, id }: { token: string; id?: string }) {
       let message = new discord.Message()
         .addEmbed(
           new discord.Embed()
-            .setTitle(titles[0]!)
+            .setTitle(wrap(titles[0]!))
             .setImage({ url: media.coverImage?.large }),
         );
 
@@ -122,7 +122,10 @@ export function start({ token, id }: { token: string; id?: string }) {
                 emotes.noStar.repeat(5 - rating)
               }`,
             )
-            .addField({ name: titles[0]!, value: `**${pull.name.full}**` })
+            .addField({
+              name: wrap(titles[0]!),
+              value: `**${wrap(pull.name.full)}**`,
+            })
             .setImage({ url: pull.image?.large }),
         );
 

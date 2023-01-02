@@ -357,6 +357,12 @@ export class Message {
   }
 
   addEmbed(embed: Embed) {
+    if (this._data.embeds.length >= 3) {
+      throw new Error(
+        // FIXME: (see https://github.com/ker0olos/fable/issues/14)
+        'having more than 3 embeds on the same message is very aesthetically unpleasant',
+      );
+    }
     this._data.embeds.push(embed._done());
     return this;
   }
