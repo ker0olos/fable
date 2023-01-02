@@ -139,7 +139,7 @@ export function start({ token, id }: { token: string; id?: string }) {
   return message;
 }
 
-function rate(role: CharacterRole, popularity: number) {
+export function rate(role: CharacterRole, popularity: number) {
   if (role === CharacterRole.BACKGROUND || popularity < 50_000) {
     return 1;
   }

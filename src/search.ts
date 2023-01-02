@@ -5,6 +5,7 @@ import { Format, RelationType } from './repo.d.ts';
 import * as discord from './discord.ts';
 
 import * as anilist from '../repos/anilist/index.ts';
+import { rate } from './gacha.ts';
 
 export async function media(
   { id, search }: {
@@ -146,11 +147,20 @@ export async function character(
   }
 
   if (debug) {
+    const media = character.media!.edges![0].node;
+
+    const role = character.media!.edges![0].characterRole;
+    const rating = rate(role, media.popularity!);
+
     return new discord.Message()
       .addEmbed(
         new discord.Embed()
           .setTitle(character.name.full)
           .addField({ name: 'ID', value: `\`${character.id}\`` })
+          .addField({ name: 'Media', value: `\`${media.id}\`` })
+          .addField({ name: 'Role', value: `\`${capitalize(role)}\`` })
+          .addField({ name: 'Popularity', value: `\`${media.popularity}\`` })
+          .addField({ name: 'Rating', value: `\`${rating}\`` })
           .setThumbnail({ url: character.image?.large }),
       );
   }
