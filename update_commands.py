@@ -60,7 +60,7 @@ class Option:
         self.name = name
         self.description = desc
         self.required = required
-        self.default_member_permissions = default_permission
+        self.default_member_permissions = default_permission.value
         # self.options = options
 
 
