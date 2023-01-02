@@ -27,8 +27,8 @@ const emotes = {
 export const variables = {
   roles: {
     10: CharacterRole.MAIN, // 10% for Main
-    70: CharacterRole.SUPPORTING, // 65% for Supporting
-    20: CharacterRole.BACKGROUND, // 25% for Background
+    70: CharacterRole.SUPPORTING, // 70% for Supporting
+    20: CharacterRole.BACKGROUND, // 20% for Background
   },
   ranges: {
     // whether you get from the far end or the near end
@@ -46,19 +46,13 @@ async function roll({ id }: { id?: string }): Promise<Character> {
     return (await anilist.character({ id: parseInt(id) }))!;
   }
 
-  let role = rng(variables.roles);
+  const role = rng(variables.roles);
 
   const range = rng(variables.ranges);
 
-  // NOTE this is a workaround an edge case
-  // most media in that range only include information about main characters
-  // which cases the pool to return empty
-  if (range[0]! === 0) {
-    role = CharacterRole.MAIN;
-  }
-
   const pool = await anilist.pool({
-    role,
+    // ignore roles on low popularity pools
+    role: range[0]! === 0 ? undefined : role,
     popularity_greater: range[0]!,
     popularity_lesser: range[1],
   });

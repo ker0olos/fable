@@ -149,9 +149,10 @@ export async function character(
     throw new Error('404');
   }
 
+  // TODO refactor
+  // decrease complexity
+  // (move to a separate function)
   if (debug) {
-    // TODO refactor
-
     const media = character.media!.edges![0].node;
 
     const role = character.media!.edges![0].characterRole;

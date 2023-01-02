@@ -168,7 +168,7 @@ export async function pool(
   variables: {
     popularity_greater: number;
     popularity_lesser?: number;
-    role: CharacterRole;
+    role?: CharacterRole;
   },
   retry = 1,
   carry: { [id: number]: Character } = {},
@@ -189,7 +189,7 @@ export async function pool(
   const page = randint(1, lastPage[key]);
 
   const query = gql`
-    query ($role: CharacterRole!, $popularity_greater: Int!, $popularity_lesser: Int) {
+    query ($popularity_greater: Int!, $popularity_lesser: Int, $role: CharacterRole) {
       Page(page: ${page}, perPage: 50) {
         # fixed to query characters that only appear in anime, movies, and manga
         media(popularity_greater: $popularity_greater, popularity_lesser: $popularity_lesser, sort: [POPULARITY], format_in: [TV, MOVIE, MANGA]) {
