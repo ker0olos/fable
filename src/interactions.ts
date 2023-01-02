@@ -78,12 +78,13 @@ async function handler(
           case 'anime':
           case 'manga':
             return (await search.media({
+              debug: Boolean(options!['nerd']),
               search: options!['query'] as string,
             }, name)).send();
           case 'debug':
           case 'character':
             return (await search.character({
-              debug: name === 'debug',
+              debug: name === 'debug' || Boolean(options!['nerd']),
               search: options!['query'] as string,
             })).send();
           case 'songs':
@@ -135,6 +136,7 @@ async function handler(
         switch (customType) {
           case 'media':
             return (await search.media({
+              debug: false,
               id: parseInt(customValues![0]),
             })).setType(discord.MessageType.Update).send();
           default:

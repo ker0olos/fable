@@ -42,8 +42,15 @@ export const variables = {
 };
 
 async function roll({ id }: { id?: string }): Promise<Character> {
+  // force a face pull
   if (id) {
-    return (await anilist.character({ id: parseInt(id) }))!;
+    const character = await anilist.character({ id: parseInt(id) });
+
+    if (!character) {
+      throw new Error('404');
+    }
+
+    return character;
   }
 
   const role = rng(variables.roles);

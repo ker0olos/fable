@@ -146,7 +146,13 @@ if __name__ == "__main__":
                     name="query",
                     desc="The title for an anime/manga",
                     type=Type.STRING,
-                )
+                ),
+                Option(
+                    name="nerd",
+                    desc="Display the nerdy information",
+                    type=Type.BOOLEAN,
+                    required=False,
+                ),
             ],
             aliases=["manga"],
         )
@@ -158,6 +164,12 @@ if __name__ == "__main__":
                     name="query",
                     desc="The title of the character",
                     type=Type.STRING,
+                ),
+                Option(
+                    name="nerd",
+                    desc="Display the nerdy information",
+                    type=Type.BOOLEAN,
+                    required=False,
                 ),
             ],
             aliases=["debug"],

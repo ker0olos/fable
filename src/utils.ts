@@ -96,6 +96,14 @@ export function capitalize(s: string): string {
     .trim();
 }
 
+export function parseId(query?: string): number | undefined {
+  const id = parseInt(query!);
+
+  if (!isNaN(id) && id.toString() === query) {
+    return id;
+  }
+}
+
 export function decodeDescription(s?: string): string | undefined {
   if (!s) {
     return;

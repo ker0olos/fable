@@ -1,4 +1,4 @@
-import { capitalize, titlesToArray } from './utils.ts';
+import { capitalize, parseId, titlesToArray } from './utils.ts';
 
 // TODO refactor
 // create a new class for Rating
@@ -11,16 +11,25 @@ import * as discord from './discord.ts';
 import * as anilist from '../repos/anilist/index.ts';
 
 export async function media(
-  { id, search }: {
+  { id, search, debug }: {
     id?: number;
     search?: string;
+    debug: boolean;
   },
   prioritize?: 'anime' | 'manga',
 ) {
+  if (typeof (id = parseId(search!)) === 'number') {
+    search = undefined;
+  }
+
   const media = await anilist.media(id ? { id } : { search }, prioritize);
 
   if (!media) {
     throw new Error('404');
+  }
+
+  if (debug) {
+    return new discord.Message().setContent('Unimplemented');
   }
 
   const titles = titlesToArray(media);
@@ -140,9 +149,13 @@ export async function character(
   { id, search, debug }: {
     id?: number;
     search?: string;
-    debug?: boolean;
+    debug: boolean;
   },
 ) {
+  if (typeof (id = parseId(search!)) === 'number') {
+    search = undefined;
+  }
+
   const character = await anilist.character(id ? { id } : { search });
 
   if (!character) {
