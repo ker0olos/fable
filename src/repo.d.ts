@@ -111,6 +111,7 @@ export type Manifest = {
   id: string;
   title: string;
   description: string;
+  author?: string;
   url?: string;
   commands?: { [key: string]: CommandDeclaration };
 };

@@ -212,12 +212,13 @@ export class Embed {
   _data: {
     type: string;
     title?: string;
+    url?: string;
     description?: string;
     color?: number;
     fields?: {
-      name?: string;
-      value?: string;
-      inline: boolean;
+      name: string;
+      value: string;
+      inline?: boolean;
     }[];
     thumbnail?: {
       url: string;
@@ -227,9 +228,12 @@ export class Embed {
     };
     author?: {
       name: string;
+      url?: string;
+      icon_url?: string;
     };
     footer?: {
       text: string;
+      icon_url?: string;
     };
   };
 
@@ -239,8 +243,13 @@ export class Embed {
     };
   }
 
-  setTitle(title: string) {
+  setTitle(title?: string) {
     this._data.title = title;
+    return this;
+  }
+
+  setUrl(url?: string) {
+    this._data.url = url;
     return this;
   }
 
@@ -254,49 +263,44 @@ export class Embed {
     return this;
   }
 
-  setAuthor(name?: string) {
-    if (name) {
-      this._data.author = {
-        name,
-      };
-    }
+  setAuthor(author: { name: string; url?: string; icon_url?: string }) {
+    this._data.author = author;
     return this;
   }
 
-  setThumbnail(url?: string) {
-    if (url) {
+  setThumbnail(thumbnail: { url?: string }) {
+    if (thumbnail.url) {
       this._data.thumbnail = {
-        url,
+        url: thumbnail.url,
       };
     }
     return this;
   }
 
-  addField(name: string, value: string, inline = false) {
+  addField(field: { name: string; value: string; inline?: boolean }) {
     if (!this._data.fields) {
       this._data.fields = [];
     }
-    this._data.fields.push({
-      name,
-      value,
-      inline,
-    });
+    if (field) {
+      this._data.fields.push(field);
+    }
     return this;
   }
 
-  setImage(url?: string) {
-    if (url) {
+  setImage(image: { url?: string }) {
+    if (image.url) {
       this._data.image = {
-        url,
+        url: image.url,
       };
     }
     return this;
   }
 
-  setFooter(text?: string, suffix = '') {
-    if (text) {
+  setFooter(footer: { text?: string; icon_url?: string }, suffix = '') {
+    if (footer.text) {
       this._data.footer = {
-        text: text + suffix,
+        ...footer,
+        text: footer.text + suffix,
       };
     }
     return this;

@@ -26,13 +26,11 @@ export async function media(
   message.addEmbed(
     new discord.Embed()
       .setTitle(titles.shift()!)
-      .setAuthor(capitalize(media.type!))
+      .setAuthor({ name: capitalize(media.type!) })
       .setDescription(media.description)
       .setColor(media.coverImage?.color)
-      .setImage(
-        media.coverImage?.extraLarge,
-      )
-      .setFooter(media.title.native),
+      .setImage({ url: media.coverImage?.extraLarge })
+      .setFooter({ text: media.title.native }),
   );
 
   media.characters?.edges!.slice(0, 2).forEach((character) => {
@@ -40,12 +38,14 @@ export async function media(
       .setTitle(character.node!.name.full)
       .setDescription(character.node!.description)
       .setColor(media?.coverImage?.color)
-      .setThumbnail(character.node!.image?.large)
+      .setThumbnail({ url: character.node!.image?.large })
       .setFooter(
-        [
-          character.node!.gender,
-          character.node!.age,
-        ].filter(Boolean).join(', '),
+        {
+          text: [
+            character.node!.gender,
+            character.node!.age,
+          ].filter(Boolean).join(', '),
+        },
       );
 
     message.addEmbed(embed);
@@ -150,8 +150,8 @@ export async function character(
       .addEmbed(
         new discord.Embed()
           .setTitle(character.name.full)
-          .addField('ID', `\`${character.id}\``)
-          .setThumbnail(character.image?.large),
+          .addField({ name: 'ID', value: `\`${character.id}\`` })
+          .setThumbnail({ url: character.image?.large }),
       );
   }
 
@@ -160,12 +160,14 @@ export async function character(
       new discord.Embed()
         .setTitle(character.name.full)
         .setDescription(character.description)
-        .setImage(character.image?.large)
+        .setImage({ url: character.image?.large })
         .setFooter(
-          [
-            character.gender,
-            character!.age,
-          ].filter(Boolean).join(', '),
+          {
+            text: [
+              character.gender,
+              character!.age,
+            ].filter(Boolean).join(', '),
+          },
         ),
     );
 

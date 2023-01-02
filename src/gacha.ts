@@ -79,7 +79,7 @@ export function start({ token, id }: { token: string; id?: string }) {
   const message = new discord.Message()
     .addEmbed(
       new discord.Embed('image').setImage(
-        `${URL}/spinner.gif`,
+        { url: `${URL}/spinner.gif` },
       ),
     );
 
@@ -97,9 +97,7 @@ export function start({ token, id }: { token: string; id?: string }) {
         .addEmbed(
           new discord.Embed()
             .setTitle(titles[0]!)
-            .setImage(
-              media.coverImage?.large,
-            ),
+            .setImage({ url: media.coverImage?.large }),
         );
 
       await message.patch(token);
@@ -109,9 +107,7 @@ export function start({ token, id }: { token: string; id?: string }) {
       message = new discord.Message()
         .addEmbed(
           new discord.Embed('image')
-            .setImage(
-              `${URL}/${rating}stars.gif`,
-            ),
+            .setImage({ url: `${URL}/${rating}stars.gif` }),
         );
 
       await message.patch(token);
@@ -126,10 +122,8 @@ export function start({ token, id }: { token: string; id?: string }) {
                 emotes.noStar.repeat(5 - rating)
               }`,
             )
-            .addField(titles[0]!, `**${pull.name.full}**`)
-            .setImage(
-              pull.image?.large,
-            ),
+            .addField({ name: titles[0]!, value: `**${pull.name.full}**` })
+            .setImage({ url: pull.image?.large }),
         );
 
       await message.patch(token);

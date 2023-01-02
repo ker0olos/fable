@@ -34,11 +34,25 @@ class Type(Enum):
 
 
 class Option:
-    def __init__(self, name: str, desc: str, typ: Type, required: bool = True):
-        self.type = typ.value
+    def __init__(
+        self,
+        name: str,
+        desc: str,
+        type: Type,
+        required: bool = True,
+        # options: typing.List | None = None,
+    ):
+        # if options is not None:
+        #     options = [option.__dict__ for option in options]
+        # else:
+        #     options = []
+
+        self.name = name
+        self.type = type.value
         self.name = name
         self.description = desc
         self.required = required
+        # self.options = options
 
 
 def make_command(
@@ -92,7 +106,7 @@ def load_manifest(filepath: str):
                 Option(
                     name=opt["id"],
                     desc=f'{opt["description"]} ({manifest["title"]})',
-                    typ=Type[opt["type"].upper()],
+                    type=Type[opt["type"].upper()],
                 )
                 for opt in options
             ],
@@ -121,6 +135,9 @@ def set_commands(commands):
 
 if __name__ == "__main__":
     set_commands(
+        # standard gacha commands
+        # uses characters and media from
+        # all builtin, community, and manual repos
         make_command(
             name="anime",
             desc="Search for an anime/manga",
@@ -128,7 +145,7 @@ if __name__ == "__main__":
                 Option(
                     name="query",
                     desc="The title for an anime/manga",
-                    typ=Type.STRING,
+                    type=Type.STRING,
                 )
             ],
             aliases=["manga"],
@@ -140,7 +157,7 @@ if __name__ == "__main__":
                 Option(
                     name="query",
                     desc="The title of the character",
-                    typ=Type.STRING,
+                    type=Type.STRING,
                 ),
             ],
             aliases=["debug"],
@@ -152,7 +169,7 @@ if __name__ == "__main__":
                 Option(
                     name="query",
                     desc="The title for an anime/manga",
-                    typ=Type.STRING,
+                    type=Type.STRING,
                 )
             ],
             aliases=["themes"],
@@ -170,11 +187,26 @@ if __name__ == "__main__":
                 Option(
                     name="id",
                     desc="The id of the character",
-                    typ=Type.STRING,
+                    type=Type.STRING,
                 )
             ],
             canary_only=True,
         )
+        # repo management commands
+        + make_command(
+            name="repo",
+            desc="repository management commands",
+            options=[
+                Option(
+                    name="builtin",
+                    desc="Show all built-in enabled-by-default repositories",
+                    type=Type.SUB_COMMAND,
+                )
+            ],
+            canary_only=True,
+        )
+        # non-standard (eternal) commands
+        # non-gacha commands (specific one-task commands)
         + load_manifest("./repos/anilist")
         + load_manifest("./repos/utils")
     )

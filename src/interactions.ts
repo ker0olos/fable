@@ -98,6 +98,21 @@ async function handler(
             return gacha.start({ token }).send();
           case 'force_pull':
             return gacha.start({ token, id: options!['id'] as string }).send();
+          case 'repo': {
+            const message = new discord.Message();
+
+            for (const manifest of repo.builtin()) {
+              const embed = new discord.Embed()
+                .setAuthor({ name: 'Fable' })
+                .setUrl(manifest.url)
+                .setDescription(manifest.description)
+                .setTitle(manifest.title);
+
+              message.addEmbed(embed);
+            }
+
+            return message.send();
+          }
           default: {
             // Non-standard (external) commands are handled by individual repos
             const external = await repo.commands(name!, interaction);

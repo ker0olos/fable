@@ -49,6 +49,13 @@ export async function commands(
   return;
 }
 
+export function builtin() {
+  return [
+    anilistMani,
+    utilsMani,
+  ];
+}
+
 // export function context() {
 //   return {
 //     release: {
