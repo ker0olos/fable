@@ -176,7 +176,7 @@ export async function character(
         new discord.Embed()
           .setTitle(character.name.full)
           .setDescription(character.name.alternative?.join('\n'))
-          .addField({ name: 'Id', value: `\`${character.id}\`` })
+          .addField({ name: 'Id', value: `${character.id}` })
           .addField({
             name: 'Rating',
             value: `${ratingToEmote(rating)}`,
@@ -187,7 +187,7 @@ export async function character(
             inline: true,
           })
           .addField({ name: 'Age', value: `${character.age}`, inline: true })
-          .addField({ name: 'Media', value: `\`${media.id}\``, inline: true })
+          .addField({ name: 'Media', value: `${media.id}`, inline: true })
           .addField({
             name: 'Role',
             value: `${capitalize(role)}`,
@@ -205,7 +205,7 @@ export async function character(
           })
           .addField({
             name: 'Popularity',
-            value: `\`${media.popularity}\``,
+            value: `${media.popularity}`,
             inline: true,
           })
           .setThumbnail({ url: character.image?.large }),

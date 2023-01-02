@@ -128,7 +128,15 @@ export function start({ token, id }: { token: string; id?: string }) {
 
       await message.patch(token);
     }).catch(async (err) => {
-      const refId = captureException(err);
+      if (err?.response?.status === 404 || err?.message === '404') {
+        await new discord.Message().setContent(
+          'Found _nothing_ matching that query!',
+        ).patch(token);
+      }
+
+      const refId = captureException({
+        ...err,
+      });
 
       await discord.Message.internal(refId).patch(token);
     });
