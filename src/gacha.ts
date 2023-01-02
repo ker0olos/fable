@@ -117,11 +117,7 @@ export function start({ token, id }: { token: string; id?: string }) {
       message = new discord.Message()
         .addEmbed(
           new discord.Embed()
-            .setTitle(
-              `${emotes.star.repeat(rating)}${
-                emotes.noStar.repeat(5 - rating)
-              }`,
-            )
+            .setTitle(ratingToEmote(rating))
             .addField({
               name: wrap(titles[0]!),
               value: `**${wrap(pull.name.full)}**`,
@@ -171,4 +167,8 @@ export function rate(role: CharacterRole, popularity: number) {
   throw new Error(
     `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
   );
+}
+
+export function ratingToEmote(rating: number) {
+  return `${emotes.star.repeat(rating)}${emotes.noStar.repeat(5 - rating)}`;
 }

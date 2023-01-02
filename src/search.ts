@@ -1,11 +1,12 @@
 import { capitalize, titlesToArray } from './utils.ts';
 
+import { rate, ratingToEmote } from './gacha.ts';
+
 import { Format, RelationType } from './repo.d.ts';
 
 import * as discord from './discord.ts';
 
 import * as anilist from '../repos/anilist/index.ts';
-import { rate } from './gacha.ts';
 
 export async function media(
   { id, search }: {
@@ -157,14 +158,38 @@ export async function character(
         new discord.Embed()
           .setTitle(character.name.full)
           .addField({ name: 'ID', value: `\`${character.id}\`` })
-          .addField({ name: 'Gender', value: `\`${character.gender}\`` })
-          .addField({ name: 'Age', value: `\`${character.age}\`` })
-          .addField({ name: 'Media', value: `\`${media.id}\`` })
-          .addField({ name: 'Role', value: `\`${capitalize(role)}\`` })
-          .addField({ name: 'Type', value: `\`${media.type}\`` })
-          .addField({ name: 'Format', value: `\`${media.format}\`` })
-          .addField({ name: 'Popularity', value: `\`${media.popularity}\`` })
-          .addField({ name: 'Rating', value: `\`${rating}\`` })
+          .addField({
+            name: 'Gender',
+            value: `${character.gender}`,
+            inline: true,
+          })
+          .addField({ name: 'Age', value: `${character.age}`, inline: true })
+          .addField({ name: 'Media', value: `\`${media.id}\``, inline: true })
+          .addField({
+            name: 'Role',
+            value: `${capitalize(role)}`,
+            inline: true,
+          })
+          .addField({
+            name: 'Type',
+            value: `${capitalize(media.type)}`,
+            inline: true,
+          })
+          .addField({
+            name: 'Format',
+            value: `\`${capitalize(media.format)}\``,
+            inline: true,
+          })
+          .addField({
+            name: 'Popularity',
+            value: `\`${media.popularity}\``,
+            inline: true,
+          })
+          .addField({
+            name: 'Rating',
+            value: `${ratingToEmote(rating)}`,
+            inline: true,
+          })
           .setThumbnail({ url: character.image?.large }),
       );
   }
