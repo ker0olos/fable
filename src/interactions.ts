@@ -102,7 +102,7 @@ async function handler(
           case 'repo': {
             const message = new discord.Message();
 
-            // FIXME build a pagination system into discord.ts
+            // TODO FIXME build a pagination system into discord.ts
             // and use it to page through the different repos
             // (see https://github.com/ker0olos/fable/issues/14)
             for (const manifest of repo.builtin()) {

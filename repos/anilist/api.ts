@@ -16,8 +16,10 @@ export async function media(
     query ($id: Int, $search: String) {
       Page {
         media(search: $search, id: $id, sort: [POPULARITY_DESC]) {
+          id
           type
           format
+          popularity
           description
           relations {
             edges {
@@ -34,22 +36,6 @@ export async function media(
                 externalLinks {
                   site
                   url
-                }
-              }
-            }
-          }
-          characters(sort: [RELEVANCE]) {
-            edges {
-              role
-              node {
-                age
-                gender
-                description
-                name {
-                  full
-                }
-                image {
-                  large
                 }
               }
             }
@@ -71,6 +57,22 @@ export async function media(
           trailer {
             id
             site
+          }
+          characters(sort: [RELEVANCE]) {
+            edges {
+              role
+              node {
+                age
+                gender
+                description
+                name {
+                  full
+                }
+                image {
+                  large
+                }
+              }
+            }
           }
         }
       }
@@ -111,7 +113,8 @@ export async function character(
           image {
             large
           }
-          media {
+          # TODO REMOVE sorting should be handled by repo
+          media(sort: [POPULARITY_DESC]) {
             edges {
               characterRole
               node {
@@ -193,7 +196,7 @@ export async function pool(
       Page(page: ${page}, perPage: 50) {
         # fixed to query characters that only appear in anime, movies, and manga
         media(popularity_greater: $popularity_greater, popularity_lesser: $popularity_lesser, sort: [POPULARITY], format_in: [TV, MOVIE, MANGA]) {
-          # FIXME only requests the first page
+          # TODO FIXME only requests the first page
           # nearly impossible to fix, given the fact that
           # we're using a workaround for the same issue on media
           # which is only possible because that was a set of predictable queries
@@ -214,6 +217,7 @@ export async function pool(
               image {
                 large
               }
+              # TODO REMOVE sorting should be handled by repo
               media(sort: POPULARITY_DESC) { # always return the hightest popularity first
                 edges {
                   # the character role in the media
@@ -260,6 +264,8 @@ export async function pool(
 
   // the parent media is only used as a wrapper to get list of popular media
 
+  // TODO FIXME can cause false positives because if character is 1* in some media
+  // and 5* in others. this pulls the highest which is 5* instead of re-rolling
   response.media!.forEach(({ characters }) => {
     characters.nodes.forEach((character) => {
       // const {

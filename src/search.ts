@@ -28,11 +28,33 @@ export async function media(
     throw new Error('404');
   }
 
-  if (debug) {
-    return new discord.Message().setContent('Unimplemented');
-  }
-
   const titles = titlesToArray(media);
+
+  if (debug) {
+    return new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setTitle(titles.shift()!)
+          .setDescription(titles.join('\n'))
+          .addField({ name: 'Id', value: `${media.id}` })
+          .addField({
+            name: 'Type',
+            value: `${capitalize(media.type)}`,
+            inline: true,
+          })
+          .addField({
+            name: 'Format',
+            value: `${capitalize(media.format)}`,
+            inline: true,
+          })
+          .addField({
+            name: 'Popularity',
+            value: `${media.popularity}`,
+            inline: true,
+          })
+          .setThumbnail({ url: media.image?.large }),
+      );
+  }
 
   const message = new discord.Message();
 
