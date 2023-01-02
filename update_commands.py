@@ -220,11 +220,11 @@ if __name__ == "__main__":
                 Option(
                     name="builtin",
                     desc="Show all built-in enabled-by-default repositories",
-                    default_permission=Permission.MANAGE_GUILD,
                     type=Type.SUB_COMMAND,
                     required=False,
                 )
             ],
+            default_permission=Permission.MANAGE_GUILD,
             canary_only=True,
         )
         # non-standard (eternal) commands
