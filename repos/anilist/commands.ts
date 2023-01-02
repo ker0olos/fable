@@ -2,7 +2,7 @@ import { titlesToArray } from '../../src/utils.ts';
 
 import * as discord from '../../src/discord.ts';
 
-import { Status } from './types.d.ts';
+import { Status } from './types.ts';
 
 import * as api from './api.ts';
 

@@ -1,4 +1,4 @@
-import { Manifest } from './repo.d.ts';
+import { Manifest } from './types.ts';
 
 import { Interaction, Message } from './discord.ts';
 
@@ -16,8 +16,7 @@ import * as anilistAPI from '../repos/anilist/index.ts';
 const anilistMani = _anilist as Manifest;
 const utilsMani = _utils as Manifest;
 
-// TODO
-// Builtin > Community > Manual
+// TODO Builtin > Community > Manual
 
 /**
  * Non-standard commands (extras) are handled by individual repos

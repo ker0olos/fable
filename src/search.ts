@@ -1,10 +1,8 @@
-import { capitalize, parseId, titlesToArray } from './utils.ts';
+import { capitalize, comma, parseId, titlesToArray } from './utils.ts';
 
-// TODO refactor
-// create a new class for Rating
-import { rate, ratingToEmote } from './gacha.ts';
+import { Rating } from './ratings.ts';
 
-import { Format, RelationType } from './repo.d.ts';
+import { Character, Format, Media, RelationType } from './types.ts';
 
 import * as discord from './discord.ts';
 
@@ -17,44 +15,25 @@ export async function media(
     debug: boolean;
   },
   prioritize?: 'anime' | 'manga',
-) {
+): Promise<discord.Message> {
   if (typeof (id = parseId(search!)) === 'number') {
     search = undefined;
   }
 
-  const media = await anilist.media(id ? { id } : { search }, prioritize);
+  const media = await anilist.media(
+    id ? { id } : { search },
+    prioritize,
+  ) as Media | undefined;
 
   if (!media) {
     throw new Error('404');
   }
 
-  const titles = titlesToArray(media);
-
   if (debug) {
-    return new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setTitle(titles.shift()!)
-          .setDescription(titles.join('\n'))
-          .addField({ name: 'Id', value: `${media.id}` })
-          .addField({
-            name: 'Type',
-            value: `${capitalize(media.type)}`,
-            inline: true,
-          })
-          .addField({
-            name: 'Format',
-            value: `${capitalize(media.format)}`,
-            inline: true,
-          })
-          .addField({
-            name: 'Popularity',
-            value: `${media.popularity}`,
-            inline: true,
-          })
-          .setThumbnail({ url: media.coverImage?.large }),
-      );
+    return new discord.Message().addEmbed(mediaDebugEmbed(media));
   }
+
+  const titles = titlesToArray(media);
 
   const message = new discord.Message();
 
@@ -167,13 +146,38 @@ export async function media(
   return message;
 }
 
+function mediaDebugEmbed(media: Media) {
+  const titles = titlesToArray(media);
+
+  return new discord.Embed()
+    .setTitle(titles.shift()!)
+    .setDescription(titles.join('\n'))
+    .addField({ name: 'Id', value: `${media.id}` })
+    .addField({
+      name: 'Type',
+      value: `${capitalize(media.type)}`,
+      inline: true,
+    })
+    .addField({
+      name: 'Format',
+      value: `${capitalize(media.format)}`,
+      inline: true,
+    })
+    .addField({
+      name: 'Popularity',
+      value: `${comma(media.popularity!)}`,
+      inline: true,
+    })
+    .setThumbnail({ url: media.coverImage?.large });
+}
+
 export async function character(
   { id, search, debug }: {
     id?: number;
     search?: string;
     debug: boolean;
   },
-) {
+): Promise<discord.Message> {
   if (typeof (id = parseId(search!)) === 'number') {
     search = undefined;
   }
@@ -184,54 +188,8 @@ export async function character(
     throw new Error('404');
   }
 
-  // TODO refactor
-  // decrease complexity
-  // (move to a separate function)
   if (debug) {
-    const media = character.media!.edges![0].node;
-
-    const role = character.media!.edges![0].characterRole;
-    const rating = rate(role, media.popularity!);
-
-    return new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setTitle(character.name.full)
-          .setDescription(character.name.alternative?.join('\n'))
-          .addField({ name: 'Id', value: `${character.id}` })
-          .addField({
-            name: 'Rating',
-            value: `${ratingToEmote(rating)}`,
-          })
-          .addField({
-            name: 'Gender',
-            value: `${character.gender}`,
-            inline: true,
-          })
-          .addField({ name: 'Age', value: `${character.age}`, inline: true })
-          .addField({ name: 'Media', value: `${media.id}`, inline: true })
-          .addField({
-            name: 'Role',
-            value: `${capitalize(role)}`,
-            inline: true,
-          })
-          .addField({
-            name: 'Type',
-            value: `${capitalize(media.type)}`,
-            inline: true,
-          })
-          .addField({
-            name: 'Format',
-            value: `${capitalize(media.format)}`,
-            inline: true,
-          })
-          .addField({
-            name: 'Popularity',
-            value: `${media.popularity}`,
-            inline: true,
-          })
-          .setThumbnail({ url: character.image?.large }),
-      );
+    return new discord.Message().addEmbed(characterDebugEmbed(character));
   }
 
   const message = new discord.Message()
@@ -269,6 +227,50 @@ export async function character(
   message.addComponents(group);
 
   return message;
+}
+
+function characterDebugEmbed(character: Character) {
+  const media = character.media!.edges![0].node;
+
+  const role = character.media!.edges![0].characterRole;
+  const rating = new Rating(role, media.popularity!);
+
+  return new discord.Embed()
+    .setTitle(character.name.full)
+    .setDescription(character.name.alternative?.join('\n'))
+    .addField({ name: 'Id', value: `${character.id}` })
+    .addField({
+      name: 'Rating',
+      value: rating.emotes,
+    })
+    .addField({
+      name: 'Gender',
+      value: `${character.gender}`,
+      inline: true,
+    })
+    .addField({ name: 'Age', value: `${character.age}`, inline: true })
+    .addField({ name: 'Media', value: `${media.id}`, inline: true })
+    .addField({
+      name: 'Role',
+      value: `${capitalize(role)}`,
+      inline: true,
+    })
+    .addField({
+      name: 'Type',
+      value: `${capitalize(media.type)}`,
+      inline: true,
+    })
+    .addField({
+      name: 'Format',
+      value: `${capitalize(media.format)}`,
+      inline: true,
+    })
+    .addField({
+      name: 'Popularity',
+      value: `${comma(media.popularity!)}`,
+      inline: true,
+    })
+    .setThumbnail({ url: character.image?.large });
 }
 
 export async function themes(

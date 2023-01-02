@@ -4,7 +4,9 @@ import {
 
 import { rng, sleep, titlesToArray, wrap } from './utils.ts';
 
-import { Character, CharacterRole } from './repo.d.ts';
+import { Rating } from './ratings.ts';
+
+import { Character, CharacterRole } from './types.ts';
 
 import * as discord from './discord.ts';
 
@@ -12,17 +14,6 @@ import * as anilist from '../repos/anilist/index.ts';
 
 const URL = 'https://raw.githubusercontent.com/ker0olos/fable/main/assets';
 
-// const colors = {
-//   background: '#2b2d42',
-//   purple: '#6b3ebd',
-//   gold: '#feb500',
-//   yellow: '#fed33c',
-// };
-
-const emotes = {
-  star: '<:fable_star:1058059570305585303>',
-  noStar: '<:fable_no_star:1058182412963688548>',
-};
 
 export const variables = {
   roles: {
@@ -92,7 +83,7 @@ export function start({ token, id }: { token: string; id?: string }) {
 
       const titles = titlesToArray(media);
 
-      const rating = rate(role, media.popularity!);
+      const rating = new Rating(role, media.popularity!);
 
       let message = new discord.Message()
         .addEmbed(
@@ -113,12 +104,12 @@ export function start({ token, id }: { token: string; id?: string }) {
 
       await message.patch(token);
 
-      await sleep(rating >= 5 ? 7 : 5);
+      await sleep(rating.stars >= 5 ? 7 : 5);
 
       message = new discord.Message()
         .addEmbed(
           new discord.Embed()
-            .setTitle(ratingToEmote(rating))
+            .setTitle(rating.emotes)
             .addField({
               name: wrap(titles[0]!),
               value: `**${wrap(pull.name.full)}**`,
@@ -134,50 +125,10 @@ export function start({ token, id }: { token: string; id?: string }) {
         ).patch(token);
       }
 
-      const refId = captureException({
-        ...err,
-      });
+      const refId = captureException(err);
 
       await discord.Message.internal(refId).patch(token);
     });
 
   return message;
-}
-
-export function rate(role: CharacterRole, popularity: number) {
-  if (role === CharacterRole.BACKGROUND || popularity < 50_000) {
-    return 1;
-  }
-
-  if (popularity < 200_000) {
-    if (role === CharacterRole.MAIN) {
-      return 3;
-    }
-
-    return 2;
-  }
-
-  if (popularity < 400_000) {
-    if (role === CharacterRole.MAIN) {
-      return 4;
-    }
-
-    return 3;
-  }
-
-  if (popularity > 400_000) {
-    if (role === CharacterRole.MAIN) {
-      return 5;
-    }
-
-    return 4;
-  }
-
-  throw new Error(
-    `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
-  );
-}
-
-export function ratingToEmote(rating: number) {
-  return `${emotes.star.repeat(rating)}${emotes.noStar.repeat(5 - rating)}`;
 }

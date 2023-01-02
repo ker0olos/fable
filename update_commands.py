@@ -148,8 +148,8 @@ if __name__ == "__main__":
                     type=Type.STRING,
                 ),
                 Option(
-                    name="nerd",
-                    desc="Display the nerdy information",
+                    name="debug",
+                    desc="Display the nerdy stuff",
                     type=Type.BOOLEAN,
                     required=False,
                 ),
@@ -166,8 +166,8 @@ if __name__ == "__main__":
                     type=Type.STRING,
                 ),
                 Option(
-                    name="nerd",
-                    desc="Display the nerdy information",
+                    name="debug",
+                    desc="Display the nerdy stuff",
                     type=Type.BOOLEAN,
                     required=False,
                 ),

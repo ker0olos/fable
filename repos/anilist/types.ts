@@ -1,4 +1,4 @@
-import { Character, CharacterRole, Media } from '../../src/repo.d.ts';
+import { Character, CharacterRole, Media } from '../../src/types.ts';
 
 export enum Status {
   'FINISHED' = 'FINISHED',

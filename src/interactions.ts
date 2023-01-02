@@ -78,13 +78,13 @@ async function handler(
           case 'anime':
           case 'manga':
             return (await search.media({
-              debug: Boolean(options!['nerd']),
+              debug: Boolean(options!['debug']),
               search: options!['query'] as string,
             }, name)).send();
           case 'debug':
           case 'character':
             return (await search.character({
-              debug: name === 'debug' || Boolean(options!['nerd']),
+              debug: name === 'debug' || Boolean(options!['debug']),
               search: options!['query'] as string,
             })).send();
           case 'songs':

@@ -1,6 +1,6 @@
 import nacl from 'https://cdn.skypack.dev/tweetnacl@v1.0.3?dts';
 
-import { Media } from './repo.d.ts';
+import { Media } from './types.ts';
 
 export function randint(min: number, max: number) {
   return Math.floor((Math.random()) * (max - min + 1)) + min;
@@ -94,6 +94,10 @@ export function capitalize(s: string): string {
   const sa = s.split('_');
   return sa.map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(' ')
     .trim();
+}
+
+export function comma(n: number) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 export function parseId(query?: string): number | undefined {
