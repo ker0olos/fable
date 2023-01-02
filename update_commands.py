@@ -57,7 +57,7 @@ class Option:
 
 def make_command(
     name: str,
-    desc: str,
+    desc: str | None = None,
     options: typing.List[Option] | None = None,
     aliases: typing.List[str] | None = None,
     canary_only: bool = False,
@@ -201,6 +201,7 @@ if __name__ == "__main__":
                     name="builtin",
                     desc="Show all built-in enabled-by-default repositories",
                     type=Type.SUB_COMMAND,
+                    required=False
                 )
             ],
             canary_only=True,
