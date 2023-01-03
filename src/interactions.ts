@@ -69,8 +69,6 @@ async function handler(
 
   // console.log(name, type, JSON.stringify(options), customType, customValues);
 
-  // TODO most of this should be managed by the some kind of repo management system
-
   try {
     switch (type) {
       case discord.InteractionType.Command:
@@ -102,7 +100,7 @@ async function handler(
           case 'repo': {
             const message = new discord.Message();
 
-            // TODO FIXME build a pagination system into discord.ts
+            // TODO LOW build a pagination system into discord.ts
             // and use it to page through the different repos
             // (see https://github.com/ker0olos/fable/issues/14)
             for (const manifest of repo.builtin()) {
@@ -119,11 +117,11 @@ async function handler(
             return message.send();
           }
           default: {
-            // Non-standard (external) commands are handled by individual repos
-            const external = await repo.commands(name!, interaction);
+            // Non-standard (extra) commands are handled by individual repos
+            const message = await repo.commands(name!, interaction);
 
-            if (external) {
-              return external.send();
+            if (message) {
+              return message.send();
             } else {
               break;
             }
@@ -131,7 +129,7 @@ async function handler(
         }
         break;
       case discord.InteractionType.Component:
-        // TODO repo external component
+        // TODO BACKLOG repo components
         // (see https://github.com/ker0olos/fable/issues/13)
         switch (customType) {
           case 'media':

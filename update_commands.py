@@ -105,7 +105,7 @@ def load_manifest(filepath: str):
     commands = []
 
     for name in manifest["commands"]:
-        desc = manifest["commands"][name]["description"]
+        desc = f'{manifest["commands"][name]["description"]} ({manifest["title"]})'
         options = manifest["commands"][name]["options"]
 
         commands += make_command(
@@ -114,7 +114,7 @@ def load_manifest(filepath: str):
             [
                 Option(
                     name=opt["id"],
-                    desc=f'{opt["description"]} ({manifest["title"]})',
+                    desc=opt["description"],
                     type=Type[opt["type"].upper()],
                 )
                 for opt in options
