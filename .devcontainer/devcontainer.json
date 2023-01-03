@@ -3,5 +3,5 @@
   "features": {
     "ghcr.io/devcontainers-contrib/features/deno:1": {}
   },
-  "extensions": [ "denoland.vscode-deno" ]
+  "extensions": ["denoland.vscode-deno"]
 }
