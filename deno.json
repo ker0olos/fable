@@ -5,6 +5,9 @@
       "include": ["camelcase", "eqeqeq", "no-const-assign", "no-eval"]
     }
   },
+  "tasks": {
+    "start": "deno run --watch --allow-all ./src/interactions.ts"
+  },
   "fmt": {
     "options": {
       "useTabs": false,

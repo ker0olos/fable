@@ -68,13 +68,13 @@ def make_command(
     options: typing.List[Option] | None = None,
     aliases: typing.List[str] | None = None,
     default_permission: Permission = Permission.ALL,
-    canary_only: bool = False,
+    dev_only: bool = False,
 ):
-    if (canary_only) and (GUILD_ID is None):
+    if dev_only and (GUILD_ID is None):
         return []
 
-    if canary_only:
-        desc = f"{desc} (canary only)"
+    if dev_only:
+        desc = f"{desc} (dev only)"
 
     commands = [
         {
@@ -130,7 +130,7 @@ def set_commands(commands):
     if GUILD_ID is None:
         print("Updating global commands for production bot\n\n")
     else:
-        print("Updating guild commands for canary bot\n\n")
+        print("Updating guild commands for dev bot\n\n")
 
     response = requests.put(
         url, headers={"Authorization": f"Bot {BOT_TOKEN}"}, json=commands, timeout=15000
@@ -199,7 +199,7 @@ if __name__ == "__main__":
             name="gacha",
             desc="An experimental/ephemeral gacha command",
             aliases=["w", "pull", "roll"],
-            canary_only=True,
+            dev_only=True,
         )
         + make_command(
             name="force_pull",
@@ -211,7 +211,8 @@ if __name__ == "__main__":
                     type=Type.STRING,
                 )
             ],
-            canary_only=True,
+            default_permission=Permission.ADMINISTRATORS,
+            dev_only=True,
         )
         # repo management commands
         + make_command(
@@ -225,7 +226,7 @@ if __name__ == "__main__":
                 )
             ],
             default_permission=Permission.MANAGE_GUILD,
-            canary_only=True,
+            dev_only=True,
         )
         # non-standard (eternal) commands
         # non-gacha commands (specific one-task commands)

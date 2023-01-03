@@ -19,13 +19,13 @@ import * as repo from './repo.ts';
 
 import * as gacha from './gacha.ts';
 
-import { dsn, publicKey, setCanary } from './config.ts';
+import { dsn, publicKey, setDev } from './config.ts';
 
 async function handler(
   request: Request,
-  canary = false,
+  dev = false,
 ): Promise<Response> {
-  setCanary(canary);
+  setDev(dev);
 
   const { error } = await validateRequest(request, {
     POST: {
@@ -165,5 +165,5 @@ init({ dsn });
 
 serve({
   '/': (_) => handler(_),
-  '/canary': (_) => handler(_, true),
+  '/dev': (_) => handler(_, true),
 });

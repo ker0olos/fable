@@ -2,17 +2,6 @@
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "features": {
     "ghcr.io/devcontainers-contrib/features/deno:1": {}
-},
-"extensions": [ "denoland.vscode-deno" ],
-"postAttachCommand": [
-  "gh codespace ports visibility 8000:public -c $CODESPACE_NAME",
-  "deno run --allow-all --watch  ./src/interactions.ts"
-],
-"portsAttributes": {
-	"8000": {
-		"label": "canary",
-    "protocol": "https",
-    "onAutoForward": "silent"
-	}
-}
+  },
+  "extensions": [ "denoland.vscode-deno" ]
 }

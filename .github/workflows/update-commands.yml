@@ -22,9 +22,9 @@ jobs:
         run: python update_commands.py
 
       - if: ${{ github.ref != 'refs/heads/main' }}
-        name: Update guild slash commands on canary
+        name: Update guild slash commands on dev
         env:
-          APP_ID: ${{ secrets.CANARY_ID }}
-          BOT_TOKEN: ${{ secrets.CANARY_TOKEN }}
+          APP_ID: ${{ secrets.DEV_ID }}
+          BOT_TOKEN: ${{ secrets.DEV_TOKEN }}
           GUILD_ID: ${{ secrets.GUILD_ID }}
         run: python update_commands.py
