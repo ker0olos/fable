@@ -7,10 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: codecov/codecov-action@v3
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno test --config deno.json
+      - run: deno test --config deno.json --coverage=cov_profile
+      - run: deno coverage cov_profile --lcov --output=lcov.info
+
   fmt:
     runs-on: ubuntu-latest
     steps:
@@ -19,6 +22,7 @@ jobs:
         with:
           deno-version: v1.x
       - run: deno fmt --config deno.json --check
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -26,4 +30,4 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno lint --config deno.json --check
+      - run: deno lint --config deno.json

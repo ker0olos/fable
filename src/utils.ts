@@ -3,7 +3,7 @@ import nacl from 'https://cdn.skypack.dev/tweetnacl@v1.0.3?dts';
 import { Media } from './types.ts';
 
 export function randint(min: number, max: number) {
-  return Math.floor((Math.random()) * (max - min + 1)) + min;
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 export function hexToInt(hex?: string): number | undefined {
@@ -33,8 +33,9 @@ export function shuffle<T>(array: T[]) {
   }
 }
 
-export const sleep = (secs: number) =>
-  new Promise((resolve) => setTimeout(resolve, secs * 1000));
+export function sleep(secs: number) {
+  return new Promise((resolve) => setTimeout(resolve, secs * 1000));
+}
 
 export function rng<T>(dict: { [chance: number]: T }): T {
   const pool = Object.values(dict);
@@ -70,12 +71,8 @@ export function truncate(
   str: string | undefined,
   n: number,
 ): string | undefined {
-  if (!str) {
-    return str;
-  }
-
-  if (str.length > n) {
-    const s = str.substring(0, n - 3) + '...';
+  if (str && str.length > n) {
+    const s = str.substring(0, n - 2);
     return s.slice(0, s.lastIndexOf(' ')) +
       '...';
   }
