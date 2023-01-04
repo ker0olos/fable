@@ -20,7 +20,7 @@ export let DEV = false;
 export async function init({ dev }: { dev: boolean }) {
   const query = await Deno.permissions.query({ name: 'env' });
 
-  if (query) {
+  if (query?.state === 'granted') {
     dsn = Deno.env.get('SENTRY_DSN')!;
 
     appId = dev ? Deno.env.get('DEV_ID')! : Deno.env.get('APP_ID')!;
