@@ -1,3 +1,5 @@
+name: deno
+
 on:
   pull_request:
   push:
@@ -7,12 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: codecov/codecov-action@v3
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
       - run: deno test --config deno.json --coverage=cov_profile
       - run: deno coverage cov_profile --lcov --output=lcov.info
+      - uses: codecov/codecov-action@v3
 
   fmt:
     runs-on: ubuntu-latest
