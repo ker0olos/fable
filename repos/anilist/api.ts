@@ -1,12 +1,18 @@
 import { randint } from '../../src/utils.ts';
 
-import { AniListMedia, Character, CharacterRole } from './types.ts';
+import { AniListMedia, Character, CharacterRole, Pool } from './types.ts';
 
 import { gql, request } from './graphql.ts';
 
 import lastPage from './lastPage.json' assert {
   type: 'json',
 };
+
+/** Order by trending than popularity */
+const mediaDefaultSort = '[ TRENDING_DESC, POPULARITY_DESC ]';
+
+/** Order manually decided by anilist moderators */
+const characterDefaultSort = '[ RELEVANCE ]';
 
 export async function media(
   variables: { id?: number; search?: string },
@@ -15,7 +21,7 @@ export async function media(
   const query = gql`
     query ($id: Int, $search: String) {
       Page {
-        media(search: $search, id: $id, sort: [POPULARITY_DESC]) {
+        media(search: $search, id: $id, sort: ${mediaDefaultSort}) {
           id
           type
           format
@@ -47,7 +53,6 @@ export async function media(
           }
           coverImage {
             extraLarge
-            large
             color
           }
           externalLinks {
@@ -58,7 +63,7 @@ export async function media(
             id
             site
           }
-          characters(sort: [RELEVANCE]) {
+          characters(sort: ${characterDefaultSort}) {
             edges {
               role
               node {
@@ -99,7 +104,8 @@ export async function character(
   const query = gql`
     query ($id: Int, $search: String) {
       Page {
-        characters(search: $search, id: $id, sort: [SEARCH_MATCH]) {
+        # match the search query
+        characters(search: $search, id: $id, sort: [ SEARCH_MATCH ]) {
           id
           age
           gender
@@ -113,8 +119,7 @@ export async function character(
           image {
             large
           }
-          # TODO REMOVE sorting should be handled by repo
-          media(sort: [POPULARITY_DESC]) {
+          media(sort: POPULARITY_DESC) {
             edges {
               characterRole
               node {
@@ -152,7 +157,7 @@ export async function nextEpisode(
 ): Promise<AniListMedia> {
   const query = gql`
     query ($search: String) {
-      Media(search: $search, type: ANIME, sort:[TRENDING_DESC, POPULARITY_DESC]) {
+      Media(search: $search, type: ANIME, sort: ${mediaDefaultSort}) {
         status
         title {
           english
@@ -174,14 +179,10 @@ export async function pool(
     role?: CharacterRole;
   },
   retry = 1,
-  carry: { [id: number]: Character } = {},
-): Promise<Character[]> {
+  dict: Pool = {},
+): Promise<Pool> {
   const maxTries = 5;
   const minimalPool = 25;
-
-  const results: {
-    [id: number]: Character;
-  } = carry;
 
   const key = JSON.stringify([
     variables.popularity_greater,
@@ -195,13 +196,17 @@ export async function pool(
     query ($popularity_greater: Int!, $popularity_lesser: Int, $role: CharacterRole) {
       Page(page: ${page}, perPage: 50) {
         # fixed to query characters that only appear in anime, movies, and manga
-        media(popularity_greater: $popularity_greater, popularity_lesser: $popularity_lesser, sort: [POPULARITY], format_in: [TV, MOVIE, MANGA]) {
-          # TODO FIXME only requests the first page
-          # nearly impossible to fix, given the fact that
-          # we're using a workaround for the same issue on media
-          # which is only possible because that was a set of predictable queries
+        media(
+          sort: ${mediaDefaultSort},
+          popularity_greater: $popularity_greater,
+          popularity_lesser: $popularity_lesser,
+          format_not_in: [ NOVEL, MUSIC, SPECIAL ],
+          # ignore hentai (not 100% reliable according to AniList)
+          isAdult: false,
+        ) {
+          # TODO BLOCKED only requests the first page
           # (see https://github.com/ker0olos/fable/issues/9)
-          characters(sort: RELEVANCE, role: $role, perPage: 25) {
+          characters(role: $role, sort: ${characterDefaultSort}, perPage: 25) {
             nodes {
               # the character themselves
               id
@@ -217,13 +222,13 @@ export async function pool(
               image {
                 large
               }
-              # TODO REMOVE sorting should be handled by repo
-              media(sort: POPULARITY_DESC) { # always return the hightest popularity first
+              media {
                 edges {
                   # the character role in the media
                   characterRole
                   node {
-                    # the media itself
+                    # the media object
+                    id
                     type
                     format
                     popularity
@@ -253,73 +258,36 @@ export async function pool(
     }[];
   } = (await request(query, variables)).Page;
 
-  // TODO a lot of this logic should be moved
-  // and handled by ome kind of repo management system not anilist
-  // sorting and deciding which media is first
-
-  // query asks for media with popularity_greater than variable
-  // but a character in that media might be the MAIN in a [more] popular alterative media
-  // therefor we ignore the parent media and only operate
-  // on the list of characters it has and their media list
-
-  // the parent media is only used as a wrapper to get list of popular media
-
-  // TODO FIXME can cause false positives because if character is 1* in some media
-  // and 5* in others. this pulls the highest which is 5* instead of re-rolling
+  // using the api
+  // create a dictionary of all the characters with their ids as key
   response.media!.forEach(({ characters }) => {
     characters.nodes.forEach((character) => {
-      // const {
-      //   node,
-      //   characterRole,
-      //   // the first [0] is always the most popular media
-      //   // the character stars in (according to the query)
-      // } = character.media?.edges!.splice(0, 1)[0]!;
-
-      // only overwrite the entry if we found the character
-      // in a media with higher popularity than existing
-      // if (
-      //   results[character.id!]?.media!.edges![0].node.popularity! >=
-      //     node.popularity!
-      // ) {
-      //   return;
-      // }
-
-      // character.media!.edges = [
-      //   {
-      //     characterRole: characterRole!,
-      //     node: node!,
-      //   },
-      //   ...character.media?.edges!,
-      // ];
-
-      results[character.id!] = character;
+      dict[character.id!] = character;
     });
   });
 
-  const _ = Object.values(results);
+  const currentPool = Object.keys(dict).length;
 
   // ensure minimal number of characters for the pool
-  // (reduces chances of common dupes due to pages with smaller pools)
-  // (if one specific page has a pool of 1 character)
-  // (every time the page is rolled. the same character is also rolled)
-  if (minimalPool >= _?.length) {
+  if (minimalPool > currentPool) {
     if (retry >= maxTries) {
       throw new Error(
         `failed to create a pool with ${
           JSON.stringify({
             ...variables,
             page,
-            current_pool: _?.length,
+            current_pool: currentPool,
             minimal_pool: minimalPool,
           })
         }`,
       );
     } else {
       // carry over the current pool
-      // to increase the pool length over the minimal pool
-      return await pool(variables, retry + 1, results);
+      // and added to to a new pool
+      // to increase the pool length
+      return await pool(variables, retry + 1, dict);
     }
   }
 
-  return _;
+  return dict;
 }
