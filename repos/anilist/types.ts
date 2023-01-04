@@ -1,4 +1,4 @@
-import { Character, CharacterRole, Media } from '../../src/types.ts';
+import { Character, CharacterRole, Media, Pool } from '../../src/types.ts';
 
 export enum Status {
   'FINISHED' = 'FINISHED',
@@ -15,4 +15,4 @@ export interface AniListMedia extends Media {
   status: Status;
 }
 
-export type { Character, CharacterRole };
+export type { Character, CharacterRole, Pool };

@@ -1,6 +1,6 @@
 import {
   captureException,
-  init,
+  init as initSentry,
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
 
 import {
@@ -19,13 +19,15 @@ import * as repo from './repo.ts';
 
 import * as gacha from './gacha.ts';
 
-import { dsn, publicKey, setDev } from './config.ts';
+import { dsn, init, publicKey } from './config.ts';
 
 async function handler(
   request: Request,
   dev = false,
 ): Promise<Response> {
-  setDev(dev);
+  init({ dev });
+
+  initSentry({ dsn });
 
   const { error } = await validateRequest(request, {
     POST: {
@@ -160,8 +162,6 @@ async function handler(
 
   return discord.Message.content(`Unimplemented`);
 }
-
-init({ dsn });
 
 serve({
   '/': (_) => handler(_),

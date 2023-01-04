@@ -299,7 +299,7 @@ export async function themes(
     }
   });
 
-  if (message._data.components.length <= 0) {
+  if (message.components() <= 0) {
     throw new Error('404');
   }
 

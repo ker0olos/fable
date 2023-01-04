@@ -99,6 +99,27 @@ export interface Character {
   };
 }
 
+export type Pool = { [id: number]: Character };
+
+export interface Manifest {
+  /** A unique alphanumeric id (must match /^[a-z][a-z0-9]+$/ */
+  id: string;
+  /** The display title of the repo */
+  title: string;
+  /** A small description about the repo and what it contains */
+  description?: string;
+  /** If the repo contains nsfw (adult) content */
+  nsfw?: boolean;
+  /** the name of the repo's author */
+  author?: string;
+  /** The icon of the repo or the author of the repo */
+  icon_url?: string;
+  /** The url to repo's homepage */
+  url?: string;
+  /** Respected only on built-in repositories */
+  commands?: { [key: string]: CommandDeclaration };
+}
+
 export type CommandDeclaration = {
   source: string;
   description: string;
@@ -107,14 +128,4 @@ export type CommandDeclaration = {
     type: string;
     description: string;
   }[];
-};
-
-export type Manifest = {
-  id: string;
-  title: string;
-  description: string;
-  author?: string;
-  icon_url?: string;
-  url?: string;
-  commands?: { [key: string]: CommandDeclaration };
 };

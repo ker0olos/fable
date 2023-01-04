@@ -1,3 +1,6 @@
+[![deno](https://github.com/ker0olos/fable/actions/workflows/deno.yml/badge.svg)](https://github.com/ker0olos/fable/actions/workflows/deno.yml)
+[![codecov](https://codecov.io/github/ker0olos/fable/branch/main/graph/badge.svg?token=3C7ZTHzGqC)](https://codecov.io/github/ker0olos/fable)
+
 # Fable
 
 > **Note** Bot is still work in progress (Not ready for production)

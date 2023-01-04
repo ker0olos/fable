@@ -20,8 +20,9 @@ const utilsMani = _utils as Manifest;
 
 /**
  * Non-standard commands (extras) are handled by individual repos
- * Non-verified repos can't execute code (not safe)
- * this only runs on official (builtin) repos created by Fable
+ * Only official builtin repos can execute code
+ * (no dynamic imports allowed in deno deploy)
+ * (not safe and won't trust it even if deno could)
  */
 export async function commands(
   name: string,

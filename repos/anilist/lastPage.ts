@@ -1,12 +1,16 @@
 import { sleep } from '../../src/utils.ts';
 
+import { join } from 'https://deno.land/std@0.168.0/path/mod.ts';
+
 import { variables } from '../../src/gacha.ts';
 
 import { gql, request } from './graphql.ts';
 
 type Data = { [key: string]: number };
 
-const filePath = './lastPage.json';
+const filepath = './lastPage.json';
+
+const dirname = new URL('.', import.meta.url).pathname;
 
 const ranges = Object.values(variables.ranges);
 
@@ -20,7 +24,7 @@ type PageInfo = {
   perPage: number;
 };
 
-const previousData = (await import(filePath, {
+const previousData = (await import(filepath, {
   assert: { type: 'json' },
 })).default as Data;
 
@@ -108,7 +112,10 @@ for (const range of ranges) {
 }
 
 if (JSON.stringify(previousData) !== JSON.stringify(data)) {
-  await Deno.writeTextFile(filePath, JSON.stringify(data, null, 2));
+  await Deno.writeTextFile(
+    join(dirname, filepath),
+    JSON.stringify(data, null, 2),
+  );
   console.log('written changes to disk');
 } else {
   console.log('no changes were found');

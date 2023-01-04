@@ -90,16 +90,17 @@ export class Interaction<Options> {
 
   constructor(body: string) {
     const obj = JSON.parse(body);
+
     const data: {
-      id: string;
+      // id: string;
       name: string;
       type: string;
-      target_id?: string;
-      resolved?: unknown[];
+      // target_id?: string;
+      // resolved?: unknown[];
       options?: {
         type: number;
         name: string;
-        focused: boolean;
+        focused?: boolean;
         value: unknown;
       }[];
     } & { // Message Component
@@ -112,8 +113,8 @@ export class Interaction<Options> {
     } = this.data = obj.data;
 
     this.id = obj.id;
-    this.type = obj.type;
     this.token = obj.token;
+    this.type = obj.type;
 
     // this.guildId = obj.guild_id;
     // this.channelId = obj.channel_id;
@@ -130,8 +131,12 @@ export class Interaction<Options> {
     switch (this.type) {
       case InteractionType.Command:
       case InteractionType.CommandAutocomplete: {
-        this.targetId = data!.target_id;
-        this.name = data!.name.replaceAll(' ', '_').toLowerCase();
+        this.name = data!.name
+          .replaceAll(' ', '_')
+          .toLowerCase();
+
+        // this.targetId = data!.target_id;
+
         data!.options?.forEach((option) => {
           this.options![option.name] = option.value as Options;
         });
@@ -161,7 +166,7 @@ export class Interaction<Options> {
 }
 
 export class Component {
-  _data: {
+  #data: {
     type: number;
     custom_id?: string;
     style?: ButtonStyle | TextInputStyle;
@@ -171,46 +176,46 @@ export class Component {
   };
 
   constructor(type: ComponentType = ComponentType.Button) {
-    this._data = {
+    this.#data = {
       type,
     };
   }
 
   setId(id: string) {
-    this._data.custom_id = id;
+    this.#data.custom_id = id;
     return this;
   }
 
   setStyle(style: ButtonStyle | TextInputStyle) {
-    this._data.style = style;
+    this.#data.style = style;
     return this;
   }
 
   setLabel(label: string) {
-    this._data.label = label;
+    this.#data.label = label;
     return this;
   }
 
   setPlaceholder(placeholder: string) {
-    this._data.type = ComponentType.TextInput;
-    this._data.placeholder = placeholder;
+    this.#data.type = ComponentType.TextInput;
+    this.#data.placeholder = placeholder;
     return this;
   }
 
   setUrl(url: string) {
-    this._data.url = url;
-    this._data.style = 5;
+    this.#data.url = url;
+    this.#data.style = 5;
     return this;
   }
 
-  _done(): unknown {
-    return this._data;
+  data() {
+    return this.#data;
   }
 }
 
 export class Embed {
-  _data: {
-    type: string;
+  #data: {
+    type: number;
     title?: string;
     url?: string;
     description?: string;
@@ -237,40 +242,40 @@ export class Embed {
     };
   };
 
-  constructor(type: 'rich' | 'image' = 'rich') {
-    this._data = {
-      type,
+  constructor() {
+    this.#data = {
+      type: 2,
     };
   }
 
   setTitle(title?: string) {
-    this._data.title = title;
+    this.#data.title = title;
     return this;
   }
 
   setUrl(url?: string) {
-    this._data.url = url;
+    this.#data.url = url;
     return this;
   }
 
   setColor(color?: string) {
-    this._data.color = hexToInt(color);
+    this.#data.color = hexToInt(color);
     return this;
   }
 
   setDescription(description?: string) {
-    this._data.description = decodeDescription(description);
+    this.#data.description = decodeDescription(description);
     return this;
   }
 
   setAuthor(author: { name: string; url?: string; icon_url?: string }) {
-    this._data.author = author;
+    this.#data.author = author;
     return this;
   }
 
   setThumbnail(thumbnail: { url?: string }) {
     if (thumbnail.url) {
-      this._data.thumbnail = {
+      this.#data.thumbnail = {
         url: thumbnail.url,
       };
     }
@@ -278,18 +283,18 @@ export class Embed {
   }
 
   addField(field: { name: string; value: string; inline?: boolean }) {
-    if (!this._data.fields) {
-      this._data.fields = [];
+    if (!this.#data.fields) {
+      this.#data.fields = [];
     }
     if (field) {
-      this._data.fields.push(field);
+      this.#data.fields.push(field);
     }
     return this;
   }
 
   setImage(image: { url?: string }) {
     if (image.url) {
-      this._data.image = {
+      this.#data.image = {
         url: image.url,
       };
     }
@@ -298,7 +303,7 @@ export class Embed {
 
   setFooter(footer: { text?: string; icon_url?: string }, suffix = '') {
     if (footer.text) {
-      this._data.footer = {
+      this.#data.footer = {
         ...footer,
         text: footer.text + suffix,
       };
@@ -306,17 +311,15 @@ export class Embed {
     return this;
   }
 
-  _done(): unknown {
-    return {
-      ...this._data,
-      type: 2,
-    };
+  data() {
+    return this.#data;
   }
 }
 
 export class Message {
-  _type?: MessageType;
-  _data: {
+  #type?: MessageType;
+
+  #data: {
     content?: string;
     embeds: unknown[];
     components: unknown[];
@@ -328,54 +331,57 @@ export class Message {
   };
 
   constructor(type: MessageType = MessageType.New) {
-    this._type = type;
-    this._data = {
+    this.#type = type;
+    this.#data = {
       embeds: [],
       components: [],
     };
   }
 
   setType(type: MessageType) {
-    this._type = type;
+    this.#type = type;
     return this;
   }
 
   setContent(content: string) {
-    this._data.content = content;
+    this.#data.content = content;
     return this;
   }
 
   setId(id: string) {
-    this._data.custom_id = id;
+    this.#data.custom_id = id;
     return this;
   }
 
   setTitle(title: string) {
-    this._type = MessageType.Modal;
-    this._data.title = title;
+    this.#type = MessageType.Modal;
+    this.#data.title = title;
     return this;
   }
 
   addEmbed(embed: Embed) {
-    if (this._data.embeds.length >= 3) {
+    if (this.#data.embeds.length >= 3) {
       throw new Error(
-        // TODO FIXME: (see https://github.com/ker0olos/fable/issues/14)
+        // TODO LOW build a pagination system into discord.ts
+        // (see https://github.com/ker0olos/fable/issues/14)
         'having more than 3 embeds on the same message is very aesthetically unpleasant',
       );
     }
-    this._data.embeds.push(embed._done());
+    this.#data.embeds.push(embed.data());
     return this;
   }
 
   addComponents(components: Component[]) {
     if (components.length > 0) {
-      this._data.components.push({
+      this.#data.components.push({
         type: 1,
         components: components.slice(0, 5).map((component) => {
           // labels have maximum of 80 characters
           // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
-          component._data.label = truncate(component._data.label, 80);
-          return component._done();
+
+          const comp = component.data();
+          comp.label = truncate(comp.label, 80);
+          return component.data();
         }),
       });
     }
@@ -384,42 +390,54 @@ export class Message {
 
   addChoices(...choices: string[]) {
     if (choices.length > 0) {
-      this._type = MessageType.AutocompleteResult;
-      if (!this._data.choices) {
-        this._data.choices = [];
+      this.#type = MessageType.AutocompleteResult;
+      if (!this.#data.choices) {
+        this.#data.choices = [];
       }
-      this._data.choices.push(...choices);
+      this.#data.choices.push(...choices);
     }
     return this;
   }
 
-  send(): Response {
+  embeds() {
+    return this.#data.embeds?.length ?? 0;
+  }
+
+  components() {
+    return this.#data.components?.length ?? 0;
+  }
+
+  data() {
     let data;
 
-    switch (this._type) {
+    switch (this.#type) {
       case MessageType.AutocompleteResult:
-        data = { choices: this._data.choices };
+        data = { choices: this.#data.choices };
         break;
       case MessageType.Modal:
         data = {
-          title: this._data.title,
-          custom_id: this._data.custom_id,
-          components: this._data.components,
+          title: this.#data.title,
+          custom_id: this.#data.custom_id,
+          components: this.#data.components,
         };
         break;
       default:
         data = {
-          embeds: this._data.embeds,
-          content: this._data.content,
-          components: this._data.components,
+          embeds: this.#data.embeds,
+          content: this.#data.content,
+          components: this.#data.components,
         };
         break;
     }
 
-    return json({
-      type: this._type,
+    return {
+      type: this.#type,
       data,
-    });
+    };
+  }
+
+  send(): Response {
+    return json(this.data());
   }
 
   async patch(token: string): Promise<Response> {
@@ -431,9 +449,9 @@ export class Message {
         'Content-Type': 'application/json; charset=utf-8',
       },
       body: JSON.stringify({
-        embeds: this._data.embeds,
-        content: this._data.content,
-        components: this._data.components,
+        embeds: this.#data.embeds,
+        content: this.#data.content,
+        components: this.#data.components,
       }),
     });
   }

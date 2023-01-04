@@ -1,8 +1,7 @@
 export let appId: string;
 export let publicKey: string;
 export let mongoUrl: string;
-
-export const dsn = Deno.env.get('SENTRY_DSN')!;
+export let dsn: string;
 
 // export const colors = {
 //   background: '#2b2d42',
@@ -18,14 +17,22 @@ export const emotes = {
 
 export let DEV = false;
 
-export function setDev(dev: boolean) {
-  appId = dev ? Deno.env.get('DEV_ID')! : Deno.env.get('APP_ID')!;
+export async function init({ dev }: { dev: boolean }) {
+  const query = await Deno.permissions.query({ name: 'env' });
 
-  publicKey = dev
-    ? Deno.env.get('DEV_PUBLIC_KEY')!
-    : Deno.env.get('APP_PUBLIC_KEY')!;
+  if (query) {
+    dsn = Deno.env.get('SENTRY_DSN')!;
 
-  mongoUrl = dev ? Deno.env.get('DEV_MONGO_URL')! : Deno.env.get('MONGO_URL')!;
+    appId = dev ? Deno.env.get('DEV_ID')! : Deno.env.get('APP_ID')!;
 
-  DEV = dev;
+    publicKey = dev
+      ? Deno.env.get('DEV_PUBLIC_KEY')!
+      : Deno.env.get('APP_PUBLIC_KEY')!;
+
+    mongoUrl = dev
+      ? Deno.env.get('DEV_MONGO_URL')!
+      : Deno.env.get('MONGO_URL')!;
+
+    DEV = dev;
+  }
 }

@@ -46,60 +46,66 @@ Deno.test('shuffle array', () => {
   }
 });
 
-Deno.test('RNG with percentages', () => {
+Deno.test('rng with percentages', async (test) => {
   const randomStub = stub(Math, 'random', returnsNext(Array(100).fill(0)));
 
-  assertThrows(
-    () =>
-      utils.rng({
-        50: 'fail',
-        55: 'fail',
-      }),
-    Error,
-    'Sum of 50,55 is 105 when it should be 100',
-  );
-
   try {
-    const rng = utils.rng({
-      10: 'a',
-      70: 'b',
-      20: 'c',
+    await test.step('normal', () => {
+      const rng = utils.rng({
+        10: 'a',
+        70: 'b',
+        20: 'c',
+      });
+
+      assertEquals(rng, 'b');
+
+      assertSpyCalls(randomStub, 100);
     });
 
-    assertEquals(rng, 'b');
-
-    assertSpyCalls(randomStub, 100);
+    await test.step('fail if doesn\'t sum up to 100', () => {
+      assertThrows(
+        () =>
+          utils.rng({
+            50: 'fail',
+            55: 'fail',
+          }),
+        Error,
+        'Sum of 50,55 is 105 when it should be 100',
+      );
+    });
   } finally {
     randomStub.restore();
   }
 });
 
-Deno.test('truncate string', () => {
-  const maxLength = 50;
+Deno.test('truncate', async (test) => {
+  await test.step('normal', () => {
+    const maxLength = 50;
 
-  const short = utils.truncate('-'.repeat(20), maxLength);
+    const short = utils.truncate('-'.repeat(20), maxLength);
 
-  assertEquals(short!.length, 20);
+    assertEquals(short!.length, 20);
 
-  const long = utils.truncate('-'.repeat(100), maxLength);
+    const long = utils.truncate('-'.repeat(100), maxLength);
 
-  assertEquals(long!.length, maxLength);
+    assertEquals(long!.length, maxLength);
 
-  assert(long!.endsWith('...'));
+    assert(long!.endsWith('...'));
+  });
+
+  await test.step('word split', () => {
+    const text =
+      'Sit aute ad sunt mollit in aliqua consectetur tempor duis adipisicing id velit et. Quis nostrud excepteur in exercitation.';
+
+    const truncate = utils.truncate(text, 20);
+
+    assert(truncate!.length < 20);
+
+    assertEquals(truncate, 'Sit aute ad sunt...');
+  });
 });
 
-Deno.test('truncate string: word split', () => {
-  const text =
-    'Sit aute ad sunt mollit in aliqua consectetur tempor duis adipisicing id velit et. Quis nostrud excepteur in exercitation.';
-
-  const truncate = utils.truncate(text, 20);
-
-  assert(truncate!.length < 20);
-
-  assertEquals(truncate, 'Sit aute ad sunt...');
-});
-
-Deno.test('word wrap string', () => {
+Deno.test('word wrap', () => {
   const text =
     'Sit aute ad sunt mollit in aliqua consectetur tempor duis adipisicing id velit et. Quis nostrud excepteur in exercitation.';
 
@@ -119,7 +125,7 @@ Deno.test('word wrap string', () => {
   );
 });
 
-Deno.test('capitalize string', () => {
+Deno.test('capitalize', () => {
   const text = 'Sit_aute_ad_sunt_mollit';
 
   const wrap = utils.capitalize(text);
@@ -127,7 +133,7 @@ Deno.test('capitalize string', () => {
   assertEquals(wrap, 'Sit Aute Ad Sunt Mollit');
 });
 
-Deno.test('comma number', () => {
+Deno.test('comma', () => {
   const number = 1_00_0_000_00;
 
   const wrap = utils.comma(number);
@@ -143,31 +149,38 @@ Deno.test('is id a number?', () => {
   assertEquals(utils.parseId(notId)!, undefined);
 });
 
-Deno.test('decode descriptions', () => {
-  // decodeURL
-  assertEquals(utils.decodeDescription('%20'), ' ');
+Deno.test('decode description', async (test) => {
+  await test.step('decode urls', () => {
+    assertEquals(utils.decodeDescription('%20'), ' ');
+  });
 
-  // decode html
-  assertEquals(utils.decodeDescription('&amp;'), '&');
-  assertEquals(utils.decodeDescription('&quot;'), '"');
-  assertEquals(utils.decodeDescription('&#039;'), '\'');
-  assertEquals(utils.decodeDescription('&lt;'), '<');
-  assertEquals(utils.decodeDescription('&gt;'), '>');
+  await test.step('decode html', () => {
+    assertEquals(utils.decodeDescription('&amp;'), '&');
+    assertEquals(utils.decodeDescription('&quot;'), '"');
+    assertEquals(utils.decodeDescription('&#039;'), '\'');
+    assertEquals(utils.decodeDescription('&lt;'), '<');
+    assertEquals(utils.decodeDescription('&gt;'), '>');
+  });
 
-  // transform html to markdown
-  assertEquals(utils.decodeDescription('<i>abc</i>'), '*abc*');
-  assertEquals(utils.decodeDescription('<b>abc</b>'), '**abc**');
-  assertEquals(utils.decodeDescription('<strike>abc</strike>'), '~~abc~~');
-  assertEquals(utils.decodeDescription('<br></br><br/>'), '\n\n\n');
-  assertEquals(utils.decodeDescription('<hr></hr>'), '\n\n');
+  await test.step('transform html to markdown', () => {
+    assertEquals(utils.decodeDescription('<i>abc</i>'), '*abc*');
+    assertEquals(utils.decodeDescription('<b>abc</b>'), '**abc**');
+    assertEquals(utils.decodeDescription('<strike>abc</strike>'), '~~abc~~');
+    assertEquals(utils.decodeDescription('<br></br><br/>'), '\n\n\n');
+    assertEquals(utils.decodeDescription('<hr></hr>'), '\n\n');
 
-  assertEquals(utils.decodeDescription('<a href="url">abc</a>'), '[abc](url)');
+    assertEquals(
+      utils.decodeDescription('<a href="url">abc</a>'),
+      '[abc](url)',
+    );
+  });
 
-  // remove certain tags
-  assertEquals(utils.decodeDescription('~!abc!~'), '');
+  await test.step('remove certain tags', () => {
+    assertEquals(utils.decodeDescription('~!abc!~'), '');
+  });
 });
 
-Deno.test('media titles to array', () => {
+Deno.test('titles to array', () => {
   const media = {
     title: {
       romaji: '',
