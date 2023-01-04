@@ -10,16 +10,16 @@ export enum MessageType {
   Ping = 1,
   New = 4,
   Update = 7,
-  AutocompleteResult = 8,
-  Modal = 9,
+  // AutocompleteResult = 8,
+  // Modal = 9,
 }
 
 export enum InteractionType {
   Ping = 1,
   Command = 2,
   Component = 3,
-  CommandAutocomplete = 4,
-  Modal = 5,
+  // CommandAutocomplete = 4,
+  // Modal = 5,
 }
 
 export enum ComponentType {
@@ -129,8 +129,8 @@ export class Interaction<Options> {
     this.options = {};
 
     switch (this.type) {
-      case InteractionType.Command:
-      case InteractionType.CommandAutocomplete: {
+      // case InteractionType.CommandAutocomplete:
+      case InteractionType.Command: {
         this.name = data!.name
           .replaceAll(' ', '_')
           .toLowerCase();
@@ -143,7 +143,7 @@ export class Interaction<Options> {
 
         break;
       }
-      case InteractionType.Modal:
+      // case InteractionType.Modal:
       case InteractionType.Component: {
         const custom = data!.custom_id.split(':');
 
@@ -208,7 +208,7 @@ export class Component {
     return this;
   }
 
-  data() {
+  json() {
     return this.#data;
   }
 }
@@ -286,9 +286,11 @@ export class Embed {
     if (!this.#data.fields) {
       this.#data.fields = [];
     }
+
     if (field) {
       this.#data.fields.push(field);
     }
+
     return this;
   }
 
@@ -311,7 +313,7 @@ export class Embed {
     return this;
   }
 
-  data() {
+  json() {
     return this.#data;
   }
 }
@@ -323,12 +325,13 @@ export class Message {
     content?: string;
     embeds: unknown[];
     components: unknown[];
-    //
-    choices?: string[];
-    //
-    title?: string;
-    custom_id?: string;
   };
+  //  & {
+  //   // choices?: string[];
+  // } & {
+  //   // title?: string;
+  //   // custom_id?: string;
+  // };
 
   constructor(type: MessageType = MessageType.New) {
     this.#type = type;
@@ -348,16 +351,16 @@ export class Message {
     return this;
   }
 
-  setId(id: string) {
-    this.#data.custom_id = id;
-    return this;
-  }
+  // setId(id: string) {
+  //   this.#data.custom_id = id;
+  //   return this;
+  // }
 
-  setTitle(title: string) {
-    this.#type = MessageType.Modal;
-    this.#data.title = title;
-    return this;
-  }
+  // setTitle(title: string) {
+  //   this.#type = MessageType.Modal;
+  //   this.#data.title = title;
+  //   return this;
+  // }
 
   addEmbed(embed: Embed) {
     if (this.#data.embeds.length >= 3) {
@@ -367,7 +370,7 @@ export class Message {
         'having more than 3 embeds on the same message is very aesthetically unpleasant',
       );
     }
-    this.#data.embeds.push(embed.data());
+    this.#data.embeds.push(embed.json());
     return this;
   }
 
@@ -379,25 +382,25 @@ export class Message {
           // labels have maximum of 80 characters
           // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
 
-          const comp = component.data();
+          const comp = component.json();
           comp.label = truncate(comp.label, 80);
-          return component.data();
+          return component.json();
         }),
       });
     }
     return this;
   }
 
-  addChoices(...choices: string[]) {
-    if (choices.length > 0) {
-      this.#type = MessageType.AutocompleteResult;
-      if (!this.#data.choices) {
-        this.#data.choices = [];
-      }
-      this.#data.choices.push(...choices);
-    }
-    return this;
-  }
+  // addChoices(...choices: string[]) {
+  //   if (choices.length > 0) {
+  //     this.#type = MessageType.AutocompleteResult;
+  //     if (!this.#data.choices) {
+  //       this.#data.choices = [];
+  //     }
+  //     this.#data.choices.push(...choices);
+  //   }
+  //   return this;
+  // }
 
   embeds() {
     return this.#data.embeds?.length ?? 0;
@@ -407,20 +410,20 @@ export class Message {
     return this.#data.components?.length ?? 0;
   }
 
-  data() {
+  json() {
     let data;
 
     switch (this.#type) {
-      case MessageType.AutocompleteResult:
-        data = { choices: this.#data.choices };
-        break;
-      case MessageType.Modal:
-        data = {
-          title: this.#data.title,
-          custom_id: this.#data.custom_id,
-          components: this.#data.components,
-        };
-        break;
+      // case MessageType.AutocompleteResult:
+      //   data = { choices: this.#data.choices };
+      //   break;
+      // case MessageType.Modal:
+      //   data = {
+      //     title: this.#data.title,
+      //     custom_id: this.#data.custom_id,
+      //     components: this.#data.components,
+      //   };
+      //   break;
       default:
         data = {
           embeds: this.#data.embeds,
@@ -437,7 +440,7 @@ export class Message {
   }
 
   send(): Response {
-    return json(this.data());
+    return json(this.json());
   }
 
   async patch(token: string): Promise<Response> {
@@ -482,17 +485,17 @@ export class Message {
     });
   }
 
-  static loading() {
-    return json({
-      type: 5,
-    });
-  }
+  // static loading() {
+  //   return json({
+  //     type: 5,
+  //   });
+  // }
 
-  static deferred() {
-    return json({
-      type: 6,
-    });
-  }
+  // static deferred() {
+  //   return json({
+  //     type: 6,
+  //   });
+  // }
 
   static content(content: string) {
     return json({
