@@ -132,12 +132,13 @@ export function decodeDescription(s?: string): string | undefined {
 }
 
 export function titlesToArray(media: Media, max?: number): string[] {
-  const titles = [
+  let titles = [
     media.title.english,
     media.title.romaji,
     media.title.native,
-  ]
-    .filter(Boolean)
+  ];
+
+  titles = titles.filter(Boolean)
     .map((str) => max ? truncate(str, max) : str);
 
   return titles as string[];

@@ -274,6 +274,25 @@ Deno.test('messages', async (test) => {
     const message = new Message(MessageType.Update);
 
     assertEquals(message.json().type, 7);
+
+    message.setType(MessageType.Ping);
+
+    assertEquals(message.json().type, 1);
+  });
+
+  await test.step('send', async () => {
+    const message = new Message().setContent('content');
+
+    const json = await message.send().json();
+
+    assertEquals(json, {
+      type: 4,
+      data: {
+        content: 'content',
+        components: [],
+        embeds: [],
+      },
+    });
   });
 });
 

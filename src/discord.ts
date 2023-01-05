@@ -403,11 +403,11 @@ export class Message {
   // }
 
   embeds() {
-    return this.#data.embeds?.length ?? 0;
+    return this.#data.embeds.length;
   }
 
   components() {
-    return this.#data.components?.length ?? 0;
+    return this.#data.components.length;
   }
 
   json() {
