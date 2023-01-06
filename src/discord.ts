@@ -52,6 +52,12 @@ export type User = {
   banner?: string;
 };
 
+export type Emote = {
+  id: string;
+  name?: string;
+  animated?: boolean;
+};
+
 export class Interaction<Options> {
   id: string;
   token: string;
@@ -170,6 +176,7 @@ export class Component {
     custom_id?: string;
     style?: ButtonStyle | TextInputStyle;
     label?: string;
+    emoji?: Emote;
     placeholder?: string;
     url?: string;
   };
@@ -192,6 +199,11 @@ export class Component {
 
   setLabel(label: string) {
     this.#data.label = label;
+    return this;
+  }
+
+  setEmote(emote: Emote) {
+    this.#data.emoji = emote;
     return this;
   }
 

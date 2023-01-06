@@ -4,7 +4,7 @@ import {
 
 import utils from './utils.ts';
 
-import { Rating } from './ratings.ts';
+import { Rating } from './rating.ts';
 
 import config from './config.ts';
 

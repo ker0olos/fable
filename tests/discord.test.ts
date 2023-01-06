@@ -179,11 +179,21 @@ Deno.test('components', async (test) => {
 
   component
     .setId('custom_id')
+    .setEmote({
+      id: 'emote_id',
+      name: 'emote_name',
+      animated: true,
+    })
     .setLabel('label');
 
   assertEquals(component.json(), {
     type: 2,
     custom_id: 'custom_id',
+    emoji: {
+      id: 'emote_id',
+      name: 'emote_name',
+      animated: true,
+    },
     label: 'label',
   });
 

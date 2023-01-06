@@ -184,7 +184,7 @@ if __name__ == "__main__":
             aliases=["debug"],
         )
         + make_command(
-            name="songs",
+            name="themes",
             desc="Search for the OP/ED and theme songs of an anime",
             options=[
                 Option(
@@ -193,7 +193,7 @@ if __name__ == "__main__":
                     type=Type.STRING,
                 )
             ],
-            aliases=["themes"],
+            aliases=["themes", "music"],
         )
         + make_command(
             name="gacha",

@@ -11,8 +11,8 @@
 // };
 
 export const emotes = {
-  star: '<:fable_star:1058059570305585303>',
-  noStar: '<:fable_no_star:1058182412963688548>',
+  star: '<:star:1061016362832642098>',
+  noStar: '<:no_star:1061016360190222466>',
 };
 
 const config: {

@@ -1,6 +1,6 @@
 import utils from './utils.ts';
 
-import { Rating } from './ratings.ts';
+import { Rating } from './rating.ts';
 
 import { Character, Format, Media, RelationType } from './types.ts';
 
@@ -128,8 +128,8 @@ export async function media(
     switch (relation.node.format) {
       case Format.MUSIC: {
         component
-          .setLabel(label)
-          .setUrl(relation.node.externalLinks?.[0]?.url!);
+          .setUrl(relation.node.externalLinks?.[0]?.url!)
+          .setLabel(label);
 
         additionalGroup.push(component);
         break;

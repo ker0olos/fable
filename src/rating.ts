@@ -13,25 +13,25 @@ export class Rating {
     else if (popularity < 200_000) {
       if (role === CharacterRole.MAIN) {
         this.#stars = 3;
+      } else {
+        this.#stars = 2;
       }
-
-      this.#stars = 2;
     } //
     //
     else if (popularity < 400_000) {
       if (role === CharacterRole.MAIN) {
         this.#stars = 4;
+      } else {
+        this.#stars = 3;
       }
-
-      this.#stars = 3;
     } //
     //
     else if (popularity > 400_000) {
       if (role === CharacterRole.MAIN) {
         this.#stars = 5;
+      } else {
+        this.#stars = 4;
       }
-
-      this.#stars = 4;
     } //
     //
     else {
