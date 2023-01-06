@@ -193,7 +193,7 @@ if __name__ == "__main__":
                     type=Type.STRING,
                 )
             ],
-            aliases=["themes", "music"],
+            aliases=["songs", "music"],
         )
         + make_command(
             name="gacha",
