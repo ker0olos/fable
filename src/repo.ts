@@ -24,7 +24,7 @@ const utilsMani = _utils as Manifest;
  * (no dynamic imports allowed in deno deploy)
  * (not safe and won't trust it even if deno could)
  */
-export async function commands(
+async function commands(
   name: string,
   interaction: Interaction<unknown>,
 ): Promise<Message | undefined> {
@@ -49,14 +49,14 @@ export async function commands(
   return;
 }
 
-export function builtin() {
+function builtin() {
   return [
     anilistMani,
     utilsMani,
   ];
 }
 
-// export function context() {
+// function context() {
 //   return {
 //     release: {
 //       id: Deno.env.get('DENO_DEPLOYMENT_ID')!,
@@ -78,3 +78,10 @@ export function builtin() {
 //     ] as Manifest[],
 //   };
 // }
+
+const repo = {
+  commands,
+  builtin,
+};
+
+export default repo;

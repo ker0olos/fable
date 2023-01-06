@@ -2,11 +2,11 @@ import nacl from 'https://cdn.skypack.dev/tweetnacl@v1.0.3?dts';
 
 import { Media } from './types.ts';
 
-export function randint(min: number, max: number) {
+function randint(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export function hexToInt(hex?: string): number | undefined {
+function hexToInt(hex?: string): number | undefined {
   if (!hex) {
     return;
   }
@@ -20,7 +20,7 @@ export function hexToInt(hex?: string): number | undefined {
   return parseInt(`${R}${G}${B}`, 16);
 }
 
-export function shuffle<T>(array: T[]) {
+function shuffle<T>(array: T[]) {
   for (
     let i = 0, length = array.length, swap = 0, temp = null;
     i < length;
@@ -33,11 +33,11 @@ export function shuffle<T>(array: T[]) {
   }
 }
 
-export function sleep(secs: number) {
+function sleep(secs: number) {
   return new Promise((resolve) => setTimeout(resolve, secs * 1000));
 }
 
-export function rng<T>(dict: { [chance: number]: T }): T {
+function rng<T>(dict: { [chance: number]: T }): T {
   const pool = Object.values(dict);
 
   const chances = Object.keys(dict).map((n) => parseInt(n));
@@ -67,7 +67,7 @@ export function rng<T>(dict: { [chance: number]: T }): T {
   return pool[_[0]];
 }
 
-export function truncate(
+function truncate(
   str: string | undefined,
   n: number,
 ): string | undefined {
@@ -80,24 +80,24 @@ export function truncate(
   return str;
 }
 
-export function wrap(text: string, width = 32) {
+function wrap(text: string, width = 32) {
   return text.replace(
     new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'),
     '$1\n',
   );
 }
 
-export function capitalize(s: string): string {
+function capitalize(s: string): string {
   const sa = s.split('_');
   return sa.map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(' ')
     .trim();
 }
 
-export function comma(n: number) {
+function comma(n: number) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-export function parseId(query?: string): number | undefined {
+function parseId(query?: string): number | undefined {
   const id = parseInt(query!);
 
   if (!isNaN(id) && id.toString() === query) {
@@ -105,7 +105,7 @@ export function parseId(query?: string): number | undefined {
   }
 }
 
-export function decodeDescription(s?: string): string | undefined {
+function decodeDescription(s?: string): string | undefined {
   if (!s) {
     return;
   }
@@ -131,7 +131,7 @@ export function decodeDescription(s?: string): string | undefined {
   return s;
 }
 
-export function titlesToArray(media: Media, max?: number): string[] {
+function titlesToArray(media: Media, max?: number): string[] {
   let titles = [
     media.title.english,
     media.title.romaji,
@@ -144,7 +144,7 @@ export function titlesToArray(media: Media, max?: number): string[] {
   return titles as string[];
 }
 
-export async function verifySignature(
+async function verifySignature(
   request: Request,
   publicKey: string,
 ): Promise<{ valid: boolean; body: string }> {
@@ -167,3 +167,21 @@ export async function verifySignature(
 
   return { valid, body };
 }
+
+const utils = {
+  capitalize,
+  comma,
+  decodeDescription,
+  hexToInt,
+  parseId,
+  randint,
+  rng,
+  shuffle,
+  sleep,
+  titlesToArray,
+  truncate,
+  verifySignature,
+  wrap,
+};
+
+export default utils;

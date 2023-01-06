@@ -35,7 +35,7 @@ export async function request<T = any, V = Variables>(
 
   if (response.ok) {
     return json?.data;
-  } else {
-    throw new Error(json);
   }
+
+  throw new Error(JSON.stringify(json));
 }

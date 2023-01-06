@@ -10,9 +10,11 @@
 A free, open-source anime gacha app, an alternative to Mudae.
 
 <!-- ### Features
-
 - 100% Free (no premiums, no pay-to-win bullshit)
-- Open-source software (contrib, fork, self-host) -->
+- Open-source software (contrib, fork, self-host)
+- Keeps up with discord newest features available
+- Puts user experience front and center
+-->
 
 ### FAQ
 

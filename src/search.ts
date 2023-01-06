@@ -1,4 +1,4 @@
-import { capitalize, comma, parseId, titlesToArray } from './utils.ts';
+import utils from './utils.ts';
 
 import { Rating } from './ratings.ts';
 
@@ -16,7 +16,7 @@ export async function media(
   },
   prioritize?: 'anime' | 'manga',
 ): Promise<discord.Message> {
-  if (typeof (id = parseId(search!)) === 'number') {
+  if (typeof (id = utils.parseId(search!)) === 'number') {
     search = undefined;
   }
 
@@ -33,14 +33,14 @@ export async function media(
     return new discord.Message().addEmbed(mediaDebugEmbed(media));
   }
 
-  const titles = titlesToArray(media);
+  const titles = utils.titlesToArray(media);
 
   const message = new discord.Message();
 
   message.addEmbed(
     new discord.Embed()
       .setTitle(titles.shift()!)
-      .setAuthor({ name: capitalize(media.type!) })
+      .setAuthor({ name: utils.capitalize(media.type!) })
       .setDescription(media.description)
       .setColor(media.coverImage?.color)
       .setImage({ url: media.coverImage?.extraLarge })
@@ -93,7 +93,7 @@ export async function media(
     const component = new discord.Component()
       .setStyle(discord.ButtonStyle.Grey);
 
-    const label = titlesToArray(relation.node, 60)[0];
+    const label = utils.titlesToArray(relation.node, 60)[0];
 
     switch (relation.relationType) {
       case RelationType.PREQUEL:
@@ -102,7 +102,7 @@ export async function media(
       case RelationType.SPIN_OFF: {
         component
           .setLabel(
-            `${label} (${capitalize(relation.relationType!)})`,
+            `${label} (${utils.capitalize(relation.relationType!)})`,
           ).setId(
             `media:${relation.node.id!}`,
           );
@@ -112,7 +112,7 @@ export async function media(
       case RelationType.ADAPTATION: {
         component
           .setLabel(
-            `${label} (${capitalize(relation.node.format!)})`,
+            `${label} (${utils.capitalize(relation.node.format!)})`,
           )
           .setId(
             `media:${relation.node.id!}`,
@@ -147,7 +147,7 @@ export async function media(
 }
 
 function mediaDebugEmbed(media: Media) {
-  const titles = titlesToArray(media);
+  const titles = utils.titlesToArray(media);
 
   return new discord.Embed()
     .setTitle(titles.shift()!)
@@ -155,17 +155,17 @@ function mediaDebugEmbed(media: Media) {
     .addField({ name: 'Id', value: `${media.id}` })
     .addField({
       name: 'Type',
-      value: `${capitalize(media.type)}`,
+      value: `${utils.capitalize(media.type)}`,
       inline: true,
     })
     .addField({
       name: 'Format',
-      value: `${capitalize(media.format)}`,
+      value: `${utils.capitalize(media.format)}`,
       inline: true,
     })
     .addField({
       name: 'Popularity',
-      value: `${comma(media.popularity!)}`,
+      value: `${utils.comma(media.popularity!)}`,
       inline: true,
     })
     .setThumbnail({ url: media.coverImage?.large });
@@ -178,7 +178,7 @@ export async function character(
     debug: boolean;
   },
 ): Promise<discord.Message> {
-  if (typeof (id = parseId(search!)) === 'number') {
+  if (typeof (id = utils.parseId(search!)) === 'number') {
     search = undefined;
   }
 
@@ -211,12 +211,12 @@ export async function character(
   const group: discord.Component[] = [];
 
   character.media?.edges?.forEach((relation) => {
-    const label = titlesToArray(relation.node, 60)[0];
+    const label = utils.titlesToArray(relation.node, 60)[0];
 
     const component = new discord.Component()
       .setStyle(discord.ButtonStyle.Grey)
       .setLabel(
-        `${label} (${capitalize(relation.node.format!)})`,
+        `${label} (${utils.capitalize(relation.node.format!)})`,
       ).setId(
         `media:${relation.node.id!}`,
       );
@@ -252,22 +252,22 @@ function characterDebugEmbed(character: Character) {
     .addField({ name: 'Media', value: `${media.id}`, inline: true })
     .addField({
       name: 'Role',
-      value: `${capitalize(role)}`,
+      value: `${utils.capitalize(role)}`,
       inline: true,
     })
     .addField({
       name: 'Type',
-      value: `${capitalize(media.type)}`,
+      value: `${utils.capitalize(media.type)}`,
       inline: true,
     })
     .addField({
       name: 'Format',
-      value: `${capitalize(media.format)}`,
+      value: `${utils.capitalize(media.format)}`,
       inline: true,
     })
     .addField({
       name: 'Popularity',
-      value: `${comma(media.popularity!)}`,
+      value: `${utils.comma(media.popularity!)}`,
       inline: true,
     })
     .setThumbnail({ url: character.image?.large });

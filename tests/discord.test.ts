@@ -6,23 +6,14 @@ import {
   stub,
 } from 'https://deno.land/std@0.168.0/testing/mock.ts';
 
-import {
-  ButtonStyle,
-  Component,
-  ComponentType,
-  Embed,
-  Interaction,
-  InteractionType,
-  Message,
-  MessageType,
-} from '../src/discord.ts';
+import * as discord from '../src/discord.ts';
 
 Deno.test('interactions', async (test) => {
   await test.step('command', () => {
     const body = JSON.stringify({
       id: 'body_id',
       token: 'body_token',
-      type: InteractionType.Command,
+      type: discord.InteractionType.Command,
       member: {
         user: {
           id: 'user_id',
@@ -43,7 +34,9 @@ Deno.test('interactions', async (test) => {
       },
     });
 
-    const interaction = new Interaction<string | number | boolean>(body);
+    const interaction = new discord.Interaction<string | number | boolean>(
+      body,
+    );
 
     assertEquals(interaction.id, 'body_id');
     assertEquals(interaction.token, 'body_token');
@@ -63,7 +56,7 @@ Deno.test('interactions', async (test) => {
     const body = JSON.stringify({
       id: 'body_id',
       token: 'body_token',
-      type: InteractionType.Component,
+      type: discord.InteractionType.Component,
       member: {
         user: {
           id: 'user_id',
@@ -87,7 +80,9 @@ Deno.test('interactions', async (test) => {
       },
     });
 
-    const interaction = new Interaction<string | number | boolean>(body);
+    const interaction = new discord.Interaction<string | number | boolean>(
+      body,
+    );
 
     assertEquals(interaction.id, 'body_id');
     assertEquals(interaction.token, 'body_token');
@@ -110,7 +105,7 @@ Deno.test('interactions', async (test) => {
 // while components have parameters that can't overlap
 
 Deno.test('embeds', async (test) => {
-  const embed = new Embed();
+  const embed = new discord.Embed();
 
   embed
     .setAuthor({ name: 'a', url: 'b', icon_url: 'c' })
@@ -180,7 +175,7 @@ Deno.test('embeds', async (test) => {
 });
 
 Deno.test('components', async (test) => {
-  const component = new Component();
+  const component = new discord.Component();
 
   component
     .setId('custom_id')
@@ -193,11 +188,14 @@ Deno.test('components', async (test) => {
   });
 
   await test.step('new with non-default type', () => {
-    assertEquals(new Component(ComponentType.UserSelect).json().type, 5);
+    assertEquals(
+      new discord.Component(discord.ComponentType.UserSelect).json().type,
+      5,
+    );
   });
 
   await test.step('new with placeholder', () => {
-    const component = new Component();
+    const component = new discord.Component();
 
     component.setPlaceholder('placeholder');
 
@@ -208,7 +206,7 @@ Deno.test('components', async (test) => {
   });
 
   await test.step('new with url', () => {
-    const component = new Component();
+    const component = new discord.Component();
 
     component.setUrl('url');
 
@@ -220,9 +218,9 @@ Deno.test('components', async (test) => {
   });
 
   await test.step('set style', () => {
-    const component = new Component();
+    const component = new discord.Component();
 
-    component.setStyle(ButtonStyle.Blue);
+    component.setStyle(discord.ButtonStyle.Blue);
 
     assertEquals(component.json(), {
       type: 2,
@@ -232,13 +230,13 @@ Deno.test('components', async (test) => {
 });
 
 Deno.test('messages', async (test) => {
-  const message = new Message();
+  const message = new discord.Message();
 
   assertEquals(message.embeds(), 0);
   assertEquals(message.components(), 0);
 
-  message.addEmbed(new Embed());
-  message.addComponents([new Component()]);
+  message.addEmbed(new discord.Embed());
+  message.addComponents([new discord.Component()]);
 
   assertEquals(message.embeds(), 1);
   assertEquals(message.components(), 1);
@@ -261,7 +259,7 @@ Deno.test('messages', async (test) => {
   });
 
   await test.step('normal', () => {
-    const message = new Message();
+    const message = new discord.Message();
 
     assertEquals(message.json().type, 4);
 
@@ -271,17 +269,17 @@ Deno.test('messages', async (test) => {
   });
 
   await test.step('set type', () => {
-    const message = new Message(MessageType.Update);
+    const message = new discord.Message(discord.MessageType.Update);
 
     assertEquals(message.json().type, 7);
 
-    message.setType(MessageType.Ping);
+    message.setType(discord.MessageType.Ping);
 
     assertEquals(message.json().type, 1);
   });
 
   await test.step('send', async () => {
-    const message = new Message().setContent('content');
+    const message = new discord.Message().setContent('content');
 
     const json = await message.send().json();
 
@@ -298,7 +296,7 @@ Deno.test('messages', async (test) => {
 
 Deno.test('static messages', async (test) => {
   await test.step('pong', async () => {
-    const message = Message.pong();
+    const message = discord.Message.pong();
 
     const json = await message.json();
 
@@ -308,7 +306,7 @@ Deno.test('static messages', async (test) => {
   });
 
   await test.step('content', async () => {
-    const message = Message.content('content');
+    const message = discord.Message.content('content');
 
     assertEquals(await message.json(), {
       type: 4,
@@ -319,7 +317,7 @@ Deno.test('static messages', async (test) => {
   });
 
   await test.step('internal error', () => {
-    const message = Message.internal('id');
+    const message = discord.Message.internal('id');
 
     assertEquals(message.json(), {
       type: 4,
@@ -342,7 +340,7 @@ Deno.test('patch messages', async () => {
   );
 
   try {
-    const message = new Message();
+    const message = new discord.Message();
 
     await message.patch('token');
 

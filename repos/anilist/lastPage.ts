@@ -1,8 +1,8 @@
-import { sleep } from '../../src/utils.ts';
+import utils from '../../src/utils.ts';
 
 import { join } from 'https://deno.land/std@0.168.0/path/mod.ts';
 
-import { variables } from '../../src/gacha.ts';
+import gacha from '../../src/gacha.ts';
 
 import { gql, request } from './graphql.ts';
 
@@ -12,7 +12,7 @@ const filepath = './lastPage.json';
 
 const dirname = new URL('.', import.meta.url).pathname;
 
-const ranges = Object.values(variables.ranges);
+const ranges = Object.values(gacha.variables.ranges);
 
 const data: Data = {};
 
@@ -96,7 +96,7 @@ for (const range of ranges) {
       // (see https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting)
       if (e.message?.includes('Too Many Requests')) {
         console.log('sleeping for a minute...');
-        await sleep(60);
+        await utils.sleep(60);
         continue;
       }
 

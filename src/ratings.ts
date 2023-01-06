@@ -1,4 +1,5 @@
 import { CharacterRole } from './types.ts';
+
 import { emotes } from './config.ts';
 
 export class Rating {

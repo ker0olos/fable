@@ -1,8 +1,7 @@
 import { json } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
-import { decodeDescription, hexToInt, truncate } from './utils.ts';
-
-import { appId } from './config.ts';
+import utils from './utils.ts';
+import config from './config.ts';
 
 const API = `https://discord.com/api/v10`;
 
@@ -259,12 +258,12 @@ export class Embed {
   }
 
   setColor(color?: string) {
-    this.#data.color = hexToInt(color);
+    this.#data.color = utils.hexToInt(color);
     return this;
   }
 
   setDescription(description?: string) {
-    this.#data.description = decodeDescription(description);
+    this.#data.description = utils.decodeDescription(description);
     return this;
   }
 
@@ -383,7 +382,7 @@ export class Message {
           // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
 
           const comp = component.json();
-          comp.label = truncate(comp.label, 80);
+          comp.label = utils.truncate(comp.label, 80);
           return component.json();
         }),
       });
@@ -444,7 +443,7 @@ export class Message {
   }
 
   async patch(token: string): Promise<Response> {
-    const url = `${API}/webhooks/${appId}/${token}/messages/@original`;
+    const url = `${API}/webhooks/${config.appId}/${token}/messages/@original`;
 
     return await fetch(url, {
       method: 'PATCH',

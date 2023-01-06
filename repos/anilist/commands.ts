@@ -1,4 +1,4 @@
-import { titlesToArray } from '../../src/utils.ts';
+import utils from '../../src/utils.ts';
 
 import * as discord from '../../src/discord.ts';
 
@@ -12,7 +12,7 @@ export async function nextEpisode(
 ) {
   const anime = await api.nextEpisode({ search: title });
 
-  const titles = titlesToArray(anime);
+  const titles = utils.titlesToArray(anime);
 
   const message = new discord.Message();
 

@@ -10,7 +10,7 @@ import {
   stub,
 } from 'https://deno.land/std@0.168.0/testing/mock.ts';
 
-import * as utils from '../src/utils.ts';
+import utils from '../src/utils.ts';
 
 import type { Media } from '../src/types.ts';
 

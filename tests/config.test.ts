@@ -9,14 +9,14 @@ import {
   stub,
 } from 'https://deno.land/std@0.168.0/testing/mock.ts';
 
-import * as config from '../src/config.ts';
+import config, { init } from '../src/config.ts';
 
 Deno.test('init', async (test) => {
   await test.step('stable', async () => {
     const permissionsStub = stub(
       Deno.permissions,
       'query',
-      () => Promise.resolve({ state: 'granted' } as any),
+      () => ({ state: 'granted' } as any),
     );
 
     const envStub = stub(
@@ -31,7 +31,7 @@ Deno.test('init', async (test) => {
     );
 
     try {
-      await config.init({ dev: false });
+      await init({ dev: false });
 
       // test config parameters
 
@@ -40,7 +40,7 @@ Deno.test('init', async (test) => {
         config.appId,
         config.publicKey,
         config.mongoUrl,
-        config.dsn,
+        config.sentry,
       ], [
         false,
         'app_id',
@@ -56,7 +56,7 @@ Deno.test('init', async (test) => {
 
       assertSpyCall(permissionsStub, 0, {
         args: [{ name: 'env' } as any],
-        returned: Promise.resolve({ state: 'granted' } as any),
+        returned: { state: 'granted' } as any,
       });
 
       assertSpyCall(envStub, 0, {
@@ -88,7 +88,7 @@ Deno.test('init', async (test) => {
     const permissionsStub = stub(
       Deno.permissions,
       'query',
-      () => Promise.resolve({ state: 'granted' } as any),
+      () => ({ state: 'granted' } as any),
     );
 
     const envStub = stub(
@@ -103,7 +103,7 @@ Deno.test('init', async (test) => {
     );
 
     try {
-      await config.init({ dev: true });
+      await init({ dev: true });
 
       // test config parameters
 
@@ -112,7 +112,7 @@ Deno.test('init', async (test) => {
         config.appId,
         config.publicKey,
         config.mongoUrl,
-        config.dsn,
+        config.sentry,
       ], [
         true,
         'dev_id',
@@ -128,7 +128,7 @@ Deno.test('init', async (test) => {
 
       assertSpyCall(permissionsStub, 0, {
         args: [{ name: 'env' } as any],
-        returned: Promise.resolve({ state: 'granted' } as any),
+        returned: { state: 'granted' } as any,
       });
 
       assertSpyCall(envStub, 0, {

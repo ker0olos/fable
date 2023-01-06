@@ -1,4 +1,4 @@
-import { randint } from '../../src/utils.ts';
+import utils from '../../src/utils.ts';
 
 import { AniListMedia, Character, CharacterRole, Pool } from './types.ts';
 
@@ -190,7 +190,7 @@ export async function pool(
   ]) as keyof typeof lastPage;
 
   // select a random page between the first and last
-  const page = randint(1, lastPage[key]);
+  const page = utils.randint(1, lastPage[key]);
 
   const query = gql`
     query ($popularity_greater: Int!, $popularity_lesser: Int, $role: CharacterRole) {

@@ -1,9 +1,9 @@
-export let appId: string;
-export let publicKey: string;
-export let mongoUrl: string;
-export let dsn: string;
+// let appId: string;
+// let publicKey: string;
+// let mongoUrl: string;
+// let dsn: string;
 
-// export const colors = {
+// const colors = {
 //   background: '#2b2d42',
 //   purple: '#6b3ebd',
 //   gold: '#feb500',
@@ -15,24 +15,38 @@ export const emotes = {
   noStar: '<:fable_no_star:1058182412963688548>',
 };
 
-export let DEV = false;
+const config: {
+  DEV: boolean;
+  appId?: string;
+  publicKey?: string;
+  mongoUrl?: string;
+  sentry?: string;
+} = {
+  DEV: false,
+  appId: undefined,
+  publicKey: undefined,
+  mongoUrl: undefined,
+  sentry: undefined,
+};
 
 export async function init({ dev }: { dev: boolean }) {
   const query = await Deno.permissions.query({ name: 'env' });
 
   if (query?.state === 'granted') {
-    dsn = Deno.env.get('SENTRY_DSN')!;
+    config.sentry = Deno.env.get('SENTRY_DSN')!;
 
-    appId = dev ? Deno.env.get('DEV_ID')! : Deno.env.get('APP_ID')!;
+    config.appId = dev ? Deno.env.get('DEV_ID')! : Deno.env.get('APP_ID')!;
 
-    publicKey = dev
+    config.publicKey = dev
       ? Deno.env.get('DEV_PUBLIC_KEY')!
       : Deno.env.get('APP_PUBLIC_KEY')!;
 
-    mongoUrl = dev
+    config.mongoUrl = dev
       ? Deno.env.get('DEV_MONGO_URL')!
       : Deno.env.get('MONGO_URL')!;
 
-    DEV = dev;
+    config.DEV = dev;
   }
 }
+
+export default config;

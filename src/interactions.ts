@@ -9,17 +9,15 @@ import {
   validateRequest,
 } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
-import { verifySignature } from './utils.ts';
-
 import * as discord from './discord.ts';
 
 import * as search from './search.ts';
 
-import * as repo from './repo.ts';
+import repo from './repo.ts';
+import utils from './utils.ts';
+import gacha from './gacha.ts';
 
-import * as gacha from './gacha.ts';
-
-import { dsn, init, publicKey } from './config.ts';
+import config, { init } from './config.ts';
 
 async function handler(
   request: Request,
@@ -27,7 +25,7 @@ async function handler(
 ): Promise<Response> {
   init({ dev });
 
-  initSentry({ dsn });
+  initSentry({ dsn: config.sentry });
 
   const { error } = await validateRequest(request, {
     POST: {
@@ -42,9 +40,9 @@ async function handler(
     );
   }
 
-  const { valid, body } = await verifySignature(
+  const { valid, body } = await utils.verifySignature(
     request,
-    publicKey,
+    config.publicKey!,
   );
 
   if (!valid) {

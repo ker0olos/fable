@@ -1,4 +1,4 @@
-import { randint } from '../../src/utils.ts';
+import utils from '../../src/utils.ts';
 
 import * as discord from '../../src/discord.ts';
 
@@ -14,7 +14,7 @@ export function roll(
   let successes = 0;
 
   for (let i = 0; i < amount; i++) {
-    const roll = randint(1, dieSize);
+    const roll = utils.randint(1, dieSize);
 
     successes += roll >= minSuccess ? 1 : 0;
 
