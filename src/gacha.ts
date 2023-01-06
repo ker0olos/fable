@@ -81,45 +81,33 @@ async function rngPull(): Promise<Roll> {
     popularity_lesser: range[1],
   });
 
-  // TODO
-  // extend/override anilist default pool
+  // TODO extend/override anilist default pool
   // order of override is: community (verified) > manual (non-verified)
 
   const pool = Object.values(dict);
 
-  let tries = 0;
-
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
 
-  // the tries parameter prevents infinite loops when the entire pool is invalid
-  while (!character && tries < 10) {
+  while (pool.length > 0) {
     // sort through each character media and pick the default
-    const candidate = pool[Math.floor(Math.random() * pool.length)];
+    const i = Math.floor(Math.random() * pool.length);
 
-    const invalid = candidate.media?.edges?.some(({ characterRole, node }) => {
-      if (node.popularity! < range[0]) {
-        return true;
-      }
+    const candidate = pool.splice(i, 1)[0];
 
-      if (node.popularity! > range[1]) {
-        return true;
-      }
-
-      if (role && role !== characterRole) {
-        return true;
-      }
-
-      if (!media || media.popularity! <= node.popularity!) {
-        media = node;
-      }
+    const edge = candidate.media?.edges?.reduce((a, b) => {
+      return a.node!.popularity! >= b.node!.popularity! ? a : b;
     });
 
-    if (!invalid) {
+    if (
+      edge?.node.popularity! >= range[0] &&
+      edge?.node.popularity! <= range[1] &&
+      (!role || edge?.characterRole === role)
+    ) {
       character = candidate;
+      media = edge?.node;
+      break;
     }
-
-    tries += 1;
   }
 
   if (!character || !media) {

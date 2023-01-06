@@ -74,7 +74,7 @@ def make_command(
         return []
 
     if dev_only:
-        desc = f"{desc} (dev only)"
+        desc = f"{desc} (Developer)"
 
     commands = [
         {
