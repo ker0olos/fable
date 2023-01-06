@@ -69,15 +69,11 @@ async function rngPull(): Promise<Roll> {
   // roll for popularity range that wil be used to generate the pool
   const range = utils.rng(variables.ranges);
 
-  console.log(range);
-
   const role = range[0] === 0
     // include all roles in the pool
     ? undefined
     // one specific role for the whole pool
     : utils.rng(variables.roles);
-
-  console.log(role);
 
   const dict = await anilist.pool({
     role,
@@ -91,10 +87,13 @@ async function rngPull(): Promise<Roll> {
 
   const pool = Object.values(dict);
 
+  let tries = 0;
+
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
 
-  while (!character) {
+  // the tries parameter prevents infinite loops when the entire pool is invalid
+  while (!character && tries < 10) {
     // sort through each character media and pick the default
     const candidate = pool[Math.floor(Math.random() * pool.length)];
 
@@ -118,9 +117,14 @@ async function rngPull(): Promise<Roll> {
 
     if (!invalid) {
       character = candidate;
-    } else {
-      console.log('invalid', candidate.name.full);
     }
+
+    tries += 1;
+  }
+
+  if (!character || !media) {
+    // TODO improve error message
+    throw new Error('501');
   }
 
   return {
@@ -175,7 +179,7 @@ function start({ token, id }: { token: string; id?: string }) {
             .setTitle(rating.emotes)
             .addField({
               name: utils.wrap(titles[0]!),
-              value: `**${utils.wrap(pull.character.name.full)}**`,
+              value: `**${utils.wrap(pull.character.name!.full)}**`,
             })
             .setImage({ url: pull.character.image?.large }),
         );

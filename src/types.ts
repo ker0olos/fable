@@ -43,19 +43,19 @@ export enum CharacterRole {
 export interface Media {
   // deno-lint-ignore no-explicit-any
   [x: string]: any;
-  type: Type;
-  format: Format;
-  title: {
+  type?: Type;
+  format?: Format;
+  title?: {
     english?: string;
     romaji?: string;
     native?: string;
   };
-  externalLinks: {
+  externalLinks?: {
     site: string;
     url: string;
   }[];
   id?: number;
-  relations: {
+  relations?: {
     edges: {
       relationType: RelationType;
       node: Media;
@@ -80,7 +80,7 @@ export interface Media {
 }
 
 export interface Character {
-  name: {
+  name?: {
     full: string;
     native?: string;
     alternative?: string[];

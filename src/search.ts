@@ -44,12 +44,12 @@ export async function media(
       .setDescription(media.description)
       .setColor(media.coverImage?.color)
       .setImage({ url: media.coverImage?.extraLarge })
-      .setFooter({ text: media.title.native }),
+      .setFooter({ text: media.title!.native }),
   );
 
   media.characters?.edges!.slice(0, 2).forEach((character) => {
     const embed = new discord.Embed()
-      .setTitle(character.node!.name.full)
+      .setTitle(character.node!.name!.full)
       .setDescription(character.node!.description)
       .setColor(media?.coverImage?.color)
       .setThumbnail({ url: character.node!.image?.large })
@@ -129,7 +129,7 @@ export async function media(
       case Format.MUSIC: {
         component
           .setLabel(label)
-          .setUrl(relation.node.externalLinks?.[0]?.url);
+          .setUrl(relation.node.externalLinks?.[0]?.url!);
 
         additionalGroup.push(component);
         break;
@@ -155,12 +155,12 @@ function mediaDebugEmbed(media: Media) {
     .addField({ name: 'Id', value: `${media.id}` })
     .addField({
       name: 'Type',
-      value: `${utils.capitalize(media.type)}`,
+      value: `${utils.capitalize(media.type!)}`,
       inline: true,
     })
     .addField({
       name: 'Format',
-      value: `${utils.capitalize(media.format)}`,
+      value: `${utils.capitalize(media.format!)}`,
       inline: true,
     })
     .addField({
@@ -195,7 +195,7 @@ export async function character(
   const message = new discord.Message()
     .addEmbed(
       new discord.Embed()
-        .setTitle(character.name.full)
+        .setTitle(character.name!.full)
         .setDescription(character.description)
         .setImage({ url: character.image?.large })
         .setFooter(
@@ -236,8 +236,8 @@ function characterDebugEmbed(character: Character) {
   const rating = new Rating(role, media.popularity!);
 
   return new discord.Embed()
-    .setTitle(character.name.full)
-    .setDescription(character.name.alternative?.join('\n'))
+    .setTitle(character.name!.full)
+    .setDescription(character.name!.alternative?.join('\n'))
     .addField({ name: 'Id', value: `${character.id}` })
     .addField({
       name: 'Rating',
@@ -257,12 +257,12 @@ function characterDebugEmbed(character: Character) {
     })
     .addField({
       name: 'Type',
-      value: `${utils.capitalize(media.type)}`,
+      value: `${utils.capitalize(media.type!)}`,
       inline: true,
     })
     .addField({
       name: 'Format',
-      value: `${utils.capitalize(media.format)}`,
+      value: `${utils.capitalize(media.format!)}`,
       inline: true,
     })
     .addField({
@@ -290,8 +290,8 @@ export async function themes(
     if (relation.node.format === Format.MUSIC) {
       const component = new discord.Component()
         .setLabel(
-          (relation.node.title.english || relation.node.title.romaji ||
-            relation.node.title.native)!,
+          (relation.node.title!.english || relation.node.title!.romaji ||
+            relation.node.title!.native)!,
         )
         .setUrl(relation.node.externalLinks?.shift()?.url!);
 

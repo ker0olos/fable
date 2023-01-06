@@ -181,8 +181,13 @@ export async function pool(
   retry = 1,
   dict: Pool = {},
 ): Promise<Pool> {
+  // the max tries parameter prevents infinite recursion
   const maxTries = 5;
+
+  // the minimal pool insures that there's enough variety in the pool
   const minimalPool = 25;
+
+  // TODO take a minimal number of different media into consideration
 
   const key = JSON.stringify([
     variables.popularity_greater,
@@ -270,6 +275,7 @@ export async function pool(
 
   // ensure minimal number of characters for the pool
   if (minimalPool > currentPool) {
+    // the max tries parameter prevents infinite recursion
     if (retry >= maxTries) {
       throw new Error(
         `failed to create a pool with ${

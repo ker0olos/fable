@@ -34,10 +34,10 @@ class Type(Enum):
 
 
 class Permission(Enum):
-    ALL = None
     OWNER = 0
     ADMINISTRATORS = str(1 << 3)
     MANAGE_GUILD = str(1 << 5)
+    ALL = None
 
 
 class Option:

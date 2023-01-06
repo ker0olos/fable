@@ -133,9 +133,9 @@ function decodeDescription(s?: string): string | undefined {
 
 function titlesToArray(media: Media, max?: number): string[] {
   let titles = [
-    media.title.english,
-    media.title.romaji,
-    media.title.native,
+    media.title!.english,
+    media.title!.romaji,
+    media.title!.native,
   ];
 
   titles = titles.filter(Boolean)
