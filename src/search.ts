@@ -1,12 +1,12 @@
 import utils from './utils.ts';
 
-import { Rating } from './rating.ts';
+import Rating from './rating.ts';
 
 import { Character, Format, Media, RelationType } from './types.ts';
 
-import * as discord from './discord.ts';
+import anilist from '../repos/anilist/index.ts';
 
-import * as anilist from '../repos/anilist/index.ts';
+import * as discord from './discord.ts';
 
 export async function media(
   { id, search, debug }: {

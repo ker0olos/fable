@@ -1,8 +1,8 @@
-import utils from '../../src/utils.ts';
+import { default as actualUtils } from '../../src/utils.ts';
 
 import * as discord from '../../src/discord.ts';
 
-export function roll(
+function roll(
   { amount }: { user: discord.User; amount: number },
   { member }: discord.Interaction<unknown>,
 ) {
@@ -14,7 +14,7 @@ export function roll(
   let successes = 0;
 
   for (let i = 0; i < amount; i++) {
-    const roll = utils.randint(1, dieSize);
+    const roll = actualUtils.randint(1, dieSize);
 
     successes += roll >= minSuccess ? 1 : 0;
 
@@ -34,3 +34,9 @@ export function roll(
 
   return message;
 }
+
+const utils = {
+  roll,
+};
+
+export default utils;

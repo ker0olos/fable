@@ -2,7 +2,7 @@ import { CharacterRole } from './types.ts';
 
 import { emotes } from './config.ts';
 
-export class Rating {
+export default class Rating {
   #stars: number;
 
   constructor(role: CharacterRole, popularity: number) {

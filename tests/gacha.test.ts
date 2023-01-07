@@ -13,7 +13,7 @@ import {
 import utils from '../src/utils.ts';
 import gacha from '../src/gacha.ts';
 
-import { Rating } from '../src/rating.ts';
+import Rating from '../src/rating.ts';
 
 import { Character, CharacterRole } from '../src/types.ts';
 

@@ -4,15 +4,15 @@ import {
 
 import utils from './utils.ts';
 
-import { Rating } from './rating.ts';
+import Rating from './rating.ts';
 
 import config from './config.ts';
 
 import { Character, CharacterRole, Media } from './types.ts';
 
-import * as discord from './discord.ts';
+import anilist from '../repos/anilist/index.ts';
 
-import * as anilist from '../repos/anilist/index.ts';
+import * as discord from './discord.ts';
 
 const CDN = 'https://raw.githubusercontent.com/ker0olos/fable/main/assets';
 
@@ -33,7 +33,7 @@ const variables = {
   },
 };
 
-type Roll = {
+type Pull = {
   role: CharacterRole;
   character: Character;
   media: Media;
@@ -45,7 +45,7 @@ type Roll = {
 /**
  * force a specific pull using an id
  */
-async function forcePull({ id }: { id: string }): Promise<Roll> {
+async function forcePull({ id }: { id: string }): Promise<Pull> {
   const character = await anilist.character({ id: parseInt(id) });
 
   if (!character) {
@@ -65,7 +65,7 @@ async function forcePull({ id }: { id: string }): Promise<Roll> {
 /**
  * generate a pool of characters then pull one
  */
-async function rngPull(): Promise<Roll> {
+async function rngPull(): Promise<Pull> {
   // roll for popularity range that wil be used to generate the pool
   const range = utils.rng(variables.ranges);
 
@@ -173,26 +173,7 @@ function start({ token, id }: { token: string; id?: string }) {
         );
 
       if (config.DEV) {
-        message.addEmbed(
-          new discord.Embed()
-            .setTitle('Pool')
-            .addField({
-              name: 'Role',
-              value: `${pull.role}`,
-            })
-            .addField({
-              name: 'Media',
-              value: `${pull.media.id}`,
-            })
-            .addField({
-              name: 'Length',
-              value: `${pull.pool}`,
-            })
-            .addField({
-              name: 'Popularity',
-              value: `${pull.popularityGreater} < P < ${pull.popularityLesser}`,
-            }),
-        );
+        message.addEmbed(pullDebugEmbed(pull));
       }
 
       await message.patch(token);
@@ -215,6 +196,27 @@ function start({ token, id }: { token: string; id?: string }) {
         { url: `${CDN}/spinner.gif` },
       ),
     );
+}
+
+function pullDebugEmbed(pull: Pull) {
+  return new discord.Embed()
+    .setTitle('Pool')
+    .addField({
+      name: 'Role',
+      value: `${pull.role}`,
+    })
+    .addField({
+      name: 'Media',
+      value: `${pull.media.id}`,
+    })
+    .addField({
+      name: 'Length',
+      value: `${pull.pool}`,
+    })
+    .addField({
+      name: 'Popularity',
+      value: `${pull.popularityGreater} < P < ${pull.popularityLesser}`,
+    });
 }
 
 const gacha = {
