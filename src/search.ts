@@ -12,7 +12,7 @@ export async function media(
   { id, search, debug }: {
     id?: number;
     search?: string;
-    debug: boolean;
+    debug?: boolean;
   },
   prioritize?: 'anime' | 'manga',
 ): Promise<discord.Message> {
@@ -40,11 +40,13 @@ export async function media(
   message.addEmbed(
     new discord.Embed()
       .setTitle(titles.shift()!)
-      .setAuthor({ name: utils.capitalize(media.type!) })
+      .setAuthor({ name: utils.capitalize(media.type!)! })
       .setDescription(media.description)
       .setColor(media.coverImage?.color)
       .setImage({ url: media.coverImage?.extraLarge })
-      .setFooter({ text: media.title!.native }),
+      .setFooter({
+        text: titles.length > 0 ? media.title!.native : undefined,
+      }),
   );
 
   media.characters?.edges!.slice(0, 2).forEach((character) => {
@@ -56,7 +58,7 @@ export async function media(
       .setFooter(
         {
           text: [
-            character.node!.gender,
+            utils.capitalize(character.node!.gender!),
             character.node!.age,
           ].filter(Boolean).join(', '),
         },
@@ -112,7 +114,7 @@ export async function media(
       case RelationType.ADAPTATION: {
         component
           .setLabel(
-            `${label} (${utils.capitalize(relation.node.format!)})`,
+            `${label} (${utils.capitalize(relation.node.type!)})`,
           )
           .setId(
             `media:${relation.node.id!}`,
@@ -175,7 +177,7 @@ export async function character(
   { id, search, debug }: {
     id?: number;
     search?: string;
-    debug: boolean;
+    debug?: boolean;
   },
 ): Promise<discord.Message> {
   if (typeof (id = utils.parseId(search!)) === 'number') {
@@ -201,7 +203,7 @@ export async function character(
         .setFooter(
           {
             text: [
-              character.gender,
+              utils.capitalize(character.gender),
               character!.age,
             ].filter(Boolean).join(', '),
           },

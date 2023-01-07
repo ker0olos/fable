@@ -87,7 +87,11 @@ function wrap(text: string, width = 32) {
   );
 }
 
-function capitalize(s: string): string {
+function capitalize(s: string | undefined): string | undefined {
+  if (!s) {
+    return;
+  }
+
   const sa = s.split('_');
   return sa.map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(' ')
     .trim();

@@ -183,6 +183,24 @@ Deno.test('decode description', async (test) => {
 Deno.test('titles to array', () => {
   const media = {
     title: {
+      romaji: 'romaji',
+      native: 'native',
+      english: 'english',
+    },
+  };
+
+  const array = utils.titlesToArray(media as Media);
+
+  assertEquals(array, [
+    'english',
+    'romaji',
+    'native',
+  ]);
+});
+
+Deno.test('titles to array 2', () => {
+  const media = {
+    title: {
       romaji: '',
       native: 'native',
       english: 'english',

@@ -68,9 +68,9 @@ export interface Media {
     edges?: { role: CharacterRole; node: Character }[];
   };
   coverImage?: {
-    extraLarge: string;
-    large: string;
-    medium: string;
+    extraLarge?: string;
+    large?: string;
+    medium?: string;
     color?: string;
   };
   trailer?: {

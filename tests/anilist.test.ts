@@ -268,7 +268,7 @@ Deno.test('next episode', async (test) => {
               Media: {
                 status: Status.RELEASING,
                 title: {
-                  english: 'english_title',
+                  english: 'anime',
                 },
                 nextAiringEpisode: {
                   airingAt: 0,
@@ -283,14 +283,12 @@ Deno.test('next episode', async (test) => {
     try {
       const message = await anilist.nextEpisode({ title: 'title' });
 
-      console.log();
-
       assertEquals(message.json(), {
         type: 4,
         data: {
           embeds: [],
           components: [],
-          content: 'The next episode of `english_title` is <t:0:R>.',
+          content: 'The next episode of `anime` is <t:0:R>.',
         },
       });
 
@@ -312,7 +310,7 @@ Deno.test('next episode', async (test) => {
               Media: {
                 status: Status.NOT_YET_RELEASED,
                 title: {
-                  english: 'english_title',
+                  english: 'anime',
                 },
               },
             },
@@ -329,7 +327,7 @@ Deno.test('next episode', async (test) => {
         data: {
           embeds: [],
           components: [],
-          content: '`english_title` is coming soon.',
+          content: '`anime` is coming soon.',
         },
       });
 
@@ -351,7 +349,7 @@ Deno.test('next episode', async (test) => {
               Media: {
                 status: Status.HIATUS,
                 title: {
-                  english: 'english_title',
+                  english: 'anime',
                 },
               },
             },
@@ -368,7 +366,7 @@ Deno.test('next episode', async (test) => {
         data: {
           embeds: [],
           components: [],
-          content: '`english_title` is taking a short break.',
+          content: '`anime` is taking a short break.',
         },
       });
 
@@ -390,7 +388,7 @@ Deno.test('next episode', async (test) => {
               Media: {
                 status: Status.FINISHED,
                 title: {
-                  english: 'english_title',
+                  english: 'anime',
                 },
               },
             },
@@ -408,7 +406,7 @@ Deno.test('next episode', async (test) => {
           embeds: [],
           components: [],
           content:
-            'Unfortunately, `english_title` has already aired its final episode.',
+            'Unfortunately, `anime` has already aired its final episode.',
         },
       });
 
@@ -430,7 +428,7 @@ Deno.test('next episode', async (test) => {
               Media: {
                 status: Status.CANCELLED,
                 title: {
-                  english: 'english_title',
+                  english: 'anime',
                 },
               },
             },
@@ -448,7 +446,7 @@ Deno.test('next episode', async (test) => {
           embeds: [],
           components: [],
           content:
-            'Unfortunately, `english_title` has already aired its final episode.',
+            'Unfortunately, `anime` has already aired its final episode.',
         },
       });
 
