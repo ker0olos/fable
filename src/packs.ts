@@ -2,16 +2,16 @@ import { Manifest } from './types.ts';
 
 import { Interaction, Message } from './discord.ts';
 
-import _anilist from '../repos/anilist/manifest.json' assert {
+import _anilist from '../packs/anilist/manifest.json' assert {
   type: 'json',
 };
 
-import _utils from '../repos/utils/manifest.json' assert {
+import _utils from '../packs/utils/manifest.json' assert {
   type: 'json',
 };
 
-import * as utilsAPI from '../repos/utils/index.ts';
-import * as anilistAPI from '../repos/anilist/index.ts';
+import * as utilsAPI from '../packs/utils/index.ts';
+import * as anilistAPI from '../packs/anilist/index.ts';
 
 const anilistMani = _anilist as Manifest;
 const utilsMani = _utils as Manifest;
@@ -19,8 +19,8 @@ const utilsMani = _utils as Manifest;
 // TODO Builtin > Community > Manual
 
 /**
- * Non-standard commands (extras) are handled by individual repos
- * Only official builtin repos can execute code
+ * Non-standard commands (extras) are handled by individual packs
+ * Only official builtin packs can execute code
  * (no dynamic imports allowed in deno deploy)
  * (not safe and won't trust it even if deno could)
  */
@@ -72,16 +72,16 @@ function builtin() {
 //     },
 //     v8: Deno.version.v8,
 //     typescript: Deno.version.typescript,
-//     repositories: [
+//     packs: [
 //       _anilist,
 //       _utils,
 //     ] as Manifest[],
 //   };
 // }
 
-const repo = {
+const packs = {
   commands,
   builtin,
 };
 
-export default repo;
+export default packs;

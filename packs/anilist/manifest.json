@@ -1,7 +1,7 @@
 {
   "id": "anilist",
   "title": "AniList",
-  "description": "A repository powered by AniList APIs. Contains a huge list of anime and manga characters",
+  "description": "A pack powered by AniList APIs. Contains a huge list of anime and manga characters",
   "url": "https://anilist.co",
   "icon_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png",
   "commands": {

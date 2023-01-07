@@ -10,7 +10,7 @@ import config from './config.ts';
 
 import { Character, CharacterRole, Media } from './types.ts';
 
-import anilist from '../repos/anilist/index.ts';
+import anilist from '../packs/anilist/index.ts';
 
 import * as discord from './discord.ts';
 

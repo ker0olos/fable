@@ -146,7 +146,7 @@ if __name__ == "__main__":
     set_commands(
         # standard gacha commands
         # uses characters and media from
-        # all builtin, community, and manual repos
+        # all builtin, community, and manual packs
         make_command(
             name="anime",
             desc="Search for an anime/manga",
@@ -214,13 +214,13 @@ if __name__ == "__main__":
             default_permission=Permission.ADMINISTRATORS,
             dev_only=True,
         )
-        # repo management commands
+        # packs management commands
         + make_command(
-            name="repo",
+            name="packs",
             options=[
                 Option(
                     name="builtin",
-                    desc="Show all built-in enabled-by-default repositories",
+                    desc="Show all built-in enabled-by-default packs",
                     type=Type.SUB_COMMAND,
                     required=False,
                 )
@@ -230,6 +230,6 @@ if __name__ == "__main__":
         )
         # non-standard (eternal) commands
         # non-gacha commands (specific one-task commands)
-        + load_manifest("./repos/anilist")
-        + load_manifest("./repos/utils")
+        + load_manifest("./packs/anilist")
+        + load_manifest("./packs/utils")
     )

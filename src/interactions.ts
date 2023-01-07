@@ -13,7 +13,7 @@ import * as discord from './discord.ts';
 
 import * as search from './search.ts';
 
-import repo from './repo.ts';
+import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
 
@@ -98,13 +98,13 @@ async function handler(
             return gacha.start({ token }).send();
           case 'force_pull':
             return gacha.start({ token, id: options!['id'] as string }).send();
-          case 'repo': {
+          case 'packs': {
             const message = new discord.Message();
 
             // TODO LOW build a pagination system into discord.ts
-            // and use it to page through the different repos
+            // and use it to page through the different packs
             // (see https://github.com/ker0olos/fable/issues/14)
-            for (const manifest of repo.builtin()) {
+            for (const manifest of packs.builtin()) {
               const embed = new discord.Embed()
                 .setAuthor({ name: 'Fable' })
                 .setUrl(manifest.url)
@@ -118,8 +118,8 @@ async function handler(
             return message.send();
           }
           default: {
-            // Non-standard (extra) commands are handled by individual repos
-            const message = await repo.commands(name!, interaction);
+            // Non-standard (extra) commands are handled by individual packs
+            const message = await packs.commands(name!, interaction);
 
             if (message) {
               return message.send();
@@ -130,7 +130,7 @@ async function handler(
         }
         break;
       case discord.InteractionType.Component:
-        // TODO BACKLOG repo components
+        // TODO BACKLOG packs components
         // (see https://github.com/ker0olos/fable/issues/13)
         switch (customType) {
           case 'media':

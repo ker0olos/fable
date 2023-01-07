@@ -4,7 +4,7 @@ import Rating from './rating.ts';
 
 import { Character, Format, Media, RelationType } from './types.ts';
 
-import anilist from '../repos/anilist/index.ts';
+import anilist from '../packs/anilist/index.ts';
 
 import * as discord from './discord.ts';
 

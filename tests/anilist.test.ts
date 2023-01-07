@@ -8,9 +8,9 @@ import {
   stub,
 } from 'https://deno.land/std@0.168.0/testing/mock.ts';
 
-import anilist from '../repos/anilist/index.ts';
+import anilist from '../packs/anilist/index.ts';
 
-import { Status } from '../repos/anilist/types.ts';
+import { Status } from '../packs/anilist/types.ts';
 
 import { Character, CharacterRole } from '../src/types.ts';
 

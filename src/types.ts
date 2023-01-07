@@ -104,19 +104,19 @@ export type Pool = { [id: number]: Character };
 export interface Manifest {
   /** A unique alphanumeric id (must match /^[a-z][a-z0-9]+$/ */
   id: string;
-  /** The display title of the repo */
+  /** The display title of the pack */
   title: string;
-  /** A small description about the repo and what it contains */
+  /** A small description about the pack and what it contains */
   description?: string;
-  /** If the repo contains nsfw (adult) content */
+  /** If the pack contains nsfw (adult) content */
   nsfw?: boolean;
-  /** the name of the repo's author */
+  /** the name of the pack's author */
   author?: string;
-  /** The icon of the repo or the author of the repo */
+  /** The icon of the pack or the author of the pack */
   icon_url?: string;
-  /** The url to repo's homepage */
+  /** The url to pack's homepage */
   url?: string;
-  /** Respected only on built-in repositories */
+  /** Respected only on built-in packs */
   commands?: { [key: string]: CommandDeclaration };
 }
 

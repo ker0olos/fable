@@ -9,14 +9,24 @@
 
 A free, open-source anime gacha app, an alternative to Mudae.
 
-<!-- ### Features
+### Features
+
 - 100% Free (no premiums, no pay-to-win bullshit)
-- Open-source software (contrib, fork, self-host)
-- Keeps up with discord newest features available
+- An intuitive system to manage and customize the characters in your servers
+- Easily add new character packs with just a single url
+- Override builtin characters with your own images, aliases, and descriptions
+- Actively developed with new game modes and features
+- Open-source software (contrib, fork, or self-host)
+- Keeps up with discord newest features _in bot technology_
 - Puts user experience front and center
--->
 
 ### FAQ
+
+<!-- > How to add a new pack to my server? -->
+
+<!-- > How to disable/remove a pack from my server? -->
+
+<!-- > How are you create a pack from scratch? -->
 
 > How are you keeping Fable free?
 
