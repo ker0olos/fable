@@ -187,6 +187,9 @@ export async function pool(
   // the minimal pool insures that there's enough variety in the pool
   const minimalPool = 25;
 
+  // TODO try and minimize the amount of times this function call anilist API
+  // multiple requests to anilist mean an huge increase in response time
+
   // TODO take a minimal number of different media into consideration
 
   const key = JSON.stringify([

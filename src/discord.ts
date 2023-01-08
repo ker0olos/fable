@@ -215,11 +215,27 @@ export class Component {
 
   setUrl(url: string) {
     this.#data.url = url;
-    this.#data.style = 5;
     return this;
   }
 
   json() {
+    if (!this.#data.style) {
+      switch (this.#data.type) {
+        case ComponentType.TextInput:
+          this.#data.style = TextInputStyle.Short;
+          break;
+        case ComponentType.Button:
+          if (this.#data.url) {
+            this.#data.style = 5;
+          } else {
+            this.#data.style = ButtonStyle.Grey;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
     return this.#data;
   }
 }
@@ -374,14 +390,9 @@ export class Message {
   // }
 
   addEmbed(embed: Embed) {
-    if (this.#data.embeds.length >= 3) {
-      throw new Error(
-        // TODO LOW build a pagination system into discord.ts
-        // (see https://github.com/ker0olos/fable/issues/14)
-        'having more than 3 embeds on the same message is very aesthetically unpleasant',
-      );
+    if (this.embedsCount() < 5) {
+      this.#data.embeds.push(embed.json());
     }
-    this.#data.embeds.push(embed.json());
     return this;
   }
 
@@ -390,11 +401,12 @@ export class Message {
       this.#data.components.push({
         type: 1,
         components: components.slice(0, 5).map((component) => {
+          const comp = component.json();
+
           // labels have maximum of 80 characters
           // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
-
-          const comp = component.json();
           comp.label = utils.truncate(comp.label, 80);
+
           return component.json();
         }),
       });
@@ -413,11 +425,11 @@ export class Message {
   //   return this;
   // }
 
-  embeds() {
+  embedsCount() {
     return this.#data.embeds.length;
   }
 
-  components() {
+  componentsCount() {
     return this.#data.components.length;
   }
 
@@ -507,6 +519,39 @@ export class Message {
   //     type: 6,
   //   });
   // }
+
+  static page(
+    { current, id, index, total }: {
+      id: string;
+      total: number;
+      index?: number;
+      current: Embed;
+    },
+  ) {
+    index = index ?? 0;
+
+    const message = new Message();
+
+    current.setFooter({
+      text: `${index + 1}/${total}`,
+    });
+
+    const navigation = [];
+
+    if (index - 1 >= 0) {
+      navigation.push(
+        new Component().setId(`${id}:${index - 1}`).setLabel(`Prev`),
+      );
+    }
+
+    if (index + 1 < total) {
+      navigation.push(
+        new Component().setId(`${id}:${index + 1}`).setLabel(`Next`),
+      );
+    }
+
+    return message.addEmbed(current).addComponents(navigation);
+  }
 
   static content(content: string) {
     return json({

@@ -92,8 +92,7 @@ export async function media(
   });
 
   media.relations?.edges.forEach((relation) => {
-    const component = new discord.Component()
-      .setStyle(discord.ButtonStyle.Grey);
+    const component = new discord.Component();
 
     const label = utils.titlesToArray(relation.node, 60)[0];
 
@@ -103,22 +102,16 @@ export async function media(
       case RelationType.SIDE_STORY:
       case RelationType.SPIN_OFF: {
         component
-          .setLabel(
-            `${label} (${utils.capitalize(relation.relationType!)})`,
-          ).setId(
-            `media:${relation.node.id!}`,
-          );
+          .setLabel(`${label} (${utils.capitalize(relation.relationType!)})`)
+          .setId(`media:${relation.node.id!}`);
+
         secondaryGroup.push(component);
         break;
       }
       case RelationType.ADAPTATION: {
         component
-          .setLabel(
-            `${label} (${utils.capitalize(relation.node.type!)})`,
-          )
-          .setId(
-            `media:${relation.node.id!}`,
-          );
+          .setLabel(`${label} (${utils.capitalize(relation.node.type!)})`)
+          .setId(`media:${relation.node.id!}`);
 
         secondaryGroup.push(component);
         break;
@@ -129,11 +122,13 @@ export async function media(
 
     switch (relation.node.format) {
       case Format.MUSIC: {
-        component
-          .setUrl(relation.node.externalLinks?.[0]?.url!)
-          .setLabel(label);
+        if (relation.node.externalLinks?.[0]?.url) {
+          component
+            .setLabel(label)
+            .setUrl(relation.node.externalLinks[0].url);
 
-        additionalGroup.push(component);
+          additionalGroup.push(component);
+        }
         break;
       }
       default:
@@ -216,12 +211,8 @@ export async function character(
     const label = utils.titlesToArray(relation.node, 60)[0];
 
     const component = new discord.Component()
-      .setStyle(discord.ButtonStyle.Grey)
-      .setLabel(
-        `${label} (${utils.capitalize(relation.node.format!)})`,
-      ).setId(
-        `media:${relation.node.id!}`,
-      );
+      .setLabel(`${label} (${utils.capitalize(relation.node.format!)})`)
+      .setId(`media:${relation.node.id!}`);
 
     group.push(component);
   });
@@ -289,19 +280,22 @@ export async function themes(
   const message = new discord.Message();
 
   media.relations?.edges.forEach((relation) => {
-    if (relation.node.format === Format.MUSIC) {
+    if (
+      relation.node.format === Format.MUSIC &&
+      relation.node.externalLinks?.[0]?.url
+    ) {
       const component = new discord.Component()
         .setLabel(
           (relation.node.title!.english || relation.node.title!.romaji ||
             relation.node.title!.native)!,
         )
-        .setUrl(relation.node.externalLinks?.shift()?.url!);
+        .setUrl(relation.node.externalLinks[0].url);
 
       message.addComponents([component]);
     }
   });
 
-  if (message.components() <= 0) {
+  if (message.componentsCount() <= 0) {
     throw new Error('404');
   }
 

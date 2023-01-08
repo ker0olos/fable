@@ -84,7 +84,7 @@ Deno.test('filter invalid pools', async (test) => {
       await assertRejects(
         async () => await gacha.rngPull(),
         Error,
-        '501',
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
       assertSpyCalls(fetchStub, 1);
@@ -120,7 +120,7 @@ Deno.test('filter invalid pools', async (test) => {
       await assertRejects(
         async () => await gacha.rngPull(),
         Error,
-        '501',
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
       assertSpyCalls(fetchStub, 1);
@@ -161,7 +161,7 @@ Deno.test('filter invalid pools', async (test) => {
       await assertRejects(
         async () => await gacha.rngPull(),
         Error,
-        '501',
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
       assertSpyCalls(fetchStub, 1);

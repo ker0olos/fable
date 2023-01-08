@@ -16,8 +16,6 @@ import * as anilistAPI from '../packs/anilist/index.ts';
 const anilistMani = _anilist as Manifest;
 const utilsMani = _utils as Manifest;
 
-// TODO Builtin > Community > Manual
-
 /**
  * Non-standard commands (extras) are handled by individual packs
  * Only official builtin packs can execute code

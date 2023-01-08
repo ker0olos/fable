@@ -111,8 +111,9 @@ async function rngPull(): Promise<Pull> {
   }
 
   if (!character || !media) {
-    // TODO improve error message
-    throw new Error('501');
+    throw new Error(
+      'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+    );
   }
 
   return {

@@ -188,6 +188,7 @@ Deno.test('components', async (test) => {
 
   assertEquals(component.json(), {
     type: 2,
+    style: 2,
     custom_id: 'custom_id',
     emoji: {
       id: 'emote_id',
@@ -211,6 +212,7 @@ Deno.test('components', async (test) => {
 
     assertEquals(component.json(), {
       type: 4,
+      style: 1,
       placeholder: 'placeholder',
     });
   });
@@ -242,14 +244,14 @@ Deno.test('components', async (test) => {
 Deno.test('messages', async (test) => {
   const message = new discord.Message();
 
-  assertEquals(message.embeds(), 0);
-  assertEquals(message.components(), 0);
+  assertEquals(message.embedsCount(), 0);
+  assertEquals(message.componentsCount(), 0);
 
   message.addEmbed(new discord.Embed());
   message.addComponents([new discord.Component()]);
 
-  assertEquals(message.embeds(), 1);
-  assertEquals(message.components(), 1);
+  assertEquals(message.embedsCount(), 1);
+  assertEquals(message.componentsCount(), 1);
 
   assertEquals(message.json(), {
     type: 4,
@@ -259,6 +261,7 @@ Deno.test('messages', async (test) => {
         type: 1,
         components: [{
           type: 2,
+          style: 2,
           label: undefined,
         }],
       }],
@@ -377,4 +380,129 @@ Deno.test('patch messages', async () => {
   } finally {
     fetchStub.restore();
   }
+});
+
+Deno.test('page messages', async (test) => {
+  await test.step('1/2', () => {
+    const message = discord.Message.page({
+      id: 'id',
+      total: 2,
+      current: new discord.Embed().setTitle('title'),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        content: undefined,
+        embeds: [{
+          type: 2,
+          footer: {
+            text: '1/2',
+          },
+          title: 'title',
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: 'id:1',
+            label: 'Next',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+
+  await test.step('2/2', () => {
+    const message = discord.Message.page({
+      id: 'id',
+      index: 1,
+      total: 2,
+      current: new discord.Embed().setTitle('title'),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        content: undefined,
+        embeds: [{
+          type: 2,
+          footer: {
+            text: '2/2',
+          },
+          title: 'title',
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: 'id:0',
+            label: 'Prev',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+
+  await test.step('2/3', () => {
+    const message = discord.Message.page({
+      id: 'id',
+      index: 1,
+      total: 3,
+      current: new discord.Embed().setTitle('title'),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        content: undefined,
+        embeds: [{
+          type: 2,
+          footer: {
+            text: '2/3',
+          },
+          title: 'title',
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: 'id:0',
+            label: 'Prev',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'id:2',
+            label: 'Next',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+
+  await test.step('1/1', () => {
+    const message = discord.Message.page({
+      id: 'id',
+      total: 1,
+      current: new discord.Embed().setTitle('title'),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        content: undefined,
+        embeds: [{
+          type: 2,
+          footer: {
+            text: '1/1',
+          },
+          title: 'title',
+        }],
+        components: [],
+      },
+    });
+  });
 });

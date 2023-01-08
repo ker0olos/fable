@@ -99,23 +99,20 @@ async function handler(
           case 'force_pull':
             return gacha.start({ token, id: options!['id'] as string }).send();
           case 'packs': {
-            const message = new discord.Message();
+            const list = packs.builtin();
 
-            // TODO LOW build a pagination system into discord.ts
-            // and use it to page through the different packs
-            // (see https://github.com/ker0olos/fable/issues/14)
-            for (const manifest of packs.builtin()) {
-              const embed = new discord.Embed()
-                .setAuthor({ name: 'Fable' })
-                .setUrl(manifest.url)
-                .setDescription(manifest.description)
-                .setThumbnail({ url: manifest.icon_url })
-                .setTitle(manifest.title);
-
-              message.addEmbed(embed);
-            }
-
-            return message.send();
+            return discord.Message.page(
+              {
+                id: 'builtins',
+                total: list.length,
+                current: new discord.Embed()
+                  .setAuthor({ name: 'Fable' })
+                  .setUrl(list[0].url)
+                  .setDescription(list[0].description)
+                  .setThumbnail({ url: list[0].icon_url })
+                  .setTitle(list[0].title),
+              },
+            ).send();
           }
           default: {
             // Non-standard (extra) commands are handled by individual packs
@@ -130,14 +127,34 @@ async function handler(
         }
         break;
       case discord.InteractionType.Component:
-        // TODO BACKLOG packs components
-        // (see https://github.com/ker0olos/fable/issues/13)
         switch (customType) {
-          case 'media':
-            return (await search.media({
+          case 'media': {
+            const message = await search.media({
               debug: false,
               id: parseInt(customValues![0]),
-            })).setType(discord.MessageType.Update).send();
+            });
+
+            return message.setType(discord.MessageType.Update).send();
+          }
+          case 'builtins': {
+            const list = packs.builtin();
+
+            const index = parseInt(customValues![0]);
+
+            return discord.Message.page(
+              {
+                index,
+                id: 'builtins',
+                total: list.length,
+                current: new discord.Embed()
+                  .setAuthor({ name: 'Fable' })
+                  .setUrl(list[index].url)
+                  .setDescription(list[index].description)
+                  .setThumbnail({ url: list[index].icon_url })
+                  .setTitle(list[index].title),
+              },
+            ).setType(discord.MessageType.Update).send();
+          }
           default:
             break;
         }
