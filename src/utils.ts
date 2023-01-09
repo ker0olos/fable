@@ -92,8 +92,14 @@ function capitalize(s: string | undefined): string | undefined {
     return;
   }
 
-  const sa = s.split('_');
-  return sa.map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(' ')
+  if (s.length <= 3) {
+    return s.toUpperCase();
+  }
+
+  return s
+    .split(/_|\s/)
+    .map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase())
+    .join(' ')
     .trim();
 }
 

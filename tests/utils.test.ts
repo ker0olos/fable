@@ -125,12 +125,22 @@ Deno.test('word wrap', () => {
   );
 });
 
-Deno.test('capitalize', () => {
-  const text = 'Sit_aute_ad_sunt_mollit';
+Deno.test('capitalize', async (test) => {
+  await test.step('normal', () => {
+    const text = 'Sit_aute_ad_sunt_mollit';
 
-  const wrap = utils.capitalize(text);
+    const wrap = utils.capitalize(text);
 
-  assertEquals(wrap, 'Sit Aute Ad Sunt Mollit');
+    assertEquals(wrap, 'Sit Aute Ad Sunt Mollit');
+  });
+
+  await test.step('3 letters', () => {
+    const text = 'ona';
+
+    const wrap = utils.capitalize(text);
+
+    assertEquals(wrap, 'ONA');
+  });
 });
 
 Deno.test('comma', () => {
