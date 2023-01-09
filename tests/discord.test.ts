@@ -20,7 +20,7 @@ Deno.test('interactions', async (test) => {
         },
       },
       data: {
-        name: 'Data Name',
+        name: 'name',
         options: [{
           name: 'text',
           value: 'text',
@@ -43,7 +43,7 @@ Deno.test('interactions', async (test) => {
 
     assertEquals(interaction.type, 2);
 
-    assertEquals(interaction.name, 'data_name');
+    assertEquals(interaction.name, 'name');
 
     assertEquals(interaction.member!.user.id, 'user_id');
 

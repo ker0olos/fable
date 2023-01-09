@@ -1,8 +1,4 @@
-import {
-  assertEquals,
-  unimplemented,
-} from 'https://deno.land/std@0.168.0/testing/asserts.ts';
-import { MessageType } from '../src/discord.ts';
+import { assertEquals } from 'https://deno.land/std@0.168.0/testing/asserts.ts';
 
 // import { stub } from 'https://deno.land/std@0.168.0/testing/mock.ts';
 
