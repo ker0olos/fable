@@ -1093,4 +1093,40 @@ Deno.test('themes', async (test) => {
       fetchStub.restore();
     }
   });
+
+  await test.step('no available themes', async () => {
+    const media: Media = {
+      relations: {
+        edges: [],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    try {
+      await assertRejects(
+        async () => await search.themes({ search: 'query' }),
+        Error,
+        '404',
+      );
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+    }
+  });
 });

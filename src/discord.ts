@@ -75,6 +75,8 @@ export class Interaction<Options> {
     [key: string]: Options;
   };
 
+  subcommand?: string;
+
   customType?: string;
   customValues?: string[];
 
@@ -107,6 +109,12 @@ export class Interaction<Options> {
         name: string;
         focused?: boolean;
         value: unknown;
+        options?: {
+          type: number;
+          name: string;
+          focused?: boolean;
+          value: unknown;
+        }[];
       }[];
     } & { // Message Component
       custom_id: string;
@@ -136,15 +144,23 @@ export class Interaction<Options> {
     switch (this.type) {
       // case InteractionType.CommandAutocomplete:
       case InteractionType.Command: {
-        this.name = data!.name
-          .replaceAll(' ', '_')
-          .toLowerCase();
+        this.name = data!.name;
 
         // this.targetId = data!.target_id;
 
-        data!.options?.forEach((option) => {
-          this.options![option.name] = option.value as Options;
-        });
+        if (data!.options?.[0].type === 1) {
+          this.subcommand = data!.options?.[0].name;
+
+          this.name += `_${this.subcommand}`;
+
+          data!.options?.[0]!.options?.forEach((option) => {
+            this.options![option.name] = option.value as Options;
+          });
+        } else {
+          data!.options?.forEach((option) => {
+            this.options![option.name] = option.value as Options;
+          });
+        }
 
         break;
       }
@@ -259,12 +275,12 @@ export class Embed {
       url: string;
     };
     author?: {
-      name: string;
+      name?: string;
       url?: string;
       icon_url?: string;
     };
     footer?: {
-      text: string;
+      text?: string;
       icon_url?: string;
     };
   };
@@ -295,8 +311,10 @@ export class Embed {
     return this;
   }
 
-  setAuthor(author: { name: string; url?: string; icon_url?: string }) {
-    this.#data.author = author;
+  setAuthor(author: { name?: string; url?: string; icon_url?: string }) {
+    if (author.name) {
+      this.#data.author = author;
+    }
     return this;
   }
 
@@ -330,12 +348,9 @@ export class Embed {
     return this;
   }
 
-  setFooter(footer: { text?: string; icon_url?: string }, suffix = '') {
+  setFooter(footer: { text?: string; icon_url?: string }) {
     if (footer.text) {
-      this.#data.footer = {
-        ...footer,
-        text: footer.text + suffix,
-      };
+      this.#data.footer = footer;
     }
     return this;
   }

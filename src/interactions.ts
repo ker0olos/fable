@@ -19,6 +19,8 @@ import gacha from './gacha.ts';
 
 import config, { init } from './config.ts';
 
+import { ManifestType } from './types.ts';
+
 async function handler(
   request: Request,
   dev = false,
@@ -59,6 +61,7 @@ async function handler(
     type,
     token,
     options,
+    subcommand,
     customType,
     customValues,
   } = interaction;
@@ -67,7 +70,7 @@ async function handler(
     return discord.Message.pong();
   }
 
-  // console.log(name, type, JSON.stringify(options), customType, customValues);
+  // console.log(type);
 
   try {
     switch (type) {
@@ -98,31 +101,24 @@ async function handler(
             return gacha.start({ token }).send();
           case 'force_pull':
             return gacha.start({ token, id: options!['id'] as string }).send();
-          case 'packs': {
-            const list = packs.builtin();
+          case 'packs_builtin':
+          case 'packs_manual': {
+            const list = packs.list(subcommand! as ManifestType);
 
-            return discord.Message.page(
-              {
-                id: 'builtins',
-                total: list.length,
-                current: new discord.Embed()
-                  .setAuthor({ name: 'Fable' })
-                  .setUrl(list[0].url)
-                  .setDescription(list[0].description)
-                  .setThumbnail({ url: list[0].icon_url })
-                  .setTitle(list[0].title),
-              },
-            ).send();
+            return packs.embed({
+              manifest: list[0],
+              total: list.length,
+            }).send();
           }
           default: {
-            // Non-standard (extra) commands are handled by individual packs
+            // non-standard commands (handled by individual packs)
             const message = await packs.commands(name!, interaction);
 
             if (message) {
               return message.send();
-            } else {
-              break;
             }
+
+            break;
           }
         }
         break;
@@ -136,24 +132,17 @@ async function handler(
 
             return message.setType(discord.MessageType.Update).send();
           }
-          case 'builtins': {
-            const list = packs.builtin();
+          case 'builtin':
+          case 'manual': {
+            const list = packs.list(customType as ManifestType);
 
             const index = parseInt(customValues![0]);
 
-            return discord.Message.page(
-              {
-                index,
-                id: 'builtins',
-                total: list.length,
-                current: new discord.Embed()
-                  .setAuthor({ name: 'Fable' })
-                  .setUrl(list[index].url)
-                  .setDescription(list[index].description)
-                  .setThumbnail({ url: list[index].icon_url })
-                  .setTitle(list[index].title),
-              },
-            ).setType(discord.MessageType.Update).send();
+            return packs.embed({
+              index,
+              total: list.length,
+              manifest: list[index],
+            }).setType(discord.MessageType.Update).send();
           }
           default:
             break;
@@ -176,7 +165,7 @@ async function handler(
     return discord.Message.internal(refId).send();
   }
 
-  return discord.Message.content(`Unimplemented`);
+  return discord.Message.content(`Unimplemented!`);
 }
 
 serve({

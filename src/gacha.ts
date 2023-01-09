@@ -82,7 +82,6 @@ async function rngPull(): Promise<Pull> {
   });
 
   // TODO extend/override anilist default pool
-  // order of override is: community (verified) > manual (non-verified)
 
   const pool = Object.values(dict);
 

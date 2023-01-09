@@ -145,8 +145,7 @@ def set_commands(commands):
 if __name__ == "__main__":
     set_commands(
         # standard gacha commands
-        # uses characters and media from
-        # all builtin, community, and manual packs
+        # uses characters and media from all packs
         make_command(
             name="anime",
             desc="Search for an anime/manga",
@@ -214,22 +213,27 @@ if __name__ == "__main__":
             default_permission=Permission.ADMINISTRATORS,
             dev_only=True,
         )
-        # packs management commands
+        # pack management commands
         + make_command(
             name="packs",
+            desc="Pack management commands",
             options=[
                 Option(
                     name="builtin",
-                    desc="Show all built-in enabled-by-default packs",
+                    desc="List all the builtin packs",
                     type=Type.SUB_COMMAND,
                     required=False,
-                )
+                ),
+                Option(
+                    name="manual",
+                    desc="List all the manually instated packs",
+                    type=Type.SUB_COMMAND,
+                    required=False,
+                ),
             ],
             default_permission=Permission.MANAGE_GUILD,
-            dev_only=True,
         )
-        # non-standard (eternal) commands
-        # non-gacha commands (specific one-task commands)
+        # non-standard commands (pack commands)
         + load_manifest("./packs/anilist")
         + load_manifest("./packs/utils")
     )

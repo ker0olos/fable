@@ -101,26 +101,35 @@ export interface Character {
 
 export type Pool = { [id: number]: Character };
 
+export enum ManifestType {
+  Builtin = 'builtin',
+  Manual = 'manual',
+}
+
 export interface Manifest {
   /** A unique alphanumeric id (must match /^[a-z][a-z0-9]+$/ */
   id: string;
   /** The display title of the pack */
   title: string;
+  /** The type of the manifest */
+  type?: ManifestType;
   /** A small description about the pack and what it contains */
   description?: string;
-  /** If the pack contains nsfw (adult) content */
-  nsfw?: boolean;
-  /** the name of the pack's author */
-  author?: string;
   /** The icon of the pack or the author of the pack */
   icon_url?: string;
+  /** the name of the pack's author */
+  author?: string;
   /** The url to pack's homepage */
   url?: string;
-  /** Respected only on built-in packs */
-  commands?: { [key: string]: CommandDeclaration };
+  /** If the pack contains nsfw (adult) content */
+  nsfw?: boolean;
 }
 
-export type CommandDeclaration = {
+export interface Builtin extends Manifest {
+  commands?: { [key: string]: PackCommand };
+}
+
+export type PackCommand = {
   source: string;
   description: string;
   options: {
