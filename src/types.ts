@@ -1,48 +1,46 @@
 // deno-lint-ignore-file camelcase
 
 export enum Type {
-  'ANIME' = 'ANIME',
-  'MANGA' = 'MANGA',
+  Anime = 'ANIME',
+  Manga = 'MANGA',
 }
 
 export enum RelationType {
-  'ADAPTATION' = 'ADAPTATION',
-  'PREQUEL' = 'PREQUEL',
-  'SEQUEL' = 'SEQUEL',
-  'PARENT' = 'PARENT',
-  'SIDE_STORY' = 'SIDE_STORY',
-  'CHARACTER' = 'CHARACTER',
-  'SUMMARY' = 'SUMMARY',
-  'ALTERNATIVE' = 'ALTERNATIVE',
-  'SPIN_OFF' = 'SPIN_OFF',
-  'OTHER' = 'OTHER',
-  'SOURCE' = 'SOURCE',
-  'COMPILATION' = 'COMPILATION',
-  'CONTAINS' = 'CONTAINS',
+  Adaptation = 'ADAPTATION',
+  Prequel = 'PREQUEL',
+  Sequel = 'SEQUEL',
+  Parent = 'PARENT',
+  SideStory = 'SIDE_STORY',
+  Character = 'CHARACTER',
+  Summary = 'SUMMARY',
+  Alternative = 'ALTERNATIVE',
+  SpinOff = 'SPIN_OFF',
+  Other = 'OTHER',
+  Source = 'SOURCE',
+  Compilation = 'COMPILATION',
+  Contains = 'CONTAINS',
 }
 
 export enum Format {
-  'TV' = 'TV',
-  'TV_SHORT' = 'TV_SHORT',
-  'MOVIE' = 'MOVIE',
-  'SPECIAL' = 'SPECIAL',
-  'OVA' = 'OVA',
-  'ONA' = 'ONA',
-  'MUSIC' = 'MUSIC',
-  'MANGA' = 'MANGA',
-  'NOVEL' = 'NOVEL',
-  'ONE_SHOT' = 'ONE_SHOT',
+  TV = 'TV',
+  TvShort = 'TV_SHORT',
+  Movie = 'MOVIE',
+  Special = 'SPECIAL',
+  OVA = 'OVA',
+  ONA = 'ONA',
+  Music = 'MUSIC',
+  Manga = 'MANGA',
+  Novel = 'NOVEL',
+  OneShot = 'ONE_SHOT',
 }
 
 export enum CharacterRole {
-  'MAIN' = 'MAIN',
-  'SUPPORTING' = 'SUPPORTING',
-  'BACKGROUND' = 'BACKGROUND',
+  Main = 'MAIN',
+  Supporting = 'SUPPORTING',
+  Background = 'BACKGROUND',
 }
 
 export interface Media {
-  // deno-lint-ignore no-explicit-any
-  [x: string]: any;
   type?: Type;
   format?: Format;
   title?: {

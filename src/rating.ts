@@ -6,12 +6,12 @@ export default class Rating {
   #stars: number;
 
   constructor(role: CharacterRole, popularity: number) {
-    if (role === CharacterRole.BACKGROUND || popularity < 50_000) {
+    if (role === CharacterRole.Background || popularity < 50_000) {
       this.#stars = 1;
     } //
     //
     else if (popularity < 200_000) {
-      if (role === CharacterRole.MAIN) {
+      if (role === CharacterRole.Main) {
         this.#stars = 3;
       } else {
         this.#stars = 2;
@@ -19,7 +19,7 @@ export default class Rating {
     } //
     //
     else if (popularity < 400_000) {
-      if (role === CharacterRole.MAIN) {
+      if (role === CharacterRole.Main) {
         this.#stars = 4;
       } else {
         this.#stars = 3;
@@ -27,7 +27,7 @@ export default class Rating {
     } //
     //
     else if (popularity > 400_000) {
-      if (role === CharacterRole.MAIN) {
+      if (role === CharacterRole.Main) {
         this.#stars = 5;
       } else {
         this.#stars = 4;

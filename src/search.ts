@@ -97,10 +97,10 @@ export async function media(
     const label = utils.titlesToArray(relation.node, 60)[0];
 
     switch (relation.relationType) {
-      case RelationType.PREQUEL:
-      case RelationType.SEQUEL:
-      case RelationType.SIDE_STORY:
-      case RelationType.SPIN_OFF: {
+      case RelationType.Prequel:
+      case RelationType.Sequel:
+      case RelationType.SideStory:
+      case RelationType.SpinOff: {
         component
           .setLabel(`${label} (${utils.capitalize(relation.relationType!)})`)
           .setId(`media:${relation.node.id!}`);
@@ -108,7 +108,7 @@ export async function media(
         secondaryGroup.push(component);
         break;
       }
-      case RelationType.ADAPTATION: {
+      case RelationType.Adaptation: {
         component
           .setLabel(`${label} (${utils.capitalize(relation.node.type!)})`)
           .setId(`media:${relation.node.id!}`);
@@ -121,7 +121,7 @@ export async function media(
     }
 
     switch (relation.node.format) {
-      case Format.MUSIC: {
+      case Format.Music: {
         if (relation.node.externalLinks?.[0]?.url) {
           component
             .setLabel(label)
@@ -281,7 +281,7 @@ export async function themes(
 
   media.relations?.edges.forEach((relation) => {
     if (
-      relation.node.format === Format.MUSIC &&
+      relation.node.format === Format.Music &&
       relation.node.externalLinks?.[0]?.url
     ) {
       const component = new discord.Component()

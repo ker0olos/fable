@@ -18,9 +18,9 @@ const CDN = 'https://raw.githubusercontent.com/ker0olos/fable/main/assets';
 
 const variables = {
   roles: {
-    10: CharacterRole.MAIN, // 10% for Main
-    70: CharacterRole.SUPPORTING, // 70% for Supporting
-    20: CharacterRole.BACKGROUND, // 20% for Background
+    10: CharacterRole.Main, // 10% for Main
+    70: CharacterRole.Supporting, // 70% for Supporting
+    20: CharacterRole.Background, // 20% for Background
   },
   ranges: {
     // whether you get from the far end or the near end

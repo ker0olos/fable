@@ -201,7 +201,7 @@ Deno.test('pool', async (test) => {
     const fetchStub = fakePool({
       media: {
         edges: [{
-          characterRole: CharacterRole.MAIN,
+          characterRole: CharacterRole.Main,
           node: {
             popularity: 1000,
           },
@@ -228,7 +228,7 @@ Deno.test('pool', async (test) => {
     const fetchStub = fakePool({
       media: {
         edges: [{
-          characterRole: CharacterRole.MAIN,
+          characterRole: CharacterRole.Main,
           node: {
             popularity: 1000,
           },

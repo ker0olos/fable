@@ -54,17 +54,17 @@ Deno.test('filter invalid pools', async (test) => {
     const fetchStub = fakePool({
       media: {
         edges: [{
-          characterRole: CharacterRole.MAIN,
+          characterRole: CharacterRole.Main,
           node: {
             popularity: 0,
           },
         }, {
-          characterRole: CharacterRole.MAIN,
+          characterRole: CharacterRole.Main,
           node: {
             popularity: 50,
           },
         }, {
-          characterRole: CharacterRole.MAIN,
+          characterRole: CharacterRole.Main,
           node: {
             popularity: 101,
           },
@@ -100,7 +100,7 @@ Deno.test('filter invalid pools', async (test) => {
     const fetchStub = fakePool({
       media: {
         edges: [{
-          characterRole: CharacterRole.MAIN,
+          characterRole: CharacterRole.Main,
           node: {
             popularity: 50,
           },
@@ -136,12 +136,12 @@ Deno.test('filter invalid pools', async (test) => {
     const fetchStub = fakePool({
       media: {
         edges: [{
-          characterRole: CharacterRole.MAIN,
+          characterRole: CharacterRole.Main,
           node: {
             popularity: 100,
           },
         }, {
-          characterRole: CharacterRole.SUPPORTING,
+          characterRole: CharacterRole.Supporting,
           node: {
             popularity: 150,
           },
@@ -178,13 +178,13 @@ Deno.test('valid pool', async () => {
   const fetchStub = fakePool({
     media: {
       edges: [{
-        characterRole: CharacterRole.MAIN,
+        characterRole: CharacterRole.Main,
         node: {
           id: 1,
           popularity: 200,
         },
       }, {
-        characterRole: CharacterRole.MAIN,
+        characterRole: CharacterRole.Main,
         node: {
           id: 2,
           popularity: 200,
@@ -226,7 +226,7 @@ Deno.test('valid pool', async () => {
 
 Deno.test('rating', async (test) => {
   await test.step('1 star', () => {
-    let rating = new Rating(CharacterRole.BACKGROUND, 1_000_000);
+    let rating = new Rating(CharacterRole.Background, 1_000_000);
 
     assertEquals(rating.stars, 1);
     assertEquals(
@@ -234,7 +234,7 @@ Deno.test('rating', async (test) => {
       '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
     );
 
-    rating = new Rating(CharacterRole.MAIN, 0);
+    rating = new Rating(CharacterRole.Main, 0);
 
     assertEquals(rating.stars, 1);
     assertEquals(
@@ -244,7 +244,7 @@ Deno.test('rating', async (test) => {
   });
 
   await test.step('2 stars', () => {
-    const rating = new Rating(CharacterRole.SUPPORTING, 199_999);
+    const rating = new Rating(CharacterRole.Supporting, 199_999);
 
     assertEquals(rating.stars, 2);
     assertEquals(
@@ -254,7 +254,7 @@ Deno.test('rating', async (test) => {
   });
 
   await test.step('3 stars', () => {
-    let rating = new Rating(CharacterRole.MAIN, 199_999);
+    let rating = new Rating(CharacterRole.Main, 199_999);
 
     assertEquals(rating.stars, 3);
     assertEquals(
@@ -262,7 +262,7 @@ Deno.test('rating', async (test) => {
       '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
     );
 
-    rating = new Rating(CharacterRole.SUPPORTING, 250_000);
+    rating = new Rating(CharacterRole.Supporting, 250_000);
 
     assertEquals(rating.stars, 3);
     assertEquals(
@@ -272,7 +272,7 @@ Deno.test('rating', async (test) => {
   });
 
   await test.step('4 stars', () => {
-    let rating = new Rating(CharacterRole.MAIN, 250_000);
+    let rating = new Rating(CharacterRole.Main, 250_000);
 
     assertEquals(rating.stars, 4);
     assertEquals(
@@ -280,7 +280,7 @@ Deno.test('rating', async (test) => {
       '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
     );
 
-    rating = new Rating(CharacterRole.SUPPORTING, 500_000);
+    rating = new Rating(CharacterRole.Supporting, 500_000);
 
     assertEquals(rating.stars, 4);
     assertEquals(
@@ -290,7 +290,7 @@ Deno.test('rating', async (test) => {
   });
 
   await test.step('5 stars', () => {
-    const rating = new Rating(CharacterRole.MAIN, 500_000);
+    const rating = new Rating(CharacterRole.Main, 500_000);
 
     assertEquals(rating.stars, 5);
     assertEquals(
@@ -302,7 +302,7 @@ Deno.test('rating', async (test) => {
   await test.step('fails', () => {
     assertThrows(
       // deno-lint-ignore no-explicit-any
-      () => new Rating(CharacterRole.MAIN, undefined as any),
+      () => new Rating(CharacterRole.Main, undefined as any),
       Error,
       'Couldn\'t determine the star rating',
     );

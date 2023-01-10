@@ -25,7 +25,7 @@ Deno.test('media', async (test) => {
   await test.step('normal search', async () => {
     const media: Media = {
       id: 1,
-      type: Type.ANIME,
+      type: Type.Anime,
       format: Format.TV,
       description: 'long description',
       title: {
@@ -90,7 +90,7 @@ Deno.test('media', async (test) => {
   await test.step('non-english title', async () => {
     const media: Media = {
       id: 1,
-      type: Type.ANIME,
+      type: Type.Anime,
       format: Format.TV,
       description: 'long description',
       title: {
@@ -150,7 +150,7 @@ Deno.test('media', async (test) => {
   await test.step('external links', async () => {
     const media: Media = {
       id: 1,
-      type: Type.ANIME,
+      type: Type.Anime,
       format: Format.TV,
       description: 'long description',
       title: {
@@ -226,7 +226,7 @@ Deno.test('media', async (test) => {
   await test.step('youtube trailer', async () => {
     const media: Media = {
       id: 1,
-      type: Type.ANIME,
+      type: Type.Anime,
       format: Format.TV,
       description: 'long description',
       title: {
@@ -302,7 +302,7 @@ Deno.test('media', async (test) => {
   await test.step('characters embeds', async () => {
     const media: Media = {
       id: 1,
-      type: Type.ANIME,
+      type: Type.Anime,
       format: Format.TV,
       description: 'long description',
       title: {
@@ -314,7 +314,7 @@ Deno.test('media', async (test) => {
       },
       characters: {
         edges: [{
-          role: CharacterRole.MAIN,
+          role: CharacterRole.Main,
           node: {
             name: {
               full: 'main character name',
@@ -327,7 +327,7 @@ Deno.test('media', async (test) => {
             age: '69',
           },
         }, {
-          role: CharacterRole.SUPPORTING,
+          role: CharacterRole.Supporting,
           node: {
             name: {
               full: 'supporting character name',
@@ -338,7 +338,7 @@ Deno.test('media', async (test) => {
             },
           },
         }, {
-          role: CharacterRole.BACKGROUND,
+          role: CharacterRole.Background,
           node: {
             name: {
               full: 'background character name',
@@ -419,7 +419,7 @@ Deno.test('media', async (test) => {
   await test.step('media relations', async () => {
     const media: Media = {
       id: 1,
-      type: Type.ANIME,
+      type: Type.Anime,
       format: Format.TV,
       description: 'long description',
       title: {
@@ -431,7 +431,7 @@ Deno.test('media', async (test) => {
       },
       relations: {
         edges: [{
-          relationType: RelationType.SEQUEL,
+          relationType: RelationType.Sequel,
           node: {
             id: 5,
             title: {
@@ -439,7 +439,7 @@ Deno.test('media', async (test) => {
             },
           },
         }, {
-          relationType: RelationType.PREQUEL,
+          relationType: RelationType.Prequel,
           node: {
             id: 10,
             title: {
@@ -447,7 +447,7 @@ Deno.test('media', async (test) => {
             },
           },
         }, {
-          relationType: RelationType.SIDE_STORY,
+          relationType: RelationType.SideStory,
           node: {
             id: 15,
             title: {
@@ -455,37 +455,37 @@ Deno.test('media', async (test) => {
             },
           },
         }, {
-          relationType: RelationType.ADAPTATION,
+          relationType: RelationType.Adaptation,
           node: {
             id: 20,
-            type: Type.MANGA,
+            type: Type.Manga,
             title: {
               english: 'adaptation',
             },
           },
         }, {
-          relationType: RelationType.CONTAINS,
+          relationType: RelationType.Contains,
           node: {
             id: 25,
-            type: Type.ANIME,
+            type: Type.Anime,
             title: {
               english: 'uninteresting relation',
             },
           },
         }, {
-          relationType: RelationType.ADAPTATION,
+          relationType: RelationType.Adaptation,
           node: {
             id: 30,
-            type: Type.ANIME,
+            type: Type.Anime,
             title: {
               english: 'second adaptation',
             },
           },
         }, {
-          relationType: RelationType.ADAPTATION,
+          relationType: RelationType.Adaptation,
           node: {
             id: 35,
-            type: Type.MANGA,
+            type: Type.Manga,
             title: {
               english: 'third adaptation',
             },
@@ -578,7 +578,7 @@ Deno.test('media', async (test) => {
   await test.step('music relations', async () => {
     const media: Media = {
       id: 1,
-      type: Type.ANIME,
+      type: Type.Anime,
       format: Format.TV,
       description: 'long description',
       title: {
@@ -590,30 +590,30 @@ Deno.test('media', async (test) => {
       },
       relations: {
         edges: [{
-          relationType: RelationType.OTHER,
+          relationType: RelationType.Other,
           node: {
             id: 5,
-            format: Format.MUSIC,
+            format: Format.Music,
             title: {
               english: 'op',
             },
             externalLinks: [{ site: 'youtube', url: 'youtube url' }],
           },
         }, {
-          relationType: RelationType.OTHER,
+          relationType: RelationType.Other,
           node: {
             id: 10,
-            format: Format.MUSIC,
+            format: Format.Music,
             title: {
               english: 'fk',
             },
             externalLinks: [{ site: 'spotify', url: 'spotify url' }],
           },
         }, {
-          relationType: RelationType.OTHER,
+          relationType: RelationType.Other,
           node: {
             id: 15,
-            format: Format.MUSIC,
+            format: Format.Music,
             title: {
               english: 'ed',
             },
@@ -908,13 +908,13 @@ Deno.test('character', async (test) => {
       },
       media: {
         edges: [{
-          characterRole: CharacterRole.MAIN,
+          characterRole: CharacterRole.Main,
           node: {
             id: 5,
             title: {
               english: 'movie',
             },
-            format: Format.MOVIE,
+            format: Format.Movie,
           },
         }],
       },
@@ -1005,10 +1005,10 @@ Deno.test('themes', async (test) => {
     const media: Media = {
       relations: {
         edges: [{
-          relationType: RelationType.OTHER,
+          relationType: RelationType.Other,
           node: {
             id: 5,
-            format: Format.MUSIC,
+            format: Format.Music,
             title: {
               english: 'music',
             },
