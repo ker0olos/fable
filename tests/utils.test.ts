@@ -164,12 +164,23 @@ Deno.test('decode description', async (test) => {
     assertEquals(utils.decodeDescription('%20'), ' ');
   });
 
-  await test.step('decode html', () => {
+  await test.step('decode simple html', () => {
     assertEquals(utils.decodeDescription('&amp;'), '&');
     assertEquals(utils.decodeDescription('&quot;'), '"');
+    assertEquals(utils.decodeDescription('&apos;'), '\'');
     assertEquals(utils.decodeDescription('&#039;'), '\'');
     assertEquals(utils.decodeDescription('&lt;'), '<');
     assertEquals(utils.decodeDescription('&gt;'), '>');
+  });
+
+  await test.step('decode complicated html', () => {
+    assertEquals(utils.decodeDescription('&amp;quot;'), '&quot;');
+    assertEquals(
+      utils.decodeDescription(
+        'http://www.example.com/string%20with%20+%20and%20?%20and%20&%20and%20spaces',
+      ),
+      'http://www.example.com/string with + and ? and & and spaces',
+    );
   });
 
   await test.step('transform html to markdown', () => {

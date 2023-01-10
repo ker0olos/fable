@@ -122,11 +122,12 @@ function decodeDescription(s?: string): string | undefined {
 
   s = decodeURI(s);
 
-  s = s.replaceAll('&amp;', '&');
-  s = s.replaceAll('&quot;', '"');
-  s = s.replaceAll('&#039;', '\'');
   s = s.replaceAll('&lt;', '<');
   s = s.replaceAll('&gt;', '>');
+  s = s.replaceAll('&#039;', '\'');
+  s = s.replaceAll('&quot;', '"');
+  s = s.replaceAll('&apos;', '\'');
+  s = s.replaceAll('&amp;', '&');
 
   s = s.replaceAll(/~!.+!~/gm, '');
 
