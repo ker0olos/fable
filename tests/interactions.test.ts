@@ -321,7 +321,7 @@ Deno.test('media', async (test) => {
             },
             description: 'main character description',
             image: {
-              large: 'main character url',
+              medium: 'main character url',
             },
             gender: 'Male',
             age: '69',
@@ -334,7 +334,7 @@ Deno.test('media', async (test) => {
             },
             description: 'supporting character description',
             image: {
-              large: 'supporting character url',
+              medium: 'supporting character url',
             },
           },
         }, {
@@ -345,7 +345,7 @@ Deno.test('media', async (test) => {
             },
             description: 'background character description',
             image: {
-              large: 'background character url',
+              medium: 'background character url',
             },
           },
         }],
@@ -464,7 +464,7 @@ Deno.test('media', async (test) => {
             },
           },
         }, {
-          relationType: RelationType.Contains,
+          relationType: RelationType.Other,
           node: {
             id: 25,
             type: Type.Anime,

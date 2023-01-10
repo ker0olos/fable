@@ -53,6 +53,8 @@ export async function media(
           }
           coverImage {
             extraLarge
+            large,
+            medium,
             color
           }
           externalLinks {
@@ -74,7 +76,7 @@ export async function media(
                   full
                 }
                 image {
-                  large
+                  medium
                 }
               }
             }
@@ -117,7 +119,8 @@ export async function character(
             alternativeSpoiler
           }
           image {
-            large
+            large,
+            medium
           }
           media(sort: POPULARITY_DESC) {
             edges {
@@ -131,9 +134,6 @@ export async function character(
                   romaji
                   english
                   native
-                }
-                coverImage {
-                  large
                 }
               }
             }

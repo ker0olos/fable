@@ -3,7 +3,7 @@
   "title": "AniList",
   "description": "A pack powered by AniList. Contains a huge list of anime and manga characters",
   "url": "https://anilist.co",
-  "icon_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png",
+  "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png",
   "commands": {
     "next_episode": {
       "source": "nextEpisode",

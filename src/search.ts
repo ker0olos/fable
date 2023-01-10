@@ -54,7 +54,7 @@ export async function media(
       .setTitle(character.node!.name!.full)
       .setDescription(character.node!.description)
       .setColor(media?.coverImage?.color)
-      .setThumbnail({ url: character.node!.image?.large })
+      .setThumbnail({ url: character.node!.image?.medium })
       .setFooter(
         {
           text: [
@@ -98,6 +98,8 @@ export async function media(
 
     switch (relation.relationType) {
       case RelationType.Prequel:
+      case RelationType.Parent:
+      case RelationType.Contains:
       case RelationType.Sequel:
       case RelationType.SideStory:
       case RelationType.SpinOff: {
@@ -165,7 +167,7 @@ function mediaDebugEmbed(media: Media) {
       value: `${utils.comma(media.popularity!)}`,
       inline: true,
     })
-    .setThumbnail({ url: media.coverImage?.large });
+    .setThumbnail({ url: media.coverImage?.medium });
 }
 
 export async function character(
@@ -263,7 +265,7 @@ function characterDebugEmbed(character: Character) {
       value: `${utils.comma(media.popularity!)}`,
       inline: true,
     })
-    .setThumbnail({ url: character.image?.large });
+    .setThumbnail({ url: character.image?.medium });
 }
 
 export async function themes(

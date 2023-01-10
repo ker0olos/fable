@@ -1,4 +1,4 @@
-// deno-lint-ignore-file camelcase
+type Modify<T, R> = Omit<T, keyof R> & R;
 
 export enum Type {
   Anime = 'ANIME',
@@ -10,15 +10,15 @@ export enum RelationType {
   Prequel = 'PREQUEL',
   Sequel = 'SEQUEL',
   Parent = 'PARENT',
+  Contains = 'CONTAINS',
   SideStory = 'SIDE_STORY',
-  Character = 'CHARACTER',
-  Summary = 'SUMMARY',
-  Alternative = 'ALTERNATIVE',
+  // Character = 'CHARACTER',
+  // Summary = 'SUMMARY',
+  // Alternative = 'ALTERNATIVE',
   SpinOff = 'SPIN_OFF',
   Other = 'OTHER',
-  Source = 'SOURCE',
-  Compilation = 'COMPILATION',
-  Contains = 'CONTAINS',
+  // Source = 'SOURCE',
+  // Compilation = 'COMPILATION',
 }
 
 export enum Format {
@@ -40,7 +40,16 @@ export enum CharacterRole {
   Background = 'BACKGROUND',
 }
 
+export enum Behavior {
+  New = 'NEW',
+  Override = 'OVERRIDE',
+  Extend = 'EXTEND',
+}
+
+type ID = string | number;
+
 export interface Media {
+  id?: number;
   type?: Type;
   format?: Format;
   title?: {
@@ -48,34 +57,46 @@ export interface Media {
     romaji?: string;
     native?: string;
   };
-  externalLinks?: {
-    site: string;
-    url: string;
-  }[];
-  id?: number;
-  relations?: {
-    edges: {
-      relationType: RelationType;
-      node: Media;
-    }[];
-  };
   popularity?: number;
   description?: string;
-  characters?: {
-    nodes?: Character[];
-    edges?: { role: CharacterRole; node: Character }[];
-  };
   coverImage?: {
     extraLarge?: string;
     large?: string;
     medium?: string;
     color?: string;
   };
+  externalLinks?: {
+    site: string;
+    url: string;
+  }[];
   trailer?: {
     id: string;
     site: string;
   };
+  relations?: {
+    edges: {
+      relationType: RelationType;
+      node: Media;
+    }[];
+  };
+  characters?: {
+    nodes?: Character[];
+    edges?: { role: CharacterRole; node: Character }[];
+  };
 }
+
+export type PackMedia = Modify<Media, {
+  id: ID;
+  behavior?: Behavior;
+  relations: {
+    relationType: RelationType;
+    characterId: number;
+  }[];
+  characters: {
+    relationType: CharacterRole;
+    characterId: ID;
+  }[];
+}>;
 
 export interface Character {
   name?: {
@@ -89,13 +110,23 @@ export interface Character {
   gender?: string;
   age?: string;
   image?: {
-    large: string;
+    large?: string;
+    medium?: string;
   };
   media?: {
     nodes?: Media[];
     edges?: { characterRole: CharacterRole; node: Media }[];
   };
 }
+
+export type PackCharacter = Modify<Character, {
+  id: ID;
+  behavior?: Behavior;
+  media: {
+    relationType: CharacterRole;
+    mediaId: ID;
+  }[];
+}>;
 
 export type Pool = { [id: number]: Character };
 
@@ -105,34 +136,28 @@ export enum ManifestType {
 }
 
 export interface Manifest {
-  /** A unique alphanumeric id (must match /^[a-z][a-z0-9]+$/ */
   id: string;
-  /** The display title of the pack */
-  title: string;
-  /** The type of the manifest */
-  type?: ManifestType;
-  /** A small description about the pack and what it contains */
+  title?: string;
   description?: string;
-  /** The icon of the pack or the author of the pack */
-  icon_url?: string;
-  /** the name of the pack's author */
-  author?: string;
-  /** The url to pack's homepage */
-  url?: string;
-  /** If the pack contains nsfw (adult) content */
   nsfw?: boolean;
+  author?: string;
+  image?: string;
+  url?: string;
+  media?: PackMedia[];
+  characters?: PackCharacter[];
+  // properties available for builtin packs only
+  commands?: { [key: string]: Command };
+  // properties set internally on load
+  type?: ManifestType;
 }
 
-export interface Builtin extends Manifest {
-  commands?: { [key: string]: PackCommand };
-}
-
-export type PackCommand = {
+type Command = {
   source: string;
   description: string;
   options: {
     id: string;
     type: string;
     description: string;
+    required?: boolean;
   }[];
 };

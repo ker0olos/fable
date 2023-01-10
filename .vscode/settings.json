@@ -24,5 +24,13 @@
   },
   "[json]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
-  }
+  },
+  "json.schemas": [
+    {
+      "url": "./manifest.builtin.schema.json",
+      "fileMatch": [
+        "packs/*/manifest.json"
+      ]
+    }
+  ]
 }

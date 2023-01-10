@@ -4,12 +4,12 @@ import { assertEquals } from 'https://deno.land/std@0.168.0/testing/asserts.ts';
 
 import packs from '../src/packs.ts';
 
-import { Builtin, ManifestType } from '../src/types.ts';
+import { Manifest, ManifestType } from '../src/types.ts';
 
 Deno.test('anilist', async (test) => {
   const builtin = packs.list(ManifestType.Builtin);
 
-  const manifest = builtin[0] as Builtin;
+  const manifest = builtin[0] as Manifest;
 
   await test.step('manifest', () => {
     assertEquals(manifest, {
@@ -20,7 +20,7 @@ Deno.test('anilist', async (test) => {
       'description':
         'A pack powered by AniList. Contains a huge list of anime and manga characters',
       'url': 'https://anilist.co',
-      'icon_url':
+      'image':
         'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png',
       'commands': {
         'next_episode': {
@@ -42,7 +42,7 @@ Deno.test('anilist', async (test) => {
 Deno.test('utils', async (test) => {
   const builtin = packs.list(ManifestType.Builtin);
 
-  const manifest = builtin[1] as Builtin;
+  const manifest = builtin[1] as Manifest;
 
   await test.step('manifest', () => {
     assertEquals(manifest, {
@@ -135,6 +135,34 @@ Deno.test('embeds', async (test) => {
             text: '2/2',
           },
           title: 'title',
+          type: 2,
+          url: undefined,
+        }],
+        content:
+          'The following packs were installed manually by server members.',
+      },
+    });
+  });
+
+  await test.step('use id instead of title', () => {
+    const message = packs.embed({
+      manifest: {
+        id: 'id',
+        type: ManifestType.Manual,
+      },
+      total: 1,
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        components: [],
+        embeds: [{
+          description: undefined,
+          footer: {
+            text: '1/1',
+          },
+          title: 'id',
           type: 2,
           url: undefined,
         }],

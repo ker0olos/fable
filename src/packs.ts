@@ -1,4 +1,4 @@
-import { Builtin, Manifest, ManifestType } from './types.ts';
+import { Manifest, ManifestType } from './types.ts';
 
 import { Embed, Interaction, Message } from './discord.ts';
 
@@ -13,8 +13,8 @@ import _utils from '../packs/utils/manifest.json' assert {
 import * as utilsAPI from '../packs/utils/index.ts';
 import * as anilistAPI from '../packs/anilist/index.ts';
 
-const anilistManifest = _anilist as Builtin;
-const utilsManifest = _utils as Builtin;
+const anilistManifest = _anilist as Manifest;
+const utilsManifest = _utils as Manifest;
 
 /**
  * Non-standard commands (extras) are handled by individual packs
@@ -98,8 +98,8 @@ function embed(
         .setUrl(manifest.url)
         .setDescription(manifest.description)
         .setAuthor({ name: manifest.author })
-        .setThumbnail({ url: manifest.icon_url })
-        .setTitle(manifest.title),
+        .setThumbnail({ url: manifest.image })
+        .setTitle(manifest.title ?? manifest.id),
     },
   );
 
