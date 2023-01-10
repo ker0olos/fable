@@ -48,6 +48,13 @@ export enum Behavior {
 
 type ID = string | number;
 
+export type Image = {
+  extraLarge?: string;
+  large?: string;
+  medium?: string;
+  color?: string;
+};
+
 export interface Media {
   id?: number;
   type?: Type;
@@ -59,12 +66,7 @@ export interface Media {
   };
   popularity?: number;
   description?: string;
-  coverImage?: {
-    extraLarge?: string;
-    large?: string;
-    medium?: string;
-    color?: string;
-  };
+  coverImage?: Image;
   externalLinks?: {
     site: string;
     url: string;
@@ -109,10 +111,7 @@ export interface Character {
   description?: string;
   gender?: string;
   age?: string;
-  image?: {
-    large?: string;
-    medium?: string;
-  };
+  image?: Image;
   media?: {
     nodes?: Media[];
     edges?: { characterRole: CharacterRole; node: Media }[];

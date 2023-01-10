@@ -43,7 +43,9 @@ export async function media(
       .setAuthor({ name: utils.capitalize(media.type!)! })
       .setDescription(media.description)
       .setColor(media.coverImage?.color)
-      .setImage({ url: media.coverImage?.extraLarge })
+      .setImage({
+        url: utils.imagesToArray(media.coverImage, 'large-first')?.[0],
+      })
       .setFooter({
         text: titles.length > 0 ? media.title!.native : undefined,
       }),
@@ -54,7 +56,9 @@ export async function media(
       .setTitle(character.node!.name!.full)
       .setDescription(character.node!.description)
       .setColor(media?.coverImage?.color)
-      .setThumbnail({ url: character.node!.image?.medium })
+      .setThumbnail({
+        url: utils.imagesToArray(character.node.image, 'small-first')?.[0],
+      })
       .setFooter(
         {
           text: [
@@ -167,7 +171,9 @@ function mediaDebugEmbed(media: Media) {
       value: `${utils.comma(media.popularity!)}`,
       inline: true,
     })
-    .setThumbnail({ url: media.coverImage?.medium });
+    .setThumbnail({
+      url: utils.imagesToArray(media.coverImage, 'small-first')?.[0],
+    });
 }
 
 export async function character(
@@ -196,7 +202,9 @@ export async function character(
       new discord.Embed()
         .setTitle(character.name!.full)
         .setDescription(character.description)
-        .setImage({ url: character.image?.large })
+        .setImage({
+          url: utils.imagesToArray(character.image, 'large-first')?.[0],
+        })
         .setFooter(
           {
             text: [
@@ -265,7 +273,9 @@ function characterDebugEmbed(character: Character) {
       value: `${utils.comma(media.popularity!)}`,
       inline: true,
     })
-    .setThumbnail({ url: character.image?.medium });
+    .setThumbnail({
+      url: utils.imagesToArray(character.image, 'small-first')?.[0],
+    });
 }
 
 export async function themes(

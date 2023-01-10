@@ -1,6 +1,6 @@
 import nacl from 'https://cdn.skypack.dev/tweetnacl@v1.0.3?dts';
 
-import { Media } from './types.ts';
+import { Image, Media } from './types.ts';
 
 function randint(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -155,6 +155,37 @@ function titlesToArray(media: Media, max?: number): string[] {
   return titles as string[];
 }
 
+function imagesToArray(
+  item: Image | undefined,
+  order: 'large-first' | 'small-first',
+  ideally?: keyof Image,
+): string[] | undefined {
+  if (!item) {
+    return undefined;
+  }
+
+  let images = [];
+
+  if (ideally && Boolean(item[ideally])) {
+    // if (ideally && ideally in item && Boolean(item[ideally])) {
+    return [item[ideally]!];
+  }
+
+  images.push(
+    item.extraLarge,
+    item.large,
+    item.medium,
+  );
+
+  images = images.filter(Boolean);
+
+  if (order === 'small-first' && images.length > 1) {
+    images.reverse();
+  }
+
+  return images as string[];
+}
+
 async function verifySignature(
   request: Request,
   publicKey: string,
@@ -190,6 +221,7 @@ const utils = {
   shuffle,
   sleep,
   titlesToArray,
+  imagesToArray,
   truncate,
   verifySignature,
   wrap,

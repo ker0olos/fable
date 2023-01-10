@@ -12,7 +12,7 @@ import {
 
 import utils from '../src/utils.ts';
 
-import type { Media } from '../src/types.ts';
+import type { Image, Media } from '../src/types.ts';
 
 Deno.test('random int in range', () => {
   const randomStub = stub(Math, 'random', returnsNext([0, 0.55, 0.999]));
@@ -201,37 +201,123 @@ Deno.test('decode description', async (test) => {
   });
 });
 
-Deno.test('titles to array', () => {
-  const media = {
-    title: {
-      romaji: 'romaji',
-      native: 'native',
-      english: 'english',
-    },
-  };
+Deno.test('titles to array', async (test) => {
+  await test.step('all titles', () => {
+    const media = {
+      title: {
+        romaji: 'romaji',
+        native: 'native',
+        english: 'english',
+      },
+    };
 
-  const array = utils.titlesToArray(media as Media);
+    const array = utils.titlesToArray(media as Media);
 
-  assertEquals(array, [
-    'english',
-    'romaji',
-    'native',
-  ]);
+    assertEquals(array, [
+      'english',
+      'romaji',
+      'native',
+    ]);
+  });
+
+  await test.step('missing 1 title', () => {
+    const media = {
+      title: {
+        romaji: '',
+        native: 'native',
+        english: 'english',
+      },
+    };
+
+    const array = utils.titlesToArray(media as Media);
+
+    assertEquals(array, [
+      'english',
+      'native',
+    ]);
+  });
 });
 
-Deno.test('titles to array 2', () => {
-  const media = {
-    title: {
-      romaji: '',
-      native: 'native',
-      english: 'english',
-    },
-  };
+Deno.test('images to array', async (test) => {
+  await test.step('all images', () => {
+    const image: Image = {
+      extraLarge: 'extraLarge',
+      large: 'large',
+      medium: 'medium',
+    };
 
-  const array = utils.titlesToArray(media as Media);
+    const array = utils.imagesToArray(image, 'large-first');
 
-  assertEquals(array, [
-    'english',
-    'native',
-  ]);
+    assertEquals(array, [
+      'extraLarge',
+      'large',
+      'medium',
+    ]);
+  });
+
+  await test.step('all images in reverse order', () => {
+    const image: Image = {
+      extraLarge: 'extraLarge',
+      large: 'large',
+      medium: 'medium',
+    };
+
+    const array = utils.imagesToArray(image, 'small-first');
+
+    assertEquals(array, [
+      'medium',
+      'large',
+      'extraLarge',
+    ]);
+  });
+
+  await test.step('select ideal size', () => {
+    const image: Image = {
+      extraLarge: 'extraLarge',
+      large: 'large',
+      medium: 'medium',
+    };
+
+    const array = utils.imagesToArray(image, 'large-first', 'large');
+
+    assertEquals(array, [
+      'large',
+    ]);
+  });
+
+  await test.step('missing 1 image', () => {
+    const image: Image = {
+      extraLarge: 'extraLarge',
+      medium: 'medium',
+    };
+
+    const array = utils.imagesToArray(image, 'large-first');
+
+    assertEquals(array, [
+      'extraLarge',
+      'medium',
+    ]);
+  });
+
+  await test.step('missing ideal image', () => {
+    const image: Image = {
+      extraLarge: 'extraLarge',
+      medium: 'medium',
+    };
+
+    const array = utils.imagesToArray(image, 'large-first', 'large');
+
+    assertEquals(array, [
+      'extraLarge',
+      'medium',
+    ]);
+  });
+
+  await test.step('missing all images', () => {
+    const image: Image = {};
+
+    const array = utils.imagesToArray(image, 'large-first');
+
+    assertEquals(array, []);
+  });
 });

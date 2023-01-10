@@ -144,7 +144,10 @@ function start({ token, id }: { token: string; id?: string }) {
         .addEmbed(
           new discord.Embed()
             .setTitle(utils.wrap(titles[0]!))
-            .setImage({ url: media.coverImage?.large }),
+            .setImage({
+              url: utils.imagesToArray(media.coverImage, 'large-first', 'large')
+                ?.[0],
+            }),
         );
 
       await message.patch(token);
@@ -169,7 +172,13 @@ function start({ token, id }: { token: string; id?: string }) {
               name: utils.wrap(titles[0]!),
               value: `**${utils.wrap(pull.character.name!.full)}**`,
             })
-            .setImage({ url: pull.character.image?.large }),
+            .setImage({
+              url: utils.imagesToArray(
+                pull.character.image,
+                'large-first',
+                'large',
+              )?.[0],
+            }),
         );
 
       if (config.DEV) {

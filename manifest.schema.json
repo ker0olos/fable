@@ -116,6 +116,10 @@
                 "description": "A url of a medium/small image (recommended: 100x150)",
                 "type": "string",
                 "format": "uri"
+              },
+              "color": {
+                "type": "string",
+                "description": "A color to be used in embeds (in hex format)"
               }
             }
           },
@@ -251,20 +255,27 @@
           "image": {
             "type": "object",
             "description": "Set the default images for the character",
-            "required": ["large", "medium"],
-            "properties": {
-              "large": {
-                "$comment": "230x345",
-                "description": "A url of a large image (recommended: 230x345)",
-                "type": "string",
-                "format": "uri"
-              },
-              "medium": {
-                "$comment": "100x150",
-                "description": "A url of a medium/small image (recommended: 100x150)",
-                "type": "string",
-                "format": "uri"
-              }
+            "extraLarge": {
+              "$comment": "450x635",
+              "description": "A url of an extra large image (recommended: 450x635)",
+              "type": "string",
+              "format": "uri"
+            },
+            "large": {
+              "$comment": "230x345",
+              "description": "A url of a large image (recommended: 230x345)",
+              "type": "string",
+              "format": "uri"
+            },
+            "medium": {
+              "$comment": "100x150",
+              "description": "A url of a medium/small image (recommended: 100x150)",
+              "type": "string",
+              "format": "uri"
+            },
+            "color": {
+              "type": "string",
+              "description": "A color to be used in embeds (in hex format)"
             }
           },
           "media": {
