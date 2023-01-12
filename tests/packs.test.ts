@@ -1,7 +1,5 @@
 import { assertEquals } from 'https://deno.land/std@0.168.0/testing/asserts.ts';
 
-// import { stub } from 'https://deno.land/std@0.168.0/testing/mock.ts';
-
 import packs from '../src/packs.ts';
 
 import { Manifest, ManifestType } from '../src/types.ts';
@@ -10,6 +8,8 @@ Deno.test('anilist', async (test) => {
   const builtin = packs.list(ManifestType.Builtin);
 
   const manifest = builtin[0] as Manifest;
+
+  assertEquals(builtin.length, 2);
 
   await test.step('manifest', () => {
     assertEquals(manifest, {
@@ -43,6 +43,8 @@ Deno.test('utils', async (test) => {
   const builtin = packs.list(ManifestType.Builtin);
 
   const manifest = builtin[1] as Manifest;
+
+  assertEquals(builtin.length, 2);
 
   await test.step('manifest', () => {
     assertEquals(manifest, {

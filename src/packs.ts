@@ -1,6 +1,3 @@
-// // @deno-types="https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.d.ts"
-// import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.js';
-
 import { Manifest, ManifestType } from './types.ts';
 
 import { Embed, Interaction, Message } from './discord.ts';
@@ -55,6 +52,7 @@ function list(type?: ManifestType): Manifest[] {
   ];
 
   // TODO load manual packs
+  // (see https://github.com/ker0olos/fable/issues/10)
   // const manual = [
   // ];
 
@@ -106,40 +104,5 @@ function embed(
 
   return message;
 }
-
-// function context() {
-//   return {
-//     release: {
-//       id: Deno.env.get('DENO_DEPLOYMENT_ID')!,
-//     },
-//     device: {
-//       arch: Deno.build.arch,
-//       processor_count: navigator.hardwareConcurrency,
-//     },
-//     os: Deno.build.os,
-//     deno: {
-//       version: Deno.version.deno,
-//       target: Deno.build.target,
-//     },
-//     v8: Deno.version.v8,
-//     typescript: Deno.version.typescript,
-//   };
-// }
-
-// async function git(
-//   { owner, name, ref }: { owner: string; name: string; ref?: string },
-// ) {
-//   const { entries } = await unzip(
-//     `https://api.github.com/repos/${owner}/${name}/zipball/${ref ?? ''}`,
-//   );
-
-//   const manifests = Object.values(entries)
-//     .filter(({ name }) => name.endsWith('manifest.json'))
-//     .map((entry) => {
-//       return entry.json() as Promise<Manifest>;
-//     });
-
-//   return Promise.all(manifests);
-// }
 
 export default packs;
