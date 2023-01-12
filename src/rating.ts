@@ -5,7 +5,9 @@ import { emotes } from './config.ts';
 export default class Rating {
   #stars: number;
 
-  constructor(role: CharacterRole, popularity: number) {
+  constructor(
+    { role, popularity }: { role?: CharacterRole; popularity: number },
+  ) {
     if (role === CharacterRole.Background || popularity < 50_000) {
       this.#stars = 1;
     } //
@@ -28,6 +30,8 @@ export default class Rating {
     //
     else if (popularity > 400_000) {
       if (role === CharacterRole.Main) {
+        this.#stars = 5;
+      } else if (!role && popularity >= 1_000_000) {
         this.#stars = 5;
       } else {
         this.#stars = 4;

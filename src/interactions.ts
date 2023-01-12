@@ -152,7 +152,10 @@ async function handler(
         break;
     }
   } catch (err) {
-    if (err?.response?.status === 404 || err?.message === '404') {
+    if (
+      err?.response?.status === 404 || err?.message === '404' ||
+      err?.message?.toLowerCase?.() === 'not found'
+    ) {
       return discord.Message.content(
         'Found _nothing_ matching that query!',
       );

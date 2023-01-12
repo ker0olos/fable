@@ -38,6 +38,7 @@ type Pull = {
   character: Character;
   media: Media;
   pool: number;
+  rating: Rating;
   popularityGreater: number;
   popularityLesser?: number;
 };
@@ -54,6 +55,19 @@ async function forcePull({ id }: { id: string }): Promise<Pull> {
     throw new Error('404');
   }
 
+  const edge = utils.reduce(character);
+
+  if (!edge) {
+    throw new Error('404');
+  }
+
+  const popularity = character.popularity || edge.node.popularity;
+
+  // allow popularity to be "0"
+  if (typeof popularity !== 'number') {
+    throw new Error('404');
+  }
+
   return {
     pool: 1,
     character,
@@ -61,6 +75,10 @@ async function forcePull({ id }: { id: string }): Promise<Pull> {
     role: character.media!.edges![0]!.characterRole,
     popularityGreater: -1,
     popularityLesser: -1,
+    rating: new Rating({
+      popularity,
+      role: character.popularity ? undefined : edge.characterRole,
+    }),
   };
 }
 
@@ -83,10 +101,15 @@ async function rngPull(): Promise<Pull> {
     popularity_lesser: range[1],
   });
 
-  // TODO extend/override anilist
+  // packs.list().forEach((manifest) => {
+  //   manifest.characters?.forEach((character) => {
+  //     // TODO extend/override anilist
+  //   });
+  // });
 
   const pool = Object.values(dict);
 
+  let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
 
@@ -96,16 +119,15 @@ async function rngPull(): Promise<Pull> {
 
     const candidate = pool.splice(i, 1)[0];
 
-    const edge = candidate.media?.edges?.reduce((a, b) => {
-      return a.node!.popularity! >= b.node!.popularity! ? a : b;
-    });
+    const edge = utils.reduce(candidate);
 
     if (!edge) {
       continue;
     }
 
-    const popularity = candidate.popularity ?? edge.node.popularity;
+    const popularity = candidate.popularity || edge.node.popularity;
 
+    // allow popularity to be "0"
     if (typeof popularity !== 'number') {
       continue;
     }
@@ -113,15 +135,23 @@ async function rngPull(): Promise<Pull> {
     if (
       popularity >= range[0] &&
       popularity <= range[1] &&
-      (!role || edge?.characterRole === role)
+      (
+        !role ||
+        candidate.popularity ||
+        edge?.characterRole === role
+      )
     ) {
+      media = edge.node;
       character = candidate;
-      media = edge?.node;
+      rating = new Rating({
+        popularity,
+        role: character.popularity ? undefined : edge.characterRole,
+      });
       break;
     }
   }
 
-  if (!character || !media) {
+  if (!character) {
     throw new Error(
       'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
     );
@@ -130,6 +160,7 @@ async function rngPull(): Promise<Pull> {
   return {
     role: role!,
     media: media!,
+    rating: rating!,
     character: character!,
     pool: pool.length,
     popularityGreater: range[0],
@@ -146,11 +177,8 @@ function start({ token, id }: { token: string; id?: string }) {
   )
     .then(async (pull) => {
       const media = pull.media;
-      const role = pull.role;
 
       const titles = utils.titlesToArray(media);
-
-      const rating = new Rating(role, media.popularity!);
 
       let message = new discord.Message()
         .addEmbed(
@@ -170,17 +198,17 @@ function start({ token, id }: { token: string; id?: string }) {
       message = new discord.Message()
         .addEmbed(
           new discord.Embed()
-            .setImage({ url: `${CDN}/stars/${rating.stars}.gif` }),
+            .setImage({ url: `${CDN}/stars/${pull.rating.stars}.gif` }),
         );
 
       await message.patch(token);
 
-      await utils.sleep(rating.stars >= 5 ? 7 : 5);
+      await utils.sleep(pull.rating.stars >= 5 ? 7 : 5);
 
       message = new discord.Message()
         .addEmbed(
           new discord.Embed()
-            .setTitle(rating.emotes)
+            .setTitle(pull.rating.emotes)
             .addField({
               name: utils.wrap(titles[0]!),
               value: `**${utils.wrap(pull.character.name!.full)}**`,

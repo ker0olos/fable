@@ -1035,6 +1035,311 @@ Deno.test('character', async (test) => {
   });
 });
 
+Deno.test('character debug', async (test) => {
+  await test.step('no media', async () => {
+    const character: Character = {
+      id: 1,
+      description: 'long description',
+      name: {
+        full: 'full name',
+      },
+      image: {
+        large: 'image_url',
+      },
+      age: '420',
+      gender: 'male',
+      popularity: 1_000_000,
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                characters: [character],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    try {
+      const message = await search.character({ search: 'query', debug: true });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [],
+          content: undefined,
+          embeds: [
+            {
+              type: 2,
+              title: 'full name',
+              description: undefined,
+              thumbnail: {
+                url: 'image_url',
+              },
+              fields: [
+                {
+                  name: 'Id',
+                  value: '1',
+                },
+                {
+                  name: 'Rating',
+                  value:
+                    '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+                },
+                {
+                  inline: true,
+                  name: 'Gender',
+                  value: 'male',
+                },
+                {
+                  inline: true,
+                  name: 'Age',
+                  value: '420',
+                },
+                {
+                  inline: true,
+                  name: 'Media',
+                  value: 'undefined',
+                },
+                {
+                  inline: true,
+                  name: 'Role',
+                  value: 'undefined',
+                },
+                {
+                  inline: true,
+                  name: 'Popularity',
+                  value: '1,000,000',
+                },
+                {
+                  name: '**WARN**',
+                  value:
+                    'Character not available in gacha.\nAdd at least one media to the character.',
+                },
+              ],
+            },
+          ],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('no media nor popularity', async () => {
+    const character: Character = {
+      id: 1,
+      description: 'long description',
+      name: {
+        full: 'full name',
+      },
+      image: {
+        large: 'image_url',
+      },
+      age: '420',
+      gender: 'male',
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                characters: [character],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    try {
+      const message = await search.character({ search: 'query', debug: true });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [],
+          content: undefined,
+          embeds: [
+            {
+              type: 2,
+              title: 'full name',
+              description: undefined,
+              thumbnail: {
+                url: 'image_url',
+              },
+              fields: [
+                {
+                  name: 'Id',
+                  value: '1',
+                },
+                {
+                  name: 'Rating',
+                  value: 'undefined',
+                },
+                {
+                  inline: true,
+                  name: 'Gender',
+                  value: 'male',
+                },
+                {
+                  inline: true,
+                  name: 'Age',
+                  value: '420',
+                },
+                {
+                  inline: true,
+                  name: 'Media',
+                  value: 'undefined',
+                },
+                {
+                  inline: true,
+                  name: 'Role',
+                  value: 'undefined',
+                },
+                {
+                  inline: true,
+                  name: 'Popularity',
+                  value: 'undefined',
+                },
+                {
+                  name: '**WARN**',
+                  value:
+                    'Character not available in gacha.\nAdd at least one media to the character.',
+                },
+              ],
+            },
+          ],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('with media', async () => {
+    const character: Character = {
+      id: 1,
+      description: 'long description',
+      name: {
+        full: 'full name',
+      },
+      image: {
+        large: 'image_url',
+      },
+      age: '420',
+      gender: 'male',
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: 5,
+            type: Type.Anime,
+            format: Format.TV,
+            popularity: 10,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                characters: [character],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    try {
+      const message = await search.character({ search: 'query', debug: true });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [],
+          content: undefined,
+          embeds: [
+            {
+              type: 2,
+              title: 'full name',
+              description: undefined,
+              thumbnail: {
+                url: 'image_url',
+              },
+              fields: [
+                {
+                  name: 'Id',
+                  value: '1',
+                },
+                {
+                  name: 'Rating',
+                  value:
+                    '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                },
+                {
+                  inline: true,
+                  name: 'Gender',
+                  value: 'male',
+                },
+                {
+                  inline: true,
+                  name: 'Age',
+                  value: '420',
+                },
+                {
+                  inline: true,
+                  name: 'Media',
+                  value: '5',
+                },
+                {
+                  inline: true,
+                  name: 'Role',
+                  value: 'Main',
+                },
+                {
+                  inline: true,
+                  name: 'Popularity',
+                  value: '10',
+                },
+              ],
+            },
+          ],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+    }
+  });
+});
+
 Deno.test('themes', async (test) => {
   await test.step('normal search', async () => {
     const media: Media = {

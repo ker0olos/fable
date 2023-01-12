@@ -50,7 +50,43 @@ function fakePool(fill: Character, length = 25) {
 }
 
 Deno.test('filter invalid pools', async (test) => {
-  await test.step('filter higher popularity', async () => {
+  await test.step('no media', async () => {
+    const fetchStub = fakePool({
+      id: 1,
+      name: {
+        full: 'name',
+      },
+      popularity: 1_000_000,
+      media: {
+        edges: [],
+      },
+    });
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([[1_000_000, 1_000_000], 'MAIN']),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    try {
+      await assertRejects(
+        async () => await gacha.rngPull(),
+        Error,
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+      );
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(rngStub, 2);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('filter higher popularity media', async () => {
     const fetchStub = fakePool({
       id: 1,
       name: {
@@ -118,7 +154,54 @@ Deno.test('filter invalid pools', async (test) => {
     }
   });
 
-  await test.step('filter lesser popularity ', async () => {
+  await test.step('filter higher popularity character', async () => {
+    const fetchStub = fakePool({
+      id: 1,
+      name: {
+        full: 'name',
+      },
+      popularity: 101,
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: 0,
+            type: Type.Anime,
+            format: Format.TV,
+            popularity: 0,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    });
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([[0, 100]]),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    try {
+      await assertRejects(
+        async () => await gacha.rngPull(),
+        Error,
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+      );
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(rngStub, 1);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('filter lesser popularity media', async () => {
     const fetchStub = fakePool({
       id: 1,
       name: {
@@ -164,7 +247,54 @@ Deno.test('filter invalid pools', async (test) => {
     }
   });
 
-  await test.step('filter roles', async () => {
+  await test.step('filter lesser popularity character', async () => {
+    const fetchStub = fakePool({
+      id: 1,
+      name: {
+        full: 'name',
+      },
+      popularity: 50,
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: 50,
+            type: Type.Anime,
+            format: Format.TV,
+            popularity: 150,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    });
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([[100, 200], 'MAIN']),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    try {
+      await assertRejects(
+        async () => await gacha.rngPull(),
+        Error,
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+      );
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(rngStub, 2);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('filter roles media', async () => {
     const fetchStub = fakePool({
       id: 1,
       name: {
@@ -228,25 +358,15 @@ Deno.test('valid pool', async () => {
     name: {
       full: 'name',
     },
+    popularity: 100,
     media: {
       edges: [{
-        characterRole: CharacterRole.Main,
-        node: {
-          id: 1,
-          popularity: 200,
-          type: Type.Anime,
-          format: Format.TV,
-          title: {
-            english: 'title',
-          },
-        },
-      }, {
-        characterRole: CharacterRole.Main,
+        characterRole: CharacterRole.Supporting,
         node: {
           id: 2,
           type: Type.Anime,
           format: Format.TV,
-          popularity: 200,
+          popularity: 1_000_000,
           title: {
             english: 'title',
           },
@@ -269,13 +389,16 @@ Deno.test('valid pool', async () => {
     assertEquals(pull.pool, 24);
 
     assertEquals(pull.character.id, 1);
-    assertEquals(pull.media.id, 1);
+    assertEquals(pull.media.id, 2);
 
-    assertEquals(pull.media.popularity, 200);
+    assertEquals(pull.character.popularity, 100);
+    assertEquals(pull.media.popularity, 1_000_000);
 
     assertEquals(pull.role, 'MAIN');
     assertEquals(pull.popularityGreater, 100);
     assertEquals(pull.popularityLesser, 200);
+
+    assertEquals(pull.rating.stars, 1);
 
     assertSpyCalls(fetchStub, 1);
     assertSpyCalls(rngStub, 2);
@@ -288,7 +411,10 @@ Deno.test('valid pool', async () => {
 
 Deno.test('rating', async (test) => {
   await test.step('1 star', () => {
-    let rating = new Rating(CharacterRole.Background, 1_000_000);
+    let rating = new Rating({
+      role: CharacterRole.Background,
+      popularity: 1000000,
+    });
 
     assertEquals(rating.stars, 1);
     assertEquals(
@@ -296,7 +422,15 @@ Deno.test('rating', async (test) => {
       '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
     );
 
-    rating = new Rating(CharacterRole.Main, 0);
+    rating = new Rating({ role: CharacterRole.Main, popularity: 0 });
+
+    assertEquals(rating.stars, 1);
+    assertEquals(
+      rating.emotes,
+      '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+    );
+
+    rating = new Rating({ popularity: 0 });
 
     assertEquals(rating.stars, 1);
     assertEquals(
@@ -306,7 +440,20 @@ Deno.test('rating', async (test) => {
   });
 
   await test.step('2 stars', () => {
-    const rating = new Rating(CharacterRole.Supporting, 199_999);
+    let rating = new Rating({
+      role: CharacterRole.Supporting,
+      popularity: 199999,
+    });
+
+    assertEquals(rating.stars, 2);
+    assertEquals(
+      rating.emotes,
+      '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+    );
+
+    rating = new Rating({
+      popularity: 199999,
+    });
 
     assertEquals(rating.stars, 2);
     assertEquals(
@@ -316,7 +463,7 @@ Deno.test('rating', async (test) => {
   });
 
   await test.step('3 stars', () => {
-    let rating = new Rating(CharacterRole.Main, 199_999);
+    let rating = new Rating({ role: CharacterRole.Main, popularity: 199999 });
 
     assertEquals(rating.stars, 3);
     assertEquals(
@@ -324,7 +471,15 @@ Deno.test('rating', async (test) => {
       '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
     );
 
-    rating = new Rating(CharacterRole.Supporting, 250_000);
+    rating = new Rating({ role: CharacterRole.Supporting, popularity: 250000 });
+
+    assertEquals(rating.stars, 3);
+    assertEquals(
+      rating.emotes,
+      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+    );
+
+    rating = new Rating({ popularity: 250000 });
 
     assertEquals(rating.stars, 3);
     assertEquals(
@@ -334,7 +489,7 @@ Deno.test('rating', async (test) => {
   });
 
   await test.step('4 stars', () => {
-    let rating = new Rating(CharacterRole.Main, 250_000);
+    let rating = new Rating({ role: CharacterRole.Main, popularity: 250000 });
 
     assertEquals(rating.stars, 4);
     assertEquals(
@@ -342,7 +497,15 @@ Deno.test('rating', async (test) => {
       '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
     );
 
-    rating = new Rating(CharacterRole.Supporting, 500_000);
+    rating = new Rating({ role: CharacterRole.Supporting, popularity: 500000 });
+
+    assertEquals(rating.stars, 4);
+    assertEquals(
+      rating.emotes,
+      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
+    );
+
+    rating = new Rating({ popularity: 500000 });
 
     assertEquals(rating.stars, 4);
     assertEquals(
@@ -352,7 +515,15 @@ Deno.test('rating', async (test) => {
   });
 
   await test.step('5 stars', () => {
-    const rating = new Rating(CharacterRole.Main, 500_000);
+    let rating = new Rating({ role: CharacterRole.Main, popularity: 500000 });
+
+    assertEquals(rating.stars, 5);
+    assertEquals(
+      rating.emotes,
+      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+    );
+
+    rating = new Rating({ popularity: 1000000 });
 
     assertEquals(rating.stars, 5);
     assertEquals(
@@ -363,8 +534,16 @@ Deno.test('rating', async (test) => {
 
   await test.step('fails', () => {
     assertThrows(
+      () =>
+        // deno-lint-ignore no-explicit-any
+        new Rating({ role: CharacterRole.Main, popularity: undefined as any }),
+      Error,
+      'Couldn\'t determine the star rating',
+    );
+
+    assertThrows(
       // deno-lint-ignore no-explicit-any
-      () => new Rating(CharacterRole.Main, undefined as any),
+      () => new Rating({ popularity: undefined as any }),
       Error,
       'Couldn\'t determine the star rating',
     );

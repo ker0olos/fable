@@ -1,6 +1,6 @@
 import nacl from 'https://cdn.skypack.dev/tweetnacl@v1.0.3?dts';
 
-import { Image, Media } from './types.ts';
+import { Character, Image, Media } from './types.ts';
 
 function randint(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -186,6 +186,18 @@ function imagesToArray(
   return images as string[];
 }
 
+function reduce(character: Character) {
+  if (!character.media?.edges?.length) {
+    return;
+  }
+
+  const edge = character.media.edges.reduce((a, b) => {
+    return a.node!.popularity! >= b.node!.popularity! ? a : b;
+  });
+
+  return edge;
+}
+
 async function verifySignature(
   request: Request,
   publicKey: string,
@@ -244,6 +256,7 @@ const utils = {
   truncate,
   verifySignature,
   wrap,
+  reduce,
   // context
 };
 

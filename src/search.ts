@@ -243,21 +243,25 @@ export async function character(
 }
 
 function characterDebugEmbed(character: Character) {
-  const media = character.media!.edges![0].node;
+  const media = utils.reduce(character);
 
-  const role = character.media!.edges![0].characterRole;
+  const role = media?.characterRole;
+  const popularity = character.popularity || media?.node.popularity;
 
-  const popularity = character.popularity ?? media.popularity;
+  const rating = popularity
+    ? new Rating({
+      popularity,
+      role: character.popularity ? undefined : role,
+    })
+    : undefined;
 
-  const rating = new Rating(role, popularity);
-
-  return new discord.Embed()
+  const embed = new discord.Embed()
     .setTitle(character.name!.full)
     .setDescription(character.name!.alternative?.join('\n'))
     .addField({ name: 'Id', value: `${character.id}` })
     .addField({
       name: 'Rating',
-      value: rating.emotes,
+      value: rating ? rating.emotes : 'undefined',
     })
     .addField({
       name: 'Gender',
@@ -265,31 +269,31 @@ function characterDebugEmbed(character: Character) {
       inline: true,
     })
     .addField({ name: 'Age', value: `${character.age}`, inline: true })
-    .addField({ name: 'Media', value: `${media.id}`, inline: true })
+    .addField({ name: 'Media', value: `${media?.node.id}`, inline: true })
     .addField({
       name: 'Role',
       value: `${utils.capitalize(role)}`,
       inline: true,
     })
     .addField({
-      name: 'Type',
-      value: `${utils.capitalize(media.type!)}`,
-      inline: true,
-    })
-    .addField({
-      name: 'Format',
-      value: `${utils.capitalize(media.format!)}`,
-      inline: true,
-    })
-    .addField({
       name: 'Popularity',
-      value: `${utils.comma(popularity)}`,
+      value: popularity ? `${utils.comma(popularity)}` : 'undefined',
       inline: true,
     })
     .setThumbnail({
       default: true,
       url: utils.imagesToArray(character.image, 'small-first')?.[0],
     });
+
+  if (!media) {
+    embed.addField({
+      name: '**WARN**',
+      value:
+        'Character not available in gacha.\nAdd at least one media to the character.',
+    });
+  }
+
+  return embed;
 }
 
 export async function themes(
