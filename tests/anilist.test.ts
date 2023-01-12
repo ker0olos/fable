@@ -224,7 +224,7 @@ Deno.test('pool', async (test) => {
     }
   });
 
-  await test.step('valid', async () => {
+  await test.step('invalid', async () => {
     const fetchStub = fakePool({
       media: {
         edges: [{
@@ -243,12 +243,10 @@ Deno.test('pool', async (test) => {
             popularity_greater: 0,
           }),
         Error,
-        'failed to create a pool with {"popularity_greater":0,"page":null,"current_pool":24,"minimal_pool":25}',
+        'failed to create a pool with {"popularity_greater":0,"pages":[null],"current_pool":24,"minimal_pool":25}',
       );
 
-      const maxTries = 5;
-
-      assertSpyCalls(fetchStub, maxTries);
+      assertSpyCalls(fetchStub, 1);
     } finally {
       fetchStub.restore();
     }

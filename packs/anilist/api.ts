@@ -173,36 +173,21 @@ export async function nextEpisode(
 }
 
 export async function pool(
-  variables: {
+  // deno-lint-ignore camelcase
+  { popularity_greater, popularity_lesser, role }: {
     popularity_greater: number;
     popularity_lesser?: number;
     role?: CharacterRole;
   },
-  retry = 1,
-  dict: Pool = {},
 ): Promise<Pool> {
-  // the max tries parameter prevents infinite recursion
-  const maxTries = 5;
+  const pool: Pool = {};
 
   // the minimal pool insures that there's enough variety in the pool
   const minimalPool = 25;
 
-  // TODO try and minimize the amount of times this function call anilist API
-  // multiple requests to anilist mean an huge increase in response time
-
-  // TODO take a minimal number of different media into consideration
-
-  const key = JSON.stringify([
-    variables.popularity_greater,
-    variables.popularity_lesser,
-  ]) as keyof typeof lastPage;
-
-  // select a random page between the first and last
-  const page = utils.randint(1, lastPage[key]);
-
   const query = gql`
-    query ($popularity_greater: Int!, $popularity_lesser: Int, $role: CharacterRole) {
-      Page(page: ${page}, perPage: 50) {
+    query ($page: Int!, $popularity_greater: Int!, $popularity_lesser: Int, $role: CharacterRole) {
+      Page(page: $page, perPage: 50) {
         # fixed to query characters that only appear in anime, movies, and manga
         media(
           sort: ${mediaDefaultSort},
@@ -258,45 +243,62 @@ export async function pool(
     }
   `;
 
-  const response: {
+  const key = JSON.stringify([
+    popularity_greater,
+    popularity_lesser,
+  ]) as keyof typeof lastPage;
+
+  // select a random page between the first and last
+  const set = [
+    ...new Set([
+      utils.randint(1, lastPage[key]),
+      utils.randint(1, lastPage[key]),
+      utils.randint(1, lastPage[key]),
+      utils.randint(1, lastPage[key]),
+      utils.randint(1, lastPage[key]),
+    ]),
+  ];
+
+  const requests = set.map(
+    (page) =>
+      request(query, { page, popularity_greater, popularity_lesser, role })
+        .then((response) => response.Page),
+  );
+
+  const pages = await Promise.all<{
     media: {
       characters: {
         nodes: Character[];
       };
     }[];
-  } = (await request(query, variables)).Page;
+  }>(requests);
 
-  // using the api
-  // create a dictionary of all the characters with their ids as key
-  response.media!.forEach(({ characters }) => {
-    characters.nodes.forEach((character) => {
-      dict[character.id!] = character;
+  pages.forEach((page) => {
+    // using the api
+    // create a dictionary of all the characters with their ids as key
+    page.media!.forEach(({ characters }) => {
+      characters.nodes.forEach((character) => {
+        pool[character.id!] = character;
+      });
     });
   });
 
-  const currentPool = Object.keys(dict).length;
+  const currentPool = Object.keys(pool).length;
 
-  // ensure minimal number of characters for the pool
   if (minimalPool > currentPool) {
-    // the max tries parameter prevents infinite recursion
-    if (retry >= maxTries) {
-      throw new Error(
-        `failed to create a pool with ${
-          JSON.stringify({
-            ...variables,
-            page,
-            current_pool: currentPool,
-            minimal_pool: minimalPool,
-          })
-        }`,
-      );
-    } else {
-      // carry over the current pool
-      // and added to to a new pool
-      // to increase the pool length
-      return await pool(variables, retry + 1, dict);
-    }
+    throw new Error(
+      `failed to create a pool with ${
+        JSON.stringify({
+          popularity_greater,
+          popularity_lesser,
+          role,
+          pages: set,
+          current_pool: currentPool,
+          minimal_pool: minimalPool,
+        })
+      }`,
+    );
   }
 
-  return dict;
+  return pool;
 }
