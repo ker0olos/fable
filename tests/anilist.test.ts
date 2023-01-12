@@ -12,7 +12,7 @@ import anilist from '../packs/anilist/index.ts';
 
 import { Status } from '../packs/anilist/types.ts';
 
-import { Character, CharacterRole } from '../src/types.ts';
+import { Character, CharacterRole, Format, Type } from '../src/types.ts';
 
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {
@@ -169,8 +169,8 @@ function fakePool(fill: Character, length = 25) {
 
   for (let index = 0; index < length; index++) {
     nodes.push({
-      id: index + 1,
       ...fill,
+      id: index + 1,
     });
   }
 
@@ -199,11 +199,21 @@ function fakePool(fill: Character, length = 25) {
 Deno.test('pool', async (test) => {
   await test.step('valid', async () => {
     const fetchStub = fakePool({
+      id: 1,
+      name: {
+        full: 'name',
+      },
       media: {
         edges: [{
           characterRole: CharacterRole.Main,
           node: {
+            id: 5,
             popularity: 1000,
+            type: Type.Anime,
+            format: Format.TV,
+            title: {
+              english: 'title',
+            },
           },
         }],
       },
@@ -226,11 +236,21 @@ Deno.test('pool', async (test) => {
 
   await test.step('invalid', async () => {
     const fetchStub = fakePool({
+      id: 1,
+      name: {
+        full: 'name',
+      },
       media: {
         edges: [{
           characterRole: CharacterRole.Main,
           node: {
+            id: 5,
             popularity: 1000,
+            type: Type.Anime,
+            format: Format.TV,
+            title: {
+              english: 'title',
+            },
           },
         }],
       },

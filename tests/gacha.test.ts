@@ -15,15 +15,15 @@ import gacha from '../src/gacha.ts';
 
 import Rating from '../src/rating.ts';
 
-import { Character, CharacterRole } from '../src/types.ts';
+import { Character, CharacterRole, Format, Type } from '../src/types.ts';
 
 function fakePool(fill: Character, length = 25) {
   const nodes: Character[] = [];
 
   for (let index = 0; index < length; index++) {
     nodes.push({
-      id: index + 1,
       ...fill,
+      id: index + 1,
     });
   }
 
@@ -52,21 +52,43 @@ function fakePool(fill: Character, length = 25) {
 Deno.test('filter invalid pools', async (test) => {
   await test.step('filter higher popularity', async () => {
     const fetchStub = fakePool({
+      id: 1,
+      name: {
+        full: 'name',
+      },
       media: {
         edges: [{
           characterRole: CharacterRole.Main,
           node: {
+            id: 0,
+            type: Type.Anime,
+            format: Format.TV,
             popularity: 0,
+            title: {
+              english: 'title',
+            },
           },
         }, {
           characterRole: CharacterRole.Main,
           node: {
+            id: 50,
+            type: Type.Anime,
+            format: Format.TV,
             popularity: 50,
+            title: {
+              english: 'title',
+            },
           },
         }, {
           characterRole: CharacterRole.Main,
           node: {
+            id: 101,
+            type: Type.Anime,
+            format: Format.TV,
             popularity: 101,
+            title: {
+              english: 'title',
+            },
           },
         }],
       },
@@ -98,11 +120,21 @@ Deno.test('filter invalid pools', async (test) => {
 
   await test.step('filter lesser popularity ', async () => {
     const fetchStub = fakePool({
+      id: 1,
+      name: {
+        full: 'name',
+      },
       media: {
         edges: [{
           characterRole: CharacterRole.Main,
           node: {
+            id: 50,
+            type: Type.Anime,
+            format: Format.TV,
             popularity: 50,
+            title: {
+              english: 'title',
+            },
           },
         }],
       },
@@ -134,16 +166,32 @@ Deno.test('filter invalid pools', async (test) => {
 
   await test.step('filter roles', async () => {
     const fetchStub = fakePool({
+      id: 1,
+      name: {
+        full: 'name',
+      },
       media: {
         edges: [{
           characterRole: CharacterRole.Main,
           node: {
+            id: 100,
+            type: Type.Anime,
+            format: Format.TV,
             popularity: 100,
+            title: {
+              english: 'title',
+            },
           },
         }, {
           characterRole: CharacterRole.Supporting,
           node: {
+            id: 150,
+            type: Type.Anime,
+            format: Format.TV,
             popularity: 150,
+            title: {
+              english: 'title',
+            },
           },
         }],
       },
@@ -176,18 +224,32 @@ Deno.test('filter invalid pools', async (test) => {
 
 Deno.test('valid pool', async () => {
   const fetchStub = fakePool({
+    id: 1,
+    name: {
+      full: 'name',
+    },
     media: {
       edges: [{
         characterRole: CharacterRole.Main,
         node: {
           id: 1,
           popularity: 200,
+          type: Type.Anime,
+          format: Format.TV,
+          title: {
+            english: 'title',
+          },
         },
       }, {
         characterRole: CharacterRole.Main,
         node: {
           id: 2,
+          type: Type.Anime,
+          format: Format.TV,
           popularity: 200,
+          title: {
+            english: 'title',
+          },
         },
       }],
     },

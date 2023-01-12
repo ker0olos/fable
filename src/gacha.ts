@@ -48,6 +48,8 @@ type Pull = {
 async function forcePull({ id }: { id: string }): Promise<Pull> {
   const character = await anilist.character({ id: parseInt(id) });
 
+  // TODO extend/override anilist
+
   if (!character) {
     throw new Error('404');
   }
@@ -81,7 +83,7 @@ async function rngPull(): Promise<Pull> {
     popularity_lesser: range[1],
   });
 
-  // TODO extend/override anilist default pool
+  // TODO extend/override anilist
 
   const pool = Object.values(dict);
 
@@ -98,9 +100,19 @@ async function rngPull(): Promise<Pull> {
       return a.node!.popularity! >= b.node!.popularity! ? a : b;
     });
 
+    if (!edge) {
+      continue;
+    }
+
+    const popularity = candidate.popularity ?? edge.node.popularity;
+
+    if (typeof popularity !== 'number') {
+      continue;
+    }
+
     if (
-      edge?.node.popularity! >= range[0] &&
-      edge?.node.popularity! <= range[1] &&
+      popularity >= range[0] &&
+      popularity <= range[1] &&
       (!role || edge?.characterRole === role)
     ) {
       character = candidate;
@@ -145,6 +157,7 @@ function start({ token, id }: { token: string; id?: string }) {
           new discord.Embed()
             .setTitle(utils.wrap(titles[0]!))
             .setImage({
+              default: true,
               url: utils.imagesToArray(media.coverImage, 'large-first', 'large')
                 ?.[0],
             }),
@@ -173,6 +186,7 @@ function start({ token, id }: { token: string; id?: string }) {
               value: `**${utils.wrap(pull.character.name!.full)}**`,
             })
             .setImage({
+              default: true,
               url: utils.imagesToArray(
                 pull.character.image,
                 'large-first',

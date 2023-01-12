@@ -20,6 +20,9 @@ export async function media(
     search = undefined;
   }
 
+  // TODO extend/override anilist
+  // lookup packs first
+
   const media = await anilist.media(
     id ? { id } : { search },
     prioritize,
@@ -44,6 +47,7 @@ export async function media(
       .setDescription(media.description)
       .setColor(media.coverImage?.color)
       .setImage({
+        default: true,
         url: utils.imagesToArray(media.coverImage, 'large-first')?.[0],
       })
       .setFooter({
@@ -57,6 +61,7 @@ export async function media(
       .setDescription(character.node!.description)
       .setColor(media?.coverImage?.color)
       .setThumbnail({
+        default: true,
         url: utils.imagesToArray(character.node.image, 'small-first')?.[0],
       })
       .setFooter(
@@ -172,6 +177,7 @@ function mediaDebugEmbed(media: Media) {
       inline: true,
     })
     .setThumbnail({
+      default: true,
       url: utils.imagesToArray(media.coverImage, 'small-first')?.[0],
     });
 }
@@ -186,6 +192,9 @@ export async function character(
   if (typeof (id = utils.parseId(search!)) === 'number') {
     search = undefined;
   }
+
+  // TODO extend/override anilist
+  // lookup packs first
 
   const character = await anilist.character(id ? { id } : { search });
 
@@ -203,6 +212,7 @@ export async function character(
         .setTitle(character.name!.full)
         .setDescription(character.description)
         .setImage({
+          default: true,
           url: utils.imagesToArray(character.image, 'large-first')?.[0],
         })
         .setFooter(
@@ -236,7 +246,10 @@ function characterDebugEmbed(character: Character) {
   const media = character.media!.edges![0].node;
 
   const role = character.media!.edges![0].characterRole;
-  const rating = new Rating(role, media.popularity!);
+
+  const popularity = character.popularity ?? media.popularity;
+
+  const rating = new Rating(role, popularity);
 
   return new discord.Embed()
     .setTitle(character.name!.full)
@@ -270,10 +283,11 @@ function characterDebugEmbed(character: Character) {
     })
     .addField({
       name: 'Popularity',
-      value: `${utils.comma(media.popularity!)}`,
+      value: `${utils.comma(popularity)}`,
       inline: true,
     })
     .setThumbnail({
+      default: true,
       url: utils.imagesToArray(character.image, 'small-first')?.[0],
     });
 }
@@ -284,6 +298,9 @@ export async function themes(
   },
 ) {
   const media = await anilist.media({ search });
+
+  // TODO extend/override anilist
+  // lookup packs first
 
   if (!media) {
     throw new Error('404');

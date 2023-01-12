@@ -8,6 +8,8 @@ import lastPage from './lastPage.json' assert {
   type: 'json',
 };
 
+import { Media } from '../../src/types.ts';
+
 /** Order by trending than popularity */
 const mediaDefaultSort = '[ TRENDING_DESC, POPULARITY_DESC ]';
 
@@ -261,23 +263,21 @@ export async function pool(
 
   const requests = set.map(
     (page) =>
-      request(query, { page, popularity_greater, popularity_lesser, role })
+      request<{
+        Page: {
+          media: Media[];
+        };
+      }>(query, { page, popularity_greater, popularity_lesser, role })
         .then((response) => response.Page),
   );
 
-  const pages = await Promise.all<{
-    media: {
-      characters: {
-        nodes: Character[];
-      };
-    }[];
-  }>(requests);
+  const pages = await Promise.all(requests);
 
   pages.forEach((page) => {
     // using the api
     // create a dictionary of all the characters with their ids as key
     page.media!.forEach(({ characters }) => {
-      characters.nodes.forEach((character) => {
+      characters!.nodes!.forEach((character) => {
         pool[character.id!] = character;
       });
     });

@@ -318,10 +318,11 @@ export class Embed {
     return this;
   }
 
-  setThumbnail(thumbnail: { url?: string }) {
-    if (thumbnail.url) {
+  setThumbnail(thumbnail: { url?: string; default?: boolean }) {
+    if (thumbnail.url || thumbnail.default) {
       this.#data.thumbnail = {
-        url: thumbnail.url,
+        url: thumbnail.url ??
+          'https://s4.anilist.co/file/anilistcdn/character/medium/default.jpg',
       };
     }
     return this;
@@ -339,10 +340,11 @@ export class Embed {
     return this;
   }
 
-  setImage(image: { url?: string }) {
-    if (image.url) {
+  setImage(image: { url?: string; default?: boolean }) {
+    if (image.url || image.default) {
       this.#data.image = {
-        url: image.url,
+        url: image.url ??
+          'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
       };
     }
     return this;

@@ -56,15 +56,15 @@ export type Image = {
 };
 
 export interface Media {
-  id?: number;
-  type?: Type;
-  format?: Format;
-  title?: {
+  id: number;
+  type: Type;
+  format: Format;
+  title: {
     english?: string;
     romaji?: string;
     native?: string;
   };
-  popularity?: number;
+  popularity: number;
   description?: string;
   coverImage?: Image;
   externalLinks?: {
@@ -101,14 +101,15 @@ export type PackMedia = Modify<Media, {
 }>;
 
 export interface Character {
-  name?: {
+  id: number;
+  name: {
     full: string;
     native?: string;
     alternative?: string[];
     alternativeSpoiler?: string[];
   };
-  id?: number;
   description?: string;
+  popularity?: number;
   gender?: string;
   age?: string;
   image?: Image;

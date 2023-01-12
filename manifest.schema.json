@@ -6,7 +6,7 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^[a-z][a-z0-9]+$",
+      "pattern": "^[a-z][-_a-z0-9]+$",
       "description": "A unique alphanumeric id"
     },
     "title": {
@@ -40,12 +40,12 @@
       "description": "An list of media (anime/manga) to add, override, or extend",
       "items": {
         "type": "object",
-        "required": ["id"],
+        "required": ["id", "title", "type", "format", "popularity"],
         "properties": {
           "id": {
             "type": ["string", "number"],
             "description": "A unique alphanumeric id",
-            "pattern": "^[a-z][a-z0-9]+$",
+            "pattern": "^[a-z][-_a-z0-9]+$",
             "minimum": 0
           },
           "behavior": {
@@ -173,7 +173,7 @@
               "mediaId": {
                 "type": ["string", "number"],
                 "description": "The id of a different media",
-                "pattern": "^[a-z][a-z0-9]+$",
+                "pattern": "^[a-z][-_a-z0-9]+$",
                 "minimum": 0
               }
             }
@@ -190,7 +190,7 @@
               "characterId": {
                 "type": ["string", "number"],
                 "description": "The id of the character",
-                "pattern": "^[a-z][a-z0-9]+$",
+                "pattern": "^[a-z][-_a-z0-9]+$",
                 "minimum": 0
               }
             }
@@ -203,12 +203,12 @@
       "description": "An list of characters to add, override, or extend",
       "items": {
         "type": "object",
-        "required": ["id"],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": ["string", "number"],
             "description": "A unique alphanumeric id",
-            "pattern": "^[a-z][a-z0-9]+$",
+            "pattern": "^[a-z][-_a-z0-9]+$",
             "minimum": 0
           },
           "behavior": {
@@ -243,6 +243,11 @@
                 }
               }
             }
+          },
+          "popularity": {
+            "type": "integer",
+            "description": "Set the popularity of the character (the number of followers or people who likes them)",
+            "minimum": 0
           },
           "gender": {
             "description": "The gender of the character",
@@ -290,7 +295,7 @@
               "mediaId": {
                 "type": ["string", "number"],
                 "description": "The id of the media",
-                "pattern": "^[a-z][a-z0-9]+$",
+                "pattern": "^[a-z][-_a-z0-9]+$",
                 "minimum": 0
               }
             }

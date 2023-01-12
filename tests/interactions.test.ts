@@ -28,6 +28,7 @@ Deno.test('media', async (test) => {
       type: Type.Anime,
       format: Format.TV,
       description: 'long description',
+      popularity: 0,
       title: {
         english: 'english title',
         romaji: 'romaji title',
@@ -93,6 +94,7 @@ Deno.test('media', async (test) => {
       type: Type.Anime,
       format: Format.TV,
       description: 'long description',
+      popularity: 0,
       title: {
         native: 'native title',
       },
@@ -153,6 +155,7 @@ Deno.test('media', async (test) => {
       type: Type.Anime,
       format: Format.TV,
       description: 'long description',
+      popularity: 0,
       title: {
         english: 'english title',
       },
@@ -229,6 +232,7 @@ Deno.test('media', async (test) => {
       type: Type.Anime,
       format: Format.TV,
       description: 'long description',
+      popularity: 0,
       title: {
         english: 'english title',
       },
@@ -305,6 +309,7 @@ Deno.test('media', async (test) => {
       type: Type.Anime,
       format: Format.TV,
       description: 'long description',
+      popularity: 0,
       title: {
         english: 'english title',
       },
@@ -316,6 +321,7 @@ Deno.test('media', async (test) => {
         edges: [{
           role: CharacterRole.Main,
           node: {
+            id: 5,
             name: {
               full: 'main character name',
             },
@@ -329,6 +335,7 @@ Deno.test('media', async (test) => {
         }, {
           role: CharacterRole.Supporting,
           node: {
+            id: 5,
             name: {
               full: 'supporting character name',
             },
@@ -340,6 +347,7 @@ Deno.test('media', async (test) => {
         }, {
           role: CharacterRole.Background,
           node: {
+            id: 5,
             name: {
               full: 'background character name',
             },
@@ -422,6 +430,7 @@ Deno.test('media', async (test) => {
       type: Type.Anime,
       format: Format.TV,
       description: 'long description',
+      popularity: 0,
       title: {
         english: 'english title',
       },
@@ -434,6 +443,9 @@ Deno.test('media', async (test) => {
           relationType: RelationType.Sequel,
           node: {
             id: 5,
+            type: Type.Anime,
+            format: Format.TV,
+            popularity: 0,
             title: {
               english: 'sequel',
             },
@@ -442,6 +454,9 @@ Deno.test('media', async (test) => {
           relationType: RelationType.Prequel,
           node: {
             id: 10,
+            type: Type.Anime,
+            format: Format.TV,
+            popularity: 0,
             title: {
               english: 'prequel',
             },
@@ -450,6 +465,9 @@ Deno.test('media', async (test) => {
           relationType: RelationType.SideStory,
           node: {
             id: 15,
+            type: Type.Anime,
+            format: Format.TV,
+            popularity: 0,
             title: {
               english: 'side story',
             },
@@ -459,6 +477,8 @@ Deno.test('media', async (test) => {
           node: {
             id: 20,
             type: Type.Manga,
+            format: Format.Manga,
+            popularity: 0,
             title: {
               english: 'adaptation',
             },
@@ -468,6 +488,8 @@ Deno.test('media', async (test) => {
           node: {
             id: 25,
             type: Type.Anime,
+            format: Format.TV,
+            popularity: 0,
             title: {
               english: 'uninteresting relation',
             },
@@ -477,6 +499,8 @@ Deno.test('media', async (test) => {
           node: {
             id: 30,
             type: Type.Anime,
+            format: Format.TV,
+            popularity: 0,
             title: {
               english: 'second adaptation',
             },
@@ -486,6 +510,8 @@ Deno.test('media', async (test) => {
           node: {
             id: 35,
             type: Type.Manga,
+            format: Format.Manga,
+            popularity: 0,
             title: {
               english: 'third adaptation',
             },
@@ -581,6 +607,7 @@ Deno.test('media', async (test) => {
       type: Type.Anime,
       format: Format.TV,
       description: 'long description',
+      popularity: 0,
       title: {
         english: 'english title',
       },
@@ -593,7 +620,9 @@ Deno.test('media', async (test) => {
           relationType: RelationType.Other,
           node: {
             id: 5,
+            type: Type.Anime,
             format: Format.Music,
+            popularity: 0,
             title: {
               english: 'op',
             },
@@ -603,7 +632,9 @@ Deno.test('media', async (test) => {
           relationType: RelationType.Other,
           node: {
             id: 10,
+            type: Type.Anime,
             format: Format.Music,
+            popularity: 0,
             title: {
               english: 'fk',
             },
@@ -613,7 +644,9 @@ Deno.test('media', async (test) => {
           relationType: RelationType.Other,
           node: {
             id: 15,
+            type: Type.Anime,
             format: Format.Music,
+            popularity: 0,
             title: {
               english: 'ed',
             },
@@ -911,10 +944,12 @@ Deno.test('character', async (test) => {
           characterRole: CharacterRole.Main,
           node: {
             id: 5,
+            type: Type.Anime,
+            format: Format.Movie,
+            popularity: 0,
             title: {
               english: 'movie',
             },
-            format: Format.Movie,
           },
         }],
       },
@@ -1003,12 +1038,21 @@ Deno.test('character', async (test) => {
 Deno.test('themes', async (test) => {
   await test.step('normal search', async () => {
     const media: Media = {
+      id: 1,
+      type: Type.Anime,
+      format: Format.Music,
+      popularity: 0,
+      title: {
+        english: 'title',
+      },
       relations: {
         edges: [{
           relationType: RelationType.Other,
           node: {
             id: 5,
+            type: Type.Anime,
             format: Format.Music,
+            popularity: 0,
             title: {
               english: 'music',
             },
@@ -1096,6 +1140,13 @@ Deno.test('themes', async (test) => {
 
   await test.step('no available themes', async () => {
     const media: Media = {
+      id: 1,
+      type: Type.Anime,
+      format: Format.Music,
+      popularity: 0,
+      title: {
+        english: 'title',
+      },
       relations: {
         edges: [],
       },
