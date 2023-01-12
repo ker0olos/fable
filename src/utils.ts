@@ -37,6 +37,34 @@ function sleep(secs: number) {
   return new Promise((resolve) => setTimeout(resolve, secs * 1000));
 }
 
+function github(url: string) {
+  // /^(https|git)(:\/\/|@)([^\/:]+)[\/:]([^\/:]+)\/(.+).git$/
+
+  let array = /^([-_a-z0-9]+)\/([-_a-z0-9]+)$/.exec(
+    url,
+  );
+
+  if (!array) {
+    array = /^https:\/\/github.com\/([^\/:]+)\/(.+)$/.exec(
+      url,
+    );
+  }
+
+  if (!array) {
+    throw new Error('invalid git url: ' + url);
+  }
+
+  return {
+    // protocol: array[1],
+    // separator: array[2],
+    // hostname: array[3],
+    owner: array[1],
+    name: array[2].endsWith('.git')
+      ? array[2].substring(0, array[2].length - 4)
+      : array[2],
+  };
+}
+
 function rng<T>(dict: { [chance: number]: T }): T {
   const pool = Object.values(dict);
 
@@ -220,6 +248,7 @@ const utils = {
   rng,
   shuffle,
   sleep,
+  github,
   titlesToArray,
   imagesToArray,
   truncate,

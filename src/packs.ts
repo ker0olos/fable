@@ -1,3 +1,6 @@
+// // @deno-types="https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.d.ts"
+// import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.js';
+
 import { Manifest, ManifestType } from './types.ts';
 
 import { Embed, Interaction, Message } from './discord.ts';
@@ -16,12 +19,12 @@ import * as anilistAPI from '../packs/anilist/index.ts';
 const anilistManifest = _anilist as Manifest;
 const utilsManifest = _utils as Manifest;
 
-/**
- * Non-standard commands (extras) are handled by individual packs
- * Only official builtin packs can execute code
- * (no dynamic imports allowed in deno deploy)
- * (not safe and won't trust it even if deno could)
- */
+const packs = {
+  embed,
+  commands,
+  list,
+};
+
 async function commands(
   name: string,
   interaction: Interaction<unknown>,
@@ -43,36 +46,27 @@ async function commands(
       interaction,
     );
   }
-
-  return;
 }
 
 function list(type?: ManifestType): Manifest[] {
   const builtin = [
     anilistManifest,
     utilsManifest,
-  ].map((manifest) => {
-    manifest.author = 'Fable';
-    manifest.type = ManifestType.Builtin;
-    return manifest;
-  });
+  ];
 
-  const manual = [
-    // TODO load manual packs
-  ].map((manifest) => {
-    // manifest.type = ManifestType.Manual;
-    return manifest;
-  });
+  // TODO load manual packs
+  // const manual = [
+  // ];
 
   switch (type) {
     case ManifestType.Builtin:
       return builtin;
-    case ManifestType.Manual:
-      return manual;
+    // case ManifestType.Manual:
+    //   return manual;
     default:
       return [
         ...builtin,
-        ...manual,
+        // ...manual,
       ];
   }
 }
@@ -132,10 +126,20 @@ function embed(
 //   };
 // }
 
-const packs = {
-  embed,
-  commands,
-  list,
-};
+// async function git(
+//   { owner, name, ref }: { owner: string; name: string; ref?: string },
+// ) {
+//   const { entries } = await unzip(
+//     `https://api.github.com/repos/${owner}/${name}/zipball/${ref ?? ''}`,
+//   );
+
+//   const manifests = Object.values(entries)
+//     .filter(({ name }) => name.endsWith('manifest.json'))
+//     .map((entry) => {
+//       return entry.json() as Promise<Manifest>;
+//     });
+
+//   return Promise.all(manifests);
+// }
 
 export default packs;

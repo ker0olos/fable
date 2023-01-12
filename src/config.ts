@@ -1,8 +1,3 @@
-// let appId: string;
-// let publicKey: string;
-// let mongoUrl: string;
-// let dsn: string;
-
 // const colors = {
 //   background: '#2b2d42',
 //   purple: '#6b3ebd',

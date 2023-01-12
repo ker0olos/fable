@@ -31,14 +31,14 @@ A free, open-source anime gacha app, an alternative to Mudae.
 > How are you keeping Fable free?
 
 I'm using serverless for the servers and the database, which is much cheaper to
-maintain. If it ever starts hurting my wallet, I will have to _actively_ ask for
-support, but <u>no one is getting special rewards for donations</u>, worst-case
-I will have to offer cosmetics; **tl;dr Fable will always remain 100% free.**
+maintain. If it ever starts hurting my wallet, I will have to actively ask for
+support, but no one is getting special rewards for donations, worst-case I will
+have to offer cosmetics; tl;dr Fable will always remain 100% free.
 
 ### Credits
 
-- Want to learn about running serverless bots on **Deno Deploy** or just
-  self-host your own version of Fable? Check the official guide at
+- This project wouldn't been possible without **Deno**. Want to learn about
+  running discord bots with low-cost? Check the official guide at
   <https://deno.com/deploy/docs/tutorial-discord-slash>
 
 - Checkout our friends at <https://anilist.co> your support will mean a lot to

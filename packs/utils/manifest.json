@@ -1,7 +1,9 @@
 {
+  "author": "Fable",
   "id": "utils",
   "title": "Utils",
   "description": "A pack containing a set of extra commands",
+  "type": "builtin",
   "commands": {
     "dice": {
       "source": "roll",
