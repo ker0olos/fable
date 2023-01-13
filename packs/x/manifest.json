@@ -1,7 +1,6 @@
 {
   "author": "Fable",
-  "id": "utils",
-  "title": "Utils",
+  "id": "x",
   "description": "A pack containing a set of extra commands",
   "type": "builtin",
   "commands": {

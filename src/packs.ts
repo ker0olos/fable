@@ -6,15 +6,15 @@ import _anilist from '../packs/anilist/manifest.json' assert {
   type: 'json',
 };
 
-import _utils from '../packs/utils/manifest.json' assert {
+import _x from '../packs/x/manifest.json' assert {
   type: 'json',
 };
 
-import * as utilsAPI from '../packs/utils/index.ts';
-import * as anilistAPI from '../packs/anilist/index.ts';
+import * as x from '../packs/x/index.ts';
+import * as anilist from '../packs/anilist/index.ts';
 
 const anilistManifest = _anilist as Manifest;
-const utilsManifest = _utils as Manifest;
+const xManifest = _x as Manifest;
 
 const packs = {
   embed,
@@ -29,16 +29,16 @@ async function commands(
   if (name in anilistManifest.commands!) {
     const command = anilistManifest.commands![name];
     // deno-lint-ignore no-explicit-any
-    return await (anilistAPI as any)[command.source](
+    return await (anilist as any)[command.source](
       interaction.options!,
       interaction,
     );
   }
 
-  if (name in utilsManifest.commands!) {
-    const command = utilsManifest.commands![name];
+  if (name in xManifest.commands!) {
+    const command = xManifest.commands![name];
     // deno-lint-ignore no-explicit-any
-    return await (utilsAPI as any)[command.source](
+    return await (x as any)[command.source](
       interaction.options!,
       interaction,
     );
@@ -48,10 +48,10 @@ async function commands(
 function list(type?: ManifestType): Manifest[] {
   const builtin = [
     anilistManifest,
-    utilsManifest,
+    xManifest,
   ];
 
-  // TODO load manual packs
+  // TODO BLOCKED load manual packs
   // (see https://github.com/ker0olos/fable/issues/10)
   // const manual = [
   // ];

@@ -39,7 +39,7 @@ Deno.test('anilist', async (test) => {
   });
 });
 
-Deno.test('utils', async (test) => {
+Deno.test('x', async (test) => {
   const builtin = packs.list(ManifestType.Builtin);
 
   const manifest = builtin[1] as Manifest;
@@ -50,8 +50,7 @@ Deno.test('utils', async (test) => {
     assertEquals(manifest, {
       'author': 'Fable',
       'type': ManifestType.Builtin,
-      'id': 'utils',
-      'title': 'Utils',
+      'id': 'x',
       'description': 'A pack containing a set of extra commands',
       'commands': {
         'dice': {
