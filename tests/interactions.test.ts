@@ -756,6 +756,88 @@ Deno.test('media', async (test) => {
   });
 });
 
+Deno.test('media debug', async (test) => {
+  await test.step('normal', async () => {
+    const media: Media = {
+      id: 1,
+      type: Type.Anime,
+      format: Format.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+        romaji: 'romaji title',
+        native: 'native title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'image_url',
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    try {
+      const message = await search.media({ search: 'query', debug: true });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            description: 'romaji title\nnative title',
+            fields: [
+              {
+                name: 'Id',
+                value: '1',
+              },
+              {
+                inline: true,
+                name: 'Type',
+                value: 'Anime',
+              },
+              {
+                inline: true,
+                name: 'Format',
+                value: 'TV',
+              },
+              {
+                inline: true,
+                name: 'Popularity',
+                value: '0',
+              },
+            ],
+            thumbnail: {
+              url: 'image_url',
+            },
+            title: 'english title',
+            type: 2,
+          }],
+          components: [],
+          content: undefined,
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+    }
+  });
+});
+
 Deno.test('character', async (test) => {
   await test.step('normal search', async () => {
     const character: Character = {

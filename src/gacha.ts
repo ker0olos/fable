@@ -71,8 +71,8 @@ async function forcePull({ id }: { id: string }): Promise<Pull> {
   return {
     pool: 1,
     character,
-    media: character.media!.edges![0]!.node,
-    role: character.media!.edges![0]!.characterRole,
+    media: edge.node,
+    role: edge.characterRole,
     popularityGreater: -1,
     popularityLesser: -1,
     rating: new Rating({

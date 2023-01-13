@@ -352,61 +352,118 @@ Deno.test('filter invalid pools', async (test) => {
   });
 });
 
-Deno.test('valid pool', async () => {
-  const fetchStub = fakePool({
-    id: 1,
-    name: {
-      full: 'name',
-    },
-    popularity: 100,
-    media: {
-      edges: [{
-        characterRole: CharacterRole.Supporting,
-        node: {
-          id: 2,
-          type: Type.Anime,
-          format: Format.TV,
-          popularity: 1_000_000,
-          title: {
-            english: 'title',
+Deno.test('valid pool', async (test) => {
+  await test.step('using character popularity', async () => {
+    const fetchStub = fakePool({
+      id: 1,
+      name: {
+        full: 'name',
+      },
+      popularity: 100,
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Supporting,
+          node: {
+            id: 2,
+            type: Type.Anime,
+            format: Format.TV,
+            popularity: 1_000_000,
+            title: {
+              english: 'title',
+            },
           },
-        },
-      }],
-    },
+        }],
+      },
+    });
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([[100, 200], 'MAIN']),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    try {
+      const pull = await gacha.rngPull();
+
+      assertEquals(pull.pool, 24);
+
+      assertEquals(pull.character.id, 1);
+      assertEquals(pull.media.id, 2);
+
+      assertEquals(pull.character.popularity, 100);
+      assertEquals(pull.media.popularity, 1_000_000);
+
+      assertEquals(pull.role, 'MAIN');
+      assertEquals(pull.popularityGreater, 100);
+      assertEquals(pull.popularityLesser, 200);
+
+      assertEquals(pull.rating.stars, 1);
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(rngStub, 2);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      fetchStub.restore();
+    }
   });
 
-  const rngStub = stub(
-    utils,
-    'rng',
-    returnsNext([[100, 200], 'MAIN']),
-  );
+  await test.step('using media popularity', async () => {
+    const fetchStub = fakePool({
+      id: 1,
+      name: {
+        full: 'name',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Supporting,
+          node: {
+            id: 2,
+            type: Type.Anime,
+            format: Format.TV,
+            popularity: 1_000_000,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    });
 
-  const randomStub = stub(Math, 'random', () => 0);
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([[100, 1_000_000], 'SUPPORTING']),
+    );
 
-  try {
-    const pull = await gacha.rngPull();
+    const randomStub = stub(Math, 'random', () => 0);
 
-    assertEquals(pull.pool, 24);
+    try {
+      const pull = await gacha.rngPull();
 
-    assertEquals(pull.character.id, 1);
-    assertEquals(pull.media.id, 2);
+      assertEquals(pull.pool, 24);
 
-    assertEquals(pull.character.popularity, 100);
-    assertEquals(pull.media.popularity, 1_000_000);
+      assertEquals(pull.character.id, 1);
+      assertEquals(pull.media.id, 2);
 
-    assertEquals(pull.role, 'MAIN');
-    assertEquals(pull.popularityGreater, 100);
-    assertEquals(pull.popularityLesser, 200);
+      assertEquals(pull.media.popularity, 1_000_000);
 
-    assertEquals(pull.rating.stars, 1);
+      assertEquals(pull.role, 'SUPPORTING');
+      assertEquals(pull.popularityGreater, 100);
+      assertEquals(pull.popularityLesser, 1_000_000);
 
-    assertSpyCalls(fetchStub, 1);
-    assertSpyCalls(rngStub, 2);
-  } finally {
-    rngStub.restore();
-    randomStub.restore();
-    fetchStub.restore();
-  }
+      assertEquals(pull.rating.stars, 4);
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(rngStub, 2);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      fetchStub.restore();
+    }
+  });
 });
 
 Deno.test('rating', async (test) => {
