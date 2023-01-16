@@ -82,8 +82,7 @@ export async function media(
   });
 
   const linksGroup: discord.Component[] = [];
-  const relationsGroup: discord.Component[] = [];
-  const othersGroup: discord.Component[] = [];
+  const musicGroup: discord.Component[] = [];
 
   if (media.trailer?.site === 'youtube') {
     const component = new discord.Component()
@@ -116,12 +115,12 @@ export async function media(
 
     switch (relation.node.format) {
       case MediaFormat.Music: {
-        if (relation.node.externalLinks?.[0]?.url) {
+        if (relation.node.externalLinks?.[0]?.url && musicGroup.length < 3) {
           component
             .setLabel(label)
             .setUrl(relation.node.externalLinks[0].url);
 
-          othersGroup.push(component);
+          musicGroup.push(component);
         }
         return;
       }
@@ -140,7 +139,7 @@ export async function media(
           .setLabel(`${label} (${utils.capitalize(relation.relationType!)})`)
           .setId(discord.join('media', `${media.packId}:${relation.node.id!}`));
 
-        relationsGroup.push(component);
+        linksGroup.push(component);
         return;
       }
       case MediaRelation.Adaptation: {
@@ -148,7 +147,7 @@ export async function media(
           .setLabel(`${label} (${utils.capitalize(relation.node.type!)})`)
           .setId(discord.join('media', `${media.packId}:${relation.node.id!}`));
 
-        relationsGroup.push(component);
+        linksGroup.push(component);
         return;
       }
       default:
@@ -156,9 +155,7 @@ export async function media(
     }
   });
 
-  message.addComponents(linksGroup);
-  message.addComponents(relationsGroup);
-  message.addComponents(othersGroup);
+  message.addComponents([...linksGroup, ...musicGroup]);
 
   return message;
 }
@@ -305,7 +302,7 @@ function characterDebugEmbed(character: Character) {
   return embed;
 }
 
-export async function themes(
+export async function music(
   { search }: {
     search?: string;
   },
@@ -321,7 +318,7 @@ export async function themes(
 
   const message = new discord.Message();
 
-  const themes: discord.Component[] = [];
+  const music: discord.Component[] = [];
 
   media.relations?.edges.forEach((relation) => {
     if (
@@ -334,15 +331,15 @@ export async function themes(
         .setLabel(label)
         .setUrl(relation.node.externalLinks[0].url);
 
-      themes.push(component);
+      music.push(component);
     }
   });
 
-  if (themes.length <= 0) {
+  if (music.length <= 0) {
     throw new Error('404');
   }
 
-  message.addComponents(themes);
+  message.addComponents(music);
 
   return message;
 }

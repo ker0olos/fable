@@ -92,10 +92,10 @@ async function handler(
               debug: name === 'debug' || Boolean(options!['debug']),
               search: options!['query'] as string,
             })).send();
-          case 'themes':
           case 'music':
           case 'songs':
-            return (await search.themes({
+          case 'themes':
+            return (await search.music({
               search: options!['query'] as string,
             })).send();
           case 'w':

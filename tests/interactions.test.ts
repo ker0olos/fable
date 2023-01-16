@@ -302,12 +302,6 @@ Deno.test('media', async (test) => {
               type: 1,
               components: [
                 {
-                  url: 'url',
-                  label: 'FakeTube',
-                  style: 5,
-                  type: 2,
-                },
-                {
                   url: 'url2',
                   label: 'Crunchyroll',
                   style: 5,
@@ -772,6 +766,15 @@ Deno.test('media', async (test) => {
                   type: 2,
                 },
               ],
+            },
+            {
+              type: 1,
+              components: [{
+                custom_id: 'media=anilist:35',
+                label: 'third adaptation (Manga)',
+                style: 2,
+                type: 2,
+              }],
             },
           ],
           content: undefined,
@@ -1970,7 +1973,7 @@ Deno.test('character debug', async (test) => {
   });
 });
 
-Deno.test('themes', async (test) => {
+Deno.test('music', async (test) => {
   await test.step('normal search', async () => {
     const media: Media = {
       id: '1',
@@ -2020,7 +2023,7 @@ Deno.test('themes', async (test) => {
     );
 
     try {
-      const message = await search.themes({ search: 'english title' });
+      const message = await search.music({ search: 'english title' });
 
       assertEquals(message.json(), {
         type: 4,
@@ -2075,7 +2078,7 @@ Deno.test('themes', async (test) => {
 
     try {
       await assertRejects(
-        async () => await search.themes({ search: 'x'.repeat(100) }),
+        async () => await search.music({ search: 'x'.repeat(100) }),
         Error,
         '404',
       );
@@ -2087,7 +2090,7 @@ Deno.test('themes', async (test) => {
     }
   });
 
-  await test.step('no available themes', async () => {
+  await test.step('no available music', async () => {
     const media: Media = {
       id: '1',
       type: MediaType.Anime,
@@ -2125,7 +2128,7 @@ Deno.test('themes', async (test) => {
 
     try {
       await assertRejects(
-        async () => await search.themes({ search: 'english title' }),
+        async () => await search.music({ search: 'english title' }),
         Error,
         '404',
       );
