@@ -1,28 +1,24 @@
-import { rng, sleep } from './utils.ts';
+import {
+  captureException,
+} from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
+
+import utils from './utils.ts';
+
+import Rating from './rating.ts';
+
+import config from './config.ts';
+
+import { Character, CharacterRole, Media } from './types.ts';
 
 import * as discord from './discord.ts';
 
-import * as anilist from './anilist.ts';
+import packs from './packs.ts';
 
-const URL = 'https://raw.githubusercontent.com/ker0olos/fable/main/assets';
-
-// const colors = {
-//   background: '#2b2d42',
-//   purple: '#6b3ebd',
-//   gold: '#feb500',
-//   yellow: '#fed33c',
-// };
-
-const emotes = {
-  star: '<:fable_star:1058059570305585303>',
-  noStar: '<:fable_no_star:1058182412963688548>',
-};
-
-export const variables = {
+const variables = {
   roles: {
-    10: anilist.CHARACTER_ROLE.MAIN, // 10% for Main
-    70: anilist.CHARACTER_ROLE.SUPPORTING, // 65% for Supporting
-    20: anilist.CHARACTER_ROLE.BACKGROUND, // 25% for Background
+    10: CharacterRole.Main, // 10% for Main
+    70: CharacterRole.Supporting, // 70% for Supporting
+    20: CharacterRole.Background, // 20% for Background
   },
   ranges: {
     // whether you get from the far end or the near end
@@ -31,94 +27,246 @@ export const variables = {
     22: [50_000, 100_000], // 22% for 50K -> 100K
     9: [100_000, 200_000], // 9% for 100K -> 200K
     3: [200_000, 400_000], // 3% for 200K -> 400K
-    1: [400_000, undefined], // 1% for 400K -> inf
+    1: [400_000, NaN], // 1% for 400K -> inf
   },
 };
 
-async function roll() {
-  let role = rng(variables.roles);
+type Pull = {
+  role: CharacterRole;
+  character: Character;
+  media: Media;
+  pool: number;
+  rating: Rating;
+  popularityGreater: number;
+  popularityLesser?: number;
+};
 
-  const range = rng(variables.ranges);
+/**
+ * force a specific pull using an id
+ */
+async function forcePull(id: string): Promise<Pull> {
+  const results = await packs.characters({ ids: [id] });
 
-  // NOTE this is a workaround an edge case
-  // most media in that range only include information about main characters
-  // which cases the pool to return empty
-  if (range[0]! === 0) {
-    role = anilist.CHARACTER_ROLE.MAIN;
+  if (!results.length) {
+    throw new Error('404');
   }
 
-  const pool = await anilist.pool({
-    role,
-    popularity_greater: range[0]!,
-    popularity_lesser: range[1],
-  });
+  // aggregate the media by populating any references to other media/character objects
+  const character = await packs.aggregate<Character>({ character: results[0] });
 
-  // TODO allow custom repos
+  const edge = character.media?.edges?.[0];
 
-  const pull = pool[Math.floor(Math.random() * pool.length)];
+  if (!edge) {
+    throw new Error('404');
+  }
 
-  console.log(
-    `pool length: ${pool.length}\npool variables: ${
-      JSON.stringify({ role, range })
-    }`,
-  );
+  const popularity = character.popularity || edge.node.popularity || 0;
 
-  return pull;
+  return {
+    pool: 1,
+    character,
+    media: edge.node,
+    role: edge.characterRole,
+    popularityGreater: -1,
+    popularityLesser: -1,
+    rating: new Rating({
+      popularity,
+      role: character.popularity ? undefined : edge.characterRole,
+    }),
+  };
 }
 
-/** start the roll's animation */
-export function start(token: string) {
-  const message = new discord.Message()
+/**
+ * generate a pool of characters then pull one
+ */
+async function rngPull(): Promise<Pull> {
+  // roll for popularity range that wil be used to generate the pool
+  const range = utils.rng(variables.ranges);
+
+  const role = range[0] === 0
+    // include all roles in the pool
+    ? undefined
+    // one specific role for the whole pool
+    : utils.rng(variables.roles);
+
+  const dict = await packs.pool({
+    role,
+    popularity_greater: range[0],
+    popularity_lesser: range[1] || undefined,
+  });
+
+  const pool = Object.values(dict);
+
+  let rating: Rating | undefined = undefined;
+  let character: Character | undefined = undefined;
+  let media: Media | undefined = undefined;
+
+  while (pool.length > 0) {
+    // sort through each character media and pick the default
+    const i = Math.floor(Math.random() * pool.length);
+
+    // aggregate the media by populating any references to other media/character objects
+    const candidate = await packs.aggregate<Character>({
+      character: pool.splice(i, 1)[0],
+    });
+
+    const edge = candidate.media?.edges?.[0];
+
+    if (!edge) {
+      continue;
+    }
+
+    const popularity = candidate.popularity || edge.node.popularity || 0;
+
+    if (
+      popularity >= range[0] &&
+      popularity <= range[1] &&
+      (
+        !role ||
+        candidate.popularity ||
+        edge?.characterRole === role
+      )
+    ) {
+      media = edge.node;
+      character = candidate;
+      rating = new Rating({
+        popularity,
+        role: character.popularity ? undefined : edge.characterRole,
+      });
+      break;
+    }
+  }
+
+  if (!character) {
+    throw new Error(
+      'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+    );
+  }
+
+  return {
+    role: role!,
+    media: media!,
+    rating: rating!,
+    character: character!,
+    pool: pool.length,
+    popularityGreater: range[0],
+    popularityLesser: range[1],
+  };
+}
+
+/**
+ * start the roll's animation
+ */
+function start({ token, id }: { token: string; id?: string }) {
+  (
+    id ? forcePull(id) : rngPull()
+  )
+    .then(async (pull) => {
+      const media = pull.media;
+
+      const titles = packs.titlesToArray(media);
+
+      let message = new discord.Message()
+        .addEmbed(
+          new discord.Embed()
+            .setTitle(utils.wrap(titles[0]!))
+            .setImage({
+              default: true,
+              url: packs.imagesToArray(media.coverImage, 'large-first', 'large')
+                ?.[0],
+            }),
+        );
+
+      await message.patch(token);
+
+      await utils.sleep(4);
+
+      message = new discord.Message()
+        .addEmbed(
+          new discord.Embed()
+            .setImage({
+              url: `${config.fileUrl}/stars/${pull.rating.stars}.gif`,
+            }),
+        );
+
+      await message.patch(token);
+
+      await utils.sleep(pull.rating.stars >= 5 ? 7 : 5);
+
+      message = new discord.Message()
+        .addEmbed(
+          new discord.Embed()
+            .setTitle(pull.rating.emotes)
+            .addField({
+              name: utils.wrap(titles[0]!),
+              value: `**${utils.wrap(pull.character.name!.full)}**`,
+            })
+            .setImage({
+              default: true,
+              url: packs.imagesToArray(
+                pull.character.image,
+                'large-first',
+                'large',
+              )?.[0],
+            }),
+        );
+
+      if (config.dev) {
+        message.addEmbed(pullDebugEmbed(pull));
+      }
+
+      await message.patch(token);
+    })
+    .catch(async (err) => {
+      if (err?.response?.status === 404 || err?.message === '404') {
+        return await new discord.Message().setContent(
+          'Found _nothing_ matching that query!',
+        ).patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  return new discord.Message()
     .addEmbed(
-      new discord.Embed('image').setImage(
-        `${URL}/spinner.gif`,
+      new discord.Embed().setImage(
+        { url: `${config.fileUrl}/spinner.gif` },
       ),
     );
-
-  roll().then(async (pull) => {
-    const titles = anilist.titles(pull.media);
-
-    let message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setTitle(titles[0]!)
-          .setImage(
-            pull.media.coverImage?.large,
-          ),
-      );
-
-    await message.patch(token);
-
-    await sleep(4);
-
-    message = new discord.Message()
-      .addEmbed(
-        new discord.Embed('image')
-          .setImage(
-            `${URL}/${pull.rating}stars.gif`,
-          ),
-      );
-
-    await message.patch(token);
-
-    await sleep(5);
-
-    message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setTitle(pull.character.name.full)
-          .setDescription(
-            `${emotes.star.repeat(pull.rating)}${
-              emotes.noStar.repeat(5 - pull.rating)
-            }`,
-          )
-          .setImage(
-            pull.character.image?.large,
-          ),
-      );
-
-    await message.patch(token);
-  });
-
-  return message;
 }
+
+function pullDebugEmbed(pull: Pull) {
+  return new discord.Embed()
+    .setTitle('Pool')
+    .addField({
+      name: 'Role',
+      value: `${pull.role}`,
+    })
+    .addField({
+      name: 'Media',
+      value: `${pull.media.id}`,
+    })
+    .addField({
+      name: 'Length',
+      value: `${pull.pool}`,
+    })
+    .addField({
+      name: 'Popularity',
+      value: `${pull.popularityGreater} < P < ${pull.popularityLesser}`,
+    });
+}
+
+const gacha = {
+  variables,
+  forcePull,
+  rngPull,
+  start,
+};
+
+export default gacha;

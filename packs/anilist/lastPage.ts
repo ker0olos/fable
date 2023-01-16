@@ -1,25 +1,30 @@
-import {
-  gql,
-  GraphQLClient,
-} from 'https://raw.githubusercontent.com/ker0olos/graphql-request/main/mod.ts';
+import utils from '../../src/utils.ts';
 
-import { sleep } from './src/utils.ts';
+import { join } from 'https://deno.land/std@0.172.0/path/mod.ts';
 
-import { PageInfo } from './src/anilist.ts';
+import gacha from '../../src/gacha.ts';
 
-import { variables } from './src/gacha.ts';
+import { gql, request } from './graphql.ts';
 
 type Data = { [key: string]: number };
 
-const filePath = './anilist.lastPage.json';
+const filepath = './lastPage.json';
 
-const client = new GraphQLClient('https://graphql.anilist.co');
+const dirname = new URL('.', import.meta.url).pathname;
 
-const ranges = Object.values(variables.ranges);
+const ranges = Object.values(gacha.variables.ranges);
 
 const data: Data = {};
 
-const previousData = (await import(filePath, {
+type PageInfo = {
+  total: number;
+  currentPage: number;
+  lastPage: number;
+  hasNextPage: boolean;
+  perPage: number;
+};
+
+const previousData = (await import(filepath, {
   assert: { type: 'json' },
 })).default as Data;
 
@@ -39,7 +44,14 @@ async function query(
         pageInfo {
           hasNextPage
         }
-        media(popularity_greater: $popularity_greater, popularity_lesser: $popularity_lesser, sort: [POPULARITY], format_in: [TV, MOVIE, MANGA]) {
+        media(
+          sort: [ TRENDING_DESC, POPULARITY_DESC ],
+          popularity_greater: $popularity_greater,
+          popularity_lesser: $popularity_lesser,
+          format_not_in: [ NOVEL, MUSIC, SPECIAL ],
+          # ignore hentai (not 100% reliable according to AniList)
+          isAdult: false,
+        ) {
           id
         }
       }
@@ -49,7 +61,7 @@ async function query(
   const response: {
     pageInfo: PageInfo;
     media: unknown[];
-  } = (await client.request(query, variables)).Page;
+  } = (await request(query, variables)).Page;
 
   return response;
 }
@@ -69,7 +81,7 @@ for (const range of ranges) {
       const { pageInfo, media } = await query({
         page,
         popularity_greater: range[0]!,
-        popularity_lesser: range[1],
+        popularity_lesser: range[1] || undefined,
       });
 
       console.log(
@@ -91,7 +103,7 @@ for (const range of ranges) {
       // (see https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting)
       if (e.message?.includes('Too Many Requests')) {
         console.log('sleeping for a minute...');
-        await sleep(60);
+        await utils.sleep(60);
         continue;
       }
 
@@ -107,7 +119,10 @@ for (const range of ranges) {
 }
 
 if (JSON.stringify(previousData) !== JSON.stringify(data)) {
-  await Deno.writeTextFile(filePath, JSON.stringify(data, null, 2));
+  await Deno.writeTextFile(
+    join(dirname, filepath),
+    JSON.stringify(data, null, 2),
+  );
   console.log('written changes to disk');
 } else {
   console.log('no changes were found');

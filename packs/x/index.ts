@@ -1,8 +1,11 @@
-import { randint } from './utils.ts';
+import utils from '../../src/utils.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '../../src/discord.ts';
 
-export function roll({ id, amount }: { id: string; amount: number }) {
+function roll(
+  { amount }: { amount: number },
+  { member }: discord.Interaction<unknown>,
+) {
   const rolls = [];
 
   const dieSize = 10;
@@ -11,7 +14,7 @@ export function roll({ id, amount }: { id: string; amount: number }) {
   let successes = 0;
 
   for (let i = 0; i < amount; i++) {
-    const roll = randint(1, dieSize);
+    const roll = utils.randint(1, dieSize);
 
     successes += roll >= minSuccess ? 1 : 0;
 
@@ -26,8 +29,14 @@ export function roll({ id, amount }: { id: string; amount: number }) {
     `\`${amount}d${dieSize}>=${minSuccess}\` \n = [ ${equation} ] \n = **${successes}** ${plural}`;
 
   const message = new discord.Message().setContent(
-    `<@${id}> ${rolledNumber}`,
+    `<@${member!.user.id}> ${rolledNumber}`,
   );
 
   return message;
 }
+
+const x = {
+  roll,
+};
+
+export default x;

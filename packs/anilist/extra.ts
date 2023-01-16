@@ -1,34 +1,41 @@
-import * as discord from './discord.ts';
+import * as discord from '../../src/discord.ts';
 
-import * as anilist from './anilist.ts';
+import { Status } from './types.ts';
 
-export async function nextEpisode({ search }: { search: string }) {
-  const anime = await anilist.getNextAiring({ search });
+import * as api from './api.ts';
 
-  const titles = anilist.titles(anime);
+import packs from '../../src/packs.ts';
+
+export async function nextEpisode(
+  { title }: { title: string },
+  // _: discord.Interaction<unknown>,
+) {
+  const anime = await api.nextEpisode({ search: title });
+
+  const titles = packs.titlesToArray(anime);
 
   const message = new discord.Message();
 
   switch (anime.status) {
-    case anilist.STATUS.RELEASING:
+    case Status.RELEASING:
       message.setContent(
         `The next episode of \`${titles.shift()}\` is <t:${
           anime.nextAiringEpisode!.airingAt
         }:R>.`,
       );
       break;
-    case anilist.STATUS.NOT_YET_RELEASED:
+    case Status.NOT_YET_RELEASED:
       message.setContent(
         `\`${titles.shift()}\` is coming soon.`,
       );
       break;
-    case anilist.STATUS.HIATUS:
+    case Status.HIATUS:
       message.setContent(
         `\`${titles.shift()}\` is taking a short break.`,
       );
       break;
-    case anilist.STATUS.FINISHED:
-    case anilist.STATUS.CANCELLED:
+    case Status.FINISHED:
+    case Status.CANCELLED:
       message.setContent(
         `Unfortunately, \`${titles.shift()}\` has already aired its final episode.`,
       );

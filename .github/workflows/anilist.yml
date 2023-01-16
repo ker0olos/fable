@@ -1,0 +1,31 @@
+name: anilist
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
+    - cron: "0 0 * * 0"
+
+jobs:
+  update-last-page-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - run: deno run --allow-all ./packs/anilist/lastPage.ts
+      - run: deno fmt --config deno.json ./packs/anilist/lastPage.json
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: 'Updated "anilist/lastPage.json'
+          commit-message: '[bot] Updated "anilist/lastPage.json"'
+          branch: anilist/last-page
+          delete-branch: true
+          body: |
+            Workaround AniList API's invalid page info (See #9)
+
+            Updated the last page cache for each possible gacha query
+          labels: |
+            anilist

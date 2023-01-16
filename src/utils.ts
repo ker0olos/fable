@@ -1,10 +1,10 @@
-import nacl from 'https://cdn.skypack.dev/tweetnacl@v1.0.3?dts';
+import nacl from 'https://esm.sh/tweetnacl@1.0.3';
 
-export function randint(min: number, max: number) {
-  return Math.floor((Math.random()) * (max - min + 1)) + min;
+function randint(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export function hexToInt(hex?: string): number | undefined {
+function hexToInt(hex?: string): number | undefined {
   if (!hex) {
     return;
   }
@@ -18,7 +18,7 @@ export function hexToInt(hex?: string): number | undefined {
   return parseInt(`${R}${G}${B}`, 16);
 }
 
-export function shuffle<T>(array: T[]) {
+function shuffle<T>(array: T[]) {
   for (
     let i = 0, length = array.length, swap = 0, temp = null;
     i < length;
@@ -31,10 +31,11 @@ export function shuffle<T>(array: T[]) {
   }
 }
 
-export const sleep = (secs: number) =>
-  new Promise((resolve) => setTimeout(resolve, secs * 1000));
+function sleep(secs: number) {
+  return new Promise((resolve) => setTimeout(resolve, secs * 1000));
+}
 
-export function rng<T>(dict: { [chance: number]: T }): T {
+function rng<T>(dict: { [chance: number]: T }): T {
   const pool = Object.values(dict);
 
   const chances = Object.keys(dict).map((n) => parseInt(n));
@@ -64,24 +65,67 @@ export function rng<T>(dict: { [chance: number]: T }): T {
   return pool[_[0]];
 }
 
-export function capitalize(s: string): string {
-  const sa = s.split('_');
-  return sa.map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(' ')
+function truncate(
+  str: string | undefined,
+  n: number,
+): string | undefined {
+  if (str && str.length > n) {
+    const s = str.substring(0, n - 2);
+    return s.slice(0, s.lastIndexOf(' ')) +
+      '...';
+  }
+
+  return str;
+}
+
+function wrap(text: string, width = 32) {
+  return text.replace(
+    new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'),
+    '$1\n',
+  );
+}
+
+function capitalize(s: string | undefined): string | undefined {
+  if (!s) {
+    return;
+  }
+
+  if (s.length <= 3) {
+    return s.toUpperCase();
+  }
+
+  return s
+    .split(/_|\s/)
+    .map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase())
+    .join(' ')
     .trim();
 }
 
-export function decodeDescription(s?: string): string | undefined {
+function comma(n: number) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function parseId(query?: string): number | undefined {
+  const id = parseInt(query!);
+
+  if (!isNaN(id) && id.toString() === query) {
+    return id;
+  }
+}
+
+function decodeDescription(s?: string): string | undefined {
   if (!s) {
     return;
   }
 
   s = decodeURI(s);
 
-  s = s.replaceAll('&amp;', '&');
-  s = s.replaceAll('&quot;', '"');
-  s = s.replaceAll('&#039;', '\'');
   s = s.replaceAll('&lt;', '<');
   s = s.replaceAll('&gt;', '>');
+  s = s.replaceAll('&#039;', '\'');
+  s = s.replaceAll('&quot;', '"');
+  s = s.replaceAll('&apos;', '\'');
+  s = s.replaceAll('&amp;', '&');
 
   s = s.replaceAll(/~!.+!~/gm, '');
 
@@ -96,7 +140,7 @@ export function decodeDescription(s?: string): string | undefined {
   return s;
 }
 
-export async function verifySignature(
+async function verifySignature(
   request: Request,
   publicKey: string,
 ): Promise<{ valid: boolean; body: string }> {
@@ -107,7 +151,7 @@ export async function verifySignature(
 
   function hexToUint8Array(hex: string) {
     return new Uint8Array(
-      hex.match(/.{1,2}/g)!.map((val) => parseInt(val, 16)),
+      hex?.match(/.{1,2}/g)!.map((val) => parseInt(val, 16)),
     );
   }
 
@@ -119,3 +163,20 @@ export async function verifySignature(
 
   return { valid, body };
 }
+
+const utils = {
+  capitalize,
+  comma,
+  decodeDescription,
+  hexToInt,
+  parseId,
+  randint,
+  rng,
+  shuffle,
+  sleep,
+  truncate,
+  verifySignature,
+  wrap,
+};
+
+export default utils;

@@ -1,0 +1,75 @@
+import { configAsync } from 'https://deno.land/x/dotenv@v3.2.0/mod.ts';
+
+// const colors = {
+//   background: '#2b2d42',
+//   purple: '#6b3ebd',
+//   gold: '#feb500',
+//   yellow: '#fed33c',
+// };
+
+export const emotes = {
+  star: '<:star:1061016362832642098>',
+  noStar: '<:no_star:1061016360190222466>',
+};
+
+const config: {
+  dev: boolean;
+  deploy: boolean;
+  appId?: string;
+  publicKey?: string;
+  mongoUrl?: string;
+  sentry?: string;
+  fileUrl?: string;
+} = {
+  dev: false,
+  deploy: false,
+  appId: undefined,
+  publicKey: undefined,
+  mongoUrl: undefined,
+  sentry: undefined,
+  fileUrl: undefined,
+};
+
+export async function init(
+  { baseUrl }: { baseUrl: string },
+) {
+  const query = await Deno.permissions.query({ name: 'env' });
+
+  if (query?.state === 'granted') {
+    config.dev = baseUrl.endsWith('/dev');
+
+    config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
+
+    // load .env file
+    if (!config.deploy) {
+      try {
+        await configAsync({ export: true });
+      } catch {
+        //
+      }
+    }
+
+    config.sentry = Deno.env.get('SENTRY_DSN')!;
+
+    config.appId = config.dev
+      ? Deno.env.get('DEV_ID')!
+      : Deno.env.get('APP_ID')!;
+
+    config.publicKey = config.dev
+      ? Deno.env.get('DEV_PUBLIC_KEY')!
+      : Deno.env.get('APP_PUBLIC_KEY')!;
+
+    config.mongoUrl = config.dev
+      ? Deno.env.get('DEV_MONGO_URL')!
+      : Deno.env.get('MONGO_URL')!;
+
+    config.fileUrl = `${new URL(baseUrl).origin}/file`;
+
+    if (!config.fileUrl.startsWith('http://localhost')) {
+      config.fileUrl = config.fileUrl
+        .replace('http://', 'https://');
+    }
+  }
+}
+
+export default config;

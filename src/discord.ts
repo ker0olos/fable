@@ -1,27 +1,30 @@
 import { json } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
-import { decodeDescription, hexToInt } from './utils.ts';
-
-const APP_ID = Deno.env.get('APP_ID');
-
-// const BOT_TOKEN = Deno.env.get('BOT_TOKEN');
+import utils from './utils.ts';
+import config from './config.ts';
 
 const API = `https://discord.com/api/v10`;
+
+const splitter = '=';
+
+export function join(...args: string[]): string {
+  return args.join(splitter);
+}
 
 export enum MessageType {
   Ping = 1,
   New = 4,
   Update = 7,
-  AutocompleteResult = 8,
-  Modal = 9,
+  // AutocompleteResult = 8,
+  // Modal = 9,
 }
 
 export enum InteractionType {
   Ping = 1,
   Command = 2,
   Component = 3,
-  CommandAutocomplete = 4,
-  Modal = 5,
+  // CommandAutocomplete = 4,
+  // Modal = 5,
 }
 
 export enum ComponentType {
@@ -55,6 +58,12 @@ export type User = {
   banner?: string;
 };
 
+export type Emote = {
+  id: string;
+  name?: string;
+  animated?: boolean;
+};
+
 export class Interaction<Options> {
   id: string;
   token: string;
@@ -69,11 +78,10 @@ export class Interaction<Options> {
 
   name?: string;
   options?: {
-    [key: string]: {
-      type: number;
-      value: Options;
-    };
+    [key: string]: Options;
   };
+
+  subcommand?: string;
 
   customType?: string;
   customValues?: string[];
@@ -95,17 +103,24 @@ export class Interaction<Options> {
 
   constructor(body: string) {
     const obj = JSON.parse(body);
+
     const data: {
-      id: string;
+      // id: string;
       name: string;
       type: string;
-      target_id?: string;
-      resolved?: unknown[];
+      // target_id?: string;
+      // resolved?: unknown[];
       options?: {
         type: number;
         name: string;
-        focused: boolean;
+        focused?: boolean;
         value: unknown;
+        options?: {
+          type: number;
+          name: string;
+          focused?: boolean;
+          value: unknown;
+        }[];
       }[];
     } & { // Message Component
       custom_id: string;
@@ -117,8 +132,8 @@ export class Interaction<Options> {
     } = this.data = obj.data;
 
     this.id = obj.id;
-    this.type = obj.type;
     this.token = obj.token;
+    this.type = obj.type;
 
     // this.guildId = obj.guild_id;
     // this.channelId = obj.channel_id;
@@ -133,22 +148,31 @@ export class Interaction<Options> {
     this.options = {};
 
     switch (this.type) {
-      case InteractionType.Command:
-      case InteractionType.CommandAutocomplete: {
-        this.targetId = data!.target_id;
-        this.name = data!.name.replaceAll(' ', '_').toLowerCase();
-        data!.options?.forEach((option) => {
-          this.options![option.name] = {
-            type: option.type,
-            value: option.value as Options,
-          };
-        });
+      // case InteractionType.CommandAutocomplete:
+      case InteractionType.Command: {
+        this.name = data!.name;
+
+        // this.targetId = data!.target_id;
+
+        if (data!.options?.[0].type === 1) {
+          this.subcommand = data!.options?.[0].name;
+
+          this.name += `_${this.subcommand}`;
+
+          data!.options?.[0]!.options?.forEach((option) => {
+            this.options![option.name] = option.value as Options;
+          });
+        } else {
+          data!.options?.forEach((option) => {
+            this.options![option.name] = option.value as Options;
+          });
+        }
 
         break;
       }
-      case InteractionType.Modal:
+      // case InteractionType.Modal:
       case InteractionType.Component: {
-        const custom = data!.custom_id.split(':');
+        const custom = data!.custom_id.split(splitter);
 
         this.customType = custom[0];
         this.customValues = custom.slice(1);
@@ -156,10 +180,7 @@ export class Interaction<Options> {
         if (data.components) {
           // deno-lint-ignore no-explicit-any
           data.components[0].components.forEach((component: any) => {
-            this.options![component.custom_id] = {
-              type: component.type,
-              value: component.value as Options,
-            };
+            this.options![component.custom_id] = component.value as Options;
           });
         }
 
@@ -172,63 +193,86 @@ export class Interaction<Options> {
 }
 
 export class Component {
-  _data: {
+  #data: {
     type: number;
     custom_id?: string;
     style?: ButtonStyle | TextInputStyle;
     label?: string;
+    emoji?: Emote;
     placeholder?: string;
     url?: string;
   };
 
   constructor(type: ComponentType = ComponentType.Button) {
-    this._data = {
+    this.#data = {
       type,
     };
   }
 
   setId(id: string) {
-    this._data.custom_id = id;
+    this.#data.custom_id = id;
     return this;
   }
 
   setStyle(style: ButtonStyle | TextInputStyle) {
-    this._data.style = style;
+    this.#data.style = style;
     return this;
   }
 
   setLabel(label: string) {
-    this._data.label = label;
+    this.#data.label = label;
+    return this;
+  }
+
+  setEmote(emote: Emote) {
+    this.#data.emoji = emote;
     return this;
   }
 
   setPlaceholder(placeholder: string) {
-    this._data.type = ComponentType.TextInput;
-    this._data.placeholder = placeholder;
+    this.#data.type = ComponentType.TextInput;
+    this.#data.placeholder = placeholder;
     return this;
   }
 
   setUrl(url: string) {
-    this._data.url = url;
-    this._data.style = 5;
+    this.#data.url = url;
     return this;
   }
 
-  _done(): unknown {
-    return this._data;
+  json() {
+    if (!this.#data.style) {
+      switch (this.#data.type) {
+        case ComponentType.TextInput:
+          this.#data.style = TextInputStyle.Short;
+          break;
+        case ComponentType.Button:
+          if (this.#data.url) {
+            this.#data.style = 5;
+          } else {
+            this.#data.style = ButtonStyle.Grey;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    return this.#data;
   }
 }
 
 export class Embed {
-  _data: {
-    type: string;
+  #data: {
+    type: number;
     title?: string;
+    url?: string;
     description?: string;
     color?: number;
     fields?: {
-      name?: string;
-      value?: string;
-      inline: boolean;
+      name: string;
+      value: string;
+      inline?: boolean;
     }[];
     thumbnail?: {
       url: string;
@@ -237,191 +281,214 @@ export class Embed {
       url: string;
     };
     author?: {
-      name: string;
+      name?: string;
+      url?: string;
+      icon_url?: string;
     };
     footer?: {
-      text: string;
+      text?: string;
+      icon_url?: string;
     };
   };
 
-  constructor(type: 'rich' | 'image' = 'rich') {
-    this._data = {
-      type,
+  constructor() {
+    this.#data = {
+      type: 2,
     };
   }
 
-  setTitle(title: string) {
-    this._data.title = title;
+  setTitle(title?: string) {
+    this.#data.title = title;
+    return this;
+  }
+
+  setUrl(url?: string) {
+    this.#data.url = url;
     return this;
   }
 
   setColor(color?: string) {
-    this._data.color = hexToInt(color);
+    this.#data.color = utils.hexToInt(color);
     return this;
   }
 
   setDescription(description?: string) {
-    this._data.description = decodeDescription(description);
+    this.#data.description = utils.decodeDescription(description);
     return this;
   }
 
-  setAuthor(name?: string) {
-    if (name) {
-      this._data.author = {
-        name,
+  setAuthor(author: { name?: string; url?: string; icon_url?: string }) {
+    if (author.name) {
+      this.#data.author = author;
+    }
+    return this;
+  }
+
+  setThumbnail(thumbnail: { url?: string; default?: boolean }) {
+    if (thumbnail.url || thumbnail.default) {
+      this.#data.thumbnail = {
+        url: thumbnail.url ?? `${config.fileUrl}/medium.jpg`,
       };
     }
     return this;
   }
 
-  setThumbnail(url?: string) {
-    if (url) {
-      this._data.thumbnail = {
-        url,
+  addField(field: { name: string; value: string; inline?: boolean }) {
+    if (!this.#data.fields) {
+      this.#data.fields = [];
+    }
+
+    if (field) {
+      this.#data.fields.push(field);
+    }
+
+    return this;
+  }
+
+  setImage(image: { url?: string; default?: boolean }) {
+    if (image.url || image.default) {
+      this.#data.image = {
+        url: image.url ?? `${config.fileUrl}/large.jpg`,
       };
     }
     return this;
   }
 
-  addField({ name, value }: { name?: string; value?: string }, inline = false) {
-    if (!this._data.fields) {
-      this._data.fields = [];
-    }
-    this._data.fields.push({
-      name,
-      value,
-      inline,
-    });
-    return this;
-  }
-
-  setImage(url?: string) {
-    if (url) {
-      this._data.image = {
-        url,
-      };
+  setFooter(footer: { text?: string; icon_url?: string }) {
+    if (footer.text) {
+      this.#data.footer = footer;
     }
     return this;
   }
 
-  setFooter(text?: string, suffix = '') {
-    if (text) {
-      this._data.footer = {
-        text: text + suffix,
-      };
-    }
-    return this;
-  }
-
-  _done(): unknown {
-    return {
-      ...this._data,
-      type: 2,
-    };
+  json() {
+    return this.#data;
   }
 }
 
 export class Message {
-  _type?: MessageType;
-  _data: {
+  #type?: MessageType;
+
+  #data: {
     content?: string;
     embeds: unknown[];
     components: unknown[];
-    //
-    choices?: string[];
-    //
-    title?: string;
-    custom_id?: string;
   };
+  //  & {
+  //   // choices?: string[];
+  // } & {
+  //   // title?: string;
+  //   // custom_id?: string;
+  // };
 
   constructor(type: MessageType = MessageType.New) {
-    this._type = type;
-    this._data = {
+    this.#type = type;
+    this.#data = {
       embeds: [],
       components: [],
     };
   }
 
   setType(type: MessageType) {
-    this._type = type;
+    this.#type = type;
     return this;
   }
 
   setContent(content: string) {
-    this._data.content = content;
+    this.#data.content = content;
     return this;
   }
 
-  setId(id: string) {
-    this._data.custom_id = id;
-    return this;
-  }
+  // setId(id: string) {
+  //   this.#data.custom_id = id;
+  //   return this;
+  // }
 
-  setTitle(title: string) {
-    this._type = MessageType.Modal;
-    this._data.title = title;
-    return this;
-  }
+  // setTitle(title: string) {
+  //   this.#type = MessageType.Modal;
+  //   this.#data.title = title;
+  //   return this;
+  // }
 
   addEmbed(embed: Embed) {
-    this._data.embeds.push(embed._done());
+    if (this.embedsCount() < 5) {
+      this.#data.embeds.push(embed.json());
+    }
     return this;
   }
 
   addComponents(components: Component[]) {
     if (components.length > 0) {
-      this._data.components.push({
+      this.#data.components.push({
         type: 1,
-        components: components.slice(0, 5).map((component) =>
-          component._done()
-        ),
+        components: components.slice(0, 5).map((component) => {
+          const comp = component.json();
+
+          // labels have maximum of 80 characters
+          // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
+          comp.label = utils.truncate(comp.label, 80);
+
+          return component.json();
+        }),
       });
     }
     return this;
   }
 
-  addChoices(...choices: string[]) {
-    if (choices.length > 0) {
-      this._type = MessageType.AutocompleteResult;
-      if (!this._data.choices) {
-        this._data.choices = [];
-      }
-      this._data.choices.push(...choices);
+  // addChoices(...choices: string[]) {
+  //   if (choices.length > 0) {
+  //     this.#type = MessageType.AutocompleteResult;
+  //     if (!this.#data.choices) {
+  //       this.#data.choices = [];
+  //     }
+  //     this.#data.choices.push(...choices);
+  //   }
+  //   return this;
+  // }
+
+  embedsCount() {
+    return this.#data.embeds.length;
+  }
+
+  componentsCount() {
+    return this.#data.components.length;
+  }
+
+  json() {
+    let data;
+
+    switch (this.#type) {
+      // case MessageType.AutocompleteResult:
+      //   data = { choices: this.#data.choices };
+      //   break;
+      // case MessageType.Modal:
+      //   data = {
+      //     title: this.#data.title,
+      //     custom_id: this.#data.custom_id,
+      //     components: this.#data.components,
+      //   };
+      //   break;
+      default:
+        data = {
+          embeds: this.#data.embeds,
+          content: this.#data.content,
+          components: this.#data.components,
+        };
+        break;
     }
-    return this;
+
+    return {
+      type: this.#type,
+      data,
+    };
   }
 
   send(): Response {
-    let data;
-
-    switch (this._type) {
-      case MessageType.AutocompleteResult:
-        data = { choices: this._data.choices };
-        break;
-      case MessageType.Modal:
-        data = {
-          title: this._data.title,
-          custom_id: this._data.custom_id,
-          components: this._data.components,
-        };
-        break;
-      default:
-        data = {
-          embeds: this._data.embeds,
-          content: this._data.content,
-          components: this._data.components,
-        };
-        break;
-    }
-
-    return json({
-      type: this._type,
-      data,
-    });
+    return json(this.json());
   }
 
   async patch(token: string): Promise<Response> {
-    const url = `${API}/webhooks/${APP_ID}/${token}/messages/@original`;
+    const url = `${API}/webhooks/${config.appId}/${token}/messages/@original`;
 
     return await fetch(url, {
       method: 'PATCH',
@@ -429,9 +496,9 @@ export class Message {
         'Content-Type': 'application/json; charset=utf-8',
       },
       body: JSON.stringify({
-        embeds: this._data.embeds,
-        content: this._data.content,
-        components: this._data.components,
+        embeds: this.#data.embeds,
+        content: this.#data.content,
+        components: this.#data.components,
       }),
     });
   }
@@ -462,25 +529,63 @@ export class Message {
     });
   }
 
-  static loading() {
-    return json({
-      type: 5,
+  // static loading() {
+  //   return json({
+  //     type: 5,
+  //   });
+  // }
+
+  // static deferred() {
+  //   return json({
+  //     type: 6,
+  //   });
+  // }
+
+  static page(
+    { current, id, index, total }: {
+      id: string;
+      total: number;
+      index?: number;
+      current: Embed;
+    },
+  ) {
+    index = index ?? 0;
+
+    const message = new Message();
+
+    current.setFooter({
+      text: `${index + 1}/${total}`,
     });
+
+    const navigation = [];
+
+    if (index - 1 >= 0) {
+      navigation.push(
+        new Component().setId(`${id}:${index - 1}`).setLabel(`Prev`),
+      );
+    }
+
+    if (index + 1 < total) {
+      navigation.push(
+        new Component().setId(`${id}:${index + 1}`).setLabel(`Next`),
+      );
+    }
+
+    return message.addEmbed(current).addComponents(navigation);
   }
 
-  static deferred() {
-    return json({
-      type: 6,
-    });
-  }
-
-  // deno-lint-ignore no-explicit-any
-  static error(err: any) {
+  static content(content: string) {
     return json({
       type: MessageType.New,
       data: {
-        content: err?.message ?? err,
+        content,
       },
     });
+  }
+
+  static internal(id: string) {
+    return new Message().setContent(
+      `An Internal Error occurred and was reported.\n\n\`\`\`ref_id: ${id}\`\`\``,
+    );
   }
 }

@@ -1,0 +1,30 @@
+name: discord
+
+on:
+  push:
+
+jobs:
+  update-slash-commands:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          cache: "pip"
+          python-version: "3.x"
+      - run: pip install -r requirements.txt
+
+      - if: ${{ github.ref == 'refs/heads/main' }}
+        name: Update global slash commands on production
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: python update_commands.py
+
+      - if: ${{ github.ref != 'refs/heads/main' }}
+        name: Update guild slash commands on dev
+        env:
+          APP_ID: ${{ secrets.DEV_ID }}
+          BOT_TOKEN: ${{ secrets.DEV_TOKEN }}
+          GUILD_ID: ${{ secrets.GUILD_ID }}
+        run: python update_commands.py
