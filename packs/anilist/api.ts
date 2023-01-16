@@ -187,8 +187,9 @@ export async function pool(
     popularity_lesser?: number;
     role?: CharacterRole;
   },
+  retry = 0,
 ): Promise<Pool> {
-  const pool: Pool = {};
+  const dict: Pool = {};
 
   // the minimal pool insures that there's enough variety in the pool
   const minimalPool = 25;
@@ -256,7 +257,7 @@ export async function pool(
   ]) as keyof typeof lastPage;
 
   // select a random page between the first and last
-  const set = [
+  const pages = [
     ...new Set([
       utils.randint(1, lastPage[key]),
       utils.randint(1, lastPage[key]),
@@ -266,7 +267,7 @@ export async function pool(
     ]),
   ];
 
-  const requests = set.map(
+  const requests = pages.map(
     (page) =>
       request<{
         Page: {
@@ -276,36 +277,40 @@ export async function pool(
         .then((response) => response.Page),
   );
 
-  const pages = await Promise.all(requests);
+  const data = await Promise.all(requests);
 
-  pages.forEach((page) => {
+  data.forEach((page) => {
     // using the api
     // create a dictionary of all the characters with their ids as key
     page.media!.forEach(({ characters }) => {
       // deno-lint-ignore ban-ts-comment
       //@ts-ignore
       characters!.nodes!.forEach((character: Character) => {
-        pool[character.id] = (character.packId = 'anilist', character);
+        dict[character.id] = (character.packId = 'anilist', character);
       });
     });
   });
 
-  const currentPool = Object.keys(pool).length;
+  const currentPool = Object.keys(dict).length;
 
   if (minimalPool > currentPool) {
-    throw new Error(
-      `failed to create a pool with ${
-        JSON.stringify({
-          popularity_greater,
-          popularity_lesser,
-          role,
-          pages: set,
-          current_pool: currentPool,
-          minimal_pool: minimalPool,
-        })
-      }`,
-    );
+    if (retry > 0) {
+      throw new Error(
+        `failed to create a pool with ${
+          JSON.stringify({
+            popularity_greater,
+            popularity_lesser,
+            role,
+            pages: pages,
+            current_pool: currentPool,
+            minimal_pool: minimalPool,
+          })
+        }`,
+      );
+    } else {
+      return pool({ popularity_greater, popularity_lesser, role }, retry + 1);
+    }
   }
 
-  return pool;
+  return dict;
 }
