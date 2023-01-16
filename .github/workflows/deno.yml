@@ -14,6 +14,8 @@ jobs:
       - run: deno test --config deno.json --coverage=cov_profile
       - run: deno coverage cov_profile --lcov --output=lcov.info
       - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   fmt:
     runs-on: ubuntu-latest
