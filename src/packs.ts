@@ -6,6 +6,10 @@ import _anilist from '../packs/anilist/manifest.json' assert {
   type: 'json',
 };
 
+import _vtubers from '../packs/vtubers/manifest.json' assert {
+  type: 'json',
+};
+
 import _x from '../packs/x/manifest.json' assert {
   type: 'json',
 };
@@ -30,6 +34,7 @@ import {
 } from './types.ts';
 
 const anilistManifest = _anilist as Manifest;
+const vtubersManifest = _vtubers as Manifest;
 const xManifest = _x as Manifest;
 
 type All = Media | DisaggregatedMedia | Character | DisaggregatedCharacter;
@@ -83,12 +88,14 @@ function list(type?: ManifestType): Manifest[] {
     case ManifestType.Builtin:
       return [
         anilistManifest,
+        vtubersManifest,
         xManifest,
       ];
     case ManifestType.Manual:
       return [...manual];
     default:
       return [
+        vtubersManifest,
         ...manual,
       ];
   }
