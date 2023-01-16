@@ -55,20 +55,18 @@ server.
 
 > How are you keeping Fable free?
 
-I'm using serverless for the servers and the database, which is much cheaper to
-maintain. If it ever starts hurting my wallet, I will have to actively ask for
-support, but no one is getting special rewards for donations, worst-case I will
-have to offer cosmetics; tl;dr Fable will always remain 100% free.
+We're using serverless for the servers and the database, which is much cheaper
+to maintain. If it ever starts hurting our wallet, we'll have to actively ask
+for support, but no one is getting special rewards for donations, worst-case
+we'll have to offer cosmetics; tl;dr Fable will always remain 100% free.
 
-### Credits
+## Credits
 
 Our core team who are responsible for reviewing code, making decisions on the
 direction of the project:
 
 - [@ker0olos](https://github.com/ker0olos) — Kerolos Zaki (aka. Wholesome) —
   Wholesome#6355
-
----
 
 - This project wouldn't been possible without [Deno][deno]. Want to learn about
   running discord bots with low-cost? Check the official guide at

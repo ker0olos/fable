@@ -1,6 +1,9 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
+import {
+  assertEquals,
+  assertObjectMatch,
+} from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 import {
   assertSpyCalls,
@@ -33,7 +36,7 @@ Deno.test('list', async (test) => {
 
     const manifest = builtin[0] as Manifest;
 
-    assertEquals(builtin.length, 2);
+    assertEquals(builtin.length, 3);
 
     assertEquals(manifest, {
       'author': 'Fable',
@@ -63,6 +66,54 @@ Deno.test('list', async (test) => {
     assertValidManifest(manifest);
   });
 
+  await test.step('vtubers', () => {
+    const builtin = packs.list(ManifestType.Builtin);
+
+    const manifest = builtin[1] as Manifest;
+
+    assertEquals(builtin.length, 3);
+
+    assertObjectMatch(manifest, {
+      'author': 'Fable',
+      'type': ManifestType.Builtin,
+      'description': 'Contains a list of the most famous vtubers',
+      'id': 'vtubers',
+      'title': 'VTubers',
+    });
+
+    assertValidManifest(manifest);
+  });
+
+  await test.step('x', () => {
+    const builtin = packs.list(ManifestType.Builtin);
+
+    const manifest = builtin[2] as Manifest;
+
+    assertEquals(builtin.length, 3);
+
+    assertEquals(manifest, {
+      'author': 'Fable',
+      'type': ManifestType.Builtin,
+      'id': 'x',
+      'description': 'A pack containing a set of extra commands',
+      'commands': {
+        'dice': {
+          'source': 'roll',
+          'description': 'Roll a ten-sided dice',
+          'options': [
+            {
+              'id': 'amount',
+              'description': 'The number of dices to roll',
+              'type': 'integer',
+            },
+          ],
+        },
+      },
+    });
+
+    assertValidManifest(manifest);
+  });
+
   await test.step('manual', () => {
     const list = packs.list(ManifestType.Manual);
 
@@ -72,7 +123,9 @@ Deno.test('list', async (test) => {
   await test.step('no type', () => {
     const list = packs.list();
 
-    assertEquals(list.length, 0);
+    assertEquals(list.length, 1);
+
+    assertEquals(list[0].id, 'vtubers');
   });
 });
 
