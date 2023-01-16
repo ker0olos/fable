@@ -14,16 +14,19 @@ import { Media } from '../../src/types.ts';
 const mediaDefaultSort = '[ TRENDING_DESC, POPULARITY_DESC ]';
 
 /** Order manually decided by anilist moderators */
-const characterDefaultSort = '[ RELEVANCE ]';
+const characterDefaultSort = '[ RELEVANCE, ROLE_DESC ]';
 
 export async function media(
-  variables: { id?: number; search?: string },
-  prioritize?: 'anime' | 'manga',
-): Promise<AniListMedia | undefined> {
+  variables: { ids?: number[]; search?: string },
+): Promise<AniListMedia[]> {
+  if (!variables.search && !variables.ids?.length) {
+    return [];
+  }
+
   const query = gql`
-    query ($id: Int, $search: String) {
+    query ($ids: [Int], $search: String) {
       Page {
-        media(search: $search, id: $id, sort: ${mediaDefaultSort}) {
+        media(search: $search, id_in: $ids, sort: ${mediaDefaultSort}) {
           id
           type
           format
@@ -88,28 +91,29 @@ export async function media(
     }
   `;
 
-  const media: {
+  const data: {
     Page: {
       media: AniListMedia[];
     };
   } = await request(query, variables);
 
-  if (!prioritize) {
-    return media.Page.media[0];
-  } else {
-    return media.Page.media.find((m) => m.type === prioritize.toUpperCase()) ??
-      media.Page.media[0];
-  }
+  return data.Page.media.map(
+    (media) => (media.packId = 'anilist', media),
+  );
 }
 
-export async function character(
-  variables: { id?: number; search?: string },
-): Promise<Character | undefined> {
+export async function characters(
+  variables: { ids?: number[]; search?: string },
+): Promise<Character[]> {
+  if (!variables.search && !variables.ids?.length) {
+    return [];
+  }
+
   const query = gql`
-    query ($id: Int, $search: String) {
+    query ($ids: [Int], $search: String) {
       Page {
         # match the search query
-        characters(search: $search, id: $id, sort: [ SEARCH_MATCH ]) {
+        characters(search: $search, id_in: $ids, sort: [ SEARCH_MATCH ]) {
           id
           age
           gender
@@ -145,13 +149,15 @@ export async function character(
     }
   `;
 
-  const character: {
+  const data: {
     Page: {
       characters: Character[];
     };
   } = await request(query, variables);
 
-  return character.Page.characters[0];
+  return data.Page.characters.map(
+    (character) => (character.packId = 'anilist', character),
+  );
 }
 
 export async function nextEpisode(
@@ -199,8 +205,7 @@ export async function pool(
           # ignore hentai (not 100% reliable according to AniList)
           isAdult: false,
         ) {
-          # TODO BLOCKED only requests the first page
-          # (see https://github.com/ker0olos/fable/issues/9)
+          # only requests the first page
           characters(role: $role, sort: ${characterDefaultSort}, perPage: 25) {
             nodes {
               # the character themselves
@@ -277,8 +282,10 @@ export async function pool(
     // using the api
     // create a dictionary of all the characters with their ids as key
     page.media!.forEach(({ characters }) => {
-      characters!.nodes!.forEach((character) => {
-        pool[character.id!] = character;
+      // deno-lint-ignore ban-ts-comment
+      //@ts-ignore
+      characters!.nodes!.forEach((character: Character) => {
+        pool[character.id] = (character.packId = 'anilist', character);
       });
     });
   });

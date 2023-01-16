@@ -6,6 +6,7 @@ import {
 import {
   json,
   serve,
+  serveStatic,
   validateRequest,
 } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
@@ -19,13 +20,12 @@ import gacha from './gacha.ts';
 
 import config, { init } from './config.ts';
 
-import { ManifestType } from './types.ts';
+import { ManifestType, MediaType } from './types.ts';
 
 async function handler(
   request: Request,
-  dev = false,
 ): Promise<Response> {
-  init({ dev });
+  init({ baseUrl: request.url });
 
   initSentry({ dsn: config.sentry });
 
@@ -70,18 +70,22 @@ async function handler(
     return discord.Message.pong();
   }
 
-  // console.log(type);
-
   try {
     switch (type) {
       case discord.InteractionType.Command:
         switch (name) {
+          case 'search':
           case 'anime':
           case 'manga':
             return (await search.media({
               debug: Boolean(options!['debug']),
               search: options!['query'] as string,
-            }, name)).send();
+              type: Object.values(MediaType).includes(
+                  name.toUpperCase() as MediaType,
+                )
+                ? name.toUpperCase() as MediaType
+                : undefined,
+            })).send();
           case 'debug':
           case 'character':
             return (await search.character({
@@ -126,10 +130,8 @@ async function handler(
         switch (customType) {
           case 'media': {
             const message = await search.media({
-              debug: false,
-              id: parseInt(customValues![0]),
+              id: customValues![0],
             });
-
             return message.setType(discord.MessageType.Update).send();
           }
           case 'builtin':
@@ -161,6 +163,10 @@ async function handler(
       );
     }
 
+    if (!config.sentry) {
+      throw err;
+    }
+
     const refId = captureException(err, {
       extra: { ...interaction },
     });
@@ -172,6 +178,10 @@ async function handler(
 }
 
 serve({
-  '/': (_) => handler(_),
-  '/dev': (_) => handler(_, true),
+  '/': handler,
+  '/dev': handler,
+  '/schema': serveStatic('../json/index.json', { baseUrl: import.meta.url }),
+  '/file/:filename+': serveStatic('../assets/public', {
+    baseUrl: import.meta.url,
+  }),
 });

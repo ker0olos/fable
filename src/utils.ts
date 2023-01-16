@@ -1,6 +1,4 @@
-import nacl from 'https://cdn.skypack.dev/tweetnacl@v1.0.3?dts';
-
-import { Character, Image, Media } from './types.ts';
+import nacl from 'https://esm.sh/tweetnacl@1.0.3';
 
 function randint(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -142,62 +140,6 @@ function decodeDescription(s?: string): string | undefined {
   return s;
 }
 
-function titlesToArray(media: Media, max?: number): string[] {
-  let titles = [
-    media.title?.english,
-    media.title?.romaji,
-    media.title?.native,
-  ];
-
-  titles = titles.filter(Boolean)
-    .map((str) => max ? truncate(str, max) : str);
-
-  return titles as string[];
-}
-
-function imagesToArray(
-  item: Image | undefined,
-  order: 'large-first' | 'small-first',
-  ideally?: keyof Image,
-): string[] | undefined {
-  if (!item) {
-    return undefined;
-  }
-
-  let images = [];
-
-  if (ideally && Boolean(item[ideally])) {
-    // if (ideally && ideally in item && Boolean(item[ideally])) {
-    return [item[ideally]!];
-  }
-
-  images.push(
-    item.extraLarge,
-    item.large,
-    item.medium,
-  );
-
-  images = images.filter(Boolean);
-
-  if (order === 'small-first' && images.length > 1) {
-    images.reverse();
-  }
-
-  return images as string[];
-}
-
-function reduce(character: Character) {
-  if (!character.media?.edges?.length) {
-    return;
-  }
-
-  const edge = character.media.edges.reduce((a, b) => {
-    return a.node!.popularity! >= b.node!.popularity! ? a : b;
-  });
-
-  return edge;
-}
-
 async function verifySignature(
   request: Request,
   publicKey: string,
@@ -222,25 +164,6 @@ async function verifySignature(
   return { valid, body };
 }
 
-// function context() {
-//   return {
-//     release: {
-//       id: Deno.env.get('DENO_DEPLOYMENT_ID')!,
-//     },
-//     device: {
-//       arch: Deno.build.arch,
-//       processor_count: navigator.hardwareConcurrency,
-//     },
-//     os: Deno.build.os,
-//     deno: {
-//       version: Deno.version.deno,
-//       target: Deno.build.target,
-//     },
-//     v8: Deno.version.v8,
-//     typescript: Deno.version.typescript,
-//   };
-// }
-
 const utils = {
   capitalize,
   comma,
@@ -251,13 +174,9 @@ const utils = {
   rng,
   shuffle,
   sleep,
-  titlesToArray,
-  imagesToArray,
   truncate,
   verifySignature,
   wrap,
-  reduce,
-  // context
 };
 
 export default utils;

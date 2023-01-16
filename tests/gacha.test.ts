@@ -2,29 +2,32 @@ import {
   assertEquals,
   assertRejects,
   assertThrows,
-} from 'https://deno.land/std@0.168.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 import {
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.168.0/testing/mock.ts';
+} from 'https://deno.land/std@0.172.0/testing/mock.ts';
 
 import utils from '../src/utils.ts';
 import gacha from '../src/gacha.ts';
+import packs from '../src/packs.ts';
 
 import Rating from '../src/rating.ts';
 
-import { Character, CharacterRole, Format, Type } from '../src/types.ts';
+import {
+  Character,
+  CharacterRole,
+  MediaFormat,
+  MediaType,
+} from '../src/types.ts';
 
 function fakePool(fill: Character, length = 25) {
   const nodes: Character[] = [];
 
   for (let index = 0; index < length; index++) {
-    nodes.push({
-      ...fill,
-      id: index + 1,
-    });
+    nodes.push(Object.assign({}, (fill.id = `${index + 1}`, fill)));
   }
 
   return stub(
@@ -52,7 +55,7 @@ function fakePool(fill: Character, length = 25) {
 Deno.test('filter invalid pools', async (test) => {
   await test.step('no media', async () => {
     const fetchStub = fakePool({
-      id: 1,
+      id: '1',
       name: {
         full: 'name',
       },
@@ -70,6 +73,12 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
@@ -83,12 +92,13 @@ Deno.test('filter invalid pools', async (test) => {
       rngStub.restore();
       randomStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
   await test.step('filter higher popularity media', async () => {
     const fetchStub = fakePool({
-      id: 1,
+      id: '1',
       name: {
         full: 'name',
       },
@@ -96,31 +106,9 @@ Deno.test('filter invalid pools', async (test) => {
         edges: [{
           characterRole: CharacterRole.Main,
           node: {
-            id: 0,
-            type: Type.Anime,
-            format: Format.TV,
-            popularity: 0,
-            title: {
-              english: 'title',
-            },
-          },
-        }, {
-          characterRole: CharacterRole.Main,
-          node: {
-            id: 50,
-            type: Type.Anime,
-            format: Format.TV,
-            popularity: 50,
-            title: {
-              english: 'title',
-            },
-          },
-        }, {
-          characterRole: CharacterRole.Main,
-          node: {
-            id: 101,
-            type: Type.Anime,
-            format: Format.TV,
+            id: '101',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
             popularity: 101,
             title: {
               english: 'title',
@@ -138,6 +126,12 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
@@ -151,12 +145,13 @@ Deno.test('filter invalid pools', async (test) => {
       rngStub.restore();
       randomStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
   await test.step('filter higher popularity character', async () => {
     const fetchStub = fakePool({
-      id: 1,
+      id: '1',
       name: {
         full: 'name',
       },
@@ -165,9 +160,9 @@ Deno.test('filter invalid pools', async (test) => {
         edges: [{
           characterRole: CharacterRole.Main,
           node: {
-            id: 0,
-            type: Type.Anime,
-            format: Format.TV,
+            id: '0',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
             popularity: 0,
             title: {
               english: 'title',
@@ -185,6 +180,12 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
@@ -198,12 +199,13 @@ Deno.test('filter invalid pools', async (test) => {
       rngStub.restore();
       randomStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
   await test.step('filter lesser popularity media', async () => {
     const fetchStub = fakePool({
-      id: 1,
+      id: '1',
       name: {
         full: 'name',
       },
@@ -211,9 +213,9 @@ Deno.test('filter invalid pools', async (test) => {
         edges: [{
           characterRole: CharacterRole.Main,
           node: {
-            id: 50,
-            type: Type.Anime,
-            format: Format.TV,
+            id: '50',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
             popularity: 50,
             title: {
               english: 'title',
@@ -231,6 +233,12 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
@@ -244,12 +252,13 @@ Deno.test('filter invalid pools', async (test) => {
       rngStub.restore();
       randomStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
   await test.step('filter lesser popularity character', async () => {
     const fetchStub = fakePool({
-      id: 1,
+      id: '1',
       name: {
         full: 'name',
       },
@@ -258,9 +267,9 @@ Deno.test('filter invalid pools', async (test) => {
         edges: [{
           characterRole: CharacterRole.Main,
           node: {
-            id: 50,
-            type: Type.Anime,
-            format: Format.TV,
+            id: '50',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
             popularity: 150,
             title: {
               english: 'title',
@@ -278,6 +287,12 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
@@ -291,33 +306,23 @@ Deno.test('filter invalid pools', async (test) => {
       rngStub.restore();
       randomStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
   await test.step('filter roles media', async () => {
     const fetchStub = fakePool({
-      id: 1,
+      id: '1',
       name: {
         full: 'name',
       },
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
-          node: {
-            id: 100,
-            type: Type.Anime,
-            format: Format.TV,
-            popularity: 100,
-            title: {
-              english: 'title',
-            },
-          },
-        }, {
           characterRole: CharacterRole.Supporting,
           node: {
-            id: 150,
-            type: Type.Anime,
-            format: Format.TV,
+            id: '150',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
             popularity: 150,
             title: {
               english: 'title',
@@ -335,6 +340,12 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
@@ -348,6 +359,7 @@ Deno.test('filter invalid pools', async (test) => {
       rngStub.restore();
       randomStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 });
@@ -355,7 +367,7 @@ Deno.test('filter invalid pools', async (test) => {
 Deno.test('valid pool', async (test) => {
   await test.step('using character popularity', async () => {
     const fetchStub = fakePool({
-      id: 1,
+      id: '1',
       name: {
         full: 'name',
       },
@@ -364,9 +376,9 @@ Deno.test('valid pool', async (test) => {
         edges: [{
           characterRole: CharacterRole.Supporting,
           node: {
-            id: 2,
-            type: Type.Anime,
-            format: Format.TV,
+            id: '2',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
             popularity: 1_000_000,
             title: {
               english: 'title',
@@ -384,13 +396,19 @@ Deno.test('valid pool', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
     try {
       const pull = await gacha.rngPull();
 
       assertEquals(pull.pool, 24);
 
-      assertEquals(pull.character.id, 1);
-      assertEquals(pull.media.id, 2);
+      assertEquals(pull.character.id, '1');
+      assertEquals(pull.media.id, '2');
 
       assertEquals(pull.character.popularity, 100);
       assertEquals(pull.media.popularity, 1_000_000);
@@ -407,12 +425,13 @@ Deno.test('valid pool', async (test) => {
       rngStub.restore();
       randomStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
   await test.step('using media popularity', async () => {
     const fetchStub = fakePool({
-      id: 1,
+      id: '1',
       name: {
         full: 'name',
       },
@@ -420,9 +439,9 @@ Deno.test('valid pool', async (test) => {
         edges: [{
           characterRole: CharacterRole.Supporting,
           node: {
-            id: 2,
-            type: Type.Anime,
-            format: Format.TV,
+            id: '2',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
             popularity: 1_000_000,
             title: {
               english: 'title',
@@ -440,13 +459,19 @@ Deno.test('valid pool', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
     try {
       const pull = await gacha.rngPull();
 
       assertEquals(pull.pool, 24);
 
-      assertEquals(pull.character.id, 1);
-      assertEquals(pull.media.id, 2);
+      assertEquals(pull.character.id, '1');
+      assertEquals(pull.media.id, '2');
 
       assertEquals(pull.media.popularity, 1_000_000);
 
@@ -462,6 +487,7 @@ Deno.test('valid pool', async (test) => {
       rngStub.restore();
       randomStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 });

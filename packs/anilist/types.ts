@@ -9,10 +9,10 @@ export enum Status {
 }
 
 export interface AniListMedia extends Media {
+  status?: Status;
   nextAiringEpisode?: {
     airingAt?: number;
   };
-  status: Status;
 }
 
 export type { Character, CharacterRole, Pool };

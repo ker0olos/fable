@@ -1,10 +1,10 @@
-import { assertEquals } from 'https://deno.land/std@0.168.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   stub,
-} from 'https://deno.land/std@0.168.0/testing/mock.ts';
+} from 'https://deno.land/std@0.172.0/testing/mock.ts';
 
 import * as discord from '../src/discord.ts';
 
@@ -63,7 +63,7 @@ Deno.test('interactions', async (test) => {
         },
       },
       data: {
-        custom_id: 'test_id:abc:123',
+        custom_id: 'test_id=abc=123',
         components: [{
           type: 1,
           components: [{

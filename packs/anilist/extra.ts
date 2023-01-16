@@ -1,10 +1,10 @@
-import utils from '../../src/utils.ts';
-
 import * as discord from '../../src/discord.ts';
 
 import { Status } from './types.ts';
 
 import * as api from './api.ts';
+
+import packs from '../../src/packs.ts';
 
 export async function nextEpisode(
   { title }: { title: string },
@@ -12,7 +12,7 @@ export async function nextEpisode(
 ) {
   const anime = await api.nextEpisode({ search: title });
 
-  const titles = utils.titlesToArray(anime);
+  const titles = packs.titlesToArray(anime);
 
   const message = new discord.Message();
 

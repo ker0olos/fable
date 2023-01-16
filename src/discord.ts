@@ -5,6 +5,12 @@ import config from './config.ts';
 
 const API = `https://discord.com/api/v10`;
 
+const splitter = '=';
+
+export function join(...args: string[]): string {
+  return args.join(splitter);
+}
+
 export enum MessageType {
   Ping = 1,
   New = 4,
@@ -166,7 +172,7 @@ export class Interaction<Options> {
       }
       // case InteractionType.Modal:
       case InteractionType.Component: {
-        const custom = data!.custom_id.split(':');
+        const custom = data!.custom_id.split(splitter);
 
         this.customType = custom[0];
         this.customValues = custom.slice(1);
@@ -321,8 +327,7 @@ export class Embed {
   setThumbnail(thumbnail: { url?: string; default?: boolean }) {
     if (thumbnail.url || thumbnail.default) {
       this.#data.thumbnail = {
-        url: thumbnail.url ??
-          'https://s4.anilist.co/file/anilistcdn/character/medium/default.jpg',
+        url: thumbnail.url ?? `${config.fileUrl}/medium.jpg`,
       };
     }
     return this;
@@ -343,8 +348,7 @@ export class Embed {
   setImage(image: { url?: string; default?: boolean }) {
     if (image.url || image.default) {
       this.#data.image = {
-        url: image.url ??
-          'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
+        url: image.url ?? `${config.fileUrl}/large.jpg`,
       };
     }
     return this;

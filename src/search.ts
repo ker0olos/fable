@@ -2,41 +2,46 @@ import utils from './utils.ts';
 
 import Rating from './rating.ts';
 
-import { Character, Format, Media, RelationType } from './types.ts';
+import {
+  Character,
+  DisaggregatedCharacter,
+  DisaggregatedMedia,
+  Media,
+  MediaFormat,
+  MediaRelation,
+  MediaType,
+} from './types.ts';
 
-import anilist from '../packs/anilist/index.ts';
+import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
 export async function media(
-  { id, search, debug }: {
-    id?: number;
+  { id, type, search, debug }: {
+    id?: string;
+    type?: MediaType;
     search?: string;
     debug?: boolean;
   },
-  prioritize?: 'anime' | 'manga',
 ): Promise<discord.Message> {
-  if (typeof (id = utils.parseId(search!)) === 'number') {
-    search = undefined;
-  }
+  const results: (Media | DisaggregatedMedia)[] = await packs.media(
+    id ? { ids: [id] } : { search, type },
+  );
 
-  // TODO extend/override anilist
-  // lookup packs first
-
-  const media = await anilist.media(
-    id ? { id } : { search },
-    prioritize,
-  ) as Media | undefined;
-
-  if (!media) {
+  if (!results.length) {
     throw new Error('404');
   }
 
   if (debug) {
-    return new discord.Message().addEmbed(mediaDebugEmbed(media));
+    return new discord.Message().addEmbed(
+      disaggregatedMediaDebugEmbed(results[0]),
+    );
   }
 
-  const titles = utils.titlesToArray(media);
+  // aggregate the media by populating any references to other media/character objects
+  const media = await packs.aggregate<Media>({ media: results[0] });
+
+  const titles = packs.titlesToArray(media);
 
   const message = new discord.Message();
 
@@ -48,7 +53,7 @@ export async function media(
       .setColor(media.coverImage?.color)
       .setImage({
         default: true,
-        url: utils.imagesToArray(media.coverImage, 'large-first')?.[0],
+        url: packs.imagesToArray(media.coverImage, 'large-first')?.[0],
       })
       .setFooter({
         text: titles.length > 0 ? media.title!.native : undefined,
@@ -59,10 +64,10 @@ export async function media(
     const embed = new discord.Embed()
       .setTitle(character.node!.name!.full)
       .setDescription(character.node!.description)
-      .setColor(media?.coverImage?.color)
+      .setColor(character.node.image?.color ?? media?.coverImage?.color)
       .setThumbnail({
         default: true,
-        url: utils.imagesToArray(character.node.image, 'small-first')?.[0],
+        url: packs.imagesToArray(character.node.image, 'small-first')?.[0],
       })
       .setFooter(
         {
@@ -89,10 +94,6 @@ export async function media(
   }
 
   media.externalLinks?.forEach((link) => {
-    if (link.site !== 'Crunchyroll') {
-      return;
-    }
-
     const component = new discord.Component()
       .setLabel(link.site)
       .setUrl(link.url);
@@ -103,26 +104,26 @@ export async function media(
   media.relations?.edges.forEach((relation) => {
     const component = new discord.Component();
 
-    const label = utils.titlesToArray(relation.node, 60)[0];
+    const label = packs.titlesToArray(relation.node, 60)[0];
 
     switch (relation.relationType) {
-      case RelationType.Prequel:
-      case RelationType.Parent:
-      case RelationType.Contains:
-      case RelationType.Sequel:
-      case RelationType.SideStory:
-      case RelationType.SpinOff: {
+      case MediaRelation.Prequel:
+      case MediaRelation.Parent:
+      case MediaRelation.Contains:
+      case MediaRelation.Sequel:
+      case MediaRelation.SideStory:
+      case MediaRelation.SpinOff: {
         component
           .setLabel(`${label} (${utils.capitalize(relation.relationType!)})`)
-          .setId(`media:${relation.node.id!}`);
+          .setId(discord.join('media', `${media.packId}:${relation.node.id!}`));
 
         secondaryGroup.push(component);
         break;
       }
-      case RelationType.Adaptation: {
+      case MediaRelation.Adaptation: {
         component
           .setLabel(`${label} (${utils.capitalize(relation.node.type!)})`)
-          .setId(`media:${relation.node.id!}`);
+          .setId(discord.join('media', `${media.packId}:${relation.node.id!}`));
 
         secondaryGroup.push(component);
         break;
@@ -132,7 +133,7 @@ export async function media(
     }
 
     switch (relation.node.format) {
-      case Format.Music: {
+      case MediaFormat.Music: {
         if (relation.node.externalLinks?.[0]?.url) {
           component
             .setLabel(label)
@@ -154,13 +155,18 @@ export async function media(
   return message;
 }
 
-function mediaDebugEmbed(media: Media) {
-  const titles = utils.titlesToArray(media);
+function disaggregatedMediaDebugEmbed(media: Media | DisaggregatedMedia) {
+  const titles = packs.titlesToArray(media);
 
   return new discord.Embed()
     .setTitle(titles.shift()!)
     .setDescription(titles.join('\n'))
-    .addField({ name: 'Id', value: `${media.id}` })
+    .setColor(media.coverImage?.color)
+    .setThumbnail({
+      default: true,
+      url: packs.imagesToArray(media.coverImage, 'small-first')?.[0],
+    })
+    .addField({ name: 'Id', value: `${media.packId}:${media.id}` })
     .addField({
       name: 'Type',
       value: `${utils.capitalize(media.type!)}`,
@@ -173,34 +179,29 @@ function mediaDebugEmbed(media: Media) {
     })
     .addField({
       name: 'Popularity',
-      value: `${utils.comma(media.popularity!)}`,
+      value: `${utils.comma(media.popularity || 0)}`,
       inline: true,
-    })
-    .setThumbnail({
-      default: true,
-      url: utils.imagesToArray(media.coverImage, 'small-first')?.[0],
     });
 }
 
 export async function character(
   { id, search, debug }: {
-    id?: number;
+    id?: string;
     search?: string;
     debug?: boolean;
   },
 ): Promise<discord.Message> {
-  if (typeof (id = utils.parseId(search!)) === 'number') {
-    search = undefined;
-  }
+  const results: (Character | DisaggregatedCharacter)[] = await packs
+    .characters(
+      id ? { ids: [id] } : { search },
+    );
 
-  // TODO extend/override anilist
-  // lookup packs first
-
-  const character = await anilist.character(id ? { id } : { search });
-
-  if (!character) {
+  if (!results.length) {
     throw new Error('404');
   }
+
+  // aggregate the media by populating any references to other media/character objects
+  const character = await packs.aggregate<Character>({ character: results[0] });
 
   if (debug) {
     return new discord.Message().addEmbed(characterDebugEmbed(character));
@@ -211,9 +212,10 @@ export async function character(
       new discord.Embed()
         .setTitle(character.name!.full)
         .setDescription(character.description)
+        .setColor(character.image?.color)
         .setImage({
           default: true,
-          url: utils.imagesToArray(character.image, 'large-first')?.[0],
+          url: packs.imagesToArray(character.image, 'large-first')?.[0],
         })
         .setFooter(
           {
@@ -228,11 +230,11 @@ export async function character(
   const group: discord.Component[] = [];
 
   character.media?.edges?.forEach((relation) => {
-    const label = utils.titlesToArray(relation.node, 60)[0];
+    const label = packs.titlesToArray(relation.node, 60)[0];
 
     const component = new discord.Component()
       .setLabel(`${label} (${utils.capitalize(relation.node.format!)})`)
-      .setId(`media:${relation.node.id!}`);
+      .setId(discord.join('media', `${character.packId}:${relation.node.id!}`));
 
     group.push(component);
   });
@@ -243,25 +245,28 @@ export async function character(
 }
 
 function characterDebugEmbed(character: Character) {
-  const media = utils.reduce(character);
+  const media = character.media?.edges?.[0];
 
   const role = media?.characterRole;
-  const popularity = character.popularity || media?.node.popularity;
+  const popularity = character.popularity || media?.node.popularity || 0;
 
-  const rating = popularity
-    ? new Rating({
-      popularity,
-      role: character.popularity ? undefined : role,
-    })
-    : undefined;
+  const rating = new Rating({
+    popularity,
+    role: character.popularity ? undefined : role,
+  });
 
   const embed = new discord.Embed()
     .setTitle(character.name!.full)
     .setDescription(character.name!.alternative?.join('\n'))
-    .addField({ name: 'Id', value: `${character.id}` })
+    .setColor(character.image?.color)
+    .setThumbnail({
+      default: true,
+      url: packs.imagesToArray(character.image, 'small-first')?.[0],
+    })
+    .addField({ name: 'Id', value: `${character.packId}:${character.id}` })
     .addField({
       name: 'Rating',
-      value: rating ? rating.emotes : 'undefined',
+      value: rating.emotes,
     })
     .addField({
       name: 'Gender',
@@ -277,12 +282,8 @@ function characterDebugEmbed(character: Character) {
     })
     .addField({
       name: 'Popularity',
-      value: popularity ? `${utils.comma(popularity)}` : 'undefined',
+      value: `${utils.comma(popularity)}`,
       inline: true,
-    })
-    .setThumbnail({
-      default: true,
-      url: utils.imagesToArray(character.image, 'small-first')?.[0],
     });
 
   if (!media) {
@@ -301,20 +302,20 @@ export async function themes(
     search?: string;
   },
 ) {
-  const media = await anilist.media({ search });
+  const results = await packs.media({ search });
 
-  // TODO extend/override anilist
-  // lookup packs first
-
-  if (!media) {
+  if (!results.length) {
     throw new Error('404');
   }
+
+  // aggregate the media by populating any references to other media/character objects
+  const media = await packs.aggregate<Media>({ media: results[0] });
 
   const message = new discord.Message();
 
   media.relations?.edges.forEach((relation) => {
     if (
-      relation.node.format === Format.Music &&
+      relation.node.format === MediaFormat.Music &&
       relation.node.externalLinks?.[0]?.url
     ) {
       const component = new discord.Component()

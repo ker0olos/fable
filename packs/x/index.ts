@@ -3,7 +3,7 @@ import utils from '../../src/utils.ts';
 import * as discord from '../../src/discord.ts';
 
 function roll(
-  { amount }: { user: discord.User; amount: number },
+  { amount }: { amount: number },
   { member }: discord.Interaction<unknown>,
 ) {
   const rolls = [];

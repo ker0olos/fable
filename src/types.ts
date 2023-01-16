@@ -1,11 +1,25 @@
 type Modify<T, R> = Omit<T, keyof R> & R;
 
-export enum Type {
+export enum MediaType {
   Anime = 'ANIME',
   Manga = 'MANGA',
 }
 
-export enum RelationType {
+export enum MediaFormat {
+  TV = 'TV',
+  TvShort = 'TV_SHORT',
+  Movie = 'MOVIE',
+  Special = 'SPECIAL',
+  OVA = 'OVA',
+  ONA = 'ONA',
+  Music = 'MUSIC',
+  Manga = 'MANGA',
+  Novel = 'NOVEL',
+  OneShot = 'ONE_SHOT',
+  Internet = 'INTERNET',
+}
+
+export enum MediaRelation {
   Adaptation = 'ADAPTATION',
   Prequel = 'PREQUEL',
   Sequel = 'SEQUEL',
@@ -21,32 +35,11 @@ export enum RelationType {
   // Compilation = 'COMPILATION',
 }
 
-export enum Format {
-  TV = 'TV',
-  TvShort = 'TV_SHORT',
-  Movie = 'MOVIE',
-  Special = 'SPECIAL',
-  OVA = 'OVA',
-  ONA = 'ONA',
-  Music = 'MUSIC',
-  Manga = 'MANGA',
-  Novel = 'NOVEL',
-  OneShot = 'ONE_SHOT',
-}
-
 export enum CharacterRole {
   Main = 'MAIN',
   Supporting = 'SUPPORTING',
   Background = 'BACKGROUND',
 }
-
-export enum Behavior {
-  New = 'NEW',
-  Override = 'OVERRIDE',
-  Extend = 'EXTEND',
-}
-
-type ID = string | number;
 
 export type Image = {
   extraLarge?: string;
@@ -56,15 +49,17 @@ export type Image = {
 };
 
 export interface Media {
-  id: number;
-  type: Type;
-  format: Format;
+  id: string;
+  type: MediaType;
+  format: MediaFormat;
   title: {
     english?: string;
     romaji?: string;
     native?: string;
   };
-  popularity: number;
+  packId?: string;
+  overwritePackId?: string;
+  popularity?: number;
   description?: string;
   coverImage?: Image;
   externalLinks?: {
@@ -77,58 +72,54 @@ export interface Media {
   };
   relations?: {
     edges: {
-      relationType: RelationType;
+      relationType: MediaRelation;
       node: Media;
     }[];
   };
   characters?: {
-    nodes?: Character[];
     edges?: { role: CharacterRole; node: Character }[];
   };
 }
 
-export type PackMedia = Modify<Media, {
-  id: ID;
-  behavior?: Behavior;
-  relations: {
-    relationType: RelationType;
-    characterId: number;
+export type DisaggregatedMedia = Modify<Media, {
+  relations?: {
+    relation: MediaRelation;
+    mediaId: string;
   }[];
-  characters: {
-    relationType: CharacterRole;
-    characterId: ID;
+  characters?: {
+    role: CharacterRole;
+    characterId: string;
   }[];
 }>;
 
 export interface Character {
-  id: number;
+  id: string;
   name: {
     full: string;
     native?: string;
     alternative?: string[];
     alternativeSpoiler?: string[];
   };
+  packId?: string;
+  overwritePackId?: string;
   description?: string;
   popularity?: number;
   gender?: string;
   age?: string;
   image?: Image;
   media?: {
-    nodes?: Media[];
     edges?: { characterRole: CharacterRole; node: Media }[];
   };
 }
 
-export type PackCharacter = Modify<Character, {
-  id: ID;
-  behavior?: Behavior;
-  media: {
-    relationType: CharacterRole;
-    mediaId: ID;
+export type DisaggregatedCharacter = Modify<Character, {
+  media?: {
+    role: CharacterRole;
+    mediaId: string;
   }[];
 }>;
 
-export type Pool = { [id: number]: Character };
+export type Pool = { [id: string]: Character | DisaggregatedCharacter };
 
 export enum ManifestType {
   Builtin = 'builtin',
@@ -143,8 +134,18 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
-  media?: PackMedia[];
-  characters?: PackCharacter[];
+  media?: {
+    new?: DisaggregatedMedia[];
+    overwrite?: {
+      [key: string]: DisaggregatedMedia;
+    };
+  };
+  characters?: {
+    new?: DisaggregatedCharacter[];
+    overwrite?: {
+      [key: string]: DisaggregatedCharacter;
+    };
+  };
   // properties available for builtin packs only
   commands?: { [key: string]: Command };
   // properties set internally on load

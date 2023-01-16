@@ -1,7 +1,13 @@
 {
+  "$id": "builtin.json",
   "$comment": "Only used for the builtin packs. Those properties don't work on normal manual packs.",
-  "allOf": [{ "$ref": "manifest.schema.json" }],
+  "allOf": [{ "$ref": "index.json" }],
+  "required": ["type", "author"],
   "properties": {
+    "type": {
+      "type": "string",
+      "pattern": "builtin"
+    },
     "commands": {
       "type": "object",
       "description": "Register new slash commands",
@@ -10,6 +16,7 @@
         "^.*$": {
           "type": "object",
           "required": ["source", "description"],
+          "additionalProperties": false,
           "properties": {
             "source": {
               "type": "string"
@@ -22,6 +29,7 @@
               "items": {
                 "type": "object",
                 "required": ["id", "description", "type"],
+                "additionalProperties": false,
                 "properties": {
                   "id": {
                     "type": "string"

@@ -1,26 +1,51 @@
-[![deno](https://github.com/ker0olos/fable/actions/workflows/deno.yml/badge.svg)](https://github.com/ker0olos/fable/actions/workflows/deno.yml)
-[![codecov](https://codecov.io/github/ker0olos/fable/branch/main/graph/badge.svg?token=3C7ZTHzGqC)](https://codecov.io/github/ker0olos/fable)
-
 # Fable
 
-> **Note** Bot is still work in progress (Not ready for production)
+<!-- User badges  -->
 
-#### [Add to Server](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
+[![Discord Bot Invite](https://img.shields.io/badge/Add%20to%20Server-blue?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
+[![Discord Support Server](https://img.shields.io/discord/992416714497212518?label=Discord%20Server&style=for-the-badge)][discord]
 
-A free, open-source anime gacha app, an alternative to Mudae.
+<!-- Development badges -->
 
-### Features
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&style=for-the-badge&label=tests)](https://github.com/ker0olos/fable/actions/workflows/deno.yml)
+[![Codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?style=for-the-badge&token=3C7ZTHzGqC)](https://codecov.io/github/ker0olos/fable)
 
-- 100% Free (no premiums, no pay-to-win bullshit)
-- An intuitive system to manage and customize the characters in your servers
-- Easily add new character packs with just a single url
-- Override builtin characters with your own images, aliases, and descriptions
-- Actively developed with new game modes and features
-- Open-source software (contrib, fork, or self-host)
-- Keeps up with discord newest features _in bot technology_
-- Puts user experience front and center
+Fable is a free, open-source _anime_[^1] gacha bot — a simple,
+east-to-understand powerful Mudae alternative. Like Mudae, you can roll anime
+characters. Unlike Mudae, there's no premiums, and no pay-to-win bullshit.
 
-### FAQ
+> **Note** The bot is still experimental. Core features might be missing.
+
+There's a intuitive system to manage and customize the characters in your
+servers, you can install community-made packs that are full of new characters
+with a one single command. That's if our builtin anime[^1] library is not enough
+for you!
+
+> **TODO** too much plain text (no one is gonna read all this) we need some
+> images and animations
+>
+> **Note** This README only lists what is already stable, which is so far just
+> the packs feature, the game modes and the rates are still being worked on.
+
+You can also overwrite the builtin characters with your own images, aliases, and
+descriptions, and fully personalize your characters, that's when you roll them,
+of course.
+
+Fable is actively developed with new game modes and features being releasing.
+
+[^1]: Currently the default builtin is anime/manga/manhwa/vtubers characters,
+but you can add other packs, for example video game characters or real people,
+you can also disable the anime pack entirety, you have full control over your
+server.
+
+## Get involved
+
+- Star this repo.
+- Join us on [Discord][discord].
+- [Contribute][contributing] — join us in building Fable, through writing code,
+  [sharing your thoughts][discord], or telling others about us.
+
+## FAQ
 
 <!-- > How to add a new pack to my server? -->
 
@@ -37,10 +62,22 @@ have to offer cosmetics; tl;dr Fable will always remain 100% free.
 
 ### Credits
 
-- This project wouldn't been possible without **Deno**. Want to learn about
+Our core team who are responsible for reviewing code, making decisions on the
+direction of the project:
+
+- [@ker0olos](https://github.com/ker0olos) — Kerolos Zaki (aka. Wholesome) —
+  Wholesome#6355
+
+---
+
+- This project wouldn't been possible without [Deno][deno]. Want to learn about
   running discord bots with low-cost? Check the official guide at
   <https://deno.com/deploy/docs/tutorial-discord-slash>
 
-- Checkout our friends at <https://anilist.co> your support will mean a lot to
+- Checkout our friends at <https://anilist.co>. Your support will mean a lot to
   them. Tracking your anime through their app might just help you rank up your
   favorite characters to 5 stars faster.
+
+[discord]: https://discord.gg/ceKyEfhyPQ
+[contributing]: ./CONTRIBUTING.md
+[deno]: https://deno.land/

@@ -148,7 +148,7 @@ if __name__ == "__main__":
         # standard gacha commands
         # uses characters and media from all packs
         make_command(
-            name="anime",
+            name="search",
             desc="Search for an anime/manga",
             options=[
                 Option(
@@ -163,7 +163,7 @@ if __name__ == "__main__":
                     required=False,
                 ),
             ],
-            aliases=["manga"],
+            aliases=["anime", "manga"],
         )
         + make_command(
             name="character",
@@ -236,5 +236,5 @@ if __name__ == "__main__":
         )
         # non-standard commands (pack commands)
         + load_manifest("./packs/anilist")
-        + load_manifest("./packs/utils")
+        + load_manifest("./packs/x")
     )

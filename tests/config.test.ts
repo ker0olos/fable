@@ -1,13 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from 'https://deno.land/std@0.168.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 import {
-  assertSpyCall,
-  assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.168.0/testing/mock.ts';
+} from 'https://deno.land/std@0.172.0/testing/mock.ts';
 
 import config, { init } from '../src/config.ts';
 
@@ -19,10 +17,18 @@ Deno.test('init', async (test) => {
       () => ({ state: 'granted' } as any),
     );
 
+    const readFileStub = stub(
+      Deno,
+      'readFile',
+      // deno-lint-ignore require-await
+      async () => new Uint8Array(),
+    );
+
     const envStub = stub(
       Deno.env,
       'get',
       returnsNext([
+        '',
         'sentry_dsn',
         'app_id',
         'app_public_key',
@@ -31,55 +37,20 @@ Deno.test('init', async (test) => {
     );
 
     try {
-      await init({ dev: false });
+      await init({ baseUrl: 'http://localhost:8000/' });
 
-      // test config parameters
-
-      assertEquals([
-        config.DEV,
-        config.appId,
-        config.publicKey,
-        config.mongoUrl,
-        config.sentry,
-      ], [
-        false,
-        'app_id',
-        'app_public_key',
-        'mongo_url',
-        'sentry_dsn',
-      ]);
-
-      // test function calls
-
-      assertSpyCalls(permissionsStub, 1);
-      assertSpyCalls(envStub, 4);
-
-      assertSpyCall(permissionsStub, 0, {
-        args: [{ name: 'env' } as any],
-        returned: { state: 'granted' } as any,
-      });
-
-      assertSpyCall(envStub, 0, {
-        args: ['SENTRY_DSN'],
-        returned: 'sentry_dsn',
-      });
-
-      assertSpyCall(envStub, 1, {
-        args: ['APP_ID'],
-        returned: 'app_id',
-      });
-
-      assertSpyCall(envStub, 2, {
-        args: ['APP_PUBLIC_KEY'],
-        returned: 'app_public_key',
-      });
-
-      assertSpyCall(envStub, 3, {
-        args: ['MONGO_URL'],
-        returned: 'mongo_url',
+      assertEquals(config, {
+        deploy: false,
+        dev: false,
+        appId: 'app_id',
+        publicKey: 'app_public_key',
+        mongoUrl: 'mongo_url',
+        fileUrl: 'http://localhost:8000/file',
+        sentry: 'sentry_dsn',
       });
     } finally {
       permissionsStub.restore();
+      readFileStub.restore();
       envStub.restore();
     }
   });
@@ -91,10 +62,18 @@ Deno.test('init', async (test) => {
       () => ({ state: 'granted' } as any),
     );
 
+    const readFileStub = stub(
+      Deno,
+      'readFile',
+      // deno-lint-ignore require-await
+      async () => new Uint8Array(),
+    );
+
     const envStub = stub(
       Deno.env,
       'get',
       returnsNext([
+        '',
         'sentry_dsn',
         'dev_id',
         'dev_public_key',
@@ -103,55 +82,65 @@ Deno.test('init', async (test) => {
     );
 
     try {
-      await init({ dev: true });
+      await init({ baseUrl: 'http://localhost:8000/dev' });
 
-      // test config parameters
-
-      assertEquals([
-        config.DEV,
-        config.appId,
-        config.publicKey,
-        config.mongoUrl,
-        config.sentry,
-      ], [
-        true,
-        'dev_id',
-        'dev_public_key',
-        'dev_mongo_url',
-        'sentry_dsn',
-      ]);
-
-      // test function calls
-
-      assertSpyCalls(permissionsStub, 1);
-      assertSpyCalls(envStub, 4);
-
-      assertSpyCall(permissionsStub, 0, {
-        args: [{ name: 'env' } as any],
-        returned: { state: 'granted' } as any,
-      });
-
-      assertSpyCall(envStub, 0, {
-        args: ['SENTRY_DSN'],
-        returned: 'sentry_dsn',
-      });
-
-      assertSpyCall(envStub, 1, {
-        args: ['DEV_ID'],
-        returned: 'dev_id',
-      });
-
-      assertSpyCall(envStub, 2, {
-        args: ['DEV_PUBLIC_KEY'],
-        returned: 'dev_public_key',
-      });
-
-      assertSpyCall(envStub, 3, {
-        args: ['DEV_MONGO_URL'],
-        returned: 'dev_mongo_url',
+      assertEquals(config, {
+        deploy: false,
+        dev: true,
+        appId: 'dev_id',
+        publicKey: 'dev_public_key',
+        mongoUrl: 'dev_mongo_url',
+        fileUrl: 'http://localhost:8000/file',
+        sentry: 'sentry_dsn',
       });
     } finally {
       permissionsStub.restore();
+      readFileStub.restore();
+      envStub.restore();
+    }
+  });
+
+  await test.step('deploy', async () => {
+    const permissionsStub = stub(
+      Deno.permissions,
+      'query',
+      () => ({ state: 'granted' } as any),
+    );
+
+    const readFileStub = stub(
+      Deno,
+      'readFile',
+      // deno-lint-ignore require-await
+      async () => new Uint8Array(),
+    );
+
+    const envStub = stub(
+      Deno.env,
+      'get',
+      returnsNext([
+        '1',
+        'sentry_dsn',
+        'dev_id',
+        'dev_public_key',
+        'dev_mongo_url',
+      ]),
+    );
+
+    try {
+      await init({ baseUrl: 'http://localhost:8000/dev' });
+
+      assertEquals(config, {
+        deploy: true,
+        dev: true,
+        appId: 'dev_id',
+        publicKey: 'dev_public_key',
+        mongoUrl: 'dev_mongo_url',
+        fileUrl: 'http://localhost:8000/file',
+        sentry: 'sentry_dsn',
+      });
+    } finally {
+      permissionsStub.restore();
+      readFileStub.restore();
       envStub.restore();
     }
   });

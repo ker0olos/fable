@@ -1,6 +1,6 @@
 import utils from '../../src/utils.ts';
 
-import { join } from 'https://deno.land/std@0.168.0/path/mod.ts';
+import { join } from 'https://deno.land/std@0.172.0/path/mod.ts';
 
 import gacha from '../../src/gacha.ts';
 
@@ -44,7 +44,14 @@ async function query(
         pageInfo {
           hasNextPage
         }
-        media(popularity_greater: $popularity_greater, popularity_lesser: $popularity_lesser, sort: [POPULARITY], format_in: [TV, MOVIE, MANGA]) {
+        media(
+          sort: [ TRENDING_DESC, POPULARITY_DESC ],
+          popularity_greater: $popularity_greater,
+          popularity_lesser: $popularity_lesser,
+          format_not_in: [ NOVEL, MUSIC, SPECIAL ],
+          # ignore hentai (not 100% reliable according to AniList)
+          isAdult: false,
+        ) {
           id
         }
       }
@@ -74,7 +81,7 @@ for (const range of ranges) {
       const { pageInfo, media } = await query({
         page,
         popularity_greater: range[0]!,
-        popularity_lesser: range[1],
+        popularity_lesser: range[1] || undefined,
       });
 
       console.log(

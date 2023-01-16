@@ -10,11 +10,9 @@ import config from './config.ts';
 
 import { Character, CharacterRole, Media } from './types.ts';
 
-import anilist from '../packs/anilist/index.ts';
-
 import * as discord from './discord.ts';
 
-const CDN = 'https://raw.githubusercontent.com/ker0olos/fable/main/assets';
+import packs from './packs.ts';
 
 const variables = {
   roles: {
@@ -46,27 +44,23 @@ type Pull = {
 /**
  * force a specific pull using an id
  */
-async function forcePull({ id }: { id: string }): Promise<Pull> {
-  const character = await anilist.character({ id: parseInt(id) });
+async function forcePull(id: string): Promise<Pull> {
+  const results = await packs.characters({ ids: [id] });
 
-  // TODO extend/override anilist
-
-  if (!character) {
+  if (!results.length) {
     throw new Error('404');
   }
 
-  const edge = utils.reduce(character);
+  // aggregate the media by populating any references to other media/character objects
+  const character = await packs.aggregate<Character>({ character: results[0] });
+
+  const edge = character.media?.edges?.[0];
 
   if (!edge) {
     throw new Error('404');
   }
 
-  const popularity = character.popularity || edge.node.popularity;
-
-  // allow popularity to be "0"
-  if (typeof popularity !== 'number') {
-    throw new Error('404');
-  }
+  const popularity = character.popularity || edge.node.popularity || 0;
 
   return {
     pool: 1,
@@ -95,17 +89,11 @@ async function rngPull(): Promise<Pull> {
     // one specific role for the whole pool
     : utils.rng(variables.roles);
 
-  const dict = await anilist.pool({
+  const dict = await packs.pool({
     role,
     popularity_greater: range[0],
-    popularity_lesser: range[1],
+    popularity_lesser: range[1] || undefined,
   });
-
-  // packs.list().forEach((manifest) => {
-  //   manifest.characters?.forEach((character) => {
-  //     // TODO extend/override anilist
-  //   });
-  // });
 
   const pool = Object.values(dict);
 
@@ -117,20 +105,18 @@ async function rngPull(): Promise<Pull> {
     // sort through each character media and pick the default
     const i = Math.floor(Math.random() * pool.length);
 
-    const candidate = pool.splice(i, 1)[0];
+    // aggregate the media by populating any references to other media/character objects
+    const candidate = await packs.aggregate<Character>({
+      character: pool.splice(i, 1)[0],
+    });
 
-    const edge = utils.reduce(candidate);
+    const edge = candidate.media?.edges?.[0];
 
     if (!edge) {
       continue;
     }
 
-    const popularity = candidate.popularity || edge.node.popularity;
-
-    // allow popularity to be "0"
-    if (typeof popularity !== 'number') {
-      continue;
-    }
+    const popularity = candidate.popularity || edge.node.popularity || 0;
 
     if (
       popularity >= range[0] &&
@@ -173,12 +159,12 @@ async function rngPull(): Promise<Pull> {
  */
 function start({ token, id }: { token: string; id?: string }) {
   (
-    id ? forcePull({ id }) : rngPull()
+    id ? forcePull(id) : rngPull()
   )
     .then(async (pull) => {
       const media = pull.media;
 
-      const titles = utils.titlesToArray(media);
+      const titles = packs.titlesToArray(media);
 
       let message = new discord.Message()
         .addEmbed(
@@ -186,7 +172,7 @@ function start({ token, id }: { token: string; id?: string }) {
             .setTitle(utils.wrap(titles[0]!))
             .setImage({
               default: true,
-              url: utils.imagesToArray(media.coverImage, 'large-first', 'large')
+              url: packs.imagesToArray(media.coverImage, 'large-first', 'large')
                 ?.[0],
             }),
         );
@@ -198,7 +184,9 @@ function start({ token, id }: { token: string; id?: string }) {
       message = new discord.Message()
         .addEmbed(
           new discord.Embed()
-            .setImage({ url: `${CDN}/stars/${pull.rating.stars}.gif` }),
+            .setImage({
+              url: `${config.fileUrl}/stars/${pull.rating.stars}.gif`,
+            }),
         );
 
       await message.patch(token);
@@ -215,7 +203,7 @@ function start({ token, id }: { token: string; id?: string }) {
             })
             .setImage({
               default: true,
-              url: utils.imagesToArray(
+              url: packs.imagesToArray(
                 pull.character.image,
                 'large-first',
                 'large',
@@ -223,7 +211,7 @@ function start({ token, id }: { token: string; id?: string }) {
             }),
         );
 
-      if (config.DEV) {
+      if (config.dev) {
         message.addEmbed(pullDebugEmbed(pull));
       }
 
@@ -236,6 +224,10 @@ function start({ token, id }: { token: string; id?: string }) {
         ).patch(token);
       }
 
+      if (!config.sentry) {
+        throw err;
+      }
+
       const refId = captureException(err);
 
       await discord.Message.internal(refId).patch(token);
@@ -244,7 +236,7 @@ function start({ token, id }: { token: string; id?: string }) {
   return new discord.Message()
     .addEmbed(
       new discord.Embed().setImage(
-        { url: `${CDN}/spinner.gif` },
+        { url: `${config.fileUrl}/spinner.gif` },
       ),
     );
 }

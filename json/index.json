@@ -1,0 +1,92 @@
+{
+  "$id": "index.json",
+  "type": "object",
+  "required": ["id"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "A unique alphanumeric id",
+      "pattern": "^[-_a-z0-9]+$"
+    },
+    "title": {
+      "type": "string",
+      "description": "The display title of the pack"
+    },
+    "description": {
+      "type": "string",
+      "description": "Small description about the pack and what it contains"
+    },
+    "nsfw": {
+      "type": "boolean",
+      "description": "If the pack contains nsfw (adult) content"
+    },
+    "author": {
+      "type": "string",
+      "description": "The name of the pack's author"
+    },
+    "image": {
+      "type": "string",
+      "description": "The icon of the pack or its author"
+    },
+    "url": {
+      "type": "string",
+      "description": "The url to pack's homepage"
+    },
+    "media": {
+      "type": "object",
+      "description": "Media to add, or overwrite",
+      "additionalProperties": false,
+      "properties": {
+        "new": {
+          "type": "array",
+          "description": "A list of new media to add",
+          "items": {
+            "allOf": [{ "$ref": "media.json" }],
+            "required": ["id", "title", "type", "format"]
+          }
+        },
+        "overwrite": {
+          "type": "object",
+          "description": "A map of ids to existing media, any matches will be entirely overwritten by the match",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[-_a-z0-9]+:[-_a-z0-9]+$": {
+              "allOf": [{ "$ref": "media.json" }],
+              "description": "The existing media will be deleted and replaced with this media",
+              "required": ["title", "type", "format"],
+              "not": { "required": ["id"] }
+            }
+          }
+        }
+      }
+    },
+    "characters": {
+      "type": "object",
+      "description": "Characters to add, or overwrite",
+      "additionalProperties": false,
+      "properties": {
+        "new": {
+          "type": "array",
+          "description": "A list of new characters to add",
+          "items": {
+            "allOf": [{ "$ref": "character.json" }],
+            "required": ["id", "name"]
+          }
+        },
+        "overwrite": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "A map of ids to existing characters, any matches will be entirely overwritten by the match",
+          "patternProperties": {
+            "^[-_a-z0-9]+:[-_a-z0-9]+$": {
+              "allOf": [{ "$ref": "character.json" }],
+              "description": "The existing character will be deleted and replaced with this character",
+              "required": ["name"],
+              "not": { "required": ["id"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

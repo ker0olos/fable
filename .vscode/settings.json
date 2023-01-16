@@ -1,16 +1,34 @@
 {
+  "files.exclude": {
+    ".git": true
+  },
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "README.md": "LICENSE,.gitignore",
+    "deno.json": "deno.lock"
+  },
+  //
   "deno.enable": true,
   "deno.lint": true,
   "deno.unstable": false,
   "deno.config": "deno.json",
+  //
   "python.languageServer": "Pylance",
   "python.linting.enabled": true,
   "python.linting.flake8Enabled": true,
   "python.analysis.typeCheckingMode": "basic",
   "python.formatting.provider": "black",
+  //
   "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[json]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
   "[python]": {
@@ -19,15 +37,16 @@
       "source.organizeImports": true
     }
   },
-  "[markdown]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
+  //
   "json.schemas": [
     {
-      "url": "./manifest.builtin.schema.json",
+      "url": "http://json-schema.org/schema",
+      "fileMatch": [
+        "json/*.json"
+      ]
+    },
+    {
+      "url": "./json/builtin.json",
       "fileMatch": [
         "packs/*/manifest.json"
       ]

@@ -1,18 +1,23 @@
 import {
   assertEquals,
   assertRejects,
-} from 'https://deno.land/std@0.168.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 import {
   assertSpyCalls,
   stub,
-} from 'https://deno.land/std@0.168.0/testing/mock.ts';
+} from 'https://deno.land/std@0.172.0/testing/mock.ts';
 
-import anilist from '../packs/anilist/index.ts';
+import * as anilist from '../packs/anilist/index.ts';
 
 import { Status } from '../packs/anilist/types.ts';
 
-import { Character, CharacterRole, Format, Type } from '../src/types.ts';
+import {
+  Character,
+  CharacterRole,
+  MediaFormat,
+  MediaType,
+} from '../src/types.ts';
 
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {
@@ -38,41 +43,8 @@ Deno.test('media', async (test) => {
     try {
       const media = await anilist.media({ search: 'query' });
 
-      assertEquals(media!.id, 1);
-    } finally {
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('prioritize search', async () => {
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        json: (() =>
-          Promise.resolve({
-            data: {
-              Page: {
-                media: [{
-                  id: 1,
-                  type: 'ANIME',
-                }, {
-                  id: 2,
-                  type: 'MANGA',
-                }],
-              },
-            },
-          })),
-        // deno-lint-ignore no-explicit-any
-      } as any),
-    );
-
-    try {
-      const media = await anilist.media({ search: 'query' }, 'manga');
-
-      assertEquals(media!.id, 2);
-      assertEquals(media!.type, 'MANGA');
+      assertEquals(media.length, 1);
+      assertEquals(media[0].id, 1 as unknown as string);
     } finally {
       fetchStub.restore();
     }
@@ -99,7 +71,7 @@ Deno.test('media', async (test) => {
     try {
       const media = await anilist.media({ search: 'query' });
 
-      assertEquals(media, undefined);
+      assertEquals(media.length, 0);
     } finally {
       fetchStub.restore();
     }
@@ -128,9 +100,10 @@ Deno.test('character', async (test) => {
     );
 
     try {
-      const character = await anilist.character({ search: 'query' });
+      const characters = await anilist.characters({ search: 'query' });
 
-      assertEquals(character!.id, 1);
+      assertEquals(characters.length, 1);
+      assertEquals(characters[0].id, 1 as unknown as string);
     } finally {
       fetchStub.restore();
     }
@@ -155,9 +128,9 @@ Deno.test('character', async (test) => {
     );
 
     try {
-      const character = await anilist.character({ search: 'query' });
+      const characters = await anilist.characters({ search: 'query' });
 
-      assertEquals(character, undefined);
+      assertEquals(characters.length, 0);
     } finally {
       fetchStub.restore();
     }
@@ -168,10 +141,7 @@ function fakePool(fill: Character, length = 25) {
   const nodes: Character[] = [];
 
   for (let index = 0; index < length; index++) {
-    nodes.push({
-      ...fill,
-      id: index + 1,
-    });
+    nodes.push(Object.assign({}, (fill.id = `${index + 1}`, fill)));
   }
 
   return stub(
@@ -199,7 +169,7 @@ function fakePool(fill: Character, length = 25) {
 Deno.test('pool', async (test) => {
   await test.step('valid', async () => {
     const fetchStub = fakePool({
-      id: 1,
+      id: '1',
       name: {
         full: 'name',
       },
@@ -207,10 +177,10 @@ Deno.test('pool', async (test) => {
         edges: [{
           characterRole: CharacterRole.Main,
           node: {
-            id: 5,
+            id: '5',
             popularity: 1000,
-            type: Type.Anime,
-            format: Format.TV,
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
             title: {
               english: 'title',
             },
@@ -225,7 +195,7 @@ Deno.test('pool', async (test) => {
       });
 
       for (let i = 1; i <= 25; i++) {
-        assertEquals(pool[i].id, i);
+        assertEquals(pool[i].id, `${i}`);
       }
 
       assertSpyCalls(fetchStub, 1);
@@ -236,7 +206,7 @@ Deno.test('pool', async (test) => {
 
   await test.step('invalid', async () => {
     const fetchStub = fakePool({
-      id: 1,
+      id: '1',
       name: {
         full: 'name',
       },
@@ -244,10 +214,10 @@ Deno.test('pool', async (test) => {
         edges: [{
           characterRole: CharacterRole.Main,
           node: {
-            id: 5,
+            id: '5',
             popularity: 1000,
-            type: Type.Anime,
-            format: Format.TV,
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
             title: {
               english: 'title',
             },
@@ -299,7 +269,7 @@ Deno.test('next episode', async (test) => {
     );
 
     try {
-      const message = await anilist.nextEpisode({ title: 'title' });
+      const message = await anilist.default.nextEpisode({ title: 'title' });
 
       assertEquals(message.json(), {
         type: 4,
@@ -338,7 +308,7 @@ Deno.test('next episode', async (test) => {
     );
 
     try {
-      const message = await anilist.nextEpisode({ title: 'title' });
+      const message = await anilist.default.nextEpisode({ title: 'title' });
 
       assertEquals(message.json(), {
         type: 4,
@@ -377,7 +347,7 @@ Deno.test('next episode', async (test) => {
     );
 
     try {
-      const message = await anilist.nextEpisode({ title: 'title' });
+      const message = await anilist.default.nextEpisode({ title: 'title' });
 
       assertEquals(message.json(), {
         type: 4,
@@ -416,7 +386,7 @@ Deno.test('next episode', async (test) => {
     );
 
     try {
-      const message = await anilist.nextEpisode({ title: 'title' });
+      const message = await anilist.default.nextEpisode({ title: 'title' });
 
       assertEquals(message.json(), {
         type: 4,
@@ -456,7 +426,7 @@ Deno.test('next episode', async (test) => {
     );
 
     try {
-      const message = await anilist.nextEpisode({ title: 'title' });
+      const message = await anilist.default.nextEpisode({ title: 'title' });
 
       assertEquals(message.json(), {
         type: 4,
@@ -492,7 +462,7 @@ Deno.test('next episode', async (test) => {
 
     try {
       await assertRejects(
-        async () => await anilist.nextEpisode({ title: 'title' }),
+        async () => await anilist.default.nextEpisode({ title: 'title' }),
         Error,
         '404',
       );
