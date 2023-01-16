@@ -12,7 +12,15 @@ export async function nextEpisode(
 ) {
   const anime = await api.nextEpisode({ search: title });
 
-  const titles = packs.titlesToArray(anime);
+  const titles = packs.aliasToArray({
+    english: anime.title?.english,
+    romaji: anime.title?.romaji,
+    native: anime.title?.native,
+  });
+
+  if (!titles.length) {
+    throw new Error('404');
+  }
 
   const message = new discord.Message();
 

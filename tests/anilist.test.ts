@@ -10,7 +10,7 @@ import {
 
 import * as anilist from '../packs/anilist/index.ts';
 
-import { Status } from '../packs/anilist/types.ts';
+import { AniListCharacter, Status } from '../packs/anilist/types.ts';
 
 import {
   Character,
@@ -137,7 +137,7 @@ Deno.test('character', async (test) => {
   });
 });
 
-function fakePool(fill: Character, length = 25) {
+function fakePool(fill: AniListCharacter, length = 25) {
   const nodes: Character[] = [];
 
   for (let index = 0; index < length; index++) {
@@ -236,7 +236,7 @@ Deno.test('pool', async (test) => {
         'failed to create a pool with {"popularity_greater":0,"pages":[null],"current_pool":24,"minimal_pool":25}',
       );
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
     }

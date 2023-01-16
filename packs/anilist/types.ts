@@ -1,4 +1,10 @@
-import { Character, CharacterRole, Media, Pool } from '../../src/types.ts';
+import {
+  Character,
+  CharacterRole,
+  Media,
+  Modify,
+  Pool,
+} from '../../src/types.ts';
 
 export enum Status {
   'FINISHED' = 'FINISHED',
@@ -8,11 +14,25 @@ export enum Status {
   'HIATUS' = 'HIATUS',
 }
 
-export interface AniListMedia extends Media {
+export type AniListMedia = Modify<Media, {
+  title: {
+    english?: string;
+    romaji?: string;
+    native?: string;
+  };
   status?: Status;
   nextAiringEpisode?: {
     airingAt?: number;
   };
-}
+}>;
 
-export type { Character, CharacterRole, Pool };
+export type AniListCharacter = Modify<Character, {
+  name: {
+    full: string;
+    native?: string;
+    alternative?: string[];
+    alternativeSpoiler?: string[];
+  };
+}>;
+
+export type { CharacterRole, Pool };

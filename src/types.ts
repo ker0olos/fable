@@ -1,4 +1,4 @@
-type Modify<T, R> = Omit<T, keyof R> & R;
+export type Modify<T, R> = Omit<T, keyof R> & R;
 
 export enum MediaType {
   Anime = 'ANIME',
@@ -41,6 +41,13 @@ export enum CharacterRole {
   Background = 'BACKGROUND',
 }
 
+export type Alias = {
+  english?: string;
+  romaji?: string;
+  native?: string;
+  alternative?: string[];
+};
+
 export type Image = {
   extraLarge?: string;
   large?: string;
@@ -52,11 +59,7 @@ export interface Media {
   id: string;
   type: MediaType;
   format: MediaFormat;
-  title: {
-    english?: string;
-    romaji?: string;
-    native?: string;
-  };
+  title: Alias;
   packId?: string;
   overwritePackId?: string;
   popularity?: number;
@@ -94,12 +97,7 @@ export type DisaggregatedMedia = Modify<Media, {
 
 export interface Character {
   id: string;
-  name: {
-    full: string;
-    native?: string;
-    alternative?: string[];
-    alternativeSpoiler?: string[];
-  };
+  name: Alias;
   packId?: string;
   overwritePackId?: string;
   description?: string;

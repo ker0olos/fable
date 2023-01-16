@@ -164,12 +164,12 @@ function start({ token, id }: { token: string; id?: string }) {
     .then(async (pull) => {
       const media = pull.media;
 
-      const titles = packs.titlesToArray(media);
+      const titles = packs.aliasToArray(media.title);
 
       let message = new discord.Message()
         .addEmbed(
           new discord.Embed()
-            .setTitle(utils.wrap(titles[0]!))
+            .setTitle(utils.wrap(titles[0]))
             .setImage({
               default: true,
               url: packs.imagesToArray(media.coverImage, 'large-first', 'large')
@@ -193,13 +193,15 @@ function start({ token, id }: { token: string; id?: string }) {
 
       await utils.sleep(pull.rating.stars >= 5 ? 7 : 5);
 
+      const alias = packs.aliasToArray(pull.character.name);
+
       message = new discord.Message()
         .addEmbed(
           new discord.Embed()
             .setTitle(pull.rating.emotes)
             .addField({
               name: utils.wrap(titles[0]!),
-              value: `**${utils.wrap(pull.character.name!.full)}**`,
+              value: `**${utils.wrap(alias[0])}**`,
             })
             .setImage({
               default: true,

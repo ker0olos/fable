@@ -15,17 +15,17 @@ import packs from '../src/packs.ts';
 import * as search from '../src/search.ts';
 
 import {
-  Character,
   CharacterRole,
-  Media,
   MediaFormat,
   MediaRelation,
   MediaType,
 } from '../src/types.ts';
 
+import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
+
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -98,7 +98,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('prioritize search', async () => {
-    const media: Media[] = [{
+    const media: AniListMedia[] = [{
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -169,8 +169,8 @@ Deno.test('media', async (test) => {
     }
   });
 
-  await test.step('non-english title', async () => {
-    const media: Media = {
+  await test.step('native title', async () => {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -238,7 +238,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('external links', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -322,7 +322,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('default image', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -384,7 +384,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('youtube trailer', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -468,7 +468,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('characters embeds', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -487,7 +487,7 @@ Deno.test('media', async (test) => {
           node: {
             id: '5',
             name: {
-              full: 'main character name',
+              english: 'main character name',
             },
             description: 'main character description',
             image: {
@@ -501,7 +501,7 @@ Deno.test('media', async (test) => {
           node: {
             id: '5',
             name: {
-              full: 'supporting character name',
+              english: 'supporting character name',
             },
             description: 'supporting character description',
             image: {
@@ -513,7 +513,7 @@ Deno.test('media', async (test) => {
           node: {
             id: '5',
             name: {
-              full: 'background character name',
+              english: 'background character name',
             },
             description: 'background character description',
             image: {
@@ -596,7 +596,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('media relations', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -789,7 +789,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('music relations', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -920,7 +920,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('not found', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -972,7 +972,7 @@ Deno.test('media', async (test) => {
 
 Deno.test('media debug', async (test) => {
   await test.step('normal', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -1063,7 +1063,7 @@ Deno.test('media debug', async (test) => {
   });
 
   await test.step('default image', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -1148,7 +1148,7 @@ Deno.test('media debug', async (test) => {
 
 Deno.test('character', async (test) => {
   await test.step('normal search', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1215,7 +1215,7 @@ Deno.test('character', async (test) => {
   });
 
   await test.step('gender only', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1280,7 +1280,7 @@ Deno.test('character', async (test) => {
   });
 
   await test.step('age only', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1345,7 +1345,7 @@ Deno.test('character', async (test) => {
   });
 
   await test.step('relations', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1428,7 +1428,7 @@ Deno.test('character', async (test) => {
   });
 
   await test.step('default image', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'full name',
@@ -1485,7 +1485,7 @@ Deno.test('character', async (test) => {
   });
 
   await test.step('not found', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1532,7 +1532,7 @@ Deno.test('character', async (test) => {
 
 Deno.test('character debug', async (test) => {
   await test.step('no media', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1643,7 +1643,7 @@ Deno.test('character debug', async (test) => {
   });
 
   await test.step('no media nor popularity', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1752,7 +1752,7 @@ Deno.test('character debug', async (test) => {
   });
 
   await test.step('default image', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'full name',
@@ -1855,7 +1855,7 @@ Deno.test('character debug', async (test) => {
   });
 
   await test.step('with media', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1975,7 +1975,7 @@ Deno.test('character debug', async (test) => {
 
 Deno.test('music', async (test) => {
   await test.step('normal search', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.Music,
@@ -2091,7 +2091,7 @@ Deno.test('music', async (test) => {
   });
 
   await test.step('no available music', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.Music,

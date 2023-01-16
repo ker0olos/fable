@@ -10,28 +10,26 @@
     },
     "name": {
       "type": "object",
-      "description": "The name/aliases of the character",
-      "required": ["full"],
+      "description": "The name of the character",
       "additionalProperties": false,
+      "anyOf": [
+        { "required": ["english"] },
+        { "required": ["romaji"] },
+        { "required": ["native"] }
+      ],
       "properties": {
-        "full": {
-          "type": "string",
-          "description": "The default name of the character"
+        "english": {
+          "type": "string"
+        },
+        "romaji": {
+          "type": "string"
         },
         "native": {
-          "type": "string",
-          "description": "The name of the character in their own language"
+          "type": "string"
         },
         "alternative": {
           "type": "array",
-          "description": "A list of alternative/aliases for the character",
-          "items": {
-            "type": "string"
-          }
-        },
-        "alternativeSpoiler": {
-          "type": "array",
-          "description": "A list of alternative/aliases for the character that might contain spoilers",
+          "description": "A list of alternative known aliases of the character",
           "items": {
             "type": "string"
           }

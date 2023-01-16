@@ -22,8 +22,9 @@ import {
   MediaFormat,
   MediaType,
 } from '../src/types.ts';
+import { AniListCharacter } from '../packs/anilist/types.ts';
 
-function fakePool(fill: Character, length = 25) {
+function fakePool(fill: AniListCharacter, length = 25) {
   const nodes: Character[] = [];
 
   for (let index = 0; index < length; index++) {

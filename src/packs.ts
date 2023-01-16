@@ -16,6 +16,7 @@ import * as anilist from '../packs/anilist/index.ts';
 import utils from './utils.ts';
 
 import {
+  Alias,
   Character,
   CharacterRole,
   DisaggregatedCharacter,
@@ -43,7 +44,7 @@ const packs = {
   aggregate,
   commands,
   pool,
-  titlesToArray,
+  aliasToArray,
   imagesToArray,
 };
 
@@ -177,25 +178,22 @@ async function findOne<T>(
         continue;
       }
 
-      const names = 'name' in item
-        ? [item.name.full, item.name.native, ...(item.name.alternative ?? [])]
-        : 'title' in item
-        ? [item.title.english, item.title.romaji, item.title.native]
-        : undefined;
+      packs.aliasToArray('name' in item ? item.name : item.title)
+        .forEach(
+          (alias) => {
+            const d = distance(search, alias);
+            const popularity = item.popularity || 0;
 
-      names?.filter(Boolean).forEach((name) => {
-        const d = distance(search, name!);
-        const popularity = item.popularity || 0;
-
-        if (
-          d < minDistance ||
-          (d === minDistance && popularity > maxPopularity)
-        ) {
-          minDistance = d;
-          maxPopularity = popularity;
-          match = (item.packId = pack.id, item) as T;
-        }
-      });
+            if (
+              d < minDistance ||
+              (d === minDistance && popularity > maxPopularity)
+            ) {
+              minDistance = d;
+              maxPopularity = popularity;
+              match = (item.packId = pack.id, item) as T;
+            }
+          },
+        );
 
       // exact match
       if (minDistance <= 0) {
@@ -446,15 +444,15 @@ function embed(
   return message;
 }
 
-function titlesToArray(
-  media: Media | DisaggregatedMedia,
+function aliasToArray(
+  alias: Alias,
   max?: number,
 ): string[] {
   let titles = [
-    media.title?.english,
-    media.title?.romaji,
-    media.title?.native,
-  ];
+    alias.english,
+    alias.romaji,
+    alias.native,
+  ].concat(alias.alternative ?? []);
 
   titles = titles.filter(Boolean)
     .map((str) => max ? utils.truncate(str, max) : str);

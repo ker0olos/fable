@@ -32,7 +32,11 @@
       "type": "object",
       "description": "The title of the media",
       "additionalProperties": false,
-      "minProperties": 1,
+      "anyOf": [
+        { "required": ["english"] },
+        { "required": ["romaji"] },
+        { "required": ["native"] }
+      ],
       "properties": {
         "english": {
           "type": "string"
@@ -42,6 +46,13 @@
         },
         "native": {
           "type": "string"
+        },
+        "alternative": {
+          "type": "array",
+          "description": "A list of alternative known aliases of the media",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

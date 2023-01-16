@@ -41,7 +41,7 @@ export async function media(
   // aggregate the media by populating any references to other media/character objects
   const media = await packs.aggregate<Media>({ media: results[0] });
 
-  const titles = packs.titlesToArray(media);
+  const titles = packs.aliasToArray(media.title);
 
   const message = new discord.Message();
 
@@ -56,13 +56,16 @@ export async function media(
         url: packs.imagesToArray(media.coverImage, 'large-first')?.[0],
       })
       .setFooter({
-        text: titles.length > 0 ? media.title!.native : undefined,
+        // checks if the native title wasn't used already
+        text: titles.length > 0 ? media.title.native : undefined,
       }),
   );
 
   media.characters?.edges!.slice(0, 2).forEach((character) => {
+    const titles = packs.aliasToArray(character.node!.name);
+
     const embed = new discord.Embed()
-      .setTitle(character.node!.name!.full)
+      .setTitle(titles[0])
       .setDescription(character.node!.description)
       .setColor(character.node.image?.color ?? media?.coverImage?.color)
       .setThumbnail({
@@ -111,7 +114,7 @@ export async function media(
   media.relations?.edges.forEach((relation) => {
     const component = new discord.Component();
 
-    const label = packs.titlesToArray(relation.node, 60)[0];
+    const label = packs.aliasToArray(relation.node.title, 60)[0];
 
     switch (relation.node.format) {
       case MediaFormat.Music: {
@@ -161,7 +164,7 @@ export async function media(
 }
 
 function disaggregatedMediaDebugEmbed(media: Media | DisaggregatedMedia) {
-  const titles = packs.titlesToArray(media);
+  const titles = packs.aliasToArray(media.title);
 
   return new discord.Embed()
     .setTitle(titles.shift()!)
@@ -212,10 +215,12 @@ export async function character(
     return new discord.Message().addEmbed(characterDebugEmbed(character));
   }
 
+  const titles = packs.aliasToArray(character.name);
+
   const message = new discord.Message()
     .addEmbed(
       new discord.Embed()
-        .setTitle(character.name!.full)
+        .setTitle(titles[0])
         .setDescription(character.description)
         .setColor(character.image?.color)
         .setImage({
@@ -235,7 +240,7 @@ export async function character(
   const relations: discord.Component[] = [];
 
   character.media?.edges?.forEach((relation) => {
-    const label = packs.titlesToArray(relation.node, 60)[0];
+    const label = packs.aliasToArray(relation.node.title, 60)[0];
 
     const component = new discord.Component()
       .setLabel(`${label} (${utils.capitalize(relation.node.format!)})`)
@@ -260,9 +265,11 @@ function characterDebugEmbed(character: Character) {
     role: character.popularity ? undefined : role,
   });
 
+  const titles = packs.aliasToArray(character.name);
+
   const embed = new discord.Embed()
-    .setTitle(character.name!.full)
-    .setDescription(character.name!.alternative?.join('\n'))
+    .setTitle(titles.splice(0, 1)[0])
+    .setDescription(titles.join('\n'))
     .setColor(character.image?.color)
     .setThumbnail({
       default: true,
@@ -325,10 +332,10 @@ export async function music(
       relation.node.format === MediaFormat.Music &&
       relation.node.externalLinks?.[0]?.url
     ) {
-      const label = packs.titlesToArray(relation.node, 60)[0];
+      const titles = packs.aliasToArray(relation.node.title, 60)[0];
 
       const component = new discord.Component()
-        .setLabel(label)
+        .setLabel(titles)
         .setUrl(relation.node.externalLinks[0].url);
 
       music.push(component);

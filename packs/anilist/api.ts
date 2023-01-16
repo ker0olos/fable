@@ -1,14 +1,19 @@
 import utils from '../../src/utils.ts';
 
-import { AniListMedia, Character, CharacterRole, Pool } from './types.ts';
-
 import { gql, request } from './graphql.ts';
 
 import lastPage from './lastPage.json' assert {
   type: 'json',
 };
 
-import { Media } from '../../src/types.ts';
+import {
+  AniListCharacter,
+  AniListMedia,
+  CharacterRole,
+  Pool,
+} from './types.ts';
+
+import { Alias, Character, Media } from '../../src/types.ts';
 
 /** Order by trending than popularity */
 const mediaDefaultSort = '[ TRENDING_DESC, POPULARITY_DESC ]';
@@ -16,9 +21,43 @@ const mediaDefaultSort = '[ TRENDING_DESC, POPULARITY_DESC ]';
 /** Order manually decided by anilist moderators */
 const characterDefaultSort = '[ RELEVANCE, ROLE_DESC ]';
 
+function transform<T>(
+  { media, character }: { media?: AniListMedia; character?: AniListCharacter },
+) {
+  if (media) {
+    const t: Media = {
+      ...media,
+      packId: 'anilist',
+      title: Object.assign(
+        {},
+        media.title?.english && { english: media.title?.english },
+        media.title?.romaji && { romaji: media.title?.romaji },
+        media.title?.native && { native: media.title?.native },
+      ) as Alias,
+    };
+    return t as T;
+  } else if (character) {
+    const t: Character = {
+      ...character,
+      packId: 'anilist',
+      name: Object.assign(
+        {},
+        character.name?.full && { english: character.name?.full },
+        character.name?.native && { native: character.name?.native },
+        character.name?.alternative &&
+          { alternative: character.name?.alternative },
+      ) as Alias,
+    };
+
+    return t as T;
+  }
+
+  throw new Error();
+}
+
 export async function media(
   variables: { ids?: number[]; search?: string },
-): Promise<AniListMedia[]> {
+): Promise<Media[]> {
   if (!variables.search && !variables.ids?.length) {
     return [];
   }
@@ -98,7 +137,7 @@ export async function media(
   } = await request(query, variables);
 
   return data.Page.media.map(
-    (media) => (media.packId = 'anilist', media),
+    (media) => transform<Media>({ media }),
   );
 }
 
@@ -151,12 +190,12 @@ export async function characters(
 
   const data: {
     Page: {
-      characters: Character[];
+      characters: AniListCharacter[];
     };
   } = await request(query, variables);
 
   return data.Page.characters.map(
-    (character) => (character.packId = 'anilist', character),
+    (character) => transform<Character>({ character }),
   );
 }
 
@@ -285,8 +324,8 @@ export async function pool(
     page.media!.forEach(({ characters }) => {
       // deno-lint-ignore ban-ts-comment
       //@ts-ignore
-      characters!.nodes!.forEach((character: Character) => {
-        dict[character.id] = (character.packId = 'anilist', character);
+      characters!.nodes!.forEach((character: AniListCharacter) => {
+        dict[character.id] = transform<Character>({ character });
       });
     });
   });

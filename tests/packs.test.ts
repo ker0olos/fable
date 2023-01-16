@@ -9,6 +9,8 @@ import {
 
 import { assertValidManifest } from '../src/validate.ts';
 
+import packs from '../src/packs.ts';
+
 import {
   Character,
   CharacterRole,
@@ -23,7 +25,7 @@ import {
   MediaType,
 } from '../src/types.ts';
 
-import packs from '../src/packs.ts';
+import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 Deno.test('list', async (test) => {
   await test.step('anilist', () => {
@@ -52,36 +54,6 @@ Deno.test('list', async (test) => {
               'id': 'title',
               'description': 'The title for an anime',
               'type': 'string',
-            },
-          ],
-        },
-      },
-    });
-
-    assertValidManifest(manifest);
-  });
-
-  await test.step('x', () => {
-    const builtin = packs.list(ManifestType.Builtin);
-
-    const manifest = builtin[1] as Manifest;
-
-    assertEquals(builtin.length, 2);
-
-    assertEquals(manifest, {
-      'author': 'Fable',
-      'type': ManifestType.Builtin,
-      'id': 'x',
-      'description': 'A pack containing a set of extra commands',
-      'commands': {
-        'dice': {
-          'source': 'roll',
-          'description': 'Roll a ten-sided dice',
-          'options': [
-            {
-              'id': 'amount',
-              'description': 'The number of dices to roll',
-              'type': 'integer',
             },
           ],
         },
@@ -729,7 +701,7 @@ Deno.test('search for media', async (test) => {
 
 Deno.test('search for characters', async (test) => {
   await test.step('anilist id', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'anilist character',
@@ -742,7 +714,7 @@ Deno.test('search for characters', async (test) => {
         new: [{
           id: '1',
           name: {
-            full: 'pack-id character',
+            english: 'pack-id character',
           },
         }],
       },
@@ -775,10 +747,13 @@ Deno.test('search for characters', async (test) => {
 
       assertEquals(results.length, 1);
 
-      assertEquals(results[0], character);
-      assertEquals(results[0].id, '1');
-
-      assertEquals(results[0].packId, 'anilist');
+      assertEquals(results[0], {
+        id: '1',
+        packId: 'anilist',
+        name: {
+          english: 'anilist character',
+        },
+      });
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -789,7 +764,7 @@ Deno.test('search for characters', async (test) => {
     const character: Character = {
       id: 1 as unknown as string,
       name: {
-        full: 'anilist character',
+        english: 'anilist character',
       },
     };
 
@@ -799,7 +774,7 @@ Deno.test('search for characters', async (test) => {
         new: [{
           id: '1',
           name: {
-            full: 'pack-id character',
+            english: 'pack-id character',
           },
         }],
       },
@@ -836,7 +811,7 @@ Deno.test('search for characters', async (test) => {
 
       assertEquals(results[0].id, '1');
       assertEquals(results[0].packId, 'pack-id');
-      assertEquals(results[0].name.full, 'pack-id character');
+      assertEquals(results[0].name.english, 'pack-id character');
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -847,7 +822,7 @@ Deno.test('search for characters', async (test) => {
     const character: Character = {
       id: 1 as unknown as string,
       name: {
-        full: 'anilist character',
+        english: 'anilist character',
       },
     };
 
@@ -884,7 +859,7 @@ Deno.test('search for characters', async (test) => {
   });
 
   await test.step('match full', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'fable',
@@ -926,7 +901,7 @@ Deno.test('search for characters', async (test) => {
   });
 
   await test.step('match native', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'x'.repeat(100),
@@ -969,7 +944,7 @@ Deno.test('search for characters', async (test) => {
   });
 
   await test.step('match alias', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'x'.repeat(100),
@@ -1011,49 +986,8 @@ Deno.test('search for characters', async (test) => {
     }
   });
 
-  await test.step('match alias with spoilers', async () => {
-    const character: Character = {
-      id: '1',
-      name: {
-        full: 'x'.repeat(100),
-        alternativeSpoiler: ['fable'],
-      },
-    };
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        json: (() =>
-          Promise.resolve({
-            data: {
-              Page: {
-                characters: [character],
-              },
-            },
-          })),
-      } as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      const results = await packs.characters({ search: 'feble' });
-
-      assertEquals(results.length, 0);
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
   await test.step('no matches', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'abc',
@@ -1095,7 +1029,7 @@ Deno.test('search for characters', async (test) => {
 
 Deno.test('aggregate media', async (test) => {
   await test.step('aggregate from anilist', async () => {
-    const parent: Media = {
+    const parent: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -1104,7 +1038,7 @@ Deno.test('aggregate media', async (test) => {
       },
     };
 
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '2',
       name: {
         full: 'character name',
@@ -1182,7 +1116,7 @@ Deno.test('aggregate media', async (test) => {
               id: '2',
               packId: 'anilist',
               name: {
-                full: 'character name',
+                english: 'character name',
               },
             },
           }],
@@ -1209,7 +1143,7 @@ Deno.test('aggregate media', async (test) => {
     const character: DisaggregatedCharacter = {
       id: '2',
       name: {
-        full: 'character name',
+        english: 'character name',
       },
     };
 
@@ -1283,7 +1217,7 @@ Deno.test('aggregate media', async (test) => {
               id: '2',
               packId: 'pack-id',
               name: {
-                full: 'character name',
+                english: 'character name',
               },
             },
           }],
@@ -1505,7 +1439,7 @@ Deno.test('aggregate media', async (test) => {
         new: [{
           id: '1',
           name: {
-            full: 'character name',
+            english: 'character name',
           },
         }],
       },
@@ -1837,7 +1771,7 @@ Deno.test('aggregate media', async (test) => {
           node: {
             id: '3',
             name: {
-              full: 'character name',
+              english: 'character name',
             },
           },
         }],
@@ -1924,7 +1858,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -1959,7 +1893,7 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
@@ -1998,7 +1932,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2030,7 +1964,7 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
@@ -2069,7 +2003,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2107,7 +2041,7 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
@@ -2157,7 +2091,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2192,7 +2126,7 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
@@ -2233,7 +2167,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2282,7 +2216,7 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [],
@@ -2301,7 +2235,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '3',
       packId: 'pack-id',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2350,7 +2284,7 @@ Deno.test('aggregate characters', async (test) => {
         id: '3',
         packId: 'pack-id',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
@@ -2404,7 +2338,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2436,7 +2370,7 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
@@ -2469,7 +2403,7 @@ Deno.test('aggregate characters', async (test) => {
     const character: Character = {
       id: '1',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: {
         edges: [{
@@ -2513,7 +2447,7 @@ Deno.test('aggregate characters', async (test) => {
     const character: Character = {
       id: '1',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
     };
 
@@ -2619,7 +2553,7 @@ Deno.test('overwrite character', async () => {
     id: '1',
     packId: 'anilist',
     name: {
-      full: 'full name',
+      english: 'full name',
     },
     age: '16',
   };
@@ -2628,7 +2562,7 @@ Deno.test('overwrite character', async () => {
     id: '0',
     packId: 'test',
     name: {
-      full: 'name overwrite',
+      english: 'name overwrite',
     },
     age: '18',
   };
@@ -2661,7 +2595,7 @@ Deno.test('overwrite character', async () => {
       overwritePackId: 'pack-id',
       age: '18',
       name: {
-        full: 'name overwrite',
+        english: 'name overwrite',
       },
       media: {
         edges: [],
@@ -2678,17 +2612,13 @@ Deno.test('overwrite character', async () => {
 
 Deno.test('titles to array', async (test) => {
   await test.step('all titles', () => {
-    const media = {
-      title: {
-        romaji: 'romaji',
-        native: 'native',
-        english: 'english',
-      },
-    };
+    const alias = packs.aliasToArray({
+      romaji: 'romaji',
+      native: 'native',
+      english: 'english',
+    });
 
-    const array = packs.titlesToArray(media as Media);
-
-    assertEquals(array, [
+    assertEquals(alias, [
       'english',
       'romaji',
       'native',
@@ -2696,17 +2626,13 @@ Deno.test('titles to array', async (test) => {
   });
 
   await test.step('missing 1 title', () => {
-    const media = {
-      title: {
-        romaji: '',
-        native: 'native',
-        english: 'english',
-      },
-    };
+    const alias = packs.aliasToArray({
+      romaji: '',
+      native: 'native',
+      english: 'english',
+    });
 
-    const array = packs.titlesToArray(media as Media);
-
-    assertEquals(array, [
+    assertEquals(alias, [
       'english',
       'native',
     ]);
