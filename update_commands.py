@@ -105,7 +105,7 @@ def load_manifest(filepath: str):
     commands = []
 
     for name in manifest["commands"]:
-        desc = f'{manifest["commands"][name]["description"]} ({manifest["title"]})'
+        desc = f'{manifest["commands"][name]["description"]} ({manifest["title"] if "title" in manifest else manifest["id"]})'
         options = manifest["commands"][name]["options"]
 
         commands += make_command(
