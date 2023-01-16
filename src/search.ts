@@ -81,16 +81,16 @@ export async function media(
     message.addEmbed(embed);
   });
 
-  const mainGroup: discord.Component[] = [];
-  const secondaryGroup: discord.Component[] = [];
-  const additionalGroup: discord.Component[] = [];
+  const linksGroup: discord.Component[] = [];
+  const relationsGroup: discord.Component[] = [];
+  const othersGroup: discord.Component[] = [];
 
   if (media.trailer?.site === 'youtube') {
     const component = new discord.Component()
       .setUrl(`https://youtu.be/${media.trailer?.id}`)
       .setLabel('Trailer');
 
-    mainGroup.push(component);
+    linksGroup.push(component);
   }
 
   media.externalLinks?.forEach((link) => {
@@ -106,13 +106,28 @@ export async function media(
       .setLabel(link.site)
       .setUrl(link.url);
 
-    mainGroup.push(component);
+    linksGroup.push(component);
   });
 
   media.relations?.edges.forEach((relation) => {
     const component = new discord.Component();
 
     const label = packs.titlesToArray(relation.node, 60)[0];
+
+    switch (relation.node.format) {
+      case MediaFormat.Music: {
+        if (relation.node.externalLinks?.[0]?.url) {
+          component
+            .setLabel(label)
+            .setUrl(relation.node.externalLinks[0].url);
+
+          othersGroup.push(component);
+        }
+        return;
+      }
+      default:
+        break;
+    }
 
     switch (relation.relationType) {
       case MediaRelation.Prequel:
@@ -125,40 +140,25 @@ export async function media(
           .setLabel(`${label} (${utils.capitalize(relation.relationType!)})`)
           .setId(discord.join('media', `${media.packId}:${relation.node.id!}`));
 
-        secondaryGroup.push(component);
-        break;
+        relationsGroup.push(component);
+        return;
       }
       case MediaRelation.Adaptation: {
         component
           .setLabel(`${label} (${utils.capitalize(relation.node.type!)})`)
           .setId(discord.join('media', `${media.packId}:${relation.node.id!}`));
 
-        secondaryGroup.push(component);
-        break;
+        relationsGroup.push(component);
+        return;
       }
       default:
-        break;
-    }
-
-    switch (relation.node.format) {
-      case MediaFormat.Music: {
-        if (relation.node.externalLinks?.[0]?.url) {
-          component
-            .setLabel(label)
-            .setUrl(relation.node.externalLinks[0].url);
-
-          additionalGroup.push(component);
-        }
-        break;
-      }
-      default:
-        break;
+        return;
     }
   });
 
-  message.addComponents(mainGroup);
-  message.addComponents(secondaryGroup);
-  message.addComponents(additionalGroup);
+  message.addComponents(linksGroup);
+  message.addComponents(relationsGroup);
+  message.addComponents(othersGroup);
 
   return message;
 }
@@ -235,7 +235,7 @@ export async function character(
         ),
     );
 
-  const group: discord.Component[] = [];
+  const relations: discord.Component[] = [];
 
   character.media?.edges?.forEach((relation) => {
     const label = packs.titlesToArray(relation.node, 60)[0];
@@ -244,10 +244,10 @@ export async function character(
       .setLabel(`${label} (${utils.capitalize(relation.node.format!)})`)
       .setId(discord.join('media', `${character.packId}:${relation.node.id!}`));
 
-    group.push(component);
+    relations.push(component);
   });
 
-  message.addComponents(group);
+  message.addComponents(relations);
 
   return message;
 }
@@ -304,6 +304,7 @@ function characterDebugEmbed(character: Character) {
 
   return embed;
 }
+
 export async function themes(
   { search }: {
     search?: string;
@@ -320,25 +321,28 @@ export async function themes(
 
   const message = new discord.Message();
 
+  const themes: discord.Component[] = [];
+
   media.relations?.edges.forEach((relation) => {
     if (
       relation.node.format === MediaFormat.Music &&
       relation.node.externalLinks?.[0]?.url
     ) {
+      const label = packs.titlesToArray(relation.node, 60)[0];
+
       const component = new discord.Component()
-        .setLabel(
-          (relation.node.title!.english || relation.node.title!.romaji ||
-            relation.node.title!.native)!,
-        )
+        .setLabel(label)
         .setUrl(relation.node.externalLinks[0].url);
 
-      message.addComponents([component]);
+      themes.push(component);
     }
   });
 
-  if (message.componentsCount() <= 0) {
+  if (themes.length <= 0) {
     throw new Error('404');
   }
+
+  message.addComponents(themes);
 
   return message;
 }
