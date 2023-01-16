@@ -74,19 +74,21 @@
       }
     },
     "media": {
-      "type": "object",
+      "type": "array",
       "description": "A list of media that the character appears in",
-      "required": ["relationType", "mediaId"],
-      "additionalProperties": false,
-      "properties": {
-        "role": {
-          "description": "Choose the role the character plays in the media",
-          "enum": ["MAIN", "SUPPORTING", "BACKGROUND"]
-        },
-        "mediaId": {
-          "type": "string",
-          "description": "Reference an existing character ([pack:]id)",
-          "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"
+      "items": {
+        "required": ["role", "mediaId"],
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "description": "Choose the role the character plays in the media",
+            "enum": ["MAIN", "SUPPORTING", "BACKGROUND"]
+          },
+          "mediaId": {
+            "type": "string",
+            "description": "Reference an existing character ([pack:]id)",
+            "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"
+          }
         }
       }
     }

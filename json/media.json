@@ -128,45 +128,49 @@
       }
     },
     "relations": {
-      "type": "object",
+      "type": "array",
       "description": "Define the relations between this media and other media",
-      "required": ["relationType", "mediaId"],
-      "additionalProperties": false,
-      "properties": {
-        "relation": {
-          "description": "Choose the kind of relationship between this media a different media",
-          "enum": [
-            "PREQUEL",
-            "SEQUEL",
-            "PARENT",
-            "CONTAINS",
-            "SIDE_STORY",
-            "SPIN_OFF",
-            "ADAPTATION",
-            "OTHER"
-          ]
-        },
-        "mediaId": {
-          "type": "string",
-          "description": "Reference an existing media ([pack:]id)",
-          "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"
+      "items": {
+        "required": ["relation", "mediaId"],
+        "additionalProperties": false,
+        "properties": {
+          "relation": {
+            "description": "Choose the kind of relationship between this media a different media",
+            "enum": [
+              "PREQUEL",
+              "SEQUEL",
+              "PARENT",
+              "CONTAINS",
+              "SIDE_STORY",
+              "SPIN_OFF",
+              "ADAPTATION",
+              "OTHER"
+            ]
+          },
+          "mediaId": {
+            "type": "string",
+            "description": "Reference an existing media ([pack:]id)",
+            "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"
+          }
         }
       }
     },
     "characters": {
-      "type": "object",
+      "type": "array",
       "description": "A list of characters that appear in the media",
-      "required": ["relationType", "characterId"],
-      "additionalProperties": false,
-      "properties": {
-        "role": {
-          "description": "Choose the role the character plays in the media",
-          "enum": ["MAIN", "SUPPORTING", "BACKGROUND"]
-        },
-        "characterId": {
-          "type": "string",
-          "description": "Reference an existing character ([pack:]id)",
-          "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"
+      "items": {
+        "required": ["role", "characterId"],
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "description": "Choose the role the character plays in the media",
+            "enum": ["MAIN", "SUPPORTING", "BACKGROUND"]
+          },
+          "characterId": {
+            "type": "string",
+            "description": "Reference an existing character ([pack:]id)",
+            "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"
+          }
         }
       }
     }
