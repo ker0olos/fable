@@ -94,6 +94,14 @@ export async function media(
   }
 
   media.externalLinks?.forEach((link) => {
+    if (
+      !['youtube', 'crunchyroll', 'official site', 'webtoon'].includes(
+        link.site.toLowerCase(),
+      )
+    ) {
+      return;
+    }
+
     const component = new discord.Component()
       .setLabel(link.site)
       .setUrl(link.url);
@@ -296,7 +304,6 @@ function characterDebugEmbed(character: Character) {
 
   return embed;
 }
-
 export async function themes(
   { search }: {
     search?: string;

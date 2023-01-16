@@ -89,8 +89,8 @@
         "additionalProperties": false,
         "properties": {
           "site": {
-            "type": "string",
-            "description": "The name of the site (e.g. Homepage, Crunchyroll)"
+            "enum": ["Crunchyroll", "YouTube", "Official Site", "Webtoon"],
+            "description": "The name of the site"
           },
           "url": {
             "type": "string",
@@ -106,8 +106,8 @@
       "additionalProperties": false,
       "properties": {
         "site": {
-          "description": "The name of the site (only supports youtube)",
-          "enum": ["youtube"]
+          "enum": ["youtube"],
+          "description": "The name of the site (only supports youtube)"
         },
         "id": {
           "type": "string",
