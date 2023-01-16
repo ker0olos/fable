@@ -411,27 +411,27 @@ export class Message {
   // }
 
   addEmbed(embed: Embed) {
-    if (this.embedsCount() < 5) {
-      this.#data.embeds.push(embed.json());
-    }
+    this.#data.embeds.push(embed.json());
     return this;
   }
 
   addComponents(components: Component[]) {
     if (components.length > 0) {
-      this.#data.components.push({
-        type: 1,
-        components: components.slice(0, 5).map((component) => {
-          const comp = component.json();
+      // max amount of items per group is 5
+      utils.chunks(components, 5)
+        .forEach((chunk) => {
+          this.#data.components.push({
+            type: 1,
+            components: chunk.map((component) => {
+              const comp = component.json();
 
-          // labels have maximum of 80 characters
-          // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
-          comp.label = utils.truncate(comp.label, 80);
-
-          return component.json();
-        }),
-      });
+              // labels have maximum of 80 characters
+              return (comp.label = utils.truncate(comp.label, 80), comp);
+            }),
+          });
+        });
     }
+
     return this;
   }
 
@@ -470,9 +470,9 @@ export class Message {
       //   break;
       default:
         data = {
-          embeds: this.#data.embeds,
           content: this.#data.content,
-          components: this.#data.components,
+          embeds: this.#data.embeds.slice(0, 3),
+          components: this.#data.components.slice(0, 5),
         };
         break;
     }

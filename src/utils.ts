@@ -105,6 +105,13 @@ function comma(n: number) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+function chunks<T>(a: Array<T>, size: number) {
+  return Array.from(
+    new Array(Math.ceil(a.length / size)),
+    (_, i) => a.slice(i * size, i * size + size),
+  );
+}
+
 function parseId(query?: string): number | undefined {
   const id = parseInt(query!);
 
@@ -175,6 +182,7 @@ const utils = {
   shuffle,
   sleep,
   truncate,
+  chunks,
   verifySignature,
   wrap,
 };
