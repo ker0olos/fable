@@ -19,7 +19,7 @@ const config: {
   publicKey?: string;
   mongoUrl?: string;
   sentry?: string;
-  fileUrl?: string;
+  origin?: string;
 } = {
   dev: false,
   deploy: false,
@@ -27,7 +27,7 @@ const config: {
   publicKey: undefined,
   mongoUrl: undefined,
   sentry: undefined,
-  fileUrl: undefined,
+  origin: undefined,
 };
 
 export async function init(
@@ -63,11 +63,10 @@ export async function init(
       ? Deno.env.get('DEV_MONGO_URL')!
       : Deno.env.get('MONGO_URL')!;
 
-    config.fileUrl = `${new URL(baseUrl).origin}/file`;
+    config.origin = new URL(baseUrl).origin;
 
-    if (!config.fileUrl.startsWith('http://localhost')) {
-      config.fileUrl = config.fileUrl
-        .replace('http://', 'https://');
+    if (!config.origin.startsWith('http://localhost')) {
+      config.origin = config.origin.replace('http://', 'https://');
     }
   }
 }

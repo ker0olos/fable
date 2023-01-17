@@ -143,11 +143,17 @@ Deno.test('embeds', async (test) => {
   });
 
   await test.step('thumbnail', () => {
-    assertEquals(embed.json().thumbnail!.url, 'abc');
+    assertEquals(
+      embed.json().thumbnail!.url,
+      'undefined/image?url=abc&size=thumbnail',
+    );
   });
 
   await test.step('image', () => {
-    assertEquals(embed.json().image!.url, 'abc');
+    assertEquals(
+      embed.json().image!.url,
+      'undefined/image?url=abc&size=default',
+    );
   });
 
   await test.step('fields', () => {

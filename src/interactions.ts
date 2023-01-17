@@ -4,6 +4,7 @@ import {
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
 
 import {
+  Handler,
   json,
   serve,
   serveStatic,
@@ -22,14 +23,12 @@ import config, { init } from './config.ts';
 
 import { ManifestType, MediaType } from './types.ts';
 
-async function handler(
-  request: Request,
-): Promise<Response> {
-  init({ baseUrl: request.url });
+const handler: Handler = async (r: Request) => {
+  init({ baseUrl: r.url });
 
   initSentry({ dsn: config.sentry });
 
-  const { error } = await validateRequest(request, {
+  const { error } = await validateRequest(r, {
     POST: {
       headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
     },
@@ -42,10 +41,7 @@ async function handler(
     );
   }
 
-  const { valid, body } = await utils.verifySignature(
-    request,
-    config.publicKey!,
-  );
+  const { valid, body } = await utils.verifySignature(r, config.publicKey!);
 
   if (!valid) {
     return json(
@@ -175,11 +171,42 @@ async function handler(
   }
 
   return discord.Message.content(`Unimplemented!`);
-}
+};
+
+const proxyImage = (): Handler => {
+  return async (r: Request): Promise<Response> => {
+    const request = new URL(r.url);
+
+    try {
+      const url = request.searchParams.get('url');
+
+      const image = url ? await fetch(url) : undefined;
+
+      if (
+        image?.status === 200 &&
+        image.headers.get('content-type')?.startsWith('image/')
+      ) {
+        const response = new Response(image.body);
+
+        response.headers.set(
+          'content-type',
+          image.headers.get('content-type')!,
+        );
+
+        return response;
+      }
+
+      throw new Error();
+    } catch {
+      return Response.redirect(`${request.origin}/file/large.jpg`);
+    }
+  };
+};
 
 serve({
   '/': handler,
   '/dev': handler,
+  '/image': proxyImage(),
   '/schema': serveStatic('../json/index.json', { baseUrl: import.meta.url }),
   '/file/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,

@@ -324,15 +324,6 @@ export class Embed {
     return this;
   }
 
-  setThumbnail(thumbnail: { url?: string; default?: boolean }) {
-    if (thumbnail.url || thumbnail.default) {
-      this.#data.thumbnail = {
-        url: thumbnail.url ?? `${config.fileUrl}/medium.jpg`,
-      };
-    }
-    return this;
-  }
-
   addField(field: { name: string; value: string; inline?: boolean }) {
     if (!this.#data.fields) {
       this.#data.fields = [];
@@ -348,7 +339,16 @@ export class Embed {
   setImage(image: { url?: string; default?: boolean }) {
     if (image.url || image.default) {
       this.#data.image = {
-        url: image.url ?? `${config.fileUrl}/large.jpg`,
+        url: `${config.origin}/image?url=${image.url}&size=default`,
+      };
+    }
+    return this;
+  }
+
+  setThumbnail(thumbnail: { url?: string; default?: boolean }) {
+    if (thumbnail.url || thumbnail.default) {
+      this.#data.thumbnail = {
+        url: `${config.origin}/image?url=${thumbnail.url}&size=thumbnail`,
       };
     }
     return this;
