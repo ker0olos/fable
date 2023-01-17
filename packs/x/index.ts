@@ -29,6 +29,7 @@ function roll(
     `\`${amount}d${dieSize}>=${minSuccess}\` \n = [ ${equation} ] \n = **${successes}** ${plural}`;
 
   const message = new discord.Message().setContent(
+    // deno-lint-ignore no-non-null-assertion
     `<@${member!.user.id}> ${rolledNumber}`,
   );
 

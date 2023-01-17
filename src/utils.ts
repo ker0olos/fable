@@ -112,8 +112,8 @@ function chunks<T>(a: Array<T>, size: number) {
   );
 }
 
-function parseId(query?: string): number | undefined {
-  const id = parseInt(query!);
+function parseId(query: string): number | undefined {
+  const id = parseInt(query);
 
   if (!isNaN(id) && id.toString() === query) {
     return id;
@@ -149,23 +149,34 @@ function decodeDescription(s?: string): string | undefined {
 
 async function verifySignature(
   request: Request,
-  publicKey: string,
+  publicKey?: string,
 ): Promise<{ valid: boolean; body: string }> {
-  const signature = request.headers.get('X-Signature-Ed25519')!;
-  const timestamp = request.headers.get('X-Signature-Timestamp')!;
+  const signature = request.headers.get('X-Signature-Ed25519') || undefined;
+  const timestamp = request.headers.get('X-Signature-Timestamp') || undefined;
 
   const body = await request.text();
 
-  function hexToUint8Array(hex: string) {
-    return new Uint8Array(
-      hex?.match(/.{1,2}/g)!.map((val) => parseInt(val, 16)),
-    );
+  function hexToUint8Array(hex?: string) {
+    const t = hex?.match(/.{1,2}/g);
+
+    if (t) {
+      return new Uint8Array(
+        t.map((val) => parseInt(val, 16)),
+      );
+    }
+  }
+
+  const sig = hexToUint8Array(signature);
+  const pubKey = hexToUint8Array(publicKey);
+
+  if (!sig || !pubKey) {
+    return { valid: false, body };
   }
 
   const valid = nacl.sign.detached.verify(
     new TextEncoder().encode(timestamp + body),
-    hexToUint8Array(signature),
-    hexToUint8Array(publicKey),
+    sig,
+    pubKey,
   );
 
   return { valid, body };

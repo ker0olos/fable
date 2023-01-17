@@ -77,7 +77,7 @@ export class Interaction<Options> {
   data?: unknown;
 
   name?: string;
-  options?: {
+  options: {
     [key: string]: Options;
   };
 
@@ -150,21 +150,21 @@ export class Interaction<Options> {
     switch (this.type) {
       // case InteractionType.CommandAutocomplete:
       case InteractionType.Command: {
-        this.name = data!.name;
+        this.name = data.name;
 
         // this.targetId = data!.target_id;
 
-        if (data!.options?.[0].type === 1) {
-          this.subcommand = data!.options?.[0].name;
+        if (data.options?.[0].type === 1) {
+          this.subcommand = data.options?.[0].name;
 
           this.name += `_${this.subcommand}`;
 
-          data!.options?.[0]!.options?.forEach((option) => {
-            this.options![option.name] = option.value as Options;
+          data.options?.[0].options?.forEach((option) => {
+            this.options[option.name] = option.value as Options;
           });
         } else {
-          data!.options?.forEach((option) => {
-            this.options![option.name] = option.value as Options;
+          data.options?.forEach((option) => {
+            this.options[option.name] = option.value as Options;
           });
         }
 
@@ -172,7 +172,7 @@ export class Interaction<Options> {
       }
       // case InteractionType.Modal:
       case InteractionType.Component: {
-        const custom = data!.custom_id.split(splitter);
+        const custom = data.custom_id.split(splitter);
 
         this.customType = custom[0];
         this.customValues = custom.slice(1);
@@ -180,7 +180,7 @@ export class Interaction<Options> {
         if (data.components) {
           // deno-lint-ignore no-explicit-any
           data.components[0].components.forEach((component: any) => {
-            this.options![component.custom_id] = component.value as Options;
+            this.options[component.custom_id] = component.value as Options;
           });
         }
 
@@ -336,10 +336,12 @@ export class Embed {
     return this;
   }
 
-  setImage(image: { url?: string; default?: boolean }) {
+  setImage(image: { url?: string; noProxy?: boolean; default?: boolean }) {
     if (image.url || image.default) {
       this.#data.image = {
-        url: `${config.origin}/image?url=${image.url}&size=default`,
+        url: config.origin && image.url?.startsWith(config.origin)
+          ? image.url
+          : `${config.origin}/image?url=${image.url}&size=default`,
       };
     }
     return this;
@@ -348,7 +350,9 @@ export class Embed {
   setThumbnail(thumbnail: { url?: string; default?: boolean }) {
     if (thumbnail.url || thumbnail.default) {
       this.#data.thumbnail = {
-        url: `${config.origin}/image?url=${thumbnail.url}&size=thumbnail`,
+        url: config.origin && thumbnail.url?.startsWith(config.origin)
+          ? thumbnail.url
+          : `${config.origin}/image?url=${thumbnail.url}&size=thumbnail`,
       };
     }
     return this;

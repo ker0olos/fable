@@ -33,7 +33,7 @@ export type AniListMedia = Modify<Media, {
   };
   characters?: {
     nodes?: AniListCharacter[];
-    edges?: { role: CharacterRole; node: AniListCharacter }[];
+    edges: { role: CharacterRole; node: AniListCharacter }[];
   };
 }>;
 
@@ -45,7 +45,7 @@ export type AniListCharacter = Modify<Character, {
     alternativeSpoiler?: string[];
   };
   media?: {
-    edges?: { characterRole: CharacterRole; node: AniListMedia }[];
+    edges: { characterRole: CharacterRole; node: AniListMedia }[];
   };
 }>;
 

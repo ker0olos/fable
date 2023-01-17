@@ -57,20 +57,20 @@ async function commands(
   name: string,
   interaction: Interaction<unknown>,
 ): Promise<Message | undefined> {
-  if (name in anilistManifest.commands!) {
-    const command = anilistManifest.commands![name];
+  if (anilistManifest.commands && name in anilistManifest.commands) {
+    const command = anilistManifest.commands[name];
     return await anilist.default
       [command.source as keyof typeof anilist.default](
         // deno-lint-ignore no-explicit-any
-        interaction.options! as any,
+        interaction.options as any,
       );
   }
 
-  if (name in xManifest.commands!) {
-    const command = xManifest.commands![name];
+  if (xManifest.commands && name in xManifest.commands) {
+    const command = xManifest.commands[name];
     return x.default[command.source as keyof typeof x.default](
       // deno-lint-ignore no-explicit-any
-      interaction.options! as any,
+      interaction.options as any,
       interaction,
     );
   }
@@ -431,6 +431,7 @@ function embed(
     {
       index,
       total,
+      // deno-lint-ignore no-non-null-assertion
       id: manifest.type!,
       current: new Embed()
         .setUrl(manifest.url)
@@ -443,7 +444,7 @@ function embed(
 
   message
     .setContent(
-      manifest.type! === ManifestType.Builtin
+      manifest.type === ManifestType.Builtin
         ? 'Builtin packs are developed and maintained directly by Fable.'
         : 'The following packs were installed manually by server members.',
     );
@@ -480,7 +481,7 @@ function imagesToArray(
 
   if (ideally && Boolean(item[ideally])) {
     // if (ideally && ideally in item && Boolean(item[ideally])) {
-    return [item[ideally]!];
+    return [item[ideally] as string];
   }
 
   images.push(

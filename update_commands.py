@@ -74,7 +74,7 @@ def make_command(
         return []
 
     if dev_only:
-        desc = f"{desc} (Developer)"
+        desc = f"{desc} (Developer Only)"
 
     commands = [
         {
@@ -199,7 +199,6 @@ if __name__ == "__main__":
             name="gacha",
             desc="An experimental/ephemeral gacha command",
             aliases=["w", "pull", "roll"],
-            dev_only=True,
         )
         + make_command(
             name="force_pull",

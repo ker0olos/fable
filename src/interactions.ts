@@ -41,7 +41,7 @@ const handler: Handler = async (r: Request) => {
     );
   }
 
-  const { valid, body } = await utils.verifySignature(r, config.publicKey!);
+  const { valid, body } = await utils.verifySignature(r, config.publicKey);
 
   if (!valid) {
     return json(
@@ -74,8 +74,8 @@ const handler: Handler = async (r: Request) => {
           case 'anime':
           case 'manga':
             return (await search.media({
-              debug: Boolean(options!['debug']),
-              search: options!['query'] as string,
+              debug: Boolean(options['debug']),
+              search: options['query'] as string,
               type: Object.values(MediaType).includes(
                   name.toUpperCase() as MediaType,
                 )
@@ -85,14 +85,14 @@ const handler: Handler = async (r: Request) => {
           case 'debug':
           case 'character':
             return (await search.character({
-              debug: name === 'debug' || Boolean(options!['debug']),
-              search: options!['query'] as string,
+              debug: name === 'debug' || Boolean(options['debug']),
+              search: options['query'] as string,
             })).send();
           case 'music':
           case 'songs':
           case 'themes':
             return (await search.music({
-              search: options!['query'] as string,
+              search: options['query'] as string,
             })).send();
           case 'w':
           case 'roll':
@@ -100,9 +100,10 @@ const handler: Handler = async (r: Request) => {
           case 'gacha':
             return gacha.start({ token }).send();
           case 'force_pull':
-            return gacha.start({ token, id: options!['id'] as string }).send();
+            return gacha.start({ token, id: options['id'] as string }).send();
           case 'packs_builtin':
           case 'packs_manual': {
+            // deno-lint-ignore no-non-null-assertion
             const list = packs.list(subcommand! as ManifestType);
 
             return packs.embed({
@@ -112,6 +113,7 @@ const handler: Handler = async (r: Request) => {
           }
           default: {
             // non-standard commands (handled by individual packs)
+            // deno-lint-ignore no-non-null-assertion
             const message = await packs.commands(name!, interaction);
 
             if (message) {
@@ -126,6 +128,7 @@ const handler: Handler = async (r: Request) => {
         switch (customType) {
           case 'media': {
             const message = await search.media({
+              // deno-lint-ignore no-non-null-assertion
               id: customValues![0],
             });
             return message.setType(discord.MessageType.Update).send();
@@ -134,6 +137,7 @@ const handler: Handler = async (r: Request) => {
           case 'manual': {
             const list = packs.list(customType as ManifestType);
 
+            // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![0]);
 
             return packs.embed({

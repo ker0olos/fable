@@ -32,7 +32,7 @@ const variables = {
 };
 
 type Pull = {
-  role: CharacterRole;
+  role?: CharacterRole;
   character: Character;
   media: Media;
   pool: number;
@@ -137,17 +137,17 @@ async function rngPull(): Promise<Pull> {
     }
   }
 
-  if (!character) {
+  if (!character || !media || !rating) {
     throw new Error(
       'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
     );
   }
 
   return {
-    role: role!,
-    media: media!,
-    rating: rating!,
-    character: character!,
+    role: role,
+    media: media,
+    rating: rating,
+    character: character,
     pool: pool.length,
     popularityGreater: range[0],
     popularityLesser: range[1],
@@ -164,12 +164,12 @@ function start({ token, id }: { token: string; id?: string }) {
     .then(async (pull) => {
       const media = pull.media;
 
-      const titles = packs.aliasToArray(media.title);
+      const mediaTitles = packs.aliasToArray(media.title);
 
       let message = new discord.Message()
         .addEmbed(
           new discord.Embed()
-            .setTitle(utils.wrap(titles[0]))
+            .setTitle(utils.wrap(mediaTitles[0]))
             .setImage({
               default: true,
               url: packs.imagesToArray(media.coverImage, 'large-first', 'large')
@@ -193,15 +193,15 @@ function start({ token, id }: { token: string; id?: string }) {
 
       await utils.sleep(pull.rating.stars >= 5 ? 7 : 5);
 
-      const alias = packs.aliasToArray(pull.character.name);
+      const characterAliases = packs.aliasToArray(pull.character.name);
 
       message = new discord.Message()
         .addEmbed(
           new discord.Embed()
             .setTitle(pull.rating.emotes)
             .addField({
-              name: utils.wrap(titles[0]!),
-              value: `**${utils.wrap(alias[0])}**`,
+              name: utils.wrap(mediaTitles[0]),
+              value: `**${utils.wrap(characterAliases[0])}**`,
             })
             .setImage({
               default: true,

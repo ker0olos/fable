@@ -49,19 +49,17 @@ export async function init(
       }
     }
 
-    config.sentry = Deno.env.get('SENTRY_DSN')!;
+    config.sentry = Deno.env.get('SENTRY_DSN');
 
-    config.appId = config.dev
-      ? Deno.env.get('DEV_ID')!
-      : Deno.env.get('APP_ID')!;
+    config.appId = config.dev ? Deno.env.get('DEV_ID') : Deno.env.get('APP_ID');
 
     config.publicKey = config.dev
-      ? Deno.env.get('DEV_PUBLIC_KEY')!
-      : Deno.env.get('APP_PUBLIC_KEY')!;
+      ? Deno.env.get('DEV_PUBLIC_KEY')
+      : Deno.env.get('APP_PUBLIC_KEY');
 
     config.mongoUrl = config.dev
-      ? Deno.env.get('DEV_MONGO_URL')!
-      : Deno.env.get('MONGO_URL')!;
+      ? Deno.env.get('DEV_MONGO_URL')
+      : Deno.env.get('MONGO_URL');
 
     config.origin = new URL(baseUrl).origin;
 

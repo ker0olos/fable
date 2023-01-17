@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-non-null-assertion
+
 import { assertEquals } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 import {
@@ -47,9 +49,9 @@ Deno.test('interactions', async (test) => {
 
     assertEquals(interaction.member!.user.id, 'user_id');
 
-    assertEquals(interaction.options!['text'], 'text');
-    assertEquals(interaction.options!['boolean'], true);
-    assertEquals(interaction.options!['number'], 420);
+    assertEquals(interaction.options['text'], 'text');
+    assertEquals(interaction.options['boolean'], true);
+    assertEquals(interaction.options['number'], 420);
   });
 
   await test.step('interactions', () => {
@@ -94,9 +96,9 @@ Deno.test('interactions', async (test) => {
 
     assertEquals(interaction.member!.user.id, 'user_id');
 
-    assertEquals(interaction.options!['text'], 'text');
-    assertEquals(interaction.options!['boolean'], true);
-    assertEquals(interaction.options!['number'], 420);
+    assertEquals(interaction.options['text'], 'text');
+    assertEquals(interaction.options['boolean'], true);
+    assertEquals(interaction.options['number'], 420);
   });
 });
 

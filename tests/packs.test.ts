@@ -2401,6 +2401,7 @@ Deno.test('aggregate characters', async (test) => {
 
     const manifest: Manifest = {
       id: 'pack-id',
+      type: ManifestType.Builtin,
       media: {
         new: [media],
       },
@@ -2556,6 +2557,7 @@ Deno.test('overwrite media', async () => {
 
   const manifest: Manifest = {
     id: 'pack-id',
+    type: ManifestType.Builtin,
     media: {
       overwrite: {
         'anilist:1': overwrite,

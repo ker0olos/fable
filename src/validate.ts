@@ -72,6 +72,7 @@ export const prettify = (
   let json = JSON.stringify(
     data,
     replacerWithPath((value, path) => {
+      // deno-lint-ignore no-non-null-assertion
       const index = _v.errors!.findIndex((e) => e.instancePath === path);
 
       if (index > -1) {
@@ -88,7 +89,8 @@ export const prettify = (
   );
 
   _v.errors.forEach((err, index) => {
-    let message = `${err.message!}`;
+    let message = `${err.message}`;
+    // deno-lint-ignore no-non-null-assertion
     let underline = '^'.repeat(err.message!.length);
 
     if (opts?.terminal) {

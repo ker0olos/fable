@@ -80,7 +80,7 @@ export interface Media {
     }[];
   };
   characters?: {
-    edges?: { role: CharacterRole; node: Character }[];
+    edges: { role: CharacterRole; node: Character }[];
   };
 }
 
@@ -106,7 +106,7 @@ export interface Character {
   age?: string;
   image?: Image;
   media?: {
-    edges?: { role: CharacterRole; node: Media }[];
+    edges: { role: CharacterRole; node: Media }[];
   };
 }
 

@@ -28,24 +28,28 @@ function transform<T>(
     const t: Media = {
       ...media,
       packId: 'anilist',
-      relations: { edges: [] },
-      characters: { edges: [] },
+      relations: undefined,
+      characters: undefined,
     };
 
     if (media.relations?.edges?.length) {
-      t.relations!.edges = media.relations.edges.map((edge) => ({
-        relation: edge.relationType,
-        node: transform({ media: edge.node as AniListMedia }),
-      }));
+      t.relations = {
+        edges: media.relations.edges.map((edge) => ({
+          relation: edge.relationType,
+          node: transform({ media: edge.node as AniListMedia }),
+        })),
+      };
     } else {
       delete t.relations;
     }
 
     if (media.characters?.edges?.length) {
-      t.characters!.edges = media.characters.edges.map((edge) => ({
-        role: edge.role,
-        node: transform({ character: edge.node as AniListCharacter }),
-      }));
+      t.characters = {
+        edges: media.characters.edges.map((edge) => ({
+          role: edge.role,
+          node: transform({ character: edge.node as AniListCharacter }),
+        })),
+      };
     } else {
       delete t.characters;
     }
@@ -55,7 +59,6 @@ function transform<T>(
     const t: Character = {
       ...character,
       packId: 'anilist',
-      media: { edges: [] },
       name: Object.assign(
         {},
         character.name?.full && { english: character.name?.full },
@@ -63,13 +66,16 @@ function transform<T>(
         character.name?.alternative &&
           { alternative: character.name?.alternative },
       ),
+      media: undefined,
     };
 
     if (character.media?.edges?.length) {
-      t.media!.edges = character.media.edges.map((edge) => ({
-        role: edge.characterRole,
-        node: transform({ media: edge.node as AniListMedia }),
-      }));
+      t.media = {
+        edges: character.media.edges.map((edge) => ({
+          role: edge.characterRole,
+          node: transform({ media: edge.node as AniListMedia }),
+        })),
+      };
     } else {
       delete t.media;
     }
@@ -346,8 +352,8 @@ export async function pool(
   data.forEach((page) => {
     // using the api
     // create a dictionary of all the characters with their ids as key
-    page.media!.forEach(({ characters }) => {
-      characters!.nodes!.forEach((character) => {
+    page.media.forEach(({ characters }) => {
+      characters?.nodes?.forEach((character) => {
         dict[character.id] = transform<Character>({ character });
       });
     });

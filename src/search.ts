@@ -52,12 +52,12 @@ export async function media(
 
   const message = new discord.Message();
 
-  const title = titles.shift()!;
+  const title = titles.shift();
 
   message.addEmbed(
     new discord.Embed()
       .setTitle(title)
-      .setAuthor({ name: utils.capitalize(media.type!)! })
+      .setAuthor({ name: utils.capitalize(media.type) })
       .setDescription(media.description)
       .setColor(media.coverImage?.color)
       .setImage({
@@ -69,12 +69,12 @@ export async function media(
       }),
   );
 
-  media.characters?.edges!.slice(0, 2).forEach((edge) => {
-    const titles = packs.aliasToArray(edge.node!.name);
+  media.characters?.edges?.slice(0, 2).forEach((edge) => {
+    const titles = packs.aliasToArray(edge.node.name);
 
     const embed = new discord.Embed()
       .setTitle(titles[0])
-      .setDescription(edge.node!.description)
+      .setDescription(edge.node.description)
       .setColor(edge.node.image?.color ?? media?.coverImage?.color)
       .setThumbnail({
         default: true,
@@ -83,8 +83,8 @@ export async function media(
       .setFooter(
         {
           text: [
-            utils.capitalize(edge.node!.gender!),
-            edge.node!.age,
+            utils.capitalize(edge.node.gender),
+            edge.node.age,
           ].filter(Boolean).join(', '),
         },
       );
@@ -182,7 +182,7 @@ function disaggregatedMediaDebugEmbed(media: Media | DisaggregatedMedia) {
   const titles = packs.aliasToArray(media.title);
 
   return new discord.Embed()
-    .setTitle(titles.shift()!)
+    .setTitle(titles.shift())
     .setDescription(titles.join('\n'))
     .setColor(media.coverImage?.color)
     .setThumbnail({
@@ -192,12 +192,12 @@ function disaggregatedMediaDebugEmbed(media: Media | DisaggregatedMedia) {
     .addField({ name: 'Id', value: `${media.packId}:${media.id}` })
     .addField({
       name: 'Type',
-      value: `${utils.capitalize(media.type!)}`,
+      value: `${utils.capitalize(media.type)}`,
       inline: true,
     })
     .addField({
       name: 'Format',
-      value: `${utils.capitalize(media.format!)}`,
+      value: `${utils.capitalize(media.format)}`,
       inline: true,
     })
     .addField({
@@ -246,7 +246,7 @@ export async function character(
           {
             text: [
               utils.capitalize(character.gender),
-              character!.age,
+              character.age,
             ].filter(Boolean).join(', '),
           },
         ),
@@ -258,8 +258,8 @@ export async function character(
     const label = packs.aliasToArray(relation.node.title, 60)[0];
 
     const component = new discord.Component()
-      .setLabel(`${label} (${utils.capitalize(relation.node.format!)})`)
-      .setId(discord.join('media', `${character.packId}:${relation.node.id!}`));
+      .setLabel(`${label} (${utils.capitalize(relation.node.format)})`)
+      .setId(discord.join('media', `${character.packId}:${relation.node.id}`));
 
     relations.push(component);
   });

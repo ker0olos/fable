@@ -28,8 +28,8 @@ export async function nextEpisode(
     case Status.RELEASING:
       message.setContent(
         `The next episode of \`${titles.shift()}\` is <t:${
-          anime.nextAiringEpisode!.airingAt
-        }:R>.`,
+          // deno-lint-ignore no-non-null-assertion
+          anime.nextAiringEpisode!.airingAt}:R>.`,
       );
       break;
     case Status.NOT_YET_RELEASED:

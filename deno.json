@@ -2,7 +2,16 @@
   "lint": {
     "rules": {
       "tags": ["recommended"],
-      "include": ["camelcase", "eqeqeq", "no-const-assign", "no-eval"]
+      "include": [
+        "prefer-ascii",
+        "camelcase",
+        "eqeqeq",
+        "no-const-assign",
+        "no-eval",
+        "no-non-null-assertion",
+        "no-throw-literal",
+        "no-sparse-arrays"
+      ]
     }
   },
   "tasks": {
