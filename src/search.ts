@@ -16,6 +16,13 @@ import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
+const externalLinksFilter = [
+  'youtube',
+  'crunchyroll',
+  'official site',
+  'webtoon',
+];
+
 export async function media(
   { id, type, search, debug }: {
     id?: string;
@@ -45,9 +52,11 @@ export async function media(
 
   const message = new discord.Message();
 
+  const title = titles.shift()!;
+
   message.addEmbed(
     new discord.Embed()
-      .setTitle(titles.shift()!)
+      .setTitle(title)
       .setAuthor({ name: utils.capitalize(media.type!)! })
       .setDescription(media.description)
       .setColor(media.coverImage?.color)
@@ -56,27 +65,26 @@ export async function media(
         url: packs.imagesToArray(media.coverImage, 'large-first')?.[0],
       })
       .setFooter({
-        // checks if the native title wasn't used already
-        text: titles.length > 0 ? media.title.native : undefined,
+        text: title !== media.title.native ? media.title.native : undefined,
       }),
   );
 
-  media.characters?.edges!.slice(0, 2).forEach((character) => {
-    const titles = packs.aliasToArray(character.node!.name);
+  media.characters?.edges!.slice(0, 2).forEach((edge) => {
+    const titles = packs.aliasToArray(edge.node!.name);
 
     const embed = new discord.Embed()
       .setTitle(titles[0])
-      .setDescription(character.node!.description)
-      .setColor(character.node.image?.color ?? media?.coverImage?.color)
+      .setDescription(edge.node!.description)
+      .setColor(edge.node.image?.color ?? media?.coverImage?.color)
       .setThumbnail({
         default: true,
-        url: packs.imagesToArray(character.node.image, 'small-first')?.[0],
+        url: packs.imagesToArray(edge.node.image, 'small-first')?.[0],
       })
       .setFooter(
         {
           text: [
-            utils.capitalize(character.node!.gender!),
-            character.node!.age,
+            utils.capitalize(edge.node!.gender!),
+            edge.node!.age,
           ].filter(Boolean).join(', '),
         },
       );
@@ -96,11 +104,7 @@ export async function media(
   }
 
   media.externalLinks?.forEach((link) => {
-    if (
-      !['youtube', 'crunchyroll', 'official site', 'webtoon'].includes(
-        link.site.toLowerCase(),
-      )
-    ) {
+    if (!externalLinksFilter.includes(link.site.toLowerCase())) {
       return;
     }
 
@@ -111,17 +115,18 @@ export async function media(
     linksGroup.push(component);
   });
 
-  media.relations?.edges.forEach((relation) => {
+  media.relations?.edges.forEach((edge) => {
     const component = new discord.Component();
 
-    const label = packs.aliasToArray(relation.node.title, 60)[0];
+    const label = packs.aliasToArray(edge.node.title, 60)[0];
 
-    switch (relation.node.format) {
+    // music links
+    switch (edge.node.format) {
       case MediaFormat.Music: {
-        if (relation.node.externalLinks?.[0]?.url && musicGroup.length < 3) {
+        if (edge.node.externalLinks?.[0]?.url && musicGroup.length < 3) {
           component
             .setLabel(label)
-            .setUrl(relation.node.externalLinks[0].url);
+            .setUrl(edge.node.externalLinks[0].url);
 
           musicGroup.push(component);
         }
@@ -131,24 +136,34 @@ export async function media(
         break;
     }
 
-    switch (relation.relationType) {
+    // navigation buttons
+
+    component.setId(discord.join('media', `${media.packId}:${edge.node.id}`));
+
+    const usedLabels = [title];
+
+    switch (edge.relation) {
       case MediaRelation.Prequel:
       case MediaRelation.Parent:
       case MediaRelation.Contains:
       case MediaRelation.Sequel:
       case MediaRelation.SideStory:
       case MediaRelation.SpinOff: {
-        component
-          .setLabel(`${label} (${utils.capitalize(relation.relationType!)})`)
-          .setId(discord.join('media', `${media.packId}:${relation.node.id!}`));
+        const relation = edge.relation;
+
+        if (usedLabels.includes(label)) {
+          component.setLabel(`${label} (${utils.capitalize(relation)})`);
+        } else {
+          component.setLabel((usedLabels.push(label), label));
+        }
 
         linksGroup.push(component);
         return;
       }
       case MediaRelation.Adaptation: {
-        component
-          .setLabel(`${label} (${utils.capitalize(relation.node.type!)})`)
-          .setId(discord.join('media', `${media.packId}:${relation.node.id!}`));
+        const type = edge.node.type.replace('TV', 'Anime');
+
+        component.setLabel(`${label} (${utils.capitalize(type)})`);
 
         linksGroup.push(component);
         return;
@@ -257,7 +272,7 @@ export async function character(
 function characterDebugEmbed(character: Character) {
   const media = character.media?.edges?.[0];
 
-  const role = media?.characterRole;
+  const role = media?.role;
   const popularity = character.popularity || media?.node.popularity || 0;
 
   const rating = new Rating({

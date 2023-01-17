@@ -319,7 +319,7 @@ async function aggregate<T>({ media, character }: {
       relations: {
         edges: media.relations
           ?.map(({ relation, mediaId }) => ({
-            relationType: relation,
+            relation,
             node: mediaRefs[mediaId],
           })).filter(({ node }) => Boolean(node)) ?? [],
       },
@@ -371,7 +371,7 @@ async function aggregate<T>({ media, character }: {
       media: {
         edges: character.media
           ?.map(({ role, mediaId }) => ({
-            characterRole: role,
+            role,
             node: mediaRefs[mediaId],
           })).filter(({ node }) => Boolean(node)) ?? [],
       },

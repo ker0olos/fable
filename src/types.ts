@@ -75,7 +75,7 @@ export interface Media {
   };
   relations?: {
     edges: {
-      relationType: MediaRelation;
+      relation: MediaRelation;
       node: Media;
     }[];
   };
@@ -106,7 +106,7 @@ export interface Character {
   age?: string;
   image?: Image;
   media?: {
-    edges?: { characterRole: CharacterRole; node: Media }[];
+    edges?: { role: CharacterRole; node: Media }[];
   };
 }
 

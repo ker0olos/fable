@@ -12,12 +12,7 @@ import * as anilist from '../packs/anilist/index.ts';
 
 import { AniListCharacter, Status } from '../packs/anilist/types.ts';
 
-import {
-  Character,
-  CharacterRole,
-  MediaFormat,
-  MediaType,
-} from '../src/types.ts';
+import { CharacterRole, MediaFormat, MediaType } from '../src/types.ts';
 
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {
@@ -138,7 +133,7 @@ Deno.test('character', async (test) => {
 });
 
 function fakePool(fill: AniListCharacter, length = 25) {
-  const nodes: Character[] = [];
+  const nodes: AniListCharacter[] = [];
 
   for (let index = 0; index < length; index++) {
     nodes.push(Object.assign({}, (fill.id = `${index + 1}`, fill)));

@@ -2,6 +2,7 @@ import {
   Character,
   CharacterRole,
   Media,
+  MediaRelation,
   Modify,
   Pool,
 } from '../../src/types.ts';
@@ -24,6 +25,16 @@ export type AniListMedia = Modify<Media, {
   nextAiringEpisode?: {
     airingAt?: number;
   };
+  relations?: {
+    edges: {
+      relationType: MediaRelation;
+      node: AniListMedia;
+    }[];
+  };
+  characters?: {
+    nodes?: AniListCharacter[];
+    edges?: { role: CharacterRole; node: AniListCharacter }[];
+  };
 }>;
 
 export type AniListCharacter = Modify<Character, {
@@ -32,6 +43,9 @@ export type AniListCharacter = Modify<Character, {
     native?: string;
     alternative?: string[];
     alternativeSpoiler?: string[];
+  };
+  media?: {
+    edges?: { characterRole: CharacterRole; node: AniListMedia }[];
   };
 }>;
 

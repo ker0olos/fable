@@ -487,7 +487,7 @@ Deno.test('media', async (test) => {
           node: {
             id: '5',
             name: {
-              english: 'main character name',
+              full: 'main character name',
             },
             description: 'main character description',
             image: {
@@ -501,7 +501,7 @@ Deno.test('media', async (test) => {
           node: {
             id: '5',
             name: {
-              english: 'supporting character name',
+              full: 'supporting character name',
             },
             description: 'supporting character description',
             image: {
@@ -513,7 +513,7 @@ Deno.test('media', async (test) => {
           node: {
             id: '5',
             name: {
-              english: 'background character name',
+              full: 'background character name',
             },
             description: 'background character description',
             image: {
@@ -619,7 +619,7 @@ Deno.test('media', async (test) => {
             format: MediaFormat.TV,
             popularity: 0,
             title: {
-              english: 'sequel',
+              english: 'english title 2',
             },
           },
         }, {
@@ -630,7 +630,7 @@ Deno.test('media', async (test) => {
             format: MediaFormat.TV,
             popularity: 0,
             title: {
-              english: 'prequel',
+              english: 'english title',
             },
           },
         }, {
@@ -738,19 +738,19 @@ Deno.test('media', async (test) => {
               components: [
                 {
                   custom_id: 'media=anilist:5',
-                  label: 'sequel (Sequel)',
+                  label: 'english title 2',
                   style: 2,
                   type: 2,
                 },
                 {
                   custom_id: 'media=anilist:10',
-                  label: 'prequel (Prequel)',
+                  label: 'english title (Prequel)',
                   style: 2,
                   type: 2,
                 },
                 {
                   custom_id: 'media=anilist:15',
-                  label: 'side story (Side Story)',
+                  label: 'side story',
                   style: 2,
                   type: 2,
                 },

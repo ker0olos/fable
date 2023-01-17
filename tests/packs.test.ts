@@ -1150,7 +1150,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Parent,
+            relation: MediaRelation.Parent,
             node: {
               id: '1',
               packId: 'anilist',
@@ -1251,7 +1251,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Parent,
+            relation: MediaRelation.Parent,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -1344,7 +1344,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Parent,
+            relation: MediaRelation.Parent,
             node: {
               id: '1',
               packId: 'anilist',
@@ -1355,7 +1355,7 @@ Deno.test('aggregate media', async (test) => {
               },
             },
           }, {
-            relationType: MediaRelation.SpinOff,
+            relation: MediaRelation.SpinOff,
             node: {
               id: '1',
               packId: 'anilist',
@@ -1436,7 +1436,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Parent,
+            relation: MediaRelation.Parent,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -1447,7 +1447,7 @@ Deno.test('aggregate media', async (test) => {
               },
             },
           }, {
-            relationType: MediaRelation.SpinOff,
+            relation: MediaRelation.SpinOff,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -1676,7 +1676,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Parent,
+            relation: MediaRelation.Parent,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -1687,7 +1687,7 @@ Deno.test('aggregate media', async (test) => {
               },
             },
           }, {
-            relationType: MediaRelation.SpinOff,
+            relation: MediaRelation.SpinOff,
             node: {
               id: '2',
               packId: 'pack-id',
@@ -1769,7 +1769,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Adaptation,
+            relation: MediaRelation.Adaptation,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -1807,7 +1807,7 @@ Deno.test('aggregate media', async (test) => {
       },
       relations: {
         edges: [{
-          relationType: MediaRelation.Sequel,
+          relation: MediaRelation.Sequel,
           node: {
             id: '2',
             type: MediaType.Anime,
@@ -1950,7 +1950,7 @@ Deno.test('aggregate characters', async (test) => {
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'anilist',
@@ -2021,7 +2021,7 @@ Deno.test('aggregate characters', async (test) => {
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -2098,7 +2098,7 @@ Deno.test('aggregate characters', async (test) => {
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'anilist',
@@ -2109,7 +2109,7 @@ Deno.test('aggregate characters', async (test) => {
               },
             },
           }, {
-            characterRole: CharacterRole.Supporting,
+            role: CharacterRole.Supporting,
             node: {
               id: '1',
               packId: 'anilist',
@@ -2183,7 +2183,7 @@ Deno.test('aggregate characters', async (test) => {
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -2194,7 +2194,7 @@ Deno.test('aggregate characters', async (test) => {
               },
             },
           }, {
-            characterRole: CharacterRole.Supporting,
+            role: CharacterRole.Supporting,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -2341,7 +2341,7 @@ Deno.test('aggregate characters', async (test) => {
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -2352,7 +2352,7 @@ Deno.test('aggregate characters', async (test) => {
               },
             },
           }, {
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '2',
               packId: 'pack-id',
@@ -2427,7 +2427,7 @@ Deno.test('aggregate characters', async (test) => {
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -2460,7 +2460,7 @@ Deno.test('aggregate characters', async (test) => {
       },
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '2',
             type: MediaType.Anime,

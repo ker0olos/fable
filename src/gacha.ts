@@ -66,12 +66,12 @@ async function forcePull(id: string): Promise<Pull> {
     pool: 1,
     character,
     media: edge.node,
-    role: edge.characterRole,
+    role: edge.role,
     popularityGreater: -1,
     popularityLesser: -1,
     rating: new Rating({
       popularity,
-      role: character.popularity ? undefined : edge.characterRole,
+      role: character.popularity ? undefined : edge.role,
     }),
   };
 }
@@ -124,14 +124,14 @@ async function rngPull(): Promise<Pull> {
       (
         !role ||
         candidate.popularity ||
-        edge?.characterRole === role
+        edge?.role === role
       )
     ) {
       media = edge.node;
       character = candidate;
       rating = new Rating({
         popularity,
-        role: character.popularity ? undefined : edge.characterRole,
+        role: character.popularity ? undefined : edge.role,
       });
       break;
     }

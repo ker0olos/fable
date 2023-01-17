@@ -13,13 +13,13 @@ import {
   Pool,
 } from './types.ts';
 
-import { Alias, Character, Media } from '../../src/types.ts';
+import { Character, Media } from '../../src/types.ts';
 
 /** Order by trending than popularity */
 const mediaDefaultSort = '[ TRENDING_DESC, POPULARITY_DESC ]';
 
 /** Order manually decided by anilist moderators */
-const characterDefaultSort = '[ RELEVANCE, ROLE_DESC ]';
+const characterDefaultSort = '[ RELEVANCE, ROLE ]';
 
 function transform<T>(
   { media, character }: { media?: AniListMedia; character?: AniListCharacter },
@@ -28,26 +28,51 @@ function transform<T>(
     const t: Media = {
       ...media,
       packId: 'anilist',
-      title: Object.assign(
-        {},
-        media.title?.english && { english: media.title?.english },
-        media.title?.romaji && { romaji: media.title?.romaji },
-        media.title?.native && { native: media.title?.native },
-      ) as Alias,
+      relations: { edges: [] },
+      characters: { edges: [] },
     };
+
+    if (media.relations?.edges?.length) {
+      t.relations!.edges = media.relations.edges.map((edge) => ({
+        relation: edge.relationType,
+        node: transform({ media: edge.node as AniListMedia }),
+      }));
+    } else {
+      delete t.relations;
+    }
+
+    if (media.characters?.edges?.length) {
+      t.characters!.edges = media.characters.edges.map((edge) => ({
+        role: edge.role,
+        node: transform({ character: edge.node as AniListCharacter }),
+      }));
+    } else {
+      delete t.characters;
+    }
+
     return t as T;
   } else if (character) {
     const t: Character = {
       ...character,
       packId: 'anilist',
+      media: { edges: [] },
       name: Object.assign(
         {},
         character.name?.full && { english: character.name?.full },
         character.name?.native && { native: character.name?.native },
         character.name?.alternative &&
           { alternative: character.name?.alternative },
-      ) as Alias,
+      ),
     };
+
+    if (character.media?.edges?.length) {
+      t.media!.edges = character.media.edges.map((edge) => ({
+        role: edge.characterRole,
+        node: transform({ media: edge.node as AniListMedia }),
+      }));
+    } else {
+      delete t.media;
+    }
 
     return t as T;
   }
@@ -310,7 +335,7 @@ export async function pool(
     (page) =>
       request<{
         Page: {
-          media: Media[];
+          media: AniListMedia[];
         };
       }>(query, { page, popularity_greater, popularity_lesser, role })
         .then((response) => response.Page),
@@ -322,9 +347,7 @@ export async function pool(
     // using the api
     // create a dictionary of all the characters with their ids as key
     page.media!.forEach(({ characters }) => {
-      // deno-lint-ignore ban-ts-comment
-      //@ts-ignore
-      characters!.nodes!.forEach((character: AniListCharacter) => {
+      characters!.nodes!.forEach((character) => {
         dict[character.id] = transform<Character>({ character });
       });
     });
