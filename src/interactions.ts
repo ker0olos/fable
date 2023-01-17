@@ -179,30 +179,28 @@ const handler: Handler = async (r: Request) => {
 
 const proxyImage = (): Handler => {
   return async (r: Request): Promise<Response> => {
-    const request = new URL(r.url);
+    const { pathname, origin } = new URL(r.url);
 
     try {
-      const url = request.searchParams.get('url');
+      const url = decodeURIComponent(pathname).substring('/external/'.length);
 
       const image = url ? await fetch(url) : undefined;
+      const type = image?.headers.get('content-type');
 
-      if (
-        image?.status === 200 &&
-        image.headers.get('content-type')?.startsWith('image/')
-      ) {
-        const response = new Response(image.body);
+      if (image?.status === 200 && type?.startsWith('image/')) {
+        const body = await image.arrayBuffer();
 
-        response.headers.set(
-          'content-type',
-          image.headers.get('content-type')!,
-        );
+        const response = new Response(body);
+
+        response.headers.set('content-type', type);
+        response.headers.set('content-length', `${body.byteLength}`);
 
         return response;
       }
 
       throw new Error();
     } catch {
-      return Response.redirect(`${request.origin}/file/large.jpg`);
+      return Response.redirect(`${origin}/file/large.jpg`);
     }
   };
 };
@@ -210,7 +208,7 @@ const proxyImage = (): Handler => {
 serve({
   '/': handler,
   '/dev': handler,
-  '/image': proxyImage(),
+  '/external/*': proxyImage(),
   '/schema': serveStatic('../json/index.json', { baseUrl: import.meta.url }),
   '/file/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,

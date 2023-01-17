@@ -147,14 +147,14 @@ Deno.test('embeds', async (test) => {
   await test.step('thumbnail', () => {
     assertEquals(
       embed.json().thumbnail!.url,
-      'undefined/image?url=abc&size=thumbnail',
+      'undefined/external/abc',
     );
   });
 
   await test.step('image', () => {
     assertEquals(
       embed.json().image!.url,
-      'undefined/image?url=abc&size=default',
+      'undefined/external/abc',
     );
   });
 

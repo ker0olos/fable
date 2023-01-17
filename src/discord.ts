@@ -341,7 +341,7 @@ export class Embed {
       this.#data.image = {
         url: config.origin && image.url?.startsWith(config.origin)
           ? image.url
-          : `${config.origin}/image?url=${image.url}&size=default`,
+          : `${config.origin}/external/${image.url}`,
       };
     }
     return this;
@@ -352,7 +352,7 @@ export class Embed {
       this.#data.thumbnail = {
         url: config.origin && thumbnail.url?.startsWith(config.origin)
           ? thumbnail.url
-          : `${config.origin}/image?url=${thumbnail.url}&size=thumbnail`,
+          : `${config.origin}/external/${thumbnail.url}`,
       };
     }
     return this;

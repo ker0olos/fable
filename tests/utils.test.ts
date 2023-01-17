@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-non-null-assertion
+
 import {
   assert,
   assertEquals,
