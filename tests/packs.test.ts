@@ -706,7 +706,7 @@ Deno.test('search for media', async (test) => {
       type: MediaType.Anime,
       format: MediaFormat.TV,
       title: {
-        english: 'fable',
+        english: 'febl',
       },
       popularity: 100,
     }, {
@@ -714,7 +714,7 @@ Deno.test('search for media', async (test) => {
       type: MediaType.Anime,
       format: MediaFormat.TV,
       title: {
-        english: 'fable',
+        english: 'feble',
       },
       popularity: 0,
     }];
@@ -742,7 +742,7 @@ Deno.test('search for media', async (test) => {
     );
 
     try {
-      const results = await packs.media({ search: 'feble' });
+      const results = await packs.media({ search: 'fable' });
 
       assertEquals(results.length, 1);
 

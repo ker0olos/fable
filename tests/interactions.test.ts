@@ -645,47 +645,36 @@ Deno.test('media', async (test) => {
             },
           },
         }, {
-          relationType: MediaRelation.Adaptation,
+          relationType: MediaRelation.SpinOff,
           node: {
             id: '20',
             type: MediaType.Manga,
             format: MediaFormat.Manga,
             popularity: 0,
             title: {
-              english: 'adaptation',
+              english: 'spin off',
             },
           },
         }, {
-          relationType: MediaRelation.Other,
+          relationType: MediaRelation.Adaptation,
           node: {
             id: '25',
             type: MediaType.Anime,
             format: MediaFormat.TV,
             popularity: 0,
             title: {
-              english: 'uninteresting relation',
+              english: 'adaptation',
             },
           },
         }, {
           relationType: MediaRelation.Adaptation,
           node: {
             id: '30',
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            popularity: 0,
-            title: {
-              english: 'second adaptation',
-            },
-          },
-        }, {
-          relationType: MediaRelation.Adaptation,
-          node: {
-            id: '35',
             type: MediaType.Manga,
             format: MediaFormat.Manga,
             popularity: 0,
             title: {
-              english: 'third adaptation',
+              english: 'second adaptation',
             },
           },
         }],
@@ -738,7 +727,7 @@ Deno.test('media', async (test) => {
               components: [
                 {
                   custom_id: 'media=anilist:5',
-                  label: 'english title 2',
+                  label: 'english title 2 (Sequel)',
                   style: 2,
                   type: 2,
                 },
@@ -750,32 +739,256 @@ Deno.test('media', async (test) => {
                 },
                 {
                   custom_id: 'media=anilist:15',
-                  label: 'side story',
+                  label: 'side story (Side Story)',
                   style: 2,
                   type: 2,
                 },
                 {
                   custom_id: 'media=anilist:20',
-                  label: 'adaptation (Manga)',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'media=anilist:30',
-                  label: 'second adaptation (Anime)',
+                  label: 'spin off (Spin Off)',
                   style: 2,
                   type: 2,
                 },
               ],
             },
+          ],
+          content: undefined,
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('media relations 2', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'image_url',
+      },
+      relations: {
+        edges: [{
+          relationType: MediaRelation.Contains,
+          node: {
+            id: '5',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 0,
+            title: {
+              english: 'child',
+            },
+          },
+        }, {
+          relationType: MediaRelation.Parent,
+          node: {
+            id: '10',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 0,
+            title: {
+              english: 'parent',
+            },
+          },
+        }, {
+          relationType: MediaRelation.Adaptation,
+          node: {
+            id: '15',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 0,
+            title: {
+              english: 'adaptation',
+            },
+          },
+        }, {
+          relationType: MediaRelation.Other,
+          node: {
+            id: '20',
+            type: MediaType.Manga,
+            format: MediaFormat.Manga,
+            popularity: 0,
+            title: {
+              english: 'other',
+            },
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({ search: 'english title' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            author: {
+              name: 'Anime',
+            },
+            title: 'english title',
+            color: 16777215,
+            description: 'long description',
+            image: {
+              url: 'undefined/external/image_url',
+            },
+          }],
+          components: [
             {
               type: 1,
-              components: [{
-                custom_id: 'media=anilist:35',
-                label: 'third adaptation (Manga)',
-                style: 2,
-                type: 2,
-              }],
+              components: [
+                {
+                  custom_id: 'media=anilist:5',
+                  label: 'child (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'media=anilist:10',
+                  label: 'parent (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'media=anilist:15',
+                  label: 'adaptation (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'media=anilist:20',
+                  label: 'other (Manga)',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          content: undefined,
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('media relations 3', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'image_url',
+      },
+      relations: {
+        edges: [{
+          relationType: MediaRelation.Other,
+          node: {
+            id: '5',
+            type: MediaType.Anime,
+            format: MediaFormat.Internet,
+            popularity: 0,
+            title: {
+              english: 'branch',
+            },
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({ search: 'english title' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            author: {
+              name: 'Anime',
+            },
+            title: 'english title',
+            color: 16777215,
+            description: 'long description',
+            image: {
+              url: 'undefined/external/image_url',
+            },
+          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'media=anilist:5',
+                  label: 'branch',
+                  style: 2,
+                  type: 2,
+                },
+              ],
             },
           ],
           content: undefined,
@@ -904,6 +1117,134 @@ Deno.test('media', async (test) => {
                   url: 'spiketone url',
                   label: 'ed',
                   style: 5,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          content: undefined,
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('relations sorting', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'image_url',
+      },
+      relations: {
+        edges: [{
+          relationType: MediaRelation.Other,
+          node: {
+            id: '5',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 0,
+            title: {
+              english: 'title',
+            },
+          },
+        }, {
+          relationType: MediaRelation.Other,
+          node: {
+            id: '10',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 100,
+            title: {
+              english: 'title',
+            },
+          },
+        }, {
+          relationType: MediaRelation.Other,
+          node: {
+            id: '15',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 50,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({ search: 'english title' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            author: {
+              name: 'Anime',
+            },
+            title: 'english title',
+            color: 16777215,
+            description: 'long description',
+            image: {
+              url: 'undefined/external/image_url',
+            },
+          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'media=anilist:10',
+                  label: 'title (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'media=anilist:15',
+                  label: 'title (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'media=anilist:5',
+                  label: 'title (Anime)',
+                  style: 2,
                   type: 2,
                 },
               ],

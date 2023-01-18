@@ -1,5 +1,3 @@
-import { distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
-
 import { Embed, Interaction, Message } from './discord.ts';
 
 import _anilist from '../packs/anilist/manifest.json' assert {
@@ -29,6 +27,8 @@ import {
   Manifest,
   ManifestType,
   Media,
+  MediaFormat,
+  MediaRelation,
   MediaType,
   Pool,
 } from './types.ts';
@@ -51,6 +51,9 @@ const packs = {
   pool,
   aliasToArray,
   imagesToArray,
+  formatToString,
+  mediaToLabel,
+  sortEdgesByPopularity,
 };
 
 async function commands(
@@ -80,7 +83,9 @@ function list(type?: ManifestType): Manifest[] {
   if (!manual) {
     // TODO BLOCKED load manual packs
     // (see https://github.com/ker0olos/fable/issues/10)
-    // tje map each loaded pack to 'dict'
+    // then map each loaded pack to 'dict'
+    // 1^ block loading packs if name is used for builtins
+    // for example never accept packs named anilist even if the builtin anilist is disabled
     manual = [];
   }
 
@@ -171,7 +176,6 @@ async function findOne<T>(
   type?: MediaType,
 ): Promise<T | undefined> {
   let maxPopularity = -1;
-  let minDistance = Infinity;
   let match: T | undefined = undefined;
 
   const anilistPack: Manifest = {
@@ -189,38 +193,26 @@ async function findOne<T>(
         continue;
       }
 
+      const popularity = item.popularity || 0;
+
       packs.aliasToArray('name' in item ? item.name : item.title)
         .forEach(
           (alias) => {
-            const d = distance(search, alias);
-            const popularity = item.popularity || 0;
+            const percentage = utils.distance(search, alias);
 
             if (
-              d < minDistance ||
-              (d === minDistance && popularity > maxPopularity)
+              percentage >= 100 ||
+              (percentage > 50 && popularity > maxPopularity)
             ) {
-              minDistance = d;
-              maxPopularity = popularity;
-              match = (item.packId = pack.id, item) as T;
+              match =
+                (maxPopularity = popularity, item.packId = pack.id, item) as T;
             }
           },
         );
-
-      // exact match
-      if (minDistance <= 0) {
-        break;
-      }
-    }
-
-    // exact match
-    if (minDistance <= 0) {
-      break;
     }
   }
 
-  if (minDistance < search.length) {
-    return match;
-  }
+  return match;
 }
 
 async function media({ ids, search, type }: {
@@ -501,6 +493,55 @@ function imagesToArray(
   }
 
   return images as string[];
+}
+
+function formatToString(format: MediaFormat): string {
+  return utils.capitalize(
+    format
+      .replace('TV_SHORT', 'Short')
+      .replace('TV', 'Anime'),
+  ) as string;
+}
+
+function mediaToLabel(
+  { media, relation }: {
+    media: Media;
+    relation?: MediaRelation;
+  },
+): string {
+  const title = packs.aliasToArray(media.title, 40)[0];
+
+  switch (media.format) {
+    case MediaFormat.Music:
+    case MediaFormat.Internet:
+      return title;
+    default:
+      break;
+  }
+
+  switch (relation) {
+    case MediaRelation.Prequel:
+    case MediaRelation.Sequel:
+    case MediaRelation.SpinOff:
+    case MediaRelation.SideStory:
+      return `${title} (${utils.capitalize(relation)})`;
+    default:
+      return `${title} (${formatToString(media.format)})`;
+  }
+}
+
+type Edge = { node: Media; relation?: MediaRelation };
+
+function sortEdgesByPopularity(
+  edges?: Edge[],
+): Edge[] | undefined {
+  if (!edges?.length) {
+    return;
+  }
+
+  return edges.sort((a, b) => {
+    return (b.node.popularity || 0) - (a.node.popularity || 0);
+  });
 }
 
 export default packs;

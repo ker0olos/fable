@@ -1,5 +1,7 @@
 import nacl from 'https://esm.sh/tweetnacl@1.0.3';
 
+import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
+
 import config from './config.ts';
 
 function randint(min: number, max: number) {
@@ -112,6 +114,10 @@ function chunks<T>(a: Array<T>, size: number) {
     new Array(Math.ceil(a.length / size)),
     (_, i) => a.slice(i * size, i * size + size),
   );
+}
+
+function distance(a: string, b: string): number {
+  return 100 - 100 * _distance(a, b) / (a.length + b.length);
 }
 
 function parseId(query: string): number | undefined {
@@ -236,6 +242,7 @@ const utils = {
   sleep,
   truncate,
   chunks,
+  distance,
   verifySignature,
   proxy,
   wrap,

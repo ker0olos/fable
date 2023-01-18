@@ -21,6 +21,7 @@ const externalLinksFilter = [
   'crunchyroll',
   'funimation',
   'official site',
+  'tapas',
   'webtoon',
   'amazon',
 ];
@@ -47,14 +48,18 @@ export async function media(
     );
   }
 
+  const message = new discord.Message();
+
   // aggregate the media by populating any references to other media/character objects
   const media = await packs.aggregate<Media>({ media: results[0] });
 
   const titles = packs.aliasToArray(media.title);
 
-  const message = new discord.Message();
-
   const title = titles.shift();
+
+  if (!title) {
+    throw new Error('404');
+  }
 
   message.addEmbed(
     new discord.Embed()
@@ -72,10 +77,10 @@ export async function media(
   );
 
   media.characters?.edges?.slice(0, 2).forEach((edge) => {
-    const titles = packs.aliasToArray(edge.node.name);
+    const alias = packs.aliasToArray(edge.node.name);
 
     const embed = new discord.Embed()
-      .setTitle(titles[0])
+      .setTitle(alias[0])
       .setDescription(edge.node.description)
       .setColor(edge.node.image?.color ?? media?.coverImage?.color)
       .setThumbnail({
@@ -117,67 +122,33 @@ export async function media(
     linksGroup.push(component);
   });
 
-  media.relations?.edges.forEach((edge) => {
-    const component = new discord.Component();
+  packs.sortEdgesByPopularity(media.relations?.edges)?.slice(0, 4)
+    ?.forEach(({ node: media, relation }) => {
+      const label = packs.mediaToLabel({
+        media,
+        relation,
+      });
 
-    const label = packs.aliasToArray(edge.node.title, 60)[0];
-
-    // music links
-    switch (edge.node.format) {
-      case MediaFormat.Music: {
-        if (edge.node.externalLinks?.[0]?.url && musicGroup.length < 3) {
-          component
+      // music links
+      if (media.format === MediaFormat.Music) {
+        if (media.externalLinks?.[0]?.url && musicGroup.length < 3) {
+          const component = new discord.Component()
             .setLabel(label)
-            .setUrl(edge.node.externalLinks[0].url);
+            .setUrl(media.externalLinks[0].url);
 
           musicGroup.push(component);
         }
-        return;
-      }
-      default:
-        break;
-    }
-
-    // navigation buttons
-
-    component.setId(discord.join('media', `${media.packId}:${edge.node.id}`));
-
-    const usedLabels = [title];
-
-    switch (edge.relation) {
-      case MediaRelation.Prequel:
-      case MediaRelation.Parent:
-      case MediaRelation.Contains:
-      case MediaRelation.Sequel:
-      case MediaRelation.SideStory:
-      case MediaRelation.SpinOff: {
-        const relation = edge.relation;
-
-        if (usedLabels.includes(label)) {
-          component.setLabel(`${label} (${utils.capitalize(relation)})`);
-        } else {
-          component.setLabel((usedLabels.push(label), label));
-        }
+        // relations buttons
+      } else {
+        const component = new discord.Component()
+          .setLabel(label)
+          .setId(discord.join('media', `${media.packId}:${media.id}`));
 
         linksGroup.push(component);
-        return;
       }
-      case MediaRelation.Adaptation: {
-        const type = edge.node.type.replace('TV', 'Anime');
+    });
 
-        component.setLabel(`${label} (${utils.capitalize(type)})`);
-
-        linksGroup.push(component);
-        return;
-      }
-      default:
-        return;
-    }
-  });
-
-  message.addComponents([...linksGroup, ...musicGroup]);
-
-  return message;
+  return message.addComponents([...linksGroup, ...musicGroup]);
 }
 
 function disaggregatedMediaDebugEmbed(media: Media | DisaggregatedMedia) {
@@ -232,12 +203,12 @@ export async function character(
     return new discord.Message().addEmbed(characterDebugEmbed(character));
   }
 
-  const titles = packs.aliasToArray(character.name);
+  const alias = packs.aliasToArray(character.name);
 
   const message = new discord.Message()
     .addEmbed(
       new discord.Embed()
-        .setTitle(titles[0])
+        .setTitle(alias[0])
         .setDescription(character.description)
         .setColor(character.image?.color)
         .setImage({
@@ -254,21 +225,22 @@ export async function character(
         ),
     );
 
-  const relations: discord.Component[] = [];
+  const group: discord.Component[] = [];
 
-  character.media?.edges?.forEach((relation) => {
-    const label = packs.aliasToArray(relation.node.title, 60)[0];
+  packs.sortEdgesByPopularity(character.media?.edges)
+    ?.forEach(({ node: media }) => {
+      const label = packs.mediaToLabel({ media });
 
-    const component = new discord.Component()
-      .setLabel(`${label} (${utils.capitalize(relation.node.format)})`)
-      .setId(discord.join('media', `${character.packId}:${relation.node.id}`));
+      const component = new discord.Component()
+        .setLabel(label)
+        .setId(
+          discord.join('media', `${character.packId}:${media.id}`),
+        );
 
-    relations.push(component);
-  });
+      group.push(component);
+    });
 
-  message.addComponents(relations);
-
-  return message;
+  return message.addComponents(group);
 }
 
 function characterDebugEmbed(character: Character) {
@@ -337,33 +309,33 @@ export async function music(
     throw new Error('404');
   }
 
+  const message = new discord.Message();
+
   // aggregate the media by populating any references to other media/character objects
   const media = await packs.aggregate<Media>({ media: results[0] });
 
-  const message = new discord.Message();
+  const group: discord.Component[] = [];
 
-  const music: discord.Component[] = [];
+  packs.sortEdgesByPopularity(media.relations?.edges)
+    ?.forEach((edge) => {
+      if (
+        edge.relation === MediaRelation.Other &&
+        edge.node.format === MediaFormat.Music &&
+        edge.node.externalLinks?.[0]?.url
+      ) {
+        const label = packs.mediaToLabel({ media: edge.node });
 
-  media.relations?.edges.forEach((relation) => {
-    if (
-      relation.node.format === MediaFormat.Music &&
-      relation.node.externalLinks?.[0]?.url
-    ) {
-      const titles = packs.aliasToArray(relation.node.title, 60)[0];
+        const component = new discord.Component()
+          .setLabel(label)
+          .setUrl(edge.node.externalLinks[0].url);
 
-      const component = new discord.Component()
-        .setLabel(titles)
-        .setUrl(relation.node.externalLinks[0].url);
+        group.push(component);
+      }
+    });
 
-      music.push(component);
-    }
-  });
-
-  if (music.length <= 0) {
+  if (group.length <= 0) {
     throw new Error('404');
   }
 
-  message.addComponents(music);
-
-  return message;
+  return message.addComponents(group);
 }
