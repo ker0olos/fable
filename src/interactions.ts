@@ -180,8 +180,18 @@ serve({
   '/': handler,
   '/dev': handler,
   '/external/*': utils.proxy,
-  '/schema': serveStatic('../json/index.json', { baseUrl: import.meta.url }),
+  '/schema': serveStatic('../json/index.json', {
+    baseUrl: import.meta.url,
+    intervene: (_, response) => {
+      response.headers.set('Cache-Control', 'public, max-age=86400');
+      return response;
+    },
+  }),
   '/file/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,
+    intervene: (_, response) => {
+      response.headers.set('Cache-Control', 'public, max-age=604800');
+      return response;
+    },
   }),
 });

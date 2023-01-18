@@ -1,7 +1,5 @@
 import nacl from 'https://esm.sh/tweetnacl@1.0.3';
 
-import { Handler } from 'https://deno.land/x/sift@0.6.0/mod.ts';
-
 import config from './config.ts';
 
 function randint(min: number, max: number) {
@@ -194,14 +192,19 @@ const proxy = async (r: Request) => {
       decodeURIComponent(encoded.pathname.substring('/external/'.length)),
     );
 
-    // const searchParams = encoded.searchParams;
-
     const image = url ? await fetch(url) : undefined;
     const type = image?.headers.get('content-type');
 
+    // NOTE discord doesn't allow any gif that doesn't end with the file extension
+    // I suspect it's some kind of nitro restriction thingy like the one with APNGs
+    // but for now so it's clear that the gif is invalid we straight out refuse it
     if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
       throw new Error();
     }
+
+    // TODO
+    //(see https://github.com/ker0olos/fable/issues/24)
+    // const searchParams = encoded.searchParams;
 
     if (image?.status === 200 && type?.startsWith('image/')) {
       const body = await image.arrayBuffer();
@@ -210,6 +213,7 @@ const proxy = async (r: Request) => {
 
       response.headers.set('content-type', type);
       response.headers.set('content-length', `${body.byteLength}`);
+      response.headers.set('cache-control', 'public, max-age=604800');
 
       return response;
     }

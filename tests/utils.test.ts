@@ -233,6 +233,10 @@ Deno.test('external images', async (test) => {
 
       assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
       assertEquals(response.headers.get('Content-Length'), '4');
+      assertEquals(
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
+      );
 
       assertEquals(await response.text(), 'data');
     } finally {
