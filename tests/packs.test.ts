@@ -249,7 +249,7 @@ Deno.test('manifest embeds', async (test) => {
 
 Deno.test('search for media', async (test) => {
   await test.step('anilist id', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -308,7 +308,7 @@ Deno.test('search for media', async (test) => {
   });
 
   await test.step('pack id', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: 1 as unknown as string,
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -368,7 +368,7 @@ Deno.test('search for media', async (test) => {
   });
 
   await test.step('no pack id specified', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: 1 as unknown as string,
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -410,7 +410,7 @@ Deno.test('search for media', async (test) => {
   });
 
   await test.step('match english', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -453,7 +453,7 @@ Deno.test('search for media', async (test) => {
   });
 
   await test.step('match romaji', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -496,7 +496,7 @@ Deno.test('search for media', async (test) => {
   });
 
   await test.step('match native', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -539,8 +539,53 @@ Deno.test('search for media', async (test) => {
     }
   });
 
+  await test.step('match alias', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'x'.repeat(100),
+      },
+      synonyms: ['fable'],
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const results = await packs.media({ search: 'feble' });
+
+      assertEquals(results.length, 1);
+
+      assertEquals(results[0].id, '1');
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
   await test.step('match english with specified types', async () => {
-    const media: Media[] = [{
+    const media: AniListMedia[] = [{
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -603,7 +648,7 @@ Deno.test('search for media', async (test) => {
   });
 
   await test.step('match on initial sorting', async () => {
-    const media: Media[] = [{
+    const media: AniListMedia[] = [{
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -656,7 +701,7 @@ Deno.test('search for media', async (test) => {
   });
 
   await test.step('match on popularity', async () => {
-    const media: Media[] = [{
+    const media: AniListMedia[] = [{
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -710,7 +755,7 @@ Deno.test('search for media', async (test) => {
   });
 
   await test.step('no matches', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -814,10 +859,10 @@ Deno.test('search for characters', async (test) => {
   });
 
   await test.step('pack id', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: 1 as unknown as string,
       name: {
-        english: 'anilist character',
+        full: 'anilist character',
       },
     };
 
@@ -872,10 +917,10 @@ Deno.test('search for characters', async (test) => {
   });
 
   await test.step('no pack id specified', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: 1 as unknown as string,
       name: {
-        english: 'anilist character',
+        full: 'anilist character',
       },
     };
 

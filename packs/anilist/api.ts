@@ -32,6 +32,7 @@ title {
   english
   native
 }
+genres
 synonyms
 coverImage {
   extraLarge
@@ -46,6 +47,9 @@ externalLinks {
 trailer {
   id
   site
+}
+tags {
+  name
 }
 `;
 
@@ -72,6 +76,14 @@ export function transform<T>(
     const t: Media = {
       ...item,
       packId: 'anilist',
+      title: Object.assign(
+        {},
+        item.title?.english && { english: item.title?.english },
+        item.title?.romaji && { romaji: item.title?.romaji },
+        item.title?.native && { native: item.title?.native },
+        item.synonyms &&
+          { alternative: item.synonyms },
+      ),
       relations: undefined,
       characters: undefined,
     };
@@ -304,7 +316,7 @@ export async function pool(
   const currentPool = Object.keys(dict).length;
 
   if (minimalPool > currentPool) {
-    if (retry > 2) {
+    if (retry > 1) {
       throw new Error(
         `failed to create a pool with ${
           JSON.stringify({

@@ -231,7 +231,7 @@ Deno.test('pool', async (test) => {
         'failed to create a pool with {"popularity_greater":0,"pages":[null],"current_pool":24,"minimal_pool":25}',
       );
 
-      assertSpyCalls(fetchStub, 2);
+      assertSpyCalls(fetchStub, 3);
     } finally {
       fetchStub.restore();
     }
