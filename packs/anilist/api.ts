@@ -304,7 +304,7 @@ export async function pool(
   const currentPool = Object.keys(dict).length;
 
   if (minimalPool > currentPool) {
-    if (retry > 0) {
+    if (retry > 2) {
       throw new Error(
         `failed to create a pool with ${
           JSON.stringify({
