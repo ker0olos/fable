@@ -16,10 +16,54 @@ import {
 import { Character, Media } from '../../src/types.ts';
 
 /** Order by trending than popularity */
-const mediaDefaultSort = '[ TRENDING_DESC, POPULARITY_DESC ]';
+const mediaDefaultSort = gql`[ TRENDING_DESC, POPULARITY_DESC ]`;
 
 /** Order manually decided by anilist moderators */
-const characterDefaultSort = '[ RELEVANCE, ROLE ]';
+const characterDefaultSort = gql`[ RELEVANCE, ROLE ]`;
+
+const mediaDefaultQuery = gql`
+id
+type
+format
+popularity
+description
+title {
+  romaji
+  english
+  native
+}
+synonyms
+coverImage {
+  extraLarge
+  large,
+  medium,
+  color
+}
+externalLinks {
+  site
+  url
+}
+trailer {
+  id
+  site
+}
+`;
+
+const characterDefaultQuery = gql`
+id
+age
+gender
+description
+name {
+  full
+  native
+  alternative
+}
+image {
+  medium
+  large
+}
+`;
 
 export function transform<T>(
   { item }: { item: AniListMedia | AniListCharacter },
@@ -97,63 +141,17 @@ export async function media(
     query ($ids: [Int], $search: String) {
       Page {
         media(search: $search, id_in: $ids, sort: ${mediaDefaultSort}) {
-          id
-          type
-          format
-          popularity
-          description
+          ${mediaDefaultQuery}
           relations {
             edges {
+              node { ${mediaDefaultQuery} }
               relationType
-              node {
-                id
-                type
-                format
-                title {
-                  romaji
-                  english
-                  native
-                }
-                externalLinks {
-                  site
-                  url
-                }
-              }
             }
-          }
-          title {
-            romaji
-            english
-            native
-          }
-          coverImage {
-            extraLarge
-            large,
-            medium,
-            color
-          }
-          externalLinks {
-            site
-            url
-          }
-          trailer {
-            id
-            site
           }
           characters(sort: ${characterDefaultSort}) {
             edges {
+              node { ${characterDefaultQuery} }
               role
-              node {
-                age
-                gender
-                description
-                name {
-                  full
-                }
-                image {
-                  medium
-                }
-              }
             }
           }
         }
@@ -182,34 +180,11 @@ export async function characters(
       Page {
         # match the search query
         characters(search: $search, id_in: $ids, sort: [ SEARCH_MATCH ]) {
-          id
-          age
-          gender
-          description
-          name {
-            full
-            native
-            alternative
-            alternativeSpoiler
-          }
-          image {
-            large,
-            medium
-          }
+          ${characterDefaultQuery}
           media(sort: POPULARITY_DESC) {
             edges {
+              node { ${mediaDefaultQuery} }
               characterRole
-              node {
-                id
-                type
-                format
-                popularity
-                title {
-                  romaji
-                  english
-                  native
-                }
-              }
             }
           }
         }
@@ -232,10 +207,12 @@ export async function nextEpisode(
   const query = gql`
     query ($search: String) {
       Media(search: $search, type: ANIME, sort: ${mediaDefaultSort}) {
-        status
         title {
           english
+          romaji
+          native
         }
+        status
         nextAiringEpisode {
           airingAt
         },
@@ -262,51 +239,21 @@ export async function pool(
   const query = gql`
     query ($page: Int!, $popularity_greater: Int!, $popularity_lesser: Int, $role: CharacterRole) {
       Page(page: $page, perPage: 50) {
-        # fixed to query characters that only appear in anime, movies, and manga
         media(
           sort: ${mediaDefaultSort},
           popularity_greater: $popularity_greater,
           popularity_lesser: $popularity_lesser,
-          format_not_in: [ NOVEL, MUSIC, SPECIAL ],
-          # ignore hentai (not 100% reliable according to AniList)
-          isAdult: false,
+          format_not_in: [ NOVEL, MUSIC, SPECIAL ], # fixed to query characters that only appear in anime, movies, and manga
+          isAdult: false, # ignore hentai (not 100% reliable according to anilist)
         ) {
-          # only requests the first page
+          # NOTE FIX only requests the first page
           characters(role: $role, sort: ${characterDefaultSort}, perPage: 25) {
             nodes {
-              # the character themselves
-              id
-              age
-              gender
-              description
-              name {
-                full
-                native
-                alternative
-                alternativeSpoiler
-              }
-              image {
-                large
-              }
+              ${characterDefaultQuery}
               media {
                 edges {
-                  # the character role in the media
+                  node { ${mediaDefaultQuery} }
                   characterRole
-                  node {
-                    # the media object
-                    id
-                    type
-                    format
-                    popularity
-                    title {
-                      romaji
-                      english
-                      native
-                    }
-                    coverImage {
-                      large
-                    }
-                  }
                 }
               }
             }
