@@ -31,12 +31,12 @@ const config: {
 };
 
 export async function init(
-  { baseUrl }: { baseUrl: string },
+  { url }: { url: URL },
 ) {
   const query = await Deno.permissions.query({ name: 'env' });
 
   if (query?.state === 'granted') {
-    config.dev = baseUrl.endsWith('/dev');
+    config.dev = url.pathname === '/dev';
 
     config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
 
@@ -61,7 +61,7 @@ export async function init(
       ? Deno.env.get('DEV_MONGO_URL')
       : Deno.env.get('MONGO_URL');
 
-    config.origin = new URL(baseUrl).origin;
+    config.origin = url.origin;
 
     if (!config.origin.startsWith('http://localhost')) {
       config.origin = config.origin.replace('http://', 'https://');

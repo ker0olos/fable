@@ -1,5 +1,9 @@
 import nacl from 'https://esm.sh/tweetnacl@1.0.3';
 
+import { Handler } from 'https://deno.land/x/sift@0.6.0/mod.ts';
+
+import config from './config.ts';
+
 function randint(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
@@ -148,13 +152,13 @@ function decodeDescription(s?: string): string | undefined {
 }
 
 async function verifySignature(
-  request: Request,
+  r: Request,
   publicKey?: string,
 ): Promise<{ valid: boolean; body: string }> {
-  const signature = request.headers.get('X-Signature-Ed25519') || undefined;
-  const timestamp = request.headers.get('X-Signature-Timestamp') || undefined;
+  const signature = r.headers.get('X-Signature-Ed25519') || undefined;
+  const timestamp = r.headers.get('X-Signature-Timestamp') || undefined;
 
-  const body = await request.text();
+  const body = await r.text();
 
   function hexToUint8Array(hex?: string) {
     const t = hex?.match(/.{1,2}/g);
@@ -182,6 +186,36 @@ async function verifySignature(
   return { valid, body };
 }
 
+const proxy: Handler = async (_, __, params) => {
+  try {
+    if (params?.url) {
+      const url = new URL(decodeURIComponent(params.url));
+
+      const image = url ? await fetch(url) : undefined;
+      const type = image?.headers.get('content-type');
+
+      if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
+        throw new Error();
+      }
+
+      if (image?.status === 200 && type?.startsWith('image/')) {
+        const body = await image.arrayBuffer();
+
+        const response = new Response(body);
+
+        response.headers.set('content-type', type);
+        response.headers.set('content-length', `${body.byteLength}`);
+
+        return response;
+      }
+    }
+
+    throw new Error();
+  } catch {
+    return Response.redirect(`${config.origin}/file/large.jpg`);
+  }
+};
+
 const utils = {
   capitalize,
   comma,
@@ -195,6 +229,7 @@ const utils = {
   truncate,
   chunks,
   verifySignature,
+  proxy,
   wrap,
 };
 

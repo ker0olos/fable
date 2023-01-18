@@ -338,22 +338,34 @@ export class Embed {
 
   setImage(image: { url?: string; noProxy?: boolean; default?: boolean }) {
     if (image.url || image.default) {
-      this.#data.image = {
-        url: config.origin && image.url?.startsWith(config.origin)
-          ? image.url
-          : `${config.origin}/external/${image.url}`,
-      };
+      if (config.origin && image.url?.startsWith(config.origin)) {
+        this.#data.image = {
+          url: image.url,
+        };
+      } else {
+        this.#data.image = {
+          url: `${config.origin}/external/${
+            encodeURIComponent(image.url ?? '')
+          }`,
+        };
+      }
     }
     return this;
   }
 
   setThumbnail(thumbnail: { url?: string; default?: boolean }) {
     if (thumbnail.url || thumbnail.default) {
-      this.#data.thumbnail = {
-        url: config.origin && thumbnail.url?.startsWith(config.origin)
-          ? thumbnail.url
-          : `${config.origin}/external/${thumbnail.url}`,
-      };
+      if (config.origin && thumbnail.url?.startsWith(config.origin)) {
+        this.#data.thumbnail = {
+          url: thumbnail.url,
+        };
+      } else {
+        this.#data.thumbnail = {
+          url: `${config.origin}/external/${
+            encodeURIComponent(thumbnail.url ?? '')
+          }?size=thumbnail`,
+        };
+      }
     }
     return this;
   }

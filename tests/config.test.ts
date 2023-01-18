@@ -37,7 +37,7 @@ Deno.test('init', async (test) => {
     );
 
     try {
-      await init({ baseUrl: 'http://localhost:8000/' });
+      await init({ url: new URL('http://localhost:8000/') });
 
       assertEquals(config, {
         deploy: false,
@@ -82,7 +82,7 @@ Deno.test('init', async (test) => {
     );
 
     try {
-      await init({ baseUrl: 'http://localhost:8000/dev' });
+      await init({ url: new URL('http://localhost:8000/dev') });
 
       assertEquals(config, {
         deploy: false,
@@ -127,7 +127,7 @@ Deno.test('init', async (test) => {
     );
 
     try {
-      await init({ baseUrl: 'http://localhost:8000/dev' });
+      await init({ url: new URL('http://localhost:8000/dev') });
 
       assertEquals(config, {
         deploy: true,

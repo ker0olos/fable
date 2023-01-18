@@ -153,7 +153,7 @@ Deno.test('media', async (test) => {
             color: undefined,
             description: undefined,
             image: {
-              url: 'undefined/external/undefined',
+              url: 'undefined/external/',
             },
             title: 'title',
           }],
@@ -368,7 +368,7 @@ Deno.test('media', async (test) => {
             description: undefined,
             title: 'english title',
             image: {
-              url: 'undefined/external/undefined',
+              url: 'undefined/external/',
             },
           }],
           components: [],
@@ -572,7 +572,7 @@ Deno.test('media', async (test) => {
             color: 16777215,
             description: 'main character description',
             thumbnail: {
-              url: 'undefined/external/main character url',
+              url: 'undefined/external/main%20character%20url?size=thumbnail',
             },
           }, {
             type: 2,
@@ -580,7 +580,8 @@ Deno.test('media', async (test) => {
             color: 16777215,
             description: 'supporting character description',
             thumbnail: {
-              url: 'undefined/external/supporting character url',
+              url:
+                'undefined/external/supporting%20character%20url?size=thumbnail',
             },
           }],
           components: [],
@@ -1045,7 +1046,7 @@ Deno.test('media debug', async (test) => {
               },
             ],
             thumbnail: {
-              url: 'undefined/external/image_url',
+              url: 'undefined/external/image_url?size=thumbnail',
             },
             title: 'english title',
             type: 2,
@@ -1128,7 +1129,7 @@ Deno.test('media debug', async (test) => {
               },
             ],
             thumbnail: {
-              url: 'undefined/external/undefined',
+              url: 'undefined/external/?size=thumbnail',
             },
             title: 'english title',
             type: 2,
@@ -1469,7 +1470,7 @@ Deno.test('character', async (test) => {
             description: undefined,
             color: undefined,
             image: {
-              url: 'undefined/external/undefined',
+              url: 'undefined/external/',
             },
           }],
           components: [],
@@ -1587,7 +1588,7 @@ Deno.test('character debug', async (test) => {
               description: undefined,
               color: 16777215,
               thumbnail: {
-                url: 'undefined/external/image_url',
+                url: 'undefined/external/image_url?size=thumbnail',
               },
               fields: [
                 {
@@ -1696,7 +1697,7 @@ Deno.test('character debug', async (test) => {
               description: undefined,
               color: undefined,
               thumbnail: {
-                url: 'undefined/external/image_url',
+                url: 'undefined/external/image_url?size=thumbnail',
               },
               fields: [
                 {
@@ -1799,7 +1800,7 @@ Deno.test('character debug', async (test) => {
               description: undefined,
               color: undefined,
               thumbnail: {
-                url: 'undefined/external/undefined',
+                url: 'undefined/external/?size=thumbnail',
               },
               fields: [
                 {
@@ -1922,7 +1923,7 @@ Deno.test('character debug', async (test) => {
               description: undefined,
               color: undefined,
               thumbnail: {
-                url: 'undefined/external/image_url',
+                url: 'undefined/external/image_url?size=thumbnail',
               },
               fields: [
                 {

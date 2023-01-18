@@ -23,8 +23,8 @@ import config, { init } from './config.ts';
 
 import { ManifestType, MediaType } from './types.ts';
 
-const handler: Handler = async (r: Request) => {
-  init({ baseUrl: r.url });
+const handler: Handler = async (r) => {
+  init({ url: new URL(r.url) });
 
   initSentry({ dsn: config.sentry });
 
@@ -177,38 +177,10 @@ const handler: Handler = async (r: Request) => {
   return discord.Message.content(`Unimplemented!`);
 };
 
-const proxyImage = (): Handler => {
-  return async (r: Request): Promise<Response> => {
-    const { pathname, origin } = new URL(r.url);
-
-    try {
-      const url = decodeURIComponent(pathname).substring('/external/'.length);
-
-      const image = url ? await fetch(url) : undefined;
-      const type = image?.headers.get('content-type');
-
-      if (image?.status === 200 && type?.startsWith('image/')) {
-        const body = await image.arrayBuffer();
-
-        const response = new Response(body);
-
-        response.headers.set('content-type', type);
-        response.headers.set('content-length', `${body.byteLength}`);
-
-        return response;
-      }
-
-      throw new Error();
-    } catch {
-      return Response.redirect(`${origin}/file/large.jpg`);
-    }
-  };
-};
-
 serve({
   '/': handler,
   '/dev': handler,
-  '/external/*': proxyImage(),
+  '/external/:url': utils.proxy,
   '/schema': serveStatic('../json/index.json', { baseUrl: import.meta.url }),
   '/file/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,

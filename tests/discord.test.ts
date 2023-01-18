@@ -147,7 +147,7 @@ Deno.test('embeds', async (test) => {
   await test.step('thumbnail', () => {
     assertEquals(
       embed.json().thumbnail!.url,
-      'undefined/external/abc',
+      'undefined/external/abc?size=thumbnail',
     );
   });
 
