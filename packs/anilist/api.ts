@@ -253,10 +253,9 @@ export async function pool(
     popularity_lesser?: number;
     role?: CharacterRole;
   },
+  dict: Pool = {},
   retry = 0,
 ): Promise<Pool> {
-  const dict: Pool = {};
-
   // the minimal pool insures that there's enough variety in the pool
   const minimalPool = 25;
 
@@ -372,7 +371,11 @@ export async function pool(
         }`,
       );
     } else {
-      return pool({ popularity_greater, popularity_lesser, role }, retry + 1);
+      return pool(
+        { popularity_greater, popularity_lesser, role },
+        dict,
+        retry + 1,
+      );
     }
   }
 
