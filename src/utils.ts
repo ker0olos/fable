@@ -186,28 +186,32 @@ async function verifySignature(
   return { valid, body };
 }
 
-const proxy: Handler = async (_, __, params) => {
+const proxy = async (r: Request) => {
   try {
-    if (params?.url) {
-      const url = new URL(decodeURIComponent(params.url));
+    const encoded = new URL(r.url);
 
-      const image = url ? await fetch(url) : undefined;
-      const type = image?.headers.get('content-type');
+    const url = new URL(
+      decodeURIComponent(encoded.pathname.substring('/external/'.length)),
+    );
 
-      if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
-        throw new Error();
-      }
+    // const searchParams = encoded.searchParams;
 
-      if (image?.status === 200 && type?.startsWith('image/')) {
-        const body = await image.arrayBuffer();
+    const image = url ? await fetch(url) : undefined;
+    const type = image?.headers.get('content-type');
 
-        const response = new Response(body);
+    if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
+      throw new Error();
+    }
 
-        response.headers.set('content-type', type);
-        response.headers.set('content-length', `${body.byteLength}`);
+    if (image?.status === 200 && type?.startsWith('image/')) {
+      const body = await image.arrayBuffer();
 
-        return response;
-      }
+      const response = new Response(body);
+
+      response.headers.set('content-type', type);
+      response.headers.set('content-length', `${body.byteLength}`);
+
+      return response;
     }
 
     throw new Error();

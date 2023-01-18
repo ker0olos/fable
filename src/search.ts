@@ -19,8 +19,10 @@ import * as discord from './discord.ts';
 const externalLinksFilter = [
   'youtube',
   'crunchyroll',
+  'funimation',
   'official site',
   'webtoon',
+  'amazon',
 ];
 
 export async function media(

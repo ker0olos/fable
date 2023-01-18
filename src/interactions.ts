@@ -4,7 +4,6 @@ import {
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
 
 import {
-  Handler,
   json,
   serve,
   serveStatic,
@@ -23,7 +22,7 @@ import config, { init } from './config.ts';
 
 import { ManifestType, MediaType } from './types.ts';
 
-const handler: Handler = async (r) => {
+const handler = async (r: Request) => {
   init({ url: new URL(r.url) });
 
   initSentry({ dsn: config.sentry });
@@ -180,7 +179,7 @@ const handler: Handler = async (r) => {
 serve({
   '/': handler,
   '/dev': handler,
-  '/external/:url': utils.proxy,
+  '/external/*': utils.proxy,
   '/schema': serveStatic('../json/index.json', { baseUrl: import.meta.url }),
   '/file/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,

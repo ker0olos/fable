@@ -219,10 +219,12 @@ Deno.test('external images', async (test) => {
     );
 
     try {
-      // deno-lint-ignore no-explicit-any
-      const response = await utils.proxy({} as any, {} as any, {
-        url: encodeURIComponent('https://example.com/image.jpg'),
-      });
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.jpg')
+        }`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
 
       assertSpyCalls(fetchStub, 1);
       assertSpyCall(fetchStub, 0, {
@@ -253,10 +255,12 @@ Deno.test('external images', async (test) => {
     );
 
     try {
-      // deno-lint-ignore no-explicit-any
-      const response = await utils.proxy({} as any, {} as any, {
-        url: encodeURIComponent('https://example.com/image.gif'),
-      });
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.gif')
+        }`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
 
       assertSpyCalls(fetchStub, 1);
       assertSpyCall(fetchStub, 0, {
@@ -286,10 +290,12 @@ Deno.test('external images', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      // deno-lint-ignore no-explicit-any
-      const response = await utils.proxy({} as any, {} as any, {
-        url: encodeURIComponent('https://example.com/image'),
-      });
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image')
+        }`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
 
       assertSpyCalls(fetchStub, 1);
       assertSpyCall(fetchStub, 0, {
@@ -325,10 +331,12 @@ Deno.test('external images', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      // deno-lint-ignore no-explicit-any
-      const response = await utils.proxy({} as any, {} as any, {
-        url: encodeURIComponent('https://example.com/image.jpeg'),
-      });
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.jpeg')
+        }`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
 
       assertSpyCalls(fetchStub, 1);
       assertSpyCall(fetchStub, 0, {
@@ -358,10 +366,10 @@ Deno.test('external images', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      // deno-lint-ignore no-explicit-any
-      const response = await utils.proxy({} as any, {} as any, {
-        url: '',
-      });
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
 
       assertSpyCalls(fetchStub, 0);
 
