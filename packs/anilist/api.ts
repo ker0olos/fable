@@ -21,33 +21,33 @@ const mediaDefaultSort = '[ TRENDING_DESC, POPULARITY_DESC ]';
 /** Order manually decided by anilist moderators */
 const characterDefaultSort = '[ RELEVANCE, ROLE ]';
 
-function transform<T>(
-  { media, character }: { media?: AniListMedia; character?: AniListCharacter },
+export function transform<T>(
+  { item }: { item: AniListMedia | AniListCharacter },
 ) {
-  if (media) {
+  if ('title' in item) {
     const t: Media = {
-      ...media,
+      ...item,
       packId: 'anilist',
       relations: undefined,
       characters: undefined,
     };
 
-    if (media.relations?.edges?.length) {
+    if (item.relations?.edges?.length) {
       t.relations = {
-        edges: media.relations.edges.map((edge) => ({
+        edges: item.relations.edges.map((edge) => ({
           relation: edge.relationType,
-          node: transform({ media: edge.node as AniListMedia }),
+          node: transform({ item: edge.node as AniListMedia }),
         })),
       };
     } else {
       delete t.relations;
     }
 
-    if (media.characters?.edges?.length) {
+    if (item.characters?.edges?.length) {
       t.characters = {
-        edges: media.characters.edges.map((edge) => ({
+        edges: item.characters.edges.map((edge) => ({
           role: edge.role,
-          node: transform({ character: edge.node as AniListCharacter }),
+          node: transform({ item: edge.node as AniListCharacter }),
         })),
       };
     } else {
@@ -55,25 +55,25 @@ function transform<T>(
     }
 
     return t as T;
-  } else if (character) {
+  } else if ('name' in item) {
     const t: Character = {
-      ...character,
+      ...item,
       packId: 'anilist',
       name: Object.assign(
         {},
-        character.name?.full && { english: character.name?.full },
-        character.name?.native && { native: character.name?.native },
-        character.name?.alternative &&
-          { alternative: character.name?.alternative },
+        item.name?.full && { english: item.name?.full },
+        item.name?.native && { native: item.name?.native },
+        item.name?.alternative &&
+          { alternative: item.name?.alternative },
       ),
       media: undefined,
     };
 
-    if (character.media?.edges?.length) {
+    if (item.media?.edges?.length) {
       t.media = {
-        edges: character.media.edges.map((edge) => ({
+        edges: item.media.edges.map((edge) => ({
           role: edge.characterRole,
-          node: transform({ media: edge.node as AniListMedia }),
+          node: transform({ item: edge.node as AniListMedia }),
         })),
       };
     } else {
@@ -83,12 +83,12 @@ function transform<T>(
     return t as T;
   }
 
-  throw new Error();
+  return item as T;
 }
 
 export async function media(
   variables: { ids?: number[]; search?: string },
-): Promise<Media[]> {
+): Promise<AniListMedia[]> {
   if (!variables.search && !variables.ids?.length) {
     return [];
   }
@@ -167,14 +167,12 @@ export async function media(
     };
   } = await request(query, variables);
 
-  return data.Page.media.map(
-    (media) => transform<Media>({ media }),
-  );
+  return data.Page.media;
 }
 
 export async function characters(
   variables: { ids?: number[]; search?: string },
-): Promise<Character[]> {
+): Promise<AniListCharacter[]> {
   if (!variables.search && !variables.ids?.length) {
     return [];
   }
@@ -225,9 +223,7 @@ export async function characters(
     };
   } = await request(query, variables);
 
-  return data.Page.characters.map(
-    (character) => transform<Character>({ character }),
-  );
+  return data.Page.characters;
 }
 
 export async function nextEpisode(
@@ -354,7 +350,7 @@ export async function pool(
     // create a dictionary of all the characters with their ids as key
     page.media.forEach(({ characters }) => {
       characters?.nodes?.forEach((character) => {
-        dict[character.id] = transform<Character>({ character });
+        dict[character.id] = transform<Character>({ item: character });
       });
     });
   });

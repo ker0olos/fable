@@ -158,7 +158,9 @@ async function findById<T>(
     { ids: anilistIds },
   );
 
-  anilistResults.forEach((item) => results[`anilist:${item.id}`] = item as T);
+  anilistResults.forEach((item) =>
+    results[`anilist:${item.id}`] = anilist.transform<T>({ item })
+  );
 
   return results;
 }
@@ -175,7 +177,9 @@ async function findOne<T>(
   const anilistPack: Manifest = {
     id: 'anilist',
     [key]: {
-      new: await anilist[key]({ search }),
+      new: (await anilist[key]({ search })).map((item) =>
+        anilist.transform({ item })
+      ),
     },
   };
 
