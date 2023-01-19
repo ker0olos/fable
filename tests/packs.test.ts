@@ -146,23 +146,28 @@ Deno.test('manifest embeds', async (test) => {
         components: [{
           type: 1,
           components: [{
-            custom_id: 'builtin:1',
+            custom_id: '_',
+            disabled: true,
+            label: '1/2',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'builtin=1',
             label: 'Next',
             style: 2,
             type: 2,
           }],
         }],
         embeds: [{
+          description:
+            'Builtin packs are developed and maintained directly by Fable',
+          type: 2,
+        }, {
           description: undefined,
-          footer: {
-            text: '1/2',
-          },
           title: 'title',
           type: 2,
           url: undefined,
         }],
-        content:
-          'Builtin packs are developed and maintained directly by Fable.',
       },
     });
   });
@@ -184,23 +189,28 @@ Deno.test('manifest embeds', async (test) => {
         components: [{
           type: 1,
           components: [{
-            custom_id: 'manual:0',
+            custom_id: 'manual=0',
             label: 'Prev',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: '_',
+            disabled: true,
+            label: '2/2',
             style: 2,
             type: 2,
           }],
         }],
         embeds: [{
+          type: 2,
+          description:
+            'The following third-party packs were manually added by your server members',
+        }, {
           description: undefined,
-          footer: {
-            text: '2/2',
-          },
           title: 'title',
           type: 2,
           url: undefined,
         }],
-        content:
-          'The following packs were installed manually by server members.',
       },
     });
   });
@@ -217,18 +227,26 @@ Deno.test('manifest embeds', async (test) => {
     assertEquals(message.json(), {
       type: 4,
       data: {
-        components: [],
         embeds: [{
+          type: 2,
+          description:
+            'The following third-party packs were manually added by your server members',
+        }, {
           description: undefined,
-          footer: {
-            text: '1/1',
-          },
           title: 'id',
           type: 2,
           url: undefined,
         }],
-        content:
-          'The following packs were installed manually by server members.',
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: '_',
+            disabled: true,
+            label: '1/1',
+            style: 2,
+            type: 2,
+          }],
+        }],
       },
     });
   });
@@ -240,8 +258,10 @@ Deno.test('manifest embeds', async (test) => {
       type: 4,
       data: {
         components: [],
-        embeds: [],
-        content: 'No packs have been installed yet.',
+        embeds: [{
+          type: 2,
+          description: 'No packs have been added yet',
+        }],
       },
     });
   });

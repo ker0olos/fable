@@ -216,7 +216,7 @@ const proxy = async (r: Request) => {
       throw new Error();
     }
 
-    // TODO
+    // TODO customize images
     //(see https://github.com/ker0olos/fable/issues/24)
     // const searchParams = encoded.searchParams;
 

@@ -1,5 +1,3 @@
-import { Embed, Interaction, Message } from './discord.ts';
-
 import _anilist from '../packs/anilist/manifest.json' assert {
   type: 'json',
 };
@@ -16,6 +14,8 @@ import * as x from '../packs/x/index.ts';
 import * as anilist from '../packs/anilist/index.ts';
 
 import utils from './utils.ts';
+
+import * as discord from './discord.ts';
 
 import {
   Alias,
@@ -59,8 +59,8 @@ const packs = {
 
 async function commands(
   name: string,
-  interaction: Interaction<unknown>,
-): Promise<Message | undefined> {
+  interaction: discord.Interaction<unknown>,
+): Promise<discord.Message | undefined> {
   if (anilistManifest.commands && name in anilistManifest.commands) {
     const command = anilistManifest.commands[name];
     return await anilist.default
@@ -203,7 +203,7 @@ async function findOne<T>(
 
             if (
               percentage >= 100 ||
-              (percentage > 50 && popularity > maxPopularity)
+              (percentage > 65 && popularity > maxPopularity)
             ) {
               match =
                 (maxPopularity = popularity, item.packId = pack.id, item) as T;
@@ -388,6 +388,8 @@ async function pool(
     role?: CharacterRole;
   },
 ): Promise<Pool> {
+  // request characters from anilist
+
   const pool = await anilist.pool({
     role,
     popularity_greater,
@@ -395,6 +397,7 @@ async function pool(
   });
 
   // add characters from packs
+
   packs
     .list()
     .forEach((pack) => {
@@ -405,10 +408,6 @@ async function pool(
       });
     });
 
-  // overwriting should be done by the receiving function
-  // when the results are narrowed down to 1 character
-  // to avoid unnecessary loops
-
   return pool;
 }
 
@@ -418,33 +417,46 @@ function embed(
     index?: number;
     total: number;
   },
-): Message {
+): discord.Message {
   if (!manifest) {
-    return new Message()
-      .setContent('No packs have been installed yet.');
+    const embed = new discord.Embed().setDescription(
+      'No packs have been added yet',
+    );
+
+    return new discord.Message()
+      .addEmbed(embed);
   }
 
-  const message = Message.page(
+  const disclaimer = manifest.type === ManifestType.Builtin
+    ? new discord.Embed().setDescription(
+      'Builtin packs are developed and maintained directly by Fable',
+    )
+    : new discord.Embed().setDescription(
+      'The following third-party packs were manually added by your server members',
+    );
+
+  const pack = new discord.Embed()
+    .setUrl(manifest.url)
+    .setDescription(manifest.description)
+    .setAuthor({ name: manifest.author })
+    .setThumbnail({ url: manifest.image })
+    .setTitle(manifest.title ?? manifest.id);
+
+  if (!manifest.type) {
+    throw new Error(`Manifest "${manifest.id}" type is undefined`);
+  }
+
+  const message = discord.Message.page(
     {
       index,
       total,
-      // deno-lint-ignore no-non-null-assertion
-      id: manifest.type!,
-      current: new Embed()
-        .setUrl(manifest.url)
-        .setDescription(manifest.description)
-        .setAuthor({ name: manifest.author })
-        .setThumbnail({ url: manifest.image })
-        .setTitle(manifest.title ?? manifest.id),
+      id: manifest.type,
+      embeds: [
+        disclaimer,
+        pack,
+      ],
     },
   );
-
-  message
-    .setContent(
-      manifest.type === ManifestType.Builtin
-        ? 'Builtin packs are developed and maintained directly by Fable.'
-        : 'The following packs were installed manually by server members.',
-    );
 
   return message;
 }
@@ -453,16 +465,18 @@ function aliasToArray(
   alias: Alias,
   max?: number,
 ): string[] {
-  let titles = [
-    alias.english,
-    alias.romaji,
-    alias.native,
-  ].concat(alias.alternative ?? []);
+  const set = new Set(
+    [
+      alias.english,
+      alias.romaji,
+      alias.native,
+    ]
+      .concat(alias.alternative ?? [])
+      .filter(Boolean)
+      .map((str) => max ? utils.truncate(str, max) : str),
+  );
 
-  titles = titles.filter(Boolean)
-    .map((str) => max ? utils.truncate(str, max) : str);
-
-  return titles as string[];
+  return Array.from(set) as string[];
 }
 
 function imagesToArray(

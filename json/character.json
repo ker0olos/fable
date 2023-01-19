@@ -6,7 +6,9 @@
     "id": {
       "type": "string",
       "description": "A unique alphanumeric id",
-      "pattern": "^[-_a-z0-9]+$"
+      "pattern": "^[-_a-z0-9]+$",
+      "minLength": 1,
+      "maxLength": 20
     },
     "name": {
       "type": "object",

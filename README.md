@@ -18,9 +18,9 @@ premiums, and no pay-to-win bullshit.
 > **Note** The bot is still experimental. Core features might be missing.
 
 There's a intuitive system to manage and customize the characters in your
-servers, you can install community-made packs that are full of new characters
-with one single command (That's if our default anime[^1] library is not enough
-for you!)
+servers, you can add community-made packs that are full of new characters with
+one single command (That's if our default anime[^1] library is not enough for
+you!)
 
 > **TODO** too much plain text (no one is gonna read all this) we need some
 > images and animations

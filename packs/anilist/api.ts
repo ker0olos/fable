@@ -258,7 +258,7 @@ export async function pool(
           format_not_in: [ NOVEL, MUSIC, SPECIAL ], # fixed to query characters that only appear in anime, movies, and manga
           isAdult: false, # ignore hentai (not 100% reliable according to anilist)
         ) {
-          # NOTE FIX only requests the first page
+          # TODO BLOCKED only requests the first page
           characters(role: $role, sort: ${characterDefaultSort}, perPage: 25) {
             nodes {
               ${characterDefaultQuery}

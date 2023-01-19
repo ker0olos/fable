@@ -86,7 +86,6 @@ Deno.test('media', async (test) => {
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -158,7 +157,6 @@ Deno.test('media', async (test) => {
             title: 'title',
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -226,7 +224,6 @@ Deno.test('media', async (test) => {
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -294,7 +291,6 @@ Deno.test('media', async (test) => {
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -320,7 +316,6 @@ Deno.test('media', async (test) => {
         extraLarge: 'image_url',
       },
       externalLinks: [
-        { site: 'FakeTube', url: 'url' },
         { site: 'Crunchyroll', url: 'url2' },
       ],
     };
@@ -378,7 +373,6 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
-          content: undefined,
         },
       });
 
@@ -440,7 +434,6 @@ Deno.test('media', async (test) => {
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -524,7 +517,6 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
-          content: undefined,
         },
       });
 
@@ -653,7 +645,6 @@ Deno.test('media', async (test) => {
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -820,7 +811,6 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
-          content: undefined,
         },
       });
 
@@ -965,7 +955,6 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
-          content: undefined,
         },
       });
 
@@ -1059,7 +1048,6 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
-          content: undefined,
         },
       });
 
@@ -1184,7 +1172,6 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
-          content: undefined,
         },
       });
 
@@ -1312,7 +1299,6 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
-          content: undefined,
         },
       });
 
@@ -1426,7 +1412,6 @@ Deno.test('media', async (test) => {
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1569,7 +1554,6 @@ Deno.test('media debug', async (test) => {
             type: 2,
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1652,7 +1636,6 @@ Deno.test('media debug', async (test) => {
             type: 2,
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1721,7 +1704,6 @@ Deno.test('character', async (test) => {
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1786,7 +1768,6 @@ Deno.test('character', async (test) => {
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1851,7 +1832,6 @@ Deno.test('character', async (test) => {
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1934,7 +1914,6 @@ Deno.test('character', async (test) => {
               type: 2,
             }],
           }],
-          content: undefined,
         },
       });
 
@@ -1991,7 +1970,6 @@ Deno.test('character', async (test) => {
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -2097,7 +2075,7 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-          content: undefined,
+
           embeds: [
             {
               type: 2,
@@ -2206,7 +2184,7 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-          content: undefined,
+
           embeds: [
             {
               type: 2,
@@ -2309,7 +2287,7 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-          content: undefined,
+
           embeds: [
             {
               type: 2,
@@ -2432,7 +2410,7 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-          content: undefined,
+
           embeds: [
             {
               type: 2,
@@ -2560,7 +2538,6 @@ Deno.test('music', async (test) => {
               ],
             },
           ],
-          content: undefined,
         },
       });
 

@@ -157,9 +157,12 @@ const handler = async (r: Request) => {
       err?.response?.status === 404 || err?.message === '404' ||
       err?.message?.toLowerCase?.() === 'not found'
     ) {
-      return discord.Message.content(
-        'Found _nothing_ matching that query!',
-      );
+      return new discord.Message().setFlags(discord.MessageFlags.Ephemeral)
+        .addEmbed(
+          new discord.Embed().setDescription(
+            'Found _nothing_ matching that query!',
+          ),
+        ).send();
     }
 
     if (!config.sentry) {
@@ -173,7 +176,7 @@ const handler = async (r: Request) => {
     return discord.Message.internal(refId).send();
   }
 
-  return discord.Message.content(`Unimplemented!`);
+  return new discord.Message().setContent(`Unimplemented!`).send();
 };
 
 serve({

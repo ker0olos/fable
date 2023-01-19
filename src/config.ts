@@ -1,6 +1,6 @@
 import { configAsync } from 'https://deno.land/x/dotenv@v3.2.0/mod.ts';
 
-// const colors = {
+// export const colors = {
 //   background: '#2b2d42',
 //   purple: '#6b3ebd',
 //   gold: '#feb500',

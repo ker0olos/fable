@@ -16,10 +16,7 @@ import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
-const musicUrlRegex = /youtube|youtu\.be|spotify/i;
-
-const externalLinksRegex =
-  /youtube|crunchyroll|official site|tapas|webtoon|amazon/i;
+const musicUrlRegex = /youtube|spotify/;
 
 export async function media(
   { id, type, search, debug }: {
@@ -43,8 +40,6 @@ export async function media(
     );
   }
 
-  const message = new discord.Message();
-
   // aggregate the media by populating any references to other media/character objects
   const media = await packs.aggregate<Media>({ media: results[0] });
 
@@ -56,7 +51,11 @@ export async function media(
     throw new Error('404');
   }
 
-  message.addEmbed(
+  const linksGroup: discord.Component[] = [];
+  const musicGroup: discord.Component[] = [];
+
+  // main media embed
+  const message = new discord.Message().addEmbed(
     new discord.Embed()
       .setTitle(title)
       .setAuthor({ name: packs.formatToString(media.format) })
@@ -71,6 +70,7 @@ export async function media(
       }),
   );
 
+  // character embeds
   packs.sortCharacters(media.characters?.edges)
     ?.slice(0, 2)
     .forEach((edge) => {
@@ -96,9 +96,6 @@ export async function media(
       message.addEmbed(embed);
     });
 
-  const linksGroup: discord.Component[] = [];
-  const musicGroup: discord.Component[] = [];
-
   if (media.trailer?.site === 'youtube') {
     const component = new discord.Component()
       .setUrl(`https://youtu.be/${media.trailer?.id}`)
@@ -107,17 +104,14 @@ export async function media(
     linksGroup.push(component);
   }
 
-  media.externalLinks?.forEach((link) => {
-    if (!externalLinksRegex.test(link.site)) {
-      return;
-    }
+  media.externalLinks
+    ?.forEach((link) => {
+      const component = new discord.Component()
+        .setLabel(link.site)
+        .setUrl(link.url);
 
-    const component = new discord.Component()
-      .setLabel(link.site)
-      .setUrl(link.url);
-
-    linksGroup.push(component);
-  });
+      linksGroup.push(component);
+    });
 
   packs.sortMedia(media.relations?.edges)
     ?.slice(0, 4)
@@ -146,7 +140,7 @@ export async function media(
       } else {
         const component = new discord.Component()
           .setLabel(label)
-          .setId(discord.join('media', `${media.packId}:${media.id}`));
+          .setId('media', `${media.packId}:${media.id}`);
 
         linksGroup.push(component);
       }
@@ -239,9 +233,7 @@ export async function character(
 
       const component = new discord.Component()
         .setLabel(label)
-        .setId(
-          discord.join('media', `${character.packId}:${media.id}`),
-        );
+        .setId('media', `${character.packId}:${media.id}`);
 
       group.push(component);
     });

@@ -7,8 +7,9 @@ const API = `https://discord.com/api/v10`;
 
 const splitter = '=';
 
-export function join(...args: string[]): string {
-  return args.join(splitter);
+export enum MessageFlags {
+  Ephemeral = 1 << 6,
+  SuppressEmbeds = 1 << 2,
 }
 
 export enum MessageType {
@@ -200,6 +201,7 @@ export class Component {
     label?: string;
     emoji?: Emote;
     placeholder?: string;
+    disabled?: boolean;
     url?: string;
   };
 
@@ -209,18 +211,28 @@ export class Component {
     };
   }
 
-  setId(id: string): Component {
-    this.#data.custom_id = id;
+  setId(...id: string[]): Component {
+    const cid = id.join(splitter);
+    // (see https://discord.com/developers/docs/interactions/message-components#custom-id)
+    if (cid.length <= 100) {
+      this.#data.custom_id = cid;
+    }
     return this;
   }
 
-  setStyle(style: ButtonStyle | TextInputStyle): Component {
+  // setStyle(style: ButtonStyle | TextInputStyle): Component {
+  setStyle(style: ButtonStyle): Component {
     this.#data.style = style;
     return this;
   }
 
   setLabel(label: string): Component {
     this.#data.label = label;
+    return this;
+  }
+
+  toggle(): Component {
+    this.#data.disabled = !this.#data.disabled;
     return this;
   }
 
@@ -390,6 +402,7 @@ export class Message {
   #type?: MessageType;
 
   #data: {
+    flags?: number;
     content?: string;
     embeds: unknown[];
     components: unknown[];
@@ -419,6 +432,11 @@ export class Message {
     return this;
   }
 
+  setFlags(flags: MessageFlags): Message {
+    this.#data.flags = flags;
+    return this;
+  }
+
   // setId(id: string) {
   //   this.#data.custom_id = id;
   //   return this;
@@ -438,6 +456,7 @@ export class Message {
   addComponents(components: Component[]): Message {
     if (components.length > 0) {
       // max amount of items per group is 5
+      // (see https://discord.com/developers/docs/interactions/message-components#action-rows)
       utils.chunks(components, 5)
         .forEach((chunk) => {
           this.#data.components.push({
@@ -446,6 +465,7 @@ export class Message {
               const comp = component.json();
 
               // labels have maximum of 80 characters
+              // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
               return (comp.label = utils.truncate(comp.label, 80), comp);
             }),
           });
@@ -466,14 +486,6 @@ export class Message {
   //   return this;
   // }
 
-  // embedsCount() {
-  //   return this.#data.embeds.length;
-  // }
-
-  // componentsCount() {
-  //   return this.#data.components.length;
-  // }
-
   // deno-lint-ignore no-explicit-any
   json(): any {
     let data;
@@ -491,7 +503,7 @@ export class Message {
       //   break;
       default:
         data = {
-          content: this.#data.content,
+          ...this.#data,
           embeds: this.#data.embeds.slice(0, 3),
           components: this.#data.components.slice(0, 5),
         };
@@ -563,45 +575,44 @@ export class Message {
   // }
 
   static page(
-    { current, id, index, total }: {
+    { embeds, id, index, total }: {
       id: string;
-      total: number;
+      embeds: Embed[];
       index?: number;
-      current: Embed;
+      total: number;
     },
   ): Message {
     index = index ?? 0;
 
     const message = new Message();
 
-    current.setFooter({
-      text: `${index + 1}/${total}`,
-    });
+    const group = [];
 
-    const navigation = [];
+    const prev = new Component()
+      .setId(id, `${index - 1}`)
+      .setLabel(`Prev`);
+
+    const next = new Component()
+      .setId(id, `${index + 1}`)
+      .setLabel(`Next`);
+
+    const indicator = new Component().setId('_')
+      .setLabel(`${index + 1}/${total}`)
+      .toggle();
 
     if (index - 1 >= 0) {
-      navigation.push(
-        new Component().setId(`${id}:${index - 1}`).setLabel(`Prev`),
-      );
+      group.push(prev);
     }
+
+    group.push(indicator);
 
     if (index + 1 < total) {
-      navigation.push(
-        new Component().setId(`${id}:${index + 1}`).setLabel(`Next`),
-      );
+      group.push(next);
     }
 
-    return message.addEmbed(current).addComponents(navigation);
-  }
+    embeds.forEach((embed) => message.addEmbed(embed));
 
-  static content(content: string): Response {
-    return json({
-      type: MessageType.New,
-      data: {
-        content,
-      },
-    });
+    return message.addComponents(group);
   }
 
   static internal(id: string): Message {

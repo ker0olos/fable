@@ -6,7 +6,9 @@
     "id": {
       "type": "string",
       "description": "A unique alphanumeric id",
-      "pattern": "^[-_a-z0-9]+$"
+      "pattern": "^[-_a-z0-9]+$",
+      "minLength": 1,
+      "maxLength": 20
     },
     "type": {
       "enum": ["ANIME", "MANGA"],
@@ -100,12 +102,13 @@
         "additionalProperties": false,
         "properties": {
           "site": {
-            "enum": ["Crunchyroll", "YouTube", "Official Site", "Webtoon"],
-            "description": "The name of the site"
+            "type": "string",
+            "description": "The title of the site"
           },
           "url": {
             "type": "string",
-            "description": "The url of the site (e.g. example.com)"
+            "pattern": "^(https:\\/\\/)?(www\\.)?(youtube\\.com|twitch\\.tv|crunchyroll\\.com|tapas\\.io|webtoon\\.com|amazon\\.com)[\\S]*$",
+            "description": "The full url of the site"
           }
         }
       }
