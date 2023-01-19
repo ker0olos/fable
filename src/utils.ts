@@ -142,15 +142,23 @@ function decodeDescription(s?: string): string | undefined {
   s = s.replaceAll('&apos;', '\'');
   s = s.replaceAll('&amp;', '&');
 
-  s = s.replaceAll(/~!.+!~/gm, '');
+  s = s.replace(/~!.+!~/gm, '');
+  s = s.replace(/\|\|.+\|\|/gm, '');
 
-  s = s.replace(/<i.*?>((.|\n)*?)<\/i>/g, '*$1*');
-  s = s.replace(/<b.*?>((.|\n)*?)<\/b>/g, '**$1**');
-  s = s.replace(/<strike.*?>((.|\n)*?)<\/strike>/g, '~~$1~~');
+  s = s.replace(/<i.*?>((.|\s)*?)<\/?i>/g, (_, s) => `*${s.trim()}*`);
+  s = s.replace(/<b.*?>((.|\s)*?)<\/?b>/g, (_, s) => `**${s.trim()}**`);
+  s = s.replace(
+    /<strike.*?>((.|\s)*?)<\/?strike>/g,
+    (_, s) => `~~${s.trim()}~~`,
+  );
 
-  s = s.replaceAll(/<br>|<\/br>|<br\/>|<hr>|<\/hr>/gm, '\n');
+  s = s.replace(/<\/?br\/?>|<\/?hr\/?>/gm, '\n');
 
-  s = s.replace(/<a.*?href="(.*?)".*?>(.*?)<\/a>/g, '[$2]($1)');
+  s = s.replace(/<a.*?href=("|')(.*?)("|').*?>(.*?)<\/?a>/g, '[$4]($2)');
+
+  // s = s.replace(/<a.*?href=("|')(.*?)("|').*?>(.*?)<\/a>/g, '$4');
+  // s = s.replace(/\[(.*)\]\((.*)\)/g, '$1');
+  // s = s.replace(/(?:https?):\/\/[\n\S]+/gm, '');
 
   return s;
 }

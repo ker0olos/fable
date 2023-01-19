@@ -19,7 +19,7 @@ import * as discord from './discord.ts';
 const musicUrlRegex = /youtube|youtu\.be|spotify/i;
 
 const externalLinksRegex =
-  /youtube|crunchyroll|funimation|official site|tapas|webtoon|amazon/i;
+  /youtube|crunchyroll|official site|tapas|webtoon|amazon/i;
 
 export async function media(
   { id, type, search, debug }: {
