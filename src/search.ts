@@ -155,7 +155,9 @@ export async function media(
   return message.addComponents([...linksGroup, ...musicGroup]);
 }
 
-function disaggregatedMediaDebugEmbed(media: Media | DisaggregatedMedia) {
+function disaggregatedMediaDebugEmbed(
+  media: Media | DisaggregatedMedia,
+): discord.Embed {
   const titles = packs.aliasToArray(media.title);
 
   return new discord.Embed()
@@ -247,7 +249,7 @@ export async function character(
   return message.addComponents(group);
 }
 
-function characterDebugEmbed(character: Character) {
+function characterDebugEmbed(character: Character): discord.Embed {
   const media = character.media?.edges?.[0];
 
   const role = media?.role;
@@ -306,7 +308,7 @@ export async function music(
   { search }: {
     search?: string;
   },
-) {
+): Promise<discord.Message> {
   const results = await packs.media({ search });
 
   if (!results.length) {

@@ -9,7 +9,7 @@ import packs from '../../src/packs.ts';
 export async function nextEpisode(
   { title }: { title: string },
   // _: discord.Interaction<unknown>,
-) {
+): Promise<discord.Message> {
   const anime = await api.nextEpisode({ search: title });
 
   const titles = packs.aliasToArray({

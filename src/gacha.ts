@@ -157,7 +157,7 @@ async function rngPull(): Promise<Pull> {
 /**
  * start the roll's animation
  */
-function start({ token, id }: { token: string; id?: string }) {
+function start({ token, id }: { token: string; id?: string }): discord.Message {
   (
     id ? forcePull(id) : rngPull()
   )
@@ -243,7 +243,7 @@ function start({ token, id }: { token: string; id?: string }) {
     );
 }
 
-function pullDebugEmbed(pull: Pull) {
+function pullDebugEmbed(pull: Pull): discord.Embed {
   return new discord.Embed()
     .setTitle('Pool')
     .addField({

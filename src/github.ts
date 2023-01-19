@@ -120,7 +120,7 @@ interface Repo {
 
 const url = 'https://api.github.com/repositories';
 
-async function get(url: string) {
+async function get(url: string): Promise<Repo> {
   // try username/repo
   let array = /^([-_a-z0-9]+)\/([-_a-z0-9]+)$/.exec(
     url,
@@ -160,7 +160,7 @@ async function get(url: string) {
 
 async function manifest(
   { id, ref }: { id: number; ref?: string },
-) {
+): Promise<Manifest[]> {
   const { entries } = await unzip(
     `${url}/${id}/zipball/${ref ?? ''}`,
   );

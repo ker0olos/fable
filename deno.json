@@ -10,7 +10,8 @@
         "no-eval",
         "no-non-null-assertion",
         "no-throw-literal",
-        "no-sparse-arrays"
+        "no-sparse-arrays",
+        "explicit-function-return-type"
       ]
     }
   },

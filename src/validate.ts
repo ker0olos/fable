@@ -32,7 +32,7 @@ const replacerWithPath = (
 ) => {
   const m = new Map();
 
-  return function (this: any, key: string, value: any) {
+  return function (this: any, key: string, value: any): string {
     let path = m.get(this);
 
     path += `/${key}`;

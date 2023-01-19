@@ -71,7 +71,7 @@ image {
 
 export function transform<T>(
   { item }: { item: AniListMedia | AniListCharacter },
-) {
+): T {
   if ('title' in item) {
     const t: Media = {
       ...item,

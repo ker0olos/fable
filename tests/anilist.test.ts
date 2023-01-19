@@ -5,6 +5,7 @@ import {
 
 import {
   assertSpyCalls,
+  Stub,
   stub,
 } from 'https://deno.land/std@0.172.0/testing/mock.ts';
 
@@ -132,7 +133,7 @@ Deno.test('character', async (test) => {
   });
 });
 
-function fakePool(fill: AniListCharacter, length = 25) {
+function fakePool(fill: AniListCharacter, length = 25): Stub {
   const nodes: AniListCharacter[] = [];
 
   for (let index = 0; index < length; index++) {

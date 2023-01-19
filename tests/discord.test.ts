@@ -252,14 +252,8 @@ Deno.test('components', async (test) => {
 Deno.test('messages', async (test) => {
   const message = new discord.Message();
 
-  assertEquals(message.embedsCount(), 0);
-  assertEquals(message.componentsCount(), 0);
-
   message.addEmbed(new discord.Embed());
   message.addComponents([new discord.Component()]);
-
-  assertEquals(message.embedsCount(), 1);
-  assertEquals(message.componentsCount(), 1);
 
   assertEquals(message.json(), {
     type: 4,

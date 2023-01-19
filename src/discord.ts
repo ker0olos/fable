@@ -209,38 +209,39 @@ export class Component {
     };
   }
 
-  setId(id: string) {
+  setId(id: string): Component {
     this.#data.custom_id = id;
     return this;
   }
 
-  setStyle(style: ButtonStyle | TextInputStyle) {
+  setStyle(style: ButtonStyle | TextInputStyle): Component {
     this.#data.style = style;
     return this;
   }
 
-  setLabel(label: string) {
+  setLabel(label: string): Component {
     this.#data.label = label;
     return this;
   }
 
-  setEmote(emote: Emote) {
+  setEmote(emote: Emote): Component {
     this.#data.emoji = emote;
     return this;
   }
 
-  setPlaceholder(placeholder: string) {
+  setPlaceholder(placeholder: string): Component {
     this.#data.type = ComponentType.TextInput;
     this.#data.placeholder = placeholder;
     return this;
   }
 
-  setUrl(url: string) {
+  setUrl(url: string): Component {
     this.#data.url = url;
     return this;
   }
 
-  json() {
+  // deno-lint-ignore no-explicit-any
+  json(): any {
     if (!this.#data.style) {
       switch (this.#data.type) {
         case ComponentType.TextInput:
@@ -297,34 +298,34 @@ export class Embed {
     };
   }
 
-  setTitle(title?: string) {
+  setTitle(title?: string): Embed {
     this.#data.title = title;
     return this;
   }
 
-  setUrl(url?: string) {
+  setUrl(url?: string): Embed {
     this.#data.url = url;
     return this;
   }
 
-  setColor(color?: string) {
+  setColor(color?: string): Embed {
     this.#data.color = utils.hexToInt(color);
     return this;
   }
 
-  setDescription(description?: string) {
+  setDescription(description?: string): Embed {
     this.#data.description = utils.decodeDescription(description);
     return this;
   }
 
-  setAuthor(author: { name?: string; url?: string; icon_url?: string }) {
+  setAuthor(author: { name?: string; url?: string; icon_url?: string }): Embed {
     if (author.name) {
       this.#data.author = author;
     }
     return this;
   }
 
-  addField(field: { name: string; value: string; inline?: boolean }) {
+  addField(field: { name: string; value: string; inline?: boolean }): Embed {
     if (!this.#data.fields) {
       this.#data.fields = [];
     }
@@ -336,7 +337,9 @@ export class Embed {
     return this;
   }
 
-  setImage(image: { url?: string; noProxy?: boolean; default?: boolean }) {
+  setImage(
+    image: { url?: string; noProxy?: boolean; default?: boolean },
+  ): Embed {
     if (image.url || image.default) {
       if (config.origin && image.url?.startsWith(config.origin)) {
         this.#data.image = {
@@ -353,7 +356,7 @@ export class Embed {
     return this;
   }
 
-  setThumbnail(thumbnail: { url?: string; default?: boolean }) {
+  setThumbnail(thumbnail: { url?: string; default?: boolean }): Embed {
     if (thumbnail.url || thumbnail.default) {
       if (config.origin && thumbnail.url?.startsWith(config.origin)) {
         this.#data.thumbnail = {
@@ -370,14 +373,15 @@ export class Embed {
     return this;
   }
 
-  setFooter(footer: { text?: string; icon_url?: string }) {
+  setFooter(footer: { text?: string; icon_url?: string }): Embed {
     if (footer.text) {
       this.#data.footer = footer;
     }
     return this;
   }
 
-  json() {
+  // deno-lint-ignore no-explicit-any
+  json(): any {
     return this.#data;
   }
 }
@@ -405,12 +409,12 @@ export class Message {
     };
   }
 
-  setType(type: MessageType) {
+  setType(type: MessageType): Message {
     this.#type = type;
     return this;
   }
 
-  setContent(content: string) {
+  setContent(content: string): Message {
     this.#data.content = content;
     return this;
   }
@@ -426,12 +430,12 @@ export class Message {
   //   return this;
   // }
 
-  addEmbed(embed: Embed) {
+  addEmbed(embed: Embed): Message {
     this.#data.embeds.push(embed.json());
     return this;
   }
 
-  addComponents(components: Component[]) {
+  addComponents(components: Component[]): Message {
     if (components.length > 0) {
       // max amount of items per group is 5
       utils.chunks(components, 5)
@@ -462,15 +466,16 @@ export class Message {
   //   return this;
   // }
 
-  embedsCount() {
-    return this.#data.embeds.length;
-  }
+  // embedsCount() {
+  //   return this.#data.embeds.length;
+  // }
 
-  componentsCount() {
-    return this.#data.components.length;
-  }
+  // componentsCount() {
+  //   return this.#data.components.length;
+  // }
 
-  json() {
+  // deno-lint-ignore no-explicit-any
+  json(): any {
     let data;
 
     switch (this.#type) {
@@ -539,7 +544,7 @@ export class Message {
   //   });
   // }
 
-  static pong() {
+  static pong(): Response {
     return json({
       type: 1,
     });
@@ -564,7 +569,7 @@ export class Message {
       index?: number;
       current: Embed;
     },
-  ) {
+  ): Message {
     index = index ?? 0;
 
     const message = new Message();
@@ -590,7 +595,7 @@ export class Message {
     return message.addEmbed(current).addComponents(navigation);
   }
 
-  static content(content: string) {
+  static content(content: string): Response {
     return json({
       type: MessageType.New,
       data: {
@@ -599,7 +604,7 @@ export class Message {
     });
   }
 
-  static internal(id: string) {
+  static internal(id: string): Message {
     return new Message().setContent(
       `An Internal Error occurred and was reported.\n\n\`\`\`ref_id: ${id}\`\`\``,
     );

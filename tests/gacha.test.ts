@@ -7,6 +7,7 @@ import {
 import {
   assertSpyCalls,
   returnsNext,
+  Stub,
   stub,
 } from 'https://deno.land/std@0.172.0/testing/mock.ts';
 
@@ -20,7 +21,7 @@ import { CharacterRole, MediaFormat, MediaType } from '../src/types.ts';
 
 import { AniListCharacter } from '../packs/anilist/types.ts';
 
-function fakePool(fill: AniListCharacter, length = 25) {
+function fakePool(fill: AniListCharacter, length = 25): Stub {
   const nodes: AniListCharacter[] = [];
 
   for (let index = 0; index < length; index++) {

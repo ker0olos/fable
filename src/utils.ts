@@ -4,7 +4,7 @@ import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weih
 
 import config from './config.ts';
 
-function randint(min: number, max: number) {
+function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
@@ -22,7 +22,7 @@ function hexToInt(hex?: string): number | undefined {
   return parseInt(`${R}${G}${B}`, 16);
 }
 
-function shuffle<T>(array: T[]) {
+function shuffle<T>(array: T[]): void {
   for (
     let i = 0, length = array.length, swap = 0, temp = null;
     i < length;
@@ -35,7 +35,7 @@ function shuffle<T>(array: T[]) {
   }
 }
 
-function sleep(secs: number) {
+function sleep(secs: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, secs * 1000));
 }
 
@@ -82,7 +82,7 @@ function truncate(
   return str;
 }
 
-function wrap(text: string, width = 32) {
+function wrap(text: string, width = 32): string {
   return text.replace(
     new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'),
     '$1\n',
@@ -105,11 +105,11 @@ function capitalize(s: string | undefined): string | undefined {
     .trim();
 }
 
-function comma(n: number) {
+function comma(n: number): string {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function chunks<T>(a: Array<T>, size: number) {
+function chunks<T>(a: Array<T>, size: number): T[][] {
   return Array.from(
     new Array(Math.ceil(a.length / size)),
     (_, i) => a.slice(i * size, i * size + size),
@@ -164,7 +164,7 @@ async function verifySignature(
 
   const body = await r.text();
 
-  function hexToUint8Array(hex?: string) {
+  function hexToUint8Array(hex?: string): Uint8Array | undefined {
     const t = hex?.match(/.{1,2}/g);
 
     if (t) {

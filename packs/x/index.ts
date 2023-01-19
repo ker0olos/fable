@@ -5,7 +5,7 @@ import * as discord from '../../src/discord.ts';
 function roll(
   { amount }: { amount: number },
   { member }: discord.Interaction<unknown>,
-) {
+): discord.Message {
   const rolls = [];
 
   const dieSize = 10;

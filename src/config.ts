@@ -32,7 +32,7 @@ const config: {
 
 export async function init(
   { url }: { url: URL },
-) {
+): Promise<void> {
   const query = await Deno.permissions.query({ name: 'env' });
 
   if (query?.state === 'granted') {
