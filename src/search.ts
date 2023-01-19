@@ -18,15 +18,8 @@ import * as discord from './discord.ts';
 
 const musicUrlRegex = /youtube|youtu\.be|spotify/i;
 
-const externalLinksFilter = [
-  'youtube',
-  'crunchyroll',
-  'funimation',
-  'official site',
-  'tapas',
-  'webtoon',
-  'amazon',
-];
+const externalLinksRegex =
+  /youtube|crunchyroll|funimation|official site|tapas|webtoon|amazon/i;
 
 export async function media(
   { id, type, search, debug }: {
@@ -78,28 +71,30 @@ export async function media(
       }),
   );
 
-  media.characters?.edges?.slice(0, 2).forEach((edge) => {
-    const alias = packs.aliasToArray(edge.node.name);
+  packs.sortCharacters(media.characters?.edges)
+    ?.slice(0, 2)
+    .forEach((edge) => {
+      const alias = packs.aliasToArray(edge.node.name);
 
-    const embed = new discord.Embed()
-      .setTitle(alias[0])
-      .setDescription(edge.node.description)
-      .setColor(edge.node.image?.color ?? media?.coverImage?.color)
-      .setThumbnail({
-        default: true,
-        url: packs.imagesToArray(edge.node.image, 'small-first')?.[0],
-      })
-      .setFooter(
-        {
-          text: [
-            utils.capitalize(edge.node.gender),
-            edge.node.age,
-          ].filter(Boolean).join(', '),
-        },
-      );
+      const embed = new discord.Embed()
+        .setTitle(alias[0])
+        .setDescription(edge.node.description)
+        .setColor(edge.node.image?.color ?? media?.coverImage?.color)
+        .setThumbnail({
+          default: true,
+          url: packs.imagesToArray(edge.node.image, 'small-first')?.[0],
+        })
+        .setFooter(
+          {
+            text: [
+              utils.capitalize(edge.node.gender),
+              edge.node.age,
+            ].filter(Boolean).join(', '),
+          },
+        );
 
-    message.addEmbed(embed);
-  });
+      message.addEmbed(embed);
+    });
 
   const linksGroup: discord.Component[] = [];
   const musicGroup: discord.Component[] = [];
@@ -113,7 +108,7 @@ export async function media(
   }
 
   media.externalLinks?.forEach((link) => {
-    if (!externalLinksFilter.includes(link.site.toLowerCase())) {
+    if (!externalLinksRegex.test(link.site)) {
       return;
     }
 
@@ -124,9 +119,10 @@ export async function media(
     linksGroup.push(component);
   });
 
-  packs.sortEdgesByPopularity(media.relations?.edges)?.slice(0, 4)
+  packs.sortMedia(media.relations?.edges)
+    ?.slice(0, 4)
     ?.forEach(({ node: media, relation }) => {
-      const label = packs.mediaToLabel({
+      const label = packs.mediaToString({
         media,
         relation,
       });
@@ -235,9 +231,9 @@ export async function character(
 
   const group: discord.Component[] = [];
 
-  packs.sortEdgesByPopularity(character.media?.edges)
+  packs.sortMedia(character.media?.edges)
     ?.forEach(({ node: media }) => {
-      const label = packs.mediaToLabel({ media });
+      const label = packs.mediaToString({ media });
 
       const component = new discord.Component()
         .setLabel(label)
@@ -324,7 +320,7 @@ export async function music(
 
   const group: discord.Component[] = [];
 
-  packs.sortEdgesByPopularity(media.relations?.edges)
+  packs.sortMedia(media.relations?.edges)
     ?.forEach((edge) => {
       if (
         edge.relation === MediaRelation.Other &&
@@ -332,7 +328,7 @@ export async function music(
         edge.node.externalLinks?.[0]?.url &&
         musicUrlRegex.test(edge.node.externalLinks?.[0]?.url)
       ) {
-        const label = packs.mediaToLabel({ media: edge.node });
+        const label = packs.mediaToString({ media: edge.node });
 
         const component = new discord.Component()
           .setLabel(label)

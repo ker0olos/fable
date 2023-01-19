@@ -52,8 +52,9 @@ const packs = {
   aliasToArray,
   imagesToArray,
   formatToString,
-  mediaToLabel,
-  sortEdgesByPopularity,
+  mediaToString,
+  sortMedia,
+  sortCharacters,
 };
 
 async function commands(
@@ -503,7 +504,7 @@ function formatToString(format: MediaFormat): string {
   ) as string;
 }
 
-function mediaToLabel(
+function mediaToString(
   { media, relation }: {
     media: Media;
     relation?: MediaRelation;
@@ -530,11 +531,24 @@ function mediaToLabel(
   }
 }
 
-type Edge = { node: Media; relation?: MediaRelation };
+type MediaEdge = { node: Media; relation?: MediaRelation };
+type CharacterEdge = { node: Character; role?: CharacterRole };
 
-function sortEdgesByPopularity(
-  edges?: Edge[],
-): Edge[] | undefined {
+function sortMedia(
+  edges?: MediaEdge[],
+): MediaEdge[] | undefined {
+  if (!edges?.length) {
+    return;
+  }
+
+  return edges.sort((a, b) => {
+    return (b.node.popularity || 0) - (a.node.popularity || 0);
+  });
+}
+
+function sortCharacters(
+  edges?: CharacterEdge[],
+): CharacterEdge[] | undefined {
   if (!edges?.length) {
     return;
   }

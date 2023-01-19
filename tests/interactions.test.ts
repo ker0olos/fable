@@ -1323,6 +1323,120 @@ Deno.test('media', async (test) => {
     }
   });
 
+  await test.step('characters sorting', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'image_url',
+      },
+      characters: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: '5',
+            name: {
+              full: 'main character name',
+            },
+            popularity: 0,
+          },
+        }, {
+          role: CharacterRole.Supporting,
+          node: {
+            id: '10',
+            name: {
+              full: 'supporting character name',
+            },
+            popularity: 100,
+          },
+        }, {
+          role: CharacterRole.Background,
+          node: {
+            id: '15',
+            name: {
+              full: 'background character name',
+            },
+            popularity: 50,
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({ search: 'english title' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            author: {
+              name: 'Anime',
+            },
+            title: 'english title',
+            color: 16777215,
+            description: 'long description',
+            image: {
+              url: 'undefined/external/image_url',
+            },
+          }, {
+            type: 2,
+            title: 'supporting character name',
+            color: 16777215,
+            description: undefined,
+            thumbnail: {
+              url: 'undefined/external/?size=thumbnail',
+            },
+          }, {
+            type: 2,
+            title: 'background character name',
+            color: 16777215,
+            description: undefined,
+            thumbnail: {
+              url: 'undefined/external/?size=thumbnail',
+            },
+          }],
+          components: [],
+          content: undefined,
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
   await test.step('not found', async () => {
     const media: AniListMedia = {
       id: '1',
