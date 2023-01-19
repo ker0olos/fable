@@ -237,6 +237,74 @@ Deno.test('media', async (test) => {
     }
   });
 
+  await test.step('format header', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.Novel,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'image_url',
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({ search: 'english title' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            author: {
+              name: 'Novel',
+            },
+            title: 'english title',
+            color: 16777215,
+            description: 'long description',
+            image: {
+              url: 'undefined/external/image_url',
+            },
+          }],
+          components: [],
+          content: undefined,
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
   await test.step('external links', async () => {
     const media: AniListMedia = {
       id: '1',
@@ -1027,7 +1095,7 @@ Deno.test('media', async (test) => {
             title: {
               english: 'op',
             },
-            externalLinks: [{ site: 'youtube', url: 'youtube url' }],
+            externalLinks: [{ site: 'Youtube', url: 'youtube_url' }],
           },
         }, {
           relationType: MediaRelation.Other,
@@ -1039,7 +1107,7 @@ Deno.test('media', async (test) => {
             title: {
               english: 'fk',
             },
-            externalLinks: [{ site: 'spotify', url: 'spotify url' }],
+            externalLinks: [{ site: 'Spotify', url: 'spotify_url' }],
           },
         }, {
           relationType: MediaRelation.Other,
@@ -1051,7 +1119,7 @@ Deno.test('media', async (test) => {
             title: {
               english: 'ed',
             },
-            externalLinks: [{ site: 'spiketone', url: 'spiketone url' }],
+            externalLinks: [{ site: 'FakeTube', url: 'faketube_url' }],
           },
         }],
       },
@@ -1102,20 +1170,14 @@ Deno.test('media', async (test) => {
               type: 1,
               components: [
                 {
-                  url: 'youtube url',
                   label: 'op',
+                  url: 'youtube_url',
                   style: 5,
                   type: 2,
                 },
                 {
-                  url: 'spotify url',
                   label: 'fk',
-                  style: 5,
-                  type: 2,
-                },
-                {
-                  url: 'spiketone url',
-                  label: 'ed',
+                  url: 'spotify_url',
                   style: 5,
                   type: 2,
                 },

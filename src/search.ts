@@ -16,6 +16,8 @@ import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
+const musicUrlRegex = /youtube|youtu\.be|spotify/i;
+
 const externalLinksFilter = [
   'youtube',
   'crunchyroll',
@@ -64,7 +66,7 @@ export async function media(
   message.addEmbed(
     new discord.Embed()
       .setTitle(title)
-      .setAuthor({ name: utils.capitalize(media.type) })
+      .setAuthor({ name: packs.formatToString(media.format) })
       .setDescription(media.description)
       .setColor(media.coverImage?.color)
       .setImage({
@@ -130,8 +132,14 @@ export async function media(
       });
 
       // music links
-      if (media.format === MediaFormat.Music) {
-        if (media.externalLinks?.[0]?.url && musicGroup.length < 3) {
+      if (
+        relation === MediaRelation.Other && media.format === MediaFormat.Music
+      ) {
+        if (
+          musicGroup.length < 3 &&
+          media.externalLinks?.[0]?.url &&
+          musicUrlRegex.test(media.externalLinks?.[0]?.url)
+        ) {
           const component = new discord.Component()
             .setLabel(label)
             .setUrl(media.externalLinks[0].url);
@@ -321,7 +329,8 @@ export async function music(
       if (
         edge.relation === MediaRelation.Other &&
         edge.node.format === MediaFormat.Music &&
-        edge.node.externalLinks?.[0]?.url
+        edge.node.externalLinks?.[0]?.url &&
+        musicUrlRegex.test(edge.node.externalLinks?.[0]?.url)
       ) {
         const label = packs.mediaToLabel({ media: edge.node });
 

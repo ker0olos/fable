@@ -498,7 +498,7 @@ function imagesToArray(
 function formatToString(format: MediaFormat): string {
   return utils.capitalize(
     format
-      .replace('TV_SHORT', 'Short')
+      .replace(/TV_SHORT|OVA|ONA/, 'Short')
       .replace('TV', 'Anime'),
   ) as string;
 }
