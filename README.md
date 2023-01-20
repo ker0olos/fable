@@ -80,5 +80,5 @@ direction of the project:
   favorite characters to 5 stars faster.
 
 [discord]: https://discord.gg/ceKyEfhyPQ
-[contributing]: ./CONTRIBUTING. md
-[deno]: https://deno.land/
+[contributing]: ./CONTRIBUTING.md
+[deno]: https://deno.land
