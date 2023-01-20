@@ -6,7 +6,9 @@
     "id": {
       "type": "string",
       "description": "A unique alphanumeric id",
-      "pattern": "^[-_a-z0-9]+$"
+      "pattern": "^[-_a-z0-9]+$",
+      "minLength": 1,
+      "maxLength": 20
     },
     "title": {
       "type": "string",
@@ -32,6 +34,24 @@
       "type": "string",
       "description": "The url to pack's homepage"
     },
+    "depends": {
+      "type": "array",
+      "description": "A list of packs that are required to make your pack function properly.",
+      "items": {
+        "type": "string",
+        "description": "Reference a pack",
+        "pattern": "^[-_a-z0-9]+$"
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "description": "A list of packs that might conflict with your pack.",
+      "items": {
+        "type": "string",
+        "description": "Reference a pack",
+        "pattern": "^[-_a-z0-9]+$"
+      }
+    },
     "media": {
       "type": "object",
       "description": "Media to add, or overwrite",
@@ -43,6 +63,15 @@
           "items": {
             "allOf": [{ "$ref": "media.json" }],
             "required": ["id", "title", "type", "format"]
+          }
+        },
+        "conflicts": {
+          "type": "array",
+          "description": "A list of media that might conflict with your pack. All media listed here will be entirely disabled.",
+          "items": {
+            "type": "string",
+            "description": "Reference an existing media ([pack:]id)",
+            "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
           }
         },
         "overwrite": {
@@ -71,6 +100,15 @@
           "items": {
             "allOf": [{ "$ref": "character.json" }],
             "required": ["id", "name"]
+          }
+        },
+        "conflicts": {
+          "type": "array",
+          "description": "A list of characters that might conflict with your pack (All characters listed here will be entirely disabled).",
+          "items": {
+            "type": "string",
+            "description": "Reference an existing character ([pack:]id)",
+            "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
           }
         },
         "overwrite": {

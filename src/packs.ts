@@ -37,9 +37,14 @@ const anilistManifest = _anilist as Manifest;
 const vtubersManifest = _vtubers as Manifest;
 const xManifest = _x as Manifest;
 
+type MediaEdge = { node: Media; relation?: MediaRelation };
+type CharacterEdge = { node: Character; role?: CharacterRole };
+
 type All = Media | DisaggregatedMedia | Character | DisaggregatedCharacter;
 
 let manual: Manifest[] | undefined = undefined;
+
+let disabled: { [key: string]: boolean } | undefined = undefined;
 
 const packs = {
   embed,
@@ -49,6 +54,7 @@ const packs = {
   aggregate,
   commands,
   pool,
+  isDisabled,
   aliasToArray,
   imagesToArray,
   formatToString,
@@ -58,6 +64,7 @@ const packs = {
   //
   clear: () => {
     manual = undefined;
+    disabled = undefined;
   },
 };
 
@@ -197,10 +204,14 @@ async function findById<T>(
     if (packId === 'anilist') {
       const n = utils.parseId(id);
 
-      if (typeof n === 'number') {
+      if (typeof n === 'number' && !packs.isDisabled(`anilist:${n}`)) {
         anilistIds.push(n);
       }
     } else {
+      if (packs.isDisabled(`${packId}:${id}`)) {
+        continue;
+      }
+
       // search for the id in packs
       // deno-lint-ignore no-explicit-any
       const match: All = (dict()[packId]?.[key]?.new as Array<any>)?.find((
@@ -245,6 +256,9 @@ async function findOne<T>(
   for (const pack of [anilistPack, ...packs.list()]) {
     for (const item of pack[key]?.new ?? []) {
       if (type && 'type' in item && item.type !== type) {
+        continue;
+      }
+      if (packs.isDisabled(`${pack.id}:${item.id}`)) {
         continue;
       }
 
@@ -513,6 +527,21 @@ function imagesToArray(
   return images as string[];
 }
 
+function isDisabled(id: string): boolean {
+  if (!disabled) {
+    disabled = {};
+
+    packs.list().forEach((pack) => {
+      // deno-lint-ignore no-non-null-assertion
+      pack.media?.conflicts?.forEach((id) => disabled![id] = true);
+      // deno-lint-ignore no-non-null-assertion
+      pack.characters?.conflicts?.forEach((id) => disabled![id] = true);
+    });
+  }
+
+  return disabled[id];
+}
+
 function formatToString(format: MediaFormat): string {
   return utils.capitalize(
     format
@@ -547,9 +576,6 @@ function mediaToString(
       return `${title} (${formatToString(media.format)})`;
   }
 }
-
-type MediaEdge = { node: Media; relation?: MediaRelation };
-type CharacterEdge = { node: Character; role?: CharacterRole };
 
 function sortMedia(
   edges?: MediaEdge[],

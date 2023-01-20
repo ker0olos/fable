@@ -15,6 +15,35 @@ import { AniListCharacter, Status } from '../packs/anilist/types.ts';
 
 import { CharacterRole, MediaFormat, MediaType } from '../src/types.ts';
 
+function fakePool(fill: AniListCharacter, length = 25): Stub {
+  const nodes: AniListCharacter[] = [];
+
+  for (let index = 0; index < length; index++) {
+    nodes.push(Object.assign({}, (fill.id = `${index + 1}`, fill)));
+  }
+
+  return stub(
+    globalThis,
+    'fetch',
+    () => ({
+      ok: true,
+      json: (() =>
+        Promise.resolve({
+          data: {
+            Page: {
+              media: [{
+                characters: {
+                  nodes,
+                },
+              }],
+            },
+          },
+        })),
+      // deno-lint-ignore no-explicit-any
+    } as any),
+  );
+}
+
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {
     const fetchStub = stub(
@@ -133,35 +162,6 @@ Deno.test('character', async (test) => {
   });
 });
 
-function fakePool(fill: AniListCharacter, length = 25): Stub {
-  const nodes: AniListCharacter[] = [];
-
-  for (let index = 0; index < length; index++) {
-    nodes.push(Object.assign({}, (fill.id = `${index + 1}`, fill)));
-  }
-
-  return stub(
-    globalThis,
-    'fetch',
-    () => ({
-      ok: true,
-      json: (() =>
-        Promise.resolve({
-          data: {
-            Page: {
-              media: [{
-                characters: {
-                  nodes,
-                },
-              }],
-            },
-          },
-        })),
-      // deno-lint-ignore no-explicit-any
-    } as any),
-  );
-}
-
 Deno.test('pool', async (test) => {
   await test.step('valid', async () => {
     const fetchStub = fakePool({
@@ -190,8 +190,8 @@ Deno.test('pool', async (test) => {
         popularity_greater: 0,
       });
 
-      for (let i = 1; i <= 25; i++) {
-        assertEquals(pool[i].id, `${i}`);
+      for (let i = 0; i < 24; i++) {
+        assertEquals(pool[`anilist:${i + 1}`].id, `${i + 1}`);
       }
 
       assertSpyCalls(fetchStub, 1);

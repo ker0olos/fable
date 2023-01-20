@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 
 import {
+  assert,
   assertEquals,
   assertObjectMatch,
 } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
@@ -126,6 +127,74 @@ Deno.test('list', async (test) => {
     assertEquals(list.length, 1);
 
     assertEquals(list[0].id, 'vtubers');
+  });
+});
+
+Deno.test('disabled', async (test) => {
+  await test.step('disabled media', () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['another-pack:1'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      assert(packs.isDisabled('another-pack:1'));
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled character', () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        conflicts: ['another-pack:1'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      assert(packs.isDisabled('another-pack:1'));
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('none', () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        conflicts: [],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      assert(!packs.isDisabled('another-pack:1'));
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
   });
 });
 
@@ -324,6 +393,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -384,6 +454,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -426,6 +497,102 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled anilist id', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'anilist media',
+      },
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['anilist:1'],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const results = await packs.media({ ids: ['anilist:1'] });
+
+      assertEquals(results.length, 0);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled pack id', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['pack2:1'],
+      },
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      media: {
+        new: [{
+          id: '1',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'media',
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      const results = await packs.media({ ids: ['pack2:1'] });
+
+      assertEquals(results.length, 0);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
     }
   });
 
@@ -469,6 +636,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -512,6 +680,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -556,6 +725,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -601,6 +771,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -664,6 +835,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -717,6 +889,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -771,6 +944,112 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled anilist match', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'anilist media',
+      },
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['anilist:1'],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const results = await packs.media({ search: 'anilist media' });
+
+      assertEquals(results.length, 0);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled pack match', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['pack2:1'],
+      },
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      media: {
+        new: [{
+          id: '1',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'pack media',
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      const results = await packs.media({ search: 'pack media' });
+
+      assertEquals(results.length, 0);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
     }
   });
 
@@ -813,6 +1092,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 });
@@ -875,6 +1155,7 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -933,6 +1214,7 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -973,6 +1255,7 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1015,6 +1298,7 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1058,6 +1342,7 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1101,6 +1386,7 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1141,6 +1427,7 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 });
@@ -1245,6 +1532,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1346,6 +1634,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1441,6 +1730,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1533,6 +1823,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1596,6 +1887,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1672,6 +1964,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1773,6 +2066,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1859,6 +2153,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1916,6 +2211,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1957,6 +2253,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 });
@@ -2033,6 +2330,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2104,6 +2402,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2192,6 +2491,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2277,6 +2577,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2345,6 +2646,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2435,6 +2737,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2515,6 +2818,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2559,6 +2863,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2595,6 +2900,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 });
@@ -2665,6 +2971,7 @@ Deno.test('overwrite media', async () => {
   } finally {
     fetchStub.restore();
     listStub.restore();
+    packs.clear();
   }
 });
 
@@ -2727,6 +3034,7 @@ Deno.test('overwrite character', async () => {
   } finally {
     fetchStub.restore();
     listStub.restore();
+    packs.clear();
   }
 });
 

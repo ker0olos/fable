@@ -394,6 +394,300 @@ Deno.test('filter invalid pools', async (test) => {
   });
 });
 
+Deno.test('disabled', async (test) => {
+  await test.step('anilist media', async () => {
+    const fetchStub = fakePoolStub({
+      id: '1',
+      name: {
+        full: 'name',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: '100',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 100,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    });
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['anilist:100'],
+      },
+    };
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([[0, 100], 'MAIN']),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      await assertRejects(
+        () => gacha.rngPull(),
+        Error,
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+      );
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(rngStub, 1);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('anilist character', async () => {
+    const fetchStub = fakePoolStub({
+      id: '1',
+      name: {
+        full: 'name',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: '100',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 100,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    });
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        conflicts: Array(25).fill({}).map((_, i) => `anilist:${i + 1}`),
+      },
+    };
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([[0, 100], 'MAIN']),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      await assertRejects(
+        () => gacha.rngPull(),
+        Error,
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+      );
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(rngStub, 1);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('pack media', async () => {
+    const pool = fakePool<DisaggregatedCharacter>({
+      id: '1',
+      name: {
+        english: 'name',
+      },
+      media: [{
+        role: CharacterRole.Main,
+        mediaId: '100',
+      }],
+    });
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [{
+          id: '100',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          popularity: 100,
+        }],
+      },
+      characters: {
+        new: pool,
+      },
+    };
+    const manifest2: Manifest = {
+      id: 'pack2',
+      media: {
+        conflicts: ['pack-id:100'],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [],
+              },
+            },
+          })),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([[0, 100], 'MAIN']),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      await assertRejects(
+        () => gacha.rngPull(),
+        Error,
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+      );
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(rngStub, 1);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('pack characters', async () => {
+    const pool = fakePool<DisaggregatedCharacter>({
+      id: '1',
+      name: {
+        english: 'name',
+      },
+      media: [{
+        role: CharacterRole.Main,
+        mediaId: '100',
+      }],
+    });
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [{
+          id: '100',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          popularity: 100,
+        }],
+      },
+      characters: {
+        new: pool,
+      },
+    };
+    const manifest2: Manifest = {
+      id: 'pack2',
+      characters: {
+        conflicts: Array(25).fill({}).map((_, i) => `pack-id:${i + 1}`),
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [],
+              },
+            },
+          })),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([[0, 100], 'MAIN']),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      await assertRejects(
+        () => gacha.rngPull(),
+        Error,
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+      );
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(rngStub, 1);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+});
+
 Deno.test('valid pool', async (test) => {
   await test.step('anilist', async () => {
     const fetchStub = fakePoolStub({

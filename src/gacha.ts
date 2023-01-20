@@ -112,7 +112,11 @@ async function rngPull(): Promise<Pull> {
 
     const edge = candidate.media?.edges?.[0];
 
-    if (!edge) {
+    if (
+      !edge ||
+      packs.isDisabled(`${candidate.packId}:${candidate.id}`) ||
+      packs.isDisabled(`${edge.node.packId}:${edge.node.id}`)
+    ) {
       continue;
     }
 

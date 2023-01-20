@@ -57,13 +57,13 @@ export type Image = {
 
 export interface Media {
   id: string;
+  packId?: string;
   type: MediaType;
   format: MediaFormat;
   title: Alias;
-  packId?: string;
-  overwritePackId?: string;
-  popularity?: number;
   description?: string;
+  popularity?: number;
+  overwritePackId?: string;
   coverImage?: Image;
   externalLinks?: {
     site: string;
@@ -132,13 +132,21 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
+  // TODO BLOCKED load manual packs
+  depends?: string[];
+  // TODO BLOCKED load manual packs
+  conflicts?: string[];
+  // TODO BLOCKED load manual packs
+  addedBy?: string;
   media?: {
+    conflicts?: string[];
     new?: DisaggregatedMedia[];
     overwrite?: {
       [key: string]: DisaggregatedMedia;
     };
   };
   characters?: {
+    conflicts?: string[];
     new?: DisaggregatedCharacter[];
     overwrite?: {
       [key: string]: DisaggregatedCharacter;
