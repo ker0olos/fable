@@ -4,6 +4,14 @@ import Ajv from 'https://esm.sh/ajv@8.12.0';
 
 import { bold, red } from 'https://deno.land/std@0.172.0/fmt/colors.ts';
 
+import alias from '../json/alias.json' assert {
+  type: 'json',
+};
+
+import image from '../json/image.json' assert {
+  type: 'json',
+};
+
 import media from '../json/media.json' assert {
   type: 'json',
 };
@@ -23,6 +31,8 @@ import builtin from '../json/builtin.json' assert {
 import { AssertionError } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 const _v = new Ajv({ strict: false, allErrors: true })
+  .addSchema(alias)
+  .addSchema(image)
   .addSchema(media)
   .addSchema(character)
   .addSchema(index).compile(builtin);

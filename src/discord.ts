@@ -7,6 +7,15 @@ const API = `https://discord.com/api/v10`;
 
 const splitter = '=';
 
+export enum ImageSize {
+  // 450x635,
+  Large = '',
+  // 230x345
+  Medium = 'medium',
+  // 100x150
+  Thumbnail = 'thumbnail',
+}
+
 export enum MessageFlags {
   Ephemeral = 1 << 6,
   SuppressEmbeds = 1 << 2,
@@ -350,7 +359,12 @@ export class Embed {
   }
 
   setImage(
-    image: { url?: string; noProxy?: boolean; default?: boolean },
+    image: {
+      url?: string;
+      default?: boolean;
+      disableProxy?: boolean;
+      preferredSize?: ImageSize;
+    },
   ): Embed {
     if (image.url || image.default) {
       if (config.origin && image.url?.startsWith(config.origin)) {
@@ -361,7 +375,7 @@ export class Embed {
         this.#data.image = {
           url: `${config.origin}/external/${
             encodeURIComponent(image.url ?? '')
-          }`,
+          }${image.preferredSize === ImageSize.Medium ? '?size=medium' : ''}`,
         };
       }
     }

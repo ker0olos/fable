@@ -17,9 +17,11 @@
       },
       "popularity": 50000000,
       "description": "Hololive Production is a streamer agency under COVER Corporation which encompasses the VTuber groups hololive and holostars, along with the Inonaka Music record label. The agency houses virtual talents whose activities include live streaming on platforms such as YouTube and interacting with fans on Twitter. The talents perform using intricate 2D and 3D avatars provided by the company.\n\n(Source: COVER Corporation)",
-      "coverImage": {
-        "extraLarge": "https://i.imgur.com/y4axd06.jpg",
-        "color": "#2596be"
+      "image": {
+        "featured": {
+          "url": "https://i.imgur.com/y4axd06.jpg",
+          "color": "#2596be"
+        }
       },
       "externalLinks": [{
         "site": "YouTube",
@@ -41,8 +43,10 @@
         "alternative": ["holoMyth"]
       },
       "description": "The Myths hail from the worlds of legend.\n\nholoMyth was the first wave of VTubers under Hololive English.",
-      "coverImage": {
-        "extraLarge": "https://i.imgur.com/0ehLlU5.png"
+      "image": {
+        "featured": {
+          "url": "https://i.imgur.com/0ehLlU5.png"
+        }
       },
       "trailer": {
         "site": "youtube",
@@ -65,8 +69,10 @@
         "alternative": ["holoCouncil"]
       },
       "description": "The Council are a group of divine beings, they are the concepts of the world itself.\n\nholoCouncil is the second wave of VTubers under Hololive English.",
-      "coverImage": {
-        "extraLarge": "https://i.imgur.com/9ZBYZmj.png"
+      "image": {
+        "featured": {
+          "url": "https://i.imgur.com/9ZBYZmj.png"
+        }
       },
       "trailer": {
         "site": "youtube",
@@ -90,19 +96,22 @@
         "english": "Gawr Gura",
         "native": "がうる・ぐら",
         "alternative": [
-          "The Apex Predator",
-          "Same-chan",
-          "SHORK",
           "Gura",
+          "SHORK",
           "goorUH"
         ]
       },
       "image": {
-        "$comment": "artist: https://www.pixiv.net/en/users/9212166",
-        "extraLarge": "https://i.imgur.com/nQFbxwh.jpeg"
+        "featured": {
+          "url": "https://i.imgur.com/nQFbxwh.jpeg",
+          "artist": {
+            "username": "ふわり",
+            "url": "https://www.pixiv.net/en/users/9212166"
+          }
+        }
       },
       "popularity": 4000000,
-      "description": "A descendant of the Lost City of Atlantis, who swam to Earth while saying, \"It's so boring down there LOLOLOL!\"\n\nGura bought her clothes (and her shark hat) in the human world and she really loves them. In her spare time, she enjoys talking to marine life.",
+      "description": "A descendant of the Lost City of Atlantis, who swam to Earth while saying, \"It's so boring down there LOLOLOL!\"\n\nGura bought her clothes (and her shark hat) in the human world and she really loves them. In her spare time, she enjoys talking to marine life.\n\n_Gura is currently the most subscribed Vtuber worldwide, taking the #1 spot from industry pioneer Kizuna AI in 2021. As of January 2023, Gura has over 4 million YouTube subscribers._",
       "age": "Between 9,000-10,000",
       "gender": "Female",
       "externalLinks": [{

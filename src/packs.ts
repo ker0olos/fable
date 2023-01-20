@@ -23,7 +23,6 @@ import {
   CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
-  Image,
   Manifest,
   ManifestType,
   Media,
@@ -56,7 +55,6 @@ const packs = {
   pool,
   isDisabled,
   aliasToArray,
-  imagesToArray,
   formatToString,
   mediaToString,
   sortMedia,
@@ -460,37 +458,6 @@ function aliasToArray(
   );
 
   return Array.from(set) as string[];
-}
-
-function imagesToArray(
-  item: Image | undefined,
-  order: 'large-first' | 'small-first',
-  ideally?: keyof Image,
-): string[] | undefined {
-  if (!item) {
-    return undefined;
-  }
-
-  let images = [];
-
-  if (ideally && Boolean(item[ideally])) {
-    // if (ideally && ideally in item && Boolean(item[ideally])) {
-    return [item[ideally] as string];
-  }
-
-  images.push(
-    item.extraLarge,
-    item.large,
-    item.medium,
-  );
-
-  images = images.filter(Boolean);
-
-  if (order === 'small-first' && images.length > 1) {
-    images.reverse();
-  }
-
-  return images as string[];
 }
 
 function isDisabled(id: string): boolean {

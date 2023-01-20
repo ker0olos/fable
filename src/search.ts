@@ -60,10 +60,10 @@ export async function media(
       .setTitle(title)
       .setAuthor({ name: packs.formatToString(media.format) })
       .setDescription(media.description)
-      .setColor(media.coverImage?.color)
+      .setColor(media.image?.featured.color)
       .setImage({
         default: true,
-        url: packs.imagesToArray(media.coverImage, 'large-first')?.[0],
+        url: media.image?.featured.url,
       })
       .setFooter({
         text: title !== media.title.native ? media.title.native : undefined,
@@ -79,10 +79,10 @@ export async function media(
       const embed = new discord.Embed()
         .setTitle(alias[0])
         .setDescription(edge.node.description)
-        .setColor(edge.node.image?.color ?? media?.coverImage?.color)
+        .setColor(media.image?.featured.color)
         .setThumbnail({
           default: true,
-          url: packs.imagesToArray(edge.node.image, 'small-first')?.[0],
+          url: edge.node.image?.featured.url,
         })
         .setFooter(
           {
@@ -157,10 +157,10 @@ function disaggregatedMediaDebugEmbed(
   return new discord.Embed()
     .setTitle(titles.shift())
     .setDescription(titles.join('\n'))
-    .setColor(media.coverImage?.color)
+    .setColor(media.image?.featured.color)
     .setThumbnail({
       default: true,
-      url: packs.imagesToArray(media.coverImage, 'small-first')?.[0],
+      url: media.image?.featured.url,
     })
     .addField({ name: 'Id', value: `${media.packId}:${media.id}` })
     .addField({
@@ -210,10 +210,10 @@ export async function character(
       new discord.Embed()
         .setTitle(alias[0])
         .setDescription(character.description)
-        .setColor(character.image?.color)
+        .setColor(character.image?.featured.color)
         .setImage({
           default: true,
-          url: packs.imagesToArray(character.image, 'large-first')?.[0],
+          url: character.image?.featured.url,
         })
         .setFooter(
           {
@@ -267,10 +267,10 @@ function characterDebugEmbed(character: Character): discord.Embed {
   const embed = new discord.Embed()
     .setTitle(titles.splice(0, 1)[0])
     .setDescription(titles.join('\n'))
-    .setColor(character.image?.color)
+    .setColor(character.image?.featured.color)
     .setThumbnail({
       default: true,
-      url: packs.imagesToArray(character.image, 'small-first')?.[0],
+      url: character.image?.featured.url,
     })
     .addField({ name: 'Id', value: `${character.packId}:${character.id}` })
     .addField({

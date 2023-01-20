@@ -33,30 +33,7 @@
     "title": {
       "type": "object",
       "description": "The title of the media",
-      "additionalProperties": false,
-      "anyOf": [
-        { "required": ["english"] },
-        { "required": ["romaji"] },
-        { "required": ["native"] }
-      ],
-      "properties": {
-        "english": {
-          "type": "string"
-        },
-        "romaji": {
-          "type": "string"
-        },
-        "native": {
-          "type": "string"
-        },
-        "alternative": {
-          "type": "array",
-          "description": "A list of alternative known aliases of the media",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
+      "$ref": "alias.json"
     },
     "popularity": {
       "type": "integer",
@@ -68,31 +45,9 @@
       "description": "Add a description about this media",
       "maxLength": 2048
     },
-    "coverImage": {
-      "type": "object",
-      "description": "Set the default images for the media",
-      "additionalProperties": false,
-      "properties": {
-        "extraLarge": {
-          "$comment": "450x635",
-          "description": "A url of an extra large image (recommended: 450x635)",
-          "type": "string"
-        },
-        "large": {
-          "$comment": "230x345",
-          "description": "A url of a large image (recommended: 230x345)",
-          "type": "string"
-        },
-        "medium": {
-          "$comment": "100x150",
-          "description": "A url of a medium/small image (recommended: 100x150)",
-          "type": "string"
-        },
-        "color": {
-          "type": "string",
-          "description": "A color to be used in embeds (in #hex)"
-        }
-      }
+    "image": {
+      "description": "A set of images featuring this media",
+      "$ref": "image.json"
     },
     "trailer": {
       "type": "object",

@@ -49,10 +49,12 @@ export type Alias = {
 };
 
 export type Image = {
-  extraLarge?: string;
-  large?: string;
-  medium?: string;
+  url: string;
   color?: string;
+  artist?: {
+    username: string;
+    url?: string;
+  };
 };
 
 export interface Media {
@@ -63,7 +65,10 @@ export interface Media {
   title: Alias;
   description?: string;
   popularity?: number;
-  coverImage?: Image;
+  image?: {
+    featured: Image;
+    additional?: Image[];
+  };
   externalLinks?: {
     site: string;
     url: string;
@@ -102,7 +107,10 @@ export interface Character {
   popularity?: number;
   gender?: string;
   age?: string;
-  image?: Image;
+  image?: {
+    featured: Image;
+    additional?: Image[];
+  };
   externalLinks?: {
     site: string;
     url: string;

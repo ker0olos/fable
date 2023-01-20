@@ -36,8 +36,6 @@ genres
 synonyms
 coverImage {
   extraLarge
-  large,
-  medium,
   color
 }
 externalLinks {
@@ -64,7 +62,6 @@ name {
   alternative
 }
 image {
-  medium
   large
 }
 `;
@@ -76,14 +73,20 @@ export function transform<T>(
     const t: Media = {
       ...item,
       packId: 'anilist',
-      title: Object.assign(
-        {},
-        item.title?.english && { english: item.title?.english },
-        item.title?.romaji && { romaji: item.title?.romaji },
-        item.title?.native && { native: item.title?.native },
-        item.synonyms &&
-          { alternative: item.synonyms },
-      ),
+      title: {
+        english: item.title?.english,
+        romaji: item.title?.romaji,
+        native: item.title?.native,
+        alternative: item.synonyms,
+      },
+      image: item.coverImage?.extraLarge
+        ? {
+          featured: {
+            url: item.coverImage.extraLarge,
+            color: item.coverImage.color,
+          },
+        }
+        : undefined,
       relations: undefined,
       characters: undefined,
     };
@@ -95,8 +98,6 @@ export function transform<T>(
           node: transform({ item: edge.node as AniListMedia }),
         })),
       };
-    } else {
-      delete t.relations;
     }
 
     if (item.characters?.edges?.length) {
@@ -106,22 +107,26 @@ export function transform<T>(
           node: transform({ item: edge.node as AniListCharacter }),
         })),
       };
-    } else {
-      delete t.characters;
     }
 
-    return t as T;
+    // get rid of undefined values
+    return JSON.parse(JSON.stringify(t)) as T;
   } else if ('name' in item) {
     const t: Character = {
       ...item,
       packId: 'anilist',
-      name: Object.assign(
-        {},
-        item.name?.full && { english: item.name?.full },
-        item.name?.native && { native: item.name?.native },
-        item.name?.alternative &&
-          { alternative: item.name?.alternative },
-      ),
+      name: {
+        english: item.name?.full,
+        native: item.name?.native,
+        alternative: item.name?.alternative,
+      },
+      image: item.image?.large
+        ? {
+          featured: {
+            url: item.image.large,
+          },
+        }
+        : undefined,
       media: undefined,
     };
 
@@ -132,11 +137,15 @@ export function transform<T>(
           node: transform({ item: edge.node as AniListMedia }),
         })),
       };
-    } else {
-      delete t.media;
     }
 
-    return t as T;
+    Object.keys(t).forEach((key) =>
+      t[key as keyof Character] === undefined &&
+      delete t[key as keyof Character]
+    );
+
+    // get rid of undefined values
+    return JSON.parse(JSON.stringify(t)) as T;
   }
 
   return item as T;

@@ -20,7 +20,6 @@ import {
   CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
-  Image,
   Manifest,
   ManifestType,
   Media,
@@ -2931,89 +2930,5 @@ Deno.test('titles to array', async (test) => {
       'english',
       'native',
     ]);
-  });
-});
-
-Deno.test('images to array', async (test) => {
-  await test.step('all images', () => {
-    const image: Image = {
-      extraLarge: 'extraLarge',
-      large: 'large',
-      medium: 'medium',
-    };
-
-    const array = packs.imagesToArray(image, 'large-first');
-
-    assertEquals(array, [
-      'extraLarge',
-      'large',
-      'medium',
-    ]);
-  });
-
-  await test.step('all images in reverse order', () => {
-    const image: Image = {
-      extraLarge: 'extraLarge',
-      large: 'large',
-      medium: 'medium',
-    };
-
-    const array = packs.imagesToArray(image, 'small-first');
-
-    assertEquals(array, [
-      'medium',
-      'large',
-      'extraLarge',
-    ]);
-  });
-
-  await test.step('select ideal size', () => {
-    const image: Image = {
-      extraLarge: 'extraLarge',
-      large: 'large',
-      medium: 'medium',
-    };
-
-    const array = packs.imagesToArray(image, 'large-first', 'large');
-
-    assertEquals(array, [
-      'large',
-    ]);
-  });
-
-  await test.step('missing 1 image', () => {
-    const image: Image = {
-      extraLarge: 'extraLarge',
-      medium: 'medium',
-    };
-
-    const array = packs.imagesToArray(image, 'large-first');
-
-    assertEquals(array, [
-      'extraLarge',
-      'medium',
-    ]);
-  });
-
-  await test.step('missing ideal image', () => {
-    const image: Image = {
-      extraLarge: 'extraLarge',
-      medium: 'medium',
-    };
-
-    const array = packs.imagesToArray(image, 'large-first', 'large');
-
-    assertEquals(array, [
-      'extraLarge',
-      'medium',
-    ]);
-  });
-
-  await test.step('missing all images', () => {
-    const image: Image = {};
-
-    const array = packs.imagesToArray(image, 'large-first');
-
-    assertEquals(array, []);
   });
 });

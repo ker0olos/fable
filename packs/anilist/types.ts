@@ -24,6 +24,10 @@ export type AniListMedia = Modify<Media, {
   tags?: { name: string }[];
   genres?: string[];
   synonyms?: string[];
+  coverImage?: {
+    extraLarge?: string;
+    color?: string;
+  };
   status?: Status;
   nextAiringEpisode?: {
     airingAt?: number;
@@ -45,6 +49,9 @@ export type AniListCharacter = Modify<Character, {
     full: string;
     native?: string;
     alternative?: string[];
+  };
+  image?: {
+    large?: string;
   };
   media?: {
     edges: { characterRole: CharacterRole; node: AniListMedia }[];

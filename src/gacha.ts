@@ -176,8 +176,8 @@ function start({ token, id }: { token: string; id?: string }): discord.Message {
             .setTitle(utils.wrap(mediaTitles[0]))
             .setImage({
               default: true,
-              url: packs.imagesToArray(media.coverImage, 'large-first', 'large')
-                ?.[0],
+              preferredSize: discord.ImageSize.Medium,
+              url: media.image?.featured.url,
             }),
         );
 
@@ -209,11 +209,8 @@ function start({ token, id }: { token: string; id?: string }): discord.Message {
             })
             .setImage({
               default: true,
-              url: packs.imagesToArray(
-                pull.character.image,
-                'large-first',
-                'large',
-              )?.[0],
+              preferredSize: discord.ImageSize.Medium,
+              url: pull.character.image?.featured.url,
             }),
         );
 

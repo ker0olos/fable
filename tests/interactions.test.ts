@@ -16,6 +16,8 @@ import * as search from '../src/search.ts';
 
 import {
   CharacterRole,
+  DisaggregatedCharacter,
+  Manifest,
   MediaFormat,
   MediaRelation,
   MediaType,
@@ -551,7 +553,7 @@ Deno.test('media', async (test) => {
             },
             description: 'main character description',
             image: {
-              medium: 'main character url',
+              large: 'main character url',
             },
             gender: 'Male',
             age: '69',
@@ -565,7 +567,7 @@ Deno.test('media', async (test) => {
             },
             description: 'supporting character description',
             image: {
-              medium: 'supporting character url',
+              large: 'supporting character url',
             },
           },
         }, {
@@ -577,7 +579,7 @@ Deno.test('media', async (test) => {
             },
             description: 'background character description',
             image: {
-              medium: 'background character url',
+              large: 'background character url',
             },
           },
         }],
@@ -1649,18 +1651,27 @@ Deno.test('media debug', async (test) => {
 
 Deno.test('character', async (test) => {
   await test.step('normal search', async () => {
-    const character: AniListCharacter = {
+    const character: DisaggregatedCharacter = {
       id: '1',
       description: 'long description',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       image: {
-        color: '#ffffff',
-        large: 'image_url',
+        featured: {
+          url: 'image_url',
+          color: '#ffffff',
+        },
       },
       age: '420',
       gender: 'male',
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [character],
+      },
     };
 
     const fetchStub = stub(
@@ -1682,7 +1693,7 @@ Deno.test('character', async (test) => {
     const listStub = stub(
       packs,
       'list',
-      () => [],
+      () => [manifest],
     );
 
     try {
@@ -2028,19 +2039,28 @@ Deno.test('character', async (test) => {
 
 Deno.test('character debug', async (test) => {
   await test.step('no media', async () => {
-    const character: AniListCharacter = {
+    const character: DisaggregatedCharacter = {
       id: '1',
       description: 'long description',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       image: {
-        color: '#ffffff',
-        large: 'image_url',
+        featured: {
+          url: 'image_url',
+          color: '#ffffff',
+        },
       },
       age: '420',
       gender: 'male',
       popularity: 1_000_000,
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [character],
+      },
     };
 
     const fetchStub = stub(
@@ -2062,7 +2082,7 @@ Deno.test('character debug', async (test) => {
     const listStub = stub(
       packs,
       'list',
-      () => [],
+      () => [manifest],
     );
 
     try {
@@ -2088,7 +2108,7 @@ Deno.test('character debug', async (test) => {
               fields: [
                 {
                   name: 'Id',
-                  value: 'anilist:1',
+                  value: 'pack-id:1',
                 },
                 {
                   name: 'Rating',

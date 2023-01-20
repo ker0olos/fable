@@ -1,0 +1,28 @@
+{
+  "$id": "alias.json",
+  "type": "object",
+  "additionalProperties": false,
+  "anyOf": [
+    { "required": ["english"] },
+    { "required": ["romaji"] },
+    { "required": ["native"] }
+  ],
+  "properties": {
+    "english": {
+      "type": "string"
+    },
+    "romaji": {
+      "type": "string"
+    },
+    "native": {
+      "type": "string"
+    },
+    "alternative": {
+      "type": "array",
+      "description": "A list of alternative known aliases",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
