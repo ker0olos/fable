@@ -12,11 +12,13 @@
     },
     "title": {
       "type": "string",
-      "description": "The display title of the pack"
+      "description": "The display title of the pack",
+      "maxLength": 128
     },
     "description": {
       "type": "string",
-      "description": "Small description about the pack and what it contains"
+      "description": "Small description about the pack and what it contains",
+      "maxLength": 2048
     },
     "nsfw": {
       "type": "boolean",

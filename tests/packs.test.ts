@@ -77,9 +77,9 @@ Deno.test('list', async (test) => {
     assertObjectMatch(manifest, {
       'author': 'Fable',
       'type': ManifestType.Builtin,
-      'description': 'Contains a list of the most famous vtubers',
+      'description': 'A pack containing a set of the most famous vtubers',
       'id': 'vtubers',
-      'title': 'VTubers',
+      'title': 'Vtubers',
     });
 
     assertValidManifest(manifest);

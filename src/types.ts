@@ -103,6 +103,10 @@ export interface Character {
   gender?: string;
   age?: string;
   image?: Image;
+  externalLinks?: {
+    site: string;
+    url: string;
+  }[];
   media?: {
     edges: { role: CharacterRole; node: Media }[];
   };

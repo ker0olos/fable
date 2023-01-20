@@ -1,7 +1,121 @@
 {
   "author": "Fable",
   "id": "vtubers",
-  "title": "VTubers",
-  "description": "Contains a list of the most famous vtubers",
-  "type": "builtin"
+  "title": "Vtubers",
+  "description": "A pack containing a set of the most famous vtubers",
+  "type": "builtin",
+  "media": {
+    "conflicts": ["anilist:145478", "anilist:118123"],
+    "new": [{
+      "id": "hololive",
+      "type": "ANIME",
+      "format": "INTERNET",
+      "title": {
+        "english": "Hololive",
+        "romaji": "Hololive",
+        "native": "ホロライブ"
+      },
+      "popularity": 50000000,
+      "description": "Hololive Production is a streamer agency under COVER Corporation which encompasses the VTuber groups hololive and holostars, along with the Inonaka Music record label. The agency houses virtual talents whose activities include live streaming on platforms such as YouTube and interacting with fans on Twitter. The talents perform using intricate 2D and 3D avatars provided by the company.\n\n(Source: COVER Corporation)",
+      "coverImage": {
+        "extraLarge": "https://i.imgur.com/y4axd06.jpg",
+        "color": "#2596be"
+      },
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@hololive"
+      }],
+      "relations": [{
+        "mediaId": "holomyth",
+        "relation": "CONTAINS"
+      }, {
+        "mediaId": "holocouncil",
+        "relation": "CONTAINS"
+      }]
+    }, {
+      "id": "holomyth",
+      "type": "ANIME",
+      "format": "INTERNET",
+      "title": {
+        "english": "hololive English -Myth-",
+        "alternative": ["holoMyth"]
+      },
+      "description": "The Myths hail from the worlds of legend.\n\nholoMyth was the first wave of VTubers under Hololive English.",
+      "coverImage": {
+        "extraLarge": "https://i.imgur.com/0ehLlU5.png"
+      },
+      "trailer": {
+        "site": "youtube",
+        "id": "8c4_22LjGQo"
+      },
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@hololiveEnglish"
+      }],
+      "relations": [{
+        "mediaId": "holocouncil",
+        "relation": "SEQUEL"
+      }]
+    }, {
+      "id": "holocouncil",
+      "type": "ANIME",
+      "format": "INTERNET",
+      "title": {
+        "english": "hololive English -Council-",
+        "alternative": ["holoCouncil"]
+      },
+      "description": "The Council are a group of divine beings, they are the concepts of the world itself.\n\nholoCouncil is the second wave of VTubers under Hololive English.",
+      "coverImage": {
+        "extraLarge": "https://i.imgur.com/9ZBYZmj.png"
+      },
+      "trailer": {
+        "site": "youtube",
+        "id": "SLnxCyzFgPw"
+      },
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@hololiveEnglish"
+      }],
+      "relations": [{
+        "mediaId": "holomyth",
+        "relation": "PREQUEL"
+      }]
+    }]
+  },
+  "characters": {
+    "conflicts": ["anilist:206017"],
+    "new": [{
+      "id": "gawrgura",
+      "name": {
+        "english": "Gawr Gura",
+        "native": "がうる・ぐら",
+        "alternative": [
+          "The Apex Predator",
+          "Same-chan",
+          "SHORK",
+          "Gura",
+          "goorUH"
+        ]
+      },
+      "image": {
+        "$comment": "artist: https://www.pixiv.net/en/users/9212166",
+        "extraLarge": "https://i.imgur.com/nQFbxwh.jpeg"
+      },
+      "popularity": 4000000,
+      "description": "A descendant of the Lost City of Atlantis, who swam to Earth while saying, \"It's so boring down there LOLOLOL!\"\n\nGura bought her clothes (and her shark hat) in the human world and she really loves them. In her spare time, she enjoys talking to marine life.",
+      "age": "Between 9,000-10,000",
+      "gender": "Female",
+      "externalLinks": [{
+        "site": "Debut Stream",
+        "url": "https://www.youtube.com/watch?v=dBK0gKW61NU"
+      }, {
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@gawrgura"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "holomyth"
+      }]
+    }]
+  }
 }

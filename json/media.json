@@ -65,7 +65,8 @@
     },
     "description": {
       "type": "string",
-      "description": "Add a description about the media"
+      "description": "Add a description about this media",
+      "maxLength": 2048
     },
     "coverImage": {
       "type": "object",
@@ -93,6 +94,23 @@
         }
       }
     },
+    "trailer": {
+      "type": "object",
+      "description": "A url to a trailer about the media",
+      "required": ["site", "id"],
+      "additionalProperties": false,
+      "properties": {
+        "site": {
+          "enum": ["youtube"],
+          "description": "The name of the site (only supports youtube)"
+        },
+        "id": {
+          "type": "string",
+          "description": "The id of the video",
+          "pattern": "([A-Za-z0-9_\\-]{11})"
+        }
+      }
+    },
     "externalLinks": {
       "type": "array",
       "description": "A list of urls for the media's pages on various platforms",
@@ -110,23 +128,6 @@
             "pattern": "^(https:\\/\\/)?(www\\.)?(youtube\\.com|twitch\\.tv|crunchyroll\\.com|tapas\\.io|webtoon\\.com|amazon\\.com)[\\S]*$",
             "description": "The full url of the site"
           }
-        }
-      }
-    },
-    "trailer": {
-      "type": "object",
-      "description": "A url to a trailer about the media",
-      "required": ["site", "id"],
-      "additionalProperties": false,
-      "properties": {
-        "site": {
-          "enum": ["youtube"],
-          "description": "The name of the site (only supports youtube)"
-        },
-        "id": {
-          "type": "string",
-          "description": "The id of the video",
-          "pattern": "([A-Za-z0-9_\\-]{11})"
         }
       }
     },

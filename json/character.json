@@ -38,6 +38,11 @@
         }
       }
     },
+    "description": {
+      "type": "string",
+      "description": "Add a description about this character",
+      "maxLength": 2048
+    },
     "popularity": {
       "type": "integer",
       "description": "Set the popularity of the character (the number of followers or people who likes them)",
@@ -54,25 +59,46 @@
     "image": {
       "type": "object",
       "description": "Set the default images for the character",
-      "additionalProperties": false,
-      "extraLarge": {
-        "$comment": "450x635",
-        "description": "A url of an extra large image (recommended: 450x635)",
-        "type": "string"
-      },
-      "large": {
-        "$comment": "230x345",
-        "description": "A url of a large image (recommended: 230x345)",
-        "type": "string"
-      },
-      "medium": {
-        "$comment": "100x150",
-        "description": "A url of a medium/small image (recommended: 100x150)",
-        "type": "string"
-      },
-      "color": {
-        "type": "string",
-        "description": "A color to be used in embeds (in #hex)"
+      "properties": {
+        "extraLarge": {
+          "$comment": "450x635",
+          "description": "A url of an extra large image (recommended: 450x635)",
+          "type": "string"
+        },
+        "large": {
+          "$comment": "230x345",
+          "description": "A url of a large image (recommended: 230x345)",
+          "type": "string"
+        },
+        "medium": {
+          "$comment": "100x150",
+          "description": "A url of a medium/small image (recommended: 100x150)",
+          "type": "string"
+        },
+        "color": {
+          "type": "string",
+          "description": "A color to be used in embeds (in #hex)"
+        }
+      }
+    },
+    "externalLinks": {
+      "type": "array",
+      "description": "A list of urls for the media's pages on various platforms",
+      "items": {
+        "type": "object",
+        "required": ["site", "url"],
+        "additionalProperties": false,
+        "properties": {
+          "site": {
+            "type": "string",
+            "description": "The title of the site"
+          },
+          "url": {
+            "type": "string",
+            "pattern": "^(https:\\/\\/)?(www\\.)?(youtube\\.com|twitch\\.tv|crunchyroll\\.com|tapas\\.io|webtoon\\.com|amazon\\.com)[\\S]*$",
+            "description": "The full url of the site"
+          }
+        }
       }
     },
     "media": {

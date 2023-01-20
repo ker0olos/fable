@@ -227,7 +227,17 @@ export async function character(
 
   const group: discord.Component[] = [];
 
+  character.externalLinks
+    ?.forEach((link) => {
+      const component = new discord.Component()
+        .setLabel(link.site)
+        .setUrl(link.url);
+
+      group.push(component);
+    });
+
   packs.sortMedia(character.media?.edges)
+    ?.slice(0, 4)
     ?.forEach(({ node: media }) => {
       const label = packs.mediaToString({ media });
 
