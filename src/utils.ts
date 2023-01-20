@@ -216,8 +216,9 @@ const proxy = async (r: Request) => {
       throw new Error();
     }
 
-    // TODO customize images
+    // TODO image customization
     //(see https://github.com/ker0olos/fable/issues/24)
+
     // const searchParams = encoded.searchParams;
 
     if (image?.status === 200 && type?.startsWith('image/')) {

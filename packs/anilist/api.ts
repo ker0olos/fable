@@ -308,7 +308,9 @@ export async function pool(
     // create a dictionary of all the characters with their ids as key
     page.media.forEach(({ characters }) => {
       characters?.nodes?.forEach((character) => {
-        dict[character.id] = transform<Character>({ item: character });
+        dict[`anilist:${character.id}`] = transform<Character>({
+          item: character,
+        });
       });
     });
   });

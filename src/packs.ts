@@ -39,7 +39,7 @@ const xManifest = _x as Manifest;
 
 type All = Media | DisaggregatedMedia | Character | DisaggregatedCharacter;
 
-let manual: Manifest[];
+let manual: Manifest[] | undefined = undefined;
 
 const packs = {
   embed,
@@ -55,6 +55,10 @@ const packs = {
   mediaToString,
   sortMedia,
   sortCharacters,
+  //
+  clear: () => {
+    manual = undefined;
+  },
 };
 
 async function commands(
@@ -115,6 +119,56 @@ function dict(): { [key: string]: Manifest } {
     ) => (obj[manifest.id] = manifest, obj),
     {},
   );
+}
+
+function embed(
+  { manifest, index, total }: {
+    manifest?: Manifest;
+    index?: number;
+    total: number;
+  },
+): discord.Message {
+  if (!manifest) {
+    const embed = new discord.Embed().setDescription(
+      'No packs have been added yet',
+    );
+
+    return new discord.Message()
+      .addEmbed(embed);
+  }
+
+  const disclaimer = manifest.type === ManifestType.Builtin
+    ? new discord.Embed().setDescription(
+      'Builtin packs are developed and maintained directly by Fable',
+    )
+    : new discord.Embed().setDescription(
+      'The following third-party packs were manually added by your server members',
+    );
+
+  const pack = new discord.Embed()
+    .setUrl(manifest.url)
+    .setDescription(manifest.description)
+    .setAuthor({ name: manifest.author })
+    .setThumbnail({ url: manifest.image })
+    .setTitle(manifest.title ?? manifest.id);
+
+  if (!manifest.type) {
+    throw new Error(`Manifest "${manifest.id}" type is undefined`);
+  }
+
+  const message = discord.Message.page(
+    {
+      index,
+      total,
+      id: manifest.type,
+      embeds: [
+        disclaimer,
+        pack,
+      ],
+    },
+  );
+
+  return message;
 }
 
 async function findById<T>(
@@ -388,77 +442,26 @@ async function pool(
     role?: CharacterRole;
   },
 ): Promise<Pool> {
-  // request characters from anilist
-
-  const pool = await anilist.pool({
-    role,
-    popularity_greater,
-    popularity_lesser,
-  });
+  let dict: Pool = {};
 
   // add characters from packs
-
   packs
     .list()
     .forEach((pack) => {
       pack.characters?.new?.forEach((character) => {
-        if (!pool[character.id]) {
-          pool[character.id.toString()] = character;
-        }
+        dict[`${pack.id}:${character.id}`] =
+          (character.packId = pack.id, character);
       });
     });
 
-  return pool;
-}
+  // request characters from anilist
+  dict = await anilist.pool({
+    role,
+    popularity_greater,
+    popularity_lesser,
+  }, dict);
 
-function embed(
-  { manifest, index, total }: {
-    manifest?: Manifest;
-    index?: number;
-    total: number;
-  },
-): discord.Message {
-  if (!manifest) {
-    const embed = new discord.Embed().setDescription(
-      'No packs have been added yet',
-    );
-
-    return new discord.Message()
-      .addEmbed(embed);
-  }
-
-  const disclaimer = manifest.type === ManifestType.Builtin
-    ? new discord.Embed().setDescription(
-      'Builtin packs are developed and maintained directly by Fable',
-    )
-    : new discord.Embed().setDescription(
-      'The following third-party packs were manually added by your server members',
-    );
-
-  const pack = new discord.Embed()
-    .setUrl(manifest.url)
-    .setDescription(manifest.description)
-    .setAuthor({ name: manifest.author })
-    .setThumbnail({ url: manifest.image })
-    .setTitle(manifest.title ?? manifest.id);
-
-  if (!manifest.type) {
-    throw new Error(`Manifest "${manifest.id}" type is undefined`);
-  }
-
-  const message = discord.Message.page(
-    {
-      index,
-      total,
-      id: manifest.type,
-      embeds: [
-        disclaimer,
-        pack,
-      ],
-    },
-  );
-
-  return message;
+  return dict;
 }
 
 function aliasToArray(
