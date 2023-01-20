@@ -337,23 +337,6 @@ async function aggregate<T>({ media, character }: {
   character?: Character | DisaggregatedCharacter;
 }): Promise<T> {
   if (media) {
-    // overwrite
-
-    const key = `${media.packId}:${media.id}`;
-
-    for (const pack of packs.list()) {
-      if (pack.media?.overwrite?.[key]) {
-        media = {
-          ...pack.media.overwrite[key],
-          overwritePackId: pack.id,
-          packId: media.packId,
-          id: media.id,
-        };
-      }
-    }
-
-    // aggregate
-
     if (
       (media.relations && 'edges' in media.relations) ||
       (media.characters && 'edges' in media.characters)
@@ -399,23 +382,6 @@ async function aggregate<T>({ media, character }: {
 
     return t as T;
   } else if (character) {
-    // overwrite
-
-    const key = `${character.packId}:${character.id}`;
-
-    for (const pack of packs.list()) {
-      if (pack.characters?.overwrite?.[key]) {
-        character = {
-          ...pack.characters.overwrite[key],
-          overwritePackId: pack.id,
-          packId: character.packId,
-          id: character.id,
-        };
-      }
-    }
-
-    // aggregate
-
     if (character.media && 'edges' in character.media) {
       return character as T;
     }

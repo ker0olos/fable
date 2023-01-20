@@ -2207,7 +2207,7 @@ Deno.test('aggregate media', async (test) => {
       assertEquals(await packs.aggregate<Media>({ media }), media);
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
+      assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -2249,7 +2249,7 @@ Deno.test('aggregate media', async (test) => {
       });
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
+      assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -2859,7 +2859,7 @@ Deno.test('aggregate characters', async (test) => {
       assertEquals(await packs.aggregate<Character>({ character }), character);
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
+      assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -2896,146 +2896,13 @@ Deno.test('aggregate characters', async (test) => {
       });
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
+      assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
       packs.clear();
     }
   });
-});
-
-Deno.test('overwrite media', async () => {
-  const media: Media = {
-    id: '1',
-    packId: 'anilist',
-    type: MediaType.Anime,
-    format: MediaFormat.TV,
-    title: {
-      english: 'title',
-    },
-  };
-
-  const overwrite: DisaggregatedMedia = {
-    id: '0',
-    packId: 'test',
-    type: MediaType.Anime,
-    format: MediaFormat.Internet,
-    title: {
-      english: 'title overwrite',
-    },
-  };
-
-  const manifest: Manifest = {
-    id: 'pack-id',
-    type: ManifestType.Builtin,
-    media: {
-      overwrite: {
-        'anilist:1': overwrite,
-      },
-    },
-  };
-
-  const fetchStub = stub(
-    globalThis,
-    'fetch',
-    () => undefined as any,
-  );
-
-  const listStub = stub(
-    packs,
-    'list',
-    () => [manifest],
-  );
-
-  try {
-    assertEquals(await packs.aggregate<Media>({ media }), {
-      id: '1',
-      packId: 'anilist',
-      overwritePackId: 'pack-id',
-      type: MediaType.Anime,
-      format: MediaFormat.Internet,
-      title: {
-        english: 'title overwrite',
-      },
-      relations: {
-        edges: [],
-      },
-      characters: {
-        edges: [],
-      },
-    });
-
-    assertSpyCalls(fetchStub, 0);
-    assertSpyCalls(listStub, 1);
-  } finally {
-    fetchStub.restore();
-    listStub.restore();
-    packs.clear();
-  }
-});
-
-Deno.test('overwrite character', async () => {
-  const character: Character = {
-    id: '1',
-    packId: 'anilist',
-    name: {
-      english: 'full name',
-    },
-    age: '16',
-  };
-
-  const overwrite: DisaggregatedCharacter = {
-    id: '0',
-    packId: 'test',
-    name: {
-      english: 'name overwrite',
-    },
-    age: '18',
-  };
-
-  const manifest: Manifest = {
-    id: 'pack-id',
-    characters: {
-      overwrite: {
-        'anilist:1': overwrite,
-      },
-    },
-  };
-
-  const fetchStub = stub(
-    globalThis,
-    'fetch',
-    () => undefined as any,
-  );
-
-  const listStub = stub(
-    packs,
-    'list',
-    () => [manifest],
-  );
-
-  try {
-    assertEquals(await packs.aggregate<Character>({ character }), {
-      id: '1',
-      packId: 'anilist',
-      overwritePackId: 'pack-id',
-      age: '18',
-      name: {
-        english: 'name overwrite',
-      },
-      media: {
-        edges: [],
-      },
-    });
-
-    assertSpyCalls(fetchStub, 0);
-    assertSpyCalls(listStub, 1);
-  } finally {
-    fetchStub.restore();
-    listStub.restore();
-    packs.clear();
-  }
 });
 
 Deno.test('titles to array', async (test) => {

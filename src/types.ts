@@ -63,7 +63,6 @@ export interface Media {
   title: Alias;
   description?: string;
   popularity?: number;
-  overwritePackId?: string;
   coverImage?: Image;
   externalLinks?: {
     site: string;
@@ -99,7 +98,6 @@ export interface Character {
   id: string;
   name: Alias;
   packId?: string;
-  overwritePackId?: string;
   description?: string;
   popularity?: number;
   gender?: string;
@@ -141,16 +139,10 @@ export interface Manifest {
   media?: {
     conflicts?: string[];
     new?: DisaggregatedMedia[];
-    overwrite?: {
-      [key: string]: DisaggregatedMedia;
-    };
   };
   characters?: {
     conflicts?: string[];
     new?: DisaggregatedCharacter[];
-    overwrite?: {
-      [key: string]: DisaggregatedCharacter;
-    };
   };
   // properties available for builtin packs only
   commands?: { [key: string]: Command };

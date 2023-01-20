@@ -73,19 +73,6 @@
             "description": "Reference an existing media ([pack:]id)",
             "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
           }
-        },
-        "overwrite": {
-          "type": "object",
-          "description": "A map of ids to existing media, any matches will be entirely overwritten by the match",
-          "additionalProperties": false,
-          "patternProperties": {
-            "^[-_a-z0-9]+:[-_a-z0-9]+$": {
-              "allOf": [{ "$ref": "media.json" }],
-              "description": "The existing media will be deleted and replaced with this media",
-              "required": ["title", "type", "format"],
-              "not": { "required": ["id"] }
-            }
-          }
         }
       }
     },
@@ -109,19 +96,6 @@
             "type": "string",
             "description": "Reference an existing character ([pack:]id)",
             "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
-          }
-        },
-        "overwrite": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "A map of ids to existing characters, any matches will be entirely overwritten by the match",
-          "patternProperties": {
-            "^[-_a-z0-9]+:[-_a-z0-9]+$": {
-              "allOf": [{ "$ref": "character.json" }],
-              "description": "The existing character will be deleted and replaced with this character",
-              "required": ["name"],
-              "not": { "required": ["id"] }
-            }
           }
         }
       }
