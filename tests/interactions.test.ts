@@ -6,18 +6,29 @@ import {
 } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 import {
+  assertSpyCall,
   assertSpyCalls,
+  returnsNext,
   stub,
 } from 'https://deno.land/std@0.172.0/testing/mock.ts';
 
+import { FakeTime } from 'https://deno.land/std@0.172.0/testing/time.ts';
+
 import packs from '../src/packs.ts';
+import config from '../src/config.ts';
+
+import Rating from '../src/rating.ts';
+
+import gacha, { Pull } from '../src/gacha.ts';
 
 import * as search from '../src/search.ts';
 
 import {
+  Character,
   CharacterRole,
   DisaggregatedCharacter,
   Manifest,
+  Media,
   MediaFormat,
   MediaRelation,
   MediaType,
@@ -2485,6 +2496,166 @@ Deno.test('character debug', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+    }
+  });
+});
+
+Deno.test('gacha', async (test) => {
+  await test.step('normal', async () => {
+    const media: Media = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      popularity: 100,
+      title: {
+        english: 'title',
+      },
+      image: {
+        featured: {
+          url: 'media_image_url',
+        },
+      },
+    };
+
+    const character: Character = {
+      id: '2',
+      name: {
+        english: 'name',
+      },
+      image: {
+        featured: {
+          url: 'character_image_url',
+        },
+      },
+    };
+
+    const pull: Pull = {
+      media,
+      character,
+      popularityGreater: 0,
+      popularityLesser: 100,
+      rating: new Rating({ popularity: 100 }),
+      pool: 1,
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const pullStub = stub(
+      gacha,
+      'rngPull',
+      returnsNext([Promise.resolve(pull)]),
+    );
+
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await gacha.start({ token: 'token' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [],
+          embeds: [{
+            type: 2,
+            image: {
+              url: 'http://localhost:8000/file/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: [
+          'https://discord.com/api/v10/webhooks/undefined/token/messages/@original',
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+              embeds: [{
+                type: 2,
+                title: 'title',
+                image: {
+                  url:
+                    'http://localhost:8000/external/media_image_url?size=medium',
+                },
+              }],
+              components: [],
+            }),
+          },
+        ],
+      });
+
+      await timeStub.tickAsync(4000);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertSpyCall(fetchStub, 1, {
+        args: [
+          'https://discord.com/api/v10/webhooks/undefined/token/messages/@original',
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+              embeds: [{
+                type: 2,
+                image: {
+                  url: 'http://localhost:8000/file/stars/1.gif',
+                },
+              }],
+              components: [],
+            }),
+          },
+        ],
+      });
+
+      await timeStub.tickAsync(5000);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertSpyCall(fetchStub, 2, {
+        args: [
+          'https://discord.com/api/v10/webhooks/undefined/token/messages/@original',
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+              embeds: [{
+                type: 2,
+                title: new Rating({ popularity: 100 }).emotes,
+                fields: [{
+                  name: 'title',
+                  value: '**name**',
+                }],
+                image: {
+                  url:
+                    'http://localhost:8000/external/character_image_url?size=medium',
+                },
+              }],
+              components: [],
+            }),
+          },
+        ],
+      });
+    } finally {
+      delete config.origin;
+
+      timeStub.restore();
+      pullStub.restore();
+      fetchStub.restore();
     }
   });
 });

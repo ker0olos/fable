@@ -518,8 +518,8 @@ export class Message {
       default:
         data = {
           ...this.#data,
-          embeds: this.#data.embeds.slice(0, 3),
           components: this.#data.components.slice(0, 5),
+          embeds: this.#data.embeds.slice(0, 3),
         };
         break;
     }
@@ -542,11 +542,7 @@ export class Message {
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
       },
-      body: JSON.stringify({
-        embeds: this.#data.embeds,
-        content: this.#data.content,
-        components: this.#data.components,
-      }),
+      body: JSON.stringify(this.json().data),
     });
   }
 

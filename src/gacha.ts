@@ -14,6 +14,16 @@ import * as discord from './discord.ts';
 
 import packs from './packs.ts';
 
+export type Pull = {
+  role?: CharacterRole;
+  character: Character;
+  media: Media;
+  pool: number;
+  rating: Rating;
+  popularityGreater: number;
+  popularityLesser?: number;
+};
+
 const variables = {
   roles: {
     10: CharacterRole.Main, // 10% for Main
@@ -29,16 +39,6 @@ const variables = {
     3: [200_000, 400_000], // 3% for 200K -> 400K
     1: [400_000, NaN], // 1% for 400K -> inf
   },
-};
-
-type Pull = {
-  role?: CharacterRole;
-  character: Character;
-  media: Media;
-  pool: number;
-  rating: Rating;
-  popularityGreater: number;
-  popularityLesser?: number;
 };
 
 /**
@@ -81,13 +81,13 @@ async function forcePull(id: string): Promise<Pull> {
  */
 async function rngPull(): Promise<Pull> {
   // roll for popularity range that wil be used to generate the pool
-  const range = utils.rng(variables.ranges);
+  const range = utils.rng(gacha.variables.ranges);
 
   const role = range[0] === 0
     // include all roles in the pool
     ? undefined
     // one specific role for the whole pool
-    : utils.rng(variables.roles);
+    : utils.rng(gacha.variables.roles);
 
   const dict = await packs.pool({
     role,
@@ -162,9 +162,7 @@ async function rngPull(): Promise<Pull> {
  * start the roll's animation
  */
 function start({ token, id }: { token: string; id?: string }): discord.Message {
-  (
-    id ? forcePull(id) : rngPull()
-  )
+  (id ? gacha.forcePull(id) : gacha.rngPull())
     .then(async (pull) => {
       const media = pull.media;
 
