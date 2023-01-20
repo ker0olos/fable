@@ -160,7 +160,8 @@ function decodeDescription(s?: string): string | undefined {
   // s = s.replace(/\[(.*)\]\((.*)\)/g, '$1');
   // s = s.replace(/(?:https?):\/\/[\n\S]+/gm, '');
 
-  return s;
+  // max characters for discord descriptions is 4096
+  return truncate(s, 4096);
 }
 
 async function verifySignature(
