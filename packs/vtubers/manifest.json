@@ -89,9 +89,15 @@
     }]
   },
   "characters": {
-    "conflicts": ["anilist:206017"],
+    "conflicts": [
+      "anilist:206017",
+      "anilist:206013",
+      "anilist:206012",
+      "anilist:206019",
+      "anilist:206020"
+    ],
     "new": [{
-      "id": "gawrgura",
+      "id": "gura",
       "name": {
         "english": "Gawr Gura",
         "native": "がうる・ぐら",
@@ -120,6 +126,142 @@
       }, {
         "site": "YouTube",
         "url": "https://www.youtube.com/@gawrgura"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "holomyth"
+      }]
+    }, {
+      "id": "calliope",
+      "name": {
+        "english": "Mori Calliope",
+        "native": "森カリオペ",
+        "alternative": [
+          "Dad",
+          "Calli",
+          "Kawaiiope"
+        ]
+      },
+      "image": {
+        "featured": {
+          "url": "https://i.imgur.com/1twuGk6.jpeg",
+          "artist": {
+            "username": "torino",
+            "url": "https://www.pixiv.net/en/users/1960050"
+          }
+        }
+      },
+      "popularity": 2000000,
+      "description": "The Grim Reaper's first apprentice. Because the world's medical system advanced so dramatically, she became a Vtuber to collect souls. It seems that the lost souls vaporized by the wholesome relationships of Vtubers flow through her as well.\n\nIn the end, she's a gentle-hearted girl whose sweet voice contradicts the morbid things she tends to say, as well as her hardcore vocals.",
+      "gender": "Female",
+      "externalLinks": [{
+        "site": "Debut Stream",
+        "url": "https://www.youtube.com/watch?v=M1_GeIfn48M"
+      }, {
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@MoriCalliope"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "holomyth"
+      }]
+    }, {
+      "id": "kiara",
+      "name": {
+        "english": "Takanashi Kiara",
+        "native": "小鳥遊キアラ",
+        "alternative": [
+          "Kusotori",
+          "Tenchou",
+          "Kiwawa"
+        ]
+      },
+      "image": {
+        "featured": {
+          "url": "https://i.imgur.com/vzrtcqP.jpeg",
+          "artist": {
+            "username": "Nardack",
+            "url": "https://www.pixiv.net/en/users/341433"
+          }
+        }
+      },
+      "popularity": 1400000,
+      "description": "An idol whose dream is to become a fast food shop owner. She is a phoenix, NOT a chicken or turkey. (Very important)\n\nShe works extremely hard since she will be reborn from ashes anyway.",
+      "gender": "Female",
+      "age": "∞",
+      "externalLinks": [{
+        "site": "Debut Stream",
+        "url": "https://www.youtube.com/watch?v=uObh73QZUvg"
+      }, {
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@TakanashiKiara"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "holomyth"
+      }]
+    }, {
+      "id": "ina",
+      "name": {
+        "english": "Ninomae Ina'nis",
+        "native": "一伊那尓栖",
+        "alternative": [
+          "Ina",
+          "Tako"
+        ]
+      },
+      "image": {
+        "featured": {
+          "url": "https://i.imgur.com/g1D5Gka.jpeg",
+          "artist": {
+            "username": "Satchel",
+            "url": "https://www.pixiv.net/en/users/1104770"
+          }
+        }
+      },
+      "popularity": 1500000,
+      "description": "Despite her looks, Ina'nis is actually a priestess of the Ancient Ones. One day, she picked up a strange book and then started to gain the power of controlling tentacles. To her, tentacles are just a part in her ordinary life; it has never been a big deal for her. However, her girly mind does want to get them dressed up and stay pretty.\n\nAfter gaining power, she started hearing Ancient Whispers and Revelations. Hence, she began her VTuber activities to deliver random sanity checks on humanity, as an ordinary girl.",
+      "gender": "Female",
+      "age": "████",
+      "externalLinks": [{
+        "site": "Debut Stream",
+        "url": "https://www.youtube.com/watch?v=ujCxiHpVYmg"
+      }, {
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@NinomaeInanis"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "holomyth"
+      }]
+    }, {
+      "id": "watson",
+      "name": {
+        "english": "Watson Amelia",
+        "native": "ワトソン・アメリア",
+        "alternative": [
+          "Ame",
+          "Watson"
+        ]
+      },
+      "image": {
+        "featured": {
+          "url": "https://i.imgur.com/JBC2hCc.jpeg",
+          "artist": {
+            "username": "イコモチ",
+            "url": "https://www.pixiv.net/en/users/801146"
+          }
+        }
+      },
+      "popularity": 1700000,
+      "description": "Amelia heard strange rumors online surrounding hololive: talking foxes, magical squirrels, superhuman dogs, and more. Soon after beginning her investigation on hololive, and just out of interest, she decided to become an idol herself!\n\nShe loves to pass her time training her reflexes with FPS games, and challenging herself with puzzle games. \"It's elementary, right?\"",
+      "gender": "Female",
+      "externalLinks": [{
+        "site": "Debut Stream",
+        "url": "https://www.youtube.com/watch?v=MXrFrkIlE-0"
+      }, {
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@WatsonAmelia"
       }],
       "media": [{
         "role": "MAIN",

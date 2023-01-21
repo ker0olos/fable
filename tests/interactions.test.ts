@@ -2552,10 +2552,11 @@ Deno.test('gacha', async (test) => {
       returnsNext([Promise.resolve(pull)]),
     );
 
+    config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await gacha.start({ token: 'token' });
+      const message = await gacha.start({ token: 'test_token' });
 
       assertEquals(message.json(), {
         type: 4,
@@ -2574,7 +2575,7 @@ Deno.test('gacha', async (test) => {
 
       assertSpyCall(fetchStub, 0, {
         args: [
-          'https://discord.com/api/v10/webhooks/undefined/token/messages/@original',
+          'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
           {
             method: 'PATCH',
             headers: {
@@ -2601,7 +2602,7 @@ Deno.test('gacha', async (test) => {
 
       assertSpyCall(fetchStub, 1, {
         args: [
-          'https://discord.com/api/v10/webhooks/undefined/token/messages/@original',
+          'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
           {
             method: 'PATCH',
             headers: {
@@ -2626,7 +2627,7 @@ Deno.test('gacha', async (test) => {
 
       assertSpyCall(fetchStub, 2, {
         args: [
-          'https://discord.com/api/v10/webhooks/undefined/token/messages/@original',
+          'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
           {
             method: 'PATCH',
             headers: {
@@ -2651,6 +2652,7 @@ Deno.test('gacha', async (test) => {
         ],
       });
     } finally {
+      delete config.appId;
       delete config.origin;
 
       timeStub.restore();
