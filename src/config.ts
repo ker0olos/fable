@@ -1,6 +1,6 @@
-import { configAsync } from 'https://deno.land/x/dotenv@v3.2.0/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.172.0/dotenv/mod.ts';
 
-// const colors = {
+// export const colors = {
 //   background: '#2b2d42',
 //   purple: '#6b3ebd',
 //   gold: '#feb500',
@@ -19,7 +19,7 @@ const config: {
   publicKey?: string;
   mongoUrl?: string;
   sentry?: string;
-  fileUrl?: string;
+  origin?: string;
 } = {
   dev: false,
   deploy: false,
@@ -27,47 +27,44 @@ const config: {
   publicKey: undefined,
   mongoUrl: undefined,
   sentry: undefined,
-  fileUrl: undefined,
+  origin: undefined,
 };
 
 export async function init(
-  { baseUrl }: { baseUrl: string },
-) {
+  { url }: { url: URL },
+): Promise<void> {
   const query = await Deno.permissions.query({ name: 'env' });
 
   if (query?.state === 'granted') {
-    config.dev = baseUrl.endsWith('/dev');
+    config.dev = url.pathname === '/dev';
 
     config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
 
     // load .env file
     if (!config.deploy) {
       try {
-        await configAsync({ export: true });
+        await Dotenv({ export: true, allowEmptyValues: true });
       } catch {
         //
       }
     }
 
-    config.sentry = Deno.env.get('SENTRY_DSN')!;
+    config.sentry = Deno.env.get('SENTRY_DSN');
 
-    config.appId = config.dev
-      ? Deno.env.get('DEV_ID')!
-      : Deno.env.get('APP_ID')!;
+    config.appId = config.dev ? Deno.env.get('DEV_ID') : Deno.env.get('APP_ID');
 
     config.publicKey = config.dev
-      ? Deno.env.get('DEV_PUBLIC_KEY')!
-      : Deno.env.get('APP_PUBLIC_KEY')!;
+      ? Deno.env.get('DEV_PUBLIC_KEY')
+      : Deno.env.get('APP_PUBLIC_KEY');
 
     config.mongoUrl = config.dev
-      ? Deno.env.get('DEV_MONGO_URL')!
-      : Deno.env.get('MONGO_URL')!;
+      ? Deno.env.get('DEV_MONGO_URL')
+      : Deno.env.get('MONGO_URL');
 
-    config.fileUrl = `${new URL(baseUrl).origin}/file`;
+    config.origin = url.origin;
 
-    if (!config.fileUrl.startsWith('http://localhost')) {
-      config.fileUrl = config.fileUrl
-        .replace('http://', 'https://');
+    if (!config.origin.startsWith('http://localhost')) {
+      config.origin = config.origin.replace('http://', 'https://');
     }
   }
 }

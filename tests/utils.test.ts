@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-non-null-assertion
+
 import {
   assert,
   assertEquals,
@@ -5,12 +7,14 @@ import {
 } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 import {
+  assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
 } from 'https://deno.land/std@0.172.0/testing/mock.ts';
 
 import utils from '../src/utils.ts';
+import config from '../src/config.ts';
 
 Deno.test('random int in range', () => {
   const randomStub = stub(Math, 'random', returnsNext([0, 0.55, 0.999]));
@@ -171,6 +175,28 @@ Deno.test('decode description', async (test) => {
     assertEquals(utils.decodeDescription('&gt;'), '>');
   });
 
+  await test.step('strip urls', () => {
+    assertEquals(
+      utils.decodeDescription('<a href="https://goolge/com/page">page</a>'),
+      '[page](https://goolge/com/page)',
+    );
+
+    assertEquals(
+      utils.decodeDescription('<a href=\'https://goolge/com/page\'>page</a>'),
+      '[page](https://goolge/com/page)',
+    );
+
+    assertEquals(
+      utils.decodeDescription('<a href=\'https://goolge/com/page\'>page<a>'),
+      '[page](https://goolge/com/page)',
+    );
+
+    assertEquals(
+      utils.decodeDescription('[page](https://goolge/com/page)'),
+      '[page](https://goolge/com/page)',
+    );
+  });
+
   await test.step('decode complicated html', () => {
     assertEquals(utils.decodeDescription('&amp;quot;'), '&quot;');
     assertEquals(
@@ -183,18 +209,204 @@ Deno.test('decode description', async (test) => {
 
   await test.step('transform html to markdown', () => {
     assertEquals(utils.decodeDescription('<i>abc</i>'), '*abc*');
+    assertEquals(utils.decodeDescription('<i> abc <i>'), '*abc*');
     assertEquals(utils.decodeDescription('<b>abc</b>'), '**abc**');
+    assertEquals(utils.decodeDescription('<b>abc   <b>'), '**abc**');
     assertEquals(utils.decodeDescription('<strike>abc</strike>'), '~~abc~~');
+    assertEquals(utils.decodeDescription('<strike>   abc<strike>'), '~~abc~~');
     assertEquals(utils.decodeDescription('<br></br><br/>'), '\n\n\n');
-    assertEquals(utils.decodeDescription('<hr></hr>'), '\n\n');
-
-    assertEquals(
-      utils.decodeDescription('<a href="url">abc</a>'),
-      '[abc](url)',
-    );
+    assertEquals(utils.decodeDescription('<hr></hr><hr/>'), '\n\n\n');
   });
 
   await test.step('remove certain tags', () => {
     assertEquals(utils.decodeDescription('~!abc!~'), '');
+    assertEquals(utils.decodeDescription('||abc||'), '');
+  });
+});
+
+Deno.test('external images', async (test) => {
+  await test.step('image/jpeg', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'image/jpeg',
+        }),
+        arrayBuffer: () => new TextEncoder().encode('data'),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.jpg')
+        }`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.jpg')],
+      });
+
+      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
+      assertEquals(response.headers.get('Content-Length'), '4');
+      assertEquals(
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
+      );
+
+      assertEquals(await response.text(), 'data');
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('valid image/gif', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'image/gif',
+        }),
+        arrayBuffer: () => new TextEncoder().encode('data'),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.gif')
+        }`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.gif')],
+      });
+
+      assertEquals(response.status, 200);
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('invalid image/gif', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'image/gif',
+        }),
+        arrayBuffer: () => new TextEncoder().encode('data'),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image')
+        }`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image')],
+      });
+
+      assertEquals(response.status, 302);
+
+      assertEquals(
+        response.headers.get('location'),
+        'http://localhost:8000/file/large.jpg',
+      );
+    } finally {
+      delete config.origin;
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('invalid type', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'application/json',
+        }),
+        arrayBuffer: () => new TextEncoder().encode('data'),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.jpeg')
+        }`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.jpeg')],
+      });
+
+      assertEquals(response.status, 302);
+
+      assertEquals(
+        response.headers.get('location'),
+        'http://localhost:8000/file/large.jpg',
+      );
+    } finally {
+      delete config.origin;
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('empty url', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      // deno-lint-ignore no-explicit-any
+      () => undefined as any,
+    );
+
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
+
+      assertSpyCalls(fetchStub, 0);
+
+      assertEquals(response.status, 302);
+
+      assertEquals(
+        response.headers.get('location'),
+        'http://localhost:8000/file/large.jpg',
+      );
+    } finally {
+      delete config.origin;
+      fetchStub.restore();
+    }
   });
 });

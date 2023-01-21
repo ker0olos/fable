@@ -22,14 +22,12 @@ import config, { init } from './config.ts';
 
 import { ManifestType, MediaType } from './types.ts';
 
-async function handler(
-  request: Request,
-): Promise<Response> {
-  init({ baseUrl: request.url });
+const handler = async (r: Request) => {
+  init({ url: new URL(r.url) });
 
   initSentry({ dsn: config.sentry });
 
-  const { error } = await validateRequest(request, {
+  const { error } = await validateRequest(r, {
     POST: {
       headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
     },
@@ -42,10 +40,7 @@ async function handler(
     );
   }
 
-  const { valid, body } = await utils.verifySignature(
-    request,
-    config.publicKey!,
-  );
+  const { valid, body } = await utils.verifySignature(r, config.publicKey);
 
   if (!valid) {
     return json(
@@ -78,8 +73,8 @@ async function handler(
           case 'anime':
           case 'manga':
             return (await search.media({
-              debug: Boolean(options!['debug']),
-              search: options!['query'] as string,
+              debug: Boolean(options['debug']),
+              search: options['query'] as string,
               type: Object.values(MediaType).includes(
                   name.toUpperCase() as MediaType,
                 )
@@ -89,14 +84,14 @@ async function handler(
           case 'debug':
           case 'character':
             return (await search.character({
-              debug: name === 'debug' || Boolean(options!['debug']),
-              search: options!['query'] as string,
+              debug: name === 'debug' || Boolean(options['debug']),
+              search: options['query'] as string,
             })).send();
-          case 'themes':
           case 'music':
           case 'songs':
-            return (await search.themes({
-              search: options!['query'] as string,
+          case 'themes':
+            return (await search.music({
+              search: options['query'] as string,
             })).send();
           case 'w':
           case 'roll':
@@ -104,9 +99,10 @@ async function handler(
           case 'gacha':
             return gacha.start({ token }).send();
           case 'force_pull':
-            return gacha.start({ token, id: options!['id'] as string }).send();
+            return gacha.start({ token, id: options['id'] as string }).send();
           case 'packs_builtin':
           case 'packs_manual': {
+            // deno-lint-ignore no-non-null-assertion
             const list = packs.list(subcommand! as ManifestType);
 
             return packs.embed({
@@ -116,6 +112,7 @@ async function handler(
           }
           default: {
             // non-standard commands (handled by individual packs)
+            // deno-lint-ignore no-non-null-assertion
             const message = await packs.commands(name!, interaction);
 
             if (message) {
@@ -130,6 +127,7 @@ async function handler(
         switch (customType) {
           case 'media': {
             const message = await search.media({
+              // deno-lint-ignore no-non-null-assertion
               id: customValues![0],
             });
             return message.setType(discord.MessageType.Update).send();
@@ -138,6 +136,7 @@ async function handler(
           case 'manual': {
             const list = packs.list(customType as ManifestType);
 
+            // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![0]);
 
             return packs.embed({
@@ -158,9 +157,12 @@ async function handler(
       err?.response?.status === 404 || err?.message === '404' ||
       err?.message?.toLowerCase?.() === 'not found'
     ) {
-      return discord.Message.content(
-        'Found _nothing_ matching that query!',
-      );
+      return new discord.Message().setFlags(discord.MessageFlags.Ephemeral)
+        .addEmbed(
+          new discord.Embed().setDescription(
+            'Found _nothing_ matching that query!',
+          ),
+        ).send();
     }
 
     if (!config.sentry) {
@@ -174,14 +176,25 @@ async function handler(
     return discord.Message.internal(refId).send();
   }
 
-  return discord.Message.content(`Unimplemented!`);
-}
+  return new discord.Message().setContent(`Unimplemented!`).send();
+};
 
 serve({
   '/': handler,
   '/dev': handler,
-  '/schema': serveStatic('../json/index.json', { baseUrl: import.meta.url }),
+  '/external/*': utils.proxy,
+  '/schema': serveStatic('../json/index.json', {
+    baseUrl: import.meta.url,
+    intervene: (_, response) => {
+      response.headers.set('Cache-Control', 'public, max-age=86400');
+      return response;
+    },
+  }),
   '/file/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,
+    intervene: (_, response) => {
+      response.headers.set('Cache-Control', 'public, max-age=604800');
+      return response;
+    },
   }),
 });

@@ -1,4 +1,4 @@
-type Modify<T, R> = Omit<T, keyof R> & R;
+export type Modify<T, R> = Omit<T, keyof R> & R;
 
 export enum MediaType {
   Anime = 'ANIME',
@@ -41,27 +41,34 @@ export enum CharacterRole {
   Background = 'BACKGROUND',
 }
 
+export type Alias = {
+  english?: string;
+  romaji?: string;
+  native?: string;
+  alternative?: string[];
+};
+
 export type Image = {
-  extraLarge?: string;
-  large?: string;
-  medium?: string;
+  url: string;
   color?: string;
+  artist?: {
+    username: string;
+    url?: string;
+  };
 };
 
 export interface Media {
   id: string;
+  packId?: string;
   type: MediaType;
   format: MediaFormat;
-  title: {
-    english?: string;
-    romaji?: string;
-    native?: string;
-  };
-  packId?: string;
-  overwritePackId?: string;
-  popularity?: number;
+  title: Alias;
   description?: string;
-  coverImage?: Image;
+  popularity?: number;
+  image?: {
+    featured: Image;
+    additional?: Image[];
+  };
   externalLinks?: {
     site: string;
     url: string;
@@ -72,12 +79,12 @@ export interface Media {
   };
   relations?: {
     edges: {
-      relationType: MediaRelation;
+      relation: MediaRelation;
       node: Media;
     }[];
   };
   characters?: {
-    edges?: { role: CharacterRole; node: Character }[];
+    edges: { role: CharacterRole; node: Character }[];
   };
 }
 
@@ -94,21 +101,22 @@ export type DisaggregatedMedia = Modify<Media, {
 
 export interface Character {
   id: string;
-  name: {
-    full: string;
-    native?: string;
-    alternative?: string[];
-    alternativeSpoiler?: string[];
-  };
+  name: Alias;
   packId?: string;
-  overwritePackId?: string;
   description?: string;
   popularity?: number;
   gender?: string;
   age?: string;
-  image?: Image;
+  image?: {
+    featured: Image;
+    additional?: Image[];
+  };
+  externalLinks?: {
+    site: string;
+    url: string;
+  }[];
   media?: {
-    edges?: { characterRole: CharacterRole; node: Media }[];
+    edges: { role: CharacterRole; node: Media }[];
   };
 }
 
@@ -134,17 +142,19 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
+  // TODO BLOCKED load manual packs
+  depends?: string[];
+  // TODO BLOCKED load manual packs
+  conflicts?: string[];
+  // TODO BLOCKED load manual packs
+  addedBy?: string;
   media?: {
+    conflicts?: string[];
     new?: DisaggregatedMedia[];
-    overwrite?: {
-      [key: string]: DisaggregatedMedia;
-    };
   };
   characters?: {
+    conflicts?: string[];
     new?: DisaggregatedCharacter[];
-    overwrite?: {
-      [key: string]: DisaggregatedCharacter;
-    };
   };
   // properties available for builtin packs only
   commands?: { [key: string]: Command };

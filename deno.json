@@ -2,12 +2,22 @@
   "lint": {
     "rules": {
       "tags": ["recommended"],
-      "include": ["camelcase", "eqeqeq", "no-const-assign", "no-eval"]
+      "include": [
+        "prefer-ascii",
+        "camelcase",
+        "eqeqeq",
+        "no-const-assign",
+        "no-eval",
+        "no-non-null-assertion",
+        "no-throw-literal",
+        "no-sparse-arrays",
+        "explicit-function-return-type"
+      ]
     }
   },
   "tasks": {
     "start": "deno run --watch --allow-net --allow-read --allow-env ./src/interactions.ts",
-    "tunnel": "deno task start & ssh -R 80:localhost:8000 localhost.run"
+    "proxy": "deno task start & ssh -R 80:localhost:8000 localhost.run"
   },
   "fmt": {
     "options": {

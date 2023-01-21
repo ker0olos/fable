@@ -6,26 +6,39 @@ import {
 } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 import {
+  assertSpyCall,
   assertSpyCalls,
+  returnsNext,
   stub,
 } from 'https://deno.land/std@0.172.0/testing/mock.ts';
 
+import { FakeTime } from 'https://deno.land/std@0.172.0/testing/time.ts';
+
 import packs from '../src/packs.ts';
+import config from '../src/config.ts';
+
+import Rating from '../src/rating.ts';
+
+import gacha, { Pull } from '../src/gacha.ts';
 
 import * as search from '../src/search.ts';
 
 import {
   Character,
   CharacterRole,
+  DisaggregatedCharacter,
+  Manifest,
   Media,
   MediaFormat,
   MediaRelation,
   MediaType,
 } from '../src/types.ts';
 
+import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
+
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -82,11 +95,10 @@ Deno.test('media', async (test) => {
             color: 16777215,
             description: 'long description',
             image: {
-              url: 'image_url',
+              url: 'undefined/external/image_url',
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -98,7 +110,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('prioritize search', async () => {
-    const media: Media[] = [{
+    const media: AniListMedia[] = [{
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -153,12 +165,11 @@ Deno.test('media', async (test) => {
             color: undefined,
             description: undefined,
             image: {
-              url: 'undefined/large.jpg',
+              url: 'undefined/external/',
             },
             title: 'title',
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -169,8 +180,8 @@ Deno.test('media', async (test) => {
     }
   });
 
-  await test.step('non-english title', async () => {
-    const media: Media = {
+  await test.step('native title', async () => {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -222,11 +233,77 @@ Deno.test('media', async (test) => {
             color: 16777215,
             description: 'long description',
             image: {
-              url: 'image_url',
+              url: 'undefined/external/image_url',
             },
           }],
           components: [],
-          content: undefined,
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('format header', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.Novel,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'image_url',
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({ search: 'english title' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            author: {
+              name: 'Novel',
+            },
+            title: 'english title',
+            color: 16777215,
+            description: 'long description',
+            image: {
+              url: 'undefined/external/image_url',
+            },
+          }],
+          components: [],
         },
       });
 
@@ -238,7 +315,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('external links', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -252,7 +329,6 @@ Deno.test('media', async (test) => {
         extraLarge: 'image_url',
       },
       externalLinks: [
-        { site: 'FakeTube', url: 'url' },
         { site: 'Crunchyroll', url: 'url2' },
       ],
     };
@@ -294,19 +370,13 @@ Deno.test('media', async (test) => {
             color: 16777215,
             description: 'long description',
             image: {
-              url: 'image_url',
+              url: 'undefined/external/image_url',
             },
           }],
           components: [
             {
               type: 1,
               components: [
-                {
-                  url: 'url',
-                  label: 'FakeTube',
-                  style: 5,
-                  type: 2,
-                },
                 {
                   url: 'url2',
                   label: 'Crunchyroll',
@@ -316,7 +386,6 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
-          content: undefined,
         },
       });
 
@@ -328,7 +397,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('default image', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -374,11 +443,10 @@ Deno.test('media', async (test) => {
             description: undefined,
             title: 'english title',
             image: {
-              url: 'undefined/large.jpg',
+              url: 'undefined/external/',
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -390,7 +458,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('youtube trailer', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -446,7 +514,7 @@ Deno.test('media', async (test) => {
             color: 16777215,
             description: 'long description',
             image: {
-              url: 'image_url',
+              url: 'undefined/external/image_url',
             },
           }],
           components: [
@@ -462,7 +530,6 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
-          content: undefined,
         },
       });
 
@@ -474,7 +541,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('characters embeds', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -497,7 +564,7 @@ Deno.test('media', async (test) => {
             },
             description: 'main character description',
             image: {
-              medium: 'main character url',
+              large: 'main character url',
             },
             gender: 'Male',
             age: '69',
@@ -511,7 +578,7 @@ Deno.test('media', async (test) => {
             },
             description: 'supporting character description',
             image: {
-              medium: 'supporting character url',
+              large: 'supporting character url',
             },
           },
         }, {
@@ -523,7 +590,7 @@ Deno.test('media', async (test) => {
             },
             description: 'background character description',
             image: {
-              medium: 'background character url',
+              large: 'background character url',
             },
           },
         }],
@@ -567,7 +634,7 @@ Deno.test('media', async (test) => {
             color: 16777215,
             description: 'long description',
             image: {
-              url: 'image_url',
+              url: 'undefined/external/image_url',
             },
           }, {
             type: 2,
@@ -578,7 +645,7 @@ Deno.test('media', async (test) => {
             color: 16777215,
             description: 'main character description',
             thumbnail: {
-              url: 'main character url',
+              url: 'undefined/external/main%20character%20url?size=thumbnail',
             },
           }, {
             type: 2,
@@ -586,11 +653,11 @@ Deno.test('media', async (test) => {
             color: 16777215,
             description: 'supporting character description',
             thumbnail: {
-              url: 'supporting character url',
+              url:
+                'undefined/external/supporting%20character%20url?size=thumbnail',
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -602,7 +669,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('media relations', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -624,7 +691,7 @@ Deno.test('media', async (test) => {
             format: MediaFormat.TV,
             popularity: 0,
             title: {
-              english: 'sequel',
+              english: 'english title 2',
             },
           },
         }, {
@@ -635,7 +702,7 @@ Deno.test('media', async (test) => {
             format: MediaFormat.TV,
             popularity: 0,
             title: {
-              english: 'prequel',
+              english: 'english title',
             },
           },
         }, {
@@ -650,47 +717,36 @@ Deno.test('media', async (test) => {
             },
           },
         }, {
-          relationType: MediaRelation.Adaptation,
+          relationType: MediaRelation.SpinOff,
           node: {
             id: '20',
             type: MediaType.Manga,
             format: MediaFormat.Manga,
             popularity: 0,
             title: {
-              english: 'adaptation',
+              english: 'spin off',
             },
           },
         }, {
-          relationType: MediaRelation.Other,
+          relationType: MediaRelation.Adaptation,
           node: {
             id: '25',
             type: MediaType.Anime,
             format: MediaFormat.TV,
             popularity: 0,
             title: {
-              english: 'uninteresting relation',
+              english: 'adaptation',
             },
           },
         }, {
           relationType: MediaRelation.Adaptation,
           node: {
             id: '30',
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            popularity: 0,
-            title: {
-              english: 'second adaptation',
-            },
-          },
-        }, {
-          relationType: MediaRelation.Adaptation,
-          node: {
-            id: '35',
             type: MediaType.Manga,
             format: MediaFormat.Manga,
             popularity: 0,
             title: {
-              english: 'third adaptation',
+              english: 'second adaptation',
             },
           },
         }],
@@ -734,7 +790,7 @@ Deno.test('media', async (test) => {
             color: 16777215,
             description: 'long description',
             image: {
-              url: 'image_url',
+              url: 'undefined/external/image_url',
             },
           }],
           components: [
@@ -743,13 +799,13 @@ Deno.test('media', async (test) => {
               components: [
                 {
                   custom_id: 'media=anilist:5',
-                  label: 'sequel (Sequel)',
+                  label: 'english title 2 (Sequel)',
                   style: 2,
                   type: 2,
                 },
                 {
                   custom_id: 'media=anilist:10',
-                  label: 'prequel (Prequel)',
+                  label: 'english title (Prequel)',
                   style: 2,
                   type: 2,
                 },
@@ -761,20 +817,250 @@ Deno.test('media', async (test) => {
                 },
                 {
                   custom_id: 'media=anilist:20',
-                  label: 'adaptation (Manga)',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'media=anilist:30',
-                  label: 'second adaptation (Anime)',
+                  label: 'spin off (Spin Off)',
                   style: 2,
                   type: 2,
                 },
               ],
             },
           ],
-          content: undefined,
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('media relations 2', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'image_url',
+      },
+      relations: {
+        edges: [{
+          relationType: MediaRelation.Contains,
+          node: {
+            id: '5',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 0,
+            title: {
+              english: 'child',
+            },
+          },
+        }, {
+          relationType: MediaRelation.Parent,
+          node: {
+            id: '10',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 0,
+            title: {
+              english: 'parent',
+            },
+          },
+        }, {
+          relationType: MediaRelation.Adaptation,
+          node: {
+            id: '15',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 0,
+            title: {
+              english: 'adaptation',
+            },
+          },
+        }, {
+          relationType: MediaRelation.Other,
+          node: {
+            id: '20',
+            type: MediaType.Manga,
+            format: MediaFormat.Manga,
+            popularity: 0,
+            title: {
+              english: 'other',
+            },
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({ search: 'english title' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            author: {
+              name: 'Anime',
+            },
+            title: 'english title',
+            color: 16777215,
+            description: 'long description',
+            image: {
+              url: 'undefined/external/image_url',
+            },
+          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'media=anilist:5',
+                  label: 'child (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'media=anilist:10',
+                  label: 'parent (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'media=anilist:15',
+                  label: 'adaptation (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'media=anilist:20',
+                  label: 'other (Manga)',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('media relations 3', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'image_url',
+      },
+      relations: {
+        edges: [{
+          relationType: MediaRelation.Other,
+          node: {
+            id: '5',
+            type: MediaType.Anime,
+            format: MediaFormat.Internet,
+            popularity: 0,
+            title: {
+              english: 'branch',
+            },
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({ search: 'english title' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            author: {
+              name: 'Anime',
+            },
+            title: 'english title',
+            color: 16777215,
+            description: 'long description',
+            image: {
+              url: 'undefined/external/image_url',
+            },
+          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'media=anilist:5',
+                  label: 'branch',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
         },
       });
 
@@ -786,7 +1072,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('music relations', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -810,7 +1096,7 @@ Deno.test('media', async (test) => {
             title: {
               english: 'op',
             },
-            externalLinks: [{ site: 'youtube', url: 'youtube url' }],
+            externalLinks: [{ site: 'Youtube', url: 'youtube_url' }],
           },
         }, {
           relationType: MediaRelation.Other,
@@ -822,7 +1108,7 @@ Deno.test('media', async (test) => {
             title: {
               english: 'fk',
             },
-            externalLinks: [{ site: 'spotify', url: 'spotify url' }],
+            externalLinks: [{ site: 'Spotify', url: 'spotify_url' }],
           },
         }, {
           relationType: MediaRelation.Other,
@@ -834,7 +1120,7 @@ Deno.test('media', async (test) => {
             title: {
               english: 'ed',
             },
-            externalLinks: [{ site: 'spiketone', url: 'spiketone url' }],
+            externalLinks: [{ site: 'FakeTube', url: 'faketube_url' }],
           },
         }],
       },
@@ -877,7 +1163,7 @@ Deno.test('media', async (test) => {
             color: 16777215,
             description: 'long description',
             image: {
-              url: 'image_url',
+              url: 'undefined/external/image_url',
             },
           }],
           components: [
@@ -885,27 +1171,260 @@ Deno.test('media', async (test) => {
               type: 1,
               components: [
                 {
-                  url: 'youtube url',
                   label: 'op',
+                  url: 'youtube_url',
                   style: 5,
                   type: 2,
                 },
                 {
-                  url: 'spotify url',
                   label: 'fk',
-                  style: 5,
-                  type: 2,
-                },
-                {
-                  url: 'spiketone url',
-                  label: 'ed',
+                  url: 'spotify_url',
                   style: 5,
                   type: 2,
                 },
               ],
             },
           ],
-          content: undefined,
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('relations sorting', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'image_url',
+      },
+      relations: {
+        edges: [{
+          relationType: MediaRelation.Other,
+          node: {
+            id: '5',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 0,
+            title: {
+              english: 'title',
+            },
+          },
+        }, {
+          relationType: MediaRelation.Other,
+          node: {
+            id: '10',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 100,
+            title: {
+              english: 'title',
+            },
+          },
+        }, {
+          relationType: MediaRelation.Other,
+          node: {
+            id: '15',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 50,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({ search: 'english title' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            author: {
+              name: 'Anime',
+            },
+            title: 'english title',
+            color: 16777215,
+            description: 'long description',
+            image: {
+              url: 'undefined/external/image_url',
+            },
+          }],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'media=anilist:10',
+                  label: 'title (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'media=anilist:15',
+                  label: 'title (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'media=anilist:5',
+                  label: 'title (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('characters sorting', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'image_url',
+      },
+      characters: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: '5',
+            name: {
+              full: 'main character name',
+            },
+            popularity: 0,
+          },
+        }, {
+          role: CharacterRole.Supporting,
+          node: {
+            id: '10',
+            name: {
+              full: 'supporting character name',
+            },
+            popularity: 100,
+          },
+        }, {
+          role: CharacterRole.Background,
+          node: {
+            id: '15',
+            name: {
+              full: 'background character name',
+            },
+            popularity: 50,
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({ search: 'english title' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            author: {
+              name: 'Anime',
+            },
+            title: 'english title',
+            color: 16777215,
+            description: 'long description',
+            image: {
+              url: 'undefined/external/image_url',
+            },
+          }, {
+            type: 2,
+            title: 'supporting character name',
+            color: 16777215,
+            description: undefined,
+            thumbnail: {
+              url: 'undefined/external/?size=thumbnail',
+            },
+          }, {
+            type: 2,
+            title: 'background character name',
+            color: 16777215,
+            description: undefined,
+            thumbnail: {
+              url: 'undefined/external/?size=thumbnail',
+            },
+          }],
+          components: [],
         },
       });
 
@@ -917,7 +1436,7 @@ Deno.test('media', async (test) => {
   });
 
   await test.step('not found', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -969,7 +1488,7 @@ Deno.test('media', async (test) => {
 
 Deno.test('media debug', async (test) => {
   await test.step('normal', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -1042,13 +1561,12 @@ Deno.test('media debug', async (test) => {
               },
             ],
             thumbnail: {
-              url: 'image_url',
+              url: 'undefined/external/image_url?size=thumbnail',
             },
             title: 'english title',
             type: 2,
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1060,7 +1578,7 @@ Deno.test('media debug', async (test) => {
   });
 
   await test.step('default image', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -1125,13 +1643,12 @@ Deno.test('media debug', async (test) => {
               },
             ],
             thumbnail: {
-              url: 'undefined/medium.jpg',
+              url: 'undefined/external/?size=thumbnail',
             },
             title: 'english title',
             type: 2,
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1145,18 +1662,27 @@ Deno.test('media debug', async (test) => {
 
 Deno.test('character', async (test) => {
   await test.step('normal search', async () => {
-    const character: Character = {
+    const character: DisaggregatedCharacter = {
       id: '1',
       description: 'long description',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       image: {
-        color: '#ffffff',
-        large: 'image_url',
+        featured: {
+          url: 'image_url',
+          color: '#ffffff',
+        },
       },
       age: '420',
       gender: 'male',
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [character],
+      },
     };
 
     const fetchStub = stub(
@@ -1178,7 +1704,7 @@ Deno.test('character', async (test) => {
     const listStub = stub(
       packs,
       'list',
-      () => [],
+      () => [manifest],
     );
 
     try {
@@ -1193,14 +1719,13 @@ Deno.test('character', async (test) => {
             description: 'long description',
             color: 16777215,
             image: {
-              url: 'image_url',
+              url: 'undefined/external/image_url',
             },
             footer: {
               text: 'Male, 420',
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1212,7 +1737,7 @@ Deno.test('character', async (test) => {
   });
 
   await test.step('gender only', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1258,14 +1783,13 @@ Deno.test('character', async (test) => {
             description: 'long description',
             color: undefined,
             image: {
-              url: 'image_url',
+              url: 'undefined/external/image_url',
             },
             footer: {
               text: 'Female',
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1277,7 +1801,7 @@ Deno.test('character', async (test) => {
   });
 
   await test.step('age only', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1323,14 +1847,13 @@ Deno.test('character', async (test) => {
             description: 'long description',
             color: undefined,
             image: {
-              url: 'image_url',
+              url: 'undefined/external/image_url',
             },
             footer: {
               text: '18+',
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1342,7 +1865,7 @@ Deno.test('character', async (test) => {
   });
 
   await test.step('relations', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1401,7 +1924,7 @@ Deno.test('character', async (test) => {
             description: 'long description',
             color: undefined,
             image: {
-              url: 'image_url',
+              url: 'undefined/external/image_url',
             },
           }],
           components: [{
@@ -1413,7 +1936,6 @@ Deno.test('character', async (test) => {
               type: 2,
             }],
           }],
-          content: undefined,
         },
       });
 
@@ -1425,7 +1947,7 @@ Deno.test('character', async (test) => {
   });
 
   await test.step('default image', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'full name',
@@ -1466,11 +1988,10 @@ Deno.test('character', async (test) => {
             description: undefined,
             color: undefined,
             image: {
-              url: 'undefined/large.jpg',
+              url: 'undefined/external/',
             },
           }],
           components: [],
-          content: undefined,
         },
       });
 
@@ -1482,7 +2003,7 @@ Deno.test('character', async (test) => {
   });
 
   await test.step('not found', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1529,19 +2050,28 @@ Deno.test('character', async (test) => {
 
 Deno.test('character debug', async (test) => {
   await test.step('no media', async () => {
-    const character: Character = {
+    const character: DisaggregatedCharacter = {
       id: '1',
       description: 'long description',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       image: {
-        color: '#ffffff',
-        large: 'image_url',
+        featured: {
+          url: 'image_url',
+          color: '#ffffff',
+        },
       },
       age: '420',
       gender: 'male',
       popularity: 1_000_000,
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [character],
+      },
     };
 
     const fetchStub = stub(
@@ -1563,7 +2093,7 @@ Deno.test('character debug', async (test) => {
     const listStub = stub(
       packs,
       'list',
-      () => [],
+      () => [manifest],
     );
 
     try {
@@ -1576,7 +2106,7 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-          content: undefined,
+
           embeds: [
             {
               type: 2,
@@ -1584,12 +2114,12 @@ Deno.test('character debug', async (test) => {
               description: undefined,
               color: 16777215,
               thumbnail: {
-                url: 'image_url',
+                url: 'undefined/external/image_url?size=thumbnail',
               },
               fields: [
                 {
                   name: 'Id',
-                  value: 'anilist:1',
+                  value: 'pack-id:1',
                 },
                 {
                   name: 'Rating',
@@ -1640,7 +2170,7 @@ Deno.test('character debug', async (test) => {
   });
 
   await test.step('no media nor popularity', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1685,7 +2215,7 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-          content: undefined,
+
           embeds: [
             {
               type: 2,
@@ -1693,7 +2223,7 @@ Deno.test('character debug', async (test) => {
               description: undefined,
               color: undefined,
               thumbnail: {
-                url: 'image_url',
+                url: 'undefined/external/image_url?size=thumbnail',
               },
               fields: [
                 {
@@ -1749,7 +2279,7 @@ Deno.test('character debug', async (test) => {
   });
 
   await test.step('default image', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'full name',
@@ -1788,7 +2318,7 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-          content: undefined,
+
           embeds: [
             {
               type: 2,
@@ -1796,7 +2326,7 @@ Deno.test('character debug', async (test) => {
               description: undefined,
               color: undefined,
               thumbnail: {
-                url: 'undefined/medium.jpg',
+                url: 'undefined/external/?size=thumbnail',
               },
               fields: [
                 {
@@ -1852,7 +2382,7 @@ Deno.test('character debug', async (test) => {
   });
 
   await test.step('with media', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       description: 'long description',
       name: {
@@ -1911,7 +2441,7 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-          content: undefined,
+
           embeds: [
             {
               type: 2,
@@ -1919,7 +2449,7 @@ Deno.test('character debug', async (test) => {
               description: undefined,
               color: undefined,
               thumbnail: {
-                url: 'image_url',
+                url: 'undefined/external/image_url?size=thumbnail',
               },
               fields: [
                 {
@@ -1970,9 +2500,171 @@ Deno.test('character debug', async (test) => {
   });
 });
 
-Deno.test('themes', async (test) => {
-  await test.step('normal search', async () => {
+Deno.test('gacha', async (test) => {
+  await test.step('normal', async () => {
     const media: Media = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      popularity: 100,
+      title: {
+        english: 'title',
+      },
+      image: {
+        featured: {
+          url: 'media_image_url',
+        },
+      },
+    };
+
+    const character: Character = {
+      id: '2',
+      name: {
+        english: 'name',
+      },
+      image: {
+        featured: {
+          url: 'character_image_url',
+        },
+      },
+    };
+
+    const pull: Pull = {
+      media,
+      character,
+      popularityGreater: 0,
+      popularityLesser: 100,
+      rating: new Rating({ popularity: 100 }),
+      pool: 1,
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const pullStub = stub(
+      gacha,
+      'rngPull',
+      returnsNext([Promise.resolve(pull)]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await gacha.start({ token: 'test_token' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [],
+          embeds: [{
+            type: 2,
+            image: {
+              url: 'http://localhost:8000/file/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: [
+          'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+              embeds: [{
+                type: 2,
+                title: 'title',
+                image: {
+                  url:
+                    'http://localhost:8000/external/media_image_url?size=medium',
+                },
+              }],
+              components: [],
+            }),
+          },
+        ],
+      });
+
+      await timeStub.tickAsync(4000);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertSpyCall(fetchStub, 1, {
+        args: [
+          'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+              embeds: [{
+                type: 2,
+                image: {
+                  url: 'http://localhost:8000/file/stars/1.gif',
+                },
+              }],
+              components: [],
+            }),
+          },
+        ],
+      });
+
+      await timeStub.tickAsync(5000);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertSpyCall(fetchStub, 2, {
+        args: [
+          'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+              embeds: [{
+                type: 2,
+                title: new Rating({ popularity: 100 }).emotes,
+                fields: [{
+                  name: 'title',
+                  value: '**name**',
+                }],
+                image: {
+                  url:
+                    'http://localhost:8000/external/character_image_url?size=medium',
+                },
+              }],
+              components: [],
+            }),
+          },
+        ],
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      pullStub.restore();
+      fetchStub.restore();
+    }
+  });
+});
+
+Deno.test('music', async (test) => {
+  await test.step('normal search', async () => {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.Music,
@@ -2020,7 +2712,7 @@ Deno.test('themes', async (test) => {
     );
 
     try {
-      const message = await search.themes({ search: 'english title' });
+      const message = await search.music({ search: 'english title' });
 
       assertEquals(message.json(), {
         type: 4,
@@ -2039,7 +2731,6 @@ Deno.test('themes', async (test) => {
               ],
             },
           ],
-          content: undefined,
         },
       });
 
@@ -2075,7 +2766,7 @@ Deno.test('themes', async (test) => {
 
     try {
       await assertRejects(
-        async () => await search.themes({ search: 'x'.repeat(100) }),
+        async () => await search.music({ search: 'x'.repeat(100) }),
         Error,
         '404',
       );
@@ -2087,8 +2778,8 @@ Deno.test('themes', async (test) => {
     }
   });
 
-  await test.step('no available themes', async () => {
-    const media: Media = {
+  await test.step('no available music', async () => {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.Music,
@@ -2125,7 +2816,7 @@ Deno.test('themes', async (test) => {
 
     try {
       await assertRejects(
-        async () => await search.themes({ search: 'english title' }),
+        async () => await search.music({ search: 'english title' }),
         Error,
         '404',
       );

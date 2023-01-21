@@ -1,6 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
+import {
+  assert,
+  assertEquals,
+  assertObjectMatch,
+} from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 import {
   assertSpyCalls,
@@ -9,12 +13,13 @@ import {
 
 import { assertValidManifest } from '../src/validate.ts';
 
+import packs from '../src/packs.ts';
+
 import {
   Character,
   CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
-  Image,
   Manifest,
   ManifestType,
   Media,
@@ -23,7 +28,7 @@ import {
   MediaType,
 } from '../src/types.ts';
 
-import packs from '../src/packs.ts';
+import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 Deno.test('list', async (test) => {
   await test.step('anilist', () => {
@@ -31,7 +36,7 @@ Deno.test('list', async (test) => {
 
     const manifest = builtin[0] as Manifest;
 
-    assertEquals(builtin.length, 2);
+    assertEquals(builtin.length, 3);
 
     assertEquals(manifest, {
       'author': 'Fable',
@@ -61,12 +66,30 @@ Deno.test('list', async (test) => {
     assertValidManifest(manifest);
   });
 
-  await test.step('x', () => {
+  await test.step('vtubers', () => {
     const builtin = packs.list(ManifestType.Builtin);
 
     const manifest = builtin[1] as Manifest;
 
-    assertEquals(builtin.length, 2);
+    assertEquals(builtin.length, 3);
+
+    assertObjectMatch(manifest, {
+      'author': 'Fable',
+      'type': ManifestType.Builtin,
+      'description': 'A pack containing a set of the most famous vtubers',
+      'id': 'vtubers',
+      'title': 'Vtubers',
+    });
+
+    assertValidManifest(manifest);
+  });
+
+  await test.step('x', () => {
+    const builtin = packs.list(ManifestType.Builtin);
+
+    const manifest = builtin[2] as Manifest;
+
+    assertEquals(builtin.length, 3);
 
     assertEquals(manifest, {
       'author': 'Fable',
@@ -100,7 +123,77 @@ Deno.test('list', async (test) => {
   await test.step('no type', () => {
     const list = packs.list();
 
-    assertEquals(list.length, 0);
+    assertEquals(list.length, 1);
+
+    assertEquals(list[0].id, 'vtubers');
+  });
+});
+
+Deno.test('disabled', async (test) => {
+  await test.step('disabled media', () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['another-pack:1'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      assert(packs.isDisabled('another-pack:1'));
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled character', () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        conflicts: ['another-pack:1'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      assert(packs.isDisabled('another-pack:1'));
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('none', () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        conflicts: [],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      assert(!packs.isDisabled('another-pack:1'));
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
   });
 });
 
@@ -121,23 +214,28 @@ Deno.test('manifest embeds', async (test) => {
         components: [{
           type: 1,
           components: [{
-            custom_id: 'builtin:1',
+            custom_id: '_',
+            disabled: true,
+            label: '1/2',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'builtin=1',
             label: 'Next',
             style: 2,
             type: 2,
           }],
         }],
         embeds: [{
+          description:
+            'Builtin packs are developed and maintained directly by Fable',
+          type: 2,
+        }, {
           description: undefined,
-          footer: {
-            text: '1/2',
-          },
           title: 'title',
           type: 2,
           url: undefined,
         }],
-        content:
-          'Builtin packs are developed and maintained directly by Fable.',
       },
     });
   });
@@ -159,23 +257,28 @@ Deno.test('manifest embeds', async (test) => {
         components: [{
           type: 1,
           components: [{
-            custom_id: 'manual:0',
+            custom_id: 'manual=0',
             label: 'Prev',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: '_',
+            disabled: true,
+            label: '2/2',
             style: 2,
             type: 2,
           }],
         }],
         embeds: [{
+          type: 2,
+          description:
+            'The following third-party packs were manually added by your server members',
+        }, {
           description: undefined,
-          footer: {
-            text: '2/2',
-          },
           title: 'title',
           type: 2,
           url: undefined,
         }],
-        content:
-          'The following packs were installed manually by server members.',
       },
     });
   });
@@ -192,18 +295,26 @@ Deno.test('manifest embeds', async (test) => {
     assertEquals(message.json(), {
       type: 4,
       data: {
-        components: [],
         embeds: [{
+          type: 2,
+          description:
+            'The following third-party packs were manually added by your server members',
+        }, {
           description: undefined,
-          footer: {
-            text: '1/1',
-          },
           title: 'id',
           type: 2,
           url: undefined,
         }],
-        content:
-          'The following packs were installed manually by server members.',
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: '_',
+            disabled: true,
+            label: '1/1',
+            style: 2,
+            type: 2,
+          }],
+        }],
       },
     });
   });
@@ -215,8 +326,10 @@ Deno.test('manifest embeds', async (test) => {
       type: 4,
       data: {
         components: [],
-        embeds: [],
-        content: 'No packs have been installed yet.',
+        embeds: [{
+          type: 2,
+          description: 'No packs have been added yet',
+        }],
       },
     });
   });
@@ -224,7 +337,7 @@ Deno.test('manifest embeds', async (test) => {
 
 Deno.test('search for media', async (test) => {
   await test.step('anilist id', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -279,11 +392,12 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('pack id', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: 1 as unknown as string,
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -339,11 +453,12 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('no pack id specified', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: 1 as unknown as string,
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -381,11 +496,107 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled anilist id', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'anilist media',
+      },
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['anilist:1'],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const results = await packs.media({ ids: ['anilist:1'] });
+
+      assertEquals(results.length, 0);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled pack id', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['pack2:1'],
+      },
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      media: {
+        new: [{
+          id: '1',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'media',
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      const results = await packs.media({ ids: ['pack2:1'] });
+
+      assertEquals(results.length, 0);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('match english', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -424,11 +635,12 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('match romaji', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -467,11 +679,12 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('match native', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -511,11 +724,58 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('match alias', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'x'.repeat(100),
+      },
+      synonyms: ['fable'],
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const results = await packs.media({ search: 'feble' });
+
+      assertEquals(results.length, 1);
+
+      assertEquals(results[0].id, '1');
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('match english with specified types', async () => {
-    const media: Media[] = [{
+    const media: AniListMedia[] = [{
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -574,11 +834,12 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('match on initial sorting', async () => {
-    const media: Media[] = [{
+    const media: AniListMedia[] = [{
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -627,16 +888,17 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('match on popularity', async () => {
-    const media: Media[] = [{
+    const media: AniListMedia[] = [{
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
       title: {
-        english: 'fable',
+        english: 'febl',
       },
       popularity: 100,
     }, {
@@ -644,7 +906,7 @@ Deno.test('search for media', async (test) => {
       type: MediaType.Anime,
       format: MediaFormat.TV,
       title: {
-        english: 'fable',
+        english: 'feble',
       },
       popularity: 0,
     }];
@@ -672,7 +934,7 @@ Deno.test('search for media', async (test) => {
     );
 
     try {
-      const results = await packs.media({ search: 'feble' });
+      const results = await packs.media({ search: 'fable' });
 
       assertEquals(results.length, 1);
 
@@ -681,11 +943,117 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled anilist match', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'anilist media',
+      },
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['anilist:1'],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const results = await packs.media({ search: 'anilist media' });
+
+      assertEquals(results.length, 0);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled pack match', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['pack2:1'],
+      },
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      media: {
+        new: [{
+          id: '1',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'pack media',
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      const results = await packs.media({ search: 'pack media' });
+
+      assertEquals(results.length, 0);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('no matches', async () => {
-    const media: Media = {
+    const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -723,13 +1091,14 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 });
 
 Deno.test('search for characters', async (test) => {
   await test.step('anilist id', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'anilist character',
@@ -742,7 +1111,7 @@ Deno.test('search for characters', async (test) => {
         new: [{
           id: '1',
           name: {
-            full: 'pack-id character',
+            english: 'pack-id character',
           },
         }],
       },
@@ -775,18 +1144,22 @@ Deno.test('search for characters', async (test) => {
 
       assertEquals(results.length, 1);
 
-      assertEquals(results[0], character);
-      assertEquals(results[0].id, '1');
-
-      assertEquals(results[0].packId, 'anilist');
+      assertEquals(results[0], {
+        id: '1',
+        packId: 'anilist',
+        name: {
+          english: 'anilist character',
+        },
+      });
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('pack id', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: 1 as unknown as string,
       name: {
         full: 'anilist character',
@@ -799,7 +1172,7 @@ Deno.test('search for characters', async (test) => {
         new: [{
           id: '1',
           name: {
-            full: 'pack-id character',
+            english: 'pack-id character',
           },
         }],
       },
@@ -836,15 +1209,16 @@ Deno.test('search for characters', async (test) => {
 
       assertEquals(results[0].id, '1');
       assertEquals(results[0].packId, 'pack-id');
-      assertEquals(results[0].name.full, 'pack-id character');
+      assertEquals(results[0].name.english, 'pack-id character');
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('no pack id specified', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: 1 as unknown as string,
       name: {
         full: 'anilist character',
@@ -880,11 +1254,12 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('match full', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'fable',
@@ -922,11 +1297,12 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('match native', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'x'.repeat(100),
@@ -965,11 +1341,12 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('match alias', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'x'.repeat(100),
@@ -1008,52 +1385,12 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-    }
-  });
-
-  await test.step('match alias with spoilers', async () => {
-    const character: Character = {
-      id: '1',
-      name: {
-        full: 'x'.repeat(100),
-        alternativeSpoiler: ['fable'],
-      },
-    };
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        json: (() =>
-          Promise.resolve({
-            data: {
-              Page: {
-                characters: [character],
-              },
-            },
-          })),
-      } as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      const results = await packs.characters({ search: 'feble' });
-
-      assertEquals(results.length, 0);
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
+      packs.clear();
     }
   });
 
   await test.step('no matches', async () => {
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'abc',
@@ -1089,13 +1426,14 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 });
 
 Deno.test('aggregate media', async (test) => {
   await test.step('aggregate from anilist', async () => {
-    const parent: Media = {
+    const parent: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -1104,7 +1442,7 @@ Deno.test('aggregate media', async (test) => {
       },
     };
 
-    const character: Character = {
+    const character: AniListCharacter = {
       id: '2',
       name: {
         full: 'character name',
@@ -1163,7 +1501,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Parent,
+            relation: MediaRelation.Parent,
             node: {
               id: '1',
               packId: 'anilist',
@@ -1182,7 +1520,7 @@ Deno.test('aggregate media', async (test) => {
               id: '2',
               packId: 'anilist',
               name: {
-                full: 'character name',
+                english: 'character name',
               },
             },
           }],
@@ -1193,6 +1531,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1209,7 +1548,7 @@ Deno.test('aggregate media', async (test) => {
     const character: DisaggregatedCharacter = {
       id: '2',
       name: {
-        full: 'character name',
+        english: 'character name',
       },
     };
 
@@ -1264,7 +1603,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Parent,
+            relation: MediaRelation.Parent,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -1283,7 +1622,7 @@ Deno.test('aggregate media', async (test) => {
               id: '2',
               packId: 'pack-id',
               name: {
-                full: 'character name',
+                english: 'character name',
               },
             },
           }],
@@ -1294,6 +1633,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1357,7 +1697,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Parent,
+            relation: MediaRelation.Parent,
             node: {
               id: '1',
               packId: 'anilist',
@@ -1368,7 +1708,7 @@ Deno.test('aggregate media', async (test) => {
               },
             },
           }, {
-            relationType: MediaRelation.SpinOff,
+            relation: MediaRelation.SpinOff,
             node: {
               id: '1',
               packId: 'anilist',
@@ -1389,6 +1729,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1449,7 +1790,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Parent,
+            relation: MediaRelation.Parent,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -1460,7 +1801,7 @@ Deno.test('aggregate media', async (test) => {
               },
             },
           }, {
-            relationType: MediaRelation.SpinOff,
+            relation: MediaRelation.SpinOff,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -1481,6 +1822,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1505,7 +1847,7 @@ Deno.test('aggregate media', async (test) => {
         new: [{
           id: '1',
           name: {
-            full: 'character name',
+            english: 'character name',
           },
         }],
       },
@@ -1544,6 +1886,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1620,6 +1963,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1689,7 +2033,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Parent,
+            relation: MediaRelation.Parent,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -1700,7 +2044,7 @@ Deno.test('aggregate media', async (test) => {
               },
             },
           }, {
-            relationType: MediaRelation.SpinOff,
+            relation: MediaRelation.SpinOff,
             node: {
               id: '2',
               packId: 'pack-id',
@@ -1721,6 +2065,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1782,7 +2127,7 @@ Deno.test('aggregate media', async (test) => {
         },
         relations: {
           edges: [{
-            relationType: MediaRelation.Adaptation,
+            relation: MediaRelation.Adaptation,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -1807,6 +2152,7 @@ Deno.test('aggregate media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1820,7 +2166,7 @@ Deno.test('aggregate media', async (test) => {
       },
       relations: {
         edges: [{
-          relationType: MediaRelation.Sequel,
+          relation: MediaRelation.Sequel,
           node: {
             id: '2',
             type: MediaType.Anime,
@@ -1837,7 +2183,7 @@ Deno.test('aggregate media', async (test) => {
           node: {
             id: '3',
             name: {
-              full: 'character name',
+              english: 'character name',
             },
           },
         }],
@@ -1860,10 +2206,11 @@ Deno.test('aggregate media', async (test) => {
       assertEquals(await packs.aggregate<Media>({ media }), media);
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
+      assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1901,10 +2248,11 @@ Deno.test('aggregate media', async (test) => {
       });
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
+      assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 });
@@ -1924,7 +2272,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -1959,11 +2307,11 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'anilist',
@@ -1981,6 +2329,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -1998,7 +2347,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2030,11 +2379,11 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -2052,6 +2401,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2069,7 +2419,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2107,11 +2457,11 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'anilist',
@@ -2122,7 +2472,7 @@ Deno.test('aggregate characters', async (test) => {
               },
             },
           }, {
-            characterRole: CharacterRole.Supporting,
+            role: CharacterRole.Supporting,
             node: {
               id: '1',
               packId: 'anilist',
@@ -2140,6 +2490,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2157,7 +2508,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2192,11 +2543,11 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -2207,7 +2558,7 @@ Deno.test('aggregate characters', async (test) => {
               },
             },
           }, {
-            characterRole: CharacterRole.Supporting,
+            role: CharacterRole.Supporting,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -2225,6 +2576,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2233,7 +2585,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2282,7 +2634,7 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [],
@@ -2293,6 +2645,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2301,7 +2654,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '3',
       packId: 'pack-id',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2350,11 +2703,11 @@ Deno.test('aggregate characters', async (test) => {
         id: '3',
         packId: 'pack-id',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -2365,7 +2718,7 @@ Deno.test('aggregate characters', async (test) => {
               },
             },
           }, {
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '2',
               packId: 'pack-id',
@@ -2383,6 +2736,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2404,7 +2758,7 @@ Deno.test('aggregate characters', async (test) => {
       id: '1',
       packId: 'test',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: [{
         role: CharacterRole.Main,
@@ -2414,6 +2768,7 @@ Deno.test('aggregate characters', async (test) => {
 
     const manifest: Manifest = {
       id: 'pack-id',
+      type: ManifestType.Builtin,
       media: {
         new: [media],
       },
@@ -2436,11 +2791,11 @@ Deno.test('aggregate characters', async (test) => {
         id: '1',
         packId: 'test',
         name: {
-          full: 'full name',
+          english: 'full name',
         },
         media: {
           edges: [{
-            characterRole: CharacterRole.Main,
+            role: CharacterRole.Main,
             node: {
               id: '1',
               packId: 'pack-id',
@@ -2462,6 +2817,7 @@ Deno.test('aggregate characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2469,11 +2825,11 @@ Deno.test('aggregate characters', async (test) => {
     const character: Character = {
       id: '1',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
       media: {
         edges: [{
-          characterRole: CharacterRole.Main,
+          role: CharacterRole.Main,
           node: {
             id: '2',
             type: MediaType.Anime,
@@ -2502,10 +2858,11 @@ Deno.test('aggregate characters', async (test) => {
       assertEquals(await packs.aggregate<Character>({ character }), character);
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
+      assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 
@@ -2513,7 +2870,7 @@ Deno.test('aggregate characters', async (test) => {
     const character: Character = {
       id: '1',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
     };
 
@@ -2538,157 +2895,24 @@ Deno.test('aggregate characters', async (test) => {
       });
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
+      assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      packs.clear();
     }
   });
 });
 
-Deno.test('overwrite media', async () => {
-  const media: Media = {
-    id: '1',
-    packId: 'anilist',
-    type: MediaType.Anime,
-    format: MediaFormat.TV,
-    title: {
-      english: 'title',
-    },
-  };
-
-  const overwrite: DisaggregatedMedia = {
-    id: '0',
-    packId: 'test',
-    type: MediaType.Anime,
-    format: MediaFormat.Internet,
-    title: {
-      english: 'title overwrite',
-    },
-  };
-
-  const manifest: Manifest = {
-    id: 'pack-id',
-    media: {
-      overwrite: {
-        'anilist:1': overwrite,
-      },
-    },
-  };
-
-  const fetchStub = stub(
-    globalThis,
-    'fetch',
-    () => undefined as any,
-  );
-
-  const listStub = stub(
-    packs,
-    'list',
-    () => [manifest],
-  );
-
-  try {
-    assertEquals(await packs.aggregate<Media>({ media }), {
-      id: '1',
-      packId: 'anilist',
-      overwritePackId: 'pack-id',
-      type: MediaType.Anime,
-      format: MediaFormat.Internet,
-      title: {
-        english: 'title overwrite',
-      },
-      relations: {
-        edges: [],
-      },
-      characters: {
-        edges: [],
-      },
-    });
-
-    assertSpyCalls(fetchStub, 0);
-    assertSpyCalls(listStub, 1);
-  } finally {
-    fetchStub.restore();
-    listStub.restore();
-  }
-});
-
-Deno.test('overwrite character', async () => {
-  const character: Character = {
-    id: '1',
-    packId: 'anilist',
-    name: {
-      full: 'full name',
-    },
-    age: '16',
-  };
-
-  const overwrite: DisaggregatedCharacter = {
-    id: '0',
-    packId: 'test',
-    name: {
-      full: 'name overwrite',
-    },
-    age: '18',
-  };
-
-  const manifest: Manifest = {
-    id: 'pack-id',
-    characters: {
-      overwrite: {
-        'anilist:1': overwrite,
-      },
-    },
-  };
-
-  const fetchStub = stub(
-    globalThis,
-    'fetch',
-    () => undefined as any,
-  );
-
-  const listStub = stub(
-    packs,
-    'list',
-    () => [manifest],
-  );
-
-  try {
-    assertEquals(await packs.aggregate<Character>({ character }), {
-      id: '1',
-      packId: 'anilist',
-      overwritePackId: 'pack-id',
-      age: '18',
-      name: {
-        full: 'name overwrite',
-      },
-      media: {
-        edges: [],
-      },
-    });
-
-    assertSpyCalls(fetchStub, 0);
-    assertSpyCalls(listStub, 1);
-  } finally {
-    fetchStub.restore();
-    listStub.restore();
-  }
-});
-
 Deno.test('titles to array', async (test) => {
   await test.step('all titles', () => {
-    const media = {
-      title: {
-        romaji: 'romaji',
-        native: 'native',
-        english: 'english',
-      },
-    };
+    const alias = packs.aliasToArray({
+      romaji: 'romaji',
+      native: 'native',
+      english: 'english',
+    });
 
-    const array = packs.titlesToArray(media as Media);
-
-    assertEquals(array, [
+    assertEquals(alias, [
       'english',
       'romaji',
       'native',
@@ -2696,103 +2920,15 @@ Deno.test('titles to array', async (test) => {
   });
 
   await test.step('missing 1 title', () => {
-    const media = {
-      title: {
-        romaji: '',
-        native: 'native',
-        english: 'english',
-      },
-    };
+    const alias = packs.aliasToArray({
+      romaji: '',
+      native: 'native',
+      english: 'english',
+    });
 
-    const array = packs.titlesToArray(media as Media);
-
-    assertEquals(array, [
+    assertEquals(alias, [
       'english',
       'native',
     ]);
-  });
-});
-
-Deno.test('images to array', async (test) => {
-  await test.step('all images', () => {
-    const image: Image = {
-      extraLarge: 'extraLarge',
-      large: 'large',
-      medium: 'medium',
-    };
-
-    const array = packs.imagesToArray(image, 'large-first');
-
-    assertEquals(array, [
-      'extraLarge',
-      'large',
-      'medium',
-    ]);
-  });
-
-  await test.step('all images in reverse order', () => {
-    const image: Image = {
-      extraLarge: 'extraLarge',
-      large: 'large',
-      medium: 'medium',
-    };
-
-    const array = packs.imagesToArray(image, 'small-first');
-
-    assertEquals(array, [
-      'medium',
-      'large',
-      'extraLarge',
-    ]);
-  });
-
-  await test.step('select ideal size', () => {
-    const image: Image = {
-      extraLarge: 'extraLarge',
-      large: 'large',
-      medium: 'medium',
-    };
-
-    const array = packs.imagesToArray(image, 'large-first', 'large');
-
-    assertEquals(array, [
-      'large',
-    ]);
-  });
-
-  await test.step('missing 1 image', () => {
-    const image: Image = {
-      extraLarge: 'extraLarge',
-      medium: 'medium',
-    };
-
-    const array = packs.imagesToArray(image, 'large-first');
-
-    assertEquals(array, [
-      'extraLarge',
-      'medium',
-    ]);
-  });
-
-  await test.step('missing ideal image', () => {
-    const image: Image = {
-      extraLarge: 'extraLarge',
-      medium: 'medium',
-    };
-
-    const array = packs.imagesToArray(image, 'large-first', 'large');
-
-    assertEquals(array, [
-      'extraLarge',
-      'medium',
-    ]);
-  });
-
-  await test.step('missing all images', () => {
-    const image: Image = {};
-
-    const array = packs.imagesToArray(image, 'large-first');
-
-    assertEquals(array, []);
   });
 });

@@ -14,6 +14,16 @@ import * as discord from './discord.ts';
 
 import packs from './packs.ts';
 
+export type Pull = {
+  role?: CharacterRole;
+  character: Character;
+  media: Media;
+  pool: number;
+  rating: Rating;
+  popularityGreater: number;
+  popularityLesser?: number;
+};
+
 const variables = {
   roles: {
     10: CharacterRole.Main, // 10% for Main
@@ -29,16 +39,6 @@ const variables = {
     3: [200_000, 400_000], // 3% for 200K -> 400K
     1: [400_000, NaN], // 1% for 400K -> inf
   },
-};
-
-type Pull = {
-  role: CharacterRole;
-  character: Character;
-  media: Media;
-  pool: number;
-  rating: Rating;
-  popularityGreater: number;
-  popularityLesser?: number;
 };
 
 /**
@@ -66,12 +66,12 @@ async function forcePull(id: string): Promise<Pull> {
     pool: 1,
     character,
     media: edge.node,
-    role: edge.characterRole,
+    role: edge.role,
     popularityGreater: -1,
     popularityLesser: -1,
     rating: new Rating({
       popularity,
-      role: character.popularity ? undefined : edge.characterRole,
+      role: character.popularity ? undefined : edge.role,
     }),
   };
 }
@@ -81,13 +81,13 @@ async function forcePull(id: string): Promise<Pull> {
  */
 async function rngPull(): Promise<Pull> {
   // roll for popularity range that wil be used to generate the pool
-  const range = utils.rng(variables.ranges);
+  const range = utils.rng(gacha.variables.ranges);
 
   const role = range[0] === 0
     // include all roles in the pool
     ? undefined
     // one specific role for the whole pool
-    : utils.rng(variables.roles);
+    : utils.rng(gacha.variables.roles);
 
   const dict = await packs.pool({
     role,
@@ -112,7 +112,11 @@ async function rngPull(): Promise<Pull> {
 
     const edge = candidate.media?.edges?.[0];
 
-    if (!edge) {
+    if (
+      !edge ||
+      packs.isDisabled(`${candidate.packId}:${candidate.id}`) ||
+      packs.isDisabled(`${edge.node.packId}:${edge.node.id}`)
+    ) {
       continue;
     }
 
@@ -124,30 +128,30 @@ async function rngPull(): Promise<Pull> {
       (
         !role ||
         candidate.popularity ||
-        edge?.characterRole === role
+        edge?.role === role
       )
     ) {
       media = edge.node;
       character = candidate;
       rating = new Rating({
         popularity,
-        role: character.popularity ? undefined : edge.characterRole,
+        role: character.popularity ? undefined : edge.role,
       });
       break;
     }
   }
 
-  if (!character) {
+  if (!character || !media || !rating) {
     throw new Error(
       'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
     );
   }
 
   return {
-    role: role!,
-    media: media!,
-    rating: rating!,
-    character: character!,
+    role: role,
+    media: media,
+    rating: rating,
+    character: character,
     pool: pool.length,
     popularityGreater: range[0],
     popularityLesser: range[1],
@@ -157,23 +161,21 @@ async function rngPull(): Promise<Pull> {
 /**
  * start the roll's animation
  */
-function start({ token, id }: { token: string; id?: string }) {
-  (
-    id ? forcePull(id) : rngPull()
-  )
+function start({ token, id }: { token: string; id?: string }): discord.Message {
+  (id ? gacha.forcePull(id) : gacha.rngPull())
     .then(async (pull) => {
       const media = pull.media;
 
-      const titles = packs.titlesToArray(media);
+      const mediaTitles = packs.aliasToArray(media.title);
 
       let message = new discord.Message()
         .addEmbed(
           new discord.Embed()
-            .setTitle(utils.wrap(titles[0]!))
+            .setTitle(utils.wrap(mediaTitles[0]))
             .setImage({
               default: true,
-              url: packs.imagesToArray(media.coverImage, 'large-first', 'large')
-                ?.[0],
+              preferredSize: discord.ImageSize.Medium,
+              url: media.image?.featured.url,
             }),
         );
 
@@ -185,7 +187,7 @@ function start({ token, id }: { token: string; id?: string }) {
         .addEmbed(
           new discord.Embed()
             .setImage({
-              url: `${config.fileUrl}/stars/${pull.rating.stars}.gif`,
+              url: `${config.origin}/file/stars/${pull.rating.stars}.gif`,
             }),
         );
 
@@ -193,21 +195,20 @@ function start({ token, id }: { token: string; id?: string }) {
 
       await utils.sleep(pull.rating.stars >= 5 ? 7 : 5);
 
+      const characterAliases = packs.aliasToArray(pull.character.name);
+
       message = new discord.Message()
         .addEmbed(
           new discord.Embed()
             .setTitle(pull.rating.emotes)
             .addField({
-              name: utils.wrap(titles[0]!),
-              value: `**${utils.wrap(pull.character.name!.full)}**`,
+              name: utils.wrap(mediaTitles[0]),
+              value: `**${utils.wrap(characterAliases[0])}**`,
             })
             .setImage({
               default: true,
-              url: packs.imagesToArray(
-                pull.character.image,
-                'large-first',
-                'large',
-              )?.[0],
+              preferredSize: discord.ImageSize.Medium,
+              url: pull.character.image?.featured.url,
             }),
         );
 
@@ -236,12 +237,12 @@ function start({ token, id }: { token: string; id?: string }) {
   return new discord.Message()
     .addEmbed(
       new discord.Embed().setImage(
-        { url: `${config.fileUrl}/spinner.gif` },
+        { url: `${config.origin}/file/spinner.gif` },
       ),
     );
 }
 
-function pullDebugEmbed(pull: Pull) {
+function pullDebugEmbed(pull: Pull): discord.Embed {
   return new discord.Embed()
     .setTitle('Pool')
     .addField({

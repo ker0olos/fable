@@ -4,6 +4,14 @@ import Ajv from 'https://esm.sh/ajv@8.12.0';
 
 import { bold, red } from 'https://deno.land/std@0.172.0/fmt/colors.ts';
 
+import alias from '../json/alias.json' assert {
+  type: 'json',
+};
+
+import image from '../json/image.json' assert {
+  type: 'json',
+};
+
 import media from '../json/media.json' assert {
   type: 'json',
 };
@@ -23,6 +31,8 @@ import builtin from '../json/builtin.json' assert {
 import { AssertionError } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
 
 const _v = new Ajv({ strict: false, allErrors: true })
+  .addSchema(alias)
+  .addSchema(image)
   .addSchema(media)
   .addSchema(character)
   .addSchema(index).compile(builtin);
@@ -32,7 +42,7 @@ const replacerWithPath = (
 ) => {
   const m = new Map();
 
-  return function (this: any, key: string, value: any) {
+  return function (this: any, key: string, value: any): string {
     let path = m.get(this);
 
     path += `/${key}`;
@@ -59,36 +69,52 @@ export const prettify = (
     return '';
   }
 
+  function appendError(data: any, index: number): any {
+    const key0 = `ERROR/${index}`;
+
+    if (index > -1) {
+      switch (typeof data) {
+        case 'object':
+          if (Array.isArray(data)) {
+            return [
+              key0,
+              ...data,
+            ];
+          } else {
+            return {
+              [key0]: 0,
+              ...data,
+            };
+          }
+        default:
+          return `${data}${key0}`;
+      }
+    } else {
+      return data;
+    }
+  }
+
   _v.errors.forEach((err, index) => {
     if (err.instancePath === '') {
-      data = {
-        [`ERROR/${index}`]: 0,
-        [`ERROR/${index}/1`]: 0,
-        ...data,
-      };
+      data = appendError(appendError, index);
     }
   });
 
   let json = JSON.stringify(
     data,
     replacerWithPath((value, path) => {
+      // deno-lint-ignore no-non-null-assertion
       const index = _v.errors!.findIndex((e) => e.instancePath === path);
 
-      if (index > -1) {
-        return {
-          [`ERROR/${index}`]: 0,
-          [`ERROR/${index}/1`]: 0,
-          ...value,
-        };
-      } else {
-        return value;
-      }
+      return appendError(value, index);
     }),
     2,
   );
 
   _v.errors.forEach((err, index) => {
-    let message = `${err.message!}`;
+    let message = `${err.message}`;
+
+    // deno-lint-ignore no-non-null-assertion
     let underline = '^'.repeat(err.message!.length);
 
     if (opts?.terminal) {
@@ -96,12 +122,13 @@ export const prettify = (
       underline = bold(red(underline));
     }
 
-    json = json.replace(new RegExp(`"ERROR/${index}": 0,`), message);
-
-    json = json.replace(
-      new RegExp(`"ERROR/${index}/1": 0,`),
-      underline,
-    );
+    json = json
+      .replace(new RegExp(`"ERROR/${index}": 0,`), `${message}\n${underline}`)
+      .replace(new RegExp(`"ERROR/${index}",`), `${message}\n${underline}`)
+      .replace(
+        new RegExp(`(.*)ERROR/${index}"`),
+        (_, s) => `${s}" >>> ${message}\n${underline}`,
+      );
   });
 
   if (opts?.markdown) {

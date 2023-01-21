@@ -37,7 +37,7 @@ Deno.test('init', async (test) => {
     );
 
     try {
-      await init({ baseUrl: 'http://localhost:8000/' });
+      await init({ url: new URL('http://localhost:8000/') });
 
       assertEquals(config, {
         deploy: false,
@@ -45,7 +45,7 @@ Deno.test('init', async (test) => {
         appId: 'app_id',
         publicKey: 'app_public_key',
         mongoUrl: 'mongo_url',
-        fileUrl: 'http://localhost:8000/file',
+        origin: 'http://localhost:8000',
         sentry: 'sentry_dsn',
       });
     } finally {
@@ -82,7 +82,7 @@ Deno.test('init', async (test) => {
     );
 
     try {
-      await init({ baseUrl: 'http://localhost:8000/dev' });
+      await init({ url: new URL('http://localhost:8000/dev') });
 
       assertEquals(config, {
         deploy: false,
@@ -90,7 +90,7 @@ Deno.test('init', async (test) => {
         appId: 'dev_id',
         publicKey: 'dev_public_key',
         mongoUrl: 'dev_mongo_url',
-        fileUrl: 'http://localhost:8000/file',
+        origin: 'http://localhost:8000',
         sentry: 'sentry_dsn',
       });
     } finally {
@@ -127,7 +127,7 @@ Deno.test('init', async (test) => {
     );
 
     try {
-      await init({ baseUrl: 'http://localhost:8000/dev' });
+      await init({ url: new URL('http://localhost:8000/dev') });
 
       assertEquals(config, {
         deploy: true,
@@ -135,7 +135,7 @@ Deno.test('init', async (test) => {
         appId: 'dev_id',
         publicKey: 'dev_public_key',
         mongoUrl: 'dev_mongo_url',
-        fileUrl: 'http://localhost:8000/file',
+        origin: 'http://localhost:8000',
         sentry: 'sentry_dsn',
       });
     } finally {

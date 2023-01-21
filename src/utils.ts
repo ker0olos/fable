@@ -1,6 +1,10 @@
 import nacl from 'https://esm.sh/tweetnacl@1.0.3';
 
-function randint(min: number, max: number) {
+import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
+
+import config from './config.ts';
+
+function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
@@ -18,7 +22,7 @@ function hexToInt(hex?: string): number | undefined {
   return parseInt(`${R}${G}${B}`, 16);
 }
 
-function shuffle<T>(array: T[]) {
+function shuffle<T>(array: T[]): void {
   for (
     let i = 0, length = array.length, swap = 0, temp = null;
     i < length;
@@ -31,7 +35,7 @@ function shuffle<T>(array: T[]) {
   }
 }
 
-function sleep(secs: number) {
+function sleep(secs: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, secs * 1000));
 }
 
@@ -78,7 +82,7 @@ function truncate(
   return str;
 }
 
-function wrap(text: string, width = 32) {
+function wrap(text: string, width = 32): string {
   return text.replace(
     new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'),
     '$1\n',
@@ -101,12 +105,23 @@ function capitalize(s: string | undefined): string | undefined {
     .trim();
 }
 
-function comma(n: number) {
+function comma(n: number): string {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function parseId(query?: string): number | undefined {
-  const id = parseInt(query!);
+function chunks<T>(a: Array<T>, size: number): T[][] {
+  return Array.from(
+    new Array(Math.ceil(a.length / size)),
+    (_, i) => a.slice(i * size, i * size + size),
+  );
+}
+
+function distance(a: string, b: string): number {
+  return 100 - 100 * _distance(a, b) / (a.length + b.length);
+}
+
+function parseId(query: string): number | undefined {
+  const id = parseInt(query);
 
   if (!isNaN(id) && id.toString() === query) {
     return id;
@@ -127,42 +142,105 @@ function decodeDescription(s?: string): string | undefined {
   s = s.replaceAll('&apos;', '\'');
   s = s.replaceAll('&amp;', '&');
 
-  s = s.replaceAll(/~!.+!~/gm, '');
+  s = s.replace(/~!.+!~/gm, '');
+  s = s.replace(/\|\|.+\|\|/gm, '');
 
-  s = s.replace(/<i.*?>((.|\n)*?)<\/i>/g, '*$1*');
-  s = s.replace(/<b.*?>((.|\n)*?)<\/b>/g, '**$1**');
-  s = s.replace(/<strike.*?>((.|\n)*?)<\/strike>/g, '~~$1~~');
+  s = s.replace(/<i.*?>((.|\s)*?)<\/?i>/g, (_, s) => `*${s.trim()}*`);
+  s = s.replace(/<b.*?>((.|\s)*?)<\/?b>/g, (_, s) => `**${s.trim()}**`);
+  s = s.replace(
+    /<strike.*?>((.|\s)*?)<\/?strike>/g,
+    (_, s) => `~~${s.trim()}~~`,
+  );
 
-  s = s.replaceAll(/<br>|<\/br>|<br\/>|<hr>|<\/hr>/gm, '\n');
+  s = s.replace(/<\/?br\/?>|<\/?hr\/?>/gm, '\n');
 
-  s = s.replace(/<a.*?href="(.*?)".*?>(.*?)<\/a>/g, '[$2]($1)');
+  s = s.replace(/<a.*?href=("|')(.*?)("|').*?>(.*?)<\/?a>/g, '[$4]($2)');
 
-  return s;
+  // s = s.replace(/<a.*?href=("|')(.*?)("|').*?>(.*?)<\/a>/g, '$4');
+  // s = s.replace(/\[(.*)\]\((.*)\)/g, '$1');
+  // s = s.replace(/(?:https?):\/\/[\n\S]+/gm, '');
+
+  // max characters for discord descriptions is 4096
+  return truncate(s, 4096);
 }
 
 async function verifySignature(
-  request: Request,
-  publicKey: string,
+  r: Request,
+  publicKey?: string,
 ): Promise<{ valid: boolean; body: string }> {
-  const signature = request.headers.get('X-Signature-Ed25519')!;
-  const timestamp = request.headers.get('X-Signature-Timestamp')!;
+  const signature = r.headers.get('X-Signature-Ed25519') || undefined;
+  const timestamp = r.headers.get('X-Signature-Timestamp') || undefined;
 
-  const body = await request.text();
+  const body = await r.text();
 
-  function hexToUint8Array(hex: string) {
-    return new Uint8Array(
-      hex?.match(/.{1,2}/g)!.map((val) => parseInt(val, 16)),
-    );
+  function hexToUint8Array(hex?: string): Uint8Array | undefined {
+    const t = hex?.match(/.{1,2}/g);
+
+    if (t) {
+      return new Uint8Array(
+        t.map((val) => parseInt(val, 16)),
+      );
+    }
+  }
+
+  const sig = hexToUint8Array(signature);
+  const pubKey = hexToUint8Array(publicKey);
+
+  if (!sig || !pubKey) {
+    return { valid: false, body };
   }
 
   const valid = nacl.sign.detached.verify(
     new TextEncoder().encode(timestamp + body),
-    hexToUint8Array(signature),
-    hexToUint8Array(publicKey),
+    sig,
+    pubKey,
   );
 
   return { valid, body };
 }
+
+const proxy = async (r: Request) => {
+  try {
+    const encoded = new URL(r.url);
+
+    const url = new URL(
+      decodeURIComponent(encoded.pathname.substring('/external/'.length)),
+    );
+
+    const image = url ? await fetch(url) : undefined;
+    const type = image?.headers.get('content-type');
+
+    // NOTE discord doesn't allow any gif that doesn't end with the file extension
+    // I suspect it's some kind of nitro restriction thingy like the one with APNGs
+    // but for now so it's clear that the gif is invalid we straight out refuse it
+    if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
+      throw new Error();
+    }
+
+    // const searchParams = encoded.searchParams;
+
+    // TODO IMPORTANT apply size parameter
+
+    // TODO image customization
+    //(see https://github.com/ker0olos/fable/issues/24)
+
+    if (image?.status === 200 && type?.startsWith('image/')) {
+      const body = await image.arrayBuffer();
+
+      const response = new Response(body);
+
+      response.headers.set('content-type', type);
+      response.headers.set('content-length', `${body.byteLength}`);
+      response.headers.set('cache-control', 'public, max-age=604800');
+
+      return response;
+    }
+
+    throw new Error();
+  } catch {
+    return Response.redirect(`${config.origin}/file/large.jpg`);
+  }
+};
 
 const utils = {
   capitalize,
@@ -175,7 +253,10 @@ const utils = {
   shuffle,
   sleep,
   truncate,
+  chunks,
+  distance,
   verifySignature,
+  proxy,
   wrap,
 };
 

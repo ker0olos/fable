@@ -7,8 +7,18 @@ const API = `https://discord.com/api/v10`;
 
 const splitter = '=';
 
-export function join(...args: string[]): string {
-  return args.join(splitter);
+export enum ImageSize {
+  // 450x635,
+  Large = '',
+  // 230x345
+  Medium = 'medium',
+  // 100x150
+  Thumbnail = 'thumbnail',
+}
+
+export enum MessageFlags {
+  Ephemeral = 1 << 6,
+  SuppressEmbeds = 1 << 2,
 }
 
 export enum MessageType {
@@ -77,7 +87,7 @@ export class Interaction<Options> {
   data?: unknown;
 
   name?: string;
-  options?: {
+  options: {
     [key: string]: Options;
   };
 
@@ -150,21 +160,21 @@ export class Interaction<Options> {
     switch (this.type) {
       // case InteractionType.CommandAutocomplete:
       case InteractionType.Command: {
-        this.name = data!.name;
+        this.name = data.name;
 
         // this.targetId = data!.target_id;
 
-        if (data!.options?.[0].type === 1) {
-          this.subcommand = data!.options?.[0].name;
+        if (data.options?.[0].type === 1) {
+          this.subcommand = data.options?.[0].name;
 
           this.name += `_${this.subcommand}`;
 
-          data!.options?.[0]!.options?.forEach((option) => {
-            this.options![option.name] = option.value as Options;
+          data.options?.[0].options?.forEach((option) => {
+            this.options[option.name] = option.value as Options;
           });
         } else {
-          data!.options?.forEach((option) => {
-            this.options![option.name] = option.value as Options;
+          data.options?.forEach((option) => {
+            this.options[option.name] = option.value as Options;
           });
         }
 
@@ -172,7 +182,7 @@ export class Interaction<Options> {
       }
       // case InteractionType.Modal:
       case InteractionType.Component: {
-        const custom = data!.custom_id.split(splitter);
+        const custom = data.custom_id.split(splitter);
 
         this.customType = custom[0];
         this.customValues = custom.slice(1);
@@ -180,7 +190,7 @@ export class Interaction<Options> {
         if (data.components) {
           // deno-lint-ignore no-explicit-any
           data.components[0].components.forEach((component: any) => {
-            this.options![component.custom_id] = component.value as Options;
+            this.options[component.custom_id] = component.value as Options;
           });
         }
 
@@ -200,6 +210,7 @@ export class Component {
     label?: string;
     emoji?: Emote;
     placeholder?: string;
+    disabled?: boolean;
     url?: string;
   };
 
@@ -209,38 +220,49 @@ export class Component {
     };
   }
 
-  setId(id: string) {
-    this.#data.custom_id = id;
+  setId(...id: string[]): Component {
+    const cid = id.join(splitter);
+    // (see https://discord.com/developers/docs/interactions/message-components#custom-id)
+    if (cid.length <= 100) {
+      this.#data.custom_id = cid;
+    }
     return this;
   }
 
-  setStyle(style: ButtonStyle | TextInputStyle) {
+  // setStyle(style: ButtonStyle | TextInputStyle): Component {
+  setStyle(style: ButtonStyle): Component {
     this.#data.style = style;
     return this;
   }
 
-  setLabel(label: string) {
+  setLabel(label: string): Component {
     this.#data.label = label;
     return this;
   }
 
-  setEmote(emote: Emote) {
+  toggle(): Component {
+    this.#data.disabled = !this.#data.disabled;
+    return this;
+  }
+
+  setEmote(emote: Emote): Component {
     this.#data.emoji = emote;
     return this;
   }
 
-  setPlaceholder(placeholder: string) {
+  setPlaceholder(placeholder: string): Component {
     this.#data.type = ComponentType.TextInput;
     this.#data.placeholder = placeholder;
     return this;
   }
 
-  setUrl(url: string) {
+  setUrl(url: string): Component {
     this.#data.url = url;
     return this;
   }
 
-  json() {
+  // deno-lint-ignore no-explicit-any
+  json(): any {
     if (!this.#data.style) {
       switch (this.#data.type) {
         case ComponentType.TextInput:
@@ -297,43 +319,34 @@ export class Embed {
     };
   }
 
-  setTitle(title?: string) {
+  setTitle(title?: string): Embed {
     this.#data.title = title;
     return this;
   }
 
-  setUrl(url?: string) {
+  setUrl(url?: string): Embed {
     this.#data.url = url;
     return this;
   }
 
-  setColor(color?: string) {
+  setColor(color?: string): Embed {
     this.#data.color = utils.hexToInt(color);
     return this;
   }
 
-  setDescription(description?: string) {
+  setDescription(description?: string): Embed {
     this.#data.description = utils.decodeDescription(description);
     return this;
   }
 
-  setAuthor(author: { name?: string; url?: string; icon_url?: string }) {
+  setAuthor(author: { name?: string; url?: string; icon_url?: string }): Embed {
     if (author.name) {
       this.#data.author = author;
     }
     return this;
   }
 
-  setThumbnail(thumbnail: { url?: string; default?: boolean }) {
-    if (thumbnail.url || thumbnail.default) {
-      this.#data.thumbnail = {
-        url: thumbnail.url ?? `${config.fileUrl}/medium.jpg`,
-      };
-    }
-    return this;
-  }
-
-  addField(field: { name: string; value: string; inline?: boolean }) {
+  addField(field: { name: string; value: string; inline?: boolean }): Embed {
     if (!this.#data.fields) {
       this.#data.fields = [];
     }
@@ -345,23 +358,56 @@ export class Embed {
     return this;
   }
 
-  setImage(image: { url?: string; default?: boolean }) {
+  setImage(
+    image: {
+      url?: string;
+      default?: boolean;
+      disableProxy?: boolean;
+      preferredSize?: ImageSize;
+    },
+  ): Embed {
     if (image.url || image.default) {
-      this.#data.image = {
-        url: image.url ?? `${config.fileUrl}/large.jpg`,
-      };
+      if (config.origin && image.url?.startsWith(config.origin)) {
+        this.#data.image = {
+          url: image.url,
+        };
+      } else {
+        this.#data.image = {
+          url: `${config.origin}/external/${
+            encodeURIComponent(image.url ?? '')
+          }${image.preferredSize === ImageSize.Medium ? '?size=medium' : ''}`,
+        };
+      }
     }
     return this;
   }
 
-  setFooter(footer: { text?: string; icon_url?: string }) {
+  setThumbnail(thumbnail: { url?: string; default?: boolean }): Embed {
+    if (thumbnail.url || thumbnail.default) {
+      if (config.origin && thumbnail.url?.startsWith(config.origin)) {
+        this.#data.thumbnail = {
+          url: thumbnail.url,
+        };
+      } else {
+        this.#data.thumbnail = {
+          url: `${config.origin}/external/${
+            encodeURIComponent(thumbnail.url ?? '')
+          }?size=thumbnail`,
+        };
+      }
+    }
+    return this;
+  }
+
+  setFooter(footer: { text?: string; icon_url?: string }): Embed {
     if (footer.text) {
       this.#data.footer = footer;
     }
     return this;
   }
 
-  json() {
+  // deno-lint-ignore no-explicit-any
+  json(): any {
     return this.#data;
   }
 }
@@ -370,6 +416,7 @@ export class Message {
   #type?: MessageType;
 
   #data: {
+    flags?: number;
     content?: string;
     embeds: unknown[];
     components: unknown[];
@@ -389,13 +436,18 @@ export class Message {
     };
   }
 
-  setType(type: MessageType) {
+  setType(type: MessageType): Message {
     this.#type = type;
     return this;
   }
 
-  setContent(content: string) {
+  setContent(content: string): Message {
     this.#data.content = content;
+    return this;
+  }
+
+  setFlags(flags: MessageFlags): Message {
+    this.#data.flags = flags;
     return this;
   }
 
@@ -410,28 +462,30 @@ export class Message {
   //   return this;
   // }
 
-  addEmbed(embed: Embed) {
-    if (this.embedsCount() < 5) {
-      this.#data.embeds.push(embed.json());
-    }
+  addEmbed(embed: Embed): Message {
+    this.#data.embeds.push(embed.json());
     return this;
   }
 
-  addComponents(components: Component[]) {
+  addComponents(components: Component[]): Message {
     if (components.length > 0) {
-      this.#data.components.push({
-        type: 1,
-        components: components.slice(0, 5).map((component) => {
-          const comp = component.json();
+      // max amount of items per group is 5
+      // (see https://discord.com/developers/docs/interactions/message-components#action-rows)
+      utils.chunks(components, 5)
+        .forEach((chunk) => {
+          this.#data.components.push({
+            type: 1,
+            components: chunk.map((component) => {
+              const comp = component.json();
 
-          // labels have maximum of 80 characters
-          // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
-          comp.label = utils.truncate(comp.label, 80);
-
-          return component.json();
-        }),
-      });
+              // labels have maximum of 80 characters
+              // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
+              return (comp.label = utils.truncate(comp.label, 80), comp);
+            }),
+          });
+        });
     }
+
     return this;
   }
 
@@ -446,15 +500,8 @@ export class Message {
   //   return this;
   // }
 
-  embedsCount() {
-    return this.#data.embeds.length;
-  }
-
-  componentsCount() {
-    return this.#data.components.length;
-  }
-
-  json() {
+  // deno-lint-ignore no-explicit-any
+  json(): any {
     let data;
 
     switch (this.#type) {
@@ -470,9 +517,9 @@ export class Message {
       //   break;
       default:
         data = {
-          embeds: this.#data.embeds,
-          content: this.#data.content,
-          components: this.#data.components,
+          ...this.#data,
+          components: this.#data.components.slice(0, 5),
+          embeds: this.#data.embeds.slice(0, 3),
         };
         break;
     }
@@ -495,11 +542,7 @@ export class Message {
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
       },
-      body: JSON.stringify({
-        embeds: this.#data.embeds,
-        content: this.#data.content,
-        components: this.#data.components,
-      }),
+      body: JSON.stringify(this.json().data),
     });
   }
 
@@ -523,7 +566,7 @@ export class Message {
   //   });
   // }
 
-  static pong() {
+  static pong(): Response {
     return json({
       type: 1,
     });
@@ -542,48 +585,47 @@ export class Message {
   // }
 
   static page(
-    { current, id, index, total }: {
+    { embeds, id, index, total }: {
       id: string;
-      total: number;
+      embeds: Embed[];
       index?: number;
-      current: Embed;
+      total: number;
     },
-  ) {
+  ): Message {
     index = index ?? 0;
 
     const message = new Message();
 
-    current.setFooter({
-      text: `${index + 1}/${total}`,
-    });
+    const group = [];
 
-    const navigation = [];
+    const prev = new Component()
+      .setId(id, `${index - 1}`)
+      .setLabel(`Prev`);
+
+    const next = new Component()
+      .setId(id, `${index + 1}`)
+      .setLabel(`Next`);
+
+    const indicator = new Component().setId('_')
+      .setLabel(`${index + 1}/${total}`)
+      .toggle();
 
     if (index - 1 >= 0) {
-      navigation.push(
-        new Component().setId(`${id}:${index - 1}`).setLabel(`Prev`),
-      );
+      group.push(prev);
     }
+
+    group.push(indicator);
 
     if (index + 1 < total) {
-      navigation.push(
-        new Component().setId(`${id}:${index + 1}`).setLabel(`Next`),
-      );
+      group.push(next);
     }
 
-    return message.addEmbed(current).addComponents(navigation);
+    embeds.forEach((embed) => message.addEmbed(embed));
+
+    return message.addComponents(group);
   }
 
-  static content(content: string) {
-    return json({
-      type: MessageType.New,
-      data: {
-        content,
-      },
-    });
-  }
-
-  static internal(id: string) {
+  static internal(id: string): Message {
     return new Message().setContent(
       `An Internal Error occurred and was reported.\n\n\`\`\`ref_id: ${id}\`\`\``,
     );

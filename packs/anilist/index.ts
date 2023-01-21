@@ -1,4 +1,4 @@
-export { characters, media, pool } from './api.ts';
+export * from './api.ts';
 
 import { nextEpisode } from './extra.ts';
 

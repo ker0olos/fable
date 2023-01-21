@@ -6,15 +6,19 @@
     "id": {
       "type": "string",
       "description": "A unique alphanumeric id",
-      "pattern": "^[-_a-z0-9]+$"
+      "pattern": "^[-_a-z0-9]+$",
+      "minLength": 1,
+      "maxLength": 20
     },
     "title": {
       "type": "string",
-      "description": "The display title of the pack"
+      "description": "The display title of the pack",
+      "maxLength": 128
     },
     "description": {
       "type": "string",
-      "description": "Small description about the pack and what it contains"
+      "description": "Small description about the pack and what it contains",
+      "maxLength": 2048
     },
     "nsfw": {
       "type": "boolean",
@@ -32,6 +36,24 @@
       "type": "string",
       "description": "The url to pack's homepage"
     },
+    "depends": {
+      "type": "array",
+      "description": "A list of packs that are required to make your pack function properly.",
+      "items": {
+        "type": "string",
+        "description": "Reference a pack",
+        "pattern": "^[-_a-z0-9]+$"
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "description": "A list of packs that might conflict with your pack.",
+      "items": {
+        "type": "string",
+        "description": "Reference a pack",
+        "pattern": "^[-_a-z0-9]+$"
+      }
+    },
     "media": {
       "type": "object",
       "description": "Media to add, or overwrite",
@@ -45,17 +67,13 @@
             "required": ["id", "title", "type", "format"]
           }
         },
-        "overwrite": {
-          "type": "object",
-          "description": "A map of ids to existing media, any matches will be entirely overwritten by the match",
-          "additionalProperties": false,
-          "patternProperties": {
-            "^[-_a-z0-9]+:[-_a-z0-9]+$": {
-              "allOf": [{ "$ref": "media.json" }],
-              "description": "The existing media will be deleted and replaced with this media",
-              "required": ["title", "type", "format"],
-              "not": { "required": ["id"] }
-            }
+        "conflicts": {
+          "type": "array",
+          "description": "A list of media that might conflict with your pack. All media listed here will be entirely disabled.",
+          "items": {
+            "type": "string",
+            "description": "Reference an existing media (pack:id)",
+            "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
           }
         }
       }
@@ -73,17 +91,13 @@
             "required": ["id", "name"]
           }
         },
-        "overwrite": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "A map of ids to existing characters, any matches will be entirely overwritten by the match",
-          "patternProperties": {
-            "^[-_a-z0-9]+:[-_a-z0-9]+$": {
-              "allOf": [{ "$ref": "character.json" }],
-              "description": "The existing character will be deleted and replaced with this character",
-              "required": ["name"],
-              "not": { "required": ["id"] }
-            }
+        "conflicts": {
+          "type": "array",
+          "description": "A list of characters that might conflict with your pack (All characters listed here will be entirely disabled).",
+          "items": {
+            "type": "string",
+            "description": "Reference an existing character (pack:id)",
+            "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
           }
         }
       }

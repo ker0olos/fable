@@ -80,7 +80,7 @@ for (const range of ranges) {
     try {
       const { pageInfo, media } = await query({
         page,
-        popularity_greater: range[0]!,
+        popularity_greater: range[0],
         popularity_lesser: range[1] || undefined,
       });
 

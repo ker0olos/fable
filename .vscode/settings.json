@@ -28,9 +28,6 @@
   "[markdown]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
-  "[json]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
   "[python]": {
     "editor.defaultFormatter": "ms-python.python",
     "editor.codeActionsOnSave": {

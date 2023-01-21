@@ -1,8 +1,8 @@
-import { distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
-
-import { Embed, Interaction, Message } from './discord.ts';
-
 import _anilist from '../packs/anilist/manifest.json' assert {
+  type: 'json',
+};
+
+import _vtubers from '../packs/vtubers/manifest.json' assert {
   type: 'json',
 };
 
@@ -15,25 +15,35 @@ import * as anilist from '../packs/anilist/index.ts';
 
 import utils from './utils.ts';
 
+import * as discord from './discord.ts';
+
 import {
+  Alias,
   Character,
   CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
-  Image,
   Manifest,
   ManifestType,
   Media,
+  MediaFormat,
+  MediaRelation,
   MediaType,
   Pool,
 } from './types.ts';
 
 const anilistManifest = _anilist as Manifest;
+const vtubersManifest = _vtubers as Manifest;
 const xManifest = _x as Manifest;
+
+type MediaEdge = { node: Media; relation?: MediaRelation };
+type CharacterEdge = { node: Character; role?: CharacterRole };
 
 type All = Media | DisaggregatedMedia | Character | DisaggregatedCharacter;
 
-let manual: Manifest[];
+let manual: Manifest[] | undefined = undefined;
+
+let disabled: { [key: string]: boolean } | undefined = undefined;
 
 const packs = {
   embed,
@@ -43,28 +53,37 @@ const packs = {
   aggregate,
   commands,
   pool,
-  titlesToArray,
-  imagesToArray,
+  isDisabled,
+  aliasToArray,
+  formatToString,
+  mediaToString,
+  sortMedia,
+  sortCharacters,
+  //
+  clear: () => {
+    manual = undefined;
+    disabled = undefined;
+  },
 };
 
 async function commands(
   name: string,
-  interaction: Interaction<unknown>,
-): Promise<Message | undefined> {
-  if (name in anilistManifest.commands!) {
-    const command = anilistManifest.commands![name];
+  interaction: discord.Interaction<unknown>,
+): Promise<discord.Message | undefined> {
+  if (anilistManifest.commands && name in anilistManifest.commands) {
+    const command = anilistManifest.commands[name];
     return await anilist.default
       [command.source as keyof typeof anilist.default](
         // deno-lint-ignore no-explicit-any
-        interaction.options! as any,
+        interaction.options as any,
       );
   }
 
-  if (name in xManifest.commands!) {
-    const command = xManifest.commands![name];
+  if (xManifest.commands && name in xManifest.commands) {
+    const command = xManifest.commands[name];
     return x.default[command.source as keyof typeof x.default](
       // deno-lint-ignore no-explicit-any
-      interaction.options! as any,
+      interaction.options as any,
       interaction,
     );
   }
@@ -74,7 +93,9 @@ function list(type?: ManifestType): Manifest[] {
   if (!manual) {
     // TODO BLOCKED load manual packs
     // (see https://github.com/ker0olos/fable/issues/10)
-    // tje map each loaded pack to 'dict'
+    // then map each loaded pack to 'dict'
+    // 1^ block loading packs if name is used for builtins
+    // for example never accept packs named anilist even if the builtin anilist is disabled
     manual = [];
   }
 
@@ -82,12 +103,14 @@ function list(type?: ManifestType): Manifest[] {
     case ManifestType.Builtin:
       return [
         anilistManifest,
+        vtubersManifest,
         xManifest,
       ];
     case ManifestType.Manual:
       return [...manual];
     default:
       return [
+        vtubersManifest,
         ...manual,
       ];
   }
@@ -101,6 +124,56 @@ function dict(): { [key: string]: Manifest } {
     ) => (obj[manifest.id] = manifest, obj),
     {},
   );
+}
+
+function embed(
+  { manifest, index, total }: {
+    manifest?: Manifest;
+    index?: number;
+    total: number;
+  },
+): discord.Message {
+  if (!manifest) {
+    const embed = new discord.Embed().setDescription(
+      'No packs have been added yet',
+    );
+
+    return new discord.Message()
+      .addEmbed(embed);
+  }
+
+  const disclaimer = manifest.type === ManifestType.Builtin
+    ? new discord.Embed().setDescription(
+      'Builtin packs are developed and maintained directly by Fable',
+    )
+    : new discord.Embed().setDescription(
+      'The following third-party packs were manually added by your server members',
+    );
+
+  const pack = new discord.Embed()
+    .setUrl(manifest.url)
+    .setDescription(manifest.description)
+    .setAuthor({ name: manifest.author })
+    .setThumbnail({ url: manifest.image })
+    .setTitle(manifest.title ?? manifest.id);
+
+  if (!manifest.type) {
+    throw new Error(`Manifest "${manifest.id}" type is undefined`);
+  }
+
+  const message = discord.Message.page(
+    {
+      index,
+      total,
+      id: manifest.type,
+      embeds: [
+        disclaimer,
+        pack,
+      ],
+    },
+  );
+
+  return message;
 }
 
 async function findById<T>(
@@ -129,10 +202,14 @@ async function findById<T>(
     if (packId === 'anilist') {
       const n = utils.parseId(id);
 
-      if (typeof n === 'number') {
+      if (typeof n === 'number' && !packs.isDisabled(`anilist:${n}`)) {
         anilistIds.push(n);
       }
     } else {
+      if (packs.isDisabled(`${packId}:${id}`)) {
+        continue;
+      }
+
       // search for the id in packs
       // deno-lint-ignore no-explicit-any
       const match: All = (dict()[packId]?.[key]?.new as Array<any>)?.find((
@@ -150,7 +227,9 @@ async function findById<T>(
     { ids: anilistIds },
   );
 
-  anilistResults.forEach((item) => results[`anilist:${item.id}`] = item as T);
+  anilistResults.forEach((item) =>
+    results[`anilist:${item.id}`] = anilist.transform<T>({ item })
+  );
 
   return results;
 }
@@ -161,13 +240,14 @@ async function findOne<T>(
   type?: MediaType,
 ): Promise<T | undefined> {
   let maxPopularity = -1;
-  let minDistance = Infinity;
   let match: T | undefined = undefined;
 
   const anilistPack: Manifest = {
     id: 'anilist',
     [key]: {
-      new: await anilist[key]({ search }),
+      new: (await anilist[key]({ search })).map((item) =>
+        anilist.transform({ item })
+      ),
     },
   };
 
@@ -176,42 +256,30 @@ async function findOne<T>(
       if (type && 'type' in item && item.type !== type) {
         continue;
       }
-
-      const names = 'name' in item
-        ? [item.name.full, item.name.native, ...(item.name.alternative ?? [])]
-        : 'title' in item
-        ? [item.title.english, item.title.romaji, item.title.native]
-        : undefined;
-
-      names?.filter(Boolean).forEach((name) => {
-        const d = distance(search, name!);
-        const popularity = item.popularity || 0;
-
-        if (
-          d < minDistance ||
-          (d === minDistance && popularity > maxPopularity)
-        ) {
-          minDistance = d;
-          maxPopularity = popularity;
-          match = (item.packId = pack.id, item) as T;
-        }
-      });
-
-      // exact match
-      if (minDistance <= 0) {
-        break;
+      if (packs.isDisabled(`${pack.id}:${item.id}`)) {
+        continue;
       }
-    }
 
-    // exact match
-    if (minDistance <= 0) {
-      break;
+      const popularity = item.popularity || 0;
+
+      packs.aliasToArray('name' in item ? item.name : item.title)
+        .forEach(
+          (alias) => {
+            const percentage = utils.distance(search, alias);
+
+            if (
+              percentage >= 100 ||
+              (percentage > 65 && popularity > maxPopularity)
+            ) {
+              match =
+                (maxPopularity = popularity, item.packId = pack.id, item) as T;
+            }
+          },
+        );
     }
   }
 
-  if (minDistance < search.length) {
-    return match;
-  }
+  return match;
 }
 
 async function media({ ids, search, type }: {
@@ -267,23 +335,6 @@ async function aggregate<T>({ media, character }: {
   character?: Character | DisaggregatedCharacter;
 }): Promise<T> {
   if (media) {
-    // overwrite
-
-    const key = `${media.packId}:${media.id}`;
-
-    for (const pack of packs.list()) {
-      if (pack.media?.overwrite?.[key]) {
-        media = {
-          ...pack.media.overwrite[key],
-          overwritePackId: pack.id,
-          packId: media.packId,
-          id: media.id,
-        };
-      }
-    }
-
-    // aggregate
-
     if (
       (media.relations && 'edges' in media.relations) ||
       (media.characters && 'edges' in media.characters)
@@ -314,7 +365,7 @@ async function aggregate<T>({ media, character }: {
       relations: {
         edges: media.relations
           ?.map(({ relation, mediaId }) => ({
-            relationType: relation,
+            relation,
             node: mediaRefs[mediaId],
           })).filter(({ node }) => Boolean(node)) ?? [],
       },
@@ -329,23 +380,6 @@ async function aggregate<T>({ media, character }: {
 
     return t as T;
   } else if (character) {
-    // overwrite
-
-    const key = `${character.packId}:${character.id}`;
-
-    for (const pack of packs.list()) {
-      if (pack.characters?.overwrite?.[key]) {
-        character = {
-          ...pack.characters.overwrite[key],
-          overwritePackId: pack.id,
-          packId: character.packId,
-          id: character.id,
-        };
-      }
-    }
-
-    // aggregate
-
     if (character.media && 'edges' in character.media) {
       return character as T;
     }
@@ -366,7 +400,7 @@ async function aggregate<T>({ media, character }: {
       media: {
         edges: character.media
           ?.map(({ role, mediaId }) => ({
-            characterRole: role,
+            role,
             node: mediaRefs[mediaId],
           })).filter(({ node }) => Boolean(node)) ?? [],
       },
@@ -386,111 +420,118 @@ async function pool(
     role?: CharacterRole;
   },
 ): Promise<Pool> {
-  const pool = await anilist.pool({
-    role,
-    popularity_greater,
-    popularity_lesser,
-  });
+  let dict: Pool = {};
 
   // add characters from packs
   packs
     .list()
     .forEach((pack) => {
       pack.characters?.new?.forEach((character) => {
-        if (!pool[character.id]) {
-          pool[character.id.toString()] = character;
-        }
+        dict[`${pack.id}:${character.id}`] =
+          (character.packId = pack.id, character);
       });
     });
 
-  // overwriting should be done by the receiving function
-  // when the results are narrowed down to 1 character
-  // to avoid unnecessary loops
+  // request characters from anilist
+  dict = await anilist.pool({
+    role,
+    popularity_greater,
+    popularity_lesser,
+  }, dict);
 
-  return pool;
+  return dict;
 }
 
-function embed(
-  { manifest, index, total }: {
-    manifest?: Manifest;
-    index?: number;
-    total: number;
-  },
-): Message {
-  if (!manifest) {
-    return new Message()
-      .setContent('No packs have been installed yet.');
-  }
-
-  const message = Message.page(
-    {
-      index,
-      total,
-      id: manifest.type!,
-      current: new Embed()
-        .setUrl(manifest.url)
-        .setDescription(manifest.description)
-        .setAuthor({ name: manifest.author })
-        .setThumbnail({ url: manifest.image })
-        .setTitle(manifest.title ?? manifest.id),
-    },
-  );
-
-  message
-    .setContent(
-      manifest.type! === ManifestType.Builtin
-        ? 'Builtin packs are developed and maintained directly by Fable.'
-        : 'The following packs were installed manually by server members.',
-    );
-
-  return message;
-}
-
-function titlesToArray(
-  media: Media | DisaggregatedMedia,
+function aliasToArray(
+  alias: Alias,
   max?: number,
 ): string[] {
-  let titles = [
-    media.title?.english,
-    media.title?.romaji,
-    media.title?.native,
-  ];
-
-  titles = titles.filter(Boolean)
-    .map((str) => max ? utils.truncate(str, max) : str);
-
-  return titles as string[];
-}
-
-function imagesToArray(
-  item: Image | undefined,
-  order: 'large-first' | 'small-first',
-  ideally?: keyof Image,
-): string[] | undefined {
-  if (!item) {
-    return undefined;
-  }
-
-  let images = [];
-
-  if (ideally && Boolean(item[ideally])) {
-    // if (ideally && ideally in item && Boolean(item[ideally])) {
-    return [item[ideally]!];
-  }
-
-  images.push(
-    item.extraLarge,
-    item.large,
-    item.medium,
+  const set = new Set(
+    [
+      alias.english,
+      alias.romaji,
+      alias.native,
+    ]
+      .concat(alias.alternative ?? [])
+      .filter(Boolean)
+      .map((str) => max ? utils.truncate(str, max) : str),
   );
 
-  images = images.filter(Boolean);
+  return Array.from(set) as string[];
+}
 
-  if (order === 'small-first' && images.length > 1) {
-    images.reverse();
+function isDisabled(id: string): boolean {
+  if (!disabled) {
+    disabled = {};
+
+    packs.list().forEach((pack) => {
+      // deno-lint-ignore no-non-null-assertion
+      pack.media?.conflicts?.forEach((id) => disabled![id] = true);
+      // deno-lint-ignore no-non-null-assertion
+      pack.characters?.conflicts?.forEach((id) => disabled![id] = true);
+    });
   }
 
-  return images as string[];
+  return disabled[id];
+}
+
+function formatToString(format: MediaFormat): string {
+  return utils.capitalize(
+    format
+      .replace(/TV_SHORT|OVA|ONA/, 'Short')
+      .replace('TV', 'Anime'),
+  ) as string;
+}
+
+function mediaToString(
+  { media, relation }: {
+    media: Media;
+    relation?: MediaRelation;
+  },
+): string {
+  const title = packs.aliasToArray(media.title, 40)[0];
+
+  switch (media.format) {
+    case MediaFormat.Music:
+    case MediaFormat.Internet:
+      return title;
+    default:
+      break;
+  }
+
+  switch (relation) {
+    case MediaRelation.Prequel:
+    case MediaRelation.Sequel:
+    case MediaRelation.SpinOff:
+    case MediaRelation.SideStory:
+      return `${title} (${utils.capitalize(relation)})`;
+    default:
+      return `${title} (${formatToString(media.format)})`;
+  }
+}
+
+function sortMedia(
+  edges?: MediaEdge[],
+): MediaEdge[] | undefined {
+  if (!edges?.length) {
+    return;
+  }
+
+  return edges.sort((a, b) => {
+    return (b.node.popularity || 0) - (a.node.popularity || 0);
+  });
+}
+
+function sortCharacters(
+  edges?: CharacterEdge[],
+): CharacterEdge[] | undefined {
+  if (!edges?.length) {
+    return;
+  }
+
+  return edges.sort((a, b) => {
+    return (b.node.popularity || 0) - (a.node.popularity || 0);
+  });
 }
 
 export default packs;

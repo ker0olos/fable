@@ -9,10 +9,18 @@ import packs from '../../src/packs.ts';
 export async function nextEpisode(
   { title }: { title: string },
   // _: discord.Interaction<unknown>,
-) {
+): Promise<discord.Message> {
   const anime = await api.nextEpisode({ search: title });
 
-  const titles = packs.titlesToArray(anime);
+  const titles = packs.aliasToArray({
+    english: anime.title?.english,
+    romaji: anime.title?.romaji,
+    native: anime.title?.native,
+  });
+
+  if (!titles.length) {
+    throw new Error('404');
+  }
 
   const message = new discord.Message();
 
@@ -20,8 +28,8 @@ export async function nextEpisode(
     case Status.RELEASING:
       message.setContent(
         `The next episode of \`${titles.shift()}\` is <t:${
-          anime.nextAiringEpisode!.airingAt
-        }:R>.`,
+          // deno-lint-ignore no-non-null-assertion
+          anime.nextAiringEpisode!.airingAt}:R>.`,
       );
       break;
     case Status.NOT_YET_RELEASED:

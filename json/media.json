@@ -6,7 +6,9 @@
     "id": {
       "type": "string",
       "description": "A unique alphanumeric id",
-      "pattern": "^[-_a-z0-9]+$"
+      "pattern": "^[-_a-z0-9]+$",
+      "minLength": 1,
+      "maxLength": 20
     },
     "type": {
       "enum": ["ANIME", "MANGA"],
@@ -31,19 +33,7 @@
     "title": {
       "type": "object",
       "description": "The title of the media",
-      "additionalProperties": false,
-      "minProperties": 1,
-      "properties": {
-        "english": {
-          "type": "string"
-        },
-        "romaji": {
-          "type": "string"
-        },
-        "native": {
-          "type": "string"
-        }
-      }
+      "$ref": "alias.json"
     },
     "popularity": {
       "type": "integer",
@@ -52,31 +42,27 @@
     },
     "description": {
       "type": "string",
-      "description": "Add a description about the media"
+      "description": "Add a description about this media",
+      "maxLength": 2048
     },
-    "coverImage": {
+    "image": {
+      "description": "A set of images featuring this media",
+      "$ref": "image.json"
+    },
+    "trailer": {
       "type": "object",
-      "description": "Set the default images for the media",
+      "description": "A url to a trailer about the media",
+      "required": ["site", "id"],
       "additionalProperties": false,
       "properties": {
-        "extraLarge": {
-          "$comment": "450x635",
-          "description": "A url of an extra large image (recommended: 450x635)",
-          "type": "string"
+        "site": {
+          "enum": ["youtube"],
+          "description": "The name of the site (only supports youtube)"
         },
-        "large": {
-          "$comment": "230x345",
-          "description": "A url of a large image (recommended: 230x345)",
-          "type": "string"
-        },
-        "medium": {
-          "$comment": "100x150",
-          "description": "A url of a medium/small image (recommended: 100x150)",
-          "type": "string"
-        },
-        "color": {
+        "id": {
           "type": "string",
-          "description": "A color to be used in embeds (in #hex)"
+          "description": "The id of the video",
+          "pattern": "([A-Za-z0-9_\\-]{11})"
         }
       }
     },
@@ -90,72 +76,60 @@
         "properties": {
           "site": {
             "type": "string",
-            "description": "The name of the site (e.g. Homepage, Crunchyroll)"
+            "description": "The title of the site"
           },
           "url": {
             "type": "string",
-            "description": "The url of the site (e.g. example.com)"
+            "pattern": "^(https:\\/\\/)?(www\\.)?(youtube\\.com|twitch\\.tv|crunchyroll\\.com|tapas\\.io|webtoon\\.com|amazon\\.com)[\\S]*$",
+            "description": "The full url of the site"
           }
         }
       }
     },
-    "trailer": {
-      "type": "object",
-      "description": "A url to a trailer about the media",
-      "required": ["site", "id"],
-      "additionalProperties": false,
-      "properties": {
-        "site": {
-          "description": "The name of the site (only supports youtube)",
-          "enum": ["youtube"]
-        },
-        "id": {
-          "type": "string",
-          "description": "The id of the video",
-          "pattern": "([A-Za-z0-9_\\-]{11})"
-        }
-      }
-    },
     "relations": {
-      "type": "object",
+      "type": "array",
       "description": "Define the relations between this media and other media",
-      "required": ["relationType", "mediaId"],
-      "additionalProperties": false,
-      "properties": {
-        "relation": {
-          "description": "Choose the kind of relationship between this media a different media",
-          "enum": [
-            "PREQUEL",
-            "SEQUEL",
-            "PARENT",
-            "CONTAINS",
-            "SIDE_STORY",
-            "SPIN_OFF",
-            "ADAPTATION",
-            "OTHER"
-          ]
-        },
-        "mediaId": {
-          "type": "string",
-          "description": "Reference an existing media ([pack:]id)",
-          "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"
+      "items": {
+        "required": ["relation", "mediaId"],
+        "additionalProperties": false,
+        "properties": {
+          "relation": {
+            "description": "Choose the kind of relationship between this media a different media",
+            "enum": [
+              "PREQUEL",
+              "SEQUEL",
+              "PARENT",
+              "CONTAINS",
+              "SIDE_STORY",
+              "SPIN_OFF",
+              "ADAPTATION",
+              "OTHER"
+            ]
+          },
+          "mediaId": {
+            "type": "string",
+            "description": "Reference an existing media ([pack:]id)",
+            "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"
+          }
         }
       }
     },
     "characters": {
-      "type": "object",
+      "type": "array",
       "description": "A list of characters that appear in the media",
-      "required": ["relationType", "characterId"],
-      "additionalProperties": false,
-      "properties": {
-        "role": {
-          "description": "Choose the role the character plays in the media",
-          "enum": ["MAIN", "SUPPORTING", "BACKGROUND"]
-        },
-        "characterId": {
-          "type": "string",
-          "description": "Reference an existing character ([pack:]id)",
-          "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"
+      "items": {
+        "required": ["role", "characterId"],
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "description": "Choose the role the character plays in the media",
+            "enum": ["MAIN", "SUPPORTING", "BACKGROUND"]
+          },
+          "characterId": {
+            "type": "string",
+            "description": "Reference an existing character ([pack:]id)",
+            "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"
+          }
         }
       }
     }
