@@ -44,9 +44,10 @@ something, we try our best to keep the bot itself term naturel).
 ## Get involved
 
 - Star this repo.
-- Join us on [Discord][discord].
-- [Contribute][contributing] — join us in building Fable, through writing code,
-  sharing your thoughts, creating packs, or telling others about us.
+- [Join our discord][discord].
+- Send our links to a couple of friends, and tell your favorite server's mods
+  about us.
+- [Contribute to the code][contributing]
 
 ## FAQ
 
@@ -71,8 +72,8 @@ direction of the project:
 - [@ker0olos](https://github.com/ker0olos) — Kerolos Zaki (aka. Wholesome) —
   Wholesome#6355
 
-- This project wouldn't been possible without [Deno][deno]. Want to learn about
-  running discord bots with low-cost? Check the official guide at
+- This project wouldn't been possible without Deno. Want to learn about running
+  discord bots with low-cost? Check the official guide at
   <https://deno.com/deploy/docs/tutorial-discord-slash>
 
 - Checkout our friends at <https://anilist.co>. Your support will mean a lot to
@@ -80,5 +81,4 @@ direction of the project:
   favorite characters to 5 stars faster.
 
 [discord]: https://discord.gg/ceKyEfhyPQ
-[contributing]: ./CONTRIBUTING.md
-[deno]: https://deno.land
+[contributing]: https://github.com/ker0olos/fable/wiki/Contributing

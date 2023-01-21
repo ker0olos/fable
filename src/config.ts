@@ -1,4 +1,4 @@
-import { configAsync } from 'https://deno.land/x/dotenv@v3.2.0/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.172.0/dotenv/mod.ts';
 
 // export const colors = {
 //   background: '#2b2d42',
@@ -43,7 +43,7 @@ export async function init(
     // load .env file
     if (!config.deploy) {
       try {
-        await configAsync({ export: true });
+        await Dotenv({ export: true, allowEmptyValues: true });
       } catch {
         //
       }

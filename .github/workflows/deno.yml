@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.29.2
+          deno-version: v1.x
       - run: deno test --config deno.json --coverage=cov_profile
       - run: deno coverage cov_profile --lcov --output=lcov.info
       - uses: codecov/codecov-action@v3
