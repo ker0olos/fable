@@ -94,7 +94,13 @@
       "anilist:206013",
       "anilist:206012",
       "anilist:206019",
-      "anilist:206020"
+      "anilist:206020",
+      "anilist:249913",
+      "anilist:249912",
+      "anilist:249911",
+      "anilist:249910",
+      "anilist:249908",
+      "anilist:245363"
     ],
     "new": [{
       "id": "gura",
@@ -102,8 +108,8 @@
         "english": "Gawr Gura",
         "native": "がうる・ぐら",
         "alternative": [
-          "Gura",
-          "SHORK",
+          "hura",
+          "shork",
           "goorUH"
         ]
       },
@@ -137,8 +143,8 @@
         "english": "Mori Calliope",
         "native": "森カリオペ",
         "alternative": [
+          "calli",
           "Dad",
-          "Calli",
           "Kawaiiope"
         ]
       },
@@ -171,7 +177,9 @@
         "english": "Takanashi Kiara",
         "native": "小鳥遊キアラ",
         "alternative": [
-          "Kusotori",
+          "kiara",
+          "birb",
+          "kusotori",
           "Tenchou",
           "Kiwawa"
         ]
@@ -188,7 +196,7 @@
       "popularity": 1400000,
       "description": "An idol whose dream is to become a fast food shop owner. She is a phoenix, NOT a chicken or turkey. (Very important)\n\nShe works extremely hard since she will be reborn from ashes anyway.",
       "gender": "Female",
-      "age": "∞",
+      "age": "15 mins-4 days on average",
       "externalLinks": [{
         "site": "Debut Stream",
         "url": "https://www.youtube.com/watch?v=uObh73QZUvg"
@@ -206,8 +214,8 @@
         "english": "Ninomae Ina'nis",
         "native": "一伊那尓栖",
         "alternative": [
-          "Ina",
-          "Tako"
+          "ina",
+          "tako"
         ]
       },
       "image": {
@@ -240,8 +248,8 @@
         "english": "Watson Amelia",
         "native": "ワトソン・アメリア",
         "alternative": [
-          "Ame",
-          "Watson"
+          "ame",
+          "watson"
         ]
       },
       "image": {
@@ -266,6 +274,162 @@
       "media": [{
         "role": "MAIN",
         "mediaId": "holomyth"
+      }]
+    }, {
+      "id": "kronii",
+      "name": {
+        "english": "Ouro Kronii",
+        "native": "オーロ・クロニー",
+        "alternative": [
+          "kronii"
+        ]
+      },
+      "image": {
+        "featured": {
+          "url": "https://i.redd.it/bbdebvztknm71.png",
+          "artist": {
+            "username": "Joshi_Kosei",
+            "url": "https://www.reddit.com/r/Joshi_Kosei/"
+          }
+        }
+      },
+      "popularity": 800000,
+      "description": "None may escape the sands of time and, indeed, most men do not even wish to be freed from her captivity (true). Her emotionally distant personality has never changed over the ages, but she developed a ~~little~~ bit of arrogance and sadistic tendencies along the way...",
+      "gender": "Female",
+      "age": "1.34",
+      "externalLinks": [{
+        "site": "Debut Stream",
+        "url": "https://www.youtube.com/watch?v=W3oVrq94mGM"
+      }, {
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@OuroKronii"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "holocouncil"
+      }]
+    }, {
+      "id": "mumei",
+      "name": {
+        "english": "Nanashi Mumei",
+        "native": "七詩ムメイ",
+        "alternative": [
+          "mumei"
+        ]
+      },
+      "image": {
+        "featured": {
+          "url": "https://i.imgur.com/1SSyHuC.jpeg",
+          "artist": {
+            "username": "Akaike",
+            "url": "https://www.pixiv.net/en/users/6204916"
+          }
+        }
+      },
+      "popularity": 700000,
+      "description": "For some reason, she seems to project a rather pitiable aura. Perhaps this is in part thanks to the loneliness she has often felt in her ever lasting travels. That is what gave her the idea of making her own friend out of a material that was indispensable to the development of human civilization \"paper\"",
+      "gender": "Female",
+      "externalLinks": [{
+        "site": "Debut Stream",
+        "url": "https://www.youtube.com/watch?v=M2gwJ-7s0Zo"
+      }, {
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@NanashiMumei"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "holocouncil"
+      }]
+    }, {
+      "id": "chaos",
+      "name": {
+        "english": "Hakos Baelz",
+        "native": "ハコス・ベールズ",
+        "alternative": [
+          "bae",
+          "chaos"
+        ]
+      },
+      "image": {
+        "featured": {
+          "url": "https://i.imgur.com/KzEStRI.jpg"
+        }
+      },
+      "popularity": 600000,
+      "description": "She believes that rules are not the be-all and end-all, which is why she has come to ~~break them all~~ sign a slave contract with Cover.",
+      "gender": "Female",
+      "externalLinks": [{
+        "site": "Debut Stream",
+        "url": "https://www.youtube.com/watch?v=mJwpVT1WvLg"
+      }, {
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@HakosBaelz"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "holocouncil"
+      }]
+    }, {
+      "id": "fauna",
+      "name": {
+        "english": "Ceres Fauna",
+        "native": "セレス・ファウナ",
+        "alternative": [
+          "fauna",
+          "faufau"
+        ]
+      },
+      "image": {
+        "featured": {
+          "url": "https://i.imgur.com/SoLX2B2.jpeg",
+          "artist": {
+            "username": "たくぼん",
+            "url": "https://www.pixiv.net/en/users/23030728"
+          }
+        }
+      },
+      "popularity": 600000,
+      "description": "green\n\ncute...",
+      "gender": "Female",
+      "age": "4.54 billion",
+      "externalLinks": [{
+        "site": "Debut Stream",
+        "url": "https://www.youtube.com/watch?v=iICu7NcUK4o"
+      }, {
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@CeresFauna"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "holocouncil"
+      }]
+    }, {
+      "id": "sana",
+      "name": {
+        "english": "Tsukumo Sana",
+        "native": "九十九 佐命",
+        "alternative": [
+          "sana"
+        ]
+      },
+      "image": {
+        "featured": {
+          "url": "https://i.imgur.com/rSmCkhB.jpeg"
+        }
+      },
+      "popularity": 200000,
+      "description": "Space is near infinite, and so was Sana's misfortune. \n\n _due to luck, horrible management, and bad choices, Sana retired after just 11 months in her carrier, with a subscriber count that even rivals holostars._",
+      "gender": "Female",
+      "externalLinks": [{
+        "site": "Debut Stream",
+        "url": "https://www.youtube.com/watch?v=3Tv5GyebhQo"
+      }, {
+        "site": "Retirement Stream",
+        "url": "https://www.youtube.com/watch?v=t8vPcBsVIqY"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "holocouncil"
       }]
     }]
   }
