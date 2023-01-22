@@ -41,25 +41,19 @@ export async function init(
     config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
 
     // load .env file
-    if (!config.deploy) {
-      try {
-        await Dotenv({ export: true, allowEmptyValues: true });
-      } catch {
-        //
-      }
+    try {
+      await Dotenv({ export: true, allowEmptyValues: true });
+    } catch {
+      //
     }
 
     config.sentry = Deno.env.get('SENTRY_DSN');
 
-    config.appId = config.dev ? Deno.env.get('DEV_ID') : Deno.env.get('APP_ID');
+    config.appId = Deno.env.get('APP_ID');
 
-    config.publicKey = config.dev
-      ? Deno.env.get('DEV_PUBLIC_KEY')
-      : Deno.env.get('APP_PUBLIC_KEY');
+    config.publicKey = Deno.env.get('PUBLIC_KEY');
 
-    config.mongoUrl = config.dev
-      ? Deno.env.get('DEV_MONGO_URL')
-      : Deno.env.get('MONGO_URL');
+    config.mongoUrl = Deno.env.get('MONGO_URL');
 
     config.origin = url.origin;
 
