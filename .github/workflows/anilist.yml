@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
@@ -19,13 +21,16 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          title: 'Updated "anilist/lastPage.json'
+          token: ${{ secrets.PAT }}
+          title: 'Updated "anilist/lastPage.json"'
           commit-message: '[bot] Updated "anilist/lastPage.json"'
-          branch: anilist/last-page
+          branch: anilist-last-page
           delete-branch: true
           body: |
-            Workaround AniList API's invalid page info (See #9)
+            This PR is auto-generated
 
             Updated the last page cache for each possible gacha query
+
+            Workaround AniList API's invalid page info (See #9)
           labels: |
             anilist
