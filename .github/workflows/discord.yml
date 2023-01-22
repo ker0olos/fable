@@ -17,12 +17,13 @@ jobs:
         env:
           APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: deno run --allow-read --allow-env --allow-net update_commands.ts
+        run: deno task commands
 
+      # test the validity of the commands
       - if: ${{ github.ref != 'refs/heads/main' }}
         name: Update guild slash commands on test server
         env:
           APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          GUILD_ID: 1046932492952805446 # test server
-        run: deno run --allow-read --allow-env --allow-net update_commands.ts
+          GUILD_ID: ${{ secrets.DUMMY_GUILD }}
+        run: deno task commands
