@@ -145,10 +145,10 @@ function decodeDescription(s?: string): string | undefined {
   s = s.replace(/~!.+!~/gm, '');
   s = s.replace(/\|\|.+\|\|/gm, '');
 
-  s = s.replace(/<i.*?>((.|\s)*?)<\/?i>/g, (_, s) => `*${s.trim()}*`);
-  s = s.replace(/<b.*?>((.|\s)*?)<\/?b>/g, (_, s) => `**${s.trim()}**`);
+  s = s.replace(/<i.*?>(.*?)<\/?i>/g, (_, s) => `*${s.trim()}*`);
+  s = s.replace(/<b.*?>(.*?)<\/?b>/g, (_, s) => `**${s.trim()}**`);
   s = s.replace(
-    /<strike.*?>((.|\s)*?)<\/?strike>/g,
+    /<strike.*?>(.*?)<\/?strike>/g,
     (_, s) => `~~${s.trim()}~~`,
   );
 
