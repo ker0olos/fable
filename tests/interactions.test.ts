@@ -2009,6 +2009,102 @@ Deno.test('character', async (test) => {
   });
 });
 
+Deno.test('characters', async (test) => {
+  await test.step('normal', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      characters: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: '2',
+            name: {
+              full: 'name',
+            },
+            popularity: 10,
+          },
+        }, {
+          role: CharacterRole.Supporting,
+          node: {
+            id: '3',
+            name: {
+              full: 'another name',
+            },
+            popularity: 100,
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.characters({ id: 'anilist:1', page: 0 });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: '_',
+              disabled: true,
+              label: '1/2',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'characters=anilist:1=1',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              color: undefined,
+              description: undefined,
+              image: {
+                url: 'undefined/external/',
+              },
+              title: 'another name',
+              type: 2,
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+});
+
 Deno.test('character debug', async (test) => {
   await test.step('no media', async () => {
     const character: DisaggregatedCharacter = {

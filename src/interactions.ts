@@ -20,7 +20,7 @@ import gacha from './gacha.ts';
 
 import config, { init } from './config.ts';
 
-import { ManifestType, Media } from './types.ts';
+import { ManifestType } from './types.ts';
 
 const handler = async (r: Request) => {
   init({ url: new URL(r.url) });
@@ -120,52 +120,35 @@ const handler = async (r: Request) => {
       case discord.InteractionType.Component:
         switch (customType) {
           case 'media': {
-            const message = await search.media({
-              // deno-lint-ignore no-non-null-assertion
-              id: customValues![0],
-            });
-            return message.setType(discord.MessageType.Update).send();
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+
+            return (await search.media({ id })).setType(
+              discord.MessageType.Update,
+            ).send();
           }
           case 'characters': {
             // deno-lint-ignore no-non-null-assertion
-            const mediaId = customValues![0];
+            const id = customValues![0];
 
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
+            const page = parseInt(customValues![1]);
 
-            const results = await packs.media({ ids: [mediaId] });
-
-            // aggregate the media by populating any references to other media/characters
-            const media = await packs.aggregate<Media>({ media: results[0] });
-
-            const characters = packs.sortCharacters(media.characters?.edges);
-
-            if (!characters?.length) {
-              throw new Error('404');
-            }
-
-            const message = discord.Message.page({
-              index,
-              total: characters.length,
-              id: discord.join(customType, mediaId),
-              embeds: [
-                search.characterEmbed(characters[index].node),
-              ],
-            });
-
-            return message.setType(discord.MessageType.Update).send();
+            return (await search.characters({ id, page })).setType(
+              discord.MessageType.Update,
+            ).send();
           }
           case 'builtin':
           case 'manual': {
             const list = packs.list(customType as ManifestType);
 
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![0]);
+            const page = parseInt(customValues![0]);
 
             return packs.embed({
-              index,
+              page,
               total: list.length,
-              manifest: list[index],
+              manifest: list[page],
             }).setType(discord.MessageType.Update).send();
           }
           default:

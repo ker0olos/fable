@@ -126,9 +126,9 @@ function dict(): { [key: string]: Manifest } {
 }
 
 function embed(
-  { manifest, index, total }: {
+  { manifest, page, total }: {
     manifest?: Manifest;
-    index?: number;
+    page?: number;
     total: number;
   },
 ): discord.Message {
@@ -161,7 +161,7 @@ function embed(
   }
 
   const message = discord.Message.page({
-    index,
+    page,
     total,
     id: manifest.type,
     embeds: [

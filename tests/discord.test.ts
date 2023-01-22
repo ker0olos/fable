@@ -421,7 +421,7 @@ Deno.test('page messages', async (test) => {
   await test.step('2/2', () => {
     const message = discord.Message.page({
       id: 'id',
-      index: 1,
+      page: 1,
       total: 2,
       embeds: [new discord.Embed().setTitle('title')],
     });
@@ -455,7 +455,7 @@ Deno.test('page messages', async (test) => {
   await test.step('2/3', () => {
     const message = discord.Message.page({
       id: 'id',
-      index: 1,
+      page: 1,
       total: 3,
       embeds: [new discord.Embed().setTitle('title')],
     });

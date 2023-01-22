@@ -63,4 +63,10 @@ export async function init(
   }
 }
 
+export function clear(): void {
+  Object.keys(config).forEach((key) =>
+    delete config[key as keyof typeof config]
+  );
+}
+
 export default config;

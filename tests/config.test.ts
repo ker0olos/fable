@@ -7,7 +7,7 @@ import {
   stub,
 } from 'https://deno.land/std@0.172.0/testing/mock.ts';
 
-import config, { init } from '../src/config.ts';
+import config, { clear as clearConfig, init } from '../src/config.ts';
 
 Deno.test('init', async (test) => {
   await test.step('stable', async () => {
@@ -49,6 +49,7 @@ Deno.test('init', async (test) => {
         sentry: 'sentry_dsn',
       });
     } finally {
+      clearConfig();
       permissionsStub.restore();
       readFileStub.restore();
       envStub.restore();
@@ -94,6 +95,7 @@ Deno.test('init', async (test) => {
         sentry: 'sentry_dsn',
       });
     } finally {
+      clearConfig();
       permissionsStub.restore();
       readFileStub.restore();
       envStub.restore();
@@ -139,6 +141,7 @@ Deno.test('init', async (test) => {
         sentry: 'sentry_dsn',
       });
     } finally {
+      clearConfig();
       permissionsStub.restore();
       readFileStub.restore();
       envStub.restore();

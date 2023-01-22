@@ -247,7 +247,7 @@ Deno.test('manifest embeds', async (test) => {
         title: 'title',
         type: ManifestType.Manual,
       },
-      index: 1,
+      page: 1,
       total: 2,
     });
 

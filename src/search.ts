@@ -151,7 +151,7 @@ export async function media(
   return message.addComponents([...linksGroup, ...musicGroup]);
 }
 
-export function mediaEmbed(media: Media, titles: string[]): discord.Embed {
+function mediaEmbed(media: Media, titles: string[]): discord.Embed {
   return new discord.Embed()
     .setTitle(titles[0])
     .setAuthor({ name: packs.formatToString(media.format) })
@@ -249,7 +249,31 @@ export async function character(
   return message.addComponents(group);
 }
 
-export function characterEmbed(character: Character): discord.Embed {
+export async function characters(
+  { id, page }: { id: string; page: number },
+): Promise<discord.Message> {
+  const results = await packs.media({ ids: [id] });
+
+  // aggregate the media by populating any references to other media/characters
+  const media = await packs.aggregate<Media>({ media: results[0] });
+
+  const characters = packs.sortCharacters(media.characters?.edges);
+
+  if (!characters?.length) {
+    throw new Error('404');
+  }
+
+  return discord.Message.page({
+    page,
+    total: characters.length,
+    id: discord.join('characters', id),
+    embeds: [
+      characterEmbed(characters[page].node),
+    ],
+  });
+}
+
+function characterEmbed(character: Character): discord.Embed {
   const alias = packs.aliasToArray(character.name);
 
   return new discord.Embed()

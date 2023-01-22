@@ -589,38 +589,38 @@ export class Message {
   // }
 
   static page(
-    { embeds, id, index, total }: {
+    { embeds, id, page, total }: {
       id: string;
       embeds: Embed[];
-      index?: number;
+      page?: number;
       total: number;
     },
   ): Message {
-    index = index ?? 0;
+    page = page ?? 0;
 
     const message = new Message();
 
     const group = [];
 
     const prev = new Component()
-      .setId(id, `${index - 1}`)
+      .setId(id, `${page - 1}`)
       .setLabel(`Prev`);
 
     const next = new Component()
-      .setId(id, `${index + 1}`)
+      .setId(id, `${page + 1}`)
       .setLabel(`Next`);
 
     const indicator = new Component().setId('_')
-      .setLabel(`${index + 1}/${total}`)
+      .setLabel(`${page + 1}/${total}`)
       .toggle();
 
-    if (index - 1 >= 0) {
+    if (page - 1 >= 0) {
       group.push(prev);
     }
 
     group.push(indicator);
 
-    if (index + 1 < total) {
+    if (page + 1 < total) {
       group.push(next);
     }
 
