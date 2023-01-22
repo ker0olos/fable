@@ -76,6 +76,8 @@ for (const range of ranges) {
 
   console.log(`${key}:\nprevious page is: ${previousData[key]}`);
 
+  const retry: { [key: number]: number } = {};
+
   while (true) {
     try {
       const { pageInfo, media } = await query({
@@ -83,6 +85,16 @@ for (const range of ranges) {
         popularity_greater: range[0],
         popularity_lesser: range[1] || undefined,
       });
+
+      if (retry[page] >= 1 && 0 < media.length) {
+        console.warn(
+          `detected page loop one page has a next flag but the next page is empty`,
+        );
+
+        break;
+      } else {
+        retry[page] = retry[page] + 1 || 1;
+      }
 
       console.log(
         `current page is: ${page}`,

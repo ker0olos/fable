@@ -14,8 +14,8 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno run --allow-all ./packs/anilist/lastPage.ts
-      - run: deno fmt --config deno.json ./packs/anilist/lastPage.json
+      - run: deno run --allow-read --allow-write --allow-net packs/anilist/lastPage.ts
+      - run: deno fmt packs/anilist/lastPage.json
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
