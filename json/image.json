@@ -1,5 +1,5 @@
 {
-  "$id": "image.json",
+  "$id": "json/image.json",
   "type": "object",
   "additionalProperties": false,
   "required": ["featured"],

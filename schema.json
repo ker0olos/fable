@@ -1,5 +1,6 @@
 {
-  "$id": "index.json",
+  "$id": "schema.json",
+  "$schema": "http://json-schema.org/schema",
   "type": "object",
   "required": ["id"],
   "properties": {
@@ -63,7 +64,7 @@
           "type": "array",
           "description": "A list of new media to add",
           "items": {
-            "allOf": [{ "$ref": "media.json" }],
+            "allOf": [{ "$ref": "json/media.json" }],
             "required": ["id", "title", "type", "format"]
           }
         },
@@ -87,7 +88,7 @@
           "type": "array",
           "description": "A list of new characters to add",
           "items": {
-            "allOf": [{ "$ref": "character.json" }],
+            "allOf": [{ "$ref": "json/character.json" }],
             "required": ["id", "name"]
           }
         },

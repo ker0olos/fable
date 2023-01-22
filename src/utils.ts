@@ -203,6 +203,8 @@ const proxy = async (r: Request) => {
   try {
     const encoded = new URL(r.url);
 
+    // const searchParams = encoded.searchParams;
+
     const url = new URL(
       decodeURIComponent(encoded.pathname.substring('/external/'.length)),
     );
@@ -210,16 +212,13 @@ const proxy = async (r: Request) => {
     const image = url ? await fetch(url) : undefined;
     const type = image?.headers.get('content-type');
 
-    // NOTE discord doesn't allow any gif that doesn't end with the file extension
-    // I suspect it's some kind of nitro restriction thingy like the one with APNGs
-    // but for now so it's clear that the gif is invalid we straight out refuse it
+    // FIXME discord doesn't allow any gif that doesn't end with the file extension
+    // (see #39)
     if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
       throw new Error();
     }
 
-    // const searchParams = encoded.searchParams;
-
-    // TODO IMPORTANT apply size parameter
+    // TODO IMPORTANT apply ?size= parameter
 
     // TODO image customization
     //(see https://github.com/ker0olos/fable/issues/24)

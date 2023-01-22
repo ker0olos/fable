@@ -179,22 +179,27 @@ const handler = async (r: Request) => {
   return new discord.Message().setContent(`Unimplemented!`).send();
 };
 
+function cache(age: number): (req: Request, res: Response) => Response {
+  return (_: Request, response: Response): Response => {
+    response.headers.set('Cache-Control', `public, max-age=${age}`);
+    return response;
+  };
+}
+
 serve({
   '/': handler,
   '/dev': handler,
   '/external/*': utils.proxy,
-  '/schema': serveStatic('../json/index.json', {
+  '/schema': serveStatic('../schema.json', {
     baseUrl: import.meta.url,
-    intervene: (_, response) => {
-      response.headers.set('Cache-Control', 'public, max-age=86400');
-      return response;
-    },
+    intervene: cache(86400),
+  }),
+  '/json/:filename+': serveStatic('../json', {
+    baseUrl: import.meta.url,
+    intervene: cache(86400),
   }),
   '/file/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,
-    intervene: (_, response) => {
-      response.headers.set('Cache-Control', 'public, max-age=604800');
-      return response;
-    },
+    intervene: cache(604800),
   }),
 });
