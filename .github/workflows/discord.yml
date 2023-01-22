@@ -2,8 +2,6 @@ name: discord
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   update-slash-commands:
@@ -13,8 +11,18 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - name: Update global slash commands on stable
+
+      - if: ${{ github.ref == 'refs/heads/main' }}
+        name: Update global slash commands on production
         env:
           APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: deno run --allow-read --allow-env --allow-net update_commands.ts
+
+      - if: ${{ github.ref != 'refs/heads/main' }}
+        name: Update guild slash commands on test server
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          GUILD_ID: 1046932492952805446 # test server
         run: deno run --allow-read --allow-env --allow-net update_commands.ts
