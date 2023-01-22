@@ -7,6 +7,10 @@ const API = `https://discord.com/api/v10`;
 
 const splitter = '=';
 
+export const join = (...args: string[]): string => {
+  return args.join(splitter);
+};
+
 export enum ImageSize {
   // 450x635,
   Large = '',
@@ -221,7 +225,7 @@ export class Component {
   }
 
   setId(...id: string[]): Component {
-    const cid = id.join(splitter);
+    const cid = join(...id);
     // (see https://discord.com/developers/docs/interactions/message-components#custom-id)
     if (cid.length <= 100) {
       this.#data.custom_id = cid;

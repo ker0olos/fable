@@ -34,21 +34,19 @@ export async function media(
     throw new Error('404');
   }
 
-  if (debug) {
-    return new discord.Message().addEmbed(
-      disaggregatedMediaDebugEmbed(results[0]),
-    );
-  }
-
-  // aggregate the media by populating any references to other media/character objects
+  // aggregate the media by populating any references to other media/characters
   const media = await packs.aggregate<Media>({ media: results[0] });
 
   const titles = packs.aliasToArray(media.title);
 
-  const title = titles.shift();
-
-  if (!title) {
+  if (!titles?.length) {
     throw new Error('404');
+  }
+
+  if (debug) {
+    return new discord.Message().addEmbed(
+      mediaDebugEmbed(media),
+    );
   }
 
   const linksGroup: discord.Component[] = [];
@@ -56,18 +54,7 @@ export async function media(
 
   // main media embed
   const message = new discord.Message().addEmbed(
-    new discord.Embed()
-      .setTitle(title)
-      .setAuthor({ name: packs.formatToString(media.format) })
-      .setDescription(media.description)
-      .setColor(media.image?.featured.color)
-      .setImage({
-        default: true,
-        url: media.image?.featured.url,
-      })
-      .setFooter({
-        text: title !== media.title.native ? media.title.native : undefined,
-      }),
+    mediaEmbed(media, titles),
   );
 
   // character embeds
@@ -104,6 +91,7 @@ export async function media(
     linksGroup.push(component);
   }
 
+  // link components
   media.externalLinks
     ?.forEach((link) => {
       const component = new discord.Component()
@@ -113,6 +101,18 @@ export async function media(
       linksGroup.push(component);
     });
 
+  // view characters
+  if (media?.characters?.edges.length) {
+    linksGroup.push(
+      new discord.Component().setLabel('View Characters').setId(
+        'characters',
+        `${media.packId}:${media.id}`,
+        '0',
+      ),
+    );
+  }
+
+  // relation components
   packs.sortMedia(media.relations?.edges)
     ?.slice(0, 4)
     ?.forEach(({ node: media, relation }) => {
@@ -149,7 +149,22 @@ export async function media(
   return message.addComponents([...linksGroup, ...musicGroup]);
 }
 
-function disaggregatedMediaDebugEmbed(
+export function mediaEmbed(media: Media, titles: string[]): discord.Embed {
+  return new discord.Embed()
+    .setTitle(titles[0])
+    .setAuthor({ name: packs.formatToString(media.format) })
+    .setDescription(media.description)
+    .setColor(media.image?.featured.color)
+    .setImage({
+      default: true,
+      url: media.image?.featured.url,
+    })
+    .setFooter({
+      text: titles[0] !== media.title.native ? media.title.native : undefined,
+    });
+}
+
+function mediaDebugEmbed(
   media: Media | DisaggregatedMedia,
 ): discord.Embed {
   const titles = packs.aliasToArray(media.title);
@@ -203,27 +218,8 @@ export async function character(
     return new discord.Message().addEmbed(characterDebugEmbed(character));
   }
 
-  const alias = packs.aliasToArray(character.name);
-
   const message = new discord.Message()
-    .addEmbed(
-      new discord.Embed()
-        .setTitle(alias[0])
-        .setDescription(character.description)
-        .setColor(character.image?.featured.color)
-        .setImage({
-          default: true,
-          url: character.image?.featured.url,
-        })
-        .setFooter(
-          {
-            text: [
-              utils.capitalize(character.gender),
-              character.age,
-            ].filter(Boolean).join(', '),
-          },
-        ),
-    );
+    .addEmbed(characterEmbed(character));
 
   const group: discord.Component[] = [];
 
@@ -249,6 +245,27 @@ export async function character(
     });
 
   return message.addComponents(group);
+}
+
+export function characterEmbed(character: Character): discord.Embed {
+  const alias = packs.aliasToArray(character.name);
+
+  return new discord.Embed()
+    .setTitle(alias[0])
+    .setDescription(character.description)
+    .setColor(character.image?.featured.color)
+    .setImage({
+      default: true,
+      url: character.image?.featured.url,
+    })
+    .setFooter(
+      {
+        text: [
+          utils.capitalize(character.gender),
+          character.age,
+        ].filter(Boolean).join(', '),
+      },
+    );
 }
 
 function characterDebugEmbed(character: Character): discord.Embed {

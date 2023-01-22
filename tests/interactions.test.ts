@@ -657,7 +657,15 @@ Deno.test('media', async (test) => {
                 'undefined/external/supporting%20character%20url?size=thumbnail',
             },
           }],
-          components: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'characters=anilist:1=0',
+              label: 'View Characters',
+              style: 2,
+              type: 2,
+            }],
+          }],
         },
       });
 
@@ -1424,7 +1432,15 @@ Deno.test('media', async (test) => {
               url: 'undefined/external/?size=thumbnail',
             },
           }],
-          components: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'characters=anilist:1=0',
+              label: 'View Characters',
+              style: 2,
+              type: 2,
+            }],
+          }],
         },
       });
 

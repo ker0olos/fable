@@ -161,17 +161,15 @@ function embed(
     throw new Error(`Manifest "${manifest.id}" type is undefined`);
   }
 
-  const message = discord.Message.page(
-    {
-      index,
-      total,
-      id: manifest.type,
-      embeds: [
-        disclaimer,
-        pack,
-      ],
-    },
-  );
+  const message = discord.Message.page({
+    index,
+    total,
+    id: manifest.type,
+    embeds: [
+      disclaimer,
+      pack,
+    ],
+  });
 
   return message;
 }
