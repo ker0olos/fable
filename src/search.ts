@@ -9,7 +9,6 @@ import {
   Media,
   MediaFormat,
   MediaRelation,
-  MediaType,
 } from './types.ts';
 
 import packs from './packs.ts';
@@ -21,15 +20,14 @@ const externalUrlRegex =
   /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoon\.com|amazon\.com)[\S]*$/;
 
 export async function media(
-  { id, type, search, debug }: {
+  { id, search, debug }: {
     id?: string;
-    type?: MediaType;
     search?: string;
     debug?: boolean;
   },
 ): Promise<discord.Message> {
   const results: (Media | DisaggregatedMedia)[] = await packs.media(
-    id ? { ids: [id] } : { search, type },
+    id ? { ids: [id] } : { search },
   );
 
   if (!results.length) {

@@ -20,7 +20,7 @@ import gacha from './gacha.ts';
 
 import config, { init } from './config.ts';
 
-import { ManifestType, Media, MediaType } from './types.ts';
+import { ManifestType, Media } from './types.ts';
 
 const handler = async (r: Request) => {
   init({ url: new URL(r.url) });
@@ -75,16 +75,10 @@ const handler = async (r: Request) => {
             return (await search.media({
               debug: Boolean(options['debug']),
               search: options['query'] as string,
-              type: Object.values(MediaType).includes(
-                  name.toUpperCase() as MediaType,
-                )
-                ? name.toUpperCase() as MediaType
-                : undefined,
             })).send();
-          case 'debug':
           case 'character':
             return (await search.character({
-              debug: name === 'debug' || Boolean(options['debug']),
+              debug: Boolean(options['debug']),
               search: options['query'] as string,
             })).send();
           case 'music':

@@ -15,6 +15,7 @@ import {
 import { FakeTime } from 'https://deno.land/std@0.172.0/testing/time.ts';
 
 import packs from '../src/packs.ts';
+
 import config from '../src/config.ts';
 
 import Rating from '../src/rating.ts';
@@ -97,77 +98,6 @@ Deno.test('media', async (test) => {
             image: {
               url: 'undefined/external/image_url',
             },
-          }],
-          components: [],
-        },
-      });
-
-      assertSpyCalls(fetchStub, 1);
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
-  await test.step('prioritize search', async () => {
-    const media: AniListMedia[] = [{
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'title',
-      },
-    }, {
-      id: '2',
-      type: MediaType.Manga,
-      format: MediaFormat.Manga,
-      title: {
-        english: 'title',
-      },
-    }];
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        json: (() =>
-          Promise.resolve({
-            data: {
-              Page: {
-                media,
-              },
-            },
-          })),
-      } as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      const message = await search.media({
-        search: 'title',
-        type: MediaType.Manga,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          embeds: [{
-            type: 2,
-            author: {
-              name: 'Manga',
-            },
-            color: undefined,
-            description: undefined,
-            image: {
-              url: 'undefined/external/',
-            },
-            title: 'title',
           }],
           components: [],
         },

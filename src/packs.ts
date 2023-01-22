@@ -28,7 +28,6 @@ import {
   Media,
   MediaFormat,
   MediaRelation,
-  MediaType,
   Pool,
 } from './types.ts';
 
@@ -235,7 +234,6 @@ async function findById<T>(
 async function findOne<T>(
   key: 'media' | 'characters',
   search: string,
-  type?: MediaType,
 ): Promise<T | undefined> {
   let maxPopularity = -1;
   let match: T | undefined = undefined;
@@ -251,9 +249,6 @@ async function findOne<T>(
 
   for (const pack of [anilistPack, ...packs.list()]) {
     for (const item of pack[key]?.new ?? []) {
-      if (type && 'type' in item && item.type !== type) {
-        continue;
-      }
       if (packs.isDisabled(`${pack.id}:${item.id}`)) {
         continue;
       }
@@ -280,10 +275,9 @@ async function findOne<T>(
   return match;
 }
 
-async function media({ ids, search, type }: {
+async function media({ ids, search }: {
   ids?: string[];
   search?: string;
-  type?: MediaType;
 }): Promise<(Media | DisaggregatedMedia)[]> {
   if (ids?.length) {
     const results = await findById<Media | DisaggregatedMedia>(
@@ -296,7 +290,6 @@ async function media({ ids, search, type }: {
     const match: Media | DisaggregatedMedia | undefined = await findOne(
       'media',
       search,
-      type,
     );
 
     return match ? [match] : [];
