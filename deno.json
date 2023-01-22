@@ -16,7 +16,8 @@
     }
   },
   "tasks": {
-    "start": "deno run --watch --allow-net --allow-read --allow-env ./src/interactions.ts",
+    "commands": "deno run --allow-net --allow-read --allow-env update_commands.ts",
+    "start": "deno run --watch --allow-net --allow-read --allow-env src/interactions.ts",
     "proxy": "deno task start & ssh -R 80:localhost:8000 localhost.run"
   },
   "fmt": {

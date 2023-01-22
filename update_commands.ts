@@ -8,13 +8,11 @@ try {
   //
 }
 
-const APP_ID = Deno.env.get('APP_ID') || Deno.env.get('DEV_ID');
+const APP_ID = Deno.env.get('APP_ID');
 
 const BOT_TOKEN = Deno.env.get('BOT_TOKEN');
 
 const GUILD_ID = Deno.env.get('GUILD_ID');
-
-// console.log(Deno.env.get('GITHUB_REF_NAME'));
 
 if (!APP_ID) {
   throw new Error('APP_ID is not defined');
