@@ -59,6 +59,22 @@
       "relations": [{
         "mediaId": "holocouncil",
         "relation": "SEQUEL"
+      }],
+      "characters": [{
+        "role": "MAIN",
+        "characterId": "gura"
+      }, {
+        "role": "MAIN",
+        "characterId": "calliope"
+      }, {
+        "role": "MAIN",
+        "characterId": "kiara"
+      }, {
+        "role": "MAIN",
+        "characterId": "ina"
+      }, {
+        "role": "MAIN",
+        "characterId": "watson"
       }]
     }, {
       "id": "holocouncil",
@@ -85,6 +101,22 @@
       "relations": [{
         "mediaId": "holomyth",
         "relation": "PREQUEL"
+      }],
+      "characters": [{
+        "role": "MAIN",
+        "characterId": "kronii"
+      }, {
+        "role": "MAIN",
+        "characterId": "mumei"
+      }, {
+        "role": "MAIN",
+        "characterId": "chaos"
+      }, {
+        "role": "MAIN",
+        "characterId": "fauna"
+      }, {
+        "role": "MAIN",
+        "characterId": "sana"
       }]
     }]
   },
