@@ -21,7 +21,6 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          token: ${{ secrets.PAT }}
           title: 'Updated "anilist/lastPage.json"'
           commit-message: '[bot] Updated "anilist/lastPage.json"'
           branch: anilist-last-page
