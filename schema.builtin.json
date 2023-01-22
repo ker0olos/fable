@@ -1,7 +1,8 @@
 {
-  "$id": "builtin.json",
+  "$id": "schema.builtin.json",
+  "$schema": "http://json-schema.org/schema",
   "$comment": "Only used for the builtin packs. Those properties don't work on normal manual packs.",
-  "allOf": [{ "$ref": "index.json" }],
+  "allOf": [{ "$ref": "schema.json" }],
   "required": ["type", "author"],
   "properties": {
     "type": {

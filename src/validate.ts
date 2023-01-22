@@ -20,11 +20,11 @@ import character from '../json/character.json' assert {
   type: 'json',
 };
 
-import index from '../json/index.json' assert {
+import index from '../schema.json' assert {
   type: 'json',
 };
 
-import builtin from '../json/builtin.json' assert {
+import builtin from '../schema.builtin.json' assert {
   type: 'json',
 };
 
@@ -127,7 +127,7 @@ export const prettify = (
       .replace(new RegExp(`"ERROR/${index}",`), `${message}\n${underline}`)
       .replace(
         new RegExp(`(.*)ERROR/${index}"`),
-        (_, s) => `${s}" >>> ${message}\n${underline}`,
+        (_: unknown, s: string) => `${s}" >>> ${message}\n${underline}`,
       );
   });
 
