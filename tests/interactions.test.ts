@@ -329,7 +329,10 @@ Deno.test('media', async (test) => {
         extraLarge: 'image_url',
       },
       externalLinks: [
-        { site: 'Crunchyroll', url: 'url2' },
+        { site: 'Crunchyroll', url: 'https://crunchyroll.com/title' },
+        { site: 'Crunchyroll 2', url: 'crunchyroll.com/title' },
+        { site: 'YouTube', url: 'https://www.youtube.com/video' },
+        { site: 'FakeTube', url: 'https://faketube.net/video' },
       ],
     };
 
@@ -378,8 +381,20 @@ Deno.test('media', async (test) => {
               type: 1,
               components: [
                 {
-                  url: 'url2',
+                  url: 'https://crunchyroll.com/title',
                   label: 'Crunchyroll',
+                  style: 5,
+                  type: 2,
+                },
+                {
+                  url: 'crunchyroll.com/title',
+                  label: 'Crunchyroll 2',
+                  style: 5,
+                  type: 2,
+                },
+                {
+                  url: 'https://www.youtube.com/video',
+                  label: 'YouTube',
                   style: 5,
                   type: 2,
                 },

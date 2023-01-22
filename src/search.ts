@@ -17,6 +17,8 @@ import packs from './packs.ts';
 import * as discord from './discord.ts';
 
 const musicUrlRegex = /youtube|spotify/;
+const externalUrlRegex =
+  /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoon\.com|amazon\.com)[\S]*$/;
 
 export async function media(
   { id, type, search, debug }: {
@@ -94,11 +96,13 @@ export async function media(
   // link components
   media.externalLinks
     ?.forEach((link) => {
-      const component = new discord.Component()
-        .setLabel(link.site)
-        .setUrl(link.url);
+      if (externalUrlRegex.test(link.url)) {
+        const component = new discord.Component()
+          .setLabel(link.site)
+          .setUrl(link.url);
 
-      linksGroup.push(component);
+        linksGroup.push(component);
+      }
     });
 
   // view characters
