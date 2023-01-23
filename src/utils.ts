@@ -2,8 +2,6 @@ import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 
 import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
 
-import config from './config.ts';
-
 function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
@@ -196,17 +194,16 @@ function verifySignature(
 }
 
 const proxy = async (r: Request) => {
+  const { pathname, origin } = new URL(r.url);
+
   try {
-    const encoded = new URL(r.url);
-
-    // const searchParams = encoded.searchParams;
-
     const url = new URL(
-      decodeURIComponent(encoded.pathname.substring('/external/'.length)),
+      decodeURIComponent(pathname.substring('/external/'.length)),
     );
 
-    const image = url ? await fetch(url) : undefined;
-    const type = image?.headers.get('content-type');
+    const response = await fetch(url);
+
+    const type = response?.headers.get('content-type');
 
     // FIXME discord doesn't allow any gif that doesn't end with the file extension
     // (see #39)
@@ -217,24 +214,24 @@ const proxy = async (r: Request) => {
     // TODO image customization
     //(see https://github.com/ker0olos/fable/issues/24)
 
-    if (image?.status === 200 && type?.startsWith('image/')) {
-      const body = await image.arrayBuffer();
-
-      const response = new Response(body);
-
-      response.headers.set('content-type', type);
-      response.headers.set('content-length', `${body.byteLength}`);
-      response.headers.set('cache-control', 'public, max-age=604800');
-
-      return response;
+    if (response?.status !== 200 || !type?.startsWith('image/')) {
+      throw new Error();
     }
 
-    throw new Error();
+    const body = await response.arrayBuffer();
+
+    const proxy = new Response(body);
+
+    proxy.headers.set('content-type', type);
+    proxy.headers.set('content-length', `${body.byteLength}`);
+    proxy.headers.set('cache-control', 'public, max-age=604800');
+
+    return proxy;
   } catch {
     if (r.url?.includes('?size=thumbnail')) {
-      return Response.redirect(`${config.origin}/assets/thumbnail.png`);
+      return Response.redirect(`${origin}/assets/thumbnail.png`);
     }
-    return Response.redirect(`${config.origin}/assets/medium.png`);
+    return Response.redirect(`${origin}/assets/medium.png`);
   }
 };
 
