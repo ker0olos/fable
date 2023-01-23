@@ -2064,7 +2064,10 @@ Deno.test('characters', async (test) => {
     );
 
     try {
-      const message = await search.characters({ id: 'anilist:1', page: 0 });
+      const message = await search.mediaCharacters({
+        mediaId: 'anilist:1',
+        page: 0,
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -2092,6 +2095,107 @@ Deno.test('characters', async (test) => {
                 url: 'undefined/external/',
               },
               title: 'another name',
+              type: 2,
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+  ``;
+
+  await test.step('external links', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      characters: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: '2',
+            name: {
+              full: 'name',
+            },
+            popularity: 10,
+            externalLinks: [{
+              site: 'YouTube',
+              url: 'https://www.youtube.com',
+            }, {
+              site: 'Crunchyroll',
+              url: 'https://crunchyroll.com',
+            }],
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.mediaCharacters({
+        mediaId: 'anilist:1',
+        page: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              label: 'YouTube',
+              url: 'https://www.youtube.com',
+              style: 5,
+              type: 2,
+            }, {
+              label: 'Crunchyroll',
+              url: 'https://crunchyroll.com',
+              style: 5,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              color: undefined,
+              description: undefined,
+              image: {
+                url: 'undefined/external/',
+              },
+              title: 'name',
               type: 2,
             },
           ],

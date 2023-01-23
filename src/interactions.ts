@@ -129,12 +129,12 @@ const handler = async (r: Request) => {
           }
           case 'characters': {
             // deno-lint-ignore no-non-null-assertion
-            const id = customValues![0];
+            const mediaId = customValues![0];
 
             // deno-lint-ignore no-non-null-assertion
             const page = parseInt(customValues![1]);
 
-            return (await search.characters({ id, page })).setType(
+            return (await search.mediaCharacters({ mediaId, page })).setType(
               discord.MessageType.Update,
             ).send();
           }

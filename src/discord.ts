@@ -589,14 +589,16 @@ export class Message {
   // }
 
   static page(
-    { embeds, id, page, total }: {
+    { embeds, components, id, page, total }: {
       id: string;
       embeds: Embed[];
+      components?: Component[];
       page?: number;
       total: number;
     },
   ): Message {
     page = page ?? 0;
+    components = components ?? [];
 
     const message = new Message();
 
@@ -626,7 +628,7 @@ export class Message {
 
     embeds.forEach((embed) => message.addEmbed(embed));
 
-    return message.addComponents(group);
+    return message.addComponents([...group, ...components]);
   }
 
   static internal(id: string): Message {

@@ -58,6 +58,7 @@ export async function media(
   );
 
   // character embeds
+  // sort characters by popularity
   packs.sortCharacters(media.characters?.edges)
     ?.slice(0, 2)
     .forEach((edge) => {
@@ -115,6 +116,7 @@ export async function media(
   }
 
   // relation components
+  // sort media by popularity
   packs.sortMedia(media.relations?.edges)
     ?.slice(0, 4)
     ?.forEach(({ node: media, relation }) => {
@@ -225,6 +227,7 @@ export async function character(
 
   const group: discord.Component[] = [];
 
+  // link components
   character.externalLinks
     ?.forEach((link) => {
       const component = new discord.Component()
@@ -234,6 +237,8 @@ export async function character(
       group.push(component);
     });
 
+  // relation components
+  // sort media by popularity
   packs.sortMedia(character.media?.edges)
     ?.slice(0, 4)
     ?.forEach(({ node: media }) => {
@@ -249,27 +254,41 @@ export async function character(
   return message.addComponents(group);
 }
 
-export async function characters(
-  { id, page }: { id: string; page: number },
+export async function mediaCharacters(
+  { mediaId, page }: { mediaId: string; page: number },
 ): Promise<discord.Message> {
-  const results = await packs.media({ ids: [id] });
+  const results = await packs.media({ ids: [mediaId] });
 
   // aggregate the media by populating any references to other media/characters
   const media = await packs.aggregate<Media>({ media: results[0] });
 
+  // sort characters by popularity
   const characters = packs.sortCharacters(media.characters?.edges);
 
   if (!characters?.length) {
     throw new Error('404');
   }
 
+  const group: discord.Component[] = [];
+
+  const character = characters[page].node;
+
+  // link components
+  character.externalLinks
+    ?.forEach((link) => {
+      const component = new discord.Component()
+        .setLabel(link.site)
+        .setUrl(link.url);
+
+      group.push(component);
+    });
+
   return discord.Message.page({
     page,
     total: characters.length,
-    id: discord.join('characters', id),
-    embeds: [
-      characterEmbed(characters[page].node),
-    ],
+    id: discord.join('characters', mediaId),
+    embeds: [characterEmbed(character)],
+    components: group,
   });
 }
 
