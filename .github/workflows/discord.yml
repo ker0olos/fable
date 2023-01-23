@@ -1,10 +1,9 @@
 name: discord
 
-on:
-  push:
+on: [push]
 
 jobs:
-  update-slash-commands:
+  update-commands:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -13,17 +12,18 @@ jobs:
           deno-version: v1.x
 
       - if: ${{ github.ref == 'refs/heads/main' }}
-        name: Update global slash commands on production
+        name: Update global commands
         env:
-          APP_ID: ${{ secrets.APP_ID }}
+          APP_ID: "$APP_ID"
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: deno task commands
 
       # test the validity of the commands
+      # by registering them on a dummy server
       - if: ${{ github.ref != 'refs/heads/main' }}
-        name: Update guild slash commands on test server
+        name: Test registering commands on a dummy server
         env:
-          APP_ID: ${{ secrets.APP_ID }}
+          APP_ID: "$APP_ID"
+          GUILD_ID: "$DUMMY_GUILD_ID"
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          GUILD_ID: ${{ secrets.DUMMY_GUILD }}
         run: deno task commands
