@@ -1,11 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from 'https://deno.land/std@0.172.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.173.0/testing/asserts.ts';
 
 import {
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.172.0/testing/mock.ts';
+} from 'https://deno.land/std@0.173.0/testing/mock.ts';
 
 import config, { clear as clearConfig, init } from '../src/config.ts';
 
