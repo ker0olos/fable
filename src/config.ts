@@ -13,7 +13,6 @@ export const emotes = {
 };
 
 const config: {
-  dev: boolean;
   deploy: boolean;
   appId?: string;
   publicKey?: string;
@@ -21,7 +20,6 @@ const config: {
   sentry?: string;
   origin?: string;
 } = {
-  dev: false,
   deploy: false,
   appId: undefined,
   publicKey: undefined,
@@ -41,8 +39,6 @@ export async function initConfig(): Promise<void> {
       //
     }
 
-    config.dev = false;
-
     config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
 
     config.sentry = Deno.env.get('SENTRY_DSN');
@@ -54,20 +50,6 @@ export async function initConfig(): Promise<void> {
     config.mongoUrl = Deno.env.get('MONGO_URL');
 
     config.origin = undefined;
-  }
-}
-
-export async function updateConfig(url: URL): Promise<void> {
-  const query = await Deno.permissions.query({ name: 'env' });
-
-  if (query?.state === 'granted') {
-    config.dev = url.pathname === '/dev';
-
-    config.origin = url.origin;
-
-    if (!config.origin.startsWith('http://localhost')) {
-      config.origin = config.origin.replace('http://', 'https://');
-    }
   }
 }
 
