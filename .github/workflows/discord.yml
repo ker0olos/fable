@@ -14,7 +14,7 @@ jobs:
       - if: ${{ github.ref == 'refs/heads/main' }}
         name: Update global commands
         env:
-          APP_ID: "$APP_ID"
+          APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: deno task commands
 
@@ -23,7 +23,7 @@ jobs:
       - if: ${{ github.ref != 'refs/heads/main' }}
         name: Test registering commands on a dummy server
         env:
-          APP_ID: "$APP_ID"
-          GUILD_ID: "$DUMMY_GUILD_ID"
+          APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          GUILD_ID: ${{ secrets.DUMMY_GUILD }}
         run: deno task commands
