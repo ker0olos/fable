@@ -3,13 +3,13 @@
 import {
   assert,
   assertEquals,
-} from 'https://deno.land/std@0.172.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.173.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   stub,
-} from 'https://deno.land/std@0.172.0/testing/mock.ts';
+} from 'https://deno.land/std@0.173.0/testing/mock.ts';
 
 import * as discord from '../src/discord.ts';
 
@@ -217,7 +217,7 @@ Deno.test('components', async (test) => {
   });
 
   await test.step('new with placeholder', () => {
-    const component = new discord.Component();
+    const component = new discord.Component(discord.ComponentType.TextInput);
 
     component.setPlaceholder('placeholder');
 
@@ -339,7 +339,7 @@ Deno.test('static messages', async (test) => {
       type: 4,
       data: {
         content:
-          'An Internal Error occurred and was reported.\n\n```ref_id: id```',
+          'An Internal Error occurred and was reported.\n```ref_id: id```',
         components: [],
         embeds: [],
       },
@@ -421,7 +421,7 @@ Deno.test('page messages', async (test) => {
   await test.step('2/2', () => {
     const message = discord.Message.page({
       id: 'id',
-      index: 1,
+      page: 1,
       total: 2,
       embeds: [new discord.Embed().setTitle('title')],
     });
@@ -455,7 +455,7 @@ Deno.test('page messages', async (test) => {
   await test.step('2/3', () => {
     const message = discord.Message.page({
       id: 'id',
-      index: 1,
+      page: 1,
       total: 3,
       embeds: [new discord.Embed().setTitle('title')],
     });

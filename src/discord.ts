@@ -7,12 +7,16 @@ const API = `https://discord.com/api/v10`;
 
 const splitter = '=';
 
+export const join = (...args: string[]): string => {
+  return args.join(splitter);
+};
+
 export enum ImageSize {
   // 450x635,
   Large = '',
-  // 230x345
+  // 230x325
   Medium = 'medium',
-  // 100x150
+  // 110x155
   Thumbnail = 'thumbnail',
 }
 
@@ -221,7 +225,7 @@ export class Component {
   }
 
   setId(...id: string[]): Component {
-    const cid = id.join(splitter);
+    const cid = join(...id);
     // (see https://discord.com/developers/docs/interactions/message-components#custom-id)
     if (cid.length <= 100) {
       this.#data.custom_id = cid;
@@ -229,8 +233,7 @@ export class Component {
     return this;
   }
 
-  // setStyle(style: ButtonStyle | TextInputStyle): Component {
-  setStyle(style: ButtonStyle): Component {
+  setStyle(style: ButtonStyle | TextInputStyle): Component {
     this.#data.style = style;
     return this;
   }
@@ -251,7 +254,6 @@ export class Component {
   }
 
   setPlaceholder(placeholder: string): Component {
-    this.#data.type = ComponentType.TextInput;
     this.#data.placeholder = placeholder;
     return this;
   }
@@ -358,14 +360,12 @@ export class Embed {
     return this;
   }
 
-  setImage(
-    image: {
-      url?: string;
-      default?: boolean;
-      disableProxy?: boolean;
-      preferredSize?: ImageSize;
-    },
-  ): Embed {
+  setImage(image: {
+    url?: string;
+    default?: boolean;
+    disableProxy?: boolean;
+    preferredSize?: ImageSize;
+  }): Embed {
     if (image.url || image.default) {
       if (config.origin && image.url?.startsWith(config.origin)) {
         this.#data.image = {
@@ -572,62 +572,52 @@ export class Message {
     });
   }
 
-  // static loading() {
-  //   return json({
-  //     type: 5,
-  //   });
-  // }
-
-  // static deferred() {
-  //   return json({
-  //     type: 6,
-  //   });
-  // }
-
   static page(
-    { embeds, id, index, total }: {
+    { embeds, components, id, page, total }: {
       id: string;
       embeds: Embed[];
-      index?: number;
+      components?: Component[];
+      page?: number;
       total: number;
     },
   ): Message {
-    index = index ?? 0;
+    page = page ?? 0;
+    components = components ?? [];
 
     const message = new Message();
 
     const group = [];
 
     const prev = new Component()
-      .setId(id, `${index - 1}`)
+      .setId(id, `${page - 1}`)
       .setLabel(`Prev`);
 
     const next = new Component()
-      .setId(id, `${index + 1}`)
+      .setId(id, `${page + 1}`)
       .setLabel(`Next`);
 
     const indicator = new Component().setId('_')
-      .setLabel(`${index + 1}/${total}`)
+      .setLabel(`${page + 1}/${total}`)
       .toggle();
 
-    if (index - 1 >= 0) {
+    if (page - 1 >= 0) {
       group.push(prev);
     }
 
     group.push(indicator);
 
-    if (index + 1 < total) {
+    if (page + 1 < total) {
       group.push(next);
     }
 
     embeds.forEach((embed) => message.addEmbed(embed));
 
-    return message.addComponents(group);
+    return message.addComponents([...group, ...components]);
   }
 
   static internal(id: string): Message {
     return new Message().setContent(
-      `An Internal Error occurred and was reported.\n\n\`\`\`ref_id: ${id}\`\`\``,
+      `An Internal Error occurred and was reported.\n\`\`\`ref_id: ${id}\`\`\``,
     );
   }
 }

@@ -4,14 +4,14 @@ import {
   assert,
   assertEquals,
   assertThrows,
-} from 'https://deno.land/std@0.172.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.173.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.172.0/testing/mock.ts';
+} from 'https://deno.land/std@0.173.0/testing/mock.ts';
 
 import utils from '../src/utils.ts';
 import config from '../src/config.ts';
@@ -331,7 +331,48 @@ Deno.test('external images', async (test) => {
 
       assertEquals(
         response.headers.get('location'),
-        'http://localhost:8000/file/large.jpg',
+        'http://localhost:8000/assets/medium.png',
+      );
+    } finally {
+      delete config.origin;
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('invalid thumbnail', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'application/json',
+        }),
+        arrayBuffer: () => new TextEncoder().encode('data'),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.jpeg')
+        }?size=thumbnail`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.jpeg')],
+      });
+
+      assertEquals(response.status, 302);
+
+      assertEquals(
+        response.headers.get('location'),
+        'http://localhost:8000/assets/thumbnail.png',
       );
     } finally {
       delete config.origin;
@@ -372,7 +413,7 @@ Deno.test('external images', async (test) => {
 
       assertEquals(
         response.headers.get('location'),
-        'http://localhost:8000/file/large.jpg',
+        'http://localhost:8000/assets/medium.png',
       );
     } finally {
       delete config.origin;
@@ -402,7 +443,7 @@ Deno.test('external images', async (test) => {
 
       assertEquals(
         response.headers.get('location'),
-        'http://localhost:8000/file/large.jpg',
+        'http://localhost:8000/assets/medium.png',
       );
     } finally {
       delete config.origin;

@@ -161,7 +161,9 @@ async function rngPull(): Promise<Pull> {
 /**
  * start the roll's animation
  */
-function start({ token, id }: { token: string; id?: string }): discord.Message {
+function start(
+  { token, id }: { token: string; id?: string },
+): discord.Message {
   (id ? gacha.forcePull(id) : gacha.rngPull())
     .then(async (pull) => {
       const media = pull.media;
@@ -187,7 +189,7 @@ function start({ token, id }: { token: string; id?: string }): discord.Message {
         .addEmbed(
           new discord.Embed()
             .setImage({
-              url: `${config.origin}/file/stars/${pull.rating.stars}.gif`,
+              url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
             }),
         );
 
@@ -212,10 +214,6 @@ function start({ token, id }: { token: string; id?: string }): discord.Message {
             }),
         );
 
-      if (config.dev) {
-        message.addEmbed(pullDebugEmbed(pull));
-      }
-
       await message.patch(token);
     })
     .catch(async (err) => {
@@ -237,30 +235,9 @@ function start({ token, id }: { token: string; id?: string }): discord.Message {
   return new discord.Message()
     .addEmbed(
       new discord.Embed().setImage(
-        { url: `${config.origin}/file/spinner.gif` },
+        { url: `${config.origin}/assets/spinner.gif` },
       ),
     );
-}
-
-function pullDebugEmbed(pull: Pull): discord.Embed {
-  return new discord.Embed()
-    .setTitle('Pool')
-    .addField({
-      name: 'Role',
-      value: `${pull.role}`,
-    })
-    .addField({
-      name: 'Media',
-      value: `${pull.media.id}`,
-    })
-    .addField({
-      name: 'Length',
-      value: `${pull.pool}`,
-    })
-    .addField({
-      name: 'Popularity',
-      value: `${pull.popularityGreater} < P < ${pull.popularityLesser}`,
-    });
 }
 
 const gacha = {

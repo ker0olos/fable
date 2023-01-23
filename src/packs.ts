@@ -28,7 +28,6 @@ import {
   Media,
   MediaFormat,
   MediaRelation,
-  MediaType,
   Pool,
 } from './types.ts';
 
@@ -41,8 +40,12 @@ type CharacterEdge = { node: Character; role?: CharacterRole };
 
 type All = Media | DisaggregatedMedia | Character | DisaggregatedCharacter;
 
+// TODO FIX this should be cached on database for each server
+// updated each time a pack is installed
 let manual: Manifest[] | undefined = undefined;
 
+// TODO FIX this should be cached on database for each server
+// updated each time a pack is installed
 let disabled: { [key: string]: boolean } | undefined = undefined;
 
 const packs = {
@@ -59,7 +62,7 @@ const packs = {
   mediaToString,
   sortMedia,
   sortCharacters,
-  //
+  // used in tests to clear cache
   clear: () => {
     manual = undefined;
     disabled = undefined;
@@ -90,6 +93,7 @@ async function commands(
 }
 
 function list(type?: ManifestType): Manifest[] {
+  // TODO FIX this should be cached on database for each server
   if (!manual) {
     // TODO BLOCKED load manual packs
     // (see https://github.com/ker0olos/fable/issues/10)
@@ -127,9 +131,9 @@ function dict(): { [key: string]: Manifest } {
 }
 
 function embed(
-  { manifest, index, total }: {
+  { manifest, page, total }: {
     manifest?: Manifest;
-    index?: number;
+    page?: number;
     total: number;
   },
 ): discord.Message {
@@ -161,17 +165,15 @@ function embed(
     throw new Error(`Manifest "${manifest.id}" type is undefined`);
   }
 
-  const message = discord.Message.page(
-    {
-      index,
-      total,
-      id: manifest.type,
-      embeds: [
-        disclaimer,
-        pack,
-      ],
-    },
-  );
+  const message = discord.Message.page({
+    page,
+    total,
+    id: manifest.type,
+    embeds: [
+      disclaimer,
+      pack,
+    ],
+  });
 
   return message;
 }
@@ -237,7 +239,6 @@ async function findById<T>(
 async function findOne<T>(
   key: 'media' | 'characters',
   search: string,
-  type?: MediaType,
 ): Promise<T | undefined> {
   let maxPopularity = -1;
   let match: T | undefined = undefined;
@@ -253,9 +254,6 @@ async function findOne<T>(
 
   for (const pack of [anilistPack, ...packs.list()]) {
     for (const item of pack[key]?.new ?? []) {
-      if (type && 'type' in item && item.type !== type) {
-        continue;
-      }
       if (packs.isDisabled(`${pack.id}:${item.id}`)) {
         continue;
       }
@@ -282,10 +280,9 @@ async function findOne<T>(
   return match;
 }
 
-async function media({ ids, search, type }: {
+async function media({ ids, search }: {
   ids?: string[];
   search?: string;
-  type?: MediaType;
 }): Promise<(Media | DisaggregatedMedia)[]> {
   if (ids?.length) {
     const results = await findById<Media | DisaggregatedMedia>(
@@ -298,7 +295,6 @@ async function media({ ids, search, type }: {
     const match: Media | DisaggregatedMedia | undefined = await findOne(
       'media',
       search,
-      type,
     );
 
     return match ? [match] : [];
@@ -461,6 +457,7 @@ function aliasToArray(
 }
 
 function isDisabled(id: string): boolean {
+  // TODO FIX this should be cached on database for each server
   if (!disabled) {
     disabled = {};
 

@@ -18,12 +18,14 @@ import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
 
-import config, { init } from './config.ts';
+import config, { initConfig } from './config.ts';
 
-import { ManifestType, MediaType } from './types.ts';
+import { ManifestType } from './types.ts';
+
+await initConfig();
 
 const handler = async (r: Request) => {
-  init({ url: new URL(r.url) });
+  const { origin } = new URL(r.url);
 
   initSentry({ dsn: config.sentry });
 
@@ -40,7 +42,15 @@ const handler = async (r: Request) => {
     );
   }
 
-  const { valid, body } = await utils.verifySignature(r, config.publicKey);
+  const signature = r.headers.get('X-Signature-Ed25519') || undefined;
+  const timestamp = r.headers.get('X-Signature-Timestamp') || undefined;
+
+  const { valid, body } = utils.verifySignature({
+    publicKey: config.publicKey,
+    body: await r.text(),
+    signature,
+    timestamp,
+  });
 
   if (!valid) {
     return json(
@@ -65,6 +75,8 @@ const handler = async (r: Request) => {
     return discord.Message.pong();
   }
 
+  config.origin = origin;
+
   try {
     switch (type) {
       case discord.InteractionType.Command:
@@ -75,16 +87,10 @@ const handler = async (r: Request) => {
             return (await search.media({
               debug: Boolean(options['debug']),
               search: options['query'] as string,
-              type: Object.values(MediaType).includes(
-                  name.toUpperCase() as MediaType,
-                )
-                ? name.toUpperCase() as MediaType
-                : undefined,
             })).send();
-          case 'debug':
           case 'character':
             return (await search.character({
-              debug: name === 'debug' || Boolean(options['debug']),
+              debug: Boolean(options['debug']),
               search: options['query'] as string,
             })).send();
           case 'music':
@@ -126,23 +132,35 @@ const handler = async (r: Request) => {
       case discord.InteractionType.Component:
         switch (customType) {
           case 'media': {
-            const message = await search.media({
-              // deno-lint-ignore no-non-null-assertion
-              id: customValues![0],
-            });
-            return message.setType(discord.MessageType.Update).send();
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+
+            return (await search.media({ id })).setType(
+              discord.MessageType.Update,
+            ).send();
+          }
+          case 'characters': {
+            // deno-lint-ignore no-non-null-assertion
+            const mediaId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const page = parseInt(customValues![1]);
+
+            return (await search.mediaCharacters({ mediaId, page })).setType(
+              discord.MessageType.Update,
+            ).send();
           }
           case 'builtin':
           case 'manual': {
             const list = packs.list(customType as ManifestType);
 
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![0]);
+            const page = parseInt(customValues![0]);
 
             return packs.embed({
-              index,
+              page,
               total: list.length,
-              manifest: list[index],
+              manifest: list[page],
             }).setType(discord.MessageType.Update).send();
           }
           default:
@@ -198,7 +216,7 @@ serve({
     baseUrl: import.meta.url,
     intervene: cache(86400),
   }),
-  '/file/:filename+': serveStatic('../assets/public', {
+  '/assets/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,
     intervene: cache(604800),
   }),

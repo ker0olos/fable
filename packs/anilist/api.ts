@@ -79,7 +79,8 @@ export function transform<T>(
         native: item.title?.native,
         alternative: item.synonyms,
       },
-      image: item.coverImage?.extraLarge
+      image: item.coverImage?.extraLarge &&
+          !item.coverImage?.extraLarge.endsWith('default.jpg')
         ? {
           featured: {
             url: item.coverImage.extraLarge,
@@ -120,7 +121,8 @@ export function transform<T>(
         native: item.name?.native,
         alternative: item.name?.alternative,
       },
-      image: item.image?.large
+      image: item.image?.large &&
+          !item.image?.large.endsWith('default.jpg')
         ? {
           featured: {
             url: item.image.large,

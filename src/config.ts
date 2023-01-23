@@ -1,4 +1,4 @@
-import { load as Dotenv } from 'https://deno.land/std@0.172.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.173.0/dotenv/mod.ts';
 
 // export const colors = {
 //   background: '#2b2d42',
@@ -13,7 +13,6 @@ export const emotes = {
 };
 
 const config: {
-  dev: boolean;
   deploy: boolean;
   appId?: string;
   publicKey?: string;
@@ -21,7 +20,6 @@ const config: {
   sentry?: string;
   origin?: string;
 } = {
-  dev: false,
   deploy: false,
   appId: undefined,
   publicKey: undefined,
@@ -30,22 +28,18 @@ const config: {
   origin: undefined,
 };
 
-export async function init(
-  { url }: { url: URL },
-): Promise<void> {
+export async function initConfig(): Promise<void> {
   const query = await Deno.permissions.query({ name: 'env' });
 
   if (query?.state === 'granted') {
-    config.dev = url.pathname === '/dev';
-
-    config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
-
-    // load .env file
     try {
+      // load .env file
       await Dotenv({ export: true, allowEmptyValues: true });
     } catch {
       //
     }
+
+    config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
 
     config.sentry = Deno.env.get('SENTRY_DSN');
 
@@ -55,12 +49,14 @@ export async function init(
 
     config.mongoUrl = Deno.env.get('MONGO_URL');
 
-    config.origin = url.origin;
-
-    if (!config.origin.startsWith('http://localhost')) {
-      config.origin = config.origin.replace('http://', 'https://');
-    }
+    config.origin = undefined;
   }
+}
+
+export function clearConfig(): void {
+  Object.keys(config).forEach((key) =>
+    delete config[key as keyof typeof config]
+  );
 }
 
 export default config;

@@ -1,4 +1,4 @@
-import { load as Dotenv } from 'https://deno.land/std@0.172.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.173.0/dotenv/mod.ts';
 
 import { Manifest } from './src/types.ts';
 

@@ -1,8 +1,6 @@
-import nacl from 'https://esm.sh/tweetnacl@1.0.3';
+import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 
 import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
-
-import config from './config.ts';
 
 function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -164,53 +162,48 @@ function decodeDescription(s?: string): string | undefined {
   return truncate(s, 4096);
 }
 
-async function verifySignature(
-  r: Request,
-  publicKey?: string,
-): Promise<{ valid: boolean; body: string }> {
-  const signature = r.headers.get('X-Signature-Ed25519') || undefined;
-  const timestamp = r.headers.get('X-Signature-Timestamp') || undefined;
+function hexToUint8Array(hex: string): Uint8Array | undefined {
+  const t = hex.match(/.{1,2}/g)?.map((val) => parseInt(val, 16));
 
-  const body = await r.text();
-
-  function hexToUint8Array(hex?: string): Uint8Array | undefined {
-    const t = hex?.match(/.{1,2}/g);
-
-    if (t) {
-      return new Uint8Array(
-        t.map((val) => parseInt(val, 16)),
-      );
-    }
+  if (t?.length) {
+    return new Uint8Array(t);
   }
+}
 
-  const sig = hexToUint8Array(signature);
-  const pubKey = hexToUint8Array(publicKey);
-
-  if (!sig || !pubKey) {
+function verifySignature(
+  { publicKey, signature, timestamp, body }: {
+    publicKey?: string;
+    signature?: string;
+    timestamp?: string;
+    body: string;
+  },
+): { valid: boolean; body: string } {
+  if (!signature || !timestamp || !publicKey) {
     return { valid: false, body };
   }
 
-  const valid = nacl.sign.detached.verify(
+  const valid = ed25519.verify(
+    // deno-lint-ignore no-non-null-assertion
+    hexToUint8Array(publicKey)!,
+    // deno-lint-ignore no-non-null-assertion
+    hexToUint8Array(signature)!,
     new TextEncoder().encode(timestamp + body),
-    sig,
-    pubKey,
   );
 
   return { valid, body };
 }
 
 const proxy = async (r: Request) => {
+  const { pathname, origin } = new URL(r.url);
+
   try {
-    const encoded = new URL(r.url);
-
-    // const searchParams = encoded.searchParams;
-
     const url = new URL(
-      decodeURIComponent(encoded.pathname.substring('/external/'.length)),
+      decodeURIComponent(pathname.substring('/external/'.length)),
     );
 
-    const image = url ? await fetch(url) : undefined;
-    const type = image?.headers.get('content-type');
+    const response = await fetch(url);
+
+    const type = response?.headers.get('content-type');
 
     // FIXME discord doesn't allow any gif that doesn't end with the file extension
     // (see #39)
@@ -218,26 +211,27 @@ const proxy = async (r: Request) => {
       throw new Error();
     }
 
-    // TODO IMPORTANT apply ?size= parameter
-
     // TODO image customization
     //(see https://github.com/ker0olos/fable/issues/24)
 
-    if (image?.status === 200 && type?.startsWith('image/')) {
-      const body = await image.arrayBuffer();
-
-      const response = new Response(body);
-
-      response.headers.set('content-type', type);
-      response.headers.set('content-length', `${body.byteLength}`);
-      response.headers.set('cache-control', 'public, max-age=604800');
-
-      return response;
+    if (response?.status !== 200 || !type?.startsWith('image/')) {
+      throw new Error();
     }
 
-    throw new Error();
+    const body = await response.arrayBuffer();
+
+    const proxy = new Response(body);
+
+    proxy.headers.set('content-type', type);
+    proxy.headers.set('content-length', `${body.byteLength}`);
+    proxy.headers.set('cache-control', 'public, max-age=604800');
+
+    return proxy;
   } catch {
-    return Response.redirect(`${config.origin}/file/large.jpg`);
+    if (r.url?.includes('?size=thumbnail')) {
+      return Response.redirect(`${origin}/assets/thumbnail.png`);
+    }
+    return Response.redirect(`${origin}/assets/medium.png`);
   }
 };
 

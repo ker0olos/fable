@@ -1,6 +1,6 @@
 import utils from '../../src/utils.ts';
 
-import { join } from 'https://deno.land/std@0.172.0/path/mod.ts';
+import { join } from 'https://deno.land/std@0.173.0/path/mod.ts';
 
 import gacha from '../../src/gacha.ts';
 

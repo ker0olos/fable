@@ -4,12 +4,12 @@ import {
   assert,
   assertEquals,
   assertObjectMatch,
-} from 'https://deno.land/std@0.172.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.173.0/testing/asserts.ts';
 
 import {
   assertSpyCalls,
   stub,
-} from 'https://deno.land/std@0.172.0/testing/mock.ts';
+} from 'https://deno.land/std@0.173.0/testing/mock.ts';
 
 import { assertValidManifest } from '../src/validate.ts';
 
@@ -129,7 +129,7 @@ Deno.test('list', async (test) => {
   });
 });
 
-Deno.test('disabled', async (test) => {
+Deno.test('disabled embeds', async (test) => {
   await test.step('disabled media', () => {
     const manifest: Manifest = {
       id: 'pack-id',
@@ -197,6 +197,178 @@ Deno.test('disabled', async (test) => {
   });
 });
 
+Deno.test('disabled relations', async (test) => {
+  await test.step('disabled media relations', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [{
+          id: '1',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title 1',
+          },
+          relations: [{
+            mediaId: '2',
+            relation: MediaRelation.Contains,
+          }],
+        }, {
+          id: '2',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title 2',
+          },
+          relations: [{
+            mediaId: '1',
+            relation: MediaRelation.Parent,
+          }],
+        }],
+      },
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      media: {
+        conflicts: ['pack-id:2'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      assertEquals(
+        // deno-lint-ignore no-non-null-assertion
+        (await packs.aggregate<Media>({ media: manifest.media!.new![0] }))
+          .relations?.edges.length,
+        0,
+      );
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled media characters', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [{
+          id: '1',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          characters: [{
+            characterId: '2',
+            role: CharacterRole.Main,
+          }],
+        }],
+      },
+      characters: {
+        new: [{
+          id: '2',
+          packId: 'pack-id',
+          name: {
+            english: 'name',
+          },
+        }],
+      },
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      characters: {
+        conflicts: ['pack-id:2'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      assertEquals(
+        // deno-lint-ignore no-non-null-assertion
+        (await packs.aggregate<Media>({ media: manifest.media!.new![0] }))
+          .characters?.edges.length,
+        0,
+      );
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled character media', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [{
+          id: '1',
+          packId: 'pack-id',
+          name: {
+            english: 'name',
+          },
+          media: [{
+            mediaId: '2',
+            role: CharacterRole.Main,
+          }],
+        }],
+      },
+      media: {
+        new: [{
+          id: '2',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+        }],
+      },
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      characters: {
+        conflicts: ['pack-id:2'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      assertEquals(
+        (await packs.aggregate<Character>({
+          // deno-lint-ignore no-non-null-assertion
+          character: manifest.characters!.new![0],
+        }))
+          .media?.edges.length,
+        0,
+      );
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+});
+
 Deno.test('manifest embeds', async (test) => {
   await test.step('builtin packs', () => {
     const message = packs.embed({
@@ -247,7 +419,7 @@ Deno.test('manifest embeds', async (test) => {
         title: 'title',
         type: ManifestType.Manual,
       },
-      index: 1,
+      page: 1,
       total: 2,
     });
 
@@ -767,70 +939,6 @@ Deno.test('search for media', async (test) => {
       assertEquals(results.length, 1);
 
       assertEquals(results[0].id, '1');
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      packs.clear();
-    }
-  });
-
-  await test.step('match english with specified types', async () => {
-    const media: AniListMedia[] = [{
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'fable',
-      },
-    }, {
-      id: '2',
-      type: MediaType.Manga,
-      format: MediaFormat.Manga,
-      title: {
-        english: 'fable',
-      },
-    }];
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        json: (() =>
-          Promise.resolve({
-            data: {
-              Page: {
-                media,
-              },
-            },
-          })),
-      } as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      let results = await packs.media({
-        search: 'feble',
-        type: MediaType.Anime,
-      });
-
-      assertEquals(results.length, 1);
-      assertEquals(results[0].id, '1');
-      assertEquals(results[0].type, 'ANIME');
-
-      results = await packs.media({
-        search: 'feble',
-        type: MediaType.Manga,
-      });
-
-      assertEquals(results.length, 1);
-      assertEquals(results[0].id, '2');
-      assertEquals(results[0].type, 'MANGA');
     } finally {
       fetchStub.restore();
       listStub.restore();

@@ -3,18 +3,19 @@
 import {
   assertEquals,
   assertRejects,
-} from 'https://deno.land/std@0.172.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.173.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.172.0/testing/mock.ts';
+} from 'https://deno.land/std@0.173.0/testing/mock.ts';
 
-import { FakeTime } from 'https://deno.land/std@0.172.0/testing/time.ts';
+import { FakeTime } from 'https://deno.land/std@0.173.0/testing/time.ts';
 
 import packs from '../src/packs.ts';
+
 import config from '../src/config.ts';
 
 import Rating from '../src/rating.ts';
@@ -97,77 +98,6 @@ Deno.test('media', async (test) => {
             image: {
               url: 'undefined/external/image_url',
             },
-          }],
-          components: [],
-        },
-      });
-
-      assertSpyCalls(fetchStub, 1);
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
-  await test.step('prioritize search', async () => {
-    const media: AniListMedia[] = [{
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'title',
-      },
-    }, {
-      id: '2',
-      type: MediaType.Manga,
-      format: MediaFormat.Manga,
-      title: {
-        english: 'title',
-      },
-    }];
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        json: (() =>
-          Promise.resolve({
-            data: {
-              Page: {
-                media,
-              },
-            },
-          })),
-      } as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      const message = await search.media({
-        search: 'title',
-        type: MediaType.Manga,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          embeds: [{
-            type: 2,
-            author: {
-              name: 'Manga',
-            },
-            color: undefined,
-            description: undefined,
-            image: {
-              url: 'undefined/external/',
-            },
-            title: 'title',
           }],
           components: [],
         },
@@ -329,7 +259,10 @@ Deno.test('media', async (test) => {
         extraLarge: 'image_url',
       },
       externalLinks: [
-        { site: 'Crunchyroll', url: 'url2' },
+        { site: 'Crunchyroll', url: 'https://crunchyroll.com/title' },
+        { site: 'Crunchyroll 2', url: 'crunchyroll.com/title' },
+        { site: 'YouTube', url: 'https://www.youtube.com/video' },
+        { site: 'FakeTube', url: 'https://faketube.net/video' },
       ],
     };
 
@@ -378,8 +311,20 @@ Deno.test('media', async (test) => {
               type: 1,
               components: [
                 {
-                  url: 'url2',
+                  url: 'https://crunchyroll.com/title',
                   label: 'Crunchyroll',
+                  style: 5,
+                  type: 2,
+                },
+                {
+                  url: 'crunchyroll.com/title',
+                  label: 'Crunchyroll 2',
+                  style: 5,
+                  type: 2,
+                },
+                {
+                  url: 'https://www.youtube.com/video',
+                  label: 'YouTube',
                   style: 5,
                   type: 2,
                 },
@@ -657,7 +602,15 @@ Deno.test('media', async (test) => {
                 'undefined/external/supporting%20character%20url?size=thumbnail',
             },
           }],
-          components: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'characters=anilist:1=0',
+              label: 'View Characters',
+              style: 2,
+              type: 2,
+            }],
+          }],
         },
       });
 
@@ -1424,7 +1377,15 @@ Deno.test('media', async (test) => {
               url: 'undefined/external/?size=thumbnail',
             },
           }],
-          components: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'characters=anilist:1=0',
+              label: 'View Characters',
+              style: 2,
+              type: 2,
+            }],
+          }],
         },
       });
 
@@ -1584,6 +1545,92 @@ Deno.test('media debug', async (test) => {
       format: MediaFormat.TV,
       title: {
         english: 'english title',
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({
+        search: 'english title',
+        debug: true,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            description: undefined,
+            color: undefined,
+            fields: [
+              {
+                name: 'Id',
+                value: 'anilist:1',
+              },
+              {
+                inline: true,
+                name: 'Type',
+                value: 'Anime',
+              },
+              {
+                inline: true,
+                name: 'Format',
+                value: 'TV',
+              },
+              {
+                inline: true,
+                name: 'Popularity',
+                value: '0',
+              },
+            ],
+            thumbnail: {
+              url: 'undefined/external/?size=thumbnail',
+            },
+            title: 'english title',
+            type: 2,
+          }],
+          components: [],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('default image 2', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'default.jpg',
       },
     };
 
@@ -2002,6 +2049,65 @@ Deno.test('character', async (test) => {
     }
   });
 
+  await test.step('default image 2', async () => {
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'full name',
+      },
+      image: {
+        large: 'default.jpg',
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                characters: [character],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.character({ search: 'full name' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            title: 'full name',
+            description: undefined,
+            color: undefined,
+            image: {
+              url: 'undefined/external/',
+            },
+          }],
+          components: [],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
   await test.step('not found', async () => {
     const character: AniListCharacter = {
       id: '1',
@@ -2044,6 +2150,206 @@ Deno.test('character', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+    }
+  });
+});
+
+Deno.test('characters', async (test) => {
+  await test.step('normal', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      characters: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: '2',
+            name: {
+              full: 'name',
+            },
+            popularity: 10,
+          },
+        }, {
+          role: CharacterRole.Supporting,
+          node: {
+            id: '3',
+            name: {
+              full: 'another name',
+            },
+            popularity: 100,
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.mediaCharacters({
+        mediaId: 'anilist:1',
+        page: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: '_',
+              disabled: true,
+              label: '1/2',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'characters=anilist:1=1',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              color: undefined,
+              description: undefined,
+              image: {
+                url: 'undefined/external/',
+              },
+              title: 'another name',
+              type: 2,
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+  ``;
+
+  await test.step('external links', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      characters: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: '2',
+            name: {
+              full: 'name',
+            },
+            popularity: 10,
+            externalLinks: [{
+              site: 'YouTube',
+              url: 'https://www.youtube.com',
+            }, {
+              site: 'Crunchyroll',
+              url: 'https://crunchyroll.com',
+            }],
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.mediaCharacters({
+        mediaId: 'anilist:1',
+        page: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              label: 'YouTube',
+              url: 'https://www.youtube.com',
+              style: 5,
+              type: 2,
+            }, {
+              label: 'Crunchyroll',
+              url: 'https://crunchyroll.com',
+              style: 5,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              color: undefined,
+              description: undefined,
+              image: {
+                url: 'undefined/external/',
+              },
+              title: 'name',
+              type: 2,
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
     }
   });
 });
@@ -2565,7 +2871,7 @@ Deno.test('gacha', async (test) => {
           embeds: [{
             type: 2,
             image: {
-              url: 'http://localhost:8000/file/spinner.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -2612,7 +2918,7 @@ Deno.test('gacha', async (test) => {
               embeds: [{
                 type: 2,
                 image: {
-                  url: 'http://localhost:8000/file/stars/1.gif',
+                  url: 'http://localhost:8000/assets/stars/1.gif',
                 },
               }],
               components: [],
