@@ -129,7 +129,7 @@ Deno.test('list', async (test) => {
   });
 });
 
-Deno.test('disabled', async (test) => {
+Deno.test('disabled embeds', async (test) => {
   await test.step('disabled media', () => {
     const manifest: Manifest = {
       id: 'pack-id',
@@ -190,6 +190,178 @@ Deno.test('disabled', async (test) => {
 
     try {
       assert(!packs.isDisabled('another-pack:1'));
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+});
+
+Deno.test('disabled relations', async (test) => {
+  await test.step('disabled media relations', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [{
+          id: '1',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title 1',
+          },
+          relations: [{
+            mediaId: '2',
+            relation: MediaRelation.Contains,
+          }],
+        }, {
+          id: '2',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title 2',
+          },
+          relations: [{
+            mediaId: '1',
+            relation: MediaRelation.Parent,
+          }],
+        }],
+      },
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      media: {
+        conflicts: ['pack-id:2'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      assertEquals(
+        // deno-lint-ignore no-non-null-assertion
+        (await packs.aggregate<Media>({ media: manifest.media!.new![0] }))
+          .relations?.edges.length,
+        0,
+      );
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled media characters', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [{
+          id: '1',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          characters: [{
+            characterId: '2',
+            role: CharacterRole.Main,
+          }],
+        }],
+      },
+      characters: {
+        new: [{
+          id: '2',
+          packId: 'pack-id',
+          name: {
+            english: 'name',
+          },
+        }],
+      },
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      characters: {
+        conflicts: ['pack-id:2'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      assertEquals(
+        // deno-lint-ignore no-non-null-assertion
+        (await packs.aggregate<Media>({ media: manifest.media!.new![0] }))
+          .characters?.edges.length,
+        0,
+      );
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled character media', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [{
+          id: '1',
+          packId: 'pack-id',
+          name: {
+            english: 'name',
+          },
+          media: [{
+            mediaId: '2',
+            role: CharacterRole.Main,
+          }],
+        }],
+      },
+      media: {
+        new: [{
+          id: '2',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+        }],
+      },
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      characters: {
+        conflicts: ['pack-id:2'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest, manifest2],
+    );
+
+    try {
+      assertEquals(
+        (await packs.aggregate<Character>({
+          // deno-lint-ignore no-non-null-assertion
+          character: manifest.characters!.new![0],
+        }))
+          .media?.edges.length,
+        0,
+      );
     } finally {
       listStub.restore();
       packs.clear();
