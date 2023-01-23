@@ -40,8 +40,12 @@ type CharacterEdge = { node: Character; role?: CharacterRole };
 
 type All = Media | DisaggregatedMedia | Character | DisaggregatedCharacter;
 
+// TODO FIX this should be cached on database for each server
+// updated each time a pack is installed
 let manual: Manifest[] | undefined = undefined;
 
+// TODO FIX this should be cached on database for each server
+// updated each time a pack is installed
 let disabled: { [key: string]: boolean } | undefined = undefined;
 
 const packs = {
@@ -58,7 +62,7 @@ const packs = {
   mediaToString,
   sortMedia,
   sortCharacters,
-  //
+  // used in tests to clear cache
   clear: () => {
     manual = undefined;
     disabled = undefined;
@@ -89,6 +93,7 @@ async function commands(
 }
 
 function list(type?: ManifestType): Manifest[] {
+  // TODO FIX this should be cached on database for each server
   if (!manual) {
     // TODO BLOCKED load manual packs
     // (see https://github.com/ker0olos/fable/issues/10)
@@ -452,6 +457,7 @@ function aliasToArray(
 }
 
 function isDisabled(id: string): boolean {
+  // TODO FIX this should be cached on database for each server
   if (!disabled) {
     disabled = {};
 

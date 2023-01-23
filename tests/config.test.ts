@@ -7,7 +7,11 @@ import {
   stub,
 } from 'https://deno.land/std@0.173.0/testing/mock.ts';
 
-import config, { clear as clearConfig, init } from '../src/config.ts';
+import config, {
+  clearConfig,
+  initConfig,
+  updateConfig,
+} from '../src/config.ts';
 
 Deno.test('init', async (test) => {
   await test.step('stable', async () => {
@@ -31,22 +35,22 @@ Deno.test('init', async (test) => {
         '',
         'sentry_dsn',
         'app_id',
-        'app_public_key',
+        'public_key',
         'mongo_url',
       ]),
     );
 
     try {
-      await init({ url: new URL('http://localhost:8000/') });
+      await initConfig();
 
       assertEquals(config, {
         deploy: false,
         dev: false,
         appId: 'app_id',
-        publicKey: 'app_public_key',
+        publicKey: 'public_key',
         mongoUrl: 'mongo_url',
-        origin: 'http://localhost:8000',
         sentry: 'sentry_dsn',
+        origin: undefined,
       });
     } finally {
       clearConfig();
@@ -76,21 +80,33 @@ Deno.test('init', async (test) => {
       returnsNext([
         '',
         'sentry_dsn',
-        'dev_id',
-        'dev_public_key',
-        'dev_mongo_url',
+        'app_id',
+        'public_key',
+        'mongo_url',
       ]),
     );
 
     try {
-      await init({ url: new URL('http://localhost:8000/dev') });
+      await initConfig();
+
+      assertEquals(config, {
+        deploy: false,
+        dev: false,
+        appId: 'app_id',
+        publicKey: 'public_key',
+        mongoUrl: 'mongo_url',
+        origin: undefined,
+        sentry: 'sentry_dsn',
+      });
+
+      await updateConfig(new URL('http://localhost:8000/dev'));
 
       assertEquals(config, {
         deploy: false,
         dev: true,
-        appId: 'dev_id',
-        publicKey: 'dev_public_key',
-        mongoUrl: 'dev_mongo_url',
+        appId: 'app_id',
+        publicKey: 'public_key',
+        mongoUrl: 'mongo_url',
         origin: 'http://localhost:8000',
         sentry: 'sentry_dsn',
       });
@@ -122,23 +138,23 @@ Deno.test('init', async (test) => {
       returnsNext([
         '1',
         'sentry_dsn',
-        'dev_id',
-        'dev_public_key',
-        'dev_mongo_url',
+        'app_id',
+        'public_key',
+        'mongo_url',
       ]),
     );
 
     try {
-      await init({ url: new URL('http://localhost:8000/dev') });
+      await initConfig();
 
       assertEquals(config, {
         deploy: true,
-        dev: true,
-        appId: 'dev_id',
-        publicKey: 'dev_public_key',
-        mongoUrl: 'dev_mongo_url',
-        origin: 'http://localhost:8000',
+        dev: false,
+        appId: 'app_id',
+        publicKey: 'public_key',
+        mongoUrl: 'mongo_url',
         sentry: 'sentry_dsn',
+        origin: undefined,
       });
     } finally {
       clearConfig();

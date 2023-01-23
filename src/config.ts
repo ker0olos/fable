@@ -30,22 +30,20 @@ const config: {
   origin: undefined,
 };
 
-export async function init(
-  { url }: { url: URL },
-): Promise<void> {
+export async function initConfig(): Promise<void> {
   const query = await Deno.permissions.query({ name: 'env' });
 
   if (query?.state === 'granted') {
-    config.dev = url.pathname === '/dev';
-
-    config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
-
-    // load .env file
     try {
+      // load .env file
       await Dotenv({ export: true, allowEmptyValues: true });
     } catch {
       //
     }
+
+    config.dev = false;
+
+    config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
 
     config.sentry = Deno.env.get('SENTRY_DSN');
 
@@ -55,6 +53,16 @@ export async function init(
 
     config.mongoUrl = Deno.env.get('MONGO_URL');
 
+    config.origin = undefined;
+  }
+}
+
+export async function updateConfig(url: URL): Promise<void> {
+  const query = await Deno.permissions.query({ name: 'env' });
+
+  if (query?.state === 'granted') {
+    config.dev = url.pathname === '/dev';
+
     config.origin = url.origin;
 
     if (!config.origin.startsWith('http://localhost')) {
@@ -63,7 +71,7 @@ export async function init(
   }
 }
 
-export function clear(): void {
+export function clearConfig(): void {
   Object.keys(config).forEach((key) =>
     delete config[key as keyof typeof config]
   );

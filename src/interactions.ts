@@ -18,14 +18,16 @@ import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
 
-import config, { init } from './config.ts';
+import config, { initConfig, updateConfig } from './config.ts';
 
 import { ManifestType } from './types.ts';
 
-const handler = async (r: Request) => {
-  init({ url: new URL(r.url) });
+await initConfig();
 
+const handler = async (r: Request) => {
   initSentry({ dsn: config.sentry });
+
+  await updateConfig(new URL(r.url));
 
   const { error } = await validateRequest(r, {
     POST: {
@@ -40,7 +42,15 @@ const handler = async (r: Request) => {
     );
   }
 
-  const { valid, body } = await utils.verifySignature(r, config.publicKey);
+  const signature = r.headers.get('X-Signature-Ed25519') || undefined;
+  const timestamp = r.headers.get('X-Signature-Timestamp') || undefined;
+
+  const { valid, body } = utils.verifySignature({
+    publicKey: config.publicKey,
+    body: await r.text(),
+    signature,
+    timestamp,
+  });
 
   if (!valid) {
     return json(
