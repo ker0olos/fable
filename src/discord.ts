@@ -14,9 +14,9 @@ export const join = (...args: string[]): string => {
 export enum ImageSize {
   // 450x635,
   Large = '',
-  // 230x345
+  // 230x325
   Medium = 'medium',
-  // 100x150
+  // 110x155
   Thumbnail = 'thumbnail',
 }
 
@@ -233,8 +233,7 @@ export class Component {
     return this;
   }
 
-  // setStyle(style: ButtonStyle | TextInputStyle): Component {
-  setStyle(style: ButtonStyle): Component {
+  setStyle(style: ButtonStyle | TextInputStyle): Component {
     this.#data.style = style;
     return this;
   }
@@ -255,7 +254,6 @@ export class Component {
   }
 
   setPlaceholder(placeholder: string): Component {
-    this.#data.type = ComponentType.TextInput;
     this.#data.placeholder = placeholder;
     return this;
   }
@@ -362,14 +360,12 @@ export class Embed {
     return this;
   }
 
-  setImage(
-    image: {
-      url?: string;
-      default?: boolean;
-      disableProxy?: boolean;
-      preferredSize?: ImageSize;
-    },
-  ): Embed {
+  setImage(image: {
+    url?: string;
+    default?: boolean;
+    disableProxy?: boolean;
+    preferredSize?: ImageSize;
+  }): Embed {
     if (image.url || image.default) {
       if (config.origin && image.url?.startsWith(config.origin)) {
         this.#data.image = {
@@ -576,18 +572,6 @@ export class Message {
     });
   }
 
-  // static loading() {
-  //   return json({
-  //     type: 5,
-  //   });
-  // }
-
-  // static deferred() {
-  //   return json({
-  //     type: 6,
-  //   });
-  // }
-
   static page(
     { embeds, components, id, page, total }: {
       id: string;
@@ -633,7 +617,7 @@ export class Message {
 
   static internal(id: string): Message {
     return new Message().setContent(
-      `An Internal Error occurred and was reported.\n\n\`\`\`ref_id: ${id}\`\`\``,
+      `An Internal Error occurred and was reported.\n\`\`\`ref_id: ${id}\`\`\``,
     );
   }
 }

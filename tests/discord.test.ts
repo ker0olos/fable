@@ -217,7 +217,7 @@ Deno.test('components', async (test) => {
   });
 
   await test.step('new with placeholder', () => {
-    const component = new discord.Component();
+    const component = new discord.Component(discord.ComponentType.TextInput);
 
     component.setPlaceholder('placeholder');
 
@@ -339,7 +339,7 @@ Deno.test('static messages', async (test) => {
       type: 4,
       data: {
         content:
-          'An Internal Error occurred and was reported.\n\n```ref_id: id```',
+          'An Internal Error occurred and was reported.\n```ref_id: id```',
         components: [],
         embeds: [],
       },

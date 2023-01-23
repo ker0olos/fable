@@ -187,7 +187,7 @@ function start({ token, id }: { token: string; id?: string }): discord.Message {
         .addEmbed(
           new discord.Embed()
             .setImage({
-              url: `${config.origin}/file/stars/${pull.rating.stars}.gif`,
+              url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
             }),
         );
 
@@ -237,7 +237,7 @@ function start({ token, id }: { token: string; id?: string }): discord.Message {
   return new discord.Message()
     .addEmbed(
       new discord.Embed().setImage(
-        { url: `${config.origin}/file/spinner.gif` },
+        { url: `${config.origin}/assets/spinner.gif` },
       ),
     );
 }

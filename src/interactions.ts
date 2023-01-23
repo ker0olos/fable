@@ -204,7 +204,7 @@ serve({
     baseUrl: import.meta.url,
     intervene: cache(86400),
   }),
-  '/file/:filename+': serveStatic('../assets/public', {
+  '/assets/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,
     intervene: cache(604800),
   }),

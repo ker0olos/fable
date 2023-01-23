@@ -1619,6 +1619,92 @@ Deno.test('media debug', async (test) => {
       listStub.restore();
     }
   });
+
+  await test.step('default image 2', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'english title',
+      },
+      coverImage: {
+        color: '#ffffff',
+        extraLarge: 'default.jpg',
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.media({
+        search: 'english title',
+        debug: true,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            description: undefined,
+            color: undefined,
+            fields: [
+              {
+                name: 'Id',
+                value: 'anilist:1',
+              },
+              {
+                inline: true,
+                name: 'Type',
+                value: 'Anime',
+              },
+              {
+                inline: true,
+                name: 'Format',
+                value: 'TV',
+              },
+              {
+                inline: true,
+                name: 'Popularity',
+                value: '0',
+              },
+            ],
+            thumbnail: {
+              url: 'undefined/external/?size=thumbnail',
+            },
+            title: 'english title',
+            type: 2,
+          }],
+          components: [],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
 });
 
 Deno.test('character', async (test) => {
@@ -1912,6 +1998,65 @@ Deno.test('character', async (test) => {
       id: '1',
       name: {
         full: 'full name',
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                characters: [character],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.character({ search: 'full name' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 2,
+            title: 'full name',
+            description: undefined,
+            color: undefined,
+            image: {
+              url: 'undefined/external/',
+            },
+          }],
+          components: [],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('default image 2', async () => {
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'full name',
+      },
+      image: {
+        large: 'default.jpg',
       },
     };
 
@@ -2726,7 +2871,7 @@ Deno.test('gacha', async (test) => {
           embeds: [{
             type: 2,
             image: {
-              url: 'http://localhost:8000/file/spinner.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -2773,7 +2918,7 @@ Deno.test('gacha', async (test) => {
               embeds: [{
                 type: 2,
                 image: {
-                  url: 'http://localhost:8000/file/stars/1.gif',
+                  url: 'http://localhost:8000/assets/stars/1.gif',
                 },
               }],
               components: [],

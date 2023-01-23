@@ -237,7 +237,10 @@ const proxy = async (r: Request) => {
 
     throw new Error();
   } catch {
-    return Response.redirect(`${config.origin}/file/large.jpg`);
+    if (r.url?.includes('?size=thumbnail')) {
+      return Response.redirect(`${config.origin}/assets/thumbnail.png`);
+    }
+    return Response.redirect(`${config.origin}/assets/medium.png`);
   }
 };
 
