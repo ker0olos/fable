@@ -18,16 +18,16 @@ import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
 
-import config, { initConfig, updateConfig } from './config.ts';
+import config, { initConfig } from './config.ts';
 
 import { ManifestType } from './types.ts';
 
 await initConfig();
 
 const handler = async (r: Request) => {
-  initSentry({ dsn: config.sentry });
+  const { origin } = new URL(r.url);
 
-  await updateConfig(new URL(r.url));
+  initSentry({ dsn: config.sentry });
 
   const { error } = await validateRequest(r, {
     POST: {
@@ -74,6 +74,8 @@ const handler = async (r: Request) => {
   if (type === discord.InteractionType.Ping) {
     return discord.Message.pong();
   }
+
+  config.origin = origin;
 
   try {
     switch (type) {
