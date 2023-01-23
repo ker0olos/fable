@@ -2,6 +2,10 @@ import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 
 import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
 
+import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
+
+const globalCache = inMemoryCache(20);
+
 function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
@@ -201,7 +205,10 @@ const proxy = async (r: Request) => {
       decodeURIComponent(pathname.substring('/external/'.length)),
     );
 
-    const response = await fetch(url);
+    let cached = true;
+
+    const response = await globalCache.match(url as unknown as Request) ??
+      (cached = false, await fetch(url));
 
     const type = response?.headers.get('content-type');
 
@@ -225,6 +232,10 @@ const proxy = async (r: Request) => {
     proxy.headers.set('content-type', type);
     proxy.headers.set('content-length', `${body.byteLength}`);
     proxy.headers.set('cache-control', 'public, max-age=604800');
+
+    if (!cached) {
+      await globalCache.put(url as unknown as Request, proxy);
+    }
 
     return proxy;
   } catch {
