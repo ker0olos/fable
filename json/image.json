@@ -1,70 +1,31 @@
 {
   "$id": "json/image.json",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["featured"],
-  "properties": {
-    "featured": {
-      "type": "object",
-      "description": "The main featured image",
-      "required": ["url"],
-      "additionalProperties": false,
-      "properties": {
-        "url": {
-          "type": "string",
-          "description": "A url of the image (450x635)"
-        },
-        "color": {
-          "type": "string",
-          "description": "The color used in discord embeds (in #hex)"
-        },
-        "artist": {
-          "description": "The artist responsible for the image",
-          "required": ["username"],
-          "additionalProperties": false,
-          "properties": {
-            "username": {
-              "type": "string",
-              "description": "The username of the artist"
-            },
-            "url": {
-              "type": "string",
-              "description": "A url leading to the artist's page"
-            }
-          }
-        }
-      }
-    },
-    "additional": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "description": "A list of additional images",
-        "required": ["url"],
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["url"],
+    "additionalProperties": false,
+    "properties": {
+      "url": {
+        "type": "string",
+        "description": "A url of the image (recommended: 450x635)"
+      },
+      "color": {
+        "type": "string",
+        "description": "The color used in discord embeds (in #hex)"
+      },
+      "artist": {
+        "description": "The artist responsible for the image",
+        "required": ["username"],
         "additionalProperties": false,
         "properties": {
+          "username": {
+            "type": "string",
+            "description": "The username of the artist"
+          },
           "url": {
             "type": "string",
-            "description": "A url of the image (450x635)"
-          },
-          "color": {
-            "type": "string",
-            "description": "The color used in discord embeds (in #hex)"
-          },
-          "artist": {
-            "description": "The artist responsible for the image",
-            "required": ["username"],
-            "additionalProperties": false,
-            "properties": {
-              "username": {
-                "type": "string",
-                "description": "The username of the artist"
-              },
-              "url": {
-                "type": "string",
-                "description": "A url leading to the artist's page"
-              }
-            }
+            "description": "A url leading to the artist's page"
           }
         }
       }

@@ -33,7 +33,7 @@
       "description": "The age of the character",
       "type": "string"
     },
-    "image": {
+    "images": {
       "description": "A set of images featuring this character",
       "$ref": "image.json"
     },
@@ -61,6 +61,7 @@
       "type": "array",
       "description": "A list of media that the character appears in",
       "items": {
+        "type": "object",
         "required": ["role", "mediaId"],
         "additionalProperties": false,
         "properties": {

@@ -45,15 +45,15 @@
       "description": "Add a description about this media",
       "maxLength": 2048
     },
-    "image": {
+    "images": {
       "description": "A set of images featuring this media",
       "$ref": "image.json"
     },
     "trailer": {
       "type": "object",
       "description": "A url to a trailer about the media",
-      "required": ["site", "id"],
       "additionalProperties": false,
+      "required": ["site", "id"],
       "properties": {
         "site": {
           "enum": ["youtube"],
@@ -71,8 +71,8 @@
       "description": "A list of urls for the media's pages on various platforms",
       "items": {
         "type": "object",
-        "required": ["site", "url"],
         "additionalProperties": false,
+        "required": ["site", "url"],
         "properties": {
           "site": {
             "type": "string",
@@ -90,8 +90,9 @@
       "type": "array",
       "description": "Define the relations between this media and other media",
       "items": {
-        "required": ["relation", "mediaId"],
+        "type": "object",
         "additionalProperties": false,
+        "required": ["relation", "mediaId"],
         "properties": {
           "relation": {
             "description": "Choose the kind of relationship between this media a different media",
@@ -118,8 +119,9 @@
       "type": "array",
       "description": "A list of characters that appear in the media",
       "items": {
-        "required": ["role", "characterId"],
+        "type": "object",
         "additionalProperties": false,
+        "required": ["role", "characterId"],
         "properties": {
           "role": {
             "description": "Choose the role the character plays in the media",

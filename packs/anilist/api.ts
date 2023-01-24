@@ -79,14 +79,12 @@ export function transform<T>(
         native: item.title?.native,
         alternative: item.synonyms,
       },
-      image: item.coverImage?.extraLarge &&
+      images: item.coverImage?.extraLarge &&
           !item.coverImage?.extraLarge.endsWith('default.jpg')
-        ? {
-          featured: {
-            url: item.coverImage.extraLarge,
-            color: item.coverImage.color,
-          },
-        }
+        ? [{
+          url: item.coverImage.extraLarge,
+          color: item.coverImage.color,
+        }]
         : undefined,
       relations: undefined,
       characters: undefined,
@@ -121,13 +119,11 @@ export function transform<T>(
         native: item.name?.native,
         alternative: item.name?.alternative,
       },
-      image: item.image?.large &&
+      images: item.image?.large &&
           !item.image?.large.endsWith('default.jpg')
-        ? {
-          featured: {
-            url: item.image.large,
-          },
-        }
+        ? [{
+          url: item.image.large,
+        }]
         : undefined,
       media: undefined,
     };

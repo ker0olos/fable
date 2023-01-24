@@ -1715,12 +1715,10 @@ Deno.test('character', async (test) => {
       name: {
         english: 'full name',
       },
-      image: {
-        featured: {
-          url: 'image_url',
-          color: '#ffffff',
-        },
-      },
+      images: [{
+        url: 'image_url',
+        color: '#ffffff',
+      }],
       age: '420',
       gender: 'male',
     };
@@ -2362,12 +2360,10 @@ Deno.test('character debug', async (test) => {
       name: {
         english: 'full name',
       },
-      image: {
-        featured: {
-          url: 'image_url',
-          color: '#ffffff',
-        },
-      },
+      images: [{
+        url: 'image_url',
+        color: '#ffffff',
+      }],
       age: '420',
       gender: 'male',
       popularity: 1_000_000,
@@ -2816,11 +2812,9 @@ Deno.test('gacha', async (test) => {
       title: {
         english: 'title',
       },
-      image: {
-        featured: {
-          url: 'media_image_url',
-        },
-      },
+      images: [{
+        url: 'media_image_url',
+      }],
     };
 
     const character: Character = {
@@ -2828,11 +2822,9 @@ Deno.test('gacha', async (test) => {
       name: {
         english: 'name',
       },
-      image: {
-        featured: {
-          url: 'character_image_url',
-        },
-      },
+      images: [{
+        url: 'character_image_url',
+      }],
     };
 
     const pull: Pull = {

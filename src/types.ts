@@ -65,10 +65,7 @@ export interface Media {
   title: Alias;
   description?: string;
   popularity?: number;
-  image?: {
-    featured: Image;
-    additional?: Image[];
-  };
+  images?: Image[];
   externalLinks?: {
     site: string;
     url: string;
@@ -107,10 +104,7 @@ export interface Character {
   popularity?: number;
   gender?: string;
   age?: string;
-  image?: {
-    featured: Image;
-    additional?: Image[];
-  };
+  images?: Image[];
   externalLinks?: {
     site: string;
     url: string;

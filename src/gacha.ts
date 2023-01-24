@@ -177,7 +177,7 @@ function start(
             .setImage({
               default: true,
               preferredSize: discord.ImageSize.Medium,
-              url: media.image?.featured.url,
+              url: media.images?.[0].url,
             }),
         );
 
@@ -210,7 +210,7 @@ function start(
             .setImage({
               default: true,
               preferredSize: discord.ImageSize.Medium,
-              url: pull.character.image?.featured.url,
+              url: pull.character.images?.[0].url,
             }),
         );
 
