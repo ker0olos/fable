@@ -122,7 +122,7 @@ Deno.test('embeds', async (test) => {
     .setImage({ url: 'abc' })
     .setFooter({ text: 'a', icon_url: 'b' });
 
-  assertEquals(embed.json().type, 2);
+  assertEquals(embed.json().type, 'rich');
   assertEquals(embed.json().fields, undefined);
 
   await test.step('author', () => {
@@ -270,7 +270,7 @@ Deno.test('messages', async (test) => {
         }],
       }],
       embeds: [{
-        type: 2,
+        type: 'rich',
       }],
     },
   });
@@ -396,7 +396,7 @@ Deno.test('page messages', async (test) => {
       type: 4,
       data: {
         embeds: [{
-          type: 2,
+          type: 'rich',
           title: 'title',
         }],
         components: [{
@@ -430,7 +430,7 @@ Deno.test('page messages', async (test) => {
       type: 4,
       data: {
         embeds: [{
-          type: 2,
+          type: 'rich',
           title: 'title',
         }],
         components: [{
@@ -464,7 +464,7 @@ Deno.test('page messages', async (test) => {
       type: 4,
       data: {
         embeds: [{
-          type: 2,
+          type: 'rich',
           title: 'title',
         }],
         components: [{
@@ -502,7 +502,7 @@ Deno.test('page messages', async (test) => {
       type: 4,
       data: {
         embeds: [{
-          type: 2,
+          type: 'rich',
           title: 'title',
         }],
         components: [{

@@ -399,13 +399,13 @@ Deno.test('manifest embeds', async (test) => {
           }],
         }],
         embeds: [{
+          type: 'rich',
           description:
             'Builtin packs are developed and maintained directly by Fable',
-          type: 2,
         }, {
+          type: 'rich',
           description: undefined,
           title: 'title',
-          type: 2,
           url: undefined,
         }],
       },
@@ -442,13 +442,13 @@ Deno.test('manifest embeds', async (test) => {
           }],
         }],
         embeds: [{
-          type: 2,
+          type: 'rich',
           description:
             'The following third-party packs were manually added by your server members',
         }, {
+          type: 'rich',
           description: undefined,
           title: 'title',
-          type: 2,
           url: undefined,
         }],
       },
@@ -468,13 +468,13 @@ Deno.test('manifest embeds', async (test) => {
       type: 4,
       data: {
         embeds: [{
-          type: 2,
+          type: 'rich',
           description:
             'The following third-party packs were manually added by your server members',
         }, {
+          type: 'rich',
           description: undefined,
           title: 'id',
-          type: 2,
           url: undefined,
         }],
         components: [{
@@ -499,7 +499,7 @@ Deno.test('manifest embeds', async (test) => {
       data: {
         components: [],
         embeds: [{
-          type: 2,
+          type: 'rich',
           description: 'No packs have been added yet',
         }],
       },

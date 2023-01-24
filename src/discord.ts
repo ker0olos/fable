@@ -288,7 +288,7 @@ export class Component {
 
 export class Embed {
   #data: {
-    type: number;
+    type: string;
     title?: string;
     url?: string;
     description?: string;
@@ -315,14 +315,15 @@ export class Embed {
     };
   };
 
-  constructor() {
+  constructor(type: 'rich' = 'rich') {
     this.#data = {
-      type: 2,
+      type,
     };
   }
 
   setTitle(title?: string): Embed {
-    this.#data.title = title;
+    // max characters for embed descriptions is 256
+    this.#data.title = utils.truncate(title, 256);
     return this;
   }
 
@@ -337,24 +338,43 @@ export class Embed {
   }
 
   setDescription(description?: string): Embed {
-    this.#data.description = utils.decodeDescription(description);
+    // max characters for embed descriptions is 4096
+    this.#data.description = utils.truncate(
+      utils.decodeDescription(description),
+      4096,
+    );
     return this;
   }
 
   setAuthor(author: { name?: string; url?: string; icon_url?: string }): Embed {
     if (author.name) {
-      this.#data.author = author;
+      this.#data.author = {
+        ...author,
+        // author name is limited to 256
+        name: utils.truncate(author.name, 256),
+      };
     }
     return this;
   }
 
-  addField(field: { name: string; value: string; inline?: boolean }): Embed {
+  addField(field: { name?: string; value?: string; inline?: boolean }): Embed {
     if (!this.#data.fields) {
       this.#data.fields = [];
     }
 
-    if (field) {
-      this.#data.fields.push(field);
+    // max amount of fields per embed is 25
+    if (this.#data.fields.length >= 25) {
+      return this;
+    }
+
+    if (field.name || field.value) {
+      // field name is limited to 256
+      // field value is limited to 1024
+      this.#data.fields.push({
+        ...field,
+        name: utils.truncate(field.name, 256) || '\u200B',
+        value: utils.truncate(field.value, 1024) || '\u200B',
+      });
     }
 
     return this;
@@ -401,7 +421,11 @@ export class Embed {
 
   setFooter(footer: { text?: string; icon_url?: string }): Embed {
     if (footer.text) {
-      this.#data.footer = footer;
+      this.#data.footer = {
+        ...footer,
+        // footer text is limited to 2048
+        text: utils.truncate(footer.text, 2048),
+      };
     }
     return this;
   }
@@ -463,11 +487,20 @@ export class Message {
   // }
 
   addEmbed(embed: Embed): Message {
-    this.#data.embeds.push(embed.json());
+    // discord allows up to 10 embeds
+    // but any more than 3 and they look cluttered
+    if (this.#data.embeds.length < 3) {
+      this.#data.embeds.push(embed.json());
+    }
     return this;
   }
 
   addComponents(components: Component[]): Message {
+    // the max amount of components allowed is 5
+    if (this.#data.components.length >= 5) {
+      return this;
+    }
+
     if (components.length > 0) {
       // max amount of items per group is 5
       // (see https://discord.com/developers/docs/interactions/message-components#action-rows)
@@ -516,11 +549,7 @@ export class Message {
       //   };
       //   break;
       default:
-        data = {
-          ...this.#data,
-          components: this.#data.components.slice(0, 5),
-          embeds: this.#data.embeds.slice(0, 3),
-        };
+        data = this.#data;
         break;
     }
 
