@@ -19,9 +19,8 @@ Deno.test('init', async (test) => {
 
     const readFileStub = stub(
       Deno,
-      'readFile',
-      // deno-lint-ignore require-await
-      async () => new Uint8Array(),
+      'readTextFile',
+      () => Promise.resolve(''),
     );
 
     const envStub = stub(
@@ -64,9 +63,8 @@ Deno.test('init', async (test) => {
 
     const readFileStub = stub(
       Deno,
-      'readFile',
-      // deno-lint-ignore require-await
-      async () => new Uint8Array(),
+      'readTextFile',
+      () => Promise.resolve(''),
     );
 
     const envStub = stub(

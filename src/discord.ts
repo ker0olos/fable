@@ -1,6 +1,6 @@
 import { json } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
-import utils from './utils.ts';
+import utils, { ImageSize } from './utils.ts';
 import config from './config.ts';
 
 const API = `https://discord.com/api/v10`;
@@ -10,15 +10,6 @@ const splitter = '=';
 export const join = (...args: string[]): string => {
   return args.join(splitter);
 };
-
-export enum ImageSize {
-  // 450x635,
-  Large = '',
-  // 230x325
-  Medium = 'medium',
-  // 110x155
-  Thumbnail = 'thumbnail',
-}
 
 export enum MessageFlags {
   Ephemeral = 1 << 6,
@@ -439,9 +430,12 @@ export class Embed {
 export class Message {
   #type?: MessageType;
 
+  // #files: File[];
+
   #data: {
     flags?: number;
     content?: string;
+    // attachments?: unknown[];
     embeds: unknown[];
     components: unknown[];
   };
@@ -454,6 +448,7 @@ export class Message {
 
   constructor(type: MessageType = MessageType.New) {
     this.#type = type;
+    // this.#files = [];
     this.#data = {
       embeds: [],
       components: [],
@@ -484,6 +479,29 @@ export class Message {
   //   this.#type = MessageType.Modal;
   //   this.#data.title = title;
   //   return this;
+  // }
+
+  // addAttachment(
+  //   { arrayBuffer, filename, type }: {
+  //     arrayBuffer: ArrayBuffer;
+  //     filename: string;
+  //     type: string;
+  //   },
+  // ): void {
+  //   if (!this.#data.attachments) {
+  //     this.#data.attachments = [];
+  //   }
+
+  //   this.#data.attachments.push({
+  //     id: `${this.#data.attachments.length}`,
+  //     filename,
+  //   });
+
+  //   this.#files.push(
+  //     new File([arrayBuffer], filename, {
+  //       type,
+  //     }),
+  //   );
   // }
 
   addEmbed(embed: Embed): Message {
@@ -560,40 +578,40 @@ export class Message {
   }
 
   send(): Response {
-    return json(this.json());
-  }
+    const formData = new FormData();
 
-  async patch(token: string): Promise<Response> {
-    const url = `${API}/webhooks/${config.appId}/${token}/messages/@original`;
+    formData.append('payload_json', JSON.stringify(this.json()));
 
-    return await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-      body: JSON.stringify(this.json().data),
+    // NOTE discord timeouts responds after 3 seconds
+    // if an upload will take longer than 3 seconds
+    // respond first with a loading message
+    // then add the attachments the follow-up message
+    // this.#files.forEach((file, index) => {
+    //   formData.append(`files[${index}]`, file, file.name);
+    // });
+
+    return new Response(formData, {
+      status: 200,
+      statusText: 'OK',
     });
   }
 
-  // async reply(channel: string, target: string): Promise<Response> {
-  //   const url = `${API}/channels/${channel}/messages`;
+  async patch(token: string): Promise<Response> {
+    const formData = new FormData();
 
-  //   return await fetch(url, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json; charset=utf-8',
-  //       'Authorization': `Bot ${BOT_TOKEN}`,
-  //     },
-  //     body: JSON.stringify({
-  //       embeds: this._data.embeds,
-  //       content: this._data.content,
-  //       components: this._data.components,
-  //       message_reference: {
-  //         message_id: target,
-  //       },
-  //     }),
-  //   });
-  // }
+    const url = `${API}/webhooks/${config.appId}/${token}/messages/@original`;
+
+    formData.append('payload_json', JSON.stringify(this.json().data));
+
+    // Object.entries(this.#files).forEach(([name, blob], index) => {
+    //   formData.append(`files[${index}]`, blob, name);
+    // });
+
+    return await fetch(url, {
+      method: 'PATCH',
+      body: formData,
+    });
+  }
 
   static pong(): Response {
     return json({

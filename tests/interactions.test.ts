@@ -2851,6 +2851,8 @@ Deno.test('gacha', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
+      const formData = new FormData();
+
       const message = await gacha.start({ token: 'test_token' });
 
       assertEquals(message.json(), {
@@ -2866,6 +2868,20 @@ Deno.test('gacha', async (test) => {
         },
       });
 
+      formData.append(
+        'payload_json',
+        JSON.stringify({
+          embeds: [{
+            type: 'rich',
+            title: 'title',
+            image: {
+              url: 'http://localhost:8000/external/media_image_url?size=medium',
+            },
+          }],
+          components: [],
+        }),
+      );
+
       assertSpyCalls(fetchStub, 1);
 
       assertSpyCall(fetchStub, 0, {
@@ -2873,25 +2889,27 @@ Deno.test('gacha', async (test) => {
           'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
           {
             method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-              embeds: [{
-                type: 'rich',
-                title: 'title',
-                image: {
-                  url:
-                    'http://localhost:8000/external/media_image_url?size=medium',
-                },
-              }],
-              components: [],
-            }),
+            body: formData,
           },
         ],
       });
 
       await timeStub.tickAsync(4000);
+
+      formData.delete('payload_json');
+
+      formData.append(
+        'payload_json',
+        JSON.stringify({
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/stars/1.gif',
+            },
+          }],
+          components: [],
+        }),
+      );
 
       assertSpyCalls(fetchStub, 2);
 
@@ -2900,23 +2918,33 @@ Deno.test('gacha', async (test) => {
           'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
           {
             method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-              embeds: [{
-                type: 'rich',
-                image: {
-                  url: 'http://localhost:8000/assets/stars/1.gif',
-                },
-              }],
-              components: [],
-            }),
+            body: formData,
           },
         ],
       });
 
       await timeStub.tickAsync(5000);
+
+      formData.delete('payload_json');
+
+      formData.append(
+        'payload_json',
+        JSON.stringify({
+          embeds: [{
+            type: 'rich',
+            title: new Rating({ popularity: 100 }).emotes,
+            fields: [{
+              name: 'title',
+              value: '**name**',
+            }],
+            image: {
+              url:
+                'http://localhost:8000/external/character_image_url?size=medium',
+            },
+          }],
+          components: [],
+        }),
+      );
 
       assertSpyCalls(fetchStub, 3);
 
@@ -2925,24 +2953,7 @@ Deno.test('gacha', async (test) => {
           'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
           {
             method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-              embeds: [{
-                type: 'rich',
-                title: new Rating({ popularity: 100 }).emotes,
-                fields: [{
-                  name: 'title',
-                  value: '**name**',
-                }],
-                image: {
-                  url:
-                    'http://localhost:8000/external/character_image_url?size=medium',
-                },
-              }],
-              components: [],
-            }),
+            body: formData,
           },
         ],
       });

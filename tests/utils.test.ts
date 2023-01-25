@@ -13,6 +13,8 @@ import {
   stub,
 } from 'https://deno.land/std@0.173.0/testing/mock.ts';
 
+import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
+
 import utils from '../src/utils.ts';
 import config from '../src/config.ts';
 
@@ -234,7 +236,7 @@ Deno.test('external images', async (test) => {
         headers: new Headers({
           'Content-Type': 'image/jpeg',
         }),
-        arrayBuffer: () => new TextEncoder().encode('data'),
+        arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -248,24 +250,78 @@ Deno.test('external images', async (test) => {
       } as any);
 
       assertSpyCalls(fetchStub, 1);
+
       assertSpyCall(fetchStub, 0, {
         args: [new URL('https://example.com/image.jpg')],
       });
 
-      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
-      assertEquals(response.headers.get('Content-Length'), '4');
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/png');
+
       assertEquals(
         response.headers.get('Cache-Control'),
         'public, max-age=604800',
       );
 
-      assertEquals(await response.text(), 'data');
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.Image);
+
+      assertEquals(`${image}`, 'Image<450x635>');
     } finally {
       fetchStub.restore();
     }
   });
 
-  await test.step('valid image/gif', async () => {
+  await test.step('image/png', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'image/png',
+        }),
+        arrayBuffer: () => Deno.readFile('tests/images/test.png'),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.png')
+        }`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.png')],
+      });
+
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+      assertEquals(
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
+      );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.Image);
+
+      assertEquals(`${image}`, 'Image<450x635>');
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('image/gif', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -274,7 +330,7 @@ Deno.test('external images', async (test) => {
         headers: new Headers({
           'Content-Type': 'image/gif',
         }),
-        arrayBuffer: () => new TextEncoder().encode('data'),
+        arrayBuffer: () => Deno.readFile('tests/images/test.gif'),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -288,11 +344,25 @@ Deno.test('external images', async (test) => {
       } as any);
 
       assertSpyCalls(fetchStub, 1);
+
       assertSpyCall(fetchStub, 0, {
         args: [new URL('https://example.com/image.gif')],
       });
 
       assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/gif');
+
+      assertEquals(
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
+      );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.GIF);
+
+      assertEquals(`${image}`, 'GIF<450x450x1000ms>');
     } finally {
       fetchStub.restore();
     }
@@ -323,6 +393,7 @@ Deno.test('external images', async (test) => {
       } as any);
 
       assertSpyCalls(fetchStub, 1);
+
       assertSpyCall(fetchStub, 0, {
         args: [new URL('https://example.com/image')],
       });
@@ -335,6 +406,194 @@ Deno.test('external images', async (test) => {
       );
     } finally {
       delete config.origin;
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('image/jpeg (thumbnail)', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'image/jpeg',
+        }),
+        arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.jpg')
+        }?size=thumbnail`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.jpg')],
+      });
+
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+      assertEquals(
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
+      );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.Image);
+
+      assertEquals(`${image}`, 'Image<110x155>');
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('image/jpeg (medium)', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'image/jpeg',
+        }),
+        arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.jpg')
+        }?size=medium`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.jpg')],
+      });
+
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+      assertEquals(
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
+      );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.Image);
+
+      assertEquals(`${image}`, 'Image<230x325>');
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('image/gif (thumbnail)', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'image/gif',
+        }),
+        arrayBuffer: () => Deno.readFile('tests/images/test.gif'),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.gif')
+        }?size=thumbnail`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.gif')],
+      });
+
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/gif');
+
+      assertEquals(
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
+      );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.GIF);
+
+      assertEquals(`${image}`, 'GIF<110x110x1000ms>');
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('image/gif (medium)', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'image/gif',
+        }),
+        arrayBuffer: () => Deno.readFile('tests/images/test.gif'),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.gif')
+        }?size=medium`,
+        // deno-lint-ignore no-explicit-any
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.gif')],
+      });
+
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/gif');
+
+      assertEquals(
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
+      );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.GIF);
+
+      assertEquals(`${image}`, 'GIF<230x230x1000ms>');
+    } finally {
       fetchStub.restore();
     }
   });

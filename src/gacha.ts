@@ -2,7 +2,7 @@ import {
   captureException,
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
 
-import utils from './utils.ts';
+import utils, { ImageSize } from './utils.ts';
 
 import Rating from './rating.ts';
 
@@ -176,7 +176,7 @@ function start(
             .setTitle(utils.wrap(mediaTitles[0]))
             .setImage({
               default: true,
-              preferredSize: discord.ImageSize.Medium,
+              preferredSize: ImageSize.Medium,
               url: media.images?.[0].url,
             }),
         );
@@ -209,7 +209,7 @@ function start(
             })
             .setImage({
               default: true,
-              preferredSize: discord.ImageSize.Medium,
+              preferredSize: ImageSize.Medium,
               url: pull.character.images?.[0].url,
             }),
         );

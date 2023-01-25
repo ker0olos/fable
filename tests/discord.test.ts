@@ -308,16 +308,33 @@ Deno.test('messages', async (test) => {
   await test.step('send', async () => {
     const message = new discord.Message().setContent('content');
 
-    const json = await message.send().json();
+    const response = message.send();
 
-    assertEquals(json, {
-      type: 4,
-      data: {
-        content: 'content',
-        components: [],
-        embeds: [],
-      },
-    });
+    assertEquals(
+      response.status,
+      200,
+    );
+
+    assertEquals(
+      response.statusText,
+      'OK',
+    );
+
+    const form = new FormData();
+
+    form.append(
+      'payload_json',
+      JSON.stringify({
+        type: 4,
+        data: {
+          embeds: [],
+          components: [],
+          content: 'content',
+        },
+      }),
+    );
+
+    assertEquals(await response.formData(), form);
   });
 });
 
@@ -360,6 +377,16 @@ Deno.test('patch messages', async () => {
 
     await message.patch('token');
 
+    const form = new FormData();
+
+    form.append(
+      'payload_json',
+      JSON.stringify({
+        embeds: [],
+        components: [],
+      }),
+    );
+
     assertSpyCalls(fetchStub, 1);
 
     assertSpyCall(fetchStub, 0, {
@@ -367,13 +394,7 @@ Deno.test('patch messages', async () => {
         'https://discord.com/api/v10/webhooks/undefined/token/messages/@original',
         {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json; charset=utf-8',
-          },
-          body: JSON.stringify({
-            embeds: [],
-            components: [],
-          }),
+          body: form,
         },
       ],
       // deno-lint-ignore no-explicit-any
