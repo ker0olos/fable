@@ -15,6 +15,8 @@ import { assertValidManifest } from '../src/validate.ts';
 
 import packs from '../src/packs.ts';
 
+import * as anilist from '../packs/anilist/api.ts';
+
 import {
   Character,
   CharacterRole,
@@ -198,7 +200,147 @@ Deno.test('disabled embeds', async (test) => {
 });
 
 Deno.test('disabled relations', async (test) => {
-  await test.step('disabled media relations', async () => {
+  await test.step('disabled anilist media relations', () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      relations: {
+        edges: [{
+          relationType: MediaRelation.Contains,
+          node: {
+            id: '2',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            title: {
+              english: 'title 2',
+            },
+          },
+        }],
+      },
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['anilist:2'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      assertEquals(
+        anilist.transform<Media>({ item: media })
+          .relations?.edges.length,
+        0,
+      );
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled anilist media characters', () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      characters: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: '2',
+            name: {
+              full: 'name',
+            },
+          },
+        }],
+      },
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['anilist:2'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      assertEquals(
+        anilist.transform<Media>({ item: media })
+          .characters?.edges.length,
+        0,
+      );
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled anilist character media', () => {
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'name',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: '2',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['anilist:2'],
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      assertEquals(
+        anilist.transform<Character>({ item: character })
+          .media?.edges.length,
+        0,
+      );
+    } finally {
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled packs media relations', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
       media: {
@@ -256,7 +398,7 @@ Deno.test('disabled relations', async (test) => {
     }
   });
 
-  await test.step('disabled media characters', async () => {
+  await test.step('disabled packs media characters', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
       media: {
@@ -311,7 +453,7 @@ Deno.test('disabled relations', async (test) => {
     }
   });
 
-  await test.step('disabled character media', async () => {
+  await test.step('disabled packs character media', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
       characters: {
