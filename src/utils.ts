@@ -1,6 +1,18 @@
 import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 
+import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
+
 import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
+
+import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
+
+export enum ImageSize {
+  Large = 'large', // 450x635,
+  Medium = 'medium', // 230x325
+  Thumbnail = 'thumbnail', // 110x155
+}
+
+const globalCache = inMemoryCache(20);
 
 function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -194,16 +206,21 @@ function verifySignature(
 }
 
 const proxy = async (r: Request) => {
-  const { pathname, origin } = new URL(r.url);
+  const { pathname, searchParams, origin } = new URL(r.url);
 
   try {
+    let cached = true;
+
     const url = new URL(
       decodeURIComponent(pathname.substring('/external/'.length)),
     );
 
-    const response = await fetch(url);
+    const response = await globalCache.match(url as unknown as Request) ??
+      (cached = false, await fetch(url));
 
     const type = response?.headers.get('content-type');
+
+    const size = searchParams.get('size') as ImageSize || ImageSize.Large;
 
     // FIXME discord doesn't allow any gif that doesn't end with the file extension
     // (see #39)
@@ -211,19 +228,64 @@ const proxy = async (r: Request) => {
       throw new Error();
     }
 
-    // TODO image customization
-    //(see https://github.com/ker0olos/fable/issues/24)
-
     if (response?.status !== 200 || !type?.startsWith('image/')) {
       throw new Error();
     }
 
-    const body = await response.arrayBuffer();
+    const original = await response.arrayBuffer();
 
-    const proxy = new Response(body);
+    if (!cached) {
+      await globalCache.put(url as unknown as Request, new Response(original));
+    }
 
-    proxy.headers.set('content-type', type);
-    proxy.headers.set('content-length', `${body.byteLength}`);
+    const transformed = await imagescript.decode(original);
+
+    let proxy: Response | undefined = undefined;
+
+    if (transformed instanceof imagescript.Image) {
+      switch (size) {
+        case ImageSize.Thumbnail:
+          transformed.cover(110, 155);
+          break;
+        case ImageSize.Medium:
+          transformed.cover(230, 325);
+          break;
+        default:
+          transformed.cover(450, 635);
+          break;
+      }
+
+      const t = await transformed.encode(2);
+
+      proxy = new Response(t);
+
+      proxy.headers.set('content-type', 'image/png');
+      proxy.headers.set('content-length', `${t.byteLength}`);
+    } else if (transformed instanceof imagescript.GIF) {
+      switch (size) {
+        case ImageSize.Thumbnail:
+          transformed.resize(110, -1);
+          break;
+        case ImageSize.Medium:
+          transformed.resize(230, -1);
+          break;
+        default:
+          transformed.resize(450, -1);
+          break;
+      }
+
+      const t = await transformed.encode(22);
+
+      proxy = new Response(t);
+
+      proxy.headers.set('content-type', 'image/gif');
+      proxy.headers.set('content-length', `${t.byteLength}`);
+    }
+
+    if (!proxy) {
+      throw new Error();
+    }
+
     proxy.headers.set('cache-control', 'public, max-age=604800');
 
     return proxy;

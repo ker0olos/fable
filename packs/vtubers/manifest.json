@@ -17,12 +17,12 @@
       },
       "popularity": 50000000,
       "description": "Hololive Production is a streamer agency under COVER Corporation which encompasses the VTuber groups hololive and holostars, along with the Inonaka Music record label. The agency houses virtual talents whose activities include live streaming on platforms such as YouTube and interacting with fans on Twitter. The talents perform using intricate 2D and 3D avatars provided by the company.\n\n(Source: COVER Corporation)",
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/y4axd06.jpg",
           "color": "#2596be"
         }
-      },
+      ],
       "externalLinks": [{
         "site": "YouTube",
         "url": "https://www.youtube.com/@hololive"
@@ -43,11 +43,11 @@
         "alternative": ["holoMyth"]
       },
       "description": "The Myths hail from the worlds of legend.\n\nholoMyth was the first wave of VTubers under Hololive English.",
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/0ehLlU5.png"
         }
-      },
+      ],
       "trailer": {
         "site": "youtube",
         "id": "8c4_22LjGQo"
@@ -85,11 +85,11 @@
         "alternative": ["holoCouncil"]
       },
       "description": "The Council are a group of divine beings, they are the concepts of the world itself.\n\nholoCouncil is the second wave of VTubers under Hololive English.",
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/9ZBYZmj.png"
         }
-      },
+      ],
       "trailer": {
         "site": "youtube",
         "id": "SLnxCyzFgPw"
@@ -145,15 +145,15 @@
           "goorUH"
         ]
       },
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/nQFbxwh.jpeg",
           "artist": {
             "username": "ふわり",
             "url": "https://www.pixiv.net/en/users/9212166"
           }
         }
-      },
+      ],
       "popularity": 4000000,
       "description": "A descendant of the Lost City of Atlantis, who swam to Earth while saying, \"It's so boring down there LOLOLOL!\"\n\nGura bought her clothes (and her shark hat) in the human world and she really loves them. In her spare time, she enjoys talking to marine life.\n\n_Gura is currently the most subscribed Vtuber worldwide, taking the #1 spot from industry pioneer Kizuna AI in 2021. As of January 2023, Gura has over 4 million YouTube subscribers._",
       "age": "Between 9,000-10,000",
@@ -180,15 +180,15 @@
           "Kawaiiope"
         ]
       },
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/1twuGk6.jpeg",
           "artist": {
             "username": "torino",
             "url": "https://www.pixiv.net/en/users/1960050"
           }
         }
-      },
+      ],
       "popularity": 2000000,
       "description": "The Grim Reaper's first apprentice. Because the world's medical system advanced so dramatically, she became a Vtuber to collect souls. It seems that the lost souls vaporized by the wholesome relationships of Vtubers flow through her as well.\n\nIn the end, she's a gentle-hearted girl whose sweet voice contradicts the morbid things she tends to say, as well as her hardcore vocals.",
       "gender": "Female",
@@ -216,15 +216,15 @@
           "Kiwawa"
         ]
       },
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/vzrtcqP.jpeg",
           "artist": {
             "username": "Nardack",
             "url": "https://www.pixiv.net/en/users/341433"
           }
         }
-      },
+      ],
       "popularity": 1400000,
       "description": "An idol whose dream is to become a fast food shop owner. She is a phoenix, NOT a chicken or turkey. (Very important)\n\nShe works extremely hard since she will be reborn from ashes anyway.",
       "gender": "Female",
@@ -250,15 +250,15 @@
           "tako"
         ]
       },
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/g1D5Gka.jpeg",
           "artist": {
             "username": "Satchel",
             "url": "https://www.pixiv.net/en/users/1104770"
           }
         }
-      },
+      ],
       "popularity": 1500000,
       "description": "Despite her looks, Ina'nis is actually a priestess of the Ancient Ones. One day, she picked up a strange book and then started to gain the power of controlling tentacles. To her, tentacles are just a part in her ordinary life; it has never been a big deal for her. However, her girly mind does want to get them dressed up and stay pretty.\n\nAfter gaining power, she started hearing Ancient Whispers and Revelations. Hence, she began her VTuber activities to deliver random sanity checks on humanity, as an ordinary girl.",
       "gender": "Female",
@@ -284,15 +284,15 @@
           "watson"
         ]
       },
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/JBC2hCc.jpeg",
           "artist": {
             "username": "イコモチ",
             "url": "https://www.pixiv.net/en/users/801146"
           }
         }
-      },
+      ],
       "popularity": 1700000,
       "description": "Amelia heard strange rumors online surrounding hololive: talking foxes, magical squirrels, superhuman dogs, and more. Soon after beginning her investigation on hololive, and just out of interest, she decided to become an idol herself!\n\nShe loves to pass her time training her reflexes with FPS games, and challenging herself with puzzle games. \"It's elementary, right?\"",
       "gender": "Female",
@@ -316,15 +316,15 @@
           "kronii"
         ]
       },
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.redd.it/bbdebvztknm71.png",
           "artist": {
             "username": "Joshi_Kosei",
             "url": "https://www.reddit.com/r/Joshi_Kosei/"
           }
         }
-      },
+      ],
       "popularity": 800000,
       "description": "None may escape the sands of time and, indeed, most men do not even wish to be freed from her captivity (true). Her emotionally distant personality has never changed over the ages, but she developed a ~~little~~ bit of arrogance and sadistic tendencies along the way...",
       "gender": "Female",
@@ -349,15 +349,15 @@
           "mumei"
         ]
       },
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/1SSyHuC.jpeg",
           "artist": {
             "username": "Akaike",
             "url": "https://www.pixiv.net/en/users/6204916"
           }
         }
-      },
+      ],
       "popularity": 700000,
       "description": "For some reason, she seems to project a rather pitiable aura. Perhaps this is in part thanks to the loneliness she has often felt in her ever lasting travels. That is what gave her the idea of making her own friend out of a material that was indispensable to the development of human civilization \"paper\"",
       "gender": "Female",
@@ -382,11 +382,11 @@
           "chaos"
         ]
       },
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/KzEStRI.jpg"
         }
-      },
+      ],
       "popularity": 600000,
       "description": "She believes that rules are not the be-all and end-all, which is why she has come to ~~break them all~~ sign a slave contract with Cover.",
       "gender": "Female",
@@ -411,15 +411,15 @@
           "faufau"
         ]
       },
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/SoLX2B2.jpeg",
           "artist": {
             "username": "たくぼん",
             "url": "https://www.pixiv.net/en/users/23030728"
           }
         }
-      },
+      ],
       "popularity": 600000,
       "description": "green\n\ncute...",
       "gender": "Female",
@@ -444,11 +444,11 @@
           "sana"
         ]
       },
-      "image": {
-        "featured": {
+      "images": [
+        {
           "url": "https://i.imgur.com/rSmCkhB.jpeg"
         }
-      },
+      ],
       "popularity": 200000,
       "description": "Space is near infinite, and so was Sana's misfortune. \n\n _due to luck, horrible management, and bad choices, Sana retired after just 11 months in her carrier, with a subscriber count that even rivals holostars._",
       "gender": "Female",

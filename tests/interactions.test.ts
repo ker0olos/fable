@@ -85,7 +85,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -155,7 +155,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -222,7 +222,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Novel',
             },
@@ -295,7 +295,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -380,7 +380,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -451,7 +451,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -571,7 +571,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -582,7 +582,7 @@ Deno.test('media', async (test) => {
               url: 'undefined/external/image_url',
             },
           }, {
-            type: 2,
+            type: 'rich',
             footer: {
               text: 'Male, 69',
             },
@@ -593,7 +593,7 @@ Deno.test('media', async (test) => {
               url: 'undefined/external/main%20character%20url?size=thumbnail',
             },
           }, {
-            type: 2,
+            type: 'rich',
             title: 'supporting character name',
             color: 16777215,
             description: 'supporting character description',
@@ -735,7 +735,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -879,7 +879,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -990,7 +990,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -1108,7 +1108,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -1229,7 +1229,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -1350,7 +1350,7 @@ Deno.test('media', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             author: {
               name: 'Anime',
             },
@@ -1361,7 +1361,7 @@ Deno.test('media', async (test) => {
               url: 'undefined/external/image_url',
             },
           }, {
-            type: 2,
+            type: 'rich',
             title: 'supporting character name',
             color: 16777215,
             description: undefined,
@@ -1369,7 +1369,7 @@ Deno.test('media', async (test) => {
               url: 'undefined/external/?size=thumbnail',
             },
           }, {
-            type: 2,
+            type: 'rich',
             title: 'background character name',
             color: 16777215,
             description: undefined,
@@ -1498,6 +1498,7 @@ Deno.test('media debug', async (test) => {
         type: 4,
         data: {
           embeds: [{
+            type: 'rich',
             description: 'romaji title\nnative title',
             color: 16777215,
             fields: [
@@ -1525,7 +1526,6 @@ Deno.test('media debug', async (test) => {
               url: 'undefined/external/image_url?size=thumbnail',
             },
             title: 'english title',
-            type: 2,
           }],
           components: [],
         },
@@ -1580,6 +1580,7 @@ Deno.test('media debug', async (test) => {
         type: 4,
         data: {
           embeds: [{
+            type: 'rich',
             description: undefined,
             color: undefined,
             fields: [
@@ -1607,7 +1608,6 @@ Deno.test('media debug', async (test) => {
               url: 'undefined/external/?size=thumbnail',
             },
             title: 'english title',
-            type: 2,
           }],
           components: [],
         },
@@ -1666,6 +1666,7 @@ Deno.test('media debug', async (test) => {
         type: 4,
         data: {
           embeds: [{
+            type: 'rich',
             description: undefined,
             color: undefined,
             fields: [
@@ -1693,7 +1694,6 @@ Deno.test('media debug', async (test) => {
               url: 'undefined/external/?size=thumbnail',
             },
             title: 'english title',
-            type: 2,
           }],
           components: [],
         },
@@ -1715,12 +1715,10 @@ Deno.test('character', async (test) => {
       name: {
         english: 'full name',
       },
-      image: {
-        featured: {
-          url: 'image_url',
-          color: '#ffffff',
-        },
-      },
+      images: [{
+        url: 'image_url',
+        color: '#ffffff',
+      }],
       age: '420',
       gender: 'male',
     };
@@ -1761,7 +1759,7 @@ Deno.test('character', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             title: 'full name',
             description: 'long description',
             color: 16777215,
@@ -1825,7 +1823,7 @@ Deno.test('character', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             title: 'full name',
             description: 'long description',
             color: undefined,
@@ -1889,7 +1887,7 @@ Deno.test('character', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             title: 'full name',
             description: 'long description',
             color: undefined,
@@ -1966,7 +1964,7 @@ Deno.test('character', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             title: 'full name',
             description: 'long description',
             color: undefined,
@@ -2030,7 +2028,7 @@ Deno.test('character', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             title: 'full name',
             description: undefined,
             color: undefined,
@@ -2089,7 +2087,7 @@ Deno.test('character', async (test) => {
         type: 4,
         data: {
           embeds: [{
-            type: 2,
+            type: 'rich',
             title: 'full name',
             description: undefined,
             color: undefined,
@@ -2234,13 +2232,13 @@ Deno.test('characters', async (test) => {
           }],
           embeds: [
             {
+              type: 'rich',
               color: undefined,
               description: undefined,
               image: {
                 url: 'undefined/external/',
               },
               title: 'another name',
-              type: 2,
             },
           ],
         },
@@ -2335,13 +2333,13 @@ Deno.test('characters', async (test) => {
           }],
           embeds: [
             {
+              type: 'rich',
               color: undefined,
               description: undefined,
               image: {
                 url: 'undefined/external/',
               },
               title: 'name',
-              type: 2,
             },
           ],
         },
@@ -2362,12 +2360,10 @@ Deno.test('character debug', async (test) => {
       name: {
         english: 'full name',
       },
-      image: {
-        featured: {
-          url: 'image_url',
-          color: '#ffffff',
-        },
-      },
+      images: [{
+        url: 'image_url',
+        color: '#ffffff',
+      }],
       age: '420',
       gender: 'male',
       popularity: 1_000_000,
@@ -2412,10 +2408,9 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-
           embeds: [
             {
-              type: 2,
+              type: 'rich',
               title: 'full name',
               description: undefined,
               color: 16777215,
@@ -2524,7 +2519,7 @@ Deno.test('character debug', async (test) => {
 
           embeds: [
             {
-              type: 2,
+              type: 'rich',
               title: 'full name',
               description: undefined,
               color: undefined,
@@ -2624,10 +2619,9 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-
           embeds: [
             {
-              type: 2,
+              type: 'rich',
               title: 'full name',
               description: undefined,
               color: undefined,
@@ -2747,10 +2741,9 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-
           embeds: [
             {
-              type: 2,
+              type: 'rich',
               title: 'full name',
               description: undefined,
               color: undefined,
@@ -2816,11 +2809,9 @@ Deno.test('gacha', async (test) => {
       title: {
         english: 'title',
       },
-      image: {
-        featured: {
-          url: 'media_image_url',
-        },
-      },
+      images: [{
+        url: 'media_image_url',
+      }],
     };
 
     const character: Character = {
@@ -2828,11 +2819,9 @@ Deno.test('gacha', async (test) => {
       name: {
         english: 'name',
       },
-      image: {
-        featured: {
-          url: 'character_image_url',
-        },
-      },
+      images: [{
+        url: 'character_image_url',
+      }],
     };
 
     const pull: Pull = {
@@ -2862,6 +2851,8 @@ Deno.test('gacha', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
+      const formData = new FormData();
+
       const message = await gacha.start({ token: 'test_token' });
 
       assertEquals(message.json(), {
@@ -2869,13 +2860,27 @@ Deno.test('gacha', async (test) => {
         data: {
           components: [],
           embeds: [{
-            type: 2,
+            type: 'rich',
             image: {
               url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
       });
+
+      formData.append(
+        'payload_json',
+        JSON.stringify({
+          embeds: [{
+            type: 'rich',
+            title: 'title',
+            image: {
+              url: 'http://localhost:8000/external/media_image_url?size=medium',
+            },
+          }],
+          components: [],
+        }),
+      );
 
       assertSpyCalls(fetchStub, 1);
 
@@ -2884,25 +2889,27 @@ Deno.test('gacha', async (test) => {
           'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
           {
             method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-              embeds: [{
-                type: 2,
-                title: 'title',
-                image: {
-                  url:
-                    'http://localhost:8000/external/media_image_url?size=medium',
-                },
-              }],
-              components: [],
-            }),
+            body: formData,
           },
         ],
       });
 
       await timeStub.tickAsync(4000);
+
+      formData.delete('payload_json');
+
+      formData.append(
+        'payload_json',
+        JSON.stringify({
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/stars/1.gif',
+            },
+          }],
+          components: [],
+        }),
+      );
 
       assertSpyCalls(fetchStub, 2);
 
@@ -2911,23 +2918,33 @@ Deno.test('gacha', async (test) => {
           'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
           {
             method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-              embeds: [{
-                type: 2,
-                image: {
-                  url: 'http://localhost:8000/assets/stars/1.gif',
-                },
-              }],
-              components: [],
-            }),
+            body: formData,
           },
         ],
       });
 
       await timeStub.tickAsync(5000);
+
+      formData.delete('payload_json');
+
+      formData.append(
+        'payload_json',
+        JSON.stringify({
+          embeds: [{
+            type: 'rich',
+            title: new Rating({ popularity: 100 }).emotes,
+            fields: [{
+              name: 'title',
+              value: '**name**',
+            }],
+            image: {
+              url:
+                'http://localhost:8000/external/character_image_url?size=medium',
+            },
+          }],
+          components: [],
+        }),
+      );
 
       assertSpyCalls(fetchStub, 3);
 
@@ -2936,24 +2953,7 @@ Deno.test('gacha', async (test) => {
           'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
           {
             method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-              embeds: [{
-                type: 2,
-                title: new Rating({ popularity: 100 }).emotes,
-                fields: [{
-                  name: 'title',
-                  value: '**name**',
-                }],
-                image: {
-                  url:
-                    'http://localhost:8000/external/character_image_url?size=medium',
-                },
-              }],
-              components: [],
-            }),
+            body: formData,
           },
         ],
       });

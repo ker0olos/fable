@@ -1,6 +1,6 @@
 import { json } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
-import utils from './utils.ts';
+import utils, { ImageSize } from './utils.ts';
 import config from './config.ts';
 
 const API = `https://discord.com/api/v10`;
@@ -10,15 +10,6 @@ const splitter = '=';
 export const join = (...args: string[]): string => {
   return args.join(splitter);
 };
-
-export enum ImageSize {
-  // 450x635,
-  Large = '',
-  // 230x325
-  Medium = 'medium',
-  // 110x155
-  Thumbnail = 'thumbnail',
-}
 
 export enum MessageFlags {
   Ephemeral = 1 << 6,
@@ -288,7 +279,7 @@ export class Component {
 
 export class Embed {
   #data: {
-    type: number;
+    type: string;
     title?: string;
     url?: string;
     description?: string;
@@ -315,14 +306,15 @@ export class Embed {
     };
   };
 
-  constructor() {
+  constructor(type: 'rich' = 'rich') {
     this.#data = {
-      type: 2,
+      type,
     };
   }
 
   setTitle(title?: string): Embed {
-    this.#data.title = title;
+    // max characters for embed descriptions is 256
+    this.#data.title = utils.truncate(title, 256);
     return this;
   }
 
@@ -337,24 +329,43 @@ export class Embed {
   }
 
   setDescription(description?: string): Embed {
-    this.#data.description = utils.decodeDescription(description);
+    // max characters for embed descriptions is 4096
+    this.#data.description = utils.truncate(
+      utils.decodeDescription(description),
+      4096,
+    );
     return this;
   }
 
   setAuthor(author: { name?: string; url?: string; icon_url?: string }): Embed {
     if (author.name) {
-      this.#data.author = author;
+      this.#data.author = {
+        ...author,
+        // author name is limited to 256
+        name: utils.truncate(author.name, 256),
+      };
     }
     return this;
   }
 
-  addField(field: { name: string; value: string; inline?: boolean }): Embed {
+  addField(field: { name?: string; value?: string; inline?: boolean }): Embed {
     if (!this.#data.fields) {
       this.#data.fields = [];
     }
 
-    if (field) {
-      this.#data.fields.push(field);
+    // max amount of fields per embed is 25
+    if (this.#data.fields.length >= 25) {
+      return this;
+    }
+
+    if (field.name || field.value) {
+      // field name is limited to 256
+      // field value is limited to 1024
+      this.#data.fields.push({
+        ...field,
+        name: utils.truncate(field.name, 256) || '\u200B',
+        value: utils.truncate(field.value, 1024) || '\u200B',
+      });
     }
 
     return this;
@@ -401,7 +412,11 @@ export class Embed {
 
   setFooter(footer: { text?: string; icon_url?: string }): Embed {
     if (footer.text) {
-      this.#data.footer = footer;
+      this.#data.footer = {
+        ...footer,
+        // footer text is limited to 2048
+        text: utils.truncate(footer.text, 2048),
+      };
     }
     return this;
   }
@@ -415,9 +430,12 @@ export class Embed {
 export class Message {
   #type?: MessageType;
 
+  // #files: File[];
+
   #data: {
     flags?: number;
     content?: string;
+    // attachments?: unknown[];
     embeds: unknown[];
     components: unknown[];
   };
@@ -430,6 +448,7 @@ export class Message {
 
   constructor(type: MessageType = MessageType.New) {
     this.#type = type;
+    // this.#files = [];
     this.#data = {
       embeds: [],
       components: [],
@@ -462,12 +481,44 @@ export class Message {
   //   return this;
   // }
 
+  // addAttachment(
+  //   { arrayBuffer, filename, type }: {
+  //     arrayBuffer: ArrayBuffer;
+  //     filename: string;
+  //     type: string;
+  //   },
+  // ): void {
+  //   if (!this.#data.attachments) {
+  //     this.#data.attachments = [];
+  //   }
+
+  //   this.#data.attachments.push({
+  //     id: `${this.#data.attachments.length}`,
+  //     filename,
+  //   });
+
+  //   this.#files.push(
+  //     new File([arrayBuffer], filename, {
+  //       type,
+  //     }),
+  //   );
+  // }
+
   addEmbed(embed: Embed): Message {
-    this.#data.embeds.push(embed.json());
+    // discord allows up to 10 embeds
+    // but any more than 3 and they look cluttered
+    if (this.#data.embeds.length < 3) {
+      this.#data.embeds.push(embed.json());
+    }
     return this;
   }
 
   addComponents(components: Component[]): Message {
+    // the max amount of components allowed is 5
+    if (this.#data.components.length >= 5) {
+      return this;
+    }
+
     if (components.length > 0) {
       // max amount of items per group is 5
       // (see https://discord.com/developers/docs/interactions/message-components#action-rows)
@@ -516,11 +567,7 @@ export class Message {
       //   };
       //   break;
       default:
-        data = {
-          ...this.#data,
-          components: this.#data.components.slice(0, 5),
-          embeds: this.#data.embeds.slice(0, 3),
-        };
+        data = this.#data;
         break;
     }
 
@@ -531,40 +578,40 @@ export class Message {
   }
 
   send(): Response {
-    return json(this.json());
-  }
+    const formData = new FormData();
 
-  async patch(token: string): Promise<Response> {
-    const url = `${API}/webhooks/${config.appId}/${token}/messages/@original`;
+    formData.append('payload_json', JSON.stringify(this.json()));
 
-    return await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-      body: JSON.stringify(this.json().data),
+    // NOTE discord timeouts responds after 3 seconds
+    // if an upload will take longer than 3 seconds
+    // respond first with a loading message
+    // then add the attachments the follow-up message
+    // this.#files.forEach((file, index) => {
+    //   formData.append(`files[${index}]`, file, file.name);
+    // });
+
+    return new Response(formData, {
+      status: 200,
+      statusText: 'OK',
     });
   }
 
-  // async reply(channel: string, target: string): Promise<Response> {
-  //   const url = `${API}/channels/${channel}/messages`;
+  async patch(token: string): Promise<Response> {
+    const formData = new FormData();
 
-  //   return await fetch(url, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json; charset=utf-8',
-  //       'Authorization': `Bot ${BOT_TOKEN}`,
-  //     },
-  //     body: JSON.stringify({
-  //       embeds: this._data.embeds,
-  //       content: this._data.content,
-  //       components: this._data.components,
-  //       message_reference: {
-  //         message_id: target,
-  //       },
-  //     }),
-  //   });
-  // }
+    const url = `${API}/webhooks/${config.appId}/${token}/messages/@original`;
+
+    formData.append('payload_json', JSON.stringify(this.json().data));
+
+    // Object.entries(this.#files).forEach(([name, blob], index) => {
+    //   formData.append(`files[${index}]`, blob, name);
+    // });
+
+    return await fetch(url, {
+      method: 'PATCH',
+      body: formData,
+    });
+  }
 
   static pong(): Response {
     return json({
