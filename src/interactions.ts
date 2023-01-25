@@ -24,6 +24,8 @@ import { ManifestType } from './types.ts';
 
 await initConfig();
 
+const sep = 'id=';
+
 const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
 
@@ -83,22 +85,37 @@ const handler = async (r: Request) => {
         switch (name) {
           case 'search':
           case 'anime':
-          case 'manga':
+          case 'manga': {
+            const query = options['query'] as string;
             return (await search.media({
               debug: Boolean(options['debug']),
-              search: options['query'] as string,
+              id: query.startsWith(sep)
+                ? query.substring(sep.length)
+                : undefined,
+              search: query,
             })).send();
-          case 'character':
+          }
+          case 'character': {
+            const query = options['query'] as string;
             return (await search.character({
               debug: Boolean(options['debug']),
-              search: options['query'] as string,
+              id: query.startsWith(sep)
+                ? query.substring(sep.length)
+                : undefined,
+              search: query,
             })).send();
+          }
           case 'music':
           case 'songs':
-          case 'themes':
+          case 'themes': {
+            const query = options['query'] as string;
             return (await search.music({
-              search: options['query'] as string,
+              id: query.startsWith(sep)
+                ? query.substring(sep.length)
+                : undefined,
+              search: query,
             })).send();
+          }
           case 'w':
           case 'roll':
           case 'pull':
