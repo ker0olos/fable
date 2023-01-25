@@ -43,15 +43,17 @@ enum Permission {
 }
 
 const Option = (
-  { name, description, type, optional }: {
+  { name, description, type, autocomplete, optional }: {
+    type: Type;
     name: string;
     description: string;
-    type: Type;
+    autocomplete?: boolean;
     optional?: boolean;
   },
 ) => ({
   name,
   description,
+  autocomplete,
   type: type.valueOf(),
   required: !optional,
 });

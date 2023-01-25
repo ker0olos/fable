@@ -17,10 +17,10 @@ export enum MessageFlags {
 }
 
 export enum MessageType {
-  Ping = 1,
+  Pong = 1,
   New = 4,
   Update = 7,
-  // AutocompleteResult = 8,
+  Suggestions = 8,
   // Modal = 9,
 }
 
@@ -28,7 +28,7 @@ export enum InteractionType {
   Ping = 1,
   Command = 2,
   Component = 3,
-  // CommandAutocomplete = 4,
+  Partial = 4,
   // Modal = 5,
 }
 
@@ -54,6 +54,11 @@ export enum TextInputStyle {
   Short = 1,
   Multiline = 2,
 }
+
+export type Suggestion = {
+  name?: string;
+  value: unknown;
+};
 
 export type User = {
   id: string;
@@ -85,6 +90,8 @@ export class Interaction<Options> {
   options: {
     [key: string]: Options;
   };
+
+  focused?: string;
 
   subcommand?: string;
 
@@ -118,8 +125,8 @@ export class Interaction<Options> {
       options?: {
         type: number;
         name: string;
-        focused?: boolean;
         value: unknown;
+        focused?: boolean;
         options?: {
           type: number;
           name: string;
@@ -153,7 +160,7 @@ export class Interaction<Options> {
     this.options = {};
 
     switch (this.type) {
-      // case InteractionType.CommandAutocomplete:
+      case InteractionType.Partial:
       case InteractionType.Command: {
         this.name = data.name;
 
@@ -166,10 +173,18 @@ export class Interaction<Options> {
 
           data.options?.[0].options?.forEach((option) => {
             this.options[option.name] = option.value as Options;
+
+            if (option.focused) {
+              this.focused = option.name;
+            }
           });
         } else {
           data.options?.forEach((option) => {
             this.options[option.name] = option.value as Options;
+
+            if (option.focused) {
+              this.focused = option.name;
+            }
           });
         }
 
@@ -438,13 +453,10 @@ export class Message {
     // attachments?: unknown[];
     embeds: unknown[];
     components: unknown[];
+    suggestions?: Suggestion[];
+    // title?: string;
+    // custom_id?: string;
   };
-  //  & {
-  //   // choices?: string[];
-  // } & {
-  //   // title?: string;
-  //   // custom_id?: string;
-  // };
 
   constructor(type: MessageType = MessageType.New) {
     this.#type = type;
@@ -540,25 +552,34 @@ export class Message {
     return this;
   }
 
-  // addChoices(...choices: string[]) {
-  //   if (choices.length > 0) {
-  //     this.#type = MessageType.AutocompleteResult;
-  //     if (!this.#data.choices) {
-  //       this.#data.choices = [];
-  //     }
-  //     this.#data.choices.push(...choices);
-  //   }
-  //   return this;
-  // }
+  addSuggestions(...suggestions: Suggestion[]): Message {
+    // the max amount of suggestions allowed is 25
+
+    if (suggestions.length) {
+      this.#type = MessageType.Suggestions;
+
+      if (!this.#data.suggestions) {
+        this.#data.suggestions = [];
+      }
+
+      if (this.#data.suggestions.length >= 25) {
+        return this;
+      }
+
+      this.#data.suggestions = this.#data.suggestions.concat(
+        suggestions.map((suggestion) => ({
+          name: `${suggestion.name ?? suggestion.value}`,
+          value: suggestion.value,
+        } as Suggestion)),
+      );
+    }
+
+    return this;
+  }
 
   // deno-lint-ignore no-explicit-any
   json(): any {
-    let data;
-
     switch (this.#type) {
-      // case MessageType.AutocompleteResult:
-      //   data = { choices: this.#data.choices };
-      //   break;
       // case MessageType.Modal:
       //   data = {
       //     title: this.#data.title,
@@ -566,15 +587,19 @@ export class Message {
       //     components: this.#data.components,
       //   };
       //   break;
+      case MessageType.Suggestions:
+        return {
+          type: MessageType.Suggestions,
+          data: {
+            choices: this.#data.suggestions ?? [],
+          },
+        };
       default:
-        data = this.#data;
-        break;
+        return {
+          type: this.#type,
+          data: this.#data,
+        };
     }
-
-    return {
-      type: this.#type,
-      data,
-    };
   }
 
   send(): Response {
@@ -615,7 +640,7 @@ export class Message {
 
   static pong(): Response {
     return json({
-      type: 1,
+      type: MessageType.Pong,
     });
   }
 
