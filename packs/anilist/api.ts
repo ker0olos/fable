@@ -15,6 +15,8 @@ import {
 
 import { Character, Media } from '../../src/types.ts';
 
+import packs from '../../src/packs.ts';
+
 /** Order by trending than popularity */
 const mediaDefaultSort = gql`[ TRENDING_DESC, POPULARITY_DESC ]`;
 
@@ -92,19 +94,23 @@ export function transform<T>(
 
     if (item.relations?.edges?.length) {
       t.relations = {
-        edges: item.relations.edges.map((edge) => ({
-          relation: edge.relationType,
-          node: transform({ item: edge.node as AniListMedia }),
-        })),
+        edges: item.relations.edges
+          .filter((edge) => !packs.isDisabled(`anilist:${edge.node.id}`))
+          .map((edge) => ({
+            relation: edge.relationType,
+            node: transform({ item: edge.node as AniListMedia }),
+          })),
       };
     }
 
     if (item.characters?.edges?.length) {
       t.characters = {
-        edges: item.characters.edges.map((edge) => ({
-          role: edge.role,
-          node: transform({ item: edge.node as AniListCharacter }),
-        })),
+        edges: item.characters.edges
+          .filter((edge) => !packs.isDisabled(`anilist:${edge.node.id}`))
+          .map((edge) => ({
+            role: edge.role,
+            node: transform({ item: edge.node as AniListCharacter }),
+          })),
       };
     }
 
@@ -130,10 +136,12 @@ export function transform<T>(
 
     if (item.media?.edges?.length) {
       t.media = {
-        edges: item.media.edges.map((edge) => ({
-          role: edge.characterRole,
-          node: transform({ item: edge.node as AniListMedia }),
-        })),
+        edges: item.media.edges
+          .filter((edge) => !packs.isDisabled(`anilist:${edge.node.id}`))
+          .map((edge) => ({
+            role: edge.characterRole,
+            node: transform({ item: edge.node as AniListMedia }),
+          })),
       };
     }
 
@@ -159,7 +167,7 @@ export async function media(
   const query = gql`
     query ($ids: [Int], $search: String) {
       Page {
-        media(search: $search, id_in: $ids, sort: ${mediaDefaultSort}) {
+        media(search: $search, id_in: $ids, sort: ${mediaDefaultSort}, isAdult: false) {
           ${mediaDefaultQuery}
           relations {
             edges {
@@ -225,7 +233,7 @@ export async function nextEpisode(
 ): Promise<AniListMedia> {
   const query = gql`
     query ($search: String) {
-      Media(search: $search, type: ANIME, sort: ${mediaDefaultSort}) {
+      Media(search: $search, type: ANIME, sort: ${mediaDefaultSort}, isAdult: false) {
         title {
           english
           romaji
@@ -262,8 +270,8 @@ export async function pool(
           sort: ${mediaDefaultSort},
           popularity_greater: $popularity_greater,
           popularity_lesser: $popularity_lesser,
-          format_not_in: [ NOVEL, MUSIC, SPECIAL ], # fixed to query characters that only appear in anime, movies, and manga
-          isAdult: false, # ignore hentai (not 100% reliable according to anilist)
+          format_not_in: [ NOVEL, MUSIC, SPECIAL ],
+          isAdult: false
         ) {
           # TODO BLOCKED only requests the first page
           characters(role: $role, sort: ${characterDefaultSort}, perPage: 25) {
@@ -315,9 +323,11 @@ export async function pool(
     // create a dictionary of all the characters with their ids as key
     page.media.forEach(({ characters }) => {
       characters?.nodes?.forEach((character) => {
-        dict[`anilist:${character.id}`] = transform<Character>({
-          item: character,
-        });
+        const id = `anilist:${character.id}`;
+
+        if (!packs.isDisabled(id)) {
+          dict[id] = transform<Character>({ item: character });
+        }
       });
     });
   });

@@ -252,6 +252,38 @@ Deno.test('components', async (test) => {
   });
 });
 
+Deno.test('suggestions', async (test) => {
+  await test.step('normal', () => {
+    const message = new discord.Message();
+
+    message.addSuggestions({ name: 'a', value: 'b' }, { value: 'c' });
+
+    assertEquals(message.json(), {
+      type: 8,
+      data: {
+        choices: [{
+          name: 'a',
+          value: 'b',
+        }, {
+          name: 'c',
+          value: 'c',
+        }],
+      },
+    });
+  });
+
+  await test.step('no suggestions', () => {
+    const message = new discord.Message(discord.MessageType.Suggestions);
+
+    assertEquals(message.json(), {
+      type: 8,
+      data: {
+        choices: [],
+      },
+    });
+  });
+});
+
 Deno.test('messages', async (test) => {
   const message = new discord.Message();
 
@@ -300,7 +332,7 @@ Deno.test('messages', async (test) => {
 
     assertEquals(message.json().type, 7);
 
-    message.setType(discord.MessageType.Ping);
+    message.setType(discord.MessageType.Pong);
 
     assertEquals(message.json().type, 1);
   });

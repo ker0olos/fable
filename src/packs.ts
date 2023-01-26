@@ -51,6 +51,7 @@ let disabled: { [key: string]: boolean } | undefined = undefined;
 const packs = {
   embed,
   list,
+  searchMany,
   media,
   characters,
   aggregate,
@@ -236,12 +237,16 @@ async function findById<T>(
   return results;
 }
 
-async function findOne<T>(
+async function searchMany<
+  T extends (Media | DisaggregatedMedia | Character | DisaggregatedCharacter),
+>(
   key: 'media' | 'characters',
   search: string,
-): Promise<T | undefined> {
-  let maxPopularity = -1;
-  let match: T | undefined = undefined;
+  threshold = 65,
+): Promise<T[]> {
+  const percentages: Set<number> = new Set();
+
+  const possibilities: { [percentage: number]: T[] } = {};
 
   const anilistPack: Manifest = {
     id: 'anilist',
@@ -258,26 +263,54 @@ async function findOne<T>(
         continue;
       }
 
-      const popularity = item.popularity || 0;
+      const all = packs.aliasToArray(
+        'name' in item ? item.name : item.title,
+      ).map((alias) => utils.distance(search, alias));
 
-      packs.aliasToArray('name' in item ? item.name : item.title)
-        .forEach(
-          (alias) => {
-            const percentage = utils.distance(search, alias);
+      if (!all.length) {
+        return [];
+      }
 
-            if (
-              percentage >= 100 ||
-              (percentage > 65 && popularity > maxPopularity)
-            ) {
-              match =
-                (maxPopularity = popularity, item.packId = pack.id, item) as T;
-            }
-          },
-        );
+      const percentage = Math.max(...all);
+
+      if (percentage < threshold) {
+        continue;
+      }
+
+      if (!possibilities[percentage]) {
+        possibilities[percentage] = (percentages.add(percentage), []);
+      }
+
+      possibilities[percentage]
+        .push((item.packId = pack.id, item) as T);
     }
   }
 
-  return match;
+  const sorted = [...percentages]
+    .sort((a, b) => b - a);
+
+  let output: T[] = [];
+
+  for (const i of sorted) {
+    output = output.concat(
+      possibilities[i].sort((a, b) =>
+        (b.popularity || 0) - (a.popularity || 0)
+      ),
+    );
+  }
+
+  return output;
+}
+
+async function searchOne<
+  T extends (Media | DisaggregatedMedia | Character | DisaggregatedCharacter),
+>(
+  key: 'media' | 'characters',
+  search: string,
+): Promise<T | undefined> {
+  const possibilities = await searchMany<T>(key, search);
+
+  return possibilities?.[0];
 }
 
 async function media({ ids, search }: {
@@ -292,7 +325,7 @@ async function media({ ids, search }: {
 
     return Object.values(results);
   } else if (search) {
-    const match: Media | DisaggregatedMedia | undefined = await findOne(
+    const match: Media | DisaggregatedMedia | undefined = await searchOne(
       'media',
       search,
     );
@@ -315,10 +348,11 @@ async function characters({ ids, search }: {
 
     return Object.values(results);
   } else if (search) {
-    const match: Character | DisaggregatedCharacter | undefined = await findOne(
-      'characters',
-      search,
-    );
+    const match: Character | DisaggregatedCharacter | undefined =
+      await searchOne(
+        'characters',
+        search,
+      );
 
     return match ? [match] : [];
   } else {

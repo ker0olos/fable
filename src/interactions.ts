@@ -20,9 +20,11 @@ import gacha from './gacha.ts';
 
 import config, { initConfig } from './config.ts';
 
-import { ManifestType } from './types.ts';
+import { Character, ManifestType, Media } from './types.ts';
 
 await initConfig();
+
+const idPrefix = 'id=';
 
 const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -79,26 +81,98 @@ const handler = async (r: Request) => {
 
   try {
     switch (type) {
+      case discord.InteractionType.Partial: {
+        switch (name) {
+          case 'search':
+          case 'anime':
+          case 'manga':
+          case 'media':
+          case 'music':
+          case 'songs':
+          case 'themes': {
+            const query = options['query'] as string;
+
+            const message = new discord.Message(
+              discord.MessageType.Suggestions,
+            );
+
+            const results = await packs.searchMany<Media>(
+              'media',
+              query,
+            );
+
+            results?.forEach((media) => {
+              message.addSuggestions({
+                name: `${packs.aliasToArray(media.title)[0]}`,
+                value: `${idPrefix}${media.packId}:${media.id}`,
+              });
+            });
+
+            return message.send();
+          }
+          case 'character': {
+            const query = options['query'] as string;
+
+            const message = new discord.Message(
+              discord.MessageType.Suggestions,
+            );
+
+            const results = await packs.searchMany<Character>(
+              'characters',
+              query,
+            );
+
+            results?.forEach((character) => {
+              message.addSuggestions({
+                name: `${packs.aliasToArray(character.name)[0]}`,
+                value: `${idPrefix}${character.packId}:${character.id}`,
+              });
+            });
+
+            return message.send();
+          }
+        }
+        break;
+      }
       case discord.InteractionType.Command:
         switch (name) {
           case 'search':
           case 'anime':
           case 'manga':
+          case 'media': {
+            const query = options['query'] as string;
+
             return (await search.media({
               debug: Boolean(options['debug']),
-              search: options['query'] as string,
+              id: query.startsWith(idPrefix)
+                ? query.substring(idPrefix.length)
+                : undefined,
+              search: query,
             })).send();
-          case 'character':
+          }
+          case 'character': {
+            const query = options['query'] as string;
+
             return (await search.character({
               debug: Boolean(options['debug']),
-              search: options['query'] as string,
+              id: query.startsWith(idPrefix)
+                ? query.substring(idPrefix.length)
+                : undefined,
+              search: query,
             })).send();
+          }
           case 'music':
           case 'songs':
-          case 'themes':
+          case 'themes': {
+            const query = options['query'] as string;
+
             return (await search.music({
-              search: options['query'] as string,
+              id: query.startsWith(idPrefix)
+                ? query.substring(idPrefix.length)
+                : undefined,
+              search: query,
             })).send();
+          }
           case 'w':
           case 'roll':
           case 'pull':

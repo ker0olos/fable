@@ -5,7 +5,12 @@
   "description": "A pack containing a set of the most famous vtubers",
   "type": "builtin",
   "media": {
-    "conflicts": ["anilist:145478", "anilist:118123"],
+    "conflicts": [
+      "anilist:145478",
+      "anilist:118123",
+      "anilist:139756",
+      "anilist:129963"
+    ],
     "new": [{
       "id": "hololive",
       "type": "ANIME",

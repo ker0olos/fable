@@ -26,9 +26,8 @@ export async function media(
     debug?: boolean;
   },
 ): Promise<discord.Message> {
-  const results: (Media | DisaggregatedMedia)[] = await packs.media(
-    id ? { ids: [id] } : { search },
-  );
+  const results: (Media | DisaggregatedMedia)[] = await packs
+    .media(id ? { ids: [id] } : { search });
 
   if (!results.length) {
     throw new Error('404');
@@ -162,9 +161,6 @@ function mediaEmbed(media: Media, titles: string[]): discord.Embed {
     .setImage({
       default: true,
       url: media.images?.[0].url,
-    })
-    .setFooter({
-      text: titles[0] !== media.title.native ? media.title.native : undefined,
     });
 }
 
@@ -207,9 +203,7 @@ export async function character(
   },
 ): Promise<discord.Message> {
   const results: (Character | DisaggregatedCharacter)[] = await packs
-    .characters(
-      id ? { ids: [id] } : { search },
-    );
+    .characters(id ? { ids: [id] } : { search });
 
   if (!results.length) {
     throw new Error('404');
@@ -369,11 +363,13 @@ function characterDebugEmbed(character: Character): discord.Embed {
 }
 
 export async function music(
-  { search }: {
+  { id, search }: {
+    id?: string;
     search?: string;
   },
 ): Promise<discord.Message> {
-  const results = await packs.media({ search });
+  const results: (Media | DisaggregatedMedia)[] = await packs
+    .media(id ? { ids: [id] } : { search });
 
   if (!results.length) {
     throw new Error('404');

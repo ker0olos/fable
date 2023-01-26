@@ -43,15 +43,17 @@ enum Permission {
 }
 
 const Option = (
-  { name, description, type, optional }: {
+  { name, description, type, autocomplete, optional }: {
+    type: Type;
     name: string;
     description: string;
-    type: Type;
+    autocomplete?: boolean;
     optional?: boolean;
   },
 ) => ({
   name,
   description,
+  autocomplete,
   type: type.valueOf(),
   required: !optional,
 });
@@ -135,6 +137,10 @@ async function put(commands: CommandsArray): Promise<void> {
     console.log('Updating guild commands for dev bot\n\n');
   }
 
+  if (commands.length > 100) {
+    throw new Error('the maximum number of commands allowed is 100');
+  }
+
   const url = GUILD_ID
     ? `https://discord.com/api/v10/applications/${APP_ID}/guilds/${GUILD_ID}/commands`
     : `https://discord.com/api/v10/applications/${APP_ID}/commands`;
@@ -160,12 +166,13 @@ put([
   // uses characters and media from all packs
   ...Command({
     name: 'search',
-    aliases: ['anime', 'manga'],
+    aliases: ['anime', 'manga', 'media'],
     description: 'Search for an anime/manga',
     options: [
       Option({
         name: 'query',
         description: 'The title for an anime/manga',
+        autocomplete: true,
         type: Type.STRING,
       }),
       Option({
@@ -183,6 +190,7 @@ put([
       Option({
         name: 'query',
         description: 'The title of the character',
+        autocomplete: true,
         type: Type.STRING,
       }),
       Option({
@@ -201,6 +209,7 @@ put([
       Option({
         name: 'query',
         description: 'The title for an anime/manga',
+        autocomplete: true,
         type: Type.STRING,
       }),
     ],

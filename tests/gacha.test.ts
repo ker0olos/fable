@@ -503,10 +503,10 @@ Deno.test('disabled', async (test) => {
       await assertRejects(
         () => gacha.rngPull(),
         Error,
-        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+        'failed to create a pool with {"popularity_greater":0,"popularity_lesser":100,"pages":[null],"current_pool":0,"minimal_pool":25}',
       );
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 3);
       assertSpyCalls(rngStub, 1);
     } finally {
       rngStub.restore();

@@ -89,9 +89,6 @@ Deno.test('media', async (test) => {
             author: {
               name: 'Anime',
             },
-            footer: {
-              text: 'native title',
-            },
             title: 'english title',
             color: 16777215,
             description: 'long description',
@@ -1739,7 +1736,7 @@ Deno.test('character', async (test) => {
           Promise.resolve({
             data: {
               Page: {
-                characters: [character],
+                characters: [],
               },
             },
           })),
@@ -2385,7 +2382,7 @@ Deno.test('character debug', async (test) => {
           Promise.resolve({
             data: {
               Page: {
-                characters: [character],
+                characters: [],
               },
             },
           })),
