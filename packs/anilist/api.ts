@@ -167,7 +167,7 @@ export async function media(
   const query = gql`
     query ($ids: [Int], $search: String) {
       Page {
-        media(search: $search, id_in: $ids, sort: ${mediaDefaultSort}) {
+        media(search: $search, id_in: $ids, sort: ${mediaDefaultSort}, isAdult: false) {
           ${mediaDefaultQuery}
           relations {
             edges {
@@ -233,7 +233,7 @@ export async function nextEpisode(
 ): Promise<AniListMedia> {
   const query = gql`
     query ($search: String) {
-      Media(search: $search, type: ANIME, sort: ${mediaDefaultSort}) {
+      Media(search: $search, type: ANIME, sort: ${mediaDefaultSort}, isAdult: false) {
         title {
           english
           romaji
@@ -270,8 +270,8 @@ export async function pool(
           sort: ${mediaDefaultSort},
           popularity_greater: $popularity_greater,
           popularity_lesser: $popularity_lesser,
-          format_not_in: [ NOVEL, MUSIC, SPECIAL ], # fixed to query characters that only appear in anime, movies, and manga
-          isAdult: false, # ignore hentai (not 100% reliable according to anilist)
+          format_not_in: [ NOVEL, MUSIC, SPECIAL ],
+          isAdult: false
         ) {
           # TODO BLOCKED only requests the first page
           characters(role: $role, sort: ${characterDefaultSort}, perPage: 25) {

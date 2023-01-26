@@ -20,11 +20,11 @@ import gacha from './gacha.ts';
 
 import config, { initConfig } from './config.ts';
 
-import { ManifestType } from './types.ts';
+import { Character, ManifestType, Media } from './types.ts';
 
 await initConfig();
 
-const sep = 'id=';
+const idPrefix = 'id=';
 
 const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -81,26 +81,84 @@ const handler = async (r: Request) => {
 
   try {
     switch (type) {
+      case discord.InteractionType.Partial: {
+        switch (name) {
+          case 'search':
+          case 'anime':
+          case 'manga':
+          case 'media':
+          case 'music':
+          case 'songs':
+          case 'themes': {
+            const query = options['query'] as string;
+
+            const message = new discord.Message(
+              discord.MessageType.Suggestions,
+            );
+
+            const results = await packs.searchMany<Media>(
+              'media',
+              query,
+              50,
+            );
+
+            results?.forEach((media) => {
+              message.addSuggestions({
+                name: `${packs.aliasToArray(media.title)[0]}`,
+                value: `${idPrefix}${media.packId}:${media.id}`,
+              });
+            });
+
+            return message.send();
+          }
+          case 'character': {
+            const query = options['query'] as string;
+
+            const message = new discord.Message(
+              discord.MessageType.Suggestions,
+            );
+
+            const results = await packs.searchMany<Character>(
+              'characters',
+              query,
+              50,
+            );
+
+            results?.forEach((character) => {
+              message.addSuggestions({
+                name: `${packs.aliasToArray(character.name)[0]}`,
+                value: `${idPrefix}${character.packId}:${character.id}`,
+              });
+            });
+
+            return message.send();
+          }
+        }
+        break;
+      }
       case discord.InteractionType.Command:
         switch (name) {
           case 'search':
           case 'anime':
-          case 'manga': {
+          case 'manga':
+          case 'media': {
             const query = options['query'] as string;
+
             return (await search.media({
               debug: Boolean(options['debug']),
-              id: query.startsWith(sep)
-                ? query.substring(sep.length)
+              id: query.startsWith(idPrefix)
+                ? query.substring(idPrefix.length)
                 : undefined,
               search: query,
             })).send();
           }
           case 'character': {
             const query = options['query'] as string;
+
             return (await search.character({
               debug: Boolean(options['debug']),
-              id: query.startsWith(sep)
-                ? query.substring(sep.length)
+              id: query.startsWith(idPrefix)
+                ? query.substring(idPrefix.length)
                 : undefined,
               search: query,
             })).send();
@@ -109,9 +167,10 @@ const handler = async (r: Request) => {
           case 'songs':
           case 'themes': {
             const query = options['query'] as string;
+
             return (await search.music({
-              id: query.startsWith(sep)
-                ? query.substring(sep.length)
+              id: query.startsWith(idPrefix)
+                ? query.substring(idPrefix.length)
                 : undefined,
               search: query,
             })).send();

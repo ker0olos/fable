@@ -649,6 +649,191 @@ Deno.test('manifest embeds', async (test) => {
   });
 });
 
+Deno.test('search many', async (test) => {
+  await test.step('sort by match percentage', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [{
+                  title: {
+                    english: 'ab',
+                  },
+                }, {
+                  title: {
+                    english: 'acc',
+                  },
+                }, {
+                  title: {
+                    english: 'aa',
+                  },
+                }],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const matches = await packs.searchMany<Media>('media', 'aa', 0);
+
+      assertEquals(matches?.length, 3);
+
+      assertObjectMatch(matches?.[0], {
+        packId: 'anilist',
+        title: { english: 'aa' },
+      });
+
+      assertObjectMatch(matches?.[1], {
+        packId: 'anilist',
+        title: { english: 'ab' },
+      });
+
+      assertObjectMatch(matches?.[2], {
+        packId: 'anilist',
+        title: { english: 'acc' },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('sort by match percentage then popularity', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [{
+                  id: '1',
+                  title: {
+                    english: 'aa',
+                  },
+                  popularity: 3,
+                }, {
+                  id: '3',
+                  title: {
+                    english: 'aa',
+                  },
+                  popularity: 1,
+                }, {
+                  id: '2',
+                  title: {
+                    english: 'aa',
+                  },
+                  popularity: 2,
+                }],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const matches = await packs.searchMany<Media>('media', 'aa', 0);
+
+      assertEquals(matches?.length, 3);
+
+      assertObjectMatch(matches?.[0], {
+        id: '1',
+        popularity: 3,
+        title: { english: 'aa' },
+      });
+
+      assertObjectMatch(matches?.[1], {
+        id: '2',
+        popularity: 2,
+        title: { english: 'aa' },
+      });
+
+      assertObjectMatch(matches?.[2], {
+        id: '3',
+        popularity: 1,
+        title: { english: 'aa' },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('threshold', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Page: {
+                media: [{
+                  title: {
+                    english: 'a',
+                  },
+                }, {
+                  title: {
+                    english: 'b',
+                  },
+                }, {
+                  title: {
+                    english: 'c',
+                  },
+                }],
+              },
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      //
+      const matches = await packs.searchMany('media', 'a', 100);
+
+      assertEquals(matches?.length, 1);
+
+      assertObjectMatch(matches?.[0], {
+        packId: 'anilist',
+        title: { english: 'a' },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+});
+
 Deno.test('search for media', async (test) => {
   await test.step('anilist id', async () => {
     const media: AniListMedia = {
@@ -1081,115 +1266,6 @@ Deno.test('search for media', async (test) => {
       assertEquals(results.length, 1);
 
       assertEquals(results[0].id, '1');
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      packs.clear();
-    }
-  });
-
-  await test.step('match on initial sorting', async () => {
-    const media: AniListMedia[] = [{
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'fable',
-      },
-      popularity: 0,
-    }, {
-      id: '2',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'fable',
-      },
-      popularity: 0,
-    }];
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        json: (() =>
-          Promise.resolve({
-            data: {
-              Page: {
-                media,
-              },
-            },
-          })),
-      } as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      const results = await packs.media({ search: 'feble' });
-
-      assertEquals(results.length, 1);
-
-      assertEquals(results[0].id, '1');
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      packs.clear();
-    }
-  });
-
-  await test.step('match on popularity', async () => {
-    const media: AniListMedia[] = [{
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'febl',
-      },
-      popularity: 100,
-    }, {
-      id: '2',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'feble',
-      },
-      popularity: 0,
-    }];
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        json: (() =>
-          Promise.resolve({
-            data: {
-              Page: {
-                media,
-              },
-            },
-          })),
-      } as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      const results = await packs.media({ search: 'fable' });
-
-      assertEquals(results.length, 1);
-
-      assertEquals(results[0].id, '1');
-      assertEquals(results[0].popularity, 100);
     } finally {
       fetchStub.restore();
       listStub.restore();

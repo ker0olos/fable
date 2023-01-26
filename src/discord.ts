@@ -447,13 +447,14 @@ export class Message {
 
   // #files: File[];
 
+  #suggestions: { [name: string]: Suggestion };
+
   #data: {
     flags?: number;
     content?: string;
     // attachments?: unknown[];
     embeds: unknown[];
     components: unknown[];
-    suggestions?: Suggestion[];
     // title?: string;
     // custom_id?: string;
   };
@@ -461,6 +462,7 @@ export class Message {
   constructor(type: MessageType = MessageType.New) {
     this.#type = type;
     // this.#files = [];
+    this.#suggestions = {};
     this.#data = {
       embeds: [],
       components: [],
@@ -553,25 +555,19 @@ export class Message {
   }
 
   addSuggestions(...suggestions: Suggestion[]): Message {
-    // the max amount of suggestions allowed is 25
+    this.#type = MessageType.Suggestions;
 
     if (suggestions.length) {
-      this.#type = MessageType.Suggestions;
+      suggestions.forEach((suggestion) => {
+        const name = `${suggestion.name ?? suggestion.value}`;
 
-      if (!this.#data.suggestions) {
-        this.#data.suggestions = [];
-      }
-
-      if (this.#data.suggestions.length >= 25) {
-        return this;
-      }
-
-      this.#data.suggestions = this.#data.suggestions.concat(
-        suggestions.map((suggestion) => ({
-          name: `${suggestion.name ?? suggestion.value}`,
-          value: suggestion.value,
-        } as Suggestion)),
-      );
+        if (!this.#suggestions[name]) {
+          this.#suggestions[name] = {
+            name: `${suggestion.name ?? suggestion.value}`,
+            value: suggestion.value,
+          } as Suggestion;
+        }
+      });
     }
 
     return this;
@@ -591,7 +587,8 @@ export class Message {
         return {
           type: MessageType.Suggestions,
           data: {
-            choices: this.#data.suggestions ?? [],
+            // the max amount of suggestions allowed is 25
+            choices: Object.values(this.#suggestions).slice(0, 25),
           },
         };
       default:

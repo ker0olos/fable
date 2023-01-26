@@ -161,9 +161,6 @@ function mediaEmbed(media: Media, titles: string[]): discord.Embed {
     .setImage({
       default: true,
       url: media.images?.[0].url,
-    })
-    .setFooter({
-      text: titles[0] !== media.title.native ? media.title.native : undefined,
     });
 }
 
