@@ -99,7 +99,6 @@ const handler = async (r: Request) => {
             const results = await packs.searchMany<Media>(
               'media',
               query,
-              50,
             );
 
             results?.forEach((media) => {
@@ -121,7 +120,6 @@ const handler = async (r: Request) => {
             const results = await packs.searchMany<Character>(
               'characters',
               query,
-              50,
             );
 
             results?.forEach((character) => {
