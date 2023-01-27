@@ -5,44 +5,12 @@ import {
 
 import {
   assertSpyCalls,
-  Stub,
   stub,
 } from 'https://deno.land/std@0.173.0/testing/mock.ts';
 
 import * as anilist from '../packs/anilist/index.ts';
 
-import { AniListCharacter, Status } from '../packs/anilist/types.ts';
-
-import { CharacterRole, MediaFormat, MediaType } from '../src/types.ts';
-
-function fakePool(fill: AniListCharacter, length = 25): Stub {
-  const nodes: AniListCharacter[] = [];
-
-  for (let index = 0; index < length; index++) {
-    nodes.push(Object.assign({}, (fill.id = `${index + 1}`, fill)));
-  }
-
-  return stub(
-    globalThis,
-    'fetch',
-    () => ({
-      ok: true,
-      json: (() =>
-        Promise.resolve({
-          data: {
-            Page: {
-              media: [{
-                characters: {
-                  nodes,
-                },
-              }],
-            },
-          },
-        })),
-      // deno-lint-ignore no-explicit-any
-    } as any),
-  );
-}
+import { Status } from '../packs/anilist/types.ts';
 
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {
@@ -156,83 +124,6 @@ Deno.test('character', async (test) => {
       const characters = await anilist.characters({ search: 'query' });
 
       assertEquals(characters.length, 0);
-    } finally {
-      fetchStub.restore();
-    }
-  });
-});
-
-Deno.test('pool', async (test) => {
-  await test.step('valid', async () => {
-    const fetchStub = fakePool({
-      id: '1',
-      name: {
-        full: 'name',
-      },
-      media: {
-        edges: [{
-          characterRole: CharacterRole.Main,
-          node: {
-            id: '5',
-            popularity: 1000,
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            title: {
-              english: 'title',
-            },
-          },
-        }],
-      },
-    });
-
-    try {
-      const pool = await anilist.pool({
-        popularity_greater: 0,
-      });
-
-      for (let i = 0; i < 24; i++) {
-        assertEquals(pool[`anilist:${i + 1}`].id, `${i + 1}`);
-      }
-
-      assertSpyCalls(fetchStub, 1);
-    } finally {
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('invalid', async () => {
-    const fetchStub = fakePool({
-      id: '1',
-      name: {
-        full: 'name',
-      },
-      media: {
-        edges: [{
-          characterRole: CharacterRole.Main,
-          node: {
-            id: '5',
-            popularity: 1000,
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            title: {
-              english: 'title',
-            },
-          },
-        }],
-      },
-    }, 24);
-
-    try {
-      await assertRejects(
-        async () =>
-          await anilist.pool({
-            popularity_greater: 0,
-          }),
-        Error,
-        'failed to create a pool with {"popularity_greater":0,"pages":[null],"current_pool":24,"minimal_pool":25}',
-      );
-
-      assertSpyCalls(fetchStub, 3);
     } finally {
       fetchStub.restore();
     }

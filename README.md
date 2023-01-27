@@ -34,7 +34,7 @@ single command.
 descriptions, and fully personalize your characters, that's when you roll them,
 of course. -->
 
-Fable is actively developed with new game modes and features being releasing.
+Fable is actively developed with new game modes and features being released.
 
 [^1]: Currently the default packs include anime/manga/manhwa/vtubers, but you
 can add other packs, for example video game characters or real life celebrities.
@@ -44,17 +44,20 @@ something, we try our best to keep the bot itself term naturel).
 ## Get involved
 
 - Star this repo.
-- [Join our discord][discord].
 - Send our links to a couple of friends, and tell your favorite server's mods
   about us.
+- [Join our discord][discord].
 - [Contribute to the code][contributing]
 
 ## FAQ
 
+<!-- TODO -->
 <!-- > How to add a new pack to my server? -->
 
+<!-- TODO -->
 <!-- > How to disable/remove a pack from my server? -->
 
+<!-- TODO -->
 <!-- > How are you create a pack from scratch? -->
 
 > How are you keeping Fable free?

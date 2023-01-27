@@ -121,7 +121,14 @@ export type DisaggregatedCharacter = Modify<Character, {
   }[];
 }>;
 
-export type Pool = { [id: string]: Character | DisaggregatedCharacter };
+export type Pool = {
+  [key: string]: {
+    'ALL': { id: string }[];
+    [CharacterRole.Main]: { id: string }[];
+    [CharacterRole.Supporting]: { id: string }[];
+    [CharacterRole.Background]: { id: string }[];
+  };
+};
 
 export enum ManifestType {
   Builtin = 'builtin',

@@ -442,34 +442,28 @@ async function aggregate<T>({ media, character }: {
   throw new Error();
 }
 
-async function pool(
-  // deno-lint-ignore camelcase
-  { popularity_greater, popularity_lesser, role }: {
-    popularity_greater: number;
-    popularity_lesser?: number;
-    role?: CharacterRole;
-  },
-): Promise<Pool> {
-  let dict: Pool = {};
+async function pool({ range, role }: {
+  range: number[];
+  role?: CharacterRole;
+}): Promise<Pool['']['ALL']> {
+  const t = (await utils.readJson<Pool>('packs/anilist/pool.json'))[
+    JSON.stringify(range)
+  ][
+    role ?? 'ALL'
+  ];
 
   // add characters from packs
   packs
     .list()
     .forEach((pack) => {
-      pack.characters?.new?.forEach((character) => {
-        dict[`${pack.id}:${character.id}`] =
-          (character.packId = pack.id, character);
-      });
+      t.push(
+        ...(pack.characters?.new?.map((character) => ({
+          id: `${pack.id}:${character.id}`,
+        })) ?? []),
+      );
     });
 
-  // request characters from anilist
-  dict = await anilist.pool({
-    role,
-    popularity_greater,
-    popularity_lesser,
-  }, dict);
-
-  return dict;
+  return t;
 }
 
 function aliasToArray(

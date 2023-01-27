@@ -297,6 +297,16 @@ const proxy = async (r: Request) => {
   }
 };
 
+async function readJson<T>(filePath: string): Promise<T> {
+  try {
+    const jsonString = await Deno.readTextFile(filePath);
+    return JSON.parse(jsonString);
+  } catch (err) {
+    err.message = `${filePath}: ${err.message}`;
+    throw err;
+  }
+}
+
 const utils = {
   capitalize,
   comma,
@@ -311,6 +321,7 @@ const utils = {
   chunks,
   distance,
   verifySignature,
+  readJson,
   proxy,
   wrap,
 };
