@@ -33,7 +33,7 @@ const variables = {
   ranges: {
     // whether you get from the far end or the near end
     // of those ranges is up to total RNG
-    65: [0, 50_000], // 65% for 0 -> 50K
+    65: [1000, 50_000], // 65% for 100 -> 50K
     22: [50_000, 100_000], // 22% for 50K -> 100K
     9: [100_000, 200_000], // 9% for 100K -> 200K
     3: [200_000, 400_000], // 3% for 200K -> 400K
@@ -89,32 +89,56 @@ async function rngPull(): Promise<Pull> {
     // one specific role for the whole pool
     : utils.rng(gacha.variables.roles);
 
-  const dict = await packs.pool({
-    role,
-    popularity_greater: range[0],
-    popularity_lesser: range[1] || undefined,
-  });
-
-  const pool = Object.values(dict);
+  const pool = await packs.pool({ range, role });
 
   let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
   let media: Media | undefined = undefined;
 
+  const inRange = (popularity: number): boolean =>
+    popularity >= range[0] &&
+    (isNaN(range[1]) || popularity <= range[1]);
+
   while (pool.length > 0) {
-    // sort through each character media and pick the default
     const i = Math.floor(Math.random() * pool.length);
 
-    // aggregate the media by populating any references to other media/character objects
+    const characterId = pool.splice(i, 1)[0].id;
+
+    // aggregate the character by populating any references to other media objects
+    const results = await packs.characters({
+      ids: [characterId],
+    });
+
+    if (!results.length) {
+      continue;
+    }
+
+    if (
+      // if the character has specified popularity
+      // and that specified popularity is not in range of
+      // the pool parameters
+      (typeof results[0].popularity === 'number' &&
+        !inRange(results[0].popularity)) ||
+      Array.isArray(results[0].media) &&
+        // no media or
+        // or role is not equal to the pool parameter
+        (!results[0].media[0] || results[0].media[0].role !== role)
+    ) {
+      continue;
+    }
+
     const candidate = await packs.aggregate<Character>({
-      character: pool.splice(i, 1)[0],
+      character: results[0],
     });
 
     const edge = candidate.media?.edges?.[0];
 
     if (
+      // if no media
       !edge ||
+      // or if character is disabled
       packs.isDisabled(`${candidate.packId}:${candidate.id}`) ||
+      // or if media is disabled
       packs.isDisabled(`${edge.node.packId}:${edge.node.id}`)
     ) {
       continue;
@@ -123,13 +147,9 @@ async function rngPull(): Promise<Pull> {
     const popularity = candidate.popularity || edge.node.popularity || 0;
 
     if (
-      popularity >= range[0] &&
-      popularity <= range[1] &&
-      (
-        !role ||
-        candidate.popularity ||
-        edge?.role === role
-      )
+      // check if character parameters match the pool parameters
+      inRange(popularity) &&
+      (!role || edge?.role === role)
     ) {
       media = edge.node;
       character = candidate;

@@ -8,7 +8,7 @@ import gacha from '../../src/gacha.ts';
 
 import { CharacterRole } from '../../src/types.ts';
 
-import { AniListMedia } from './types.ts';
+import { AniListMedia, Pool } from './types.ts';
 
 const filepath = './pool.json';
 
@@ -19,14 +19,7 @@ const ranges = Object.values(gacha.variables.ranges);
 // (see https://github.com/ker0olos/fable/issues/9)
 // (see https://github.com/ker0olos/fable/issues/45)
 
-type Cache = {
-  [key: string]: {
-    'ALL': { id: string }[];
-    [CharacterRole.Main]: { id: string }[];
-    [CharacterRole.Supporting]: { id: string }[];
-    [CharacterRole.Background]: { id: string }[];
-  };
-};
+type Cache = Pool;
 
 type PageInfo = {
   // total: number;

@@ -34,7 +34,7 @@ single command.
 descriptions, and fully personalize your characters, that's when you roll them,
 of course. -->
 
-Fable is actively developed with new game modes and features being releasing.
+Fable is actively developed with new game modes and features being released.
 
 [^1]: Currently the default packs include anime/manga/manhwa/vtubers, but you
 can add other packs, for example video game characters or real life celebrities.
