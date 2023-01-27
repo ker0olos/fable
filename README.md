@@ -44,17 +44,20 @@ something, we try our best to keep the bot itself term naturel).
 ## Get involved
 
 - Star this repo.
-- [Join our discord][discord].
 - Send our links to a couple of friends, and tell your favorite server's mods
   about us.
+- [Join our discord][discord].
 - [Contribute to the code][contributing]
 
 ## FAQ
 
+<!-- TODO -->
 <!-- > How to add a new pack to my server? -->
 
+<!-- TODO -->
 <!-- > How to disable/remove a pack from my server? -->
 
+<!-- TODO -->
 <!-- > How are you create a pack from scratch? -->
 
 > How are you keeping Fable free?

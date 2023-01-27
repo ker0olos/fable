@@ -1,5 +1,3 @@
-import { readJson } from 'https://deno.land/x/jsonfile@1.0.0/mod.ts';
-
 import _anilist from '../packs/anilist/manifest.json' assert {
   type: 'json',
 };
@@ -448,10 +446,11 @@ async function pool({ range, role }: {
   range: number[];
   role?: CharacterRole;
 }): Promise<Pool['']['ALL']> {
-  const t =
-    (await readJson('packs/anilist/pool.json') as Pool)[JSON.stringify(range)][
-      role ?? 'ALL'
-    ];
+  const t = (await utils.readJson<Pool>('packs/anilist/pool.json'))[
+    JSON.stringify(range)
+  ][
+    role ?? 'ALL'
+  ];
 
   // add characters from packs
   packs

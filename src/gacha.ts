@@ -24,6 +24,8 @@ export type Pull = {
   popularityLesser?: number;
 };
 
+const lowest = 1000;
+
 const variables = {
   roles: {
     10: CharacterRole.Main, // 10% for Main
@@ -33,7 +35,7 @@ const variables = {
   ranges: {
     // whether you get from the far end or the near end
     // of those ranges is up to total RNG
-    65: [1000, 50_000], // 65% for 100 -> 50K
+    65: [lowest, 50_000], // 65% for 1K -> 50K
     22: [50_000, 100_000], // 22% for 50K -> 100K
     9: [100_000, 200_000], // 9% for 100K -> 200K
     3: [200_000, 400_000], // 3% for 200K -> 400K
@@ -60,7 +62,7 @@ async function forcePull(id: string): Promise<Pull> {
     throw new Error('404');
   }
 
-  const popularity = character.popularity || edge.node.popularity || 0;
+  const popularity = character.popularity || edge.node.popularity || lowest;
 
   return {
     pool: 1,
@@ -104,11 +106,11 @@ async function rngPull(): Promise<Pull> {
 
     const characterId = pool.splice(i, 1)[0].id;
 
-    // aggregate the character by populating any references to other media objects
     const results = await packs.characters({
       ids: [characterId],
     });
 
+    // search will return empty if the character is disabled
     if (!results.length) {
       continue;
     }
@@ -127,24 +129,19 @@ async function rngPull(): Promise<Pull> {
       continue;
     }
 
+    // aggregate will filter out any disabled media
     const candidate = await packs.aggregate<Character>({
       character: results[0],
     });
 
     const edge = candidate.media?.edges?.[0];
 
-    if (
-      // if no media
-      !edge ||
-      // or if character is disabled
-      packs.isDisabled(`${candidate.packId}:${candidate.id}`) ||
-      // or if media is disabled
-      packs.isDisabled(`${edge.node.packId}:${edge.node.id}`)
-    ) {
+    // if no media
+    if (!edge) {
       continue;
     }
 
-    const popularity = candidate.popularity || edge.node.popularity || 0;
+    const popularity = candidate.popularity || edge.node.popularity || lowest;
 
     if (
       // check if character parameters match the pool parameters

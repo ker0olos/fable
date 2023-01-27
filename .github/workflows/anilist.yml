@@ -7,7 +7,7 @@ on:
     - cron: "0 0 * * 0"
 
 jobs:
-  update-last-page-cache:
+  update-pool:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
