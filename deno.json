@@ -25,6 +25,9 @@
       "useTabs": false,
       "singleQuote": true,
       "indentWidth": 2
+    },
+    "files": {
+      "exclude": ["packs/anilist/pool.json"]
     }
   }
 }
