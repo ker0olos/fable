@@ -1,4 +1,4 @@
-import { load as Dotenv } from 'https://deno.land/std@0.174.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.175.0/dotenv/mod.ts';
 
 // export const colors = {
 //   background: '#2b2d42',
@@ -36,14 +36,12 @@ export async function initConfig(): Promise<void> {
   const query = await Deno.permissions.query({ name: 'env' });
 
   if (query?.state === 'granted') {
-    try {
-      // load .env file
-      await Dotenv({ export: true, allowEmptyValues: true });
-    } catch {
-      //
-    }
-
     config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
+
+    // load .env file
+    if (!config.deploy) {
+      await Dotenv({ export: true, allowEmptyValues: true });
+    }
 
     config.sentry = Deno.env.get('SENTRY_DSN');
 
