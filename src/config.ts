@@ -16,14 +16,18 @@ const config: {
   deploy: boolean;
   appId?: string;
   publicKey?: string;
-  mongoUrl?: string;
+  mongoCluster?: string;
+  mongoEndpoint?: string;
+  mongoApiKey?: string;
   sentry?: string;
   origin?: string;
 } = {
   deploy: false,
   appId: undefined,
   publicKey: undefined,
-  mongoUrl: undefined,
+  mongoCluster: undefined,
+  mongoEndpoint: undefined,
+  mongoApiKey: undefined,
   sentry: undefined,
   origin: undefined,
 };
@@ -47,7 +51,9 @@ export async function initConfig(): Promise<void> {
 
     config.publicKey = Deno.env.get('PUBLIC_KEY');
 
-    config.mongoUrl = Deno.env.get('MONGO_URL');
+    config.mongoCluster = Deno.env.get('MONGO_CLUSTER');
+    config.mongoEndpoint = Deno.env.get('MONGO_ENDPOINT');
+    config.mongoApiKey = Deno.env.get('MONGO_API_KEY');
 
     config.origin = undefined;
   }
