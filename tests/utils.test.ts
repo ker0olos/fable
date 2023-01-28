@@ -226,6 +226,24 @@ Deno.test('decode description', async (test) => {
   });
 });
 
+Deno.test('read json', async () => {
+  const readTextStub = stub(
+    Deno,
+    'readTextFile',
+    () => Promise.resolve('{"data": "abc"}'),
+  );
+
+  try {
+    const data = await utils.readJson('');
+
+    assertEquals(data, {
+      data: 'abc',
+    });
+  } finally {
+    readTextStub.restore();
+  }
+});
+
 Deno.test('external images', async (test) => {
   await test.step('image/jpeg', async () => {
     const fetchStub = stub(
