@@ -2,7 +2,7 @@
 
 import Ajv from 'https://esm.sh/ajv@8.12.0';
 
-import { bold, red } from 'https://deno.land/std@0.173.0/fmt/colors.ts';
+import { bold, red } from 'https://deno.land/std@0.174.0/fmt/colors.ts';
 
 import alias from '../json/alias.json' assert {
   type: 'json',
@@ -28,7 +28,7 @@ import builtin from '../schema.builtin.json' assert {
   type: 'json',
 };
 
-import { AssertionError } from 'https://deno.land/std@0.173.0/testing/asserts.ts';
+import { AssertionError } from 'https://deno.land/std@0.174.0/testing/asserts.ts';
 
 const _v = new Ajv({ strict: false, allErrors: true })
   .addSchema(alias)

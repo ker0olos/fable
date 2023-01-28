@@ -20,6 +20,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
+          author: GitHub <noreply@github.com>
           title: 'Updated "anilist/pool.json"'
           commit-message: '[bot] Updated "anilist/pool.json"'
           branch: update-anilist-pool
