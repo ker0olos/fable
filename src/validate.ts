@@ -2,7 +2,7 @@
 
 import Ajv from 'https://esm.sh/ajv@8.12.0';
 
-import { bold, red } from 'https://deno.land/std@0.175.0/fmt/colors.ts';
+import { bold, green, red } from 'https://deno.land/std@0.175.0/fmt/colors.ts';
 
 import alias from '../json/alias.json' assert {
   type: 'json',
@@ -29,6 +29,7 @@ import builtin from '../schema.builtin.json' assert {
 };
 
 import { AssertionError } from 'https://deno.land/std@0.175.0/testing/asserts.ts';
+import utils from './utils.ts';
 
 const _v = new Ajv({ strict: false, allErrors: true })
   .addSchema(alias)
@@ -66,7 +67,7 @@ export const prettify = (
   opts?: { markdown?: boolean; terminal?: boolean },
 ) => {
   if (!_v.errors) {
-    return '';
+    throw new Error();
   }
 
   function appendError(data: any, index: number): any {
@@ -96,7 +97,7 @@ export const prettify = (
 
   _v.errors.forEach((err, index) => {
     if (err.instancePath === '') {
-      data = appendError(appendError, index);
+      data = appendError(data, index);
     }
   });
 
@@ -140,6 +141,20 @@ export const prettify = (
 
 export const assertValidManifest = (data: any) => {
   if (!validate(data)) {
-    throw new AssertionError(prettify(data, { terminal: true }));
+    throw new AssertionError(prettify(data));
   }
 };
+
+// if being called directly
+if (import.meta.main) {
+  const filename = Deno.args[0];
+
+  const data = await utils.readJson(filename);
+
+  if (!validate(data)) {
+    console.log(prettify(data, { terminal: true }));
+    Deno.exit(1);
+  } else {
+    console.log(green('Valid'));
+  }
+}
