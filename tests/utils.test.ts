@@ -4,14 +4,14 @@ import {
   assert,
   assertEquals,
   assertThrows,
-} from 'https://deno.land/std@0.173.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.175.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.173.0/testing/mock.ts';
+} from 'https://deno.land/std@0.175.0/testing/mock.ts';
 
 import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
@@ -224,6 +224,24 @@ Deno.test('decode description', async (test) => {
     assertEquals(utils.decodeDescription('~!abc!~'), '');
     assertEquals(utils.decodeDescription('||abc||'), '');
   });
+});
+
+Deno.test('read json', async () => {
+  const readTextStub = stub(
+    Deno,
+    'readTextFile',
+    () => Promise.resolve('{"data": "abc"}'),
+  );
+
+  try {
+    const data = await utils.readJson('');
+
+    assertEquals(data, {
+      data: 'abc',
+    });
+  } finally {
+    readTextStub.restore();
+  }
 });
 
 Deno.test('external images', async (test) => {

@@ -1,11 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from 'https://deno.land/std@0.173.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.175.0/testing/asserts.ts';
 
 import {
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.173.0/testing/mock.ts';
+} from 'https://deno.land/std@0.175.0/testing/mock.ts';
 
 import config, { clearConfig, initConfig } from '../src/config.ts';
 
@@ -31,7 +31,9 @@ Deno.test('init', async (test) => {
         'sentry_dsn',
         'app_id',
         'public_key',
-        'mongo_url',
+        'mongo_cluster',
+        'mongo_endpoint',
+        'mongo_api_key',
       ]),
     );
 
@@ -42,7 +44,9 @@ Deno.test('init', async (test) => {
         deploy: false,
         appId: 'app_id',
         publicKey: 'public_key',
-        mongoUrl: 'mongo_url',
+        mongoCluster: 'mongo_cluster',
+        mongoEndpoint: 'mongo_endpoint',
+        mongoApiKey: 'mongo_api_key',
         sentry: 'sentry_dsn',
         origin: undefined,
       });
@@ -75,7 +79,9 @@ Deno.test('init', async (test) => {
         'sentry_dsn',
         'app_id',
         'public_key',
-        'mongo_url',
+        'mongo_cluster',
+        'mongo_endpoint',
+        'mongo_api_key',
       ]),
     );
 
@@ -86,7 +92,9 @@ Deno.test('init', async (test) => {
         deploy: true,
         appId: 'app_id',
         publicKey: 'public_key',
-        mongoUrl: 'mongo_url',
+        mongoCluster: 'mongo_cluster',
+        mongoEndpoint: 'mongo_endpoint',
+        mongoApiKey: 'mongo_api_key',
         sentry: 'sentry_dsn',
         origin: undefined,
       });

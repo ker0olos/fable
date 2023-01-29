@@ -2,14 +2,14 @@ import {
   assertEquals,
   assertRejects,
   assertThrows,
-} from 'https://deno.land/std@0.173.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.175.0/testing/asserts.ts';
 
 import {
   assertSpyCalls,
   returnsNext,
   Stub,
   stub,
-} from 'https://deno.land/std@0.173.0/testing/mock.ts';
+} from 'https://deno.land/std@0.175.0/testing/mock.ts';
 
 import utils from '../src/utils.ts';
 import gacha from '../src/gacha.ts';
