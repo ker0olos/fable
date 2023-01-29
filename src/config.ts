@@ -1,3 +1,5 @@
+import mongo from 'https://raw.githubusercontent.com/ker0olos/mongo/v1.0.2/mod.ts';
+
 import { load as Dotenv } from 'https://deno.land/std@0.175.0/dotenv/mod.ts';
 
 // export const colors = {
@@ -52,6 +54,14 @@ export async function initConfig(): Promise<void> {
     config.mongoCluster = Deno.env.get('MONGO_CLUSTER');
     config.mongoEndpoint = Deno.env.get('MONGO_ENDPOINT');
     config.mongoApiKey = Deno.env.get('MONGO_API_KEY');
+
+    if (config.mongoCluster && config.mongoEndpoint && config.mongoApiKey) {
+      mongo.credentials({
+        dataSource: config.mongoCluster,
+        endpoint: config.mongoEndpoint,
+        apiKey: config.mongoApiKey,
+      });
+    }
 
     config.origin = undefined;
   }
