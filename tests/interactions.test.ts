@@ -2437,7 +2437,7 @@ Deno.test('character debug', async (test) => {
                 {
                   inline: true,
                   name: 'Media',
-                  value: 'undefined',
+                  value: 'undefined:undefined',
                 },
                 {
                   inline: true,
@@ -2546,7 +2546,7 @@ Deno.test('character debug', async (test) => {
                 {
                   inline: true,
                   name: 'Media',
-                  value: 'undefined',
+                  value: 'undefined:undefined',
                 },
                 {
                   inline: true,
@@ -2648,7 +2648,7 @@ Deno.test('character debug', async (test) => {
                 {
                   inline: true,
                   name: 'Media',
-                  value: 'undefined',
+                  value: 'undefined:undefined',
                 },
                 {
                   inline: true,
@@ -2770,7 +2770,7 @@ Deno.test('character debug', async (test) => {
                 {
                   inline: true,
                   name: 'Media',
-                  value: '5',
+                  value: 'anilist:5',
                 },
                 {
                   inline: true,

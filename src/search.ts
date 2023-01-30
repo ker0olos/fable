@@ -339,7 +339,11 @@ function characterDebugEmbed(character: Character): discord.Embed {
       inline: true,
     })
     .addField({ name: 'Age', value: `${character.age}`, inline: true })
-    .addField({ name: 'Media', value: `${media?.node.id}`, inline: true })
+    .addField({
+      name: 'Media',
+      value: `${media?.node.packId}:${media?.node.id}`,
+      inline: true,
+    })
     .addField({
       name: 'Role',
       value: `${utils.capitalize(role)}`,
