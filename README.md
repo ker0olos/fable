@@ -24,17 +24,17 @@ There's a intuitive system to manage and customize the characters in your
 servers, you can add community-made packs that are full of new characters with
 single command.
 
-> **TODO** too much plain text (no one is gonna read all this) we need some
-> images and animations
->
-> **Note** This README only lists what is already stable, which is so far just
-> packs, the game modes and the animations are still being worked on.
+Fable is actively developed with new game modes and features being released.
+
+<h6 align="center">
+  <img src="https://user-images.githubusercontent.com/52022280/215555794-c8e52906-99a5-485c-9cdd-8961e168f587.gif" alt="Pull">
+  </br>
+  <i>(Animated Pulls)</i>
+</h6>
 
 <!-- You can also overwrite the builtin characters with your own images, aliases, and
 descriptions, and fully personalize your characters, that's when you roll them,
 of course. -->
-
-Fable is actively developed with new game modes and features being released.
 
 [^1]: Currently the default packs include anime/manga/manhwa/vtubers, but you
 can add other packs, for example video game characters or real life celebrities.
