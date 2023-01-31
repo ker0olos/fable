@@ -11,19 +11,12 @@ jobs:
         with:
           deno-version: v1.x
 
-      - if: ${{ github.ref == 'refs/heads/main' }}
-        name: Update global commands
-        env:
-          APP_ID: ${{ secrets.APP_ID }}
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: deno task commands
-
-      # test the validity of the commands
-      # by registering them on a dummy server
       - if: ${{ github.ref != 'refs/heads/main' }}
-        name: Test registering commands on a dummy server
+        name: Set environment to dummy
+        run: echo "GUILD_ID=${{ secrets.DUMMY_GUILD }}" >> "$GITHUB_ENV"
+
+      - name: Update global commands
         env:
           APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          GUILD_ID: ${{ secrets.DUMMY_GUILD }}
-        run: deno task commands
+        run: deno run -A update_commands.ts
