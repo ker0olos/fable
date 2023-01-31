@@ -57,8 +57,11 @@ something, we try our best to keep the bot itself term naturel).
 <!-- TODO -->
 <!-- > How to disable/remove a pack from my server? -->
 
-<!-- TODO -->
-<!-- > How are you create a pack from scratch? -->
+> How are you create a pack from scratch?
+
+We recommend that you check out
+[fable-community/example](https://github.com/fable-community/example), it has a
+great quick start guide.
 
 > How are you keeping Fable free?
 

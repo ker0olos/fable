@@ -2920,7 +2920,7 @@ Deno.test('gacha', async (test) => {
         ],
       });
 
-      await timeStub.tickAsync(5000);
+      await timeStub.tickAsync(6000);
 
       formData.delete('payload_json');
 

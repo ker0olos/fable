@@ -167,11 +167,11 @@ put([
   ...Command({
     name: 'search',
     aliases: ['anime', 'manga', 'media'],
-    description: 'Search for an anime/manga',
+    description: 'Search for a media',
     options: [
       Option({
         name: 'query',
-        description: 'The title for an anime/manga',
+        description: 'The title of the media',
         autocomplete: true,
         type: Type.STRING,
       }),
@@ -189,7 +189,7 @@ put([
     options: [
       Option({
         name: 'query',
-        description: 'The title of the character',
+        description: 'The name of the character',
         autocomplete: true,
         type: Type.STRING,
       }),
@@ -203,12 +203,12 @@ put([
   }),
   ...Command({
     name: 'music',
-    description: 'Search for the OP/ED and theme songs of an anime',
+    description: 'Look up the music and theme songs of a media',
     aliases: ['songs', 'themes'],
     options: [
       Option({
         name: 'query',
-        description: 'The title for an anime/manga',
+        description: 'The title of the media',
         autocomplete: true,
         type: Type.STRING,
       }),
@@ -216,7 +216,7 @@ put([
   }),
   ...Command({
     name: 'gacha',
-    description: 'An experimental/ephemeral gacha command',
+    description: 'Start a gacha pull',
     aliases: ['w', 'pull', 'roll'],
   }),
   ...Command({

@@ -164,7 +164,9 @@ export async function media(
               relationType
             }
           }
-          characters(sort: ${characterDefaultSort}) {
+          # FIXME view characters maxes out at 25 on anilist media
+          # (see #54)
+          characters(sort: ${characterDefaultSort}, perPage: 25) {
             edges {
               node { ${characterDefaultQuery} }
               role

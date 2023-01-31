@@ -67,6 +67,9 @@ const handler = async (r: Request) => {
     name,
     type,
     token,
+    guildId,
+    channelId,
+    member,
     options,
     subcommand,
     customType,
@@ -177,7 +180,7 @@ const handler = async (r: Request) => {
           case 'roll':
           case 'pull':
           case 'gacha':
-            return gacha.start({ token }).send();
+            return gacha.start({ token, member, guildId, channelId }).send();
           case 'force_pull':
             return gacha.start({ token, id: options['id'] as string }).send();
           case 'packs_builtin':
@@ -277,9 +280,8 @@ function cache(
 ): (req: Request, res: Response) => Response {
   return (_: Request, response: Response): Response => {
     if (type) {
-      response.headers.set('content-type', type);
+      response.headers.set('Content-Type', type);
     }
-
     response.headers.set('Cache-Control', `public, max-age=${age}`);
     return response;
   };

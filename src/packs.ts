@@ -88,7 +88,8 @@ async function commands(
     return x.default[command.source as keyof typeof x.default](
       // deno-lint-ignore no-explicit-any
       interaction.options as any,
-      interaction,
+      // deno-lint-ignore no-non-null-assertion
+      interaction.member!,
     );
   }
 }

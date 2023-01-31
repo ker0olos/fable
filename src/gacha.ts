@@ -179,7 +179,13 @@ async function rngPull(): Promise<Pull> {
  * start the roll's animation
  */
 function start(
-  { token, id }: { token: string; id?: string },
+  { token, id }: {
+    id?: string;
+    token: string;
+    member?: discord.Member;
+    guildId?: string;
+    channelId?: string;
+  },
 ): discord.Message {
   (id ? gacha.forcePull(id) : gacha.rngPull())
     .then(async (pull) => {
@@ -212,7 +218,7 @@ function start(
 
       await message.patch(token);
 
-      await utils.sleep(pull.rating.stars >= 5 ? 7 : 5);
+      await utils.sleep(6);
 
       const characterAliases = packs.aliasToArray(pull.character.name);
 

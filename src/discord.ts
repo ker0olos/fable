@@ -60,7 +60,13 @@ export type Suggestion = {
   value: unknown;
 };
 
-export type User = {
+export type Member = {
+  nick?: string;
+  avatar: string;
+  user: User;
+};
+
+type User = {
   id: string;
   username: string;
   discriminator: string;
@@ -103,6 +109,7 @@ export class Interaction<Options> {
 
   /** member is sent when the interaction is invoked in a guild */
   member?: {
+    nick?: string;
     avatar: string;
     user: User;
   };
@@ -120,6 +127,8 @@ export class Interaction<Options> {
       // id: string;
       name: string;
       type: string;
+      guild_id?: string;
+      channel_id?: string;
       // target_id?: string;
       // resolved?: unknown[];
       options?: {
@@ -147,8 +156,8 @@ export class Interaction<Options> {
     this.token = obj.token;
     this.type = obj.type;
 
-    // this.guildId = obj.guild_id;
-    // this.channelId = obj.channel_id;
+    this.guildId = obj.guild_id;
+    this.channelId = obj.channel_id;
 
     // this.user = obj.user;
     // this.message = obj?.message

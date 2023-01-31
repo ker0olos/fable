@@ -76,7 +76,7 @@ function fakePool(
   return { readJsonStub, fetchStub };
 }
 
-Deno.test('filter ienvalid pools', async (test) => {
+Deno.test('filter invalid pools', async (test) => {
   await test.step('no media', async () => {
     const variables = {
       range: [100, 200],

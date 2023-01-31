@@ -4,7 +4,7 @@ import * as discord from '../../src/discord.ts';
 
 function roll(
   { amount }: { amount: number },
-  { member }: discord.Interaction<unknown>,
+  { user }: discord.Member,
 ): discord.Message {
   const rolls = [];
 
@@ -29,8 +29,7 @@ function roll(
     `\`${amount}d${dieSize}>=${minSuccess}\` \n = [ ${equation} ] \n = **${successes}** ${plural}`;
 
   const message = new discord.Message().setContent(
-    // deno-lint-ignore no-non-null-assertion
-    `<@${member!.user.id}> ${rolledNumber}`,
+    `<@${user.id}> ${rolledNumber}`,
   );
 
   return message;
