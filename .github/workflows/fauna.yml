@@ -1,0 +1,51 @@
+name: fauna
+
+on: [push]
+
+jobs:
+  upload-graphql-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - run: npm install -g fauna-shell
+
+      - if: ${{ github.ref == 'refs/heads/main' }}
+        name: Set environment to production
+        run: echo "FAUNA_SECRET=${{ secrets.FAUNA_SECRET }}" >> "$GITHUB_ENV"
+
+      - if: ${{ github.ref != 'refs/heads/main' }}
+        name: Set environment to dummy
+        run: echo "FAUNA_SECRET=${{ secrets.DUMMY_FAUNA }}" >> "$GITHUB_ENV"
+
+      - name: Upload GraphQL Schema
+        run: fauna upload-graphql-schema \
+          models/schema.gql \
+          --mode replace \
+          --scheme https \
+          --secret "$FAUNA_SECRET" \
+          --domain db.us.fauna.com \
+          --graphqlHost graphql.us.fauna.com \
+          --graphqlPort 443
+
+  update-models:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - if: ${{ github.ref == 'refs/heads/main' }}
+        name: Set environment to production
+        run: echo "FAUNA_SECRET=${{ secrets.FAUNA_SECRET }}" >> "$GITHUB_ENV"
+
+      - if: ${{ github.ref != 'refs/heads/main' }}
+        name: Set environment to dummy
+        run: echo "FAUNA_SECRET=${{ secrets.DUMMY_FAUNA }}" >> "$GITHUB_ENV"
+
+      - name: Update User-Defined Functions / Indexes
+        run: deno run -A update_models.ts

@@ -4,6 +4,10 @@ import Ajv from 'https://esm.sh/ajv@8.12.0';
 
 import { bold, green, red } from 'https://deno.land/std@0.175.0/fmt/colors.ts';
 
+import { AssertionError } from 'https://deno.land/std@0.175.0/testing/asserts.ts';
+
+import utils from './utils.ts';
+
 import alias from '../json/alias.json' assert {
   type: 'json',
 };
@@ -27,9 +31,6 @@ import index from '../schema.json' assert {
 import builtin from '../schema.builtin.json' assert {
   type: 'json',
 };
-
-import { AssertionError } from 'https://deno.land/std@0.175.0/testing/asserts.ts';
-import utils from './utils.ts';
 
 const _v = new Ajv({ strict: false, allErrors: true })
   .addSchema(alias)

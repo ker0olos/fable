@@ -1,0 +1,45 @@
+# endpoint: https://graphql.fauna.com/graphql
+# cookbook: https://docs.fauna.com/fauna/current/learn/cookbook/graphql
+# cheatsheet: https://docs.fauna.com/fauna/current/api/fql/cheat_sheet
+
+type User @collection(name: "users") {
+  # discord user id
+  id: String! @unique
+  #
+  inventories: [Inventory!]! @relation
+}
+
+type Guild @collection(name: "guilds") {
+  # discord guild id
+  id: String! @unique
+  # servers can have multiple sandboxed instances
+  instances: [Instance!]! @relation
+}
+
+type Instance @collection(name: "instance") {
+  # the main/default instance
+  main: Boolean!
+  # the guild where the instance resides
+  guild: Guild! @relation
+  # each user has an inventory
+  inventories: [Inventory!]! @relation
+}
+
+type Inventory @collection(name: "inventory") {
+  # the time the user last pulled a gacha
+  lastPull: Date!
+  # the amount of pulls available to the user
+  availablePulls: Int!
+  #
+  instance: Instance! @relation
+  #
+  user: User! @relation
+}
+
+type Query {
+  getUserById(id: String!): User! @index(name: "users_discord_id")
+  getGuildById(id: String!): Guild! @index(name: "guilds_discord_id")
+
+  getUserInventory(userId: String!, guildId: String!): Inventory!
+    @resolver(name: "get_user_inventory")
+}

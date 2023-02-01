@@ -1,5 +1,7 @@
 import { load as Dotenv } from 'https://deno.land/std@0.175.0/dotenv/mod.ts';
 
+import { green } from 'https://deno.land/std@0.175.0/fmt/colors.ts';
+
 import { Manifest } from './src/types.ts';
 
 try {
@@ -157,11 +159,12 @@ async function put(commands: CommandsArray): Promise<void> {
   if (response.status !== 200) {
     throw new Error(JSON.stringify(await response.json(), undefined, 2));
   } else {
-    console.log(response.status, response.statusText);
+    // console.log(response.status, response.statusText);
+    console.log(green('OK'));
   }
 }
 
-put([
+await put([
   // standard gacha commands
   // uses characters and media from all packs
   ...Command({

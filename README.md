@@ -52,14 +52,14 @@ something, we try our best to keep the bot itself term naturel).
 ## FAQ
 
 <!-- TODO -->
-<!-- > How to add a new pack to my server? -->
+<!-- > How can I add a new pack to my server? -->
 
 <!-- TODO -->
 <!-- > How to disable/remove a pack from my server? -->
 
-> How are you create a pack from scratch?
+> How can I create a new pack?
 
-We recommend that you check out
+We recommend that you check
 [fable-community/example](https://github.com/fable-community/example), it has a
 great quick start guide.
 

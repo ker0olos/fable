@@ -1,10 +1,14 @@
-import { gql, request } from './graphql.ts';
+import { gql, request as _request } from '../../src/graphql.ts';
 
 import { AniListCharacter, AniListMedia } from './types.ts';
 
 import { Character, Media } from '../../src/types.ts';
 
 import packs from '../../src/packs.ts';
+
+const request = _request({
+  url: 'https://graphql.anilist.co',
+});
 
 /** Order by trending than popularity */
 const mediaDefaultSort = gql`[ TRENDING_DESC, POPULARITY_DESC ]`;

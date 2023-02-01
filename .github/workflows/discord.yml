@@ -15,7 +15,7 @@ jobs:
         name: Set environment to dummy
         run: echo "GUILD_ID=${{ secrets.DUMMY_GUILD }}" >> "$GITHUB_ENV"
 
-      - name: Update global commands
+      - name: Update Commands
         env:
           APP_ID: ${{ secrets.APP_ID }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
