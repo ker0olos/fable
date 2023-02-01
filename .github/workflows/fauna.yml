@@ -22,17 +22,18 @@ jobs:
         run: echo "FAUNA_SECRET=${{ secrets.DUMMY_FAUNA }}" >> "$GITHUB_ENV"
 
       - name: Upload GraphQL Schema
-        run: fauna upload-graphql-schema \
-          models/schema.gql \
-          --mode replace \
-          --scheme https \
-          --secret "$FAUNA_SECRET" \
-          --domain db.us.fauna.com \
-          --graphqlHost graphql.us.fauna.com \
+        run: >
+          fauna upload-graphql-schema models/schema.gql
+          --secret "$FAUNA_SECRET"
+          --scheme https
+          --mode replace
+          --domain db.us.fauna.com
+          --graphqlHost graphql.us.fauna.com
           --graphqlPort 443
 
   update-models:
     runs-on: ubuntu-latest
+    needs: [ upload-graphql-schema ]
     steps:
       - uses: actions/checkout@v3
       - uses: denoland/setup-deno@v1
