@@ -118,8 +118,8 @@ const Pack = (path: string): CommandsArray => {
         name,
         description,
         options: options.map((opt) => (Option({
-          name,
-          description,
+          name: opt.id,
+          description: opt.description,
           type: Type[opt.type.toUpperCase() as keyof typeof Type],
           optional: !opt.required,
         }))),
