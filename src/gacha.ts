@@ -82,10 +82,11 @@ async function forcePull(id: string): Promise<Pull> {
  * generate a pool of characters then pull one
  */
 async function rngPull(): Promise<Pull> {
-  // roll for popularity range that wil be used to generate the pool
+  // rng for popularity range
   const range = utils.rng(gacha.variables.ranges);
 
-  const role = range[0] === 0
+  // rng for character roll in media[0]
+  const role = range[0] <= lowest
     // include all roles in the pool
     ? undefined
     // one specific role for the whole pool
@@ -176,7 +177,7 @@ async function rngPull(): Promise<Pull> {
 }
 
 /**
- * start the roll's animation
+ * start the pull's animation
  */
 function start(
   { token, id }: {

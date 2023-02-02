@@ -79,7 +79,7 @@ function fakePool(
 Deno.test('filter invalid pools', async (test) => {
   await test.step('no media', async () => {
     const variables = {
-      range: [100, 200],
+      range: [2000, 3000],
       role: CharacterRole.Main,
     };
 
@@ -89,7 +89,7 @@ Deno.test('filter invalid pools', async (test) => {
         name: {
           full: 'name',
         },
-        popularity: 150,
+        popularity: 2500,
         media: {
           edges: [],
         },
@@ -133,7 +133,7 @@ Deno.test('filter invalid pools', async (test) => {
 
   await test.step('filter higher popularity media', async () => {
     const variables = {
-      range: [0, 100],
+      range: [1000, 2000],
     };
 
     const { readJsonStub, fetchStub } = fakePool(
@@ -149,7 +149,7 @@ Deno.test('filter invalid pools', async (test) => {
               id: 'anime',
               type: MediaType.Anime,
               format: MediaFormat.TV,
-              popularity: 101,
+              popularity: 2001,
               title: {
                 english: 'title',
               },
@@ -196,7 +196,7 @@ Deno.test('filter invalid pools', async (test) => {
 
   await test.step('filter higher popularity character', async () => {
     const variables = {
-      range: [0, 100],
+      range: [1000, 2000],
     };
 
     const { readJsonStub, fetchStub } = fakePool(
@@ -205,13 +205,13 @@ Deno.test('filter invalid pools', async (test) => {
         name: {
           full: 'name',
         },
-        popularity: 101,
+        popularity: 2001,
         media: {
           edges: [{
             characterRole: CharacterRole.Main,
             node: {
               id: 'anime',
-              popularity: 75,
+              popularity: 1000,
               type: MediaType.Anime,
               format: MediaFormat.TV,
               title: {
@@ -260,7 +260,7 @@ Deno.test('filter invalid pools', async (test) => {
 
   await test.step('filter lesser popularity media', async () => {
     const variables = {
-      range: [50, 100],
+      range: [2000, 3000],
       role: CharacterRole.Main,
     };
 
@@ -277,7 +277,7 @@ Deno.test('filter invalid pools', async (test) => {
               id: 'anime',
               type: MediaType.Anime,
               format: MediaFormat.TV,
-              popularity: 49,
+              popularity: 1999,
               title: {
                 english: 'title',
               },
@@ -324,7 +324,7 @@ Deno.test('filter invalid pools', async (test) => {
 
   await test.step('filter lesser popularity character', async () => {
     const variables = {
-      range: [50, 100],
+      range: [2000, 3000],
       role: CharacterRole.Main,
     };
 
@@ -334,13 +334,13 @@ Deno.test('filter invalid pools', async (test) => {
         name: {
           full: 'name',
         },
-        popularity: 49,
+        popularity: 1999,
         media: {
           edges: [{
             characterRole: CharacterRole.Main,
             node: {
               id: 'anime',
-              popularity: 75,
+              popularity: 2500,
               type: MediaType.Anime,
               format: MediaFormat.TV,
               title: {
@@ -389,7 +389,7 @@ Deno.test('filter invalid pools', async (test) => {
 
   await test.step('filter roles anilist', async () => {
     const variables = {
-      range: [50, 100],
+      range: [2000, 3000],
       role: CharacterRole.Main,
     };
 
@@ -404,7 +404,7 @@ Deno.test('filter invalid pools', async (test) => {
             characterRole: CharacterRole.Supporting,
             node: {
               id: 'anime',
-              popularity: 75,
+              popularity: 2500,
               type: MediaType.Anime,
               format: MediaFormat.TV,
               title: {
@@ -453,7 +453,7 @@ Deno.test('filter invalid pools', async (test) => {
 
   await test.step('filter roles packs', async () => {
     const variables = {
-      range: [50, 100],
+      range: [2000, 3000],
       role: CharacterRole.Main,
     };
 
@@ -477,7 +477,7 @@ Deno.test('filter invalid pools', async (test) => {
       media: {
         new: [{
           id: '2',
-          popularity: 75,
+          popularity: 2500,
           type: MediaType.Anime,
           format: MediaFormat.TV,
           title: {
@@ -524,7 +524,7 @@ Deno.test('filter invalid pools', async (test) => {
 Deno.test('disabled', async (test) => {
   await test.step('media', async () => {
     const variables = {
-      range: [50, 100],
+      range: [2000, 3000],
       role: CharacterRole.Main,
     };
 
@@ -547,7 +547,7 @@ Deno.test('disabled', async (test) => {
             node: {
               id: 'anime',
               packId: 'anilist',
-              popularity: 75,
+              popularity: 2500,
               type: MediaType.Anime,
               format: MediaFormat.TV,
               title: {
@@ -596,7 +596,7 @@ Deno.test('disabled', async (test) => {
 
   await test.step('character', async () => {
     const variables = {
-      range: [50, 100],
+      range: [2000, 3000],
       role: CharacterRole.Main,
     };
 
@@ -669,7 +669,7 @@ Deno.test('disabled', async (test) => {
 Deno.test('valid pool', async (test) => {
   await test.step('normal', async () => {
     const variables = {
-      range: [50, 100],
+      range: [2000, 3000],
       role: CharacterRole.Main,
     };
 
@@ -684,7 +684,7 @@ Deno.test('valid pool', async (test) => {
             characterRole: CharacterRole.Main,
             node: {
               id: 'anime',
-              popularity: 75,
+              popularity: 2500,
               type: MediaType.Anime,
               format: MediaFormat.TV,
               title: {
@@ -723,7 +723,7 @@ Deno.test('valid pool', async (test) => {
                   format: MediaFormat.TV,
                   id: 'anime',
                   packId: 'anilist',
-                  popularity: 75,
+                  popularity: 2500,
                   title: {
                     english: 'title',
                   },
@@ -742,15 +742,15 @@ Deno.test('valid pool', async (test) => {
           format: MediaFormat.TV,
           id: 'anime',
           packId: 'anilist',
-          popularity: 75,
+          popularity: 2500,
           title: {
             english: 'title',
           },
           type: MediaType.Anime,
         },
         pool: 24,
-        popularityGreater: 50,
-        popularityLesser: 100,
+        popularityGreater: 2000,
+        popularityLesser: 3000,
         rating: new Rating({ role: CharacterRole.Main, popularity: 75 }),
         role: CharacterRole.Main,
       });
@@ -769,7 +769,7 @@ Deno.test('valid pool', async (test) => {
 
   await test.step('exact popularity', async () => {
     const variables = {
-      range: [50, 100],
+      range: [2000, 3000],
       role: CharacterRole.Main,
     };
 
@@ -784,7 +784,7 @@ Deno.test('valid pool', async (test) => {
             characterRole: CharacterRole.Main,
             node: {
               id: 'anime',
-              popularity: 100,
+              popularity: 2000,
               type: MediaType.Anime,
               format: MediaFormat.TV,
               title: {
@@ -823,7 +823,7 @@ Deno.test('valid pool', async (test) => {
                   format: MediaFormat.TV,
                   id: 'anime',
                   packId: 'anilist',
-                  popularity: 100,
+                  popularity: 2000,
                   title: {
                     english: 'title',
                   },
@@ -842,15 +842,15 @@ Deno.test('valid pool', async (test) => {
           format: MediaFormat.TV,
           id: 'anime',
           packId: 'anilist',
-          popularity: 100,
+          popularity: 2000,
           title: {
             english: 'title',
           },
           type: MediaType.Anime,
         },
         pool: 24,
-        popularityGreater: 50,
-        popularityLesser: 100,
+        popularityGreater: 2000,
+        popularityLesser: 3000,
         rating: new Rating({ role: CharacterRole.Main, popularity: 100 }),
         role: CharacterRole.Main,
       });
@@ -971,7 +971,7 @@ Deno.test('valid pool', async (test) => {
 
   await test.step('from pack', async () => {
     const variables = {
-      range: [50, 100],
+      range: [2000, 3000],
       role: CharacterRole.Main,
     };
 
@@ -995,7 +995,7 @@ Deno.test('valid pool', async (test) => {
       media: {
         new: [{
           id: '2',
-          popularity: 75,
+          popularity: 2500,
           type: MediaType.Anime,
           format: MediaFormat.TV,
           title: {
@@ -1030,7 +1030,7 @@ Deno.test('valid pool', async (test) => {
                   format: MediaFormat.TV,
                   id: '2',
                   packId: 'pack-id',
-                  popularity: 75,
+                  popularity: 2500,
                   title: {
                     english: 'title',
                   },
@@ -1049,16 +1049,16 @@ Deno.test('valid pool', async (test) => {
           format: MediaFormat.TV,
           id: '2',
           packId: 'pack-id',
-          popularity: 75,
+          popularity: 2500,
           title: {
             english: 'title',
           },
           type: MediaType.Anime,
         },
         pool: 0,
-        popularityGreater: 50,
-        popularityLesser: 100,
-        rating: new Rating({ role: CharacterRole.Main, popularity: 75 }),
+        popularityGreater: 2000,
+        popularityLesser: 3000,
+        rating: new Rating({ role: CharacterRole.Main, popularity: 2500 }),
         role: CharacterRole.Main,
       });
 

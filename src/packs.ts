@@ -450,7 +450,7 @@ async function pool({ range, role }: {
   const t = (await utils.readJson<Pool>('packs/anilist/pool.json'))[
     JSON.stringify(range)
   ][
-    role ?? 'ALL'
+    role || 'ALL'
   ];
 
   // add characters from packs
