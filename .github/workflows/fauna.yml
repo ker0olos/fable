@@ -31,7 +31,7 @@ jobs:
           --graphqlHost graphql.us.fauna.com
           --graphqlPort 443
 
-  update-models:
+  update-resolvers:
     runs-on: ubuntu-latest
     needs: [ upload-graphql-schema ]
     steps:
@@ -48,5 +48,5 @@ jobs:
         name: Set environment to dummy
         run: echo "FAUNA_SECRET=${{ secrets.DUMMY_FAUNA }}" >> "$GITHUB_ENV"
 
-      - name: Update User-Defined Functions / Indexes
-        run: deno run -A update_models.ts
+      - name: Update Resolvers (User-Defined Functions)
+        run: deno run -A update_resolvers.ts

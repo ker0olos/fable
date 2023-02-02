@@ -2,14 +2,14 @@
 # cookbook: https://docs.fauna.com/fauna/current/learn/cookbook/graphql
 # cheatsheet: https://docs.fauna.com/fauna/current/api/fql/cheat_sheet
 
-type User @collection(name: "users") {
+type User @collection(name: "user") {
   # discord user id
   id: String! @unique
   #
   inventories: [Inventory!]! @relation
 }
 
-type Guild @collection(name: "guilds") {
+type Guild @collection(name: "guild") {
   # discord guild id
   id: String! @unique
   # servers can have multiple sandboxed instances
@@ -39,6 +39,7 @@ type Inventory @collection(name: "inventory") {
 type Query {
   getUserById(id: String!): User! @index(name: "users_discord_id")
   getGuildById(id: String!): Guild! @index(name: "guilds_discord_id")
+  # getInventoryByUser(user: User!): [Inventory]! @index(name: "user_inventories")
 
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")
