@@ -18,8 +18,8 @@ type TypedExpr<T> = Expr & { type?: T };
 export type StringExpr = string | TypedExpr<'string'>;
 export type NumberExpr = number | TypedExpr<'number'>;
 export type BooleanExpr = boolean | TypedExpr<'boolean'>;
-export type LambdaExpr = (...vars: any[]) => ExprArg;
 
+export type NullExpr = TypedExpr<'null'>;
 export type TimeExpr = TypedExpr<'time'>;
 export type IndexExpr = TypedExpr<'index'>;
 export type MatchExpr = TypedExpr<'match'>;
@@ -49,7 +49,8 @@ export interface Instance {
 }
 
 export interface Inventory {
-  lastPull: TimeExpr;
+  lastPull: TimeExpr | NullExpr;
+  lastReset: TimeExpr | NullExpr;
   availablePulls: NumberExpr;
   instance: RefExpr;
   user: RefExpr;
@@ -87,8 +88,31 @@ export function Append(ref: RefExpr, items: Expr): RefExpr[] {
   return fql.Append(ref, items) as unknown as RefExpr[];
 }
 
+export function ContainsPath(
+  expr: (StringExpr | NullExpr)[],
+  _in: Expr,
+): BooleanExpr {
+  return fql.ContainsPath(expr, _in);
+}
+
 export function IsNonEmpty(expr: Expr): BooleanExpr {
   return fql.IsNonEmpty(expr);
+}
+
+export function Or(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
+  return fql.Or(a, b);
+}
+
+export function And(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
+  return fql.And(a, b);
+}
+
+export function GTE(a: NumberExpr, b: NumberExpr): BooleanExpr {
+  return fql.GTE(a, b);
+}
+
+export function LTE(a: NumberExpr, b: NumberExpr): BooleanExpr {
+  return fql.LTE(a, b);
 }
 
 export function If<A = Expr, B = Expr>(
@@ -99,22 +123,17 @@ export function If<A = Expr, B = Expr>(
   return fql.If(cond, _then, _else) as A | B;
 }
 
-export function updateResolver(
-  { client, name, lambda }: {
-    name: string;
-    client: Client;
-    lambda: LambdaExpr;
-  },
-): Promise<void> {
-  return client.query(
-    fql.Update(fql.FaunaFunction(name), {
-      body: fql.Query(lambda),
-    }),
-  );
-}
+export function Let<T, U>(
+  params: { [K in keyof T]: T[K] },
+  cb: (shadows: typeof params) => U,
+): U {
+  const shadows: any = {};
 
-export function Let(vars: Record<string, ExprArg>, _in: Expr): Expr {
-  return fql.Let(vars, _in);
+  for (const obj of Object.keys(params)) {
+    shadows[obj] = fql.Var(obj);
+  }
+
+  return fql.Let(params, cb(shadows) as any) as U;
 }
 
 export function Var(name: StringExpr): Expr {
@@ -125,12 +144,34 @@ export function Intersection(a: Expr, b: Expr): Expr {
   return fql.Intersection(a, b);
 }
 
-export function Select(path: ExprArg[], from: Expr): Expr {
+export function Select(path: (StringExpr | NumberExpr)[], from: Expr): Expr {
   return fql.Select(path, from);
+}
+
+export function TimeDiffInMinutes(a: TimeExpr, b: TimeExpr): NumberExpr {
+  return fql.TimeDiff(a, b, 'minutes');
 }
 
 export function Now(): TimeExpr {
   return fql.Now();
+}
+
+export function Null(): NullExpr {
+  return null as unknown as NullExpr;
+}
+
+export function Resolver(
+  { client, name, lambda }: {
+    name: string;
+    client: Client;
+    lambda: (...vars: any[]) => ExprArg;
+  },
+): Promise<void> {
+  return client.query(
+    fql.Update(fql.FaunaFunction(name), {
+      body: fql.Query(lambda),
+    }),
+  );
 }
 
 export type { Client };

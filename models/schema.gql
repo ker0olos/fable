@@ -27,7 +27,9 @@ type Instance @collection(name: "instance") {
 
 type Inventory @collection(name: "inventory") {
   # the time the user last pulled a gacha
-  lastPull: Date!
+  lastPull: Time
+  # the last time the pulls available was reset
+  lastReset: Time
   # the amount of pulls available to the user
   availablePulls: Int!
   #
@@ -39,7 +41,6 @@ type Inventory @collection(name: "inventory") {
 type Query {
   getUserById(id: String!): User! @index(name: "users_discord_id")
   getGuildById(id: String!): Guild! @index(name: "guilds_discord_id")
-  # getInventoryByUser(user: User!): [Inventory]! @index(name: "user_inventories")
 
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")
