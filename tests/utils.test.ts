@@ -728,3 +728,28 @@ Deno.test('external images', async (test) => {
     }
   });
 });
+
+Deno.test('text images', async (test) => {
+  await test.step('5', async () => {
+    // deno-lint-ignore no-explicit-any
+    const response = await utils.text({} as any, {} as any, {
+      text: '5',
+      // deno-lint-ignore no-explicit-any
+    } as any);
+
+    assertEquals(response.status, 200);
+
+    assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+    assertEquals(
+      response.headers.get('Cache-Control'),
+      'public, max-age=604800',
+    );
+
+    const image = await imagescript.decode(await response.arrayBuffer());
+
+    assert(image instanceof imagescript.Image);
+
+    assertEquals(`${image}`, 'Image<64x64>');
+  });
+});

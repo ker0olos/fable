@@ -265,6 +265,7 @@ function start(
 }
 
 const gacha = {
+  lowest,
   variables,
   forcePull,
   rngPull,

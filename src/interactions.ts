@@ -291,6 +291,7 @@ serve({
   '/': handler,
   '/dev': handler,
   '/external/*': utils.proxy,
+  '/text/:text': utils.text,
   '/schema': serveStatic('../schema.json', {
     baseUrl: import.meta.url,
     intervene: cache(86400, 'application/schema+json'),

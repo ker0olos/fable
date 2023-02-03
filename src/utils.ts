@@ -6,6 +6,8 @@ import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weih
 
 import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
 
+import { ConnInfo, PathParams } from 'https://deno.land/x/sift@0.6.0/mod.ts';
+
 export enum ImageSize {
   Large = 'large', // 450x635,
   Medium = 'medium', // 230x325
@@ -205,7 +207,48 @@ function verifySignature(
   return { valid, body };
 }
 
-const proxy = async (r: Request) => {
+async function text(
+  _: Request,
+  __: ConnInfo,
+  params: PathParams,
+): Promise<Response> {
+  const font = await fetch(
+    'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
+  );
+
+  let image = new imagescript.Image(64, 64);
+
+  const text = imagescript.Image.renderText(
+    new Uint8Array(await font.arrayBuffer()),
+    34,
+    params?.text?.substring(0, 2) ?? '??',
+    0xffffffff,
+    new imagescript.TextLayout({
+      maxWidth: image.width,
+      maxHeight: image.height,
+      verticalAlign: 'center',
+      horizontalAlign: 'middle',
+    }),
+  );
+
+  image = image.composite(
+    text,
+    (image.width * 0.5) - (text.width * 0.5),
+    (image.height * 0.5) - (text.height * 0.5),
+  );
+
+  const t = await image.encode(2);
+
+  const response = new Response(t);
+
+  response.headers.set('content-type', 'image/png');
+  response.headers.set('content-length', `${t.byteLength}`);
+  response.headers.set('cache-control', 'public, max-age=604800');
+
+  return response;
+}
+
+async function proxy(r: Request): Promise<Response> {
   const { pathname, searchParams, origin } = new URL(r.url);
 
   try {
@@ -295,7 +338,7 @@ const proxy = async (r: Request) => {
     }
     return Response.redirect(`${origin}/assets/medium.png`);
   }
-};
+}
 
 async function readJson<T>(filePath: string): Promise<T> {
   try {
@@ -322,6 +365,7 @@ const utils = {
   distance,
   verifySignature,
   readJson,
+  text,
   proxy,
   wrap,
 };

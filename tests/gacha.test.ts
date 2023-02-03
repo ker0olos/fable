@@ -1076,6 +1076,8 @@ Deno.test('valid pool', async (test) => {
 });
 
 Deno.test('variables', () => {
+  assertEquals(gacha.lowest, 1000);
+
   assertEquals(gacha.variables.roles, {
     10: CharacterRole.Main,
     70: CharacterRole.Supporting,
