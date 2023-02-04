@@ -16,7 +16,10 @@
 > **Note** The bot is still experimental. Some features might be missing or
 > disabled
 
-<img align="right" src="https://user-images.githubusercontent.com/52022280/215555794-c8e52906-99a5-485c-9cdd-8961e168f587.gif" alt="Pull">
+<i>
+  <h6 align="right">(Animated Pulls)</h6>
+  <img align="right" src="https://user-images.githubusercontent.com/52022280/215555794-c8e52906-99a5-485c-9cdd-8961e168f587.gif" alt="Animated Pulls">
+</i>
 
 Fable is a free, open-source _anime_[^1] gacha bot — a simple, powerful Mudae
 alternative. Like Mudae, you can pull anime characters. Unlike Mudae, there's no
@@ -39,7 +42,21 @@ something, we try our best to keep the bot itself term naturel).
 
 <br clear="right"/>
 
-## Get involved
+## Quick Start
+
+<i>
+  <h6 align="right">(Character Search)</h6>
+  <img align="right" src="https://user-images.githubusercontent.com/52022280/216527501-8985899c-d9f3-481a-821b-068a2f4a8ad3.jpg" alt="Searching">
+</i>
+
+### Essential Commands
+
+- `/gacha`, `/pull` or `/w`: to start a new gacha pull
+- `/now`, `/cl` or `/tu`: to check what you can do at right now
+- `/search`, `/anime` or `/manga`: to search and view a media
+- `/character`: to search and view a character
+
+### Get Involved
 
 - Star this repo.
 - Send our links to a couple of friends, and tell your favorite server's mods
@@ -47,7 +64,7 @@ something, we try our best to keep the bot itself term naturel).
 - [Join our discord][discord].
 - [Contribute to the code][contributing]
 
-## FAQ
+### FAQ
 
 <!-- TODO -->
 <!-- > How can I add a new pack to my server? -->
@@ -67,6 +84,8 @@ We're using serverless for the servers and the database, which is much cheaper
 to maintain. If it ever starts hurting our wallet, we'll have to actively ask
 for support, but no one is getting special rewards for donations, worst-case
 we'll have to offer cosmetics; tl;dr Fable will always remain 100% free.
+
+<br clear="right"/>
 
 ## Credits
 
