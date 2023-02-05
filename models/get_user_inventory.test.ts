@@ -5,7 +5,9 @@ import { assertEquals } from 'https://deno.land/std@0.175.0/testing/asserts.ts';
 import {
   assertSpyCall,
   assertSpyCallArg,
+  assertSpyCalls,
   returnsNext,
+  spy,
   stub,
 } from 'https://deno.land/std@0.175.0/testing/mock.ts';
 
@@ -15,7 +17,7 @@ import { fql } from './fql.ts';
 
 import {
   checkPullsForRefill,
-  default as getResolverLambda,
+  default as Model,
   getOrCreateGuild,
   getOrCreateInstance,
   getOrCreateInventory,
@@ -39,9 +41,12 @@ const FakeIsNonEmpty = () =>
   stub(fql, 'IsNonEmpty', ((match: any) => Boolean(match)) as any);
 
 const FakeSelect = (obj?: any) => stub(fql, 'Select', () => obj);
-const FakeIntersection = (obj?: any) => stub(fql, 'Intersection', () => obj);
 const FakeMatch = (obj?: any) =>
-  stub(fql, 'Match', (_: any, id: any) => obj ? ({ ...obj, id }) : undefined);
+  stub(
+    fql,
+    'Match',
+    (_: any, ...terms: any[]) => obj ? ({ ...obj, ...terms }) : undefined,
+  );
 
 const FakeNow = () => stub(fql, 'Now', () => new Date() as any);
 const FakeTimeDiff = () =>
@@ -60,12 +65,9 @@ const FakeIf = () =>
     ((cond: boolean, _then: any, _else: any) => cond ? _then : _else) as any,
   );
 
-const FakeResolver = () =>
-  stub(
-    fql,
-    'Resolver',
-    ((resolver: any) => resolver.lambda()) as any,
-  );
+const FakeClient = () => ({
+  query: spy(),
+});
 
 Deno.test('get or create user', async (test) => {
   await test.step('get', () => {
@@ -89,7 +91,7 @@ Deno.test('get or create user', async (test) => {
       assertSpyCallArg(ifStub, 0, 0, true);
 
       assertEquals(match, {
-        id: 'user_id',
+        '0': 'user_id',
         match: true,
       });
     } finally {
@@ -158,7 +160,7 @@ Deno.test('get or create guild', async (test) => {
       assertSpyCallArg(ifStub, 0, 0, true);
 
       assertEquals(match, {
-        id: 'guild_id',
+        '0': 'guild_id',
         match: true,
       });
     } finally {
@@ -286,11 +288,11 @@ Deno.test('get or create inventory', async (test) => {
     const ifStub = FakeIf();
     const letStub = FakeLet();
     const getStub = FakeGet();
+    const refStub = FakeRef();
+    const indexStub = FakeIndex();
     const isNonEmptyStub = FakeIsNonEmpty();
 
-    const selectStub = FakeSelect({ select: true });
-
-    const intersectionStub = FakeIntersection({
+    const matchStub = FakeMatch({
       match: true,
     });
 
@@ -300,42 +302,46 @@ Deno.test('get or create inventory', async (test) => {
         user: 'user' as any,
       }) as any;
 
-      assertSpyCall(selectStub, 0, {
-        args: [['data', 'inventories'], 'instance' as any],
+      assertSpyCall(refStub, 0, {
+        args: ['instance' as any],
       });
 
-      assertSpyCall(selectStub, 1, {
-        args: [['data', 'inventories'], 'user' as any],
-      });
-
-      assertSpyCall(selectStub, 2, {
-        args: [[0], { match: true } as any],
+      assertSpyCall(refStub, 1, {
+        args: ['user' as any],
       });
 
       assertSpyCallArg(ifStub, 0, 0, true);
 
       assertEquals(match, {
-        select: true,
+        '0': {
+          ref: 'instance',
+        },
+        '1': {
+          ref: 'user',
+        },
+        match: true,
       });
     } finally {
       ifStub.restore();
       letStub.restore();
       getStub.restore();
+      refStub.restore();
+      indexStub.restore();
       isNonEmptyStub.restore();
-      selectStub.restore();
-      intersectionStub.restore();
+      matchStub.restore();
     }
   });
 
   await test.step('create', () => {
     const ifStub = FakeIf();
     const letStub = FakeLet();
+    const refStub = FakeRef();
+    const indexStub = FakeIndex();
     const isNonEmptyStub = FakeIsNonEmpty();
-    const intersectionStub = FakeIntersection();
-    const appendStub = FakeAppend();
+    const matchStub = FakeMatch();
 
     const varStub = FakeVar();
-    const refStub = FakeRef();
+    const appendStub = FakeAppend();
     const selectStub = FakeSelect({ select: true });
 
     const createStub = FakeCreate();
@@ -347,12 +353,12 @@ Deno.test('get or create inventory', async (test) => {
         user: 'user' as any,
       }) as any;
 
-      assertSpyCall(selectStub, 0, {
-        args: [['data', 'inventories'], 'instance' as any],
+      assertSpyCall(refStub, 0, {
+        args: ['instance' as any],
       });
 
-      assertSpyCall(selectStub, 1, {
-        args: [['data', 'inventories'], 'user' as any],
+      assertSpyCall(refStub, 1, {
+        args: ['user' as any],
       });
 
       assertSpyCallArg(ifStub, 0, 0, false);
@@ -379,11 +385,12 @@ Deno.test('get or create inventory', async (test) => {
     } finally {
       ifStub.restore();
       letStub.restore();
-      isNonEmptyStub.restore();
-      intersectionStub.restore();
-      appendStub.restore();
-      varStub.restore();
       refStub.restore();
+      indexStub.restore();
+      isNonEmptyStub.restore();
+      matchStub.restore();
+      varStub.restore();
+      appendStub.restore();
       selectStub.restore();
       createStub.restore();
       updateStub.restore();
@@ -539,16 +546,17 @@ Deno.test('check for pulls refill', async (test) => {
   });
 });
 
-Deno.test('get_user_inventory', async (test) => {
-  const resolverStub = FakeResolver();
+Deno.test('model', async (test) => {
+  const client = FakeClient();
 
-  try {
-    const resolver = getResolverLambda(undefined as any);
+  Model(client as any);
 
-    await assertSnapshot(test, resolver);
-  } finally {
-    resolverStub.restore();
-  }
+  assertSpyCalls(client.query, 4);
+
+  await assertSnapshot(test, client.query.calls[0].args);
+  await assertSnapshot(test, client.query.calls[1].args);
+  await assertSnapshot(test, client.query.calls[2].args);
+  await assertSnapshot(test, client.query.calls[3].args);
 });
 
 Deno.test('variables', () => {

@@ -4,25 +4,25 @@
 
 type User @collection(name: "user") {
   # discord user id
-  id: String! @unique
+  id: String!
   #
-  inventories: [Inventory!]! @relation
+  inventories: [Inventory!]!
 }
 
 type Guild @collection(name: "guild") {
   # discord guild id
-  id: String! @unique
+  id: String!
   # servers can have multiple sandboxed instances
-  instances: [Instance!]! @relation
+  instances: [Instance!]!
 }
 
 type Instance @collection(name: "instance") {
   # the main/default instance
   main: Boolean!
   # each user has an inventory
-  inventories: [Inventory!]! @relation
+  inventories: [Inventory!]!
   # the guild where the instance resides
-  guild: Guild! @relation
+  guild: Guild!
 }
 
 type Inventory @collection(name: "inventory") {
@@ -31,11 +31,11 @@ type Inventory @collection(name: "inventory") {
   # the amount of pulls available to the user
   availablePulls: Int!
   #
-  characters: [Character!]! @relation
+  characters: [Character!]!
   #
-  instance: Instance! @relation
+  instance: Instance!
   #
-  user: User! @relation
+  user: User!
 }
 
 type Character @collection(name: "character") {
@@ -43,12 +43,10 @@ type Character @collection(name: "character") {
   #
   quantity: Int!
   #
-  inventory: Inventory! @relation
+  inventory: Inventory!
 }
 
 type Query {
-  getUserById(id: String!): User! @index(name: "users_discord_id")
-  getGuildById(id: String!): Guild! @index(name: "guilds_discord_id")
   #
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")

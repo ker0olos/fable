@@ -28,5 +28,5 @@ async function update(queries: Promise<unknown>[]): Promise<void> {
 }
 
 await update([
-  getUserInventory(client),
+  ...getUserInventory(client),
 ]);

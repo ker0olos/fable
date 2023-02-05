@@ -109,17 +109,15 @@ export function getOrCreateInventory(
   { instance, user }: { instance: InstanceExpr; user: UserExpr },
 ): InventoryExpr {
   return fql.Let({
-    // intersecting between user's inventories on all instances
-    // and the inventories of all users on the instance
-    // e.g. all_instance_inventories - all_inventories_that_are_not_this_user
-    match: fql.Intersection(
-      fql.Select(['data', 'inventories'], instance),
-      fql.Select(['data', 'inventories'], user),
+    match: fql.Match(
+      fql.Index('inventories_instance_user'),
+      fql.Ref(instance),
+      fql.Ref(user),
     ),
   }, ({ match }) =>
     fql.If(
       fql.IsNonEmpty(match),
-      fql.Get(fql.Select([0], match)),
+      fql.Get(match),
       fql.Let(
         {
           // create a new inventory
@@ -174,23 +172,46 @@ export function checkPullsForRefill(inventory: InventoryExpr): InventoryExpr {
   );
 }
 
-export default function (client: Client): Promise<void> {
-  return fql.Resolver({
-    client,
-    name: 'get_user_inventory',
-    lambda: (userId: string, guildId: string) => {
-      return fql.Let(
-        {
-          user: getOrCreateUser(userId),
-          guild: getOrCreateGuild(guildId),
-          instance: getOrCreateInstance(fql.Var('guild')),
-          inventory: getOrCreateInventory({
-            user: fql.Var('user'),
-            instance: fql.Var('instance'),
-          }),
-        },
-        ({ inventory }) => checkPullsForRefill(inventory),
-      );
-    },
-  });
+export default function (client: Client): Promise<void>[] {
+  return [
+    fql.Indexer({
+      client,
+      unique: true,
+      collection: 'user',
+      name: 'users_discord_id',
+      terms: [{ field: ['data', 'id'] }],
+    }),
+    fql.Indexer({
+      client,
+      unique: true,
+      collection: 'guild',
+      name: 'guilds_discord_id',
+      terms: [{ field: ['data', 'id'] }],
+    }),
+    fql.Indexer({
+      client,
+      unique: true,
+      collection: 'inventory',
+      name: 'inventories_instance_user',
+      terms: [{ field: ['data', 'instance'] }, { field: ['data', 'user'] }],
+    }),
+    fql.Resolver({
+      client,
+      name: 'get_user_inventory',
+      lambda: (userId: string, guildId: string) => {
+        return fql.Let(
+          {
+            user: getOrCreateUser(userId),
+            guild: getOrCreateGuild(guildId),
+            instance: getOrCreateInstance(fql.Var('guild')),
+            inventory: getOrCreateInventory({
+              user: fql.Var('user'),
+              instance: fql.Var('instance'),
+            }),
+          },
+          ({ inventory }) => checkPullsForRefill(inventory),
+        );
+      },
+    }),
+  ];
 }

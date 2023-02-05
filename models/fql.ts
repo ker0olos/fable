@@ -50,8 +50,8 @@ function Index(name: string): IndexExpr {
   return _fql.FaunaIndex(name);
 }
 
-function Match(index: IndexExpr, term: StringExpr): MatchExpr {
-  return _fql.Match(index, term);
+function Match(index: IndexExpr, ...terms: ExprArg[]): MatchExpr {
+  return _fql.Match(index, ...terms);
 }
 
 function Get(refOrMatch: RefExpr | MatchExpr): Expr {
@@ -123,6 +123,33 @@ function Null(): NullExpr {
   return null as unknown as NullExpr;
 }
 
+function Indexer(
+  { client, name, unique, collection, terms }: {
+    client: Client;
+    unique?: boolean;
+    collection: string;
+    name: string;
+    terms: {
+      field: string[];
+    }[];
+  },
+): Promise<void> {
+  const params = {
+    name,
+    unique,
+    source: _fql.Collection(collection),
+    terms,
+  };
+
+  return client.query(
+    _fql.If(
+      _fql.Exists(_fql.FaunaIndex(name)),
+      _fql.Update(_fql.FaunaIndex(name), params),
+      _fql.CreateIndex(params),
+    ),
+  );
+}
+
 function Resolver(
   { client, name, lambda }: {
     name: string;
@@ -130,10 +157,17 @@ function Resolver(
     lambda: (...vars: any[]) => ExprArg;
   },
 ): Promise<void> {
+  const params = {
+    name,
+    body: _fql.Query(lambda),
+  };
+
   return client.query(
-    _fql.Update(_fql.FaunaFunction(name), {
-      body: _fql.Query(lambda),
-    }),
+    _fql.If(
+      _fql.Exists(_fql.FaunaFunction(name)),
+      _fql.Update(_fql.FaunaFunction(name), params),
+      _fql.CreateFunction(params),
+    ),
   );
 }
 
@@ -141,14 +175,15 @@ export const fql = {
   And,
   Append,
   Create,
-  GTE,
   Get,
+  GTE,
   If,
   Index,
+  Indexer,
   Intersection,
   IsNonEmpty,
-  LTE,
   Let,
+  LTE,
   Match,
   Now,
   Null,
