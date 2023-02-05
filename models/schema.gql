@@ -2,6 +2,11 @@
 # cookbook: https://docs.fauna.com/fauna/current/learn/cookbook/graphql
 # cheatsheet: https://docs.fauna.com/fauna/current/api/fql/cheat_sheet
 
+type Response @embedded {
+  ok: Boolean!
+  error: String
+}
+
 type User @collection(name: "user") {
   # discord user id
   id: String!
@@ -31,8 +36,6 @@ type Inventory @collection(name: "inventory") {
   # the amount of pulls available to the user
   availablePulls: Int!
   #
-  characters: [Character!]!
-  #
   instance: Instance!
   #
   user: User!
@@ -42,11 +45,26 @@ type Character @collection(name: "character") {
   #
   id: String!
   #
-  inventory: Inventory!
+  instance: Instance!
+  #
+  user: User!
 }
 
 type Query {
   #
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")
+
+  #
+  getUserCharacters(userId: String!, guildId: String!): [Character!]
+    @resolver(name: "get_user_characters", paginated: true)
+}
+
+type Mutation {
+  #
+  addCharacterToInventory(
+    userId: String!
+    guildId: String!
+    characterId: String!
+  ): Response! @resolver(name: "add_character_to_inventory")
 }

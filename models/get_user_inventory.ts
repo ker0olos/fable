@@ -142,7 +142,9 @@ export function getInventory(
     ));
 }
 
-export function refillPulls(inventory: InventoryExpr): InventoryExpr {
+export function refillPulls(
+  { inventory }: { inventory: InventoryExpr },
+): InventoryExpr {
   return fql.If(
     fql.And(
       // if available pulls is less than or equal to 0
@@ -203,7 +205,7 @@ export default function (client: Client): Promise<void>[] {
               instance: fql.Var('instance'),
             }),
           },
-          ({ inventory }) => refillPulls(inventory),
+          refillPulls,
         );
       },
     }),

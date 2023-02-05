@@ -12,6 +12,8 @@ import { Client } from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.js';
 
 import getUserInventory from './models/get_user_inventory.ts';
 
+import getUserCharacters from './models/get_user_characters.ts';
+
 const FAUNA_SECRET = Deno.env.get('FAUNA_SECRET');
 
 if (!FAUNA_SECRET) {
@@ -29,4 +31,5 @@ async function update(queries: Promise<unknown>[]): Promise<void> {
 
 await update([
   ...getUserInventory(client),
+  ...getUserCharacters(client),
 ]);

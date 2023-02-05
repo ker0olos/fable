@@ -29,6 +29,7 @@ export type UserExpr = TypedExpr<'user'>;
 export type GuildExpr = TypedExpr<'guild'>;
 export type InstanceExpr = TypedExpr<'instance'>;
 export type InventoryExpr = TypedExpr<'inventory'>;
+export type CharacterExpr = TypedExpr<'character'>;
 
 function Ref(document: Expr): RefExpr {
   return _fql.Select('ref', document);
@@ -62,6 +63,13 @@ function Append(ref: RefExpr, items: Expr): RefExpr[] {
   return _fql.Append(ref, items) as unknown as RefExpr[];
 }
 
+function Map<T = Expr>(
+  refOrMatch: RefExpr | MatchExpr,
+  map: (ref: RefExpr) => Expr,
+): T[] {
+  return _fql.Map(refOrMatch, map) as unknown as T[];
+}
+
 function IsNonEmpty(expr: Expr): BooleanExpr {
   return _fql.IsNonEmpty(expr);
 }
@@ -78,12 +86,21 @@ function LTE(a: NumberExpr, b: NumberExpr): BooleanExpr {
   return _fql.LTE(a, b);
 }
 
+function Subtract(a: NumberExpr, b: NumberExpr): NumberExpr {
+  return _fql.Subtract(a, b);
+}
+
 function If<A = Expr, B = Expr>(
   cond: BooleanExpr,
   _then: Expr,
   _else: Expr,
 ): A | B {
   return _fql.If(cond, _then, _else) as A | B;
+}
+
+function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
+  // deno-lint-ignore no-non-null-assertion
+  return _fql.Equals(a!, b!);
 }
 
 function Let<T, U>(
@@ -103,10 +120,6 @@ function Var(name: StringExpr): Expr {
   return _fql.Var(name);
 }
 
-function Intersection(a: Expr, b: Expr): Expr {
-  return _fql.Intersection(a, b);
-}
-
 function Select(path: (StringExpr | NumberExpr)[], from: Expr): Expr {
   return _fql.Select(path, from);
 }
@@ -123,10 +136,39 @@ function Null(): NullExpr {
   return null as unknown as NullExpr;
 }
 
+function Pagination(
+  match: MatchExpr,
+  size?: NumberExpr,
+  after?: StringExpr,
+  before?: StringExpr,
+): Expr {
+  // "fql" is intended to be "fql" not "_fql"
+  // since this is a logic unique to this script
+  // not a built-in fql function
+  // and should follow mocks
+
+  return fql.If(
+    fql.Equals(size, fql.Null()),
+    _fql.Paginate(match),
+    fql.If(
+      fql.Equals(before, fql.Null()),
+      fql.If(
+        fql.Equals(after, fql.Null()),
+        // deno-lint-ignore no-non-null-assertion
+        _fql.Paginate(match, { size: size! }),
+        // deno-lint-ignore no-non-null-assertion
+        _fql.Paginate(match, { size: size!, after }),
+      ),
+      // deno-lint-ignore no-non-null-assertion
+      _fql.Paginate(match, { size: size!, before }),
+    ),
+  );
+}
+
 function Indexer(
   { client, name, unique, collection, terms }: {
     client: Client;
-    unique?: boolean;
+    unique: boolean;
     collection: string;
     name: string;
     terms: {
@@ -175,21 +217,24 @@ export const fql = {
   And,
   Append,
   Create,
+  Equals,
   Get,
   GTE,
   If,
   Index,
   Indexer,
-  Intersection,
   IsNonEmpty,
   Let,
   LTE,
+  Map,
   Match,
   Now,
   Null,
+  Pagination,
   Ref,
   Resolver,
   Select,
+  Subtract,
   TimeDiffInMinutes,
   Update,
   Var,
