@@ -70,10 +70,6 @@ function And(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
   return _fql.And(a, b);
 }
 
-function Or(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
-  return _fql.Or(a, b);
-}
-
 function GTE(a: NumberExpr, b: NumberExpr): BooleanExpr {
   return _fql.GTE(a, b);
 }
@@ -156,7 +152,6 @@ export const fql = {
   Match,
   Now,
   Null,
-  Or,
   Ref,
   Resolver,
   Select,

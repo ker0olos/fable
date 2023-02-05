@@ -25,19 +25,25 @@ export interface Guild {
 
 export interface Instance {
   main: BooleanExpr;
-  guild: RefExpr;
   inventories: RefExpr[];
+  guild: RefExpr;
 }
 
 export interface Inventory {
   lastPull: TimeExpr | NullExpr;
   availablePulls: NumberExpr;
+  characters: RefExpr[];
   instance: RefExpr;
   user: RefExpr;
 }
 
-export const AVAILABLE_PULLS_DEFAULT = 5;
-export const PULLS_RESET_TIME = 60;
+export interface Character {
+  id: StringExpr;
+  quantity: NumberExpr;
+  inventory: RefExpr;
+}
+
+export const PULLS_DEFAULT = 5;
 
 export function getOrCreateUser(id: StringExpr): UserExpr {
   return fql.Let({
@@ -119,7 +125,8 @@ export function getOrCreateInventory(
           // create a new inventory
           createdInventory: fql.Create<Inventory>('inventory', {
             lastPull: fql.Null(),
-            availablePulls: AVAILABLE_PULLS_DEFAULT,
+            availablePulls: PULLS_DEFAULT,
+            characters: [],
             instance: fql.Ref(instance),
             user: fql.Ref(user),
           }),
@@ -143,7 +150,7 @@ export function getOrCreateInventory(
     ));
 }
 
-export function checkPullsForReset(inventory: InventoryExpr): InventoryExpr {
+export function checkPullsForRefill(inventory: InventoryExpr): InventoryExpr {
   return fql.If(
     fql.And(
       // if available pulls is less than or equal to 0
@@ -155,12 +162,12 @@ export function checkPullsForReset(inventory: InventoryExpr): InventoryExpr {
           fql.Select(['data', 'lastPull'], inventory),
           fql.Now(),
         ),
-        PULLS_RESET_TIME,
+        60,
       ),
     ),
-    // reset the available pulls to default
+    // refill the available pulls to default
     fql.Update<Inventory>(fql.Ref(inventory), {
-      availablePulls: AVAILABLE_PULLS_DEFAULT,
+      availablePulls: PULLS_DEFAULT,
     }),
     // return inventory as is
     inventory,
@@ -182,7 +189,7 @@ export default function (client: Client): Promise<void> {
             instance: fql.Var('instance'),
           }),
         },
-        ({ inventory }) => checkPullsForReset(inventory),
+        ({ inventory }) => checkPullsForRefill(inventory),
       );
     },
   });

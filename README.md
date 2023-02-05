@@ -13,9 +13,6 @@
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&style=for-the-badge&label=tests)](https://github.com/ker0olos/fable/actions/workflows/deno.yml)
 [![Codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?style=for-the-badge&token=3C7ZTHzGqC)](https://codecov.io/github/ker0olos/fable)
 
-> **Note** The bot is still experimental. Some features might be missing or
-> disabled
-
 <i>
   <h6 align="right">(Animated Pulls)</h6>
   <img align="right" src="https://user-images.githubusercontent.com/52022280/215555794-c8e52906-99a5-485c-9cdd-8961e168f587.gif" alt="Animated Pulls">
@@ -40,12 +37,16 @@ can add other packs, for example video game characters or real life celebrities.
 You can also disable the anime packs entirety (Incase it's a sport server or
 something, we try our best to keep the bot itself term naturel).
 
+> **Note** The bot is still early access. Some features might be missing or
+> disabled. Missing features include "Trading" (see
+> [#20](https://github.com/ker0olos/fable/issues/20) for more info)
+
 <br clear="right"/>
 
 ## Quick Start
 
 <i>
-  <h6 align="right">(Character Search)</h6>
+  <h6 align="right">(Rich Character Searches)</h6>
   <img align="right" src="https://user-images.githubusercontent.com/52022280/216527501-8985899c-d9f3-481a-821b-068a2f4a8ad3.jpg" alt="Searching">
 </i>
 
@@ -77,6 +78,14 @@ something, we try our best to keep the bot itself term naturel).
 We recommend that you check
 [fable-community/example](https://github.com/fable-community/example), it has a
 great quick start guide.
+
+> Can I use prefixes like "$"?
+
+No, Fable was built from the ground up to only support slash commands, prefixes
+are an entirely different thing that requires the bot to manually monitor all
+incoming messages in a server. We won't add prefixes to Fable, but you can go
+tell discord to add custom prefixes to "slash" commands instead of slash for all
+bots.
 
 > How are you keeping Fable free?
 

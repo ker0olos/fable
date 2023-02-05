@@ -417,6 +417,10 @@ Expr {
                                     raw: {
                                       object: {
                                         availablePulls: 5,
+                                        characters: Expr {
+                                          raw: [
+                                          ],
+                                        },
                                         instance: Expr {
                                           raw: {
                                             from: Expr {

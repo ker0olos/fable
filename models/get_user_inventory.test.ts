@@ -14,14 +14,13 @@ import { assertSnapshot } from 'https://deno.land/std@0.175.0/testing/snapshot.t
 import { fql } from './fql.ts';
 
 import {
-  AVAILABLE_PULLS_DEFAULT,
-  checkPullsForReset,
+  checkPullsForRefill,
   default as getResolverLambda,
   getOrCreateGuild,
   getOrCreateInstance,
   getOrCreateInventory,
   getOrCreateUser,
-  PULLS_RESET_TIME,
+  PULLS_DEFAULT,
 } from './get_user_inventory.ts';
 
 const FakeIndex = () => stub(fql, 'Index', () => ({}) as any);
@@ -373,6 +372,7 @@ Deno.test('get or create inventory', async (test) => {
       assertEquals(match, {
         lastPull: null,
         availablePulls: 5,
+        characters: [],
         instance: { ref: 'instance' },
         user: { ref: 'user' },
       });
@@ -391,7 +391,7 @@ Deno.test('get or create inventory', async (test) => {
   });
 });
 
-Deno.test('check for pulls reset', async (test) => {
+Deno.test('check for pulls refill', async (test) => {
   await test.step('available pulls is 5', () => {
     const ifStub = FakeIf();
     const andStub = FakeAnd();
@@ -411,7 +411,7 @@ Deno.test('check for pulls reset', async (test) => {
     );
 
     try {
-      const result = checkPullsForReset('inventory' as any) as any;
+      const result = checkPullsForRefill('inventory' as any) as any;
 
       assertSpyCall(selectStub, 0, {
         args: [['data', 'availablePulls'], 'inventory' as any],
@@ -454,7 +454,7 @@ Deno.test('check for pulls reset', async (test) => {
     );
 
     try {
-      const result = checkPullsForReset('inventory' as any) as any;
+      const result = checkPullsForRefill('inventory' as any) as any;
 
       assertSpyCall(selectStub, 0, {
         args: [['data', 'availablePulls'], 'inventory' as any],
@@ -504,7 +504,7 @@ Deno.test('check for pulls reset', async (test) => {
     const updateStub = FakeUpdate();
 
     try {
-      const result = checkPullsForReset('inventory' as any) as any;
+      const result = checkPullsForRefill('inventory' as any) as any;
 
       assertSpyCall(selectStub, 0, {
         args: [['data', 'availablePulls'], 'inventory' as any],
@@ -552,6 +552,5 @@ Deno.test('get_user_inventory', async (test) => {
 });
 
 Deno.test('variables', () => {
-  assertEquals(AVAILABLE_PULLS_DEFAULT, 5);
-  assertEquals(PULLS_RESET_TIME, 60);
+  assertEquals(PULLS_DEFAULT, 5);
 });

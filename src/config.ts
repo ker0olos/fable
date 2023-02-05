@@ -1,5 +1,3 @@
-import mongo from 'https://raw.githubusercontent.com/ker0olos/mongo/v1.0.2/mod.ts';
-
 import { load as Dotenv } from 'https://deno.land/std@0.175.0/dotenv/mod.ts';
 
 // export const colors = {
@@ -18,18 +16,14 @@ const config: {
   deploy: boolean;
   appId?: string;
   publicKey?: string;
-  mongoCluster?: string;
-  mongoEndpoint?: string;
-  mongoApiKey?: string;
+  faunaSecret?: string;
   sentry?: string;
   origin?: string;
 } = {
   deploy: false,
   appId: undefined,
   publicKey: undefined,
-  mongoCluster: undefined,
-  mongoEndpoint: undefined,
-  mongoApiKey: undefined,
+  faunaSecret: undefined,
   sentry: undefined,
   origin: undefined,
 };
@@ -51,17 +45,7 @@ export async function initConfig(): Promise<void> {
 
     config.publicKey = Deno.env.get('PUBLIC_KEY');
 
-    config.mongoCluster = Deno.env.get('MONGO_CLUSTER');
-    config.mongoEndpoint = Deno.env.get('MONGO_ENDPOINT');
-    config.mongoApiKey = Deno.env.get('MONGO_API_KEY');
-
-    if (config.mongoCluster && config.mongoEndpoint && config.mongoApiKey) {
-      mongo.credentials({
-        dataSource: config.mongoCluster,
-        endpoint: config.mongoEndpoint,
-        apiKey: config.mongoApiKey,
-      });
-    }
+    config.faunaSecret = Deno.env.get('FAUNA_SECRET');
 
     config.origin = undefined;
   }

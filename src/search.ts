@@ -67,10 +67,7 @@ export async function media(
         .setTitle(alias[0])
         .setDescription(edge.node.description)
         .setColor(media.images?.[0].color)
-        .setThumbnail({
-          default: true,
-          url: edge.node.images?.[0].url,
-        })
+        .setThumbnail({ url: edge.node.images?.[0].url })
         .setFooter(
           {
             text: [
@@ -158,10 +155,7 @@ function mediaEmbed(media: Media, titles: string[]): discord.Embed {
     .setAuthor({ name: packs.formatToString(media.format) })
     .setDescription(media.description)
     .setColor(media.images?.[0].color)
-    .setImage({
-      default: true,
-      url: media.images?.[0].url,
-    });
+    .setImage({ url: media.images?.[0].url });
 }
 
 function mediaDebugEmbed(
@@ -173,10 +167,7 @@ function mediaDebugEmbed(
     .setTitle(titles.shift())
     .setDescription(titles.join('\n'))
     .setColor(media.images?.[0].color)
-    .setThumbnail({
-      default: true,
-      url: media.images?.[0].url,
-    })
+    .setThumbnail({ url: media.images?.[0].url })
     .addField({ name: 'Id', value: `${media.packId}:${media.id}` })
     .addField({
       name: 'Type',
@@ -293,10 +284,7 @@ function characterEmbed(character: Character): discord.Embed {
     .setTitle(alias[0])
     .setDescription(character.description)
     .setColor(character.images?.[0].color)
-    .setImage({
-      default: true,
-      url: character.images?.[0].url,
-    })
+    .setImage({ url: character.images?.[0].url })
     .setFooter(
       {
         text: [
@@ -324,10 +312,7 @@ function characterDebugEmbed(character: Character): discord.Embed {
     .setTitle(titles.splice(0, 1)[0])
     .setDescription(titles.join('\n'))
     .setColor(character.images?.[0].color)
-    .setThumbnail({
-      default: true,
-      url: character.images?.[0].url,
-    })
+    .setThumbnail({ url: character.images?.[0].url })
     .addField({ name: 'Id', value: `${character.packId}:${character.id}` })
     .addField({
       name: 'Rating',

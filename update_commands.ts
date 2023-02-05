@@ -223,6 +223,11 @@ await put([
     aliases: ['w', 'pull', 'roll'],
   }),
   ...Command({
+    name: 'now',
+    description: 'Check what you can do right now',
+    aliases: ['tu', 'cl', 'checklist'],
+  }),
+  ...Command({
     name: 'force_pull',
     description: 'Force a gacha pull',
     defaultPermission: Permission.ADMINISTRATORS,

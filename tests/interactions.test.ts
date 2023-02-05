@@ -23,6 +23,7 @@ import Rating from '../src/rating.ts';
 import gacha, { Pull } from '../src/gacha.ts';
 
 import * as search from '../src/search.ts';
+import * as user from '../src/user.ts';
 
 import {
   Character,
@@ -3128,6 +3129,117 @@ Deno.test('music', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+    }
+  });
+});
+
+Deno.test('user', async (test) => {
+  await test.step('now with pulls', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              getUserInventory: {
+                availablePulls: 5,
+                lastPull: undefined,
+              },
+            },
+          })),
+      } as any),
+    );
+
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await user.now({
+        userId: 'guild',
+        guildId: 'user',
+        channelId: 'channel',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [
+            {
+              footer: {
+                text: 'Available Pulls',
+              },
+              image: {
+                url: 'http://localhost:8000/i/5',
+              },
+              type: 'rich',
+            },
+          ],
+          components: [],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      delete config.origin;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('now with no pulls', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              getUserInventory: {
+                availablePulls: 0,
+                lastPull: time.toISOString(),
+              },
+            },
+          })),
+      } as any),
+    );
+
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await user.now({
+        userId: 'guild',
+        guildId: 'user',
+        channelId: 'channel',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [
+            {
+              footer: {
+                text: 'Available Pulls',
+              },
+              image: {
+                url: 'http://localhost:8000/i/0',
+              },
+              type: 'rich',
+            },
+            { type: 'rich', description: 'Refill <t:1675570906:R>' },
+          ],
+          components: [],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      delete config.origin;
+
+      fetchStub.restore();
     }
   });
 });

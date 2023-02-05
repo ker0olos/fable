@@ -7,6 +7,7 @@ const API = `https://discord.com/api/v10`;
 
 const splitter = '=';
 
+export const empty = '\u200B';
 export const join = (...args: string[]): string => {
   return args.join(splitter);
 };
@@ -85,8 +86,8 @@ export class Interaction<Options> {
   token: string;
   type: InteractionType;
 
-  guildId?: string;
-  channelId?: string;
+  guildId: string;
+  channelId: string;
   targetId?: string;
 
   message?: unknown;
@@ -108,7 +109,7 @@ export class Interaction<Options> {
   // user?: User;
 
   /** member is sent when the interaction is invoked in a guild */
-  member?: {
+  member: {
     nick?: string;
     avatar: string;
     user: User;
@@ -127,8 +128,8 @@ export class Interaction<Options> {
       // id: string;
       name: string;
       type: string;
-      guild_id?: string;
-      channel_id?: string;
+      guild_id: string;
+      channel_id: string;
       // target_id?: string;
       // resolved?: unknown[];
       options?: {
@@ -398,30 +399,46 @@ export class Embed {
   setImage(image: {
     url?: string;
     default?: boolean;
-    disableProxy?: boolean;
-    preferredSize?: ImageSize;
+    proxy?: boolean;
+    size?: ImageSize;
   }): Embed {
+    image.default = image.default ?? true;
+    image.proxy = image.proxy ?? true;
+
     if (image.url || image.default) {
-      if (config.origin && image.url?.startsWith(config.origin)) {
+      if (
+        (config.origin && image.url?.startsWith(config.origin) ||
+          (!image.default && !image.proxy))
+      ) {
         this.#data.image = {
-          url: image.url,
+          // deno-lint-ignore no-non-null-assertion
+          url: image.url!,
         };
       } else {
         this.#data.image = {
           url: `${config.origin}/external/${
             encodeURIComponent(image.url ?? '')
-          }${image.preferredSize === ImageSize.Medium ? '?size=medium' : ''}`,
+          }${image.size === ImageSize.Medium ? '?size=medium' : ''}`,
         };
       }
     }
     return this;
   }
 
-  setThumbnail(thumbnail: { url?: string; default?: boolean }): Embed {
+  setThumbnail(
+    thumbnail: { url?: string; default?: boolean; proxy?: boolean },
+  ): Embed {
+    thumbnail.default = thumbnail.default ?? true;
+    thumbnail.proxy = thumbnail.proxy ?? true;
+
     if (thumbnail.url || thumbnail.default) {
-      if (config.origin && thumbnail.url?.startsWith(config.origin)) {
+      if (
+        (config.origin && thumbnail.url?.startsWith(config.origin) ||
+          (!thumbnail.default && !thumbnail.proxy))
+      ) {
         this.#data.thumbnail = {
-          url: thumbnail.url,
+          // deno-lint-ignore no-non-null-assertion
+          url: thumbnail.url!,
         };
       } else {
         this.#data.thumbnail = {

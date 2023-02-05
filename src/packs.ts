@@ -160,7 +160,7 @@ function embed(
     .setUrl(manifest.url)
     .setDescription(manifest.description)
     .setAuthor({ name: manifest.author })
-    .setThumbnail({ url: manifest.image })
+    .setThumbnail({ url: manifest.image, default: false, proxy: false })
     .setTitle(manifest.title ?? manifest.id);
 
   if (!manifest.type) {

@@ -13,6 +13,7 @@ import {
 import * as discord from './discord.ts';
 
 import * as search from './search.ts';
+import * as user from './user.ts';
 
 import packs from './packs.ts';
 import utils from './utils.ts';
@@ -176,11 +177,26 @@ const handler = async (r: Request) => {
               search: query,
             })).send();
           }
+          case 'tu':
+          case 'cl':
+          case 'now':
+          case 'checklist': {
+            return (await user.now({
+              userId: member.user.id,
+              guildId,
+              channelId,
+            })).send();
+          }
           case 'w':
           case 'roll':
           case 'pull':
           case 'gacha':
-            return gacha.start({ token, member, guildId, channelId }).send();
+            return gacha.start({
+              token,
+              userId: member.user.id,
+              guildId,
+              channelId,
+            }).send();
           case 'force_pull':
             return gacha.start({ token, id: options['id'] as string }).send();
           case 'packs_builtin':
@@ -291,7 +307,7 @@ serve({
   '/': handler,
   '/dev': handler,
   '/external/*': utils.proxy,
-  '/text/:text': utils.text,
+  '/i/:text': utils.text,
   '/schema': serveStatic('../schema.json', {
     baseUrl: import.meta.url,
     intervene: cache(86400, 'application/schema+json'),

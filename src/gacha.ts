@@ -180,12 +180,13 @@ async function rngPull(): Promise<Pull> {
  * start the pull's animation
  */
 function start(
-  { token, id }: {
+  { token, id, messageType }: {
     id?: string;
     token: string;
-    member?: discord.Member;
+    userId?: string;
     guildId?: string;
     channelId?: string;
+    messageType?: discord.MessageType;
   },
 ): discord.Message {
   (id ? gacha.forcePull(id) : gacha.rngPull())
@@ -199,8 +200,7 @@ function start(
           new discord.Embed()
             .setTitle(utils.wrap(mediaTitles[0]))
             .setImage({
-              default: true,
-              preferredSize: ImageSize.Medium,
+              size: ImageSize.Medium,
               url: media.images?.[0].url,
             }),
         );
@@ -232,8 +232,7 @@ function start(
               value: `**${utils.wrap(characterAliases[0])}**`,
             })
             .setImage({
-              default: true,
-              preferredSize: ImageSize.Medium,
+              size: ImageSize.Medium,
               url: pull.character.images?.[0].url,
             }),
         );
@@ -256,7 +255,7 @@ function start(
       await discord.Message.internal(refId).patch(token);
     });
 
-  return new discord.Message()
+  return new discord.Message(messageType)
     .addEmbed(
       new discord.Embed().setImage(
         { url: `${config.origin}/assets/spinner.gif` },

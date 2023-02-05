@@ -58,6 +58,7 @@ Deno.test('list', async (test) => {
             {
               'id': 'title',
               'description': 'The title for an anime',
+              'required': true,
               'type': 'string',
             },
           ],
@@ -518,6 +519,7 @@ Deno.test('manifest embeds', async (test) => {
         id: 'id',
         title: 'title',
         type: ManifestType.Builtin,
+        image: 'https://example.com/image',
       },
       total: 2,
     });
@@ -549,6 +551,9 @@ Deno.test('manifest embeds', async (test) => {
           description: undefined,
           title: 'title',
           url: undefined,
+          thumbnail: {
+            url: 'https://example.com/image',
+          },
         }],
       },
     });

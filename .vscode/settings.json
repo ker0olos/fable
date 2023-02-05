@@ -1,6 +1,7 @@
 {
   "files.exclude": {
-    ".git": true
+    ".git": true,
+    "**/__snapshots__": true
   },
   "editor.tabSize": 2,
   "editor.formatOnSave": true,

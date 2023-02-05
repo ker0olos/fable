@@ -19,10 +19,10 @@ type Guild @collection(name: "guild") {
 type Instance @collection(name: "instance") {
   # the main/default instance
   main: Boolean!
-  # the guild where the instance resides
-  guild: Guild! @relation
   # each user has an inventory
   inventories: [Inventory!]! @relation
+  # the guild where the instance resides
+  guild: Guild! @relation
 }
 
 type Inventory @collection(name: "inventory") {
@@ -31,15 +31,25 @@ type Inventory @collection(name: "inventory") {
   # the amount of pulls available to the user
   availablePulls: Int!
   #
+  characters: [Character!]! @relation
+  #
   instance: Instance! @relation
   #
   user: User! @relation
 }
 
+type Character @collection(name: "character") {
+  id: String!
+  #
+  quantity: Int!
+  #
+  inventory: Inventory! @relation
+}
+
 type Query {
   getUserById(id: String!): User! @index(name: "users_discord_id")
   getGuildById(id: String!): Guild! @index(name: "guilds_discord_id")
-
+  #
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")
 }
