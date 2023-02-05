@@ -3156,8 +3156,8 @@ Deno.test('user', async (test) => {
 
     try {
       const message = await user.now({
-        userId: 'guild',
-        guildId: 'user',
+        userId: 'user',
+        guildId: 'guild',
         channelId: 'channel',
       });
 
@@ -3175,7 +3175,19 @@ Deno.test('user', async (test) => {
               type: 'rich',
             },
           ],
-          components: [],
+          components: [
+            {
+              components: [
+                {
+                  custom_id: 'gacha=user',
+                  label: '/gacha',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+              type: 1,
+            },
+          ],
         },
       });
 

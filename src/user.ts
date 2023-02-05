@@ -46,12 +46,12 @@ export async function now({
   );
 
   if (availablePulls > 0) {
-    // TODO
-    // message.addComponents([
-    //   new discord.Component()
-    //     .setId(discord.join('gacha', userId))
-    //     .setLabel('/gacha'),
-    // ]);
+    // `/gacha` shortcut
+    message.addComponents([
+      new discord.Component()
+        .setId(discord.join('gacha', userId))
+        .setLabel('/gacha'),
+    ]);
   } else {
     // deno-lint-ignore no-non-null-assertion
     const refill = new Date(lastPull!);

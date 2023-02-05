@@ -243,6 +243,25 @@ const handler = async (r: Request) => {
               discord.MessageType.Update,
             ).send();
           }
+          case 'gacha': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            if (userId === member.user.id) {
+              return gacha.start({
+                token,
+                userId: member.user.id,
+                guildId,
+                channelId,
+                messageType: discord.MessageType.Update,
+              }).send();
+            } else {
+              return new discord.Message()
+                .setContent('Forbidden')
+                .setFlags(discord.MessageFlags.Ephemeral)
+                .send();
+            }
+          }
           case 'builtin':
           case 'manual': {
             const list = packs.list(customType as ManifestType);
