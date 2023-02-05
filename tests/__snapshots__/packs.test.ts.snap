@@ -1,0 +1,641 @@
+export const snapshot = {};
+
+snapshot[`list > anilist 1`] = `
+{
+  author: "Fable",
+  commands: {
+    next_episode: {
+      description: "Find when the next episode of an anime is airing",
+      options: [
+        {
+          description: "The title for an anime",
+          id: "title",
+          required: true,
+          type: "string",
+        },
+      ],
+      source: "nextEpisode",
+    },
+  },
+  description: "A pack powered by AniList. Contains a huge list of anime and manga characters",
+  id: "anilist",
+  image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png",
+  title: "AniList",
+  type: "builtin",
+  url: "https://anilist.co",
+}
+`;
+
+snapshot[`list > vtubers 1`] = `
+{
+  author: "Fable",
+  characters: {
+    conflicts: [
+      "anilist:206017",
+      "anilist:206013",
+      "anilist:206012",
+      "anilist:206019",
+      "anilist:206020",
+      "anilist:249913",
+      "anilist:249912",
+      "anilist:249911",
+      "anilist:249910",
+      "anilist:249908",
+      "anilist:245363",
+    ],
+    new: [
+      {
+        age: "Between 9,000-10,000",
+        description: \`A descendant of the Lost City of Atlantis, who swam to Earth while saying, "It's so boring down there LOLOLOL!"
+
+Gura bought her clothes (and her shark hat) in the human world and she really loves them. In her spare time, she enjoys talking to marine life.
+
+_Gura is currently the most subscribed Vtuber worldwide, taking the #1 spot from industry pioneer Kizuna AI in 2021. As of January 2023, Gura has over 4 million YouTube subscribers._\`,
+        externalLinks: [
+          {
+            site: "Debut Stream",
+            url: "https://www.youtube.com/watch?v=dBK0gKW61NU",
+          },
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@gawrgura",
+          },
+        ],
+        gender: "Female",
+        id: "gura",
+        images: [
+          {
+            artist: {
+              url: "https://www.pixiv.net/en/users/9212166",
+              username: "ふわり",
+            },
+            url: "https://i.imgur.com/nQFbxwh.jpeg",
+          },
+        ],
+        media: [
+          {
+            mediaId: "holomyth",
+            role: "MAIN",
+          },
+        ],
+        name: {
+          alternative: [
+            "hura",
+            "shork",
+            "goorUH",
+          ],
+          english: "Gawr Gura",
+          native: "がうる・ぐら",
+        },
+        popularity: 4000000,
+      },
+      {
+        description: "The Grim Reaper's first apprentice. Because the world's medical system advanced so dramatically, she became a Vtuber to collect souls. It seems that the lost souls vaporized by the wholesome relationships of Vtubers flow through her as well.
+
+In the end, she's a gentle-hearted girl whose sweet voice contradicts the morbid things she tends to say, as well as her hardcore vocals.",
+        externalLinks: [
+          {
+            site: "Debut Stream",
+            url: "https://www.youtube.com/watch?v=M1_GeIfn48M",
+          },
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@MoriCalliope",
+          },
+        ],
+        gender: "Female",
+        id: "calliope",
+        images: [
+          {
+            artist: {
+              url: "https://www.pixiv.net/en/users/1960050",
+              username: "torino",
+            },
+            url: "https://i.imgur.com/1twuGk6.jpeg",
+          },
+        ],
+        media: [
+          {
+            mediaId: "holomyth",
+            role: "MAIN",
+          },
+        ],
+        name: {
+          alternative: [
+            "calli",
+            "Dad",
+            "Kawaiiope",
+          ],
+          english: "Mori Calliope",
+          native: "森カリオペ",
+        },
+        popularity: 2000000,
+      },
+      {
+        age: "15 mins-4 days on average",
+        description: "An idol whose dream is to become a fast food shop owner. She is a phoenix, NOT a chicken or turkey. (Very important)
+
+She works extremely hard since she will be reborn from ashes anyway.",
+        externalLinks: [
+          {
+            site: "Debut Stream",
+            url: "https://www.youtube.com/watch?v=uObh73QZUvg",
+          },
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@TakanashiKiara",
+          },
+        ],
+        gender: "Female",
+        id: "kiara",
+        images: [
+          {
+            artist: {
+              url: "https://www.pixiv.net/en/users/341433",
+              username: "Nardack",
+            },
+            url: "https://i.imgur.com/vzrtcqP.jpeg",
+          },
+        ],
+        media: [
+          {
+            mediaId: "holomyth",
+            role: "MAIN",
+          },
+        ],
+        name: {
+          alternative: [
+            "kiara",
+            "birb",
+            "kusotori",
+            "Tenchou",
+            "Kiwawa",
+          ],
+          english: "Takanashi Kiara",
+          native: "小鳥遊キアラ",
+        },
+        popularity: 1400000,
+      },
+      {
+        age: "████",
+        description: "Despite her looks, Ina'nis is actually a priestess of the Ancient Ones. One day, she picked up a strange book and then started to gain the power of controlling tentacles. To her, tentacles are just a part in her ordinary life; it has never been a big deal for her. However, her girly mind does want to get them dressed up and stay pretty.
+
+After gaining power, she started hearing Ancient Whispers and Revelations. Hence, she began her VTuber activities to deliver random sanity checks on humanity, as an ordinary girl.",
+        externalLinks: [
+          {
+            site: "Debut Stream",
+            url: "https://www.youtube.com/watch?v=ujCxiHpVYmg",
+          },
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@NinomaeInanis",
+          },
+        ],
+        gender: "Female",
+        id: "ina",
+        images: [
+          {
+            artist: {
+              url: "https://www.pixiv.net/en/users/1104770",
+              username: "Satchel",
+            },
+            url: "https://i.imgur.com/g1D5Gka.jpeg",
+          },
+        ],
+        media: [
+          {
+            mediaId: "holomyth",
+            role: "MAIN",
+          },
+        ],
+        name: {
+          alternative: [
+            "ina",
+            "tako",
+          ],
+          english: "Ninomae Ina'nis",
+          native: "一伊那尓栖",
+        },
+        popularity: 1500000,
+      },
+      {
+        description: \`Amelia heard strange rumors online surrounding hololive: talking foxes, magical squirrels, superhuman dogs, and more. Soon after beginning her investigation on hololive, and just out of interest, she decided to become an idol herself!
+
+She loves to pass her time training her reflexes with FPS games, and challenging herself with puzzle games. "It's elementary, right?"\`,
+        externalLinks: [
+          {
+            site: "Debut Stream",
+            url: "https://www.youtube.com/watch?v=MXrFrkIlE-0",
+          },
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@WatsonAmelia",
+          },
+        ],
+        gender: "Female",
+        id: "watson",
+        images: [
+          {
+            artist: {
+              url: "https://www.pixiv.net/en/users/801146",
+              username: "イコモチ",
+            },
+            url: "https://i.imgur.com/JBC2hCc.jpeg",
+          },
+        ],
+        media: [
+          {
+            mediaId: "holomyth",
+            role: "MAIN",
+          },
+        ],
+        name: {
+          alternative: [
+            "ame",
+            "watson",
+          ],
+          english: "Watson Amelia",
+          native: "ワトソン・アメリア",
+        },
+        popularity: 1700000,
+      },
+      {
+        age: "1.34",
+        description: "None may escape the sands of time and, indeed, most men do not even wish to be freed from her captivity (true). Her emotionally distant personality has never changed over the ages, but she developed a ~~little~~ bit of arrogance and sadistic tendencies along the way...",
+        externalLinks: [
+          {
+            site: "Debut Stream",
+            url: "https://www.youtube.com/watch?v=W3oVrq94mGM",
+          },
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@OuroKronii",
+          },
+        ],
+        gender: "Female",
+        id: "kronii",
+        images: [
+          {
+            artist: {
+              url: "https://www.reddit.com/r/Joshi_Kosei/",
+              username: "Joshi_Kosei",
+            },
+            url: "https://i.redd.it/bbdebvztknm71.png",
+          },
+        ],
+        media: [
+          {
+            mediaId: "holocouncil",
+            role: "MAIN",
+          },
+        ],
+        name: {
+          alternative: [
+            "kronii",
+          ],
+          english: "Ouro Kronii",
+          native: "オーロ・クロニー",
+        },
+        popularity: 800000,
+      },
+      {
+        description: 'For some reason, she seems to project a rather pitiable aura. Perhaps this is in part thanks to the loneliness she has often felt in her ever lasting travels. That is what gave her the idea of making her own friend out of a material that was indispensable to the development of human civilization "paper"',
+        externalLinks: [
+          {
+            site: "Debut Stream",
+            url: "https://www.youtube.com/watch?v=M2gwJ-7s0Zo",
+          },
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@NanashiMumei",
+          },
+        ],
+        gender: "Female",
+        id: "mumei",
+        images: [
+          {
+            artist: {
+              url: "https://www.pixiv.net/en/users/6204916",
+              username: "Akaike",
+            },
+            url: "https://i.imgur.com/1SSyHuC.jpeg",
+          },
+        ],
+        media: [
+          {
+            mediaId: "holocouncil",
+            role: "MAIN",
+          },
+        ],
+        name: {
+          alternative: [
+            "mumei",
+          ],
+          english: "Nanashi Mumei",
+          native: "七詩ムメイ",
+        },
+        popularity: 700000,
+      },
+      {
+        description: "She believes that rules are not the be-all and end-all, which is why she has come to ~~break them all~~ sign a slave contract with Cover.",
+        externalLinks: [
+          {
+            site: "Debut Stream",
+            url: "https://www.youtube.com/watch?v=mJwpVT1WvLg",
+          },
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@HakosBaelz",
+          },
+        ],
+        gender: "Female",
+        id: "chaos",
+        images: [
+          {
+            url: "https://i.imgur.com/KzEStRI.jpg",
+          },
+        ],
+        media: [
+          {
+            mediaId: "holocouncil",
+            role: "MAIN",
+          },
+        ],
+        name: {
+          alternative: [
+            "bae",
+            "chaos",
+          ],
+          english: "Hakos Baelz",
+          native: "ハコス・ベールズ",
+        },
+        popularity: 600000,
+      },
+      {
+        age: "4.54 billion",
+        description: "green
+
+cute...",
+        externalLinks: [
+          {
+            site: "Debut Stream",
+            url: "https://www.youtube.com/watch?v=iICu7NcUK4o",
+          },
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@CeresFauna",
+          },
+        ],
+        gender: "Female",
+        id: "fauna",
+        images: [
+          {
+            artist: {
+              url: "https://www.pixiv.net/en/users/23030728",
+              username: "たくぼん",
+            },
+            url: "https://i.imgur.com/SoLX2B2.jpeg",
+          },
+        ],
+        media: [
+          {
+            mediaId: "holocouncil",
+            role: "MAIN",
+          },
+        ],
+        name: {
+          alternative: [
+            "fauna",
+            "faufau",
+          ],
+          english: "Ceres Fauna",
+          native: "セレス・ファウナ",
+        },
+        popularity: 600000,
+      },
+      {
+        description: "Space is near infinite, and so was Sana's misfortune. 
+
+ _due to luck, horrible management, and bad choices, Sana retired after just 11 months in her carrier, with a subscriber count that even rivals holostars._",
+        externalLinks: [
+          {
+            site: "Debut Stream",
+            url: "https://www.youtube.com/watch?v=3Tv5GyebhQo",
+          },
+          {
+            site: "Retirement Stream",
+            url: "https://www.youtube.com/watch?v=t8vPcBsVIqY",
+          },
+        ],
+        gender: "Female",
+        id: "sana",
+        images: [
+          {
+            url: "https://i.imgur.com/rSmCkhB.jpeg",
+          },
+        ],
+        media: [
+          {
+            mediaId: "holocouncil",
+            role: "MAIN",
+          },
+        ],
+        name: {
+          alternative: [
+            "sana",
+          ],
+          english: "Tsukumo Sana",
+          native: "九十九 佐命",
+        },
+        popularity: 200000,
+      },
+    ],
+  },
+  description: "A pack containing a set of the most famous vtubers",
+  id: "vtubers",
+  media: {
+    conflicts: [
+      "anilist:145478",
+      "anilist:118123",
+      "anilist:139756",
+      "anilist:129963",
+    ],
+    new: [
+      {
+        description: "Hololive Production is a streamer agency under COVER Corporation which encompasses the VTuber groups hololive and holostars, along with the Inonaka Music record label. The agency houses virtual talents whose activities include live streaming on platforms such as YouTube and interacting with fans on Twitter. The talents perform using intricate 2D and 3D avatars provided by the company.
+
+(Source: COVER Corporation)",
+        externalLinks: [
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@hololive",
+          },
+        ],
+        format: "INTERNET",
+        id: "hololive",
+        images: [
+          {
+            color: "#2596be",
+            url: "https://i.imgur.com/y4axd06.jpg",
+          },
+        ],
+        popularity: 50000000,
+        relations: [
+          {
+            mediaId: "holomyth",
+            relation: "CONTAINS",
+          },
+          {
+            mediaId: "holocouncil",
+            relation: "CONTAINS",
+          },
+        ],
+        title: {
+          english: "Hololive",
+          native: "ホロライブ",
+          romaji: "Hololive",
+        },
+        type: "ANIME",
+      },
+      {
+        characters: [
+          {
+            characterId: "gura",
+            role: "MAIN",
+          },
+          {
+            characterId: "calliope",
+            role: "MAIN",
+          },
+          {
+            characterId: "kiara",
+            role: "MAIN",
+          },
+          {
+            characterId: "ina",
+            role: "MAIN",
+          },
+          {
+            characterId: "watson",
+            role: "MAIN",
+          },
+        ],
+        description: "The Myths hail from the worlds of legend.
+
+holoMyth was the first wave of VTubers under Hololive English.",
+        externalLinks: [
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@hololiveEnglish",
+          },
+        ],
+        format: "INTERNET",
+        id: "holomyth",
+        images: [
+          {
+            url: "https://i.imgur.com/0ehLlU5.png",
+          },
+        ],
+        relations: [
+          {
+            mediaId: "holocouncil",
+            relation: "SEQUEL",
+          },
+        ],
+        title: {
+          alternative: [
+            "holoMyth",
+          ],
+          english: "hololive English -Myth-",
+        },
+        trailer: {
+          id: "8c4_22LjGQo",
+          site: "youtube",
+        },
+        type: "ANIME",
+      },
+      {
+        characters: [
+          {
+            characterId: "kronii",
+            role: "MAIN",
+          },
+          {
+            characterId: "mumei",
+            role: "MAIN",
+          },
+          {
+            characterId: "chaos",
+            role: "MAIN",
+          },
+          {
+            characterId: "fauna",
+            role: "MAIN",
+          },
+          {
+            characterId: "sana",
+            role: "MAIN",
+          },
+        ],
+        description: "The Council are a group of divine beings, they are the concepts of the world itself.
+
+holoCouncil is the second wave of VTubers under Hololive English.",
+        externalLinks: [
+          {
+            site: "YouTube",
+            url: "https://www.youtube.com/@hololiveEnglish",
+          },
+        ],
+        format: "INTERNET",
+        id: "holocouncil",
+        images: [
+          {
+            url: "https://i.imgur.com/9ZBYZmj.png",
+          },
+        ],
+        relations: [
+          {
+            mediaId: "holomyth",
+            relation: "PREQUEL",
+          },
+        ],
+        title: {
+          alternative: [
+            "holoCouncil",
+          ],
+          english: "hololive English -Council-",
+        },
+        trailer: {
+          id: "SLnxCyzFgPw",
+          site: "youtube",
+        },
+        type: "ANIME",
+      },
+    ],
+  },
+  title: "Vtubers",
+  type: "builtin",
+}
+`;
+
+snapshot[`list > x 1`] = `
+{
+  author: "Fable",
+  commands: {
+    dice: {
+      description: "Roll a ten-sided dice",
+      options: [
+        {
+          description: "The number of dices to roll",
+          id: "amount",
+          type: "integer",
+        },
+      ],
+      source: "roll",
+    },
+  },
+  description: "A pack containing a set of extra commands",
+  id: "x",
+  type: "builtin",
+}
+`;

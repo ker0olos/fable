@@ -7,67 +7,43 @@ import {
   assertSpyCallArg,
   assertSpyCalls,
   returnsNext,
-  spy,
   stub,
 } from 'https://deno.land/std@0.175.0/testing/mock.ts';
 
 import { assertSnapshot } from 'https://deno.land/std@0.175.0/testing/snapshot.ts';
 
+import {
+  FakeAnd,
+  FakeAppend,
+  FakeClient,
+  FakeCreate,
+  FakeGet,
+  FakeGTE,
+  FakeIf,
+  FakeIndex,
+  FakeIsNonEmpty,
+  FakeLet,
+  FakeLTE,
+  FakeMatch,
+  FakeNow,
+  FakeRef,
+  FakeSelect,
+  FakeTimeDiff,
+  FakeUpdate,
+  FakeVar,
+} from './fql.mock.ts';
+
 import { fql } from './fql.ts';
 
 import {
-  checkPullsForRefill,
   default as Model,
-  getOrCreateGuild,
-  getOrCreateInstance,
-  getOrCreateInventory,
-  getOrCreateUser,
+  getGuild,
+  getInstance,
+  getInventory,
+  getUser,
   PULLS_DEFAULT,
+  refillPulls,
 } from './get_user_inventory.ts';
-
-const FakeIndex = () => stub(fql, 'Index', () => ({}) as any);
-const FakeRef = () => stub(fql, 'Ref', (obj: any) => ({ ref: obj }) as any);
-
-const FakeVar = () => stub(fql, 'Var', (name) => name as any);
-const FakeLet = () => stub(fql, 'Let', (params, cb) => cb(params));
-const FakeGet = () => stub(fql, 'Get', (r) => r);
-const FakeAppend = () => stub(fql, 'Append', (a: any, b: any) => [a, b]);
-
-const FakeGTE = () => stub(fql, 'GTE', (a: any, b: any) => a >= b);
-const FakeLTE = () => stub(fql, 'LTE', (a: any, b: any) => a <= b);
-
-const FakeAnd = () => stub(fql, 'And', (a: any, b: any) => a && b);
-const FakeIsNonEmpty = () =>
-  stub(fql, 'IsNonEmpty', ((match: any) => Boolean(match)) as any);
-
-const FakeSelect = (obj?: any) => stub(fql, 'Select', () => obj);
-const FakeMatch = (obj?: any) =>
-  stub(
-    fql,
-    'Match',
-    (_: any, ...terms: any[]) => obj ? ({ ...obj, ...terms }) : undefined,
-  );
-
-const FakeNow = () => stub(fql, 'Now', () => new Date() as any);
-const FakeTimeDiff = () =>
-  stub(fql, 'TimeDiffInMinutes', (a: any, b: any) => {
-    const diff = b.getTime() - a.getTime();
-    return (diff / 60000);
-  });
-
-const FakeCreate = () => stub(fql, 'Create', (_: any, data: any) => data);
-const FakeUpdate = () => stub(fql, 'Update', (_: any, data: any) => data);
-
-const FakeIf = () =>
-  stub(
-    fql,
-    'If',
-    ((cond: boolean, _then: any, _else: any) => cond ? _then : _else) as any,
-  );
-
-const FakeClient = () => ({
-  query: spy(),
-});
 
 Deno.test('get or create user', async (test) => {
   await test.step('get', () => {
@@ -82,7 +58,7 @@ Deno.test('get or create user', async (test) => {
     });
 
     try {
-      const match = getOrCreateUser('user_id') as any;
+      const match = getUser('user_id') as any;
 
       assertSpyCall(indexStub, 0, {
         args: ['users_discord_id'],
@@ -114,7 +90,7 @@ Deno.test('get or create user', async (test) => {
     const matchStub = FakeMatch();
 
     try {
-      const match = getOrCreateUser('user_id') as any;
+      const match = getUser('user_id') as any;
 
       assertSpyCall(indexStub, 0, {
         args: ['users_discord_id'],
@@ -151,7 +127,7 @@ Deno.test('get or create guild', async (test) => {
     });
 
     try {
-      const match = getOrCreateGuild('guild_id') as any;
+      const match = getGuild('guild_id') as any;
 
       assertSpyCall(indexStub, 0, {
         args: ['guilds_discord_id'],
@@ -183,7 +159,7 @@ Deno.test('get or create guild', async (test) => {
     const matchStub = FakeMatch();
 
     try {
-      const match = getOrCreateGuild('guild_id') as any;
+      const match = getGuild('guild_id') as any;
 
       assertSpyCall(indexStub, 0, {
         args: ['guilds_discord_id'],
@@ -217,7 +193,7 @@ Deno.test('get or create instance', async (test) => {
     const selectStub = FakeSelect({ select: true });
 
     try {
-      const match = getOrCreateInstance('guild' as any) as any;
+      const match = getInstance('guild' as any) as any;
 
       assertSpyCall(selectStub, 0, {
         args: [['data', 'instances'], 'guild' as any],
@@ -251,7 +227,7 @@ Deno.test('get or create instance', async (test) => {
     const updateStub = FakeUpdate();
 
     try {
-      const match = getOrCreateInstance('guild' as any) as any;
+      const match = getInstance('guild' as any) as any;
 
       assertSpyCall(selectStub, 0, {
         args: [['data', 'instances'], 'guild' as any],
@@ -297,7 +273,7 @@ Deno.test('get or create inventory', async (test) => {
     });
 
     try {
-      const match = getOrCreateInventory({
+      const match = getInventory({
         instance: 'instance' as any,
         user: 'user' as any,
       }) as any;
@@ -348,7 +324,7 @@ Deno.test('get or create inventory', async (test) => {
     const updateStub = FakeUpdate();
 
     try {
-      const match = getOrCreateInventory({
+      const match = getInventory({
         instance: 'instance' as any,
         user: 'user' as any,
       }) as any;
@@ -418,7 +394,7 @@ Deno.test('check for pulls refill', async (test) => {
     );
 
     try {
-      const result = checkPullsForRefill('inventory' as any) as any;
+      const result = refillPulls('inventory' as any) as any;
 
       assertSpyCall(selectStub, 0, {
         args: [['data', 'availablePulls'], 'inventory' as any],
@@ -461,7 +437,7 @@ Deno.test('check for pulls refill', async (test) => {
     );
 
     try {
-      const result = checkPullsForRefill('inventory' as any) as any;
+      const result = refillPulls('inventory' as any) as any;
 
       assertSpyCall(selectStub, 0, {
         args: [['data', 'availablePulls'], 'inventory' as any],
@@ -511,7 +487,7 @@ Deno.test('check for pulls refill', async (test) => {
     const updateStub = FakeUpdate();
 
     try {
-      const result = checkPullsForRefill('inventory' as any) as any;
+      const result = refillPulls('inventory' as any) as any;
 
       assertSpyCall(selectStub, 0, {
         args: [['data', 'availablePulls'], 'inventory' as any],

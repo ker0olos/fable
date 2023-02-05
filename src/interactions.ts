@@ -324,19 +324,14 @@ function cache(
 
 serve({
   '/': handler,
-  '/dev': handler,
-  '/external/*': utils.proxy,
   '/i/:text': utils.text,
-  '/schema': serveStatic('../schema.json', {
-    baseUrl: import.meta.url,
-    intervene: cache(86400, 'application/schema+json'),
-  }),
-  '/json/:filename+': serveStatic('../json', {
-    baseUrl: import.meta.url,
-    intervene: cache(86400, 'application/schema+json'),
-  }),
+  '/external/*': utils.proxy,
   '/assets/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,
     intervene: cache(604800),
+  }),
+  '/:filename+': serveStatic('../json', {
+    baseUrl: import.meta.url,
+    intervene: cache(86400, 'application/schema+json'),
   }),
 });

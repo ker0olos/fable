@@ -37,15 +37,9 @@ export interface Inventory {
   user: RefExpr;
 }
 
-export interface Character {
-  id: StringExpr;
-  quantity: NumberExpr;
-  inventory: RefExpr;
-}
-
 export const PULLS_DEFAULT = 5;
 
-export function getOrCreateUser(id: StringExpr): UserExpr {
+export function getUser(id: StringExpr): UserExpr {
   return fql.Let({
     match: fql.Match(fql.Index('users_discord_id'), id),
   }, ({ match }) =>
@@ -61,7 +55,7 @@ export function getOrCreateUser(id: StringExpr): UserExpr {
     ));
 }
 
-export function getOrCreateGuild(id: StringExpr): GuildExpr {
+export function getGuild(id: StringExpr): GuildExpr {
   return fql.Let({
     match: fql.Match(fql.Index('guilds_discord_id'), id),
   }, ({ match }) =>
@@ -77,7 +71,7 @@ export function getOrCreateGuild(id: StringExpr): GuildExpr {
     ));
 }
 
-export function getOrCreateInstance(guild: GuildExpr): InstanceExpr {
+export function getInstance(guild: GuildExpr): InstanceExpr {
   return fql.Let({
     match: fql.Select(['data', 'instances'], guild),
   }, ({ match }) =>
@@ -105,7 +99,7 @@ export function getOrCreateInstance(guild: GuildExpr): InstanceExpr {
     ));
 }
 
-export function getOrCreateInventory(
+export function getInventory(
   { instance, user }: { instance: InstanceExpr; user: UserExpr },
 ): InventoryExpr {
   return fql.Let({
@@ -148,7 +142,7 @@ export function getOrCreateInventory(
     ));
 }
 
-export function checkPullsForRefill(inventory: InventoryExpr): InventoryExpr {
+export function refillPulls(inventory: InventoryExpr): InventoryExpr {
   return fql.If(
     fql.And(
       // if available pulls is less than or equal to 0
@@ -201,15 +195,15 @@ export default function (client: Client): Promise<void>[] {
       lambda: (userId: string, guildId: string) => {
         return fql.Let(
           {
-            user: getOrCreateUser(userId),
-            guild: getOrCreateGuild(guildId),
-            instance: getOrCreateInstance(fql.Var('guild')),
-            inventory: getOrCreateInventory({
+            user: getUser(userId),
+            guild: getGuild(guildId),
+            instance: getInstance(fql.Var('guild')),
+            inventory: getInventory({
               user: fql.Var('user'),
               instance: fql.Var('instance'),
             }),
           },
-          ({ inventory }) => checkPullsForRefill(inventory),
+          ({ inventory }) => refillPulls(inventory),
         );
       },
     }),

@@ -24,11 +24,11 @@ import character from '../json/character.json' assert {
   type: 'json',
 };
 
-import index from '../schema.json' assert {
+import index from '../json/schema.json' assert {
   type: 'json',
 };
 
-import builtin from '../schema.builtin.json' assert {
+import builtin from '../json/schema.builtin.json' assert {
   type: 'json',
 };
 

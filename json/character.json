@@ -1,5 +1,5 @@
 {
-  "$id": "json/character.json",
+  "$id": "character.json",
   "type": "object",
   "additionalProperties": false,
   "properties": {

@@ -1,5 +1,5 @@
 {
-  "$id": "json/image.json",
+  "$id": "image.json",
   "type": "array",
   "items": {
     "type": "object",

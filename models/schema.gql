@@ -39,9 +39,8 @@ type Inventory @collection(name: "inventory") {
 }
 
 type Character @collection(name: "character") {
-  id: String!
   #
-  quantity: Int!
+  id: String!
   #
   inventory: Inventory!
 }

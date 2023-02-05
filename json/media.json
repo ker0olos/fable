@@ -1,5 +1,5 @@
 {
-  "$id": "json/media.json",
+  "$id": "media.json",
   "type": "object",
   "additionalProperties": false,
   "properties": {

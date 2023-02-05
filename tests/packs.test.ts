@@ -11,6 +11,8 @@ import {
   stub,
 } from 'https://deno.land/std@0.175.0/testing/mock.ts';
 
+import { assertSnapshot } from 'https://deno.land/std@0.175.0/testing/snapshot.ts';
+
 import { assertValidManifest } from '../src/validate.ts';
 
 import packs from '../src/packs.ts';
@@ -33,88 +35,40 @@ import {
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 Deno.test('list', async (test) => {
-  await test.step('anilist', () => {
+  await test.step('anilist', async (test) => {
     const builtin = packs.list(ManifestType.Builtin);
 
     const manifest = builtin[0] as Manifest;
 
     assertEquals(builtin.length, 3);
 
-    assertEquals(manifest, {
-      'author': 'Fable',
-      'type': ManifestType.Builtin,
-      'id': 'anilist',
-      'title': 'AniList',
-      'description':
-        'A pack powered by AniList. Contains a huge list of anime and manga characters',
-      'url': 'https://anilist.co',
-      'image':
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png',
-      'commands': {
-        'next_episode': {
-          'source': 'nextEpisode',
-          'description': 'Find when the next episode of an anime is airing',
-          'options': [
-            {
-              'id': 'title',
-              'description': 'The title for an anime',
-              'required': true,
-              'type': 'string',
-            },
-          ],
-        },
-      },
-    });
-
     assertValidManifest(manifest);
+
+    await assertSnapshot(test, manifest);
   });
 
-  await test.step('vtubers', () => {
+  await test.step('vtubers', async (test) => {
     const builtin = packs.list(ManifestType.Builtin);
 
     const manifest = builtin[1] as Manifest;
 
     assertEquals(builtin.length, 3);
 
-    assertObjectMatch(manifest, {
-      'author': 'Fable',
-      'type': ManifestType.Builtin,
-      'description': 'A pack containing a set of the most famous vtubers',
-      'id': 'vtubers',
-      'title': 'Vtubers',
-    });
-
     assertValidManifest(manifest);
+
+    await assertSnapshot(test, manifest);
   });
 
-  await test.step('x', () => {
+  await test.step('x', async (test) => {
     const builtin = packs.list(ManifestType.Builtin);
 
     const manifest = builtin[2] as Manifest;
 
     assertEquals(builtin.length, 3);
 
-    assertEquals(manifest, {
-      'author': 'Fable',
-      'type': ManifestType.Builtin,
-      'id': 'x',
-      'description': 'A pack containing a set of extra commands',
-      'commands': {
-        'dice': {
-          'source': 'roll',
-          'description': 'Roll a ten-sided dice',
-          'options': [
-            {
-              'id': 'amount',
-              'description': 'The number of dices to roll',
-              'type': 'integer',
-            },
-          ],
-        },
-      },
-    });
-
     assertValidManifest(manifest);
+
+    await assertSnapshot(test, manifest);
   });
 
   await test.step('manual', () => {

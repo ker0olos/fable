@@ -63,7 +63,7 @@
           "type": "array",
           "description": "A list of new media to add",
           "items": {
-            "allOf": [{ "$ref": "json/media.json" }],
+            "allOf": [{ "$ref": "media.json" }],
             "required": ["id", "title", "type", "format"]
           }
         },
@@ -87,7 +87,7 @@
           "type": "array",
           "description": "A list of new characters to add",
           "items": {
-            "allOf": [{ "$ref": "json/character.json" }],
+            "allOf": [{ "$ref": "character.json" }],
             "required": ["id", "name"]
           }
         },
