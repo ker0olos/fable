@@ -677,6 +677,7 @@ export class Message {
     },
   ): Message {
     page = page ?? 0;
+
     components = components ?? [];
 
     const message = new Message();

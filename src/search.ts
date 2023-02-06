@@ -149,7 +149,7 @@ export async function media(
   return message.addComponents([...linksGroup, ...musicGroup]);
 }
 
-function mediaEmbed(media: Media, titles: string[]): discord.Embed {
+export function mediaEmbed(media: Media, titles: string[]): discord.Embed {
   return new discord.Embed()
     .setTitle(titles[0])
     .setAuthor({ name: packs.formatToString(media.format) })
@@ -240,8 +240,10 @@ export async function character(
 }
 
 export async function mediaCharacters(
-  { mediaId, page }: { mediaId: string; page: number },
+  { mediaId, page }: { mediaId: string; page?: number },
 ): Promise<discord.Message> {
+  page = page ?? 0;
+
   const results = await packs.media({ ids: [mediaId] });
 
   // aggregate the media by populating any references to other media/characters
@@ -250,6 +252,7 @@ export async function mediaCharacters(
   // sort characters by popularity
   const characters = packs.sortCharacters(media.characters?.edges);
 
+  // FIXME errors like this will disturb the pages
   if (!characters?.length) {
     throw new Error('404');
   }
@@ -277,7 +280,7 @@ export async function mediaCharacters(
   });
 }
 
-function characterEmbed(character: Character): discord.Embed {
+export function characterEmbed(character: Character): discord.Embed {
   const alias = packs.aliasToArray(character.name);
 
   return new discord.Embed()

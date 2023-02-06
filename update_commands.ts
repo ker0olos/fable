@@ -218,14 +218,19 @@ await put([
     ],
   }),
   ...Command({
-    name: 'gacha',
-    description: 'Start a gacha pull',
-    aliases: ['w', 'pull', 'roll'],
-  }),
-  ...Command({
     name: 'now',
     description: 'Check what you can do right now',
-    aliases: ['tu', 'cl', 'checklist'],
+    aliases: ['checklist', 'cl', 'tu'],
+  }),
+  ...Command({
+    name: 'gacha',
+    description: 'Start a gacha pull',
+    aliases: ['pull', 'roll', 'w'],
+  }),
+  ...Command({
+    name: 'collection',
+    description: 'View all the characters in your possession',
+    aliases: ['list', 'harem', 'mm'],
   }),
   ...Command({
     name: 'force_pull',

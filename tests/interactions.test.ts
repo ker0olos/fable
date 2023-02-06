@@ -2207,7 +2207,6 @@ Deno.test('characters', async (test) => {
     try {
       const message = await search.mediaCharacters({
         mediaId: 'anilist:1',
-        page: 0,
       });
 
       assertEquals(message.json(), {
@@ -2247,7 +2246,6 @@ Deno.test('characters', async (test) => {
       packs.clear();
     }
   });
-  ``;
 
   await test.step('external links', async () => {
     const media: AniListMedia = {
@@ -2303,7 +2301,6 @@ Deno.test('characters', async (test) => {
     try {
       const message = await search.mediaCharacters({
         mediaId: 'anilist:1',
-        page: 0,
       });
 
       assertEquals(message.json(), {
@@ -3037,6 +3034,105 @@ Deno.test('gacha', async (test) => {
       timeStub.restore();
       pullStub.restore();
       fetchStub.restore();
+    }
+  });
+});
+
+Deno.test('collection', async (test) => {
+  await test.step('normal', async () => {
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'title',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: '2',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            title: {
+              english: 'name',
+            },
+            popularity: 10,
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                getUserInventory: {
+                  characters: [{ id: 'anilist:1' }],
+                },
+              },
+            })),
+        } as any,
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                Page: {
+                  characters: [character],
+                },
+              },
+            })),
+        } as any,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await user.collection({
+        userId: '1',
+        guildId: '2',
+        channelId: '3',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              color: undefined,
+              description: undefined,
+              image: {
+                url: 'undefined/external/',
+              },
+              title: 'title',
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
     }
   });
 });

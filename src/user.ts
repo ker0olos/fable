@@ -1,8 +1,14 @@
 import { gql, request } from './graphql.ts';
 
+import config, { faunaUrl } from './config.ts';
+
+import { characterEmbed } from './search.ts';
+
+import packs from './packs.ts';
+
 import * as discord from './discord.ts';
 
-import config, { faunaUrl } from './config.ts';
+import { Character, DisaggregatedCharacter } from './types.ts';
 
 export async function now({
   userId,
@@ -71,4 +77,76 @@ export async function now({
   }
 
   return message;
+}
+
+export async function collection({
+  userId,
+  guildId,
+  page,
+}: {
+  userId: string;
+  guildId: string;
+  channelId: string;
+  page?: number;
+}): Promise<discord.Message> {
+  page = page ?? 0;
+
+  const query = gql`
+    query ($userId: String!, $guildId: String!) {
+      getUserInventory(userId: $userId, guildId: $guildId) {
+        characters {
+          id
+        }
+      }
+    }
+  `;
+
+  const { characters } = (await request<{
+    getUserInventory: { characters: { id: string }[] };
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+    },
+  })).getUserInventory;
+
+  // FIXME errors like this will disturb the pages
+  if (!characters?.length) {
+    throw new Error('404');
+  }
+
+  const results: (Character | DisaggregatedCharacter)[] = await packs
+    .characters({ ids: [characters[page].id] });
+
+  // FIXME errors like this will disturb the pages
+  if (!results.length) {
+    throw new Error('404');
+  }
+
+  const character = await packs.aggregate<Character>({ character: results[0] });
+
+  const group: discord.Component[] = [];
+
+  // link components
+  character.externalLinks
+    ?.forEach((link) => {
+      const component = new discord.Component()
+        .setLabel(link.site)
+        .setUrl(link.url);
+
+      group.push(component);
+    });
+
+  return discord.Message.page({
+    page,
+    total: characters.length,
+    id: discord.join('collection', userId),
+    embeds: [characterEmbed(character)],
+    components: group,
+  });
 }

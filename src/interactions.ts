@@ -207,6 +207,17 @@ const handler = async (r: Request) => {
             return gacha
               .start({ token, characterId: options['id'] as string })
               .send();
+          case 'collection':
+          case 'list':
+          case 'harem':
+          case 'mm': {
+            return (await user.collection({
+              userId: member.user.id,
+              guildId,
+              channelId,
+            }))
+              .send();
+          }
           case 'packs_builtin':
           case 'packs_manual': {
             // deno-lint-ignore no-non-null-assertion
@@ -253,10 +264,22 @@ const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
+          case 'collection': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const page = parseInt(customValues![1]);
+
+            return (await user.collection({ userId, guildId, channelId, page }))
+              .setType(discord.MessageType.Update)
+              .send();
+          }
           case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
+            // verify user id
             if (userId === member.user.id) {
               return gacha
                 .start({
