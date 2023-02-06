@@ -25,6 +25,8 @@ export type IndexExpr = TypedExpr<'index'>;
 export type MatchExpr = TypedExpr<'match'>;
 export type RefExpr = TypedExpr<'ref'>;
 
+export type ResponseExpr = TypedExpr<'response'>;
+
 export type UserExpr = TypedExpr<'user'>;
 export type GuildExpr = TypedExpr<'guild'>;
 export type InstanceExpr = TypedExpr<'instance'>;

@@ -1,9 +1,9 @@
 import {
-  CharacterExpr,
   Client,
   fql,
   InstanceExpr,
   InventoryExpr,
+  ResponseExpr,
   StringExpr,
   UserExpr,
 } from './fql.ts';
@@ -19,14 +19,14 @@ import {
 
 import { Character } from './get_user_characters.ts';
 
-function addCharacter(
+export function addCharacter(
   { characterId, inventory, instance, user }: {
     characterId: StringExpr;
     inventory: InventoryExpr;
     instance: InstanceExpr;
     user: UserExpr;
   },
-): CharacterExpr {
+): ResponseExpr {
   return fql.Let({
     match: fql.Match(
       fql.Index('characters_instance_id'),

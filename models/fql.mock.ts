@@ -4,7 +4,8 @@ import { spy, stub } from 'https://deno.land/std@0.175.0/testing/mock.ts';
 
 import { fql } from './fql.ts';
 
-export const FakeIndex = () => stub(fql, 'Index', () => ({}) as any);
+export const FakeIndex = () => stub(fql, 'Index', (name) => name as any);
+
 export const FakeRef = () =>
   stub(fql, 'Ref', (obj: any) => ({ ref: obj }) as any);
 
@@ -15,6 +16,9 @@ export const FakeAppend = () => stub(fql, 'Append', (a: any, b: any) => [a, b]);
 
 export const FakeGTE = () => stub(fql, 'GTE', (a: any, b: any) => a >= b);
 export const FakeLTE = () => stub(fql, 'LTE', (a: any, b: any) => a <= b);
+
+export const FakeSubtract = () =>
+  stub(fql, 'Subtract', (a: any, b: any) => a - b);
 
 export const FakeAnd = () => stub(fql, 'And', (a: any, b: any) => a && b);
 export const FakeIsNonEmpty = () =>
@@ -28,7 +32,9 @@ export const FakeMatch = (obj?: any) =>
     (_: any, ...terms: any[]) => obj ? ({ ...obj, ...terms }) : undefined,
   );
 
-export const FakeNow = () => stub(fql, 'Now', () => new Date() as any);
+export const FakeNow = (date?: Date) =>
+  stub(fql, 'Now', () => date ?? new Date() as any);
+
 export const FakeTimeDiff = () =>
   stub(fql, 'TimeDiffInMinutes', (a: any, b: any) => {
     const diff = b.getTime() - a.getTime();
