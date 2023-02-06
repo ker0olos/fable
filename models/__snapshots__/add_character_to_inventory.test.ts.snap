@@ -173,6 +173,16 @@ snapshot[`model 2`] = `
                                                                     select: "ref",
                                                                   },
                                                                 },
+                                                                inventory: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "inventory",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
                                                                 user: Expr {
                                                                   raw: {
                                                                     from: Expr {
@@ -1091,6 +1101,16 @@ snapshot[`model 2`] = `
                                                                     from: Expr {
                                                                       raw: {
                                                                         var: "instance",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                                inventory: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "inventory",
                                                                       },
                                                                     },
                                                                     select: "ref",

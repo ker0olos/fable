@@ -65,12 +65,12 @@ function Append(ref: RefExpr, items: Expr): RefExpr[] {
   return _fql.Append(ref, items) as unknown as RefExpr[];
 }
 
-function Map<T = Expr>(
-  refOrMatch: RefExpr | MatchExpr,
-  map: (ref: RefExpr) => Expr,
-): T[] {
-  return _fql.Map(refOrMatch, map) as unknown as T[];
-}
+// function Map<T = Expr>(
+//   refOrMatch: RefExpr | MatchExpr,
+//   map: (ref: RefExpr) => Expr,
+// ): T[] {
+//   return _fql.Map(refOrMatch, map) as unknown as T[];
+// }
 
 function IsNonEmpty(expr: Expr): BooleanExpr {
   return _fql.IsNonEmpty(expr);
@@ -138,34 +138,34 @@ function Null(): NullExpr {
   return null as unknown as NullExpr;
 }
 
-function Pagination(
-  match: MatchExpr,
-  size?: NumberExpr,
-  after?: StringExpr,
-  before?: StringExpr,
-): Expr {
-  // "fql" is intended to be "fql" not "_fql"
-  // since this is a logic unique to this script
-  // not a built-in fql function
-  // and should follow mocks
+// function Pagination(
+//   match: MatchExpr,
+//   size?: NumberExpr,
+//   after?: StringExpr,
+//   before?: StringExpr,
+// ): Expr {
+//   // "fql" is intended to be "fql" not "_fql"
+//   // since this is a logic unique to this script
+//   // not a built-in fql function
+//   // and should follow mocks
 
-  return fql.If(
-    fql.Equals(size, fql.Null()),
-    _fql.Paginate(match),
-    fql.If(
-      fql.Equals(before, fql.Null()),
-      fql.If(
-        fql.Equals(after, fql.Null()),
-        // deno-lint-ignore no-non-null-assertion
-        _fql.Paginate(match, { size: size! }),
-        // deno-lint-ignore no-non-null-assertion
-        _fql.Paginate(match, { size: size!, after }),
-      ),
-      // deno-lint-ignore no-non-null-assertion
-      _fql.Paginate(match, { size: size!, before }),
-    ),
-  );
-}
+//   return fql.If(
+//     fql.Equals(size, fql.Null()),
+//     _fql.Paginate(match),
+//     fql.If(
+//       fql.Equals(before, fql.Null()),
+//       fql.If(
+//         fql.Equals(after, fql.Null()),
+//         // deno-lint-ignore no-non-null-assertion
+//         _fql.Paginate(match, { size: size! }),
+//         // deno-lint-ignore no-non-null-assertion
+//         _fql.Paginate(match, { size: size!, after }),
+//       ),
+//       // deno-lint-ignore no-non-null-assertion
+//       _fql.Paginate(match, { size: size!, before }),
+//     ),
+//   );
+// }
 
 function Indexer(
   { client, name, unique, collection, terms }: {
@@ -228,11 +228,11 @@ export const fql = {
   IsNonEmpty,
   Let,
   LTE,
-  Map,
+  // Map,
   Match,
   Now,
   Null,
-  Pagination,
+  // Pagination,
   Ref,
   Resolver,
   Select,

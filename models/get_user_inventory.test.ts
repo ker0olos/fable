@@ -475,8 +475,6 @@ Deno.test('check for pulls refill', async (test) => {
     try {
       const result = refillPulls({ inventory: 'inventory' as any }) as any;
 
-      console.log(selectStub.calls[0]);
-
       assertSpyCall(selectStub, 0, {
         args: [['data', 'availablePulls'], 'inventory' as any],
       });

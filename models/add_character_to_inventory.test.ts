@@ -204,6 +204,9 @@ Deno.test('add character to inventory', async (test) => {
           'character' as any,
           {
             id: 'character_id',
+            inventory: {
+              ref: 'inventory',
+            },
             user: {
               ref: 'user',
             },

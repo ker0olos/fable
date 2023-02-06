@@ -36,6 +36,8 @@ type Inventory @collection(name: "inventory") {
   # the amount of pulls available to the user
   availablePulls: Int!
   #
+  characters: [Character!]!
+  #
   instance: Instance!
   #
   user: User!
@@ -44,6 +46,8 @@ type Inventory @collection(name: "inventory") {
 type Character @collection(name: "character") {
   #
   id: String!
+  #
+  inventory: Inventory!
   #
   instance: Instance!
   #
@@ -54,10 +58,6 @@ type Query {
   #
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")
-
-  #
-  getUserCharacters(userId: String!, guildId: String!): [Character!]
-    @resolver(name: "get_user_characters", paginated: true)
 }
 
 type Mutation {

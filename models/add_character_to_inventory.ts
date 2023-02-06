@@ -3,6 +3,7 @@ import {
   fql,
   InstanceExpr,
   InventoryExpr,
+  RefExpr,
   ResponseExpr,
   StringExpr,
   UserExpr,
@@ -17,7 +18,12 @@ import {
   refillPulls,
 } from './get_user_inventory.ts';
 
-import { Character } from './get_user_characters.ts';
+export interface Character {
+  id: StringExpr;
+  inventory: RefExpr;
+  instance: RefExpr;
+  user: RefExpr;
+}
 
 export function addCharacter(
   { characterId, inventory, instance, user }: {
@@ -46,6 +52,7 @@ export function addCharacter(
           {
             createdCharacter: fql.Create<Character>('character', {
               id: characterId,
+              inventory: fql.Ref(inventory),
               instance: fql.Ref(instance),
               user: fql.Ref(user),
             }),
