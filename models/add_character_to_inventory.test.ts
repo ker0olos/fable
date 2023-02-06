@@ -44,6 +44,9 @@ Deno.test('add character to inventory', async (test) => {
     const refStub = FakeRef();
     const indexStub = FakeIndex();
     const isNonEmptyStub = FakeIsNonEmpty();
+    const lteStub = FakeLTE();
+
+    const selectStub = FakeSelect(1);
 
     const matchStub = FakeMatch({ match: true });
 
@@ -69,7 +72,8 @@ Deno.test('add character to inventory', async (test) => {
         ],
       });
 
-      assertSpyCallArg(ifStub, 1, 0, true);
+      assertSpyCallArg(ifStub, 0, 0, true);
+      assertSpyCallArg(ifStub, 1, 0, false);
 
       assertEquals(response, {
         ok: false,
@@ -81,6 +85,8 @@ Deno.test('add character to inventory', async (test) => {
       refStub.restore();
       indexStub.restore();
       isNonEmptyStub.restore();
+      selectStub.restore();
+      lteStub.restore();
       matchStub.restore();
     }
   });
@@ -125,12 +131,11 @@ Deno.test('add character to inventory', async (test) => {
         ],
       });
 
-      assertSpyCallArg(ifStub, 1, 0, false);
-      assertSpyCallArg(ifStub, 0, 0, true);
+      assertSpyCallArg(ifStub, 0, 0, false);
 
       assertEquals(response, {
         ok: false,
-        error: 'NO_AVAILABLE_PULLS',
+        error: 'NO_PULLS_AVAILABLE',
       });
     } finally {
       ifStub.restore();

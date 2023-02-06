@@ -12,6 +12,8 @@ export const emotes = {
   noStar: '<:no_star:1061016360190222466>',
 };
 
+export const faunaUrl = 'https://graphql.us.fauna.com/graphql';
+
 const config: {
   deploy: boolean;
   appId?: string;

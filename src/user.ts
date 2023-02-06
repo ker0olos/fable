@@ -2,9 +2,7 @@ import { gql, request } from './graphql.ts';
 
 import * as discord from './discord.ts';
 
-import config from './config.ts';
-
-const url = 'https://graphql.us.fauna.com/graphql';
+import config, { faunaUrl } from './config.ts';
 
 export async function now({
   userId,
@@ -28,7 +26,7 @@ export async function now({
   const { availablePulls, lastPull } = (await request<{
     getUserInventory: { availablePulls: number; lastPull?: string };
   }>({
-    url,
+    url: faunaUrl,
     query,
     headers: {
       'authorization': `Bearer ${config.faunaSecret}`,
@@ -46,8 +44,8 @@ export async function now({
   );
 
   if (availablePulls > 0) {
-    // `/gacha` shortcut
     message.addComponents([
+      // `/gacha` shortcut
       new discord.Component()
         .setId(discord.join('gacha', userId))
         .setLabel('/gacha'),

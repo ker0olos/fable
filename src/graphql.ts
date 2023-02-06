@@ -43,5 +43,5 @@ export async function request<T = any, V = Variables>(
     throw new Error(JSON.stringify(json.errors ?? json));
   }
 
-  return json?.data;
+  return json.data;
 }

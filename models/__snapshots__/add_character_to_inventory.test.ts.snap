@@ -293,32 +293,17 @@ snapshot[`model 2`] = `
                                         },
                                         if: Expr {
                                           raw: {
-                                            lte: Expr {
-                                              raw: [
-                                                Expr {
-                                                  raw: {
-                                                    from: Expr {
-                                                      raw: {
-                                                        var: "inventory",
-                                                      },
-                                                    },
-                                                    select: Expr {
-                                                      raw: [
-                                                        "data",
-                                                        "availablePulls",
-                                                      ],
-                                                    },
-                                                  },
-                                                },
-                                                0,
-                                              ],
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
                                             },
                                           },
                                         },
                                         then: Expr {
                                           raw: {
                                             object: {
-                                              error: "NO_AVAILABLE_PULLS",
+                                              error: "CHARACTER_EXISTS",
                                               ok: false,
                                             },
                                           },
@@ -327,17 +312,32 @@ snapshot[`model 2`] = `
                                     },
                                     if: Expr {
                                       raw: {
-                                        is_nonempty: Expr {
-                                          raw: {
-                                            var: "match",
-                                          },
+                                        lte: Expr {
+                                          raw: [
+                                            Expr {
+                                              raw: {
+                                                from: Expr {
+                                                  raw: {
+                                                    var: "inventory",
+                                                  },
+                                                },
+                                                select: Expr {
+                                                  raw: [
+                                                    "data",
+                                                    "availablePulls",
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                            0,
+                                          ],
                                         },
                                       },
                                     },
                                     then: Expr {
                                       raw: {
                                         object: {
-                                          error: "CHARACTER_EXISTS",
+                                          error: "NO_PULLS_AVAILABLE",
                                           ok: false,
                                         },
                                       },
@@ -1226,32 +1226,17 @@ snapshot[`model 2`] = `
                                         },
                                         if: Expr {
                                           raw: {
-                                            lte: Expr {
-                                              raw: [
-                                                Expr {
-                                                  raw: {
-                                                    from: Expr {
-                                                      raw: {
-                                                        var: "inventory",
-                                                      },
-                                                    },
-                                                    select: Expr {
-                                                      raw: [
-                                                        "data",
-                                                        "availablePulls",
-                                                      ],
-                                                    },
-                                                  },
-                                                },
-                                                0,
-                                              ],
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
                                             },
                                           },
                                         },
                                         then: Expr {
                                           raw: {
                                             object: {
-                                              error: "NO_AVAILABLE_PULLS",
+                                              error: "CHARACTER_EXISTS",
                                               ok: false,
                                             },
                                           },
@@ -1260,17 +1245,32 @@ snapshot[`model 2`] = `
                                     },
                                     if: Expr {
                                       raw: {
-                                        is_nonempty: Expr {
-                                          raw: {
-                                            var: "match",
-                                          },
+                                        lte: Expr {
+                                          raw: [
+                                            Expr {
+                                              raw: {
+                                                from: Expr {
+                                                  raw: {
+                                                    var: "inventory",
+                                                  },
+                                                },
+                                                select: Expr {
+                                                  raw: [
+                                                    "data",
+                                                    "availablePulls",
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                            0,
+                                          ],
                                         },
                                       },
                                     },
                                     then: Expr {
                                       raw: {
                                         object: {
-                                          error: "CHARACTER_EXISTS",
+                                          error: "NO_PULLS_AVAILABLE",
                                           ok: false,
                                         },
                                       },

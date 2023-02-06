@@ -41,13 +41,13 @@ export function addCharacter(
     ),
   }, ({ match }) =>
     fql.If(
-      fql.IsNonEmpty(match),
+      fql.LTE(fql.Select(['data', 'availablePulls'], inventory), 0),
       // deno-lint-ignore no-explicit-any
-      { ok: false, error: 'CHARACTER_EXISTS' } as any,
+      { ok: false, error: 'NO_PULLS_AVAILABLE' } as any,
       fql.If(
-        fql.LTE(fql.Select(['data', 'availablePulls'], inventory), 0),
+        fql.IsNonEmpty(match),
         // deno-lint-ignore no-explicit-any
-        { ok: false, error: 'NO_AVAILABLE_PULLS' } as any,
+        { ok: false, error: 'CHARACTER_EXISTS' } as any,
         fql.Let(
           {
             createdCharacter: fql.Create<Character>('character', {

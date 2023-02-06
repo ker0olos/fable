@@ -2851,7 +2851,7 @@ Deno.test('gacha', async (test) => {
     try {
       const formData = new FormData();
 
-      const message = await gacha.start({ token: 'test_token' });
+      const message = gacha.start({ token: 'test_token' });
 
       assertEquals(message.json(), {
         type: 4,
@@ -2879,6 +2879,8 @@ Deno.test('gacha', async (test) => {
           components: [],
         }),
       );
+
+      await timeStub.tickAsync(0);
 
       assertSpyCalls(fetchStub, 1);
 
@@ -2947,6 +2949,79 @@ Deno.test('gacha', async (test) => {
       assertSpyCalls(fetchStub, 3);
 
       assertSpyCall(fetchStub, 2, {
+        args: [
+          'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+          {
+            method: 'PATCH',
+            body: formData,
+          },
+        ],
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      pullStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('no pulls available', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const pullStub = stub(
+      gacha,
+      'rngPull',
+      // deno-lint-ignore require-await
+      async () => {
+        throw new Error('NO_PULLS_AVAILABLE');
+      },
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const formData = new FormData();
+
+      const message = gacha.start({ token: 'test_token' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      formData.append(
+        'payload_json',
+        JSON.stringify({
+          embeds: [{
+            type: 'rich',
+            description: 'You don\'t have any pulls available!',
+          }],
+          components: [],
+        }),
+      );
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
         args: [
           'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
           {

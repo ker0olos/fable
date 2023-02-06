@@ -87,11 +87,11 @@ const handler = async (r: Request) => {
     switch (type) {
       case discord.InteractionType.Partial: {
         switch (name) {
-          case 'search':
+          case 'search': // search
           case 'anime':
           case 'manga':
           case 'media':
-          case 'music':
+          case 'music': // music also takes the same input
           case 'songs':
           case 'themes': {
             const query = options['query'] as string;
@@ -152,7 +152,8 @@ const handler = async (r: Request) => {
                 ? query.substring(idPrefix.length)
                 : undefined,
               search: query,
-            })).send();
+            }))
+              .send();
           }
           case 'character': {
             const query = options['query'] as string;
@@ -163,7 +164,8 @@ const handler = async (r: Request) => {
                 ? query.substring(idPrefix.length)
                 : undefined,
               search: query,
-            })).send();
+            }))
+              .send();
           }
           case 'music':
           case 'songs':
@@ -175,39 +177,47 @@ const handler = async (r: Request) => {
                 ? query.substring(idPrefix.length)
                 : undefined,
               search: query,
-            })).send();
+            }))
+              .send();
           }
-          case 'tu':
-          case 'cl':
           case 'now':
-          case 'checklist': {
+          case 'checklist':
+          case 'cl':
+          case 'tu': {
             return (await user.now({
               userId: member.user.id,
               guildId,
               channelId,
-            })).send();
+            }))
+              .send();
           }
-          case 'w':
-          case 'roll':
-          case 'pull':
           case 'gacha':
-            return gacha.start({
-              token,
-              userId: member.user.id,
-              guildId,
-              channelId,
-            }).send();
+          case 'pull':
+          case 'roll':
+          case 'w':
+            return gacha
+              .start({
+                token,
+                userId: member.user.id,
+                guildId,
+                channelId,
+              })
+              .send();
           case 'force_pull':
-            return gacha.start({ token, id: options['id'] as string }).send();
+            return gacha
+              .start({ token, characterId: options['id'] as string })
+              .send();
           case 'packs_builtin':
           case 'packs_manual': {
             // deno-lint-ignore no-non-null-assertion
             const list = packs.list(subcommand! as ManifestType);
 
-            return packs.embed({
-              manifest: list[0],
-              total: list.length,
-            }).send();
+            return packs
+              .embed({
+                manifest: list[0],
+                total: list.length,
+              })
+              .send();
           }
           default: {
             // non-standard commands (handled by individual packs)
@@ -228,9 +238,9 @@ const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return (await search.media({ id })).setType(
-              discord.MessageType.Update,
-            ).send();
+            return (await search.media({ id }))
+              .setType(discord.MessageType.Update)
+              .send();
           }
           case 'characters': {
             // deno-lint-ignore no-non-null-assertion
@@ -239,22 +249,24 @@ const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const page = parseInt(customValues![1]);
 
-            return (await search.mediaCharacters({ mediaId, page })).setType(
-              discord.MessageType.Update,
-            ).send();
+            return (await search.mediaCharacters({ mediaId, page }))
+              .setType(discord.MessageType.Update)
+              .send();
           }
           case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
             if (userId === member.user.id) {
-              return gacha.start({
-                token,
-                userId: member.user.id,
-                guildId,
-                channelId,
-                messageType: discord.MessageType.Update,
-              }).send();
+              return gacha
+                .start({
+                  token,
+                  userId: member.user.id,
+                  guildId,
+                  channelId,
+                  messageType: discord.MessageType.Update,
+                })
+                .send();
             } else {
               return new discord.Message()
                 .setContent('Forbidden')
@@ -287,7 +299,8 @@ const handler = async (r: Request) => {
       err?.response?.status === 404 || err?.message === '404' ||
       err?.message?.toLowerCase?.() === 'not found'
     ) {
-      return new discord.Message().setFlags(discord.MessageFlags.Ephemeral)
+      return new discord.Message()
+        .setFlags(discord.MessageFlags.Ephemeral)
         .addEmbed(
           new discord.Embed().setDescription(
             'Found _nothing_ matching that query!',
