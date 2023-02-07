@@ -6,11 +6,6 @@ import _vtubers from '../packs/vtubers/manifest.json' assert {
   type: 'json',
 };
 
-import _x from '../packs/x/manifest.json' assert {
-  type: 'json',
-};
-
-import * as x from '../packs/x/index.ts';
 import * as anilist from '../packs/anilist/index.ts';
 
 import utils from './utils.ts';
@@ -33,7 +28,6 @@ import {
 
 const anilistManifest = _anilist as Manifest;
 const vtubersManifest = _vtubers as Manifest;
-const xManifest = _x as Manifest;
 
 type MediaEdge = { node: Media; relation?: MediaRelation };
 type CharacterEdge = { node: Character; role?: CharacterRole };
@@ -82,16 +76,6 @@ async function commands(
         interaction.options as any,
       );
   }
-
-  if (xManifest.commands && name in xManifest.commands) {
-    const command = xManifest.commands[name];
-    return x.default[command.source as keyof typeof x.default](
-      // deno-lint-ignore no-explicit-any
-      interaction.options as any,
-      // deno-lint-ignore no-non-null-assertion
-      interaction.member!,
-    );
-  }
 }
 
 function list(type?: ManifestType): Manifest[] {
@@ -110,7 +94,6 @@ function list(type?: ManifestType): Manifest[] {
       return [
         anilistManifest,
         vtubersManifest,
-        xManifest,
       ];
     case ManifestType.Manual:
       return [...manual];

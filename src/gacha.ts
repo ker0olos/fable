@@ -47,9 +47,6 @@ const variables = {
   },
 };
 
-/**
- * force a specific pull using an id
- */
 async function forcePull(characterId: string): Promise<Pull> {
   const results = await packs.characters({ ids: [characterId] });
 
@@ -82,9 +79,6 @@ async function forcePull(characterId: string): Promise<Pull> {
   };
 }
 
-/**
- * generate a pool of characters then pull one
- */
 async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
   // rng for popularity range
   const range = utils.rng(gacha.variables.ranges);

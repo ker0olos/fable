@@ -267,5 +267,4 @@ await put([
   }),
   // non-standard commands (pack commands)
   ...Pack('./packs/anilist'),
-  ...Pack('./packs/x'),
 ]);

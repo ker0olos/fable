@@ -617,25 +617,3 @@ holoCouncil is the second wave of VTubers under Hololive English.",
   type: "builtin",
 }
 `;
-
-snapshot[`list > x 1`] = `
-{
-  author: "Fable",
-  commands: {
-    dice: {
-      description: "Roll a ten-sided dice",
-      options: [
-        {
-          description: "The number of dices to roll",
-          id: "amount",
-          type: "integer",
-        },
-      ],
-      source: "roll",
-    },
-  },
-  description: "A pack containing a set of extra commands",
-  id: "x",
-  type: "builtin",
-}
-`;

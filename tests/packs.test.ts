@@ -40,7 +40,7 @@ Deno.test('list', async (test) => {
 
     const manifest = builtin[0] as Manifest;
 
-    assertEquals(builtin.length, 3);
+    assertEquals(builtin.length, 2);
 
     assertValidManifest(manifest);
 
@@ -52,19 +52,7 @@ Deno.test('list', async (test) => {
 
     const manifest = builtin[1] as Manifest;
 
-    assertEquals(builtin.length, 3);
-
-    assertValidManifest(manifest);
-
-    await assertSnapshot(test, manifest);
-  });
-
-  await test.step('x', async (test) => {
-    const builtin = packs.list(ManifestType.Builtin);
-
-    const manifest = builtin[2] as Manifest;
-
-    assertEquals(builtin.length, 3);
+    assertEquals(builtin.length, 2);
 
     assertValidManifest(manifest);
 
