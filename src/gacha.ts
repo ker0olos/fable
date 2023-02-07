@@ -10,7 +10,13 @@ import Rating from './rating.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import { Character, CharacterRole, Media, Mutation } from './types.ts';
+import {
+  Character,
+  CharacterRole,
+  Media,
+  Mutation,
+  PoolInfo,
+} from './types.ts';
 
 import { NoPullsError, PoolError } from './errors.ts';
 
@@ -22,11 +28,8 @@ export type Pull = {
   role?: CharacterRole;
   character: Character;
   media: Media;
-  pool: number;
   rating: Rating;
-  popularityGreater: number;
-  popularityLesser?: number;
-};
+} & PoolInfo;
 
 const lowest = 1000;
 
@@ -72,6 +75,7 @@ async function forcePull(characterId: string): Promise<Pull> {
     role: edge.role,
     popularityGreater: -1,
     popularityLesser: -1,
+    popularityChance: -1,
     rating: new Rating({
       popularity,
       role: character.popularity ? undefined : edge.role,
@@ -81,12 +85,14 @@ async function forcePull(characterId: string): Promise<Pull> {
 
 async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
   // rng for popularity range
-  const range = utils.rng(gacha.variables.ranges);
+  const { value: range, chance: rangeChance } = utils.rng(
+    gacha.variables.ranges,
+  );
 
   // rng for character roll in media[0]
-  const role = range[0] <= lowest
+  const { value: role, chance: roleChance } = range[0] <= lowest
     // include all roles in the pool
-    ? undefined
+    ? { value: undefined, chance: undefined }
     // one specific role for the whole pool
     : utils.rng(gacha.variables.roles);
 
@@ -99,7 +105,14 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
   const inRange = (popularity: number): boolean =>
     popularity >= range[0] && (isNaN(range[1]) || popularity <= range[1]);
 
-  const poolLength = pool.length;
+  const poolInfo: PoolInfo = {
+    pool: pool.length,
+    popularityChance: rangeChance,
+    popularityGreater: range[0],
+    popularityLesser: range[1],
+    roleChance,
+    role,
+  };
 
   while (pool.length > 0) {
     const i = Math.floor(Math.random() * pool.length);
@@ -154,8 +167,28 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
     // add character to user's inventory
     if (userId && guildId) {
       const mutation = gql`
-        mutation ($userId: String!, $guildId: String!, $characterId: String!) {
-          addCharacterToInventory(userId: $userId, guildId: $guildId, characterId: $characterId) {
+        mutation (
+          $userId: String!
+          $guildId: String!
+          $characterId: String!
+          $pool: Int!
+          $popularityChance: Int!
+          $popularityGreater: Int!
+          $popularityLesser: Int!
+          $roleChance: Int
+          $role: String
+        ) {
+          addCharacterToInventory(
+            userId: $userId
+            guildId: $guildId
+            characterId: $characterId
+            pool: $pool
+            popularityChance: $popularityChance
+            popularityGreater: $popularityGreater
+            popularityLesser: $popularityLesser
+            roleChance: $roleChance
+            role: $role
+          ) {
             ok
             error
             inventory {
@@ -177,6 +210,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           userId,
           guildId,
           characterId,
+          ...poolInfo,
         },
       })).addCharacterToInventory;
 
@@ -204,12 +238,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
   }
 
   if (!character || !media || !rating) {
-    throw new PoolError({
-      role: role,
-      pool: poolLength,
-      popularityGreater: range[0],
-      popularityLesser: range[1],
-    });
+    throw new PoolError(poolInfo);
   }
 
   return {
@@ -217,9 +246,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
     media: media,
     rating: rating,
     character: character,
-    pool: poolLength,
-    popularityGreater: range[0],
-    popularityLesser: range[1],
+    ...poolInfo,
   };
 }
 

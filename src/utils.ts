@@ -53,7 +53,7 @@ function sleep(secs: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, secs * 1000));
 }
 
-function rng<T>(dict: { [chance: number]: T }): T {
+function rng<T>(dict: { [chance: number]: T }): { value: T; chance: number } {
   const pool = Object.values(dict);
 
   const chances = Object.keys(dict).map((n) => parseInt(n));
@@ -80,7 +80,10 @@ function rng<T>(dict: { [chance: number]: T }): T {
   shuffle(_);
 
   // use the first item from the shuffled array on the pool
-  return pool[_[0]];
+  return {
+    value: pool[_[0]],
+    chance: chances[_[0]],
+  };
 }
 
 function truncate(

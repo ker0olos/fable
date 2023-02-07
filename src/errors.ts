@@ -1,6 +1,6 @@
 import utils from './utils.ts';
 
-import { CharacterRole } from './types.ts';
+import { PoolInfo } from './types.ts';
 
 export class NoPullsError extends Error {
   refillTimestamp: string;
@@ -14,20 +14,15 @@ export class NoPullsError extends Error {
 }
 
 export class PoolError extends Error {
-  variables: {
-    pool: number;
-    popularityGreater: number;
-    popularityLesser: number;
-    role?: CharacterRole;
-  };
+  info: PoolInfo;
 
-  constructor(variables: typeof PoolError.prototype.variables) {
+  constructor(info: PoolInfo) {
     const message =
       'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables';
 
     super(message);
 
     this.name = 'PoolError';
-    this.variables = variables;
+    this.info = info;
   }
 }

@@ -2825,6 +2825,7 @@ Deno.test('gacha', async (test) => {
     const pull: Pull = {
       media,
       character,
+      popularityChance: 0,
       popularityGreater: 0,
       popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),

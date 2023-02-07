@@ -48,12 +48,36 @@ type Character @collection(name: "character") {
   #
   id: String!
   #
+  history: [History!]!
+  #
   inventory: Inventory!
   #
   instance: Instance!
   #
   user: User!
 }
+
+type History @embedded {
+  gacha: Gacha
+  # trade: Trade
+}
+
+type Gacha @embedded {
+  by: User!
+  pool: Int!
+  #
+  popularityChance: Int!
+  popularityGreater: Int!
+  popularityLesser: Int!
+  #
+  roleChance: Int
+  role: String
+}
+
+# type Trade @embedded {
+#   from: User!
+#   to: User!
+# }
 
 type Query {
   #
@@ -67,5 +91,11 @@ type Mutation {
     userId: String!
     guildId: String!
     characterId: String!
+    pool: Int!
+    popularityChance: Int!
+    popularityGreater: Int!
+    popularityLesser: Int!
+    roleChance: Int
+    role: String
   ): Response! @resolver(name: "add_character_to_inventory")
 }

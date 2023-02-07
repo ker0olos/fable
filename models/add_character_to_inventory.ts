@@ -3,6 +3,7 @@ import {
   fql,
   InstanceExpr,
   InventoryExpr,
+  NumberExpr,
   RefExpr,
   ResponseExpr,
   StringExpr,
@@ -20,17 +21,47 @@ import {
 
 export interface Character {
   id: StringExpr;
+  history: History[];
   inventory: RefExpr;
   instance: RefExpr;
   user: RefExpr;
 }
 
+export interface History {
+  gacha?: {
+    by: RefExpr;
+    pool: NumberExpr;
+    popularityChance: NumberExpr;
+    popularityGreater: NumberExpr;
+    popularityLesser: NumberExpr;
+    roleChance?: NumberExpr;
+    role?: StringExpr;
+  };
+}
+
 export function addCharacter(
-  { characterId, inventory, instance, user }: {
+  {
+    characterId,
+    inventory,
+    instance,
+    user,
+    pool,
+    popularityChance,
+    popularityGreater,
+    popularityLesser,
+    roleChance,
+    role,
+  }: {
     characterId: StringExpr;
     inventory: InventoryExpr;
     instance: InstanceExpr;
     user: UserExpr;
+    pool: NumberExpr;
+    popularityChance: NumberExpr;
+    popularityGreater: NumberExpr;
+    popularityLesser: NumberExpr;
+    roleChance?: NumberExpr;
+    role?: StringExpr;
   },
 ): ResponseExpr {
   return fql.Let({
@@ -59,6 +90,19 @@ export function addCharacter(
               inventory: fql.Ref(inventory),
               instance: fql.Ref(instance),
               user: fql.Ref(user),
+              history: [
+                {
+                  gacha: {
+                    by: fql.Ref(user),
+                    pool,
+                    popularityChance,
+                    popularityGreater,
+                    popularityLesser,
+                    roleChance,
+                    role,
+                  },
+                },
+              ],
             }),
             // update the inventory
             updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
@@ -94,7 +138,17 @@ export default function (client: Client): Promise<void>[] {
     fql.Resolver({
       client,
       name: 'add_character_to_inventory',
-      lambda: (userId: string, guildId: string, characterId: string) => {
+      lambda: (
+        userId: string,
+        guildId: string,
+        characterId: string,
+        pool: number,
+        popularityChance: number,
+        popularityGreater: number,
+        popularityLesser: number,
+        roleChance?: number,
+        role?: string,
+      ) => {
         return fql.Let(
           {
             user: getUser(userId),
@@ -114,6 +168,12 @@ export default function (client: Client): Promise<void>[] {
               inventory,
               instance,
               user,
+              pool,
+              popularityChance,
+              popularityGreater,
+              popularityLesser,
+              roleChance,
+              role,
             }),
         );
       },

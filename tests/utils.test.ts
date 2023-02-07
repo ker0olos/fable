@@ -61,7 +61,7 @@ Deno.test('rng with percentages', async (test) => {
         20: 'c',
       });
 
-      assertEquals(rng, 'b');
+      assertEquals(rng, { value: 'b', chance: 70 });
 
       assertSpyCalls(randomStub, 100);
     });

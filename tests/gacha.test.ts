@@ -102,7 +102,10 @@ Deno.test('filter invalid pools', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -165,7 +168,9 @@ Deno.test('filter invalid pools', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -229,7 +234,9 @@ Deno.test('filter invalid pools', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -293,7 +300,10 @@ Deno.test('filter invalid pools', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -358,7 +368,10 @@ Deno.test('filter invalid pools', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -422,7 +435,10 @@ Deno.test('filter invalid pools', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -491,7 +507,10 @@ Deno.test('filter invalid pools', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -565,7 +584,10 @@ Deno.test('disabled', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -636,7 +658,10 @@ Deno.test('disabled', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -702,7 +727,10 @@ Deno.test('valid pool', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: 0 },
+        { value: variables.role, chance: 0 },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -750,9 +778,11 @@ Deno.test('valid pool', async (test) => {
           type: MediaType.Anime,
         },
         pool: 25,
+        popularityChance: 0,
         popularityGreater: 2000,
         popularityLesser: 3000,
         rating: new Rating({ role: CharacterRole.Main, popularity: 75 }),
+        roleChance: 0,
         role: CharacterRole.Main,
       });
 
@@ -802,7 +832,10 @@ Deno.test('valid pool', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: 0 },
+        { value: variables.role, chance: 0 },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -850,9 +883,11 @@ Deno.test('valid pool', async (test) => {
           type: MediaType.Anime,
         },
         pool: 25,
+        popularityChance: 0,
         popularityGreater: 2000,
         popularityLesser: 3000,
         rating: new Rating({ role: CharacterRole.Main, popularity: 100 }),
+        roleChance: 0,
         role: CharacterRole.Main,
       });
 
@@ -903,7 +938,10 @@ Deno.test('valid pool', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: 0 },
+        { value: variables.role, chance: 0 },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -952,9 +990,11 @@ Deno.test('valid pool', async (test) => {
           type: MediaType.Anime,
         },
         pool: 25,
+        popularityChance: 0,
         popularityGreater: 100_000,
         popularityLesser: 500_000,
         rating: new Rating({ role: CharacterRole.Main, popularity: 500_000 }),
+        roleChance: 0,
         role: CharacterRole.Main,
       });
 
@@ -1009,7 +1049,10 @@ Deno.test('valid pool', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: 0 },
+        { value: variables.role, chance: 0 },
+      ]),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -1057,9 +1100,11 @@ Deno.test('valid pool', async (test) => {
           type: MediaType.Anime,
         },
         pool: 1,
+        popularityChance: 0,
         popularityGreater: 2000,
         popularityLesser: 3000,
         rating: new Rating({ role: CharacterRole.Main, popularity: 2500 }),
+        roleChance: 0,
         role: CharacterRole.Main,
       });
 
@@ -1093,7 +1138,10 @@ Deno.test('adding character to inventory', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
     );
 
     const fetchStub = stub(
@@ -1184,7 +1232,10 @@ Deno.test('adding character to inventory', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
     );
 
     const fetchStub = stub(
@@ -1278,7 +1329,10 @@ Deno.test('adding character to inventory', async (test) => {
     const rngStub = stub(
       utils,
       'rng',
-      returnsNext([variables.range, variables.role]),
+      returnsNext([
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
     );
 
     const fetchStub = stub(

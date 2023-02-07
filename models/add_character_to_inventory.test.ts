@@ -56,6 +56,12 @@ Deno.test('add character to inventory', async (test) => {
         inventory: 'inventory',
         instance: 'instance',
         user: 'user',
+        pool: 1,
+        popularityChance: 1,
+        popularityGreater: 0,
+        popularityLesser: 100,
+        roleChance: 1,
+        role: 'role',
       } as any) as any;
 
       assertSpyCall(indexStub, 0, {
@@ -108,6 +114,12 @@ Deno.test('add character to inventory', async (test) => {
         inventory: 'inventory',
         instance: 'instance',
         user: 'user',
+        pool: 1,
+        popularityChance: 1,
+        popularityGreater: 0,
+        popularityLesser: 100,
+        roleChance: 1,
+        role: 'role',
       } as any) as any;
 
       assertSpyCall(indexStub, 0, {
@@ -181,6 +193,12 @@ Deno.test('add character to inventory', async (test) => {
         inventory: 'inventory',
         instance: 'instance',
         user: 'user',
+        pool: 1,
+        popularityChance: 1,
+        popularityGreater: 0,
+        popularityLesser: 100,
+        roleChance: 1,
+        role: 'role',
       } as any) as any;
 
       assertSpyCall(indexStub, 0, {
@@ -221,6 +239,19 @@ Deno.test('add character to inventory', async (test) => {
             instance: {
               ref: 'instance',
             },
+            history: [{
+              gacha: {
+                by: {
+                  ref: 'user',
+                },
+                pool: 1,
+                popularityChance: 1,
+                popularityGreater: 0,
+                popularityLesser: 100,
+                roleChance: 1,
+                role: 'role',
+              },
+            }],
           },
         ],
       });

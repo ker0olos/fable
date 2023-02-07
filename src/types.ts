@@ -130,6 +130,15 @@ export type Pool = {
   };
 };
 
+export type PoolInfo = {
+  pool: number;
+  popularityChance: number;
+  popularityGreater: number;
+  popularityLesser: number;
+  roleChance?: number;
+  role?: CharacterRole;
+};
+
 export enum ManifestType {
   Builtin = 'builtin',
   Manual = 'manual',
