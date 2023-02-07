@@ -4,11 +4,13 @@ import config, { faunaUrl } from './config.ts';
 
 import { characterEmbed } from './search.ts';
 
+import utils from './utils.ts';
+
 import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
-import { Character, DisaggregatedCharacter } from './types.ts';
+import { Character, DisaggregatedCharacter, Inventory } from './types.ts';
 
 export async function now({
   userId,
@@ -30,7 +32,7 @@ export async function now({
   const message = new discord.Message();
 
   const { availablePulls, lastPull } = (await request<{
-    getUserInventory: { availablePulls: number; lastPull?: string };
+    getUserInventory: Inventory;
   }>({
     url: faunaUrl,
     query,
@@ -57,21 +59,11 @@ export async function now({
         .setLabel('/gacha'),
     ]);
   } else {
-    // deno-lint-ignore no-non-null-assertion
-    const refill = new Date(lastPull!);
-
-    refill.setMinutes(refill.getMinutes() + 60);
-
-    const refillTimestamp = refill.getTime().toString();
-
     message.addEmbed(
       new discord.Embed()
         .setDescription(
-          // discord apparently uses black magic and requires us to cut 3 digits
-          // or go 30,000 years into the future
-          `Refill <t:${
-            refillTimestamp.substring(0, refillTimestamp.length - 3)
-          }:R>`,
+          // deno-lint-ignore no-non-null-assertion
+          `Refill <t:${utils.lastPullToRefillTimestamp(lastPull!)}:R>`,
         ),
     );
   }

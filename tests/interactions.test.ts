@@ -23,6 +23,7 @@ import Rating from '../src/rating.ts';
 import gacha, { Pull } from '../src/gacha.ts';
 
 import * as search from '../src/search.ts';
+
 import * as user from '../src/user.ts';
 
 import {
@@ -37,6 +38,8 @@ import {
 } from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
+
+import { NoPullsError } from '../src/errors.ts';
 
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {
@@ -2978,7 +2981,7 @@ Deno.test('gacha', async (test) => {
       'rngPull',
       // deno-lint-ignore require-await
       async () => {
-        throw new Error('NO_PULLS_AVAILABLE');
+        throw new NoPullsError('2023-02-07T00:53:09.199Z');
       },
     );
 
@@ -3006,10 +3009,13 @@ Deno.test('gacha', async (test) => {
       formData.append(
         'payload_json',
         JSON.stringify({
-          embeds: [{
-            type: 'rich',
-            description: 'You don\'t have any pulls available!',
-          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: '**You don\'t have any pulls available!**',
+            },
+            { type: 'rich', description: 'Refill <t:1675734789:R>' },
+          ],
           components: [],
         }),
       );

@@ -10,7 +10,9 @@ import Rating from './rating.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import { Character, CharacterRole, Media } from './types.ts';
+import { Character, CharacterRole, Media, Mutation } from './types.ts';
+
+import { NoPullsError, PoolError } from './errors.ts';
 
 import * as discord from './discord.ts';
 
@@ -162,15 +164,15 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           addCharacterToInventory(userId: $userId, guildId: $guildId, characterId: $characterId) {
             ok
             error
+            inventory {
+              lastPull
+            }
           }
         }
       `;
 
       const response = (await request<{
-        addCharacterToInventory: {
-          ok: boolean;
-          error?: string;
-        };
+        addCharacterToInventory: Mutation;
       }>({
         url: faunaUrl,
         query: mutation,
@@ -184,13 +186,16 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
         },
       })).addCharacterToInventory;
 
-      switch (response.error) {
-        case 'CHARACTER_EXISTS':
-          continue;
-        case 'NO_PULLS_AVAILABLE':
-          throw new Error(response.error);
-        default:
-          break;
+      if (!response.ok) {
+        switch (response.error) {
+          case 'CHARACTER_EXISTS':
+            continue;
+          case 'NO_PULLS_AVAILABLE':
+            // deno-lint-ignore no-non-null-assertion
+            throw new NoPullsError(response.inventory.lastPull!);
+          default:
+            throw new Error(response);
+        }
       }
     }
 
@@ -205,9 +210,12 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
   }
 
   if (!character || !media || !rating) {
-    throw new Error(
-      'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
-    );
+    throw new PoolError({
+      role: role,
+      pool: poolLength,
+      popularityGreater: range[0],
+      popularityLesser: range[1],
+    });
   }
 
   return {
@@ -288,13 +296,18 @@ function start(
         await message.patch(token);
       })
       .catch(async (err) => {
-        if (err?.message === 'NO_PULLS_AVAILABLE') {
+        if (err instanceof NoPullsError) {
           return await new discord.Message()
             .addEmbed(
               new discord.Embed().setDescription(
-                'You don\'t have any pulls available!',
+                '**You don\'t have any pulls available!**',
               ),
-            ).patch(token);
+            )
+            .addEmbed(
+              new discord.Embed()
+                .setDescription(`Refill <t:${err.refillTimestamp}:R>`),
+            )
+            .patch(token);
         }
 
         if (!config.sentry) {

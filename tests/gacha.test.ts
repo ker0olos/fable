@@ -1229,6 +1229,9 @@ Deno.test('adding character to inventory', async (test) => {
               addCharacterToInventory: {
                 ok: false,
                 error: 'NO_PULLS_AVAILABLE',
+                inventory: {
+                  lastPull: '2023-02-07T01:00:55.222Z',
+                },
               },
             },
           })),

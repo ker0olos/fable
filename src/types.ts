@@ -163,6 +163,20 @@ export interface Manifest {
   type?: ManifestType;
 }
 
+export type Inventory = {
+  lastPull?: string;
+  availablePulls: number;
+};
+
+export type Mutation = { ok: true } | {
+  ok: false;
+  error: 'CHARACTER_EXISTS';
+} | {
+  ok: false;
+  error: 'NO_PULLS_AVAILABLE';
+  inventory: Inventory;
+};
+
 type Command = {
   source: string;
   description: string;

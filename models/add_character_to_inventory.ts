@@ -42,8 +42,12 @@ export function addCharacter(
   }, ({ match }) =>
     fql.If(
       fql.LTE(fql.Select(['data', 'availablePulls'], inventory), 0),
-      // deno-lint-ignore no-explicit-any
-      { ok: false, error: 'NO_PULLS_AVAILABLE' } as any,
+      {
+        ok: false,
+        error: 'NO_PULLS_AVAILABLE',
+        inventory: fql.Ref(inventory),
+        // deno-lint-ignore no-explicit-any
+      } as any,
       fql.If(
         fql.IsNonEmpty(match),
         // deno-lint-ignore no-explicit-any

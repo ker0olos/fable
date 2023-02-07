@@ -209,7 +209,6 @@ const handler = async (r: Request) => {
               .send();
           case 'collection':
           case 'list':
-          case 'harem':
           case 'mm': {
             return (await user.collection({
               userId: member.user.id,

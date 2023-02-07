@@ -136,6 +136,9 @@ Deno.test('add character to inventory', async (test) => {
       assertEquals(response, {
         ok: false,
         error: 'NO_PULLS_AVAILABLE',
+        inventory: {
+          ref: 'inventory',
+        },
       });
     } finally {
       ifStub.restore();

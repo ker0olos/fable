@@ -338,6 +338,16 @@ snapshot[`model 2`] = `
                                       raw: {
                                         object: {
                                           error: "NO_PULLS_AVAILABLE",
+                                          inventory: Expr {
+                                            raw: {
+                                              from: Expr {
+                                                raw: {
+                                                  var: "inventory",
+                                                },
+                                              },
+                                              select: "ref",
+                                            },
+                                          },
                                           ok: false,
                                         },
                                       },
@@ -1271,6 +1281,16 @@ snapshot[`model 2`] = `
                                       raw: {
                                         object: {
                                           error: "NO_PULLS_AVAILABLE",
+                                          inventory: Expr {
+                                            raw: {
+                                              from: Expr {
+                                                raw: {
+                                                  var: "inventory",
+                                                },
+                                              },
+                                              select: "ref",
+                                            },
+                                          },
                                           ok: false,
                                         },
                                       },

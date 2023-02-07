@@ -5,6 +5,7 @@
 type Response @embedded {
   ok: Boolean!
   error: String
+  inventory: Inventory
 }
 
 type User @collection(name: "user") {

@@ -230,7 +230,7 @@ await put([
   ...Command({
     name: 'collection',
     description: 'View all the characters in your possession',
-    aliases: ['list', 'harem', 'mm'],
+    aliases: ['list', 'mm'],
   }),
   ...Command({
     name: 'force_pull',
