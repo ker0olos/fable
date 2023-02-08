@@ -154,10 +154,9 @@ function embed(
     page,
     total,
     id: manifest.type,
-    embeds: [
-      disclaimer,
-      pack,
-    ],
+    message: new discord.Message()
+      .addEmbed(disclaimer)
+      .addEmbed(pack),
   });
 
   return message;

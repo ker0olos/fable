@@ -2,6 +2,22 @@ import utils from './utils.ts';
 
 import { PoolInfo } from './types.ts';
 
+export class NoPermissionError extends Error {
+  constructor() {
+    super('Forbidden');
+
+    this.name = 'NoPermissionError';
+  }
+}
+
+export class NonFetalError extends Error {
+  constructor(message: string) {
+    super(message);
+
+    this.name = 'NonFetalError';
+  }
+}
+
 export class NoPullsError extends Error {
   refillTimestamp: string;
 

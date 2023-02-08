@@ -2,7 +2,7 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import { characterEmbed } from './search.ts';
+import { characterMessage } from './search.ts';
 
 import utils from './utils.ts';
 
@@ -57,6 +57,9 @@ export async function now({
       new discord.Component()
         .setId(discord.join('gacha', userId))
         .setLabel('/gacha'),
+      new discord.Component()
+        .setId(discord.join('collection', userId, '0'))
+        .setLabel('/collection'),
     ]);
   } else {
     message.addEmbed(
@@ -107,38 +110,42 @@ export async function collection({
     },
   })).getUserInventory;
 
-  // FIXME errors like this will disturb the pages
   if (!characters?.length) {
-    throw new Error('404');
+    return new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription('You don\'t have any characters'),
+      )
+      .addComponents([
+        // `/gacha` shortcut
+        new discord.Component()
+          .setId(discord.join('gacha', userId))
+          .setLabel('/gacha'),
+      ]);
   }
 
   const results: (Character | DisaggregatedCharacter)[] = await packs
     .characters({ ids: [characters[page].id] });
 
-  // FIXME errors like this will disturb the pages
+  let message: discord.Message;
+
   if (!results.length) {
-    throw new Error('404');
+    message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription('This character was removed or disabled')
+          .setImage({ default: true }),
+      );
+  } else {
+    message = characterMessage(
+      await packs.aggregate<Character>({ character: results[0] }),
+    );
   }
-
-  const character = await packs.aggregate<Character>({ character: results[0] });
-
-  const group: discord.Component[] = [];
-
-  // link components
-  character.externalLinks
-    ?.forEach((link) => {
-      const component = new discord.Component()
-        .setLabel(link.site)
-        .setUrl(link.url);
-
-      group.push(component);
-    });
 
   return discord.Message.page({
     page,
     total: characters.length,
     id: discord.join('collection', userId),
-    embeds: [characterEmbed(character)],
-    components: group,
+    message,
   });
 }

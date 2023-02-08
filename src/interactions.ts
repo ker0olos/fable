@@ -23,6 +23,8 @@ import config, { initConfig } from './config.ts';
 
 import { Character, ManifestType, Media } from './types.ts';
 
+import { NonFetalError, NoPermissionError } from './errors.ts';
+
 await initConfig();
 
 const idPrefix = 'id=';
@@ -114,7 +116,8 @@ const handler = async (r: Request) => {
 
             return message.send();
           }
-          case 'character': {
+          case 'character':
+          case 'char': {
             const query = options['query'] as string;
 
             const message = new discord.Message(
@@ -155,7 +158,8 @@ const handler = async (r: Request) => {
             }))
               .send();
           }
-          case 'character': {
+          case 'character':
+          case 'char': {
             const query = options['query'] as string;
 
             return (await search.character({
@@ -259,7 +263,7 @@ const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const page = parseInt(customValues![1]);
 
-            return (await search.mediaCharacters({ mediaId, page }))
+            return (await search.characterPages({ mediaId, page }))
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -289,12 +293,9 @@ const handler = async (r: Request) => {
                   messageType: discord.MessageType.Update,
                 })
                 .send();
-            } else {
-              return new discord.Message()
-                .setContent('Forbidden')
-                .setFlags(discord.MessageFlags.Ephemeral)
-                .send();
             }
+
+            throw new NoPermissionError();
           }
           case 'builtin':
           case 'manual': {
@@ -318,8 +319,8 @@ const handler = async (r: Request) => {
     }
   } catch (err) {
     if (
-      err?.response?.status === 404 || err?.message === '404' ||
-      err?.message?.toLowerCase?.() === 'not found'
+      err.response?.status === 404 || err?.message === '404' ||
+      err.message?.toLowerCase?.() === 'not found'
     ) {
       return new discord.Message()
         .setFlags(discord.MessageFlags.Ephemeral)
@@ -328,6 +329,21 @@ const handler = async (r: Request) => {
             'Found _nothing_ matching that query!',
           ),
         ).send();
+    }
+
+    if (err instanceof NonFetalError) {
+      return new discord.Message()
+        .setFlags(discord.MessageFlags.Ephemeral)
+        .addEmbed(
+          new discord.Embed().setDescription(err.message),
+        ).send();
+    }
+
+    if (err instanceof NoPermissionError) {
+      return new discord.Message()
+        .setFlags(discord.MessageFlags.Ephemeral)
+        .setContent('Forbidden')
+        .send();
     }
 
     if (!config.sentry) {

@@ -478,7 +478,7 @@ export class Message {
   #data: {
     flags?: number;
     content?: string;
-    // attachments?: unknown[];
+    // attachments?: any[];
     embeds: unknown[];
     components: unknown[];
     // title?: string;
@@ -550,32 +550,31 @@ export class Message {
     if (this.#data.embeds.length < 3) {
       this.#data.embeds.push(embed.json());
     }
+
     return this;
   }
 
   addComponents(components: Component[]): Message {
-    // the max amount of components allowed is 5
-    if (this.#data.components.length >= 5) {
-      return this;
-    }
+    this.#data.components.push(...components.map((component) => {
+      const comp = component.json();
+      // labels have maximum of 80 characters
+      // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
+      return (comp.label = utils.truncate(comp.label, 80), comp);
+    }));
 
-    if (components.length > 0) {
-      // max amount of items per group is 5
-      // (see https://discord.com/developers/docs/interactions/message-components#action-rows)
-      utils.chunks(components, 5)
-        .forEach((chunk) => {
-          this.#data.components.push({
-            type: 1,
-            components: chunk.map((component) => {
-              const comp = component.json();
+    return this;
+  }
 
-              // labels have maximum of 80 characters
-              // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
-              return (comp.label = utils.truncate(comp.label, 80), comp);
-            }),
-          });
-        });
-    }
+  insertComponents(components: Component[]): Message {
+    this.#data.components = [
+      ...components.map((component) => {
+        const comp = component.json();
+        // labels have maximum of 80 characters
+        // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
+        return (comp.label = utils.truncate(comp.label, 80), comp);
+      }),
+      ...this.#data.components,
+    ];
 
     return this;
   }
@@ -617,11 +616,33 @@ export class Message {
             choices: Object.values(this.#suggestions).slice(0, 25),
           },
         };
-      default:
+      default: {
+        const components: {
+          type: 1;
+          components: unknown[];
+        }[] = [];
+
+        const chunks = utils
+          // max amount of items per group is 5
+          // (see https://discord.com/developers/docs/interactions/message-components#action-rows)
+          .chunks(this.#data.components, 5)
+          .slice(0, 5);
+
+        chunks.forEach((chunk) => {
+          components.push({
+            type: 1,
+            components: chunk,
+          });
+        });
+
         return {
           type: this.#type,
-          data: this.#data,
+          data: {
+            ...this.#data,
+            components,
+          },
         };
+      }
     }
   }
 
@@ -668,19 +689,14 @@ export class Message {
   }
 
   static page(
-    { embeds, components, id, page, total }: {
+    { message, id, page, total }: {
       id: string;
-      embeds: Embed[];
-      components?: Component[];
       page?: number;
       total: number;
+      message: Message;
     },
   ): Message {
     page = page ?? 0;
-
-    components = components ?? [];
-
-    const message = new Message();
 
     const group = [];
 
@@ -706,9 +722,7 @@ export class Message {
       group.push(next);
     }
 
-    embeds.forEach((embed) => message.addEmbed(embed));
-
-    return message.addComponents([...group, ...components]);
+    return message.insertComponents(group);
   }
 
   static internal(id: string): Message {

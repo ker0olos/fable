@@ -189,6 +189,7 @@ await put([
   ...Command({
     name: 'character',
     description: 'Search for a character',
+    aliases: ['char'],
     options: [
       Option({
         name: 'query',
@@ -229,7 +230,7 @@ await put([
   }),
   ...Command({
     name: 'collection',
-    description: 'View all the characters in your possession',
+    description: 'View all your characters',
     aliases: ['list', 'mm'],
   }),
   ...Command({

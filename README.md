@@ -53,7 +53,7 @@ something, we try our best to keep the bot itself term naturel).
 ### Essential Commands
 
 - `/gacha`, `/pull` or `/w`: to start a new gacha pull
-- `/now`, `/cl` or `/tu`: to check what you can do at right now
+- `/now`, `/cl` or `/tu`: to check what you can do right now
 - `/collection`, or `/mm`: to view all your characters
 - `/search`, `/anime` or `/manga`: to search and view a media
 - `/character`: to search for a specific character

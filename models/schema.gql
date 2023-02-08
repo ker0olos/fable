@@ -68,7 +68,7 @@ type Gacha @embedded {
   #
   popularityChance: Int!
   popularityGreater: Int!
-  popularityLesser: Int!
+  popularityLesser: Int
   #
   roleChance: Int
   role: String
@@ -94,7 +94,7 @@ type Mutation {
     pool: Int!
     popularityChance: Int!
     popularityGreater: Int!
-    popularityLesser: Int!
+    popularityLesser: Int
     roleChance: Int
     role: String
   ): Response! @resolver(name: "add_character_to_inventory")

@@ -186,27 +186,29 @@ Deno.test('embeds', async (test) => {
 });
 
 Deno.test('components', async (test) => {
-  const component = new discord.Component();
+  await test.step('general', () => {
+    const component = new discord.Component();
 
-  component
-    .setId('custom_id')
-    .setEmote({
-      id: 'emote_id',
-      name: 'emote_name',
-      animated: true,
-    })
-    .setLabel('label');
+    component
+      .setId('custom_id')
+      .setEmote({
+        id: 'emote_id',
+        name: 'emote_name',
+        animated: true,
+      })
+      .setLabel('label');
 
-  assertEquals(component.json(), {
-    type: 2,
-    style: 2,
-    custom_id: 'custom_id',
-    emoji: {
-      id: 'emote_id',
-      name: 'emote_name',
-      animated: true,
-    },
-    label: 'label',
+    assertEquals(component.json(), {
+      type: 2,
+      style: 2,
+      custom_id: 'custom_id',
+      emoji: {
+        id: 'emote_id',
+        name: 'emote_name',
+        animated: true,
+      },
+      label: 'label',
+    });
   });
 
   await test.step('new with non-default type', () => {
@@ -285,28 +287,6 @@ Deno.test('suggestions', async (test) => {
 });
 
 Deno.test('messages', async (test) => {
-  const message = new discord.Message();
-
-  message.addEmbed(new discord.Embed());
-  message.addComponents([new discord.Component()]);
-
-  assertEquals(message.json(), {
-    type: 4,
-    data: {
-      components: [{
-        type: 1,
-        components: [{
-          type: 2,
-          style: 2,
-          label: undefined,
-        }],
-      }],
-      embeds: [{
-        type: 'rich',
-      }],
-    },
-  });
-
   await test.step('normal', () => {
     const message = new discord.Message();
 
@@ -335,6 +315,73 @@ Deno.test('messages', async (test) => {
     message.setType(discord.MessageType.Pong);
 
     assertEquals(message.json().type, 1);
+  });
+
+  await test.step('adding embeds and components', () => {
+    const message = new discord.Message();
+
+    message.addEmbed(new discord.Embed());
+    message.addComponents([new discord.Component()]);
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        components: [{
+          type: 1,
+          components: [{
+            type: 2,
+            style: 2,
+            label: undefined,
+          }],
+        }],
+        embeds: [{
+          type: 'rich',
+        }],
+      },
+    });
+  });
+
+  await test.step('inserting components', () => {
+    const message = new discord.Message();
+
+    message.addComponents([
+      new discord.Component().setId('1'),
+      new discord.Component().setId('2'),
+    ]);
+
+    message.insertComponents([
+      new discord.Component().setId('3'),
+    ]);
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        components: [{
+          type: 1,
+          components: [
+            {
+              type: 2,
+              style: 2,
+              custom_id: '3',
+              label: undefined,
+            },
+            {
+              type: 2,
+              style: 2,
+              custom_id: '1',
+              label: undefined,
+            },
+            {
+              type: 2,
+              style: 2,
+              custom_id: '2',
+              label: undefined,
+            },
+          ],
+        }],
+        embeds: [],
+      },
+    });
   });
 
   await test.step('send', async () => {
@@ -442,7 +489,8 @@ Deno.test('page messages', async (test) => {
     const message = discord.Message.page({
       id: 'id',
       total: 2,
-      embeds: [new discord.Embed().setTitle('title')],
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
     });
 
     assertEquals(message.json(), {
@@ -476,7 +524,8 @@ Deno.test('page messages', async (test) => {
       id: 'id',
       page: 1,
       total: 2,
-      embeds: [new discord.Embed().setTitle('title')],
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
     });
 
     assertEquals(message.json(), {
@@ -510,7 +559,8 @@ Deno.test('page messages', async (test) => {
       id: 'id',
       page: 1,
       total: 3,
-      embeds: [new discord.Embed().setTitle('title')],
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
     });
 
     assertEquals(message.json(), {
@@ -548,7 +598,8 @@ Deno.test('page messages', async (test) => {
     const message = discord.Message.page({
       id: 'id',
       total: 1,
-      embeds: [new discord.Embed().setTitle('title')],
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
     });
 
     assertEquals(message.json(), {

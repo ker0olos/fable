@@ -10,6 +10,10 @@ import Rating from './rating.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import packs from './packs.ts';
+
+import * as discord from './discord.ts';
+
 import {
   Character,
   CharacterRole,
@@ -19,10 +23,6 @@ import {
 } from './types.ts';
 
 import { NoPullsError, PoolError } from './errors.ts';
-
-import * as discord from './discord.ts';
-
-import packs from './packs.ts';
 
 export type Pull = {
   role?: CharacterRole;
@@ -174,7 +174,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           $pool: Int!
           $popularityChance: Int!
           $popularityGreater: Int!
-          $popularityLesser: Int!
+          $popularityLesser: Int
           $roleChance: Int
           $role: String
         ) {

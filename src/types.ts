@@ -134,7 +134,7 @@ export type PoolInfo = {
   pool: number;
   popularityChance: number;
   popularityGreater: number;
-  popularityLesser: number;
+  popularityLesser?: number;
   roleChance?: number;
   role?: CharacterRole;
 };

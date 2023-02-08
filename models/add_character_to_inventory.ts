@@ -33,7 +33,7 @@ export interface History {
     pool: NumberExpr;
     popularityChance: NumberExpr;
     popularityGreater: NumberExpr;
-    popularityLesser: NumberExpr;
+    popularityLesser?: NumberExpr;
     roleChance?: NumberExpr;
     role?: StringExpr;
   };
@@ -59,7 +59,7 @@ export function addCharacter(
     pool: NumberExpr;
     popularityChance: NumberExpr;
     popularityGreater: NumberExpr;
-    popularityLesser: NumberExpr;
+    popularityLesser?: NumberExpr;
     roleChance?: NumberExpr;
     role?: StringExpr;
   },
@@ -145,7 +145,7 @@ export default function (client: Client): Promise<void>[] {
         pool: number,
         popularityChance: number,
         popularityGreater: number,
-        popularityLesser: number,
+        popularityLesser?: number,
         roleChance?: number,
         role?: string,
       ) => {
