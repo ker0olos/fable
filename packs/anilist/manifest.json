@@ -14,7 +14,8 @@
         {
           "id": "title",
           "description": "The title for an anime",
-          "type": "string"
+          "type": "string",
+          "required": true
         }
       ]
     }

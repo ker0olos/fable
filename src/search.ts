@@ -1,6 +1,10 @@
-import utils from './utils.ts';
+import packs from './packs.ts';
 
 import Rating from './rating.ts';
+
+import utils from './utils.ts';
+
+import * as discord from './discord.ts';
 
 import {
   Character,
@@ -11,9 +15,7 @@ import {
   MediaRelation,
 } from './types.ts';
 
-import packs from './packs.ts';
-
-import * as discord from './discord.ts';
+import { NonFetalError } from './errors.ts';
 
 const musicUrlRegex = /youtube|spotify/;
 const externalUrlRegex =
@@ -36,25 +38,25 @@ export async function media(
   // aggregate the media by populating any references to other media/characters
   const media = await packs.aggregate<Media>({ media: results[0] });
 
+  if (debug) {
+    return mediaDebugMessage(media);
+  }
+
+  return mediaMessage(media);
+}
+
+export function mediaMessage(media: Media): discord.Message {
   const titles = packs.aliasToArray(media.title);
 
   if (!titles?.length) {
     throw new Error('404');
   }
 
-  if (debug) {
-    return new discord.Message().addEmbed(
-      mediaDebugEmbed(media),
-    );
-  }
-
   const linksGroup: discord.Component[] = [];
   const musicGroup: discord.Component[] = [];
 
-  // main media embed
-  const message = new discord.Message().addEmbed(
-    mediaEmbed(media, titles),
-  );
+  const message = new discord.Message()
+    .addEmbed(mediaEmbed(media, titles));
 
   // character embeds
   // sort characters by popularity
@@ -67,10 +69,7 @@ export async function media(
         .setTitle(alias[0])
         .setDescription(edge.node.description)
         .setColor(media.images?.[0].color)
-        .setThumbnail({
-          default: true,
-          url: edge.node.images?.[0].url,
-        })
+        .setThumbnail({ url: edge.node.images?.[0].url })
         .setFooter(
           {
             text: [
@@ -152,31 +151,29 @@ export async function media(
   return message.addComponents([...linksGroup, ...musicGroup]);
 }
 
-function mediaEmbed(media: Media, titles: string[]): discord.Embed {
+export function mediaEmbed(media: Media, titles: string[]): discord.Embed {
   return new discord.Embed()
     .setTitle(titles[0])
     .setAuthor({ name: packs.formatToString(media.format) })
     .setDescription(media.description)
     .setColor(media.images?.[0].color)
-    .setImage({
-      default: true,
-      url: media.images?.[0].url,
-    });
+    .setImage({ url: media.images?.[0].url });
 }
 
-function mediaDebugEmbed(
+export function mediaDebugMessage(
   media: Media | DisaggregatedMedia,
-): discord.Embed {
+): discord.Message | discord.Message {
   const titles = packs.aliasToArray(media.title);
 
-  return new discord.Embed()
+  if (!titles?.length) {
+    throw new Error('404');
+  }
+
+  const embed = new discord.Embed()
     .setTitle(titles.shift())
     .setDescription(titles.join('\n'))
     .setColor(media.images?.[0].color)
-    .setThumbnail({
-      default: true,
-      url: media.images?.[0].url,
-    })
+    .setThumbnail({ url: media.images?.[0].url })
     .addField({ name: 'Id', value: `${media.packId}:${media.id}` })
     .addField({
       name: 'Type',
@@ -193,6 +190,8 @@ function mediaDebugEmbed(
       value: `${utils.comma(media.popularity || 0)}`,
       inline: true,
     });
+
+  return new discord.Message().addEmbed(embed);
 }
 
 export async function character(
@@ -213,9 +212,13 @@ export async function character(
   const character = await packs.aggregate<Character>({ character: results[0] });
 
   if (debug) {
-    return new discord.Message().addEmbed(characterDebugEmbed(character));
+    return characterDebugMessage(character);
   }
 
+  return characterMessage(character);
+}
+
+export function characterMessage(character: Character): discord.Message {
   const message = new discord.Message()
     .addEmbed(characterEmbed(character));
 
@@ -248,55 +251,14 @@ export async function character(
   return message.addComponents(group);
 }
 
-export async function mediaCharacters(
-  { mediaId, page }: { mediaId: string; page: number },
-): Promise<discord.Message> {
-  const results = await packs.media({ ids: [mediaId] });
-
-  // aggregate the media by populating any references to other media/characters
-  const media = await packs.aggregate<Media>({ media: results[0] });
-
-  // sort characters by popularity
-  const characters = packs.sortCharacters(media.characters?.edges);
-
-  if (!characters?.length) {
-    throw new Error('404');
-  }
-
-  const group: discord.Component[] = [];
-
-  const character = characters[page].node;
-
-  // link components
-  character.externalLinks
-    ?.forEach((link) => {
-      const component = new discord.Component()
-        .setLabel(link.site)
-        .setUrl(link.url);
-
-      group.push(component);
-    });
-
-  return discord.Message.page({
-    page,
-    total: characters.length,
-    id: discord.join('characters', mediaId),
-    embeds: [characterEmbed(character)],
-    components: group,
-  });
-}
-
-function characterEmbed(character: Character): discord.Embed {
+export function characterEmbed(character: Character): discord.Embed {
   const alias = packs.aliasToArray(character.name);
 
   return new discord.Embed()
     .setTitle(alias[0])
     .setDescription(character.description)
     .setColor(character.images?.[0].color)
-    .setImage({
-      default: true,
-      url: character.images?.[0].url,
-    })
+    .setImage({ url: character.images?.[0].url })
     .setFooter(
       {
         text: [
@@ -307,7 +269,7 @@ function characterEmbed(character: Character): discord.Embed {
     );
 }
 
-function characterDebugEmbed(character: Character): discord.Embed {
+export function characterDebugMessage(character: Character): discord.Message {
   const media = character.media?.edges?.[0];
 
   const role = media?.role;
@@ -324,10 +286,7 @@ function characterDebugEmbed(character: Character): discord.Embed {
     .setTitle(titles.splice(0, 1)[0])
     .setDescription(titles.join('\n'))
     .setColor(character.images?.[0].color)
-    .setThumbnail({
-      default: true,
-      url: character.images?.[0].url,
-    })
+    .setThumbnail({ url: character.images?.[0].url })
     .addField({ name: 'Id', value: `${character.packId}:${character.id}` })
     .addField({
       name: 'Rating',
@@ -339,7 +298,11 @@ function characterDebugEmbed(character: Character): discord.Embed {
       inline: true,
     })
     .addField({ name: 'Age', value: `${character.age}`, inline: true })
-    .addField({ name: 'Media', value: `${media?.node.id}`, inline: true })
+    .addField({
+      name: 'Media',
+      value: `${media?.node.packId}:${media?.node.id}`,
+      inline: true,
+    })
     .addField({
       name: 'Role',
       value: `${utils.capitalize(role)}`,
@@ -359,7 +322,36 @@ function characterDebugEmbed(character: Character): discord.Embed {
     });
   }
 
-  return embed;
+  return new discord.Message().addEmbed(embed);
+}
+
+export async function characterPages(
+  { mediaId, page }: { mediaId: string; page?: number },
+): Promise<discord.Message> {
+  page = page ?? 0;
+
+  const results = await packs.media({ ids: [mediaId] });
+
+  // aggregate the media by populating any references to other media/characters
+  const media = await packs.aggregate<Media>({ media: results[0] });
+
+  // sort characters by popularity
+  const characters = packs.sortCharacters(media.characters?.edges);
+
+  if (!characters?.length) {
+    throw new NonFetalError(
+      `${packs.aliasToArray(media.title)[0]} contains no characters`,
+    );
+  }
+
+  const character = characterMessage(characters[page].node);
+
+  return discord.Message.page({
+    page,
+    total: characters.length,
+    id: discord.join('characters', mediaId),
+    message: character,
+  });
 }
 
 export async function music(

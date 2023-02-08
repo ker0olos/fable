@@ -6,11 +6,6 @@ import _vtubers from '../packs/vtubers/manifest.json' assert {
   type: 'json',
 };
 
-import _x from '../packs/x/manifest.json' assert {
-  type: 'json',
-};
-
-import * as x from '../packs/x/index.ts';
 import * as anilist from '../packs/anilist/index.ts';
 
 import utils from './utils.ts';
@@ -33,7 +28,6 @@ import {
 
 const anilistManifest = _anilist as Manifest;
 const vtubersManifest = _vtubers as Manifest;
-const xManifest = _x as Manifest;
 
 type MediaEdge = { node: Media; relation?: MediaRelation };
 type CharacterEdge = { node: Character; role?: CharacterRole };
@@ -82,15 +76,6 @@ async function commands(
         interaction.options as any,
       );
   }
-
-  if (xManifest.commands && name in xManifest.commands) {
-    const command = xManifest.commands[name];
-    return x.default[command.source as keyof typeof x.default](
-      // deno-lint-ignore no-explicit-any
-      interaction.options as any,
-      interaction,
-    );
-  }
 }
 
 function list(type?: ManifestType): Manifest[] {
@@ -109,7 +94,6 @@ function list(type?: ManifestType): Manifest[] {
       return [
         anilistManifest,
         vtubersManifest,
-        xManifest,
       ];
     case ManifestType.Manual:
       return [...manual];
@@ -159,7 +143,7 @@ function embed(
     .setUrl(manifest.url)
     .setDescription(manifest.description)
     .setAuthor({ name: manifest.author })
-    .setThumbnail({ url: manifest.image })
+    .setThumbnail({ url: manifest.image, default: false, proxy: false })
     .setTitle(manifest.title ?? manifest.id);
 
   if (!manifest.type) {
@@ -170,10 +154,9 @@ function embed(
     page,
     total,
     id: manifest.type,
-    embeds: [
-      disclaimer,
-      pack,
-    ],
+    message: new discord.Message()
+      .addEmbed(disclaimer)
+      .addEmbed(pack),
   });
 
   return message;
@@ -449,7 +432,7 @@ async function pool({ range, role }: {
   const t = (await utils.readJson<Pool>('packs/anilist/pool.json'))[
     JSON.stringify(range)
   ][
-    role ?? 'ALL'
+    role || 'ALL'
   ];
 
   // add characters from packs

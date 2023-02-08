@@ -1,5 +1,7 @@
 import { load as Dotenv } from 'https://deno.land/std@0.175.0/dotenv/mod.ts';
 
+import { green } from 'https://deno.land/std@0.175.0/fmt/colors.ts';
+
 import { Manifest } from './src/types.ts';
 
 try {
@@ -118,8 +120,8 @@ const Pack = (path: string): CommandsArray => {
         name,
         description,
         options: options.map((opt) => (Option({
-          name,
-          description,
+          name: opt.id,
+          description: opt.description,
           type: Type[opt.type.toUpperCase() as keyof typeof Type],
           optional: !opt.required,
         }))),
@@ -157,21 +159,22 @@ async function put(commands: CommandsArray): Promise<void> {
   if (response.status !== 200) {
     throw new Error(JSON.stringify(await response.json(), undefined, 2));
   } else {
-    console.log(response.status, response.statusText);
+    // console.log(response.status, response.statusText);
+    console.log(green('OK'));
   }
 }
 
-put([
+await put([
   // standard gacha commands
   // uses characters and media from all packs
   ...Command({
     name: 'search',
     aliases: ['anime', 'manga', 'media'],
-    description: 'Search for an anime/manga',
+    description: 'Search for a media',
     options: [
       Option({
         name: 'query',
-        description: 'The title for an anime/manga',
+        description: 'The title of the media',
         autocomplete: true,
         type: Type.STRING,
       }),
@@ -186,10 +189,11 @@ put([
   ...Command({
     name: 'character',
     description: 'Search for a character',
+    aliases: ['char'],
     options: [
       Option({
         name: 'query',
-        description: 'The title of the character',
+        description: 'The name of the character',
         autocomplete: true,
         type: Type.STRING,
       }),
@@ -203,21 +207,31 @@ put([
   }),
   ...Command({
     name: 'music',
-    description: 'Search for the OP/ED and theme songs of an anime',
+    description: 'Look up the music and theme songs of a media',
     aliases: ['songs', 'themes'],
     options: [
       Option({
         name: 'query',
-        description: 'The title for an anime/manga',
+        description: 'The title of the media',
         autocomplete: true,
         type: Type.STRING,
       }),
     ],
   }),
   ...Command({
+    name: 'now',
+    description: 'Check what you can do right now',
+    aliases: ['checklist', 'cl', 'tu'],
+  }),
+  ...Command({
     name: 'gacha',
-    description: 'An experimental/ephemeral gacha command',
-    aliases: ['w', 'pull', 'roll'],
+    description: 'Start a gacha pull',
+    aliases: ['pull', 'roll', 'w'],
+  }),
+  ...Command({
+    name: 'collection',
+    description: 'View all your characters',
+    aliases: ['list', 'mm'],
   }),
   ...Command({
     name: 'force_pull',
@@ -254,5 +268,4 @@ put([
   }),
   // non-standard commands (pack commands)
   ...Pack('./packs/anilist'),
-  ...Pack('./packs/x'),
 ]);

@@ -1,5 +1,5 @@
 {
-  "$id": "json/alias.json",
+  "$id": "alias.json",
   "type": "object",
   "additionalProperties": false,
   "anyOf": [

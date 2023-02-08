@@ -130,6 +130,15 @@ export type Pool = {
   };
 };
 
+export type PoolInfo = {
+  pool: number;
+  popularityChance: number;
+  popularityGreater: number;
+  popularityLesser?: number;
+  roleChance?: number;
+  role?: CharacterRole;
+};
+
 export enum ManifestType {
   Builtin = 'builtin',
   Manual = 'manual',
@@ -162,6 +171,20 @@ export interface Manifest {
   // properties set internally on load
   type?: ManifestType;
 }
+
+export type Inventory = {
+  lastPull?: string;
+  availablePulls: number;
+};
+
+export type Mutation = { ok: true } | {
+  ok: false;
+  error: 'CHARACTER_EXISTS';
+} | {
+  ok: false;
+  error: 'NO_PULLS_AVAILABLE';
+  inventory: Inventory;
+};
 
 type Command = {
   source: string;

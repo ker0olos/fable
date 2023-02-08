@@ -6,11 +6,15 @@ import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weih
 
 import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
 
+import { ConnInfo, PathParams } from 'https://deno.land/x/sift@0.6.0/mod.ts';
+
 export enum ImageSize {
   Large = 'large', // 450x635,
   Medium = 'medium', // 230x325
   Thumbnail = 'thumbnail', // 110x155
 }
+
+let font: Uint8Array | undefined = undefined;
 
 const globalCache = inMemoryCache(20);
 
@@ -49,7 +53,7 @@ function sleep(secs: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, secs * 1000));
 }
 
-function rng<T>(dict: { [chance: number]: T }): T {
+function rng<T>(dict: { [chance: number]: T }): { value: T; chance: number } {
   const pool = Object.values(dict);
 
   const chances = Object.keys(dict).map((n) => parseInt(n));
@@ -76,7 +80,10 @@ function rng<T>(dict: { [chance: number]: T }): T {
   shuffle(_);
 
   // use the first item from the shuffled array on the pool
-  return pool[_[0]];
+  return {
+    value: pool[_[0]],
+    chance: chances[_[0]],
+  };
 }
 
 function truncate(
@@ -205,7 +212,40 @@ function verifySignature(
   return { valid, body };
 }
 
-const proxy = async (r: Request) => {
+async function text(
+  _: Request,
+  __: ConnInfo,
+  params: PathParams,
+): Promise<Response> {
+  font = font ?? new Uint8Array(
+    await (await fetch(
+      'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
+    )).arrayBuffer(),
+  );
+
+  const text = imagescript.Image.renderText(
+    font,
+    28,
+    params?.text?.substring(0, 2) ?? '?',
+    0xffffffff,
+    new imagescript.TextLayout({
+      maxWidth: 48,
+      maxHeight: 48,
+    }),
+  );
+
+  const t = await text.encode(2);
+
+  const response = new Response(t);
+
+  response.headers.set('content-type', 'image/png');
+  response.headers.set('content-length', `${t.byteLength}`);
+  response.headers.set('cache-control', 'public, max-age=604800');
+
+  return response;
+}
+
+async function proxy(r: Request): Promise<Response> {
   const { pathname, searchParams, origin } = new URL(r.url);
 
   try {
@@ -295,7 +335,7 @@ const proxy = async (r: Request) => {
     }
     return Response.redirect(`${origin}/assets/medium.png`);
   }
-};
+}
 
 async function readJson<T>(filePath: string): Promise<T> {
   try {
@@ -307,22 +347,36 @@ async function readJson<T>(filePath: string): Promise<T> {
   }
 }
 
+function lastPullToRefillTimestamp(lastPull: string): string {
+  const refill = new Date(lastPull);
+
+  refill.setMinutes(refill.getMinutes() + 60);
+
+  const refillTimestamp = refill.getTime().toString();
+
+  // discord apparently uses black magic and requires us to cut 3 digits
+  // or go 30,000 years into the future
+  return refillTimestamp.substring(0, refillTimestamp.length - 3);
+}
+
 const utils = {
   capitalize,
+  chunks,
   comma,
   decodeDescription,
+  distance,
   hexToInt,
+  lastPullToRefillTimestamp,
   parseId,
+  proxy,
   randint,
+  readJson,
   rng,
   shuffle,
   sleep,
+  text,
   truncate,
-  chunks,
-  distance,
   verifySignature,
-  readJson,
-  proxy,
   wrap,
 };
 

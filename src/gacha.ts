@@ -2,27 +2,34 @@ import {
   captureException,
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
 
+import { gql, request } from './graphql.ts';
+
 import utils, { ImageSize } from './utils.ts';
 
 import Rating from './rating.ts';
 
-import config from './config.ts';
+import config, { faunaUrl } from './config.ts';
 
-import { Character, CharacterRole, Media } from './types.ts';
+import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
-import packs from './packs.ts';
+import {
+  Character,
+  CharacterRole,
+  Media,
+  Mutation,
+  PoolInfo,
+} from './types.ts';
+
+import { NoPullsError, PoolError } from './errors.ts';
 
 export type Pull = {
   role?: CharacterRole;
   character: Character;
   media: Media;
-  pool: number;
   rating: Rating;
-  popularityGreater: number;
-  popularityLesser?: number;
-};
+} & PoolInfo;
 
 const lowest = 1000;
 
@@ -43,11 +50,8 @@ const variables = {
   },
 };
 
-/**
- * force a specific pull using an id
- */
-async function forcePull(id: string): Promise<Pull> {
-  const results = await packs.characters({ ids: [id] });
+async function forcePull(characterId: string): Promise<Pull> {
+  const results = await packs.characters({ ids: [characterId] });
 
   if (!results.length) {
     throw new Error('404');
@@ -71,6 +75,7 @@ async function forcePull(id: string): Promise<Pull> {
     role: edge.role,
     popularityGreater: -1,
     popularityLesser: -1,
+    popularityChance: -1,
     rating: new Rating({
       popularity,
       role: character.popularity ? undefined : edge.role,
@@ -78,16 +83,16 @@ async function forcePull(id: string): Promise<Pull> {
   };
 }
 
-/**
- * generate a pool of characters then pull one
- */
-async function rngPull(): Promise<Pull> {
-  // roll for popularity range that wil be used to generate the pool
-  const range = utils.rng(gacha.variables.ranges);
+async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
+  // rng for popularity range
+  const { value: range, chance: rangeChance } = utils.rng(
+    gacha.variables.ranges,
+  );
 
-  const role = range[0] === 0
+  // rng for character roll in media[0]
+  const { value: role, chance: roleChance } = range[0] <= lowest
     // include all roles in the pool
-    ? undefined
+    ? { value: undefined, chance: undefined }
     // one specific role for the whole pool
     : utils.rng(gacha.variables.roles);
 
@@ -98,8 +103,16 @@ async function rngPull(): Promise<Pull> {
   let media: Media | undefined = undefined;
 
   const inRange = (popularity: number): boolean =>
-    popularity >= range[0] &&
-    (isNaN(range[1]) || popularity <= range[1]);
+    popularity >= range[0] && (isNaN(range[1]) || popularity <= range[1]);
+
+  const poolInfo: PoolInfo = {
+    pool: pool.length,
+    popularityChance: rangeChance,
+    popularityGreater: range[0],
+    popularityLesser: range[1],
+    roleChance,
+    role,
+  };
 
   while (pool.length > 0) {
     const i = Math.floor(Math.random() * pool.length);
@@ -119,12 +132,16 @@ async function rngPull(): Promise<Pull> {
       // if the character has specified popularity
       // and that specified popularity is not in range of
       // the pool parameters
-      (typeof results[0].popularity === 'number' &&
-        !inRange(results[0].popularity)) ||
-      Array.isArray(results[0].media) &&
+      (
+        typeof results[0].popularity === 'number' &&
+        !inRange(results[0].popularity)
+      ) ||
+      (
+        Array.isArray(results[0].media) &&
         // no media or
         // or role is not equal to the pool parameter
         (!results[0].media[0] || results[0].media[0].role !== role)
+      )
     ) {
       continue;
     }
@@ -143,25 +160,85 @@ async function rngPull(): Promise<Pull> {
 
     const popularity = candidate.popularity || edge.node.popularity || lowest;
 
-    if (
-      // check if character parameters match the pool parameters
-      inRange(popularity) &&
-      (!role || edge?.role === role)
-    ) {
-      media = edge.node;
-      character = candidate;
-      rating = new Rating({
-        popularity,
-        role: character.popularity ? undefined : edge.role,
-      });
-      break;
+    if (!inRange(popularity) || (role && edge?.role !== role)) {
+      continue;
     }
+
+    // add character to user's inventory
+    if (userId && guildId) {
+      const mutation = gql`
+        mutation (
+          $userId: String!
+          $guildId: String!
+          $characterId: String!
+          $pool: Int!
+          $popularityChance: Int!
+          $popularityGreater: Int!
+          $popularityLesser: Int
+          $roleChance: Int
+          $role: String
+        ) {
+          addCharacterToInventory(
+            userId: $userId
+            guildId: $guildId
+            characterId: $characterId
+            pool: $pool
+            popularityChance: $popularityChance
+            popularityGreater: $popularityGreater
+            popularityLesser: $popularityLesser
+            roleChance: $roleChance
+            role: $role
+          ) {
+            ok
+            error
+            inventory {
+              lastPull
+            }
+          }
+        }
+      `;
+
+      const response = (await request<{
+        addCharacterToInventory: Mutation;
+      }>({
+        url: faunaUrl,
+        query: mutation,
+        headers: {
+          'authorization': `Bearer ${config.faunaSecret}`,
+        },
+        variables: {
+          userId,
+          guildId,
+          characterId,
+          ...poolInfo,
+        },
+      })).addCharacterToInventory;
+
+      if (!response.ok) {
+        switch (response.error) {
+          case 'CHARACTER_EXISTS':
+            continue;
+          case 'NO_PULLS_AVAILABLE':
+            // deno-lint-ignore no-non-null-assertion
+            throw new NoPullsError(response.inventory.lastPull!);
+          default:
+            throw new Error(response);
+        }
+      }
+    }
+
+    media = edge.node;
+    character = candidate;
+    rating = new Rating({
+      popularity,
+      role: character.popularity ? undefined : edge.role,
+    });
+
+    break;
   }
 
   if (!character || !media || !rating) {
-    throw new Error(
-      'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
-    );
+    throw new PoolError(poolInfo);
   }
 
   return {
@@ -169,95 +246,112 @@ async function rngPull(): Promise<Pull> {
     media: media,
     rating: rating,
     character: character,
-    pool: pool.length,
-    popularityGreater: range[0],
-    popularityLesser: range[1],
+    ...poolInfo,
   };
 }
 
 /**
- * start the roll's animation
+ * start the pull's animation
  */
 function start(
-  { token, id }: { token: string; id?: string },
+  { token, userId, guildId, characterId, messageType }: {
+    token: string;
+    userId?: string;
+    guildId?: string;
+    channelId?: string;
+    characterId?: string;
+    messageType?: discord.MessageType;
+  },
 ): discord.Message {
-  (id ? gacha.forcePull(id) : gacha.rngPull())
-    .then(async (pull) => {
-      const media = pull.media;
+  const _ =
+    (characterId
+      ? gacha.forcePull(characterId)
+      : gacha.rngPull(userId, guildId))
+      .then(async (pull) => {
+        const media = pull.media;
 
-      const mediaTitles = packs.aliasToArray(media.title);
+        const mediaTitles = packs.aliasToArray(media.title);
 
-      let message = new discord.Message()
-        .addEmbed(
-          new discord.Embed()
-            .setTitle(utils.wrap(mediaTitles[0]))
-            .setImage({
-              default: true,
-              preferredSize: ImageSize.Medium,
-              url: media.images?.[0].url,
-            }),
-        );
+        let message = new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setTitle(utils.wrap(mediaTitles[0]))
+              .setImage({
+                size: ImageSize.Medium,
+                url: media.images?.[0].url,
+              }),
+          );
 
-      await message.patch(token);
+        await message.patch(token);
 
-      await utils.sleep(4);
+        await utils.sleep(4);
 
-      message = new discord.Message()
-        .addEmbed(
-          new discord.Embed()
-            .setImage({
-              url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
-            }),
-        );
+        message = new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setImage({
+                url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
+              }),
+          );
 
-      await message.patch(token);
+        await message.patch(token);
 
-      await utils.sleep(pull.rating.stars >= 5 ? 7 : 5);
+        await utils.sleep(6);
 
-      const characterAliases = packs.aliasToArray(pull.character.name);
+        const characterAliases = packs.aliasToArray(pull.character.name);
 
-      message = new discord.Message()
-        .addEmbed(
-          new discord.Embed()
-            .setTitle(pull.rating.emotes)
-            .addField({
-              name: utils.wrap(mediaTitles[0]),
-              value: `**${utils.wrap(characterAliases[0])}**`,
-            })
-            .setImage({
-              default: true,
-              preferredSize: ImageSize.Medium,
-              url: pull.character.images?.[0].url,
-            }),
-        );
+        message = new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setTitle(pull.rating.emotes)
+              .addField({
+                name: utils.wrap(mediaTitles[0]),
+                value: `**${utils.wrap(characterAliases[0])}**`,
+              })
+              .setImage({
+                size: ImageSize.Medium,
+                url: pull.character.images?.[0].url,
+              }),
+          );
 
-      await message.patch(token);
-    })
-    .catch(async (err) => {
-      if (err?.response?.status === 404 || err?.message === '404') {
-        return await new discord.Message().setContent(
-          'Found _nothing_ matching that query!',
-        ).patch(token);
-      }
+        await message.patch(token);
+      })
+      .catch(async (err) => {
+        if (err instanceof NoPullsError) {
+          return await new discord.Message()
+            .addEmbed(
+              new discord.Embed().setDescription(
+                '**You don\'t have any pulls available!**',
+              ),
+            )
+            .addEmbed(
+              new discord.Embed()
+                .setDescription(`Refill <t:${err.refillTimestamp}:R>`),
+            )
+            .patch(token);
+        }
 
-      if (!config.sentry) {
-        throw err;
-      }
+        if (!config.sentry) {
+          throw err;
+        }
 
-      const refId = captureException(err);
+        const refId = captureException(err);
 
-      await discord.Message.internal(refId).patch(token);
-    });
+        await discord.Message.internal(refId).patch(token);
+      });
 
-  return new discord.Message()
+  const spinner = new discord.Message(messageType)
     .addEmbed(
       new discord.Embed().setImage(
         { url: `${config.origin}/assets/spinner.gif` },
       ),
     );
+
+  return spinner;
 }
 
 const gacha = {
+  lowest,
   variables,
   forcePull,
   rngPull,

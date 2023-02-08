@@ -7,6 +7,7 @@ const API = `https://discord.com/api/v10`;
 
 const splitter = '=';
 
+export const empty = '\u200B';
 export const join = (...args: string[]): string => {
   return args.join(splitter);
 };
@@ -60,7 +61,13 @@ export type Suggestion = {
   value: unknown;
 };
 
-export type User = {
+export type Member = {
+  nick?: string;
+  avatar: string;
+  user: User;
+};
+
+type User = {
   id: string;
   username: string;
   discriminator: string;
@@ -79,8 +86,8 @@ export class Interaction<Options> {
   token: string;
   type: InteractionType;
 
-  guildId?: string;
-  channelId?: string;
+  guildId: string;
+  channelId: string;
   targetId?: string;
 
   message?: unknown;
@@ -102,7 +109,8 @@ export class Interaction<Options> {
   // user?: User;
 
   /** member is sent when the interaction is invoked in a guild */
-  member?: {
+  member: {
+    nick?: string;
     avatar: string;
     user: User;
   };
@@ -120,6 +128,8 @@ export class Interaction<Options> {
       // id: string;
       name: string;
       type: string;
+      guild_id: string;
+      channel_id: string;
       // target_id?: string;
       // resolved?: unknown[];
       options?: {
@@ -147,8 +157,8 @@ export class Interaction<Options> {
     this.token = obj.token;
     this.type = obj.type;
 
-    // this.guildId = obj.guild_id;
-    // this.channelId = obj.channel_id;
+    this.guildId = obj.guild_id;
+    this.channelId = obj.channel_id;
 
     // this.user = obj.user;
     // this.message = obj?.message
@@ -389,30 +399,46 @@ export class Embed {
   setImage(image: {
     url?: string;
     default?: boolean;
-    disableProxy?: boolean;
-    preferredSize?: ImageSize;
+    proxy?: boolean;
+    size?: ImageSize;
   }): Embed {
+    image.default = image.default ?? true;
+    image.proxy = image.proxy ?? true;
+
     if (image.url || image.default) {
-      if (config.origin && image.url?.startsWith(config.origin)) {
+      if (
+        (config.origin && image.url?.startsWith(config.origin) ||
+          (!image.default && !image.proxy))
+      ) {
         this.#data.image = {
-          url: image.url,
+          // deno-lint-ignore no-non-null-assertion
+          url: image.url!,
         };
       } else {
         this.#data.image = {
           url: `${config.origin}/external/${
             encodeURIComponent(image.url ?? '')
-          }${image.preferredSize === ImageSize.Medium ? '?size=medium' : ''}`,
+          }${image.size === ImageSize.Medium ? '?size=medium' : ''}`,
         };
       }
     }
     return this;
   }
 
-  setThumbnail(thumbnail: { url?: string; default?: boolean }): Embed {
+  setThumbnail(
+    thumbnail: { url?: string; default?: boolean; proxy?: boolean },
+  ): Embed {
+    thumbnail.default = thumbnail.default ?? true;
+    thumbnail.proxy = thumbnail.proxy ?? true;
+
     if (thumbnail.url || thumbnail.default) {
-      if (config.origin && thumbnail.url?.startsWith(config.origin)) {
+      if (
+        (config.origin && thumbnail.url?.startsWith(config.origin) ||
+          (!thumbnail.default && !thumbnail.proxy))
+      ) {
         this.#data.thumbnail = {
-          url: thumbnail.url,
+          // deno-lint-ignore no-non-null-assertion
+          url: thumbnail.url!,
         };
       } else {
         this.#data.thumbnail = {
@@ -452,7 +478,7 @@ export class Message {
   #data: {
     flags?: number;
     content?: string;
-    // attachments?: unknown[];
+    // attachments?: any[];
     embeds: unknown[];
     components: unknown[];
     // title?: string;
@@ -524,32 +550,31 @@ export class Message {
     if (this.#data.embeds.length < 3) {
       this.#data.embeds.push(embed.json());
     }
+
     return this;
   }
 
   addComponents(components: Component[]): Message {
-    // the max amount of components allowed is 5
-    if (this.#data.components.length >= 5) {
-      return this;
-    }
+    this.#data.components.push(...components.map((component) => {
+      const comp = component.json();
+      // labels have maximum of 80 characters
+      // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
+      return (comp.label = utils.truncate(comp.label, 80), comp);
+    }));
 
-    if (components.length > 0) {
-      // max amount of items per group is 5
-      // (see https://discord.com/developers/docs/interactions/message-components#action-rows)
-      utils.chunks(components, 5)
-        .forEach((chunk) => {
-          this.#data.components.push({
-            type: 1,
-            components: chunk.map((component) => {
-              const comp = component.json();
+    return this;
+  }
 
-              // labels have maximum of 80 characters
-              // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
-              return (comp.label = utils.truncate(comp.label, 80), comp);
-            }),
-          });
-        });
-    }
+  insertComponents(components: Component[]): Message {
+    this.#data.components = [
+      ...components.map((component) => {
+        const comp = component.json();
+        // labels have maximum of 80 characters
+        // (see https://discord.com/developers/docs/interactions/message-components#button-object-button-structure)
+        return (comp.label = utils.truncate(comp.label, 80), comp);
+      }),
+      ...this.#data.components,
+    ];
 
     return this;
   }
@@ -591,11 +616,33 @@ export class Message {
             choices: Object.values(this.#suggestions).slice(0, 25),
           },
         };
-      default:
+      default: {
+        const components: {
+          type: 1;
+          components: unknown[];
+        }[] = [];
+
+        const chunks = utils
+          // max amount of items per group is 5
+          // (see https://discord.com/developers/docs/interactions/message-components#action-rows)
+          .chunks(this.#data.components, 5)
+          .slice(0, 5);
+
+        chunks.forEach((chunk) => {
+          components.push({
+            type: 1,
+            components: chunk,
+          });
+        });
+
         return {
           type: this.#type,
-          data: this.#data,
+          data: {
+            ...this.#data,
+            components,
+          },
         };
+      }
     }
   }
 
@@ -642,18 +689,14 @@ export class Message {
   }
 
   static page(
-    { embeds, components, id, page, total }: {
+    { message, id, page, total }: {
       id: string;
-      embeds: Embed[];
-      components?: Component[];
       page?: number;
       total: number;
+      message: Message;
     },
   ): Message {
     page = page ?? 0;
-    components = components ?? [];
-
-    const message = new Message();
 
     const group = [];
 
@@ -679,9 +722,7 @@ export class Message {
       group.push(next);
     }
 
-    embeds.forEach((embed) => message.addEmbed(embed));
-
-    return message.addComponents([...group, ...components]);
+    return message.insertComponents(group);
   }
 
   static internal(id: string): Message {

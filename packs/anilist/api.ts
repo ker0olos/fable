@@ -1,10 +1,12 @@
-import { gql, request } from './graphql.ts';
+import { gql, request } from '../../src/graphql.ts';
 
 import { AniListCharacter, AniListMedia } from './types.ts';
 
 import { Character, Media } from '../../src/types.ts';
 
 import packs from '../../src/packs.ts';
+
+const url = 'https://graphql.anilist.co';
 
 /** Order by trending than popularity */
 const mediaDefaultSort = gql`[ TRENDING_DESC, POPULARITY_DESC ]`;
@@ -164,7 +166,9 @@ export async function media(
               relationType
             }
           }
-          characters(sort: ${characterDefaultSort}) {
+          # FIXME view characters maxes out at 25 on anilist media
+          # (see #54)
+          characters(sort: ${characterDefaultSort}, perPage: 25) {
             edges {
               node { ${characterDefaultQuery} }
               role
@@ -179,7 +183,7 @@ export async function media(
     Page: {
       media: AniListMedia[];
     };
-  } = await request(query, variables);
+  } = await request({ url, query, variables });
 
   return data.Page.media;
 }
@@ -212,7 +216,7 @@ export async function characters(
     Page: {
       characters: AniListCharacter[];
     };
-  } = await request(query, variables);
+  } = await request({ url, query, variables });
 
   return data.Page.characters;
 }
@@ -236,5 +240,5 @@ export async function nextEpisode(
     }
   `;
 
-  return (await request(query, variables)).Media;
+  return (await request({ url, query, variables })).Media;
 }

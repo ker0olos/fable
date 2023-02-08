@@ -1,0 +1,101 @@
+# endpoint: https://graphql.fauna.com/graphql
+# cookbook: https://docs.fauna.com/fauna/current/learn/cookbook/graphql
+# cheatsheet: https://docs.fauna.com/fauna/current/api/fql/cheat_sheet
+
+type Response @embedded {
+  ok: Boolean!
+  error: String
+  inventory: Inventory
+}
+
+type User @collection(name: "user") {
+  # discord user id
+  id: String!
+  #
+  inventories: [Inventory!]!
+}
+
+type Guild @collection(name: "guild") {
+  # discord guild id
+  id: String!
+  # servers can have multiple sandboxed instances
+  instances: [Instance!]!
+}
+
+type Instance @collection(name: "instance") {
+  # the main/default instance
+  main: Boolean!
+  # each user has an inventory
+  inventories: [Inventory!]!
+  # the guild where the instance resides
+  guild: Guild!
+}
+
+type Inventory @collection(name: "inventory") {
+  # the time the user last pulled a gacha
+  lastPull: Time
+  # the amount of pulls available to the user
+  availablePulls: Int!
+  #
+  characters: [Character!]!
+  #
+  instance: Instance!
+  #
+  user: User!
+}
+
+type Character @collection(name: "character") {
+  #
+  id: String!
+  #
+  history: [History!]!
+  #
+  inventory: Inventory!
+  #
+  instance: Instance!
+  #
+  user: User!
+}
+
+type History @embedded {
+  gacha: Gacha
+  # trade: Trade
+}
+
+type Gacha @embedded {
+  by: User!
+  pool: Int!
+  #
+  popularityChance: Int!
+  popularityGreater: Int!
+  popularityLesser: Int
+  #
+  roleChance: Int
+  role: String
+}
+
+# type Trade @embedded {
+#   from: User!
+#   to: User!
+# }
+
+type Query {
+  #
+  getUserInventory(userId: String!, guildId: String!): Inventory!
+    @resolver(name: "get_user_inventory")
+}
+
+type Mutation {
+  #
+  addCharacterToInventory(
+    userId: String!
+    guildId: String!
+    characterId: String!
+    pool: Int!
+    popularityChance: Int!
+    popularityGreater: Int!
+    popularityLesser: Int
+    roleChance: Int
+    role: String
+  ): Response! @resolver(name: "add_character_to_inventory")
+}

@@ -8,7 +8,7 @@ import gacha from '../../src/gacha.ts';
 
 import { CharacterRole } from '../../src/types.ts';
 
-import { AniListMedia, Pool } from './types.ts';
+import { AniListCharacter, AniListMedia, Pool } from './types.ts';
 
 const filepath = './pool.json';
 
@@ -31,7 +31,7 @@ type PageInfo = {
 
 const cache: Cache = {};
 
-async function query(
+async function queryMedia(
   variables: {
     page: number;
     popularity_greater: number;
@@ -54,21 +54,7 @@ async function query(
           format_not_in: [ NOVEL, MUSIC, SPECIAL ],
           isAdult: false,
         ) {
-          characters(perPage: 25) {
-            nodes {
-              id # character id
-              media(sort: POPULARITY_DESC) {
-                edges {
-                  characterRole # actual role
-                  # actual media
-                  node { 
-                    id
-                    popularity
-                  }
-                }
-              }
-            }
-          }
+          id
         }
       }
     }
@@ -82,8 +68,55 @@ async function query(
   return response;
 }
 
+async function queryCharacters(
+  variables: {
+    id: string;
+    page: number;
+  },
+): Promise<{
+  pageInfo: PageInfo;
+  nodes: AniListCharacter[];
+}> {
+  const _ = gql`
+    query ($id: Int!, $page: Int!) {
+      Media(id: $id) {
+        characters(page: $page, perPage: 25) {
+          pageInfo {
+            hasNextPage
+          }
+          nodes {
+            id # character id
+            media(sort: POPULARITY_DESC) {
+              edges {
+                characterRole # actual role
+                # actual media
+                node { 
+                  id
+                  popularity
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const response: {
+    Media: AniListMedia;
+  } = await request(_, variables);
+
+  return {
+    // deno-lint-ignore ban-ts-comment
+    //@ts-ignore
+    pageInfo: response.Media.characters?.pageInfo,
+    // deno-lint-ignore no-non-null-assertion
+    nodes: response.Media.characters?.nodes!,
+  };
+}
+
 for (const range of ranges) {
-  let page = 1;
+  let mediaPage = 1;
 
   const key = JSON.stringify(range);
 
@@ -98,8 +131,8 @@ for (const range of ranges) {
 
   while (true) {
     try {
-      const { pageInfo, media } = await query({
-        page,
+      const { pageInfo, media } = await queryMedia({
+        page: mediaPage,
         popularity_greater: range[0],
         popularity_lesser: range[1] || undefined,
       });
@@ -111,27 +144,54 @@ for (const range of ranges) {
         BACKGROUND: characters.BACKGROUND.length,
       };
 
-      for (const data of media) {
-        data.characters?.nodes
-          ?.forEach((character) => {
-            const id = `anilist:${character.id}`;
+      for (const { id } of media) {
+        let charactersPage = 1;
 
-            const edge = character.media?.edges[0];
+        while (true) {
+          try {
+            const { nodes, pageInfo } = await queryCharacters({
+              id,
+              page: charactersPage,
+            });
 
-            if (
-              edge?.node.popularity &&
-              edge.node.popularity >= range[0] &&
-              (isNaN(range[1]) || edge.node.popularity <= range[1])
-            ) {
-              characters.ALL.push({ id });
+            nodes.forEach((character) => {
+              const id = `anilist:${character.id}`;
 
-              characters[edge.characterRole].push({ id });
+              const edge = character.media?.edges[0];
+
+              if (
+                edge?.node.popularity &&
+                edge.node.popularity >= range[0] &&
+                (isNaN(range[1]) || edge.node.popularity <= range[1])
+              ) {
+                characters.ALL.push({ id });
+
+                characters[edge.characterRole].push({ id });
+              }
+            });
+
+            if (pageInfo.hasNextPage) {
+              charactersPage += 1;
+              continue;
             }
-          });
+
+            break;
+          } catch (e) {
+            // handle the rate limit
+            // (see https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting)
+            if (e.message?.includes('Too Many Requests')) {
+              console.log('sleeping for a minute...');
+              await utils.sleep(60);
+              continue;
+            }
+
+            throw e;
+          }
+        }
       }
 
       console.log(
-        `${key}: page: ${page} had: total ${
+        `${key}: page: ${mediaPage} had: total ${
           characters.ALL.length - t.ALL
         } characters: MAIN: ${characters.MAIN.length - t.MAIN} | SUPPORTING: ${
           characters.SUPPORTING.length - t.SUPPORTING
@@ -139,7 +199,7 @@ for (const range of ranges) {
       );
 
       if (pageInfo.hasNextPage) {
-        page += 1;
+        mediaPage += 1;
         continue;
       }
 
@@ -174,4 +234,10 @@ await Deno.writeTextFile(
   JSON.stringify(cache, null, 2),
 );
 
-console.log('written cache to disk');
+let totalCharacters = 0;
+
+Object.values(cache).forEach(({ ALL }) => totalCharacters += ALL.length);
+
+console.log(`${totalCharacters} characters`);
+
+console.log('\n\nwritten cache to disk');

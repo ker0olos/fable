@@ -31,9 +31,7 @@ Deno.test('init', async (test) => {
         'sentry_dsn',
         'app_id',
         'public_key',
-        'mongo_cluster',
-        'mongo_endpoint',
-        'mongo_api_key',
+        'fauna_secret',
       ]),
     );
 
@@ -44,9 +42,7 @@ Deno.test('init', async (test) => {
         deploy: false,
         appId: 'app_id',
         publicKey: 'public_key',
-        mongoCluster: 'mongo_cluster',
-        mongoEndpoint: 'mongo_endpoint',
-        mongoApiKey: 'mongo_api_key',
+        faunaSecret: 'fauna_secret',
         sentry: 'sentry_dsn',
         origin: undefined,
       });
@@ -79,9 +75,7 @@ Deno.test('init', async (test) => {
         'sentry_dsn',
         'app_id',
         'public_key',
-        'mongo_cluster',
-        'mongo_endpoint',
-        'mongo_api_key',
+        'fauna_secret',
       ]),
     );
 
@@ -92,9 +86,7 @@ Deno.test('init', async (test) => {
         deploy: true,
         appId: 'app_id',
         publicKey: 'public_key',
-        mongoCluster: 'mongo_cluster',
-        mongoEndpoint: 'mongo_endpoint',
-        mongoApiKey: 'mongo_api_key',
+        faunaSecret: 'fauna_secret',
         sentry: 'sentry_dsn',
         origin: undefined,
       });

@@ -61,7 +61,7 @@ Deno.test('rng with percentages', async (test) => {
         20: 'c',
       });
 
-      assertEquals(rng, 'b');
+      assertEquals(rng, { value: 'b', chance: 70 });
 
       assertSpyCalls(randomStub, 100);
     });
@@ -726,5 +726,52 @@ Deno.test('external images', async (test) => {
       delete config.origin;
       fetchStub.restore();
     }
+  });
+});
+
+Deno.test('text images', async (test) => {
+  await test.step('5', async () => {
+    // deno-lint-ignore no-explicit-any
+    const response = await utils.text({} as any, {} as any, {
+      text: '5',
+      // deno-lint-ignore no-explicit-any
+    } as any);
+
+    assertEquals(response.status, 200);
+
+    assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+    assertEquals(
+      response.headers.get('Cache-Control'),
+      'public, max-age=604800',
+    );
+
+    const image = await imagescript.decode(await response.arrayBuffer());
+
+    assert(image instanceof imagescript.Image);
+
+    assertEquals(`${image}`, 'Image<15x39>');
+  });
+
+  await test.step('?', async () => {
+    // deno-lint-ignore no-explicit-any
+    const response = await utils.text({} as any, {} as any, {
+      // deno-lint-ignore no-explicit-any
+    } as any);
+
+    assertEquals(response.status, 200);
+
+    assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+    assertEquals(
+      response.headers.get('Cache-Control'),
+      'public, max-age=604800',
+    );
+
+    const image = await imagescript.decode(await response.arrayBuffer());
+
+    assert(image instanceof imagescript.Image);
+
+    assertEquals(`${image}`, 'Image<13x39>');
   });
 });
