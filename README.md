@@ -22,9 +22,9 @@
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/215555794-c8e52906-99a5-485c-9cdd-8961e168f587.gif" alt="Animated Pulls">
 </i>
 
-Fable is a free, open-source _anime_[^1] gacha bot — a simple, powerful Mudae
-alternative. Like Mudae, you can pull anime characters. Unlike Mudae, there's no
-premiums, and no pay-to-win bullshit.
+Fable is a free, open-source gacha[^1] bot — a simple, powerful Mudae
+alternative. Like Mudae, you can pull anime characters. Unlike Mudae, there are
+no premiums and no pay-to-win bullshit.
 
 There's a intuitive system to manage and customize the characters in your
 servers, you can add community-made packs that are full of new characters with a
@@ -32,10 +32,10 @@ single command.
 
 Fable is actively developed with new game modes and features frequently.
 
-[^1]: Currently the default packs include anime/manga/manhwa/vtubers, but you
-can add other packs, for example video game characters or real life celebrities.
-You can also disable the anime packs entirety (Incase it's a sport server or
-something, we try our best to keep the bot itself term naturel).
+[^1]: Currently the default packs include anime/manga/vtubers, but you can add
+other packs, e.g. video game characters or real life celebrities. And you can
+disable the anime packs entirety (Incase it's a sports server or else, we try
+our best to include term naturel commands along with anime analogies).
 
 > **Warning** Fable is in early access. Some features might be missing. Missing
 > features include "Trading" (see
@@ -52,10 +52,10 @@ something, we try our best to keep the bot itself term naturel).
 
 ### Essential Commands
 
-- `/gacha`, `/pull` or `/w`: to start a new gacha pull
-- `/now`, `/cl` or `/tu`: to check what you can do right now
+- `/gacha`, `/w`: to start a new gacha pull
+- `/now`, `/tu`: to check what you can do right now
 - `/collection`, or `/mm`: to view all your characters
-- `/search`, `/anime` or `/manga`: to search and view a media
+- `/search`, `/anime` or `/manga`: to search for specific series
 - `/character`: to search for a specific character
 
 ### Get Involved
@@ -111,7 +111,7 @@ direction of the project:
 
 - Checkout our friends at <https://anilist.co>. Your support will mean a lot to
   them. Tracking your anime through their app might just help you rank up your
-  favorite characters to 5 stars faster.
+  favorite characters to 5 stars.
 
 [discord]: https://discord.gg/ceKyEfhyPQ
 [contributing]: https://github.com/ker0olos/fable/wiki/Contributing

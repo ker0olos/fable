@@ -164,10 +164,6 @@ Deno.test('is id a number?', () => {
 });
 
 Deno.test('decode description', async (test) => {
-  await test.step('decode urls', () => {
-    assertEquals(utils.decodeDescription('%20'), ' ');
-  });
-
   await test.step('decode simple html', () => {
     assertEquals(utils.decodeDescription('&amp;'), '&');
     assertEquals(utils.decodeDescription('&quot;'), '"');
@@ -201,12 +197,6 @@ Deno.test('decode description', async (test) => {
 
   await test.step('decode complicated html', () => {
     assertEquals(utils.decodeDescription('&amp;quot;'), '&quot;');
-    assertEquals(
-      utils.decodeDescription(
-        'http://www.example.com/string%20with%20+%20and%20?%20and%20&%20and%20spaces',
-      ),
-      'http://www.example.com/string with + and ? and & and spaces',
-    );
   });
 
   await test.step('transform html to markdown', () => {

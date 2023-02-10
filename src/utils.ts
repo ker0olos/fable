@@ -150,8 +150,6 @@ function decodeDescription(s?: string): string | undefined {
     return;
   }
 
-  s = decodeURI(s);
-
   s = s.replaceAll('&lt;', '<');
   s = s.replaceAll('&gt;', '>');
   s = s.replaceAll('&#039;', '\'');

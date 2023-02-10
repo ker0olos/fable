@@ -170,7 +170,7 @@ await put([
   ...Command({
     name: 'search',
     aliases: ['anime', 'manga', 'media'],
-    description: 'Search for a media',
+    description: 'Search for a specific series',
     options: [
       Option({
         name: 'query',
@@ -188,7 +188,7 @@ await put([
   }),
   ...Command({
     name: 'character',
-    description: 'Search for a character',
+    description: 'Search for a specific character',
     aliases: ['char'],
     options: [
       Option({
