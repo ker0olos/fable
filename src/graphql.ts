@@ -1,3 +1,5 @@
+import { GraphQLError } from './errors.ts';
+
 // deno-lint-ignore no-explicit-any
 type Variables = { [key: string]: any };
 
@@ -37,11 +39,21 @@ export async function request<T = any, V = Variables>(
 
   const response = await fetch(url, options);
 
-  const json = await response.json();
+  try {
+    const json = await response.json();
 
-  if (json.errors || !response.ok) {
-    throw new Error(JSON.stringify(json.errors ?? json));
+    if (json.errors || !response.ok) {
+      throw new Error(json.errors ?? json);
+    }
+
+    return json.data;
+  } catch (err) {
+    throw new GraphQLError(
+      url,
+      query,
+      variables,
+      await response.text(),
+      err.message,
+    );
   }
-
-  return json.data;
 }
