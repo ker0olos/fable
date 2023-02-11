@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import Ajv from 'https://esm.sh/ajv@8.12.0';
+import Ajv, { ValidateFunction } from 'https://esm.sh/ajv@8.12.0';
 
 import { bold, green, red } from 'https://deno.land/std@0.175.0/fmt/colors.ts';
 
@@ -32,13 +32,6 @@ import builtin from '../json/schema.builtin.json' assert {
   type: 'json',
 };
 
-const _v = new Ajv({ strict: false, allErrors: true })
-  .addSchema(alias)
-  .addSchema(image)
-  .addSchema(media)
-  .addSchema(character)
-  .addSchema(index).compile(builtin);
-
 const replacerWithPath = (
   replacer: (value: any, path: string) => string,
 ) => {
@@ -61,13 +54,12 @@ const replacerWithPath = (
   };
 };
 
-export const validate = (data: any) => _v(data);
-
 export const prettify = (
   data: any,
+  { errors }: ValidateFunction,
   opts?: { markdown?: boolean; terminal?: boolean },
 ) => {
-  if (!_v.errors) {
+  if (!errors) {
     throw new Error();
   }
 
@@ -96,7 +88,7 @@ export const prettify = (
     }
   }
 
-  _v.errors.forEach((err, index) => {
+  errors.forEach((err, index) => {
     if (err.instancePath === '') {
       data = appendError(data, index);
     }
@@ -106,14 +98,14 @@ export const prettify = (
     data,
     replacerWithPath((value, path) => {
       // deno-lint-ignore no-non-null-assertion
-      const index = _v.errors!.findIndex((e) => e.instancePath === path);
+      const index = errors!.findIndex((e) => e.instancePath === path);
 
       return appendError(value, index);
     }),
     2,
   );
 
-  _v.errors.forEach((err, index) => {
+  errors.forEach((err, index) => {
     let message = `${err.message}`;
 
     // deno-lint-ignore no-non-null-assertion
@@ -134,15 +126,22 @@ export const prettify = (
   });
 
   if (opts?.markdown) {
-    return `Errors: ${_v.errors.length}` + '\n```json\n' + json + '\n```';
+    return `Errors: ${errors.length}` + '\n```json\n' + json + '\n```';
   }
 
   return json;
 };
 
 export const assertValidManifest = (data: any) => {
+  const validate = new Ajv({ strict: false, allErrors: true })
+    .addSchema(alias)
+    .addSchema(image)
+    .addSchema(media)
+    .addSchema(character)
+    .addSchema(index).compile(builtin);
+
   if (!validate(data)) {
-    throw new AssertionError(prettify(data));
+    throw new AssertionError(prettify(data, validate));
   }
 };
 
@@ -152,8 +151,15 @@ if (import.meta.main) {
 
   const data = await utils.readJson(filename);
 
+  const validate = new Ajv({ strict: false, allErrors: true })
+    .addSchema(alias)
+    .addSchema(image)
+    .addSchema(media)
+    .addSchema(character)
+    .compile(index);
+
   if (!validate(data)) {
-    console.log(prettify(data, { terminal: true }));
+    console.log(prettify(data, validate, { terminal: true }));
     Deno.exit(1);
   } else {
     console.log(green('Valid'));
