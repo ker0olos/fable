@@ -10,6 +10,8 @@ import Rating from './rating.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import { characterMessage } from './media.ts';
+
 import packs from './packs.ts';
 
 import * as discord from './discord.ts';
@@ -164,6 +166,13 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
       continue;
     }
 
+    // const popularity = candidate.popularity || edge.node.popularity || lowest;
+    rating = Rating.fromCharacter(candidate);
+
+    if (rating.stars < 1) {
+      continue;
+    }
+
     // add character to user's inventory
     if (userId && guildId) {
       const mutation = gql`
@@ -229,10 +238,6 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
 
     media = edge.node;
     character = candidate;
-    rating = new Rating({
-      popularity,
-      role: character.popularity ? undefined : edge.role,
-    });
 
     break;
   }
@@ -298,21 +303,31 @@ function start(
 
         await utils.sleep(6);
 
-        const characterAliases = packs.aliasToArray(pull.character.name);
+        message = characterMessage(pull.character, {
+          relations: false,
+          rating: pull.rating,
+          description: false,
+          externalLinks: false,
+          footer: false,
+          media: {
+            title: true,
+          },
+        });
 
-        message = new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setTitle(pull.rating.emotes)
-              .addField({
-                name: utils.wrap(mediaTitles[0]),
-                value: `**${utils.wrap(characterAliases[0])}**`,
-              })
-              .setImage({
-                size: ImageSize.Medium,
-                url: pull.character.images?.[0].url,
-              }),
-          );
+        if (userId) {
+          message.addComponents([
+            new discord.Component()
+              .setId('gacha', userId)
+              .setLabel('/gacha'),
+          ]);
+        }
+
+        message.addComponents([
+          new discord.Component()
+            // deno-lint-ignore no-non-null-assertion
+            .setId(`collection`, userId!, '-1')
+            .setLabel('/collection'),
+        ]);
 
         await message.patch(token);
       })

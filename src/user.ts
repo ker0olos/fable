@@ -2,7 +2,7 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import { characterMessage } from './search.ts';
+import { characterMessage } from './media.ts';
 
 import utils from './utils.ts';
 
@@ -11,6 +11,8 @@ import packs from './packs.ts';
 import * as discord from './discord.ts';
 
 import { Character, DisaggregatedCharacter, Inventory } from './types.ts';
+
+import Rating from './rating.ts';
 
 export async function now({
   userId,
@@ -55,13 +57,17 @@ export async function now({
     message.addComponents([
       // `/gacha` shortcut
       new discord.Component()
-        .setId(discord.join('gacha', userId))
+        .setId('gacha', userId)
         .setLabel('/gacha'),
+      // `/collections` shortcut
       new discord.Component()
-        .setId(discord.join('collection', userId, '0'))
+        .setId('collection', userId, '0')
         .setLabel('/collection'),
     ]);
   } else {
+    // if user has no pulls
+    // inform display the refill timestamp in the same message
+
     message.addEmbed(
       new discord.Embed()
         .setDescription(
@@ -119,13 +125,13 @@ export async function collection({
       .addComponents([
         // `/gacha` shortcut
         new discord.Component()
-          .setId(discord.join('gacha', userId))
+          .setId('gacha', userId)
           .setLabel('/gacha'),
       ]);
   }
 
   const results: (Character | DisaggregatedCharacter)[] = await packs
-    .characters({ ids: [characters[page].id] });
+    .characters({ ids: characters.slice(page).map((c) => c.id) });
 
   let message: discord.Message;
 
@@ -137,8 +143,19 @@ export async function collection({
           .setImage({ default: true }),
       );
   } else {
+    const character = await packs.aggregate<Character>({
+      character: results[0],
+    });
+
     message = characterMessage(
-      await packs.aggregate<Character>({ character: results[0] }),
+      character,
+      {
+        relations: 1,
+        rating: Rating.fromCharacter(character),
+        media: {
+          title: true,
+        },
+      },
     );
   }
 

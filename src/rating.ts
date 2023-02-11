@@ -1,4 +1,10 @@
-import { CharacterRole } from './types.ts';
+import {
+  captureException,
+} from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
+
+import { Character, CharacterRole } from './types.ts';
+
+import gacha from './gacha.ts';
 
 import { emotes } from './config.ts';
 
@@ -39,9 +45,11 @@ export default class Rating {
     } //
     //
     else {
-      throw new Error(
+      captureException(
         `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
       );
+
+      this.#stars = 0;
     }
   }
 
@@ -53,5 +61,19 @@ export default class Rating {
     return `${emotes.star.repeat(this.#stars)}${
       emotes.noStar.repeat(5 - this.#stars)
     }`;
+  }
+
+  static fromCharacter(character: Character): Rating {
+    const edge = character.media?.edges?.[0];
+    if (character.popularity) {
+      return new Rating({ popularity: character.popularity });
+    } else if (edge) {
+      return new Rating({
+        popularity: edge.node.popularity || gacha.lowest,
+        role: edge.role,
+      });
+    }
+
+    return new Rating({ popularity: -1 });
   }
 }

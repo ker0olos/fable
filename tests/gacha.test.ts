@@ -2,7 +2,6 @@ import {
   assertEquals,
   assertObjectMatch,
   assertRejects,
-  assertThrows,
 } from 'https://deno.land/std@0.175.0/testing/asserts.ts';
 
 import {
@@ -27,6 +26,8 @@ import {
 } from '../src/types.ts';
 
 import { AniListCharacter } from '../packs/anilist/types.ts';
+
+import { NoPullsError, PoolError } from '../src/errors.ts';
 
 function fakePool(
   fill: AniListCharacter | DisaggregatedCharacter,
@@ -119,7 +120,7 @@ Deno.test('filter invalid pools', async (test) => {
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
-        Error,
+        PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
@@ -184,7 +185,7 @@ Deno.test('filter invalid pools', async (test) => {
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
-        Error,
+        PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
@@ -250,7 +251,7 @@ Deno.test('filter invalid pools', async (test) => {
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
-        Error,
+        PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
@@ -317,7 +318,7 @@ Deno.test('filter invalid pools', async (test) => {
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
-        Error,
+        PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
@@ -385,7 +386,7 @@ Deno.test('filter invalid pools', async (test) => {
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
-        Error,
+        PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
@@ -452,7 +453,7 @@ Deno.test('filter invalid pools', async (test) => {
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
-        Error,
+        PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
@@ -524,7 +525,7 @@ Deno.test('filter invalid pools', async (test) => {
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
-        Error,
+        PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
@@ -601,7 +602,7 @@ Deno.test('disabled', async (test) => {
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
-        Error,
+        PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
@@ -675,7 +676,7 @@ Deno.test('disabled', async (test) => {
     try {
       await assertRejects(
         async () => await gacha.rngPull(),
-        Error,
+        PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
@@ -1201,7 +1202,7 @@ Deno.test('adding character to inventory', async (test) => {
     try {
       await assertRejects(
         async () => await gacha.rngPull('1', '2'),
-        Error,
+        PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
@@ -1298,7 +1299,7 @@ Deno.test('adding character to inventory', async (test) => {
     try {
       await assertRejects(
         async () => await gacha.rngPull('1', '2'),
-        Error,
+        NoPullsError,
         'NO_PULLS_AVAILABLE',
       );
 
@@ -1569,20 +1570,24 @@ Deno.test('rating', async (test) => {
     );
   });
 
-  await test.step('fails', () => {
-    assertThrows(
-      () =>
+  await test.step('fails', async (test) => {
+    await test.step('test', () => {
+      const rating = new Rating({
+        role: CharacterRole.Main,
         // deno-lint-ignore no-explicit-any
-        new Rating({ role: CharacterRole.Main, popularity: undefined as any }),
-      Error,
-      'Couldn\'t determine the star rating',
-    );
+        popularity: undefined as any,
+      });
 
-    assertThrows(
-      // deno-lint-ignore no-explicit-any
-      () => new Rating({ popularity: undefined as any }),
-      Error,
-      'Couldn\'t determine the star rating',
-    );
+      assertEquals(rating.stars, 0);
+    });
+
+    await test.step('test', () => {
+      const rating = new Rating({
+        // deno-lint-ignore no-explicit-any
+        popularity: undefined as any,
+      });
+
+      assertEquals(rating.stars, 0);
+    });
   });
 });

@@ -50,12 +50,15 @@ export type Alias = {
 
 export type Image = {
   url: string;
-  color?: string;
   artist?: {
     username: string;
     url?: string;
   };
 };
+
+export type MediaEdge = { node: Media; relation?: MediaRelation };
+export type CharacterEdge = { node: Character; role?: CharacterRole };
+export type CharacterMediaEdge = { node: Media; role?: CharacterRole };
 
 export interface Media {
   id: string;
@@ -75,13 +78,10 @@ export interface Media {
     site: string;
   };
   relations?: {
-    edges: {
-      relation: MediaRelation;
-      node: Media;
-    }[];
+    edges: MediaEdge[];
   };
   characters?: {
-    edges: { role: CharacterRole; node: Character }[];
+    edges: CharacterEdge[];
   };
 }
 
@@ -110,7 +110,7 @@ export interface Character {
     url: string;
   }[];
   media?: {
-    edges: { role: CharacterRole; node: Media }[];
+    edges: CharacterMediaEdge[];
   };
 }
 

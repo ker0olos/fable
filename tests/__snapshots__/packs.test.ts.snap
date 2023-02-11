@@ -475,7 +475,6 @@ cute...",
         id: "hololive",
         images: [
           {
-            color: "#2596be",
             url: "https://i.imgur.com/y4axd06.jpg",
           },
         ],

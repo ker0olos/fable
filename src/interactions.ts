@@ -12,7 +12,7 @@ import {
 
 import * as discord from './discord.ts';
 
-import * as search from './search.ts';
+import * as search from './media.ts';
 import * as user from './user.ts';
 
 import packs from './packs.ts';
@@ -253,6 +253,14 @@ const handler = async (r: Request) => {
             const id = customValues![0];
 
             return (await search.media({ id }))
+              .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'character': {
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+
+            return (await search.character({ id }))
               .setType(discord.MessageType.Update)
               .send();
           }

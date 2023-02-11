@@ -26,7 +26,6 @@ export type AniListMedia = Modify<Media, {
   synonyms?: string[];
   coverImage?: {
     extraLarge?: string;
-    color?: string;
   };
   status?: Status;
   nextAiringEpisode?: {

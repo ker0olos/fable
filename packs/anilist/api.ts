@@ -29,7 +29,6 @@ genres
 synonyms
 coverImage {
   extraLarge
-  color
 }
 externalLinks {
   site
@@ -76,7 +75,6 @@ export function transform<T>(
           !item.coverImage?.extraLarge.endsWith('default.jpg')
         ? [{
           url: item.coverImage.extraLarge,
-          color: item.coverImage.color,
         }]
         : undefined,
       relations: undefined,
@@ -135,28 +133,30 @@ export function transform<T>(
           })),
       };
 
-      let index = 0;
+      if (t.media.edges.length) {
+        let index = 0;
 
-      // check if a primary media swap is required
-      t.media.edges.forEach((e, i) => {
-        if (
-          // ignore background roles
-          (t.media?.edges[index].role === CharacterRole.Background) ||
-          // sort by popularity
-          (
-            e.role !== CharacterRole.Background &&
-            // deno-lint-ignore no-non-null-assertion
-            e.node.popularity! > t.media!.edges[index].node.popularity!
-          )
-        ) {
-          index = i;
-        }
-      });
+        // check if a primary media swap is required
+        t.media.edges.forEach((e, i) => {
+          if (
+            // ignore background roles
+            (t.media?.edges[index].role === CharacterRole.Background) ||
+            // sort by popularity
+            (
+              e.role !== CharacterRole.Background &&
+              // deno-lint-ignore no-non-null-assertion
+              e.node.popularity! > t.media!.edges[index].node.popularity!
+            )
+          ) {
+            index = i;
+          }
+        });
 
-      // swap position
-      const _ = t.media.edges[0];
-      t.media.edges[0] = t.media.edges[index];
-      t.media.edges[index] = _;
+        // swap position
+        const _ = t.media.edges[0];
+        t.media.edges[0] = t.media.edges[index];
+        t.media.edges[index] = _;
+      }
     }
 
     Object.keys(t).forEach((key) =>

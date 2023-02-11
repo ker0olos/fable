@@ -109,7 +109,7 @@ Deno.test('interactions', async (test) => {
 // because embeds can contain all parameters
 // while components have parameters that can't overlap
 
-Deno.test('embeds', async (test) => {
+Deno.test('embeds', () => {
   const embed = new discord.Embed();
 
   embed
@@ -125,63 +125,45 @@ Deno.test('embeds', async (test) => {
   assertEquals(embed.json().type, 'rich');
   assertEquals(embed.json().fields, undefined);
 
-  await test.step('author', () => {
-    assertEquals(embed.json().author!.name, 'a');
-    assertEquals(embed.json().author!.url, 'b');
-    assertEquals(embed.json().author!.icon_url, 'c');
+  assertEquals(embed.json().author!.name, 'a');
+  assertEquals(embed.json().author!.url, 'b');
+  assertEquals(embed.json().author!.icon_url, 'c');
+
+  assertEquals(embed.json().title, 'abc');
+
+  assertEquals(embed.json().description!, 'abc');
+
+  assertEquals(embed.json().url, 'abc');
+
+  assertEquals(embed.json().color!, 4087690);
+
+  assertEquals(
+    embed.json().thumbnail!.url,
+    'undefined/external/abc?size=thumbnail',
+  );
+
+  assertEquals(
+    embed.json().image!.url,
+    'undefined/external/abc',
+  );
+
+  assertEquals(embed.json().footer!.text, 'a');
+  assertEquals(embed.json().footer!.icon_url, 'b');
+
+  embed.addField({ name: 'a', value: 'b' });
+  embed.addField({ name: 'c', value: 'd', inline: true });
+
+  assertEquals(embed.json().fields!.length, 2);
+
+  assertEquals(embed.json().fields![0], {
+    name: 'a',
+    value: 'b',
   });
 
-  await test.step('title', () => {
-    assertEquals(embed.json().title, 'abc');
-  });
-
-  await test.step('description', () => {
-    assertEquals(embed.json().description!, 'abc');
-  });
-
-  await test.step('url', () => {
-    assertEquals(embed.json().url, 'abc');
-  });
-
-  await test.step('color', () => {
-    assertEquals(embed.json().color!, 4087690);
-  });
-
-  await test.step('thumbnail', () => {
-    assertEquals(
-      embed.json().thumbnail!.url,
-      'undefined/external/abc?size=thumbnail',
-    );
-  });
-
-  await test.step('image', () => {
-    assertEquals(
-      embed.json().image!.url,
-      'undefined/external/abc',
-    );
-  });
-
-  await test.step('fields', () => {
-    embed.addField({ name: 'a', value: 'b' });
-    embed.addField({ name: 'c', value: 'd', inline: true });
-
-    assertEquals(embed.json().fields!.length, 2);
-
-    assertEquals(embed.json().fields![0], {
-      name: 'a',
-      value: 'b',
-    });
-
-    assertEquals(embed.json().fields![1], {
-      name: 'c',
-      value: 'd',
-      inline: true,
-    });
-  });
-
-  await test.step('footer', () => {
-    assertEquals(embed.json().footer!.text, 'a');
-    assertEquals(embed.json().footer!.icon_url, 'b');
+  assertEquals(embed.json().fields![1], {
+    name: 'c',
+    value: 'd',
+    inline: true,
   });
 });
 

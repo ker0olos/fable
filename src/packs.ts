@@ -55,8 +55,6 @@ const packs = {
   aliasToArray,
   formatToString,
   mediaToString,
-  sortMedia,
-  sortCharacters,
   // used in tests to clear cache
   clear: () => {
     manual = undefined;
@@ -516,30 +514,6 @@ function mediaToString(
     default:
       return `${title} (${formatToString(media.format)})`;
   }
-}
-
-function sortMedia(
-  edges?: MediaEdge[],
-): MediaEdge[] | undefined {
-  if (!edges?.length) {
-    return;
-  }
-
-  return edges.sort((a, b) => {
-    return (b.node.popularity || 0) - (a.node.popularity || 0);
-  });
-}
-
-function sortCharacters(
-  edges?: CharacterEdge[],
-): CharacterEdge[] | undefined {
-  if (!edges?.length) {
-    return;
-  }
-
-  return edges.sort((a, b) => {
-    return (b.node.popularity || 0) - (a.node.popularity || 0);
-  });
 }
 
 export default packs;
