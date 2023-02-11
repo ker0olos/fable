@@ -1,12 +1,12 @@
-import _anilist from '../packs/anilist/manifest.json' assert {
+import _anilistManifest from '../packs/anilist/manifest.json' assert {
   type: 'json',
 };
 
-import _vtubers from '../packs/vtubers/manifest.json' assert {
+import _vtubersManifest from '../packs/vtubers/manifest.json' assert {
   type: 'json',
 };
 
-import * as anilist from '../packs/anilist/index.ts';
+import * as _anilist from '../packs/anilist/index.ts';
 
 import utils from './utils.ts';
 
@@ -26,11 +26,8 @@ import {
   Pool,
 } from './types.ts';
 
-const anilistManifest = _anilist as Manifest;
-const vtubersManifest = _vtubers as Manifest;
-
-type MediaEdge = { node: Media; relation?: MediaRelation };
-type CharacterEdge = { node: Character; role?: CharacterRole };
+const anilistManifest = _anilistManifest as Manifest;
+const vtubersManifest = _vtubersManifest as Manifest;
 
 type All = Media | DisaggregatedMedia | Character | DisaggregatedCharacter;
 
@@ -49,7 +46,7 @@ const packs = {
   media,
   characters,
   aggregate,
-  commands,
+  anilist,
   pool,
   isDisabled,
   aliasToArray,
@@ -62,18 +59,18 @@ const packs = {
   },
 };
 
-async function commands(
+async function anilist(
   name: string,
   interaction: discord.Interaction<unknown>,
 ): Promise<discord.Message | undefined> {
-  if (anilistManifest.commands && name in anilistManifest.commands) {
-    const command = anilistManifest.commands[name];
-    return await anilist.default
-      [command.source as keyof typeof anilist.default](
-        // deno-lint-ignore no-explicit-any
-        interaction.options as any,
-      );
-  }
+  // deno-lint-ignore no-non-null-assertion
+  const command = anilistManifest.commands![name];
+
+  return await _anilist.default
+    [command.source as keyof typeof _anilist.default](
+      // deno-lint-ignore no-explicit-any
+      interaction.options as any,
+    );
 }
 
 function list(type?: ManifestType): Manifest[] {
@@ -207,12 +204,12 @@ async function findById<T>(
   }
 
   // request the ids from anilist
-  const anilistResults = await anilist[key](
+  const anilistResults = await _anilist[key](
     { ids: anilistIds },
   );
 
   anilistResults.forEach((item) =>
-    results[`anilist:${item.id}`] = anilist.transform<T>({ item })
+    results[`anilist:${item.id}`] = _anilist.transform<T>({ item })
   );
 
   return results;
@@ -232,8 +229,8 @@ async function searchMany<
   const anilistPack: Manifest = {
     id: 'anilist',
     [key]: {
-      new: (await anilist[key]({ search })).map((item) =>
-        anilist.transform({ item })
+      new: (await _anilist[key]({ search })).map((item) =>
+        _anilist.transform({ item })
       ),
     },
   };

@@ -221,8 +221,7 @@ const handler = async (r: Request) => {
             }))
               .send();
           }
-          case 'packs_builtin':
-          case 'packs_manual': {
+          case 'packs': {
             // deno-lint-ignore no-non-null-assertion
             const list = packs.list(subcommand! as ManifestType);
 
@@ -233,15 +232,17 @@ const handler = async (r: Request) => {
               })
               .send();
           }
-          default: {
-            // non-standard commands (handled by individual packs)
+          case 'anilist': {
             // deno-lint-ignore no-non-null-assertion
-            const message = await packs.commands(name!, interaction);
+            const message = await packs.anilist(subcommand!, interaction);
 
             if (message) {
               return message.send();
             }
 
+            break;
+          }
+          default: {
             break;
           }
         }

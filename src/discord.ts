@@ -179,8 +179,6 @@ export class Interaction<Options> {
         if (data.options?.[0].type === 1) {
           this.subcommand = data.options?.[0].name;
 
-          this.name += `_${this.subcommand}`;
-
           data.options?.[0].options?.forEach((option) => {
             this.options[option.name] = option.value as Options;
 
