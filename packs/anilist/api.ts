@@ -2,7 +2,7 @@ import { gql, request } from '../../src/graphql.ts';
 
 import { AniListCharacter, AniListMedia } from './types.ts';
 
-import { Character, Media } from '../../src/types.ts';
+import { Character, CharacterRole, Media } from '../../src/types.ts';
 
 import packs from '../../src/packs.ts';
 
@@ -134,6 +134,29 @@ export function transform<T>(
             node: transform({ item: edge.node as AniListMedia }),
           })),
       };
+
+      let index = 0;
+
+      // check if a primary media swap is required
+      t.media.edges.forEach((e, i) => {
+        if (
+          // ignore background roles
+          (t.media?.edges[index].role === CharacterRole.Background) ||
+          // sort by popularity
+          (
+            e.role !== CharacterRole.Background &&
+            // deno-lint-ignore no-non-null-assertion
+            e.node.popularity! > t.media!.edges[index].node.popularity!
+          )
+        ) {
+          index = i;
+        }
+      });
+
+      // swap position
+      const _ = t.media.edges[0];
+      t.media.edges[0] = t.media.edges[index];
+      t.media.edges[index] = _;
     }
 
     Object.keys(t).forEach((key) =>
