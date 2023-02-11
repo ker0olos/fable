@@ -177,7 +177,7 @@ function Indexer(
       field: string[];
     }[];
   },
-): Promise<void> {
+): () => Promise<void> {
   const params = {
     name,
     unique,
@@ -185,13 +185,14 @@ function Indexer(
     terms,
   };
 
-  return client.query(
-    _fql.If(
-      _fql.Exists(_fql.FaunaIndex(name)),
-      _fql.Update(_fql.FaunaIndex(name), params),
-      _fql.CreateIndex(params),
-    ),
-  );
+  return () =>
+    client.query(
+      _fql.If(
+        _fql.Exists(_fql.FaunaIndex(name)),
+        _fql.Update(_fql.FaunaIndex(name), params),
+        _fql.CreateIndex(params),
+      ),
+    );
 }
 
 function Resolver(
@@ -200,19 +201,20 @@ function Resolver(
     client: Client;
     lambda: (...vars: any[]) => ExprArg;
   },
-): Promise<void> {
+): () => Promise<void> {
   const params = {
     name,
     body: _fql.Query(lambda),
   };
 
-  return client.query(
-    _fql.If(
-      _fql.Exists(_fql.FaunaFunction(name)),
-      _fql.Update(_fql.FaunaFunction(name), params),
-      _fql.CreateFunction(params),
-    ),
-  );
+  return () =>
+    client.query(
+      _fql.If(
+        _fql.Exists(_fql.FaunaFunction(name)),
+        _fql.Update(_fql.FaunaFunction(name), params),
+        _fql.CreateFunction(params),
+      ),
+    );
 }
 
 export const fql = {

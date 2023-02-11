@@ -24,9 +24,16 @@ const client = new Client({
   secret: FAUNA_SECRET,
 });
 
-async function update(queries: Promise<unknown>[]): Promise<void> {
-  await Promise.all(queries);
-  console.log(green('\n\nOK'));
+async function update(queries: (() => Promise<unknown>)[]): Promise<void> {
+  for (let i = 0; i < queries.length; i++) {
+    const query = queries[i];
+
+    console.log(`${i + 1}/${queries.length}`);
+
+    await query();
+  }
+
+  console.log(green('\nOK'));
 }
 
 await update([

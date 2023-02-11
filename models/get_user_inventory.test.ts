@@ -604,7 +604,7 @@ Deno.test('check for pulls refill', async (test) => {
 Deno.test('model', async (test) => {
   const client = FakeClient();
 
-  Model(client as any);
+  Model(client as any).forEach((q) => q());
 
   assertSpyCalls(client.query, 4);
 

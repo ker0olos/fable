@@ -126,7 +126,7 @@ export function addCharacter(
     ));
 }
 
-export default function (client: Client): Promise<void>[] {
+export default function (client: Client): (() => Promise<void>)[] {
   return [
     fql.Indexer({
       client,
