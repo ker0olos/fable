@@ -254,7 +254,7 @@ async function proxy(r: Request): Promise<Response> {
     );
 
     const response = await globalCache.match(url as unknown as Request) ??
-      (cached = false, await fetch(url));
+      (cached = false, await fetch(url, { signal: AbortSignal.timeout(3000) }));
 
     const type = response?.headers.get('content-type');
 
