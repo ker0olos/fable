@@ -129,13 +129,6 @@ export function addCharacter(
 
 export default function (client: Client): (() => Promise<void>)[] {
   return [
-    fql.Indexer({
-      client,
-      unique: true,
-      collection: 'character',
-      name: 'characters_instance_id',
-      terms: [{ field: ['data', 'id'] }, { field: ['data', 'instance'] }],
-    }),
     fql.Resolver({
       client,
       name: 'add_character_to_inventory',

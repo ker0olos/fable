@@ -25,8 +25,8 @@ export async function now({
   const query = gql`
     query ($userId: String!, $guildId: String!) {
       getUserInventory(userId: $userId, guildId: $guildId) {
-        availablePulls
         lastPull
+        availablePulls
       }
     }
   `;
@@ -103,7 +103,7 @@ export async function collection({
   `;
 
   const { characters } = (await request<{
-    getUserInventory: { characters: { id: string }[] };
+    getUserInventory: Inventory;
   }>({
     url: faunaUrl,
     query,

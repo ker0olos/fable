@@ -14,6 +14,8 @@ import getUserInventory from './models/get_user_inventory.ts';
 
 import addCharacterToInventory from './models/add_character_to_inventory.ts';
 
+import findCharacter from './models/find_character.ts';
+
 const FAUNA_SECRET = Deno.env.get('FAUNA_SECRET');
 
 if (!FAUNA_SECRET) {
@@ -38,5 +40,6 @@ async function update(queries: (() => Promise<unknown>)[]): Promise<void> {
 
 await update([
   ...getUserInventory(client),
+  ...findCharacter(client),
   ...addCharacterToInventory(client),
 ]);

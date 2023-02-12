@@ -83,6 +83,9 @@ type Query {
   #
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")
+  #
+  findCharacter(characterId: String!, guildId: String!): Character
+    @resolver(name: "find_character")
 }
 
 type Mutation {

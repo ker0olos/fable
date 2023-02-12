@@ -175,14 +175,18 @@ export interface Manifest {
 export type Inventory = {
   lastPull?: string;
   availablePulls: number;
+  characters: { id: string }[];
 };
 
-export type Mutation = { ok: true } | {
+export type Mutation = {
   ok: false;
   error: 'CHARACTER_EXISTS';
 } | {
   ok: false;
   error: 'NO_PULLS_AVAILABLE';
+  inventory: Inventory;
+} | {
+  ok: true;
   inventory: Inventory;
 };
 
