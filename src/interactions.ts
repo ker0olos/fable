@@ -265,14 +265,14 @@ const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'characters': {
+          case 'mcharacters': {
             // deno-lint-ignore no-non-null-assertion
             const mediaId = customValues![0];
 
             // deno-lint-ignore no-non-null-assertion
             const page = parseInt(customValues![1]);
 
-            return (await search.characterPages({ mediaId, page }))
+            return (await search.mediaCharacters({ mediaId, page }))
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -384,7 +384,6 @@ function cache(
 
 serve({
   '/': handler,
-  '/i/:text': utils.text,
   '/external/*': utils.proxy,
   '/assets/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,

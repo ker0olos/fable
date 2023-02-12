@@ -47,9 +47,15 @@ export async function now({
     },
   })).getUserInventory;
 
+  message.addAttachment({
+    arrayBuffer: await utils.text(availablePulls),
+    filename: 'pulls.png',
+    type: 'image/png',
+  });
+
   message.addEmbed(
     new discord.Embed()
-      .setImage({ url: `${config.origin}/i/${availablePulls}` })
+      .setImage({ url: `attachment://pulls.png` })
       .setFooter({ text: 'Available Pulls' }),
   );
 

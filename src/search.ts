@@ -94,7 +94,7 @@ export function mediaMessage(media: Media): discord.Message {
   if (media?.characters?.edges.length) {
     linksGroup.push(
       new discord.Component().setLabel('View Characters').setId(
-        'characters',
+        'mcharacters',
         `${media.packId}:${media.id}`,
         '0',
       ),
@@ -391,7 +391,7 @@ export function characterDebugMessage(character: Character): discord.Message {
   return new discord.Message().addEmbed(embed);
 }
 
-export async function characterPages(
+export async function mediaCharacters(
   { mediaId, page }: { mediaId: string; page?: number },
 ): Promise<discord.Message> {
   page = page ?? 0;
@@ -424,7 +424,7 @@ export async function characterPages(
   return discord.Message.page({
     page,
     total: characters.length,
-    id: discord.join('characters', mediaId),
+    id: discord.join('mcharacters', mediaId),
     message: character,
   });
 }

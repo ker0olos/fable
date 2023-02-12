@@ -19,6 +19,7 @@ import * as discord from './discord.ts';
 import {
   Character,
   CharacterRole,
+  Inventory,
   Media,
   Mutation,
   PoolInfo,
@@ -28,6 +29,8 @@ import { NoPullsError, PoolError } from './errors.ts';
 
 export type Pull = {
   role?: CharacterRole;
+  index?: number;
+  remaining?: number;
   character: Character;
   media: Media;
   rating: Rating;
@@ -99,6 +102,8 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
     : utils.rng(gacha.variables.roles);
 
   const pool = await packs.pool({ range, role });
+
+  let inventory: Inventory | undefined = undefined;
 
   let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
@@ -202,6 +207,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
             error
             inventory {
               lastPull
+              availablePulls
             }
           }
         }
@@ -223,7 +229,9 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
         },
       })).addCharacterToInventory;
 
-      if (!response.ok) {
+      if (response.ok) {
+        inventory = response.inventory;
+      } else {
         switch (response.error) {
           case 'CHARACTER_EXISTS':
             continue;
@@ -251,6 +259,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
     media: media,
     rating: rating,
     character: character,
+    remaining: inventory?.availablePulls,
     ...poolInfo,
   };
 }
@@ -324,8 +333,12 @@ function start(
 
         message.addComponents([
           new discord.Component()
-            // deno-lint-ignore no-non-null-assertion
-            .setId(`collection`, userId!, '-1')
+            .setId(
+              `collection`,
+              // deno-lint-ignore no-non-null-assertion
+              userId!,
+              `${pull.character.packId}:${pull.character.id}`,
+            )
             .setLabel('/collection'),
         ]);
 

@@ -181,7 +181,7 @@ async function findById<T>(
     }
 
     if (packId === 'anilist') {
-      const n = utils.parseId(id);
+      const n = utils.parseInt(id);
 
       if (typeof n === 'number' && !packs.isDisabled(`anilist:${n}`)) {
         anilistIds.push(n);

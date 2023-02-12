@@ -137,7 +137,11 @@ function distance(a: string, b: string): number {
   return 100 - 100 * _distance(a, b) / (a.length + b.length);
 }
 
-function parseId(query: string): number | undefined {
+function _parseInt(query?: string): number | undefined {
+  if (query === undefined) {
+    return;
+  }
+
   const id = parseInt(query);
 
   if (!isNaN(id) && id.toString() === query) {
@@ -210,11 +214,7 @@ function verifySignature(
   return { valid, body };
 }
 
-async function text(
-  _: Request,
-  __: ConnInfo,
-  params: PathParams,
-): Promise<Response> {
+async function text(s: string | number): Promise<Uint8Array> {
   font = font ?? new Uint8Array(
     await (await fetch(
       'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
@@ -224,7 +224,7 @@ async function text(
   const text = imagescript.Image.renderText(
     font,
     28,
-    params?.text?.substring(0, 2) ?? '?',
+    `${s}`.substring(0, 2),
     0xffffffff,
     new imagescript.TextLayout({
       maxWidth: 48,
@@ -232,15 +232,7 @@ async function text(
     }),
   );
 
-  const t = await text.encode(2);
-
-  const response = new Response(t);
-
-  response.headers.set('content-type', 'image/png');
-  response.headers.set('content-length', `${t.byteLength}`);
-  response.headers.set('cache-control', 'public, max-age=604800');
-
-  return response;
+  return text.encode(2);
 }
 
 async function proxy(r: Request): Promise<Response> {
@@ -365,7 +357,7 @@ const utils = {
   distance,
   hexToInt,
   lastPullToRefillTimestamp,
-  parseId,
+  parseInt: _parseInt,
   proxy,
   randint,
   readJson,

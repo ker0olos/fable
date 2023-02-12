@@ -155,12 +155,12 @@ Deno.test('comma', () => {
   assertEquals(wrap, '100,000,000');
 });
 
-Deno.test('is id a number?', () => {
+Deno.test('parse int', () => {
   const id = '84824280';
   const notId = 'abc' + id;
 
-  assertEquals(utils.parseId(id)!, 84824280);
-  assertEquals(utils.parseId(notId)!, undefined);
+  assertEquals(utils.parseInt(id)!, 84824280);
+  assertEquals(utils.parseInt(notId)!, undefined);
 });
 
 Deno.test('decode description', async (test) => {
@@ -752,42 +752,22 @@ Deno.test('external images', async (test) => {
 
 Deno.test('text images', async (test) => {
   await test.step('5', async () => {
-    const response = await utils.text({} as any, {} as any, {
-      text: '5',
-    } as any);
+    const arrayBuffer = await utils.text(5);
 
-    assertEquals(response.status, 200);
-
-    assertEquals(response.headers.get('Content-Type'), 'image/png');
-
-    assertEquals(
-      response.headers.get('Cache-Control'),
-      'public, max-age=604800',
-    );
-
-    const image = await imagescript.decode(await response.arrayBuffer());
+    const image = await imagescript.decode(arrayBuffer);
 
     assert(image instanceof imagescript.Image);
 
     assertEquals(`${image}`, 'Image<15x39>');
   });
 
-  await test.step('?', async () => {
-    const response = await utils.text({} as any, {} as any, {} as any);
+  await test.step('999', async () => {
+    const arrayBuffer = await utils.text(999);
 
-    assertEquals(response.status, 200);
-
-    assertEquals(response.headers.get('Content-Type'), 'image/png');
-
-    assertEquals(
-      response.headers.get('Cache-Control'),
-      'public, max-age=604800',
-    );
-
-    const image = await imagescript.decode(await response.arrayBuffer());
+    const image = await imagescript.decode(arrayBuffer);
 
     assert(image instanceof imagescript.Image);
 
-    assertEquals(`${image}`, 'Image<13x39>');
+    assertEquals(`${image}`, 'Image<32x39>');
   });
 });

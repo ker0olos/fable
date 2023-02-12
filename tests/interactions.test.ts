@@ -27,6 +27,8 @@ import * as search from '../src/search.ts';
 
 import * as user from '../src/user.ts';
 
+import utils from '../src/utils.ts';
+
 import {
   Character,
   CharacterRole,
@@ -596,7 +598,7 @@ Deno.test('media', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'characters=anilist:1=0',
+              custom_id: 'mcharacters=anilist:1=0',
               label: 'View Characters',
               style: 2,
               type: 2,
@@ -1361,7 +1363,7 @@ Deno.test('media', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'characters=anilist:1=0',
+              custom_id: 'mcharacters=anilist:1=0',
               label: 'View Characters',
               style: 2,
               type: 2,
@@ -2236,7 +2238,7 @@ Deno.test('characters', async (test) => {
     );
 
     try {
-      const message = await search.characterPages({
+      const message = await search.mediaCharacters({
         mediaId: 'anilist:1',
       });
 
@@ -2254,7 +2256,7 @@ Deno.test('characters', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'characters=anilist:1=1',
+                custom_id: 'mcharacters=anilist:1=1',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -2356,7 +2358,7 @@ Deno.test('characters', async (test) => {
     );
 
     try {
-      const message = await search.characterPages({
+      const message = await search.mediaCharacters({
         mediaId: 'anilist:1',
       });
 
@@ -2454,7 +2456,7 @@ Deno.test('characters', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await search.characterPages({
+          await search.mediaCharacters({
             mediaId: 'anilist:1',
           }),
         NonFetalError,
@@ -3082,7 +3084,7 @@ Deno.test('gacha', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'collection=user-id=-1',
+                custom_id: 'collection=user-id=pack-id-2:2',
                 label: '/collection',
                 style: 2,
                 type: 2,
@@ -3719,6 +3721,12 @@ Deno.test('music', async (test) => {
 
 Deno.test('user', async (test) => {
   await test.step('now with pulls', async () => {
+    const textStub = stub(
+      utils,
+      'text',
+      () => Promise.resolve(new Uint8Array()),
+    );
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -3736,8 +3744,6 @@ Deno.test('user', async (test) => {
       } as any),
     );
 
-    config.origin = 'http://localhost:8000';
-
     try {
       const message = await user.now({
         userId: 'user',
@@ -3745,16 +3751,29 @@ Deno.test('user', async (test) => {
         channelId: 'channel',
       });
 
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(textStub, 1);
+
+      assertSpyCall(textStub, 0, {
+        args: [5],
+      });
+
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [
+            {
+              filename: 'pulls.png',
+              id: '0',
+            },
+          ],
           embeds: [
             {
               footer: {
                 text: 'Available Pulls',
               },
               image: {
-                url: 'http://localhost:8000/i/5',
+                url: 'attachment://pulls.png',
               },
               type: 'rich',
             },
@@ -3780,17 +3799,20 @@ Deno.test('user', async (test) => {
           ],
         },
       });
-
-      assertSpyCalls(fetchStub, 1);
     } finally {
-      delete config.origin;
-
+      textStub.restore();
       fetchStub.restore();
     }
   });
 
   await test.step('now with no pulls', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const textStub = stub(
+      utils,
+      'text',
+      () => Promise.resolve(new Uint8Array()),
+    );
 
     const fetchStub = stub(
       globalThis,
@@ -3809,8 +3831,6 @@ Deno.test('user', async (test) => {
       } as any),
     );
 
-    config.origin = 'http://localhost:8000';
-
     try {
       const message = await user.now({
         userId: 'guild',
@@ -3818,16 +3838,29 @@ Deno.test('user', async (test) => {
         channelId: 'channel',
       });
 
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(textStub, 1);
+
+      assertSpyCall(textStub, 0, {
+        args: [0],
+      });
+
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [
+            {
+              filename: 'pulls.png',
+              id: '0',
+            },
+          ],
           embeds: [
             {
               footer: {
                 text: 'Available Pulls',
               },
               image: {
-                url: 'http://localhost:8000/i/0',
+                url: 'attachment://pulls.png',
               },
               type: 'rich',
             },
@@ -3836,11 +3869,8 @@ Deno.test('user', async (test) => {
           components: [],
         },
       });
-
-      assertSpyCalls(fetchStub, 1);
     } finally {
-      delete config.origin;
-
+      textStub.restore();
       fetchStub.restore();
     }
   });

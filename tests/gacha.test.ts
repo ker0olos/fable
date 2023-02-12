@@ -782,6 +782,7 @@ Deno.test('valid pool', async (test) => {
         popularityChance: 0,
         popularityGreater: 2000,
         popularityLesser: 3000,
+        remaining: undefined,
         rating: new Rating({ role: CharacterRole.Main, popularity: 75 }),
         roleChance: 0,
         role: CharacterRole.Main,
@@ -887,6 +888,7 @@ Deno.test('valid pool', async (test) => {
         popularityChance: 0,
         popularityGreater: 2000,
         popularityLesser: 3000,
+        remaining: undefined,
         rating: new Rating({ role: CharacterRole.Main, popularity: 100 }),
         roleChance: 0,
         role: CharacterRole.Main,
@@ -994,6 +996,7 @@ Deno.test('valid pool', async (test) => {
         popularityChance: 0,
         popularityGreater: 100_000,
         popularityLesser: 500_000,
+        remaining: undefined,
         rating: new Rating({ role: CharacterRole.Main, popularity: 500_000 }),
         roleChance: 0,
         role: CharacterRole.Main,
@@ -1104,6 +1107,7 @@ Deno.test('valid pool', async (test) => {
         popularityChance: 0,
         popularityGreater: 2000,
         popularityLesser: 3000,
+        remaining: undefined,
         rating: new Rating({ role: CharacterRole.Main, popularity: 2500 }),
         roleChance: 0,
         role: CharacterRole.Main,
@@ -1377,6 +1381,9 @@ Deno.test('adding character to inventory', async (test) => {
             data: {
               addCharacterToInventory: {
                 ok: true,
+                inventory: {
+                  availablePulls: 2,
+                },
               },
             },
           })),
@@ -1391,6 +1398,7 @@ Deno.test('adding character to inventory', async (test) => {
 
     try {
       assertObjectMatch(await gacha.rngPull('1', '2'), {
+        remaining: 2,
         character: {
           id: 'anilist:1',
           packId: 'anilist',
