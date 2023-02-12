@@ -2,9 +2,9 @@
 
 import Ajv, { ValidateFunction } from 'https://esm.sh/ajv@8.12.0';
 
-import { bold, green, red } from 'https://deno.land/std@0.175.0/fmt/colors.ts';
+import { bold, green, red } from 'https://deno.land/std@0.177.0/fmt/colors.ts';
 
-import { AssertionError } from 'https://deno.land/std@0.175.0/testing/asserts.ts';
+import { AssertionError } from 'https://deno.land/std@0.177.0/testing/asserts.ts';
 
 import utils from './utils.ts';
 

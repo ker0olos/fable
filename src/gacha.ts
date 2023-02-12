@@ -10,7 +10,7 @@ import Rating from './rating.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import { characterMessage } from './media.ts';
+import { characterMessage } from './search.ts';
 
 import packs from './packs.ts';
 

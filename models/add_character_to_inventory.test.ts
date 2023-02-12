@@ -6,11 +6,11 @@ import {
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.175.0/testing/mock.ts';
+} from 'https://deno.land/std@0.177.0/testing/mock.ts';
 
-import { assertEquals } from 'https://deno.land/std@0.175.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.177.0/testing/asserts.ts';
 
-import { assertSnapshot } from 'https://deno.land/std@0.175.0/testing/snapshot.ts';
+import { assertSnapshot } from 'https://deno.land/std@0.177.0/testing/snapshot.ts';
 
 import {
   FakeAppend,
@@ -276,6 +276,9 @@ Deno.test('add character to inventory', async (test) => {
 
       assertEquals(response, {
         ok: true,
+        inventory: {
+          ref: 'inventory',
+        },
       });
     } finally {
       ifStub.restore();

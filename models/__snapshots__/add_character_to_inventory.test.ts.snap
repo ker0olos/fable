@@ -139,6 +139,16 @@ snapshot[`model 2`] = `
                                             in: Expr {
                                               raw: {
                                                 object: {
+                                                  inventory: Expr {
+                                                    raw: {
+                                                      from: Expr {
+                                                        raw: {
+                                                          var: "inventory",
+                                                        },
+                                                      },
+                                                      select: "ref",
+                                                    },
+                                                  },
                                                   ok: true,
                                                 },
                                               },
@@ -1144,6 +1154,16 @@ snapshot[`model 2`] = `
                                             in: Expr {
                                               raw: {
                                                 object: {
+                                                  inventory: Expr {
+                                                    raw: {
+                                                      from: Expr {
+                                                        raw: {
+                                                          var: "inventory",
+                                                        },
+                                                      },
+                                                      select: "ref",
+                                                    },
+                                                  },
                                                   ok: true,
                                                 },
                                               },

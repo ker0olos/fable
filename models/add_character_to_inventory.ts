@@ -119,6 +119,7 @@ export function addCharacter(
           },
           () => ({
             ok: true,
+            inventory: fql.Ref(inventory),
             // deno-lint-ignore no-explicit-any
           } as any),
         ),

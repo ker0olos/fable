@@ -12,7 +12,7 @@ import {
 
 import * as discord from './discord.ts';
 
-import * as search from './media.ts';
+import * as search from './search.ts';
 import * as user from './user.ts';
 
 import packs from './packs.ts';
