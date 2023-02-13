@@ -89,14 +89,14 @@ export async function now({
 export async function collection({
   userId,
   guildId,
-  page,
+  targetId,
 }: {
   userId: string;
   guildId: string;
   channelId: string;
-  page?: number;
+  targetId?: string;
 }): Promise<discord.Message> {
-  page = page ?? 0;
+  let pid: string | number = utils.parseInt(targetId) ?? targetId ?? 0;
 
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -136,8 +136,12 @@ export async function collection({
       ]);
   }
 
+  if (typeof pid === 'string') {
+    pid = characters.findIndex(({ id }) => id === targetId);
+  }
+
   const results: (Character | DisaggregatedCharacter)[] = await packs
-    .characters({ ids: characters.slice(page).map((c) => c.id) });
+    .characters({ ids: [characters[pid].id] });
 
   let message: discord.Message;
 
@@ -151,6 +155,7 @@ export async function collection({
   } else {
     const character = await packs.aggregate<Character>({
       character: results[0],
+      end: 1,
     });
 
     message = characterMessage(
@@ -165,7 +170,7 @@ export async function collection({
     );
   }
 
-  return discord.Message.page({
+  return discord.Message.anchor({
     page,
     total: characters.length,
     id: discord.join('collection', userId),

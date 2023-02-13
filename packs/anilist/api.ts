@@ -2,7 +2,12 @@ import { gql, request } from '../../src/graphql.ts';
 
 import { AniListCharacter, AniListMedia } from './types.ts';
 
-import { Character, CharacterRole, Media } from '../../src/types.ts';
+import {
+  Character,
+  CharacterEdge,
+  CharacterRole,
+  Media,
+} from '../../src/types.ts';
 
 import packs from '../../src/packs.ts';
 
@@ -189,8 +194,6 @@ export async function media(
               relationType
             }
           }
-          # FIXME view characters maxes out at 25 on anilist media
-          # (see #54)
           characters(sort: ${characterDefaultSort}, perPage: 25) {
             edges {
               node { ${characterDefaultQuery} }
@@ -242,6 +245,66 @@ export async function characters(
   } = await request({ url, query, variables });
 
   return data.Page.characters;
+}
+
+export async function mediaCharacter(
+  { id, index }: {
+    id: string;
+    index: number;
+  },
+): Promise<{
+  media?: Media;
+  character?: Character;
+  next: boolean;
+}> {
+  const query = gql`
+    query ($id: Int, $page: Int) {
+      Media(id: $id) {
+        ${mediaDefaultQuery}
+        characters(sort: ${characterDefaultSort}, page: $page, perPage: 1) {
+          pageInfo {
+            hasNextPage
+          }
+          edges {
+            node { ${characterDefaultQuery} }
+            role
+          }
+        }
+      }
+    }
+  `;
+
+  const data: {
+    Media?: AniListMedia & {
+      characters?: {
+        pageInfo: {
+          hasNextPage: boolean;
+        };
+        edges: CharacterEdge[];
+      };
+    };
+  } = await request({
+    url,
+    query,
+    variables: {
+      id,
+      // anilist pages starts from 1 not 0
+      // so 'page' is always one greater than 'index'
+      page: index + 1,
+    },
+  });
+
+  return {
+    next: Boolean(data.Media?.characters?.pageInfo.hasNextPage),
+    media: data.Media
+      ? transform({ item: data.Media as AniListMedia })
+      : undefined,
+    character: data.Media?.characters?.edges[0]?.node
+      ? transform({
+        item: data.Media?.characters?.edges[0]?.node as AniListCharacter,
+      })
+      : undefined,
+  };
 }
 
 export async function nextEpisode(

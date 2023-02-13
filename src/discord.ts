@@ -240,10 +240,13 @@ export class Component {
 
   setId(...id: string[]): Component {
     const cid = join(...id);
+
     // (see https://discord.com/developers/docs/interactions/message-components#custom-id)
-    if (cid.length <= 100) {
-      this.#data.custom_id = cid;
+    if (cid.length > 100) {
+      throw new Error(`id length (${cid.length}) is > 100`);
     }
+
+    this.#data.custom_id = cid;
     return this;
   }
 
@@ -692,38 +695,72 @@ export class Message {
   }
 
   static page(
-    { message, id, page, total }: {
-      id: string;
-      page?: number;
-      total: number;
+    { message, type, target, index, total, next }: {
+      type: string;
+      target: string;
       message: Message;
+      index: number;
+      next?: boolean;
+      total?: number;
     },
   ): Message {
-    page = page ?? 0;
+    const group: Component[] = [];
 
-    const group = [];
-
-    const prev = new Component()
-      .setId(id, `${page - 1}`)
-      .setLabel(`Prev`);
-
-    const next = new Component()
-      .setId(id, `${page + 1}`)
-      .setLabel(`Next`);
-
-    const indicator = new Component().setId('_')
-      .setLabel(`${page + 1}/${total}`)
-      .toggle();
-
-    if (page - 1 >= 0) {
-      group.push(prev);
+    if (index - 1 >= 0) {
+      group.push(
+        new Component()
+          .setId(type, target, `${index - 1}`)
+          .setLabel(`Prev`),
+      );
     }
 
-    group.push(indicator);
+    group.push(
+      new Component().setId('_')
+        .setLabel(
+          `${index + 1}/${total ? total : next ? index + 2 : index + 1}`,
+        )
+        .toggle(),
+    );
 
-    if (page + 1 < total) {
-      group.push(next);
+    if (next) {
+      group.push(
+        new Component()
+          .setId(type, target, `${index + 1}`)
+          .setLabel(`Next`),
+      );
     }
+
+    return message.insertComponents(group);
+  }
+
+  static anchor(
+    { message, type, anchor, page, total }: {
+      type: string;
+      message: Message;
+      anchor: string | number;
+      page?: number;
+      total?: number;
+    },
+  ): Message {
+    const group: Component[] = [];
+
+    group.push(
+      new Component()
+        .setId('anchor', type, `${anchor}`, 'prev')
+        .setLabel(`Prev`),
+    );
+
+    group.push(
+      new Component().setId('_')
+        .setLabel(`${page ?? '?'}${total ? `/${total}` : ''}`)
+        .toggle(),
+    );
+
+    group.push(
+      new Component()
+        .setId('anchor', type, `${anchor}`, 'next')
+        .setLabel(`Next`),
+    );
 
     return message.insertComponents(group);
   }

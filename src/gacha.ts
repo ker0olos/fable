@@ -63,7 +63,10 @@ async function forcePull(characterId: string): Promise<Pull> {
   }
 
   // aggregate the media by populating any references to other media/character objects
-  const character = await packs.aggregate<Character>({ character: results[0] });
+  const character = await packs.aggregate<Character>({
+    character: results[0],
+    end: 1,
+  });
 
   const edge = character.media?.edges?.[0];
 
@@ -156,6 +159,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
     // aggregate will filter out any disabled media
     const candidate = await packs.aggregate<Character>({
       character: results[0],
+      end: 1,
     });
 
     const edge = candidate.media?.edges?.[0];

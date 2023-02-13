@@ -211,36 +211,28 @@ const handler = async (r: Request) => {
             return gacha
               .start({ token, characterId: options['id'] as string })
               .send();
-          case 'collection':
-          case 'list':
-          case 'mm': {
-            return (await user.collection({
-              userId: member.user.id,
-              guildId,
-              channelId,
-            }))
-              .send();
-          }
+          // case 'collection':
+          // case 'list':
+          // case 'mm': {
+          //   return (await user.collection({
+          //     userId: member.user.id,
+          //     guildId,
+          //     channelId,
+          //   }))
+          //     .send();
+          // }
           case 'packs': {
-            // deno-lint-ignore no-non-null-assertion
-            const list = packs.list(subcommand! as ManifestType);
-
-            return packs
-              .embed({
-                manifest: list[0],
-                total: list.length,
-              })
-              .send();
+            return packs.embed({
+              // deno-lint-ignore no-non-null-assertion
+              type: subcommand! as ManifestType,
+            }).send();
           }
           case 'anilist': {
             // deno-lint-ignore no-non-null-assertion
             const message = await packs.anilist(subcommand!, interaction);
 
-            if (message) {
-              return message.send();
-            }
-
-            break;
+            // deno-lint-ignore no-non-null-assertion
+            return message!.send();
           }
           default: {
             break;
@@ -257,36 +249,34 @@ const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'character': {
-            // deno-lint-ignore no-non-null-assertion
-            const id = customValues![0];
-
-            return (await search.character({ id }))
-              .setType(discord.MessageType.Update)
-              .send();
-          }
-          case 'mcharacters': {
+          case 'mcharacter': {
             // deno-lint-ignore no-non-null-assertion
             const mediaId = customValues![0];
 
             // deno-lint-ignore no-non-null-assertion
-            const page = parseInt(customValues![1]);
+            const index = parseInt(customValues![1]) || 0;
 
-            return (await search.mediaCharacters({ mediaId, page }))
+            return (await search.mediaCharacter({
+              mediaId,
+              index,
+            }))
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'collection': {
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
+          // case 'collection': {
+          //   // deno-lint-ignore no-non-null-assertion
+          //   const userId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
-            const page = parseInt(customValues![1]);
-
-            return (await user.collection({ userId, guildId, channelId, page }))
-              .setType(discord.MessageType.Update)
-              .send();
-          }
+          //   return (await user.collection({
+          //     userId,
+          //     guildId,
+          //     channelId,
+          //     // deno-lint-ignore no-non-null-assertion
+          //     targetId: customValues![1],
+          //   }))
+          //     .setType(discord.MessageType.Update)
+          //     .send();
+          // }
           case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
@@ -306,18 +296,27 @@ const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
-          case 'builtin':
-          case 'manual': {
-            const list = packs.list(customType as ManifestType);
-
+          case 'anchor': {
             // deno-lint-ignore no-non-null-assertion
-            const page = parseInt(customValues![0]);
+            const type = customValues![0];
+            // deno-lint-ignore no-non-null-assertion
+            const anchor = customValues![1];
+            // deno-lint-ignore no-non-null-assertion
+            const action = customValues![2];
 
-            return packs.embed({
-              page,
-              total: list.length,
-              manifest: list[page],
-            }).setType(discord.MessageType.Update).send();
+            switch (type) {
+              case 'builtin':
+              case 'manual': {
+                return packs.embed({
+                  anchor,
+                  action,
+                  type: type as ManifestType,
+                }).setType(discord.MessageType.Update).send();
+              }
+              default:
+                break;
+            }
+            break;
           }
           default:
             break;

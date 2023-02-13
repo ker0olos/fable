@@ -4,6 +4,7 @@ import {
   assert,
   assertEquals,
   assertObjectMatch,
+  assertRejects,
 } from 'https://deno.land/std@0.177.0/testing/asserts.ts';
 
 import {
@@ -456,143 +457,202 @@ Deno.test('disabled relations', async (test) => {
 
 Deno.test('manifest embeds', async (test) => {
   await test.step('builtin packs', () => {
-    const message = packs.embed({
-      manifest: {
-        id: 'id',
-        title: 'title',
-        type: ManifestType.Builtin,
-        image: 'https://example.com/image',
-      },
-      total: 2,
-    });
+    const manifest: Manifest = {
+      id: 'pack-id',
+      type: ManifestType.Builtin,
+    };
 
-    assertEquals(message.json(), {
-      type: 4,
-      data: {
-        components: [{
-          type: 1,
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const message = packs.embed({
+        type: ManifestType.Builtin,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
           components: [{
-            custom_id: '_',
-            disabled: true,
-            label: '1/2',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: 'builtin=1',
-            label: 'Next',
-            style: 2,
-            type: 2,
+            type: 1,
+            components: [{
+              custom_id: 'anchor=builtin=pack-id=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'anchor=builtin=pack-id=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
           }],
-        }],
-        embeds: [{
-          type: 'rich',
-          description:
-            'Builtin packs are developed and maintained directly by Fable',
-        }, {
-          type: 'rich',
-          description: undefined,
-          title: 'title',
-          url: undefined,
-          thumbnail: {
-            url: 'https://example.com/image',
-          },
-        }],
-      },
-    });
+          embeds: [{
+            type: 'rich',
+            description:
+              'Builtin packs are developed and maintained directly by Fable',
+          }, {
+            type: 'rich',
+            description: undefined,
+            title: 'pack-id',
+            url: undefined,
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
   });
 
   await test.step('manual packs', () => {
-    const message = packs.embed({
-      manifest: {
-        id: 'id',
-        title: 'title',
-        type: ManifestType.Manual,
-      },
-      page: 1,
-      total: 2,
-    });
+    const manifest: Manifest = {
+      id: 'pack-id',
+      type: ManifestType.Manual,
+    };
 
-    assertEquals(message.json(), {
-      type: 4,
-      data: {
-        components: [{
-          type: 1,
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const message = packs.embed({
+        type: ManifestType.Manual,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
           components: [{
-            custom_id: 'manual=0',
-            label: 'Prev',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: '_',
-            disabled: true,
-            label: '2/2',
-            style: 2,
-            type: 2,
+            type: 1,
+            components: [{
+              custom_id: 'anchor=manual=pack-id=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'anchor=manual=pack-id=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
           }],
-        }],
-        embeds: [{
-          type: 'rich',
-          description:
-            'The following third-party packs were manually added by your server members',
-        }, {
-          type: 'rich',
-          description: undefined,
-          title: 'title',
-          url: undefined,
-        }],
-      },
-    });
+          embeds: [{
+            type: 'rich',
+            description:
+              'The following third-party packs were manually added by your server members',
+          }, {
+            type: 'rich',
+            description: undefined,
+            title: 'pack-id',
+            url: undefined,
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
   });
 
-  await test.step('use id instead of title', () => {
-    const message = packs.embed({
-      manifest: {
-        id: 'id',
-        type: ManifestType.Manual,
-      },
-      total: 1,
-    });
+  await test.step('use title and id ', () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      type: ManifestType.Builtin,
+      title: 'Title',
+    };
 
-    assertEquals(message.json(), {
-      type: 4,
-      data: {
-        embeds: [{
-          type: 'rich',
-          description:
-            'The following third-party packs were manually added by your server members',
-        }, {
-          type: 'rich',
-          description: undefined,
-          title: 'id',
-          url: undefined,
-        }],
-        components: [{
-          type: 1,
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const message = packs.embed({
+        type: ManifestType.Builtin,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
           components: [{
-            custom_id: '_',
-            disabled: true,
-            label: '1/1',
-            style: 2,
-            type: 2,
+            type: 1,
+            components: [{
+              custom_id: 'anchor=builtin=pack-id=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'anchor=builtin=pack-id=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
           }],
-        }],
-      },
-    });
+          embeds: [{
+            type: 'rich',
+            description:
+              'Builtin packs are developed and maintained directly by Fable',
+          }, {
+            type: 'rich',
+            description: undefined,
+            title: 'Title',
+            url: undefined,
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
   });
 
   await test.step('no manifest', () => {
-    const message = packs.embed({ total: 1 });
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
 
-    assertEquals(message.json(), {
-      type: 4,
-      data: {
-        components: [],
-        embeds: [{
-          type: 'rich',
-          description: 'No packs have been added yet',
-        }],
-      },
-    });
+    try {
+      const message = packs.embed({
+        type: ManifestType.Builtin,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [],
+          embeds: [{
+            type: 'rich',
+            description: 'No packs have been added yet',
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
   });
 });
 
@@ -1696,6 +1756,285 @@ Deno.test('search for characters', async (test) => {
       const results = await packs.characters({ search: 'd' });
 
       assertEquals(results.length, 0);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+});
+
+Deno.test('media character', async (test) => {
+  await test.step('anilist', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      characters: {
+        pageInfo: {
+          hasNextPage: true,
+        },
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: '2',
+            name: {
+              full: 'name',
+            },
+          },
+        }],
+      } as any,
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Media: media,
+            },
+          })),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const result = await packs.mediaCharacter({
+        mediaId: 'anilist:1',
+        index: 0,
+      });
+
+      assertEquals(result, {
+        next: true,
+        media: {
+          id: '1',
+          packId: 'anilist',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          characters: {
+            edges: [
+              {
+                role: 'MAIN',
+                node: {
+                  id: '2',
+                  packId: 'anilist',
+                  name: {
+                    english: 'name',
+                  },
+                },
+              },
+            ],
+          } as any,
+        },
+        character: {
+          id: '2',
+          packId: 'anilist',
+          name: {
+            english: 'name',
+          },
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('pack', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [{
+          id: '1',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          characters: [{
+            role: CharacterRole.Main,
+            characterId: '2',
+          }],
+        }],
+      },
+      characters: {
+        new: [{
+          id: '2',
+          name: {
+            english: 'name',
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const result = await packs.mediaCharacter({
+        mediaId: 'pack-id:1',
+        index: 0,
+      });
+
+      assertEquals(result, {
+        total: 1,
+        next: false,
+        media: {
+          id: '1',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          relations: {
+            edges: [],
+          },
+          characters: {
+            edges: [
+              {
+                role: 'MAIN',
+                node: {
+                  id: '2',
+                  packId: 'pack-id',
+                  name: {
+                    english: 'name',
+                  },
+                },
+              },
+            ],
+          } as any,
+        },
+        character: {
+          id: '2',
+          packId: 'pack-id',
+          name: {
+            english: 'name',
+          },
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('pack with no characters', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [{
+          id: '1',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          characters: [],
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const result = await packs.mediaCharacter({
+        mediaId: 'pack-id:1',
+        index: 0,
+      });
+
+      assertEquals(result, {
+        total: 0,
+        next: false,
+        character: undefined,
+        media: {
+          id: '1',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          relations: {
+            edges: [],
+          },
+          characters: {
+            edges: [],
+          },
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled media', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        conflicts: ['anilist:1'],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      await assertRejects(
+        async () =>
+          await packs.mediaCharacter({
+            mediaId: 'anilist:1',
+            index: 0,
+          }),
+        Error,
+        '404',
+      );
     } finally {
       fetchStub.restore();
       listStub.restore();

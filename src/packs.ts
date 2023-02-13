@@ -45,6 +45,7 @@ const packs = {
   searchMany,
   media,
   characters,
+  mediaCharacter,
   aggregate,
   anilist,
   pool,
@@ -111,13 +112,15 @@ function dict(): { [key: string]: Manifest } {
 }
 
 function embed(
-  { manifest, page, total }: {
-    manifest?: Manifest;
-    page?: number;
-    total: number;
+  { type, anchor, action }: {
+    type: ManifestType;
+    anchor?: string;
+    action?: string;
   },
 ): discord.Message {
-  if (!manifest) {
+  const list = packs.list(type);
+
+  if (!list.length) {
     const embed = new discord.Embed().setDescription(
       'No packs have been added yet',
     );
@@ -125,6 +128,16 @@ function embed(
     return new discord.Message()
       .addEmbed(embed);
   }
+
+  let index = anchor ? list.findIndex(({ id }) => anchor === id) : 0;
+
+  if (action === 'prev') {
+    index = index - 1 < 0 ? list.length - 1 : index - 1;
+  } else if (action === 'next') {
+    index = index + 1 < list.length ? index + 1 : 0;
+  }
+
+  const manifest = list[index];
 
   const disclaimer = manifest.type === ManifestType.Builtin
     ? new discord.Embed().setDescription(
@@ -145,38 +158,48 @@ function embed(
     throw new Error(`Manifest "${manifest.id}" type is undefined`);
   }
 
-  const message = discord.Message.page({
-    page,
-    total,
-    id: manifest.type,
-    message: new discord.Message()
-      .addEmbed(disclaimer)
-      .addEmbed(pack),
-  });
+  const message = new discord.Message()
+    .addEmbed(disclaimer)
+    .addEmbed(pack);
 
-  return message;
+  return discord.Message.anchor({
+    page: index + 1,
+    total: list.length,
+    anchor: manifest.id,
+    message,
+    type,
+  });
+}
+
+function parseId(
+  literal: string,
+  defaultPackId?: string,
+): [string | undefined, string | undefined] {
+  const split = /^([-_a-z0-9]+):([-_a-z0-9]+)$/.exec(literal);
+
+  if (split?.length === 3) {
+    const [, packId, id] = split;
+    return [packId, id];
+  } else if (defaultPackId && /^([-_a-z0-9]+)$/.test(literal)) {
+    return [defaultPackId, literal];
+  }
+
+  return [undefined, undefined];
 }
 
 async function findById<T>(
   key: 'media' | 'characters',
   ids: string[],
-  defaultId?: string,
+  defaultPackId?: string,
 ): Promise<{ [key: string]: T }> {
   const anilistIds: number[] = [];
 
   const results: { [key: string]: T } = {};
 
   for (const literal of [...new Set(ids)]) {
-    let id: string;
-    let packId: string;
+    const [packId, id] = parseId(literal, defaultPackId);
 
-    const split = /^([-_a-z0-9]+):([-_a-z0-9]+)$/.exec(literal);
-
-    if (split?.length === 3) {
-      [, packId, id] = split;
-    } else if (defaultId && /^([-_a-z0-9]+)$/.test(literal)) {
-      [packId, id] = [defaultId, literal];
-    } else {
+    if (!packId || !id) {
       continue;
     }
 
@@ -338,10 +361,70 @@ async function characters({ ids, search }: {
   }
 }
 
-async function aggregate<T>({ media, character }: {
+async function mediaCharacter({ mediaId, index }: {
+  mediaId: string;
+  index: number;
+}): Promise<
+  {
+    media?: Media | DisaggregatedMedia;
+    character?: Character | DisaggregatedCharacter;
+    total?: number;
+    next: boolean;
+  }
+> {
+  const [packId, id] = parseId(mediaId);
+
+  if (packs.isDisabled(mediaId) || !packId || !id) {
+    throw new Error('404');
+  }
+
+  if (packId === 'anilist') {
+    return _anilist.mediaCharacter({
+      id,
+      index,
+    });
+  } else {
+    // search for the id in packs
+    const match: Media | DisaggregatedMedia | undefined = dict()[packId]?.media
+      ?.new?.find((
+        m,
+      ) => m.id === id);
+
+    if (!match) {
+      return { next: false };
+    }
+
+    match.packId = packId;
+
+    const total = match?.characters?.length ?? 0;
+
+    const media = await aggregate<Media>({
+      media: match,
+      start: index,
+      end: 1,
+    });
+
+    return {
+      total,
+      media,
+      character: media?.characters?.edges?.[0]?.node,
+      next: index + 1 < total,
+    };
+  }
+}
+
+async function aggregate<T>({ media, character, start, end }: {
   media?: Media | DisaggregatedMedia;
   character?: Character | DisaggregatedCharacter;
+  start?: number;
+  end?: number;
 }): Promise<T> {
+  start = start || 0;
+
+  if (end) {
+    end = start + (end || 1);
+  }
+
   if (media) {
     if (
       (media.relations && 'edges' in media.relations) ||
@@ -352,16 +435,21 @@ async function aggregate<T>({ media, character }: {
 
     media = media as DisaggregatedMedia;
 
-    const mediaIds = (media.relations instanceof Array ? media.relations : [])
+    const mediaIds = (media.relations instanceof Array
+      ? media.relations.slice(start, end)
+      : [])
       .map((
         { mediaId },
-      ) => mediaId);
+      ) =>
+        mediaId
+      );
 
-    const characterIds =
-      (media.characters instanceof Array ? media.characters : [])
-        .map((
-          { characterId },
-        ) => characterId);
+    const characterIds = (media.characters instanceof Array
+      ? media.characters.slice(start, end)
+      : [])
+      .map((
+        { characterId },
+      ) => characterId);
 
     const [mediaRefs, characterRefs] = await Promise.all([
       findById<Media>('media', mediaIds, media.packId),
@@ -371,14 +459,14 @@ async function aggregate<T>({ media, character }: {
     const t: Media = {
       ...media,
       relations: {
-        edges: media.relations
+        edges: media.relations?.slice(start, end)
           ?.map(({ relation, mediaId }) => ({
             relation,
             node: mediaRefs[mediaId],
           })).filter(({ node }) => Boolean(node)) ?? [],
       },
       characters: {
-        edges: media.characters
+        edges: media.characters?.slice(start, end)
           ?.map(({ role, characterId }) => ({
             role,
             node: characterRefs[characterId],
@@ -394,10 +482,14 @@ async function aggregate<T>({ media, character }: {
 
     character = character as DisaggregatedCharacter;
 
-    const mediaIds = (character.media instanceof Array ? character.media : [])
+    const mediaIds = (character.media instanceof Array
+      ? character.media.slice(start, end)
+      : [])
       .map((
         { mediaId },
-      ) => mediaId);
+      ) =>
+        mediaId
+      );
 
     const [mediaRefs] = [
       await findById<Media>('media', mediaIds, character.packId),
@@ -406,7 +498,7 @@ async function aggregate<T>({ media, character }: {
     const t: Character = {
       ...character,
       media: {
-        edges: character.media
+        edges: character.media?.slice(start, end)
           ?.map(({ role, mediaId }) => ({
             role,
             node: mediaRefs[mediaId],
@@ -478,7 +570,11 @@ function isDisabled(id: string): boolean {
   return disabled[id];
 }
 
-function formatToString(format: MediaFormat): string {
+function formatToString(format?: MediaFormat): string {
+  if (!format || format === MediaFormat.Music) {
+    return '';
+  }
+
   return utils.capitalize(
     format
       .replace(/TV_SHORT|OVA|ONA/, 'Short')
@@ -494,22 +590,21 @@ function mediaToString(
 ): string {
   const title = packs.aliasToArray(media.title, 40)[0];
 
-  switch (media.format) {
-    case MediaFormat.Music:
-    case MediaFormat.Internet:
-      return title;
-    default:
-      break;
-  }
-
   switch (relation) {
     case MediaRelation.Prequel:
     case MediaRelation.Sequel:
     case MediaRelation.SpinOff:
     case MediaRelation.SideStory:
-      return `${title} (${utils.capitalize(relation)})`;
-    default:
-      return `${title} (${formatToString(media.format)})`;
+      return [title, `(${utils.capitalize(relation)})`].join(' ');
+    default: {
+      const format = formatToString(media.format);
+
+      if (!format) {
+        return title;
+      }
+
+      return [title, `(${format})`].join(' ');
+    }
   }
 }
 

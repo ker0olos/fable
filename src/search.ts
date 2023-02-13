@@ -36,7 +36,7 @@ export async function media(
   }
 
   // aggregate the media by populating any references to other media/characters
-  const media = await packs.aggregate<Media>({ media: results[0] });
+  const media = await packs.aggregate<Media>({ media: results[0], end: 4 });
 
   if (debug) {
     return mediaDebugMessage(media);
@@ -94,9 +94,8 @@ export function mediaMessage(media: Media): discord.Message {
   if (media?.characters?.edges.length) {
     linksGroup.push(
       new discord.Component().setLabel('View Characters').setId(
-        'mcharacters',
+        'mcharacter',
         `${media.packId}:${media.id}`,
-        '0',
       ),
     );
   }
@@ -195,7 +194,10 @@ export async function character(
   }
 
   // aggregate the media by populating any references to other media/character objects
-  const character = await packs.aggregate<Character>({ character: results[0] });
+  const character = await packs.aggregate<Character>({
+    character: results[0],
+    end: 4,
+  });
 
   if (debug) {
     return characterDebugMessage(character);
@@ -391,41 +393,51 @@ export function characterDebugMessage(character: Character): discord.Message {
   return new discord.Message().addEmbed(embed);
 }
 
-export async function mediaCharacters(
-  { mediaId, page }: { mediaId: string; page?: number },
+export async function mediaCharacter(
+  { mediaId, index }: {
+    mediaId: string;
+    index: number;
+  },
 ): Promise<discord.Message> {
-  page = page ?? 0;
+  const { character: node, media, next, total } = await packs.mediaCharacter({
+    mediaId,
+    index,
+  });
 
-  const results = await packs.media({ ids: [mediaId] });
-
-  // aggregate the media by populating any references to other media/characters
-  const media = await packs.aggregate<Media>({ media: results[0] });
+  if (!media) {
+    throw new Error('404');
+  }
 
   const titles = packs.aliasToArray(media.title);
 
-  // sort characters by popularity
-  const characters = media.characters?.edges;
-
-  if (!characters?.length) {
-    throw new NonFetalError(
-      `${packs.aliasToArray(media.title)[0]} contains no characters`,
-    );
+  if (!node) {
+    throw new NonFetalError(`${titles[0]} contains no characters`);
   }
 
-  const character = characterMessage(characters[page].node, {
+  if (packs.isDisabled(`${node.packId}:${node.id}`)) {
+    throw new NonFetalError('character is disabled or invalid');
+  }
+
+  const character = await packs.aggregate<Character>({
+    character: node,
+    end: 1,
+  });
+
+  const message = characterMessage(character, {
     relations: false,
-  })
-    .addComponents([
-      new discord.Component()
-        .setLabel(titles[0])
-        .setId('media', mediaId),
-    ]);
+  }).addComponents([
+    new discord.Component()
+      .setLabel(titles[0])
+      .setId('media', mediaId),
+  ]);
 
   return discord.Message.page({
-    page,
-    total: characters.length,
-    id: discord.join('mcharacters', mediaId),
-    message: character,
+    total,
+    type: 'mcharacter',
+    target: mediaId,
+    message,
+    index,
+    next,
   });
 }
 
