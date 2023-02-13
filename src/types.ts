@@ -16,7 +16,6 @@ export enum MediaFormat {
   Manga = 'MANGA',
   Novel = 'NOVEL',
   OneShot = 'ONE_SHOT',
-  Internet = 'INTERNET',
 }
 
 export enum MediaRelation {
@@ -64,7 +63,7 @@ export interface Media {
   id: string;
   packId?: string;
   type: MediaType;
-  format: MediaFormat;
+  format?: MediaFormat;
   title: Alias;
   description?: string;
   popularity?: number;
