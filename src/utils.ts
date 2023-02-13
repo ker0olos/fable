@@ -6,8 +6,6 @@ import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weih
 
 import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
 
-import { ConnInfo, PathParams } from 'https://deno.land/x/sift@0.6.0/mod.ts';
-
 export enum ImageSize {
   Large = 'large', // 450x635,
   Medium = 'medium', // 230x325
@@ -159,28 +157,24 @@ function decodeDescription(s?: string): string | undefined {
   s = s.replaceAll('&#039;', '\'');
   s = s.replaceAll('&quot;', '"');
   s = s.replaceAll('&apos;', '\'');
+  s = s.replaceAll('&rsquo;', '\'');
   s = s.replaceAll('&amp;', '&');
 
-  s = s.replace(/~!.+!~/gm, '');
-  s = s.replace(/\|\|.+\|\|/gm, '');
+  s = s.replace(/~![\S\s]+!~/gm, '');
+  s = s.replace(/\|\|[\S\s]+\|\|/gm, '');
 
-  s = s.replace(/<i.*?>(.*?)<\/?i>/g, (_, s) => `*${s.trim()}*`);
-  s = s.replace(/<b.*?>(.*?)<\/?b>/g, (_, s) => `**${s.trim()}**`);
+  s = s.replace(/<i.*?>([\S\s]*?)<\/?i>/g, (_, s) => `*${s.trim()}*`);
+  s = s.replace(/<b.*?>([\S\s]*?)<\/?b>/g, (_, s) => `**${s.trim()}**`);
   s = s.replace(
-    /<strike.*?>(.*?)<\/?strike>/g,
+    /<strike.*?>([\S\s]*)<\/?strike>/g,
     (_, s) => `~~${s.trim()}~~`,
   );
 
   s = s.replace(/<\/?br\/?>|<\/?hr\/?>/gm, '\n');
 
-  s = s.replace(/<a.*?href=("|')(.*?)("|').*?>(.*?)<\/?a>/g, '[$4]($2)');
+  s = s.replace(/<a.*?href=("|')(.*?)("|').*?>([\S\s]*?)<\/?a>/g, '[$4]($2)');
 
-  // s = s.replace(/<a.*?href=("|')(.*?)("|').*?>(.*?)<\/a>/g, '$4');
-  // s = s.replace(/\[(.*)\]\((.*)\)/g, '$1');
-  // s = s.replace(/(?:https?):\/\/[\n\S]+/gm, '');
-
-  // max characters for discord descriptions is 4096
-  return truncate(s, 4096);
+  return s;
 }
 
 function hexToUint8Array(hex: string): Uint8Array | undefined {

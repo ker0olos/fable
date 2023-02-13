@@ -168,6 +168,7 @@ Deno.test('decode description', async (test) => {
     assertEquals(utils.decodeDescription('&amp;'), '&');
     assertEquals(utils.decodeDescription('&quot;'), '"');
     assertEquals(utils.decodeDescription('&apos;'), '\'');
+    assertEquals(utils.decodeDescription('&rsquo;'), '\'');
     assertEquals(utils.decodeDescription('&#039;'), '\'');
     assertEquals(utils.decodeDescription('&lt;'), '<');
     assertEquals(utils.decodeDescription('&gt;'), '>');
@@ -177,6 +178,11 @@ Deno.test('decode description', async (test) => {
     assertEquals(
       utils.decodeDescription('<a href="https://goolge/com/page">page</a>'),
       '[page](https://goolge/com/page)',
+    );
+
+    assertEquals(
+      utils.decodeDescription('<a href="https://goolge/com/page">pa\n\nge</a>'),
+      '[pa\n\nge](https://goolge/com/page)',
     );
 
     assertEquals(
@@ -201,9 +207,9 @@ Deno.test('decode description', async (test) => {
 
   await test.step('transform html to markdown', () => {
     assertEquals(utils.decodeDescription('<i>abc</i>'), '*abc*');
-    assertEquals(utils.decodeDescription('<i> abc <i>'), '*abc*');
+    assertEquals(utils.decodeDescription('<i> a\nbc  \n <i>'), '*a\nbc*');
     assertEquals(utils.decodeDescription('<b>abc</b>'), '**abc**');
-    assertEquals(utils.decodeDescription('<b>abc   <b>'), '**abc**');
+    assertEquals(utils.decodeDescription('<b>ab\nc \n  <b>'), '**ab\nc**');
     assertEquals(utils.decodeDescription('<strike>abc</strike>'), '~~abc~~');
     assertEquals(utils.decodeDescription('<strike>   abc<strike>'), '~~abc~~');
     assertEquals(utils.decodeDescription('<br></br><br/>'), '\n\n\n');
@@ -212,7 +218,9 @@ Deno.test('decode description', async (test) => {
 
   await test.step('remove certain tags', () => {
     assertEquals(utils.decodeDescription('~!abc!~'), '');
+    assertEquals(utils.decodeDescription('~!a\n\nbc!~'), '');
     assertEquals(utils.decodeDescription('||abc||'), '');
+    assertEquals(utils.decodeDescription('||a\nb\nc||'), '');
   });
 });
 
