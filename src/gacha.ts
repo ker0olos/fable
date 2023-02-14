@@ -189,6 +189,8 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           $userId: String!
           $guildId: String!
           $characterId: String!
+          $mediaId: String!
+          $rating: Int!
           $pool: Int!
           $popularityChance: Int!
           $popularityGreater: Int!
@@ -200,6 +202,8 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
             userId: $userId
             guildId: $guildId
             characterId: $characterId
+            mediaId: $mediaId
+            rating: $rating
             pool: $pool
             popularityChance: $popularityChance
             popularityGreater: $popularityGreater
@@ -229,6 +233,8 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           userId,
           guildId,
           characterId,
+          mediaId: `${edge.node.packId}:${edge.node.id}`,
+          rating: rating.stars,
           ...poolInfo,
         },
       })).addCharacterToInventory;

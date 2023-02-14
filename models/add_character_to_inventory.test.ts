@@ -190,6 +190,8 @@ Deno.test('add character to inventory', async (test) => {
     try {
       const response = addCharacter({
         characterId: 'character_id',
+        mediaId: 'media_id',
+        rating: 4,
         inventory: 'inventory',
         instance: 'instance',
         user: 'user',
@@ -230,6 +232,8 @@ Deno.test('add character to inventory', async (test) => {
           'character' as any,
           {
             id: 'character_id',
+            mediaId: 'media_id',
+            rating: 4,
             inventory: {
               ref: 'inventory',
             },

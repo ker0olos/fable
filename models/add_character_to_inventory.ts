@@ -21,6 +21,8 @@ import {
 
 export interface Character {
   id: StringExpr;
+  mediaId: StringExpr;
+  rating: NumberExpr;
   history: History[];
   inventory: RefExpr;
   instance: RefExpr;
@@ -41,6 +43,8 @@ export interface History {
 
 export function addCharacter(
   {
+    rating,
+    mediaId,
     characterId,
     inventory,
     instance,
@@ -52,6 +56,8 @@ export function addCharacter(
     roleChance,
     role,
   }: {
+    rating: NumberExpr;
+    mediaId: StringExpr;
     characterId: StringExpr;
     inventory: InventoryExpr;
     instance: InstanceExpr;
@@ -86,6 +92,8 @@ export function addCharacter(
         fql.Let(
           {
             createdCharacter: fql.Create<Character>('character', {
+              rating,
+              mediaId,
               id: characterId,
               inventory: fql.Ref(inventory),
               instance: fql.Ref(instance),
@@ -136,6 +144,8 @@ export default function (client: Client): (() => Promise<void>)[] {
         userId: string,
         guildId: string,
         characterId: string,
+        mediaId: string,
+        rating: number,
         pool: number,
         popularityChance: number,
         popularityGreater: number,
@@ -158,6 +168,8 @@ export default function (client: Client): (() => Promise<void>)[] {
           },
           ({ inventory, instance, user }) =>
             addCharacter({
+              rating,
+              mediaId,
               characterId,
               inventory,
               instance,

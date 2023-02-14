@@ -136,6 +136,16 @@ snapshot[`model 1`] = `
                                                                     select: "ref",
                                                                   },
                                                                 },
+                                                                mediaId: Expr {
+                                                                  raw: {
+                                                                    var: "mediaId",
+                                                                  },
+                                                                },
+                                                                rating: Expr {
+                                                                  raw: {
+                                                                    var: "rating",
+                                                                  },
+                                                                },
                                                                 user: Expr {
                                                                   raw: {
                                                                     from: Expr {
@@ -992,6 +1002,8 @@ snapshot[`model 1`] = `
                             "userId",
                             "guildId",
                             "characterId",
+                            "mediaId",
+                            "rating",
                             "pool",
                             "popularityChance",
                             "popularityGreater",
@@ -1151,6 +1163,16 @@ snapshot[`model 1`] = `
                                                                     select: "ref",
                                                                   },
                                                                 },
+                                                                mediaId: Expr {
+                                                                  raw: {
+                                                                    var: "mediaId",
+                                                                  },
+                                                                },
+                                                                rating: Expr {
+                                                                  raw: {
+                                                                    var: "rating",
+                                                                  },
+                                                                },
                                                                 user: Expr {
                                                                   raw: {
                                                                     from: Expr {
@@ -2007,6 +2029,8 @@ snapshot[`model 1`] = `
                             "userId",
                             "guildId",
                             "characterId",
+                            "mediaId",
+                            "rating",
                             "pool",
                             "popularityChance",
                             "popularityGreater",
