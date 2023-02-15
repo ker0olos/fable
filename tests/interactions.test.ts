@@ -2649,7 +2649,7 @@ Deno.test('media characters', async (test) => {
               {
                 custom_id: '_',
                 disabled: true,
-                label: '1/2',
+                label: '1',
                 style: 2,
                 type: 2,
               },

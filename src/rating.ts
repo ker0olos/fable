@@ -9,11 +9,25 @@ import gacha from './gacha.ts';
 import { emotes } from './config.ts';
 
 export default class Rating {
-  #stars: number;
+  #stars = 0;
 
   constructor(
-    { role, popularity }: { role?: CharacterRole; popularity: number },
+    { role, popularity, stars }: {
+      stars?: number;
+      role?: CharacterRole;
+      popularity?: number;
+    },
   ) {
+    if (typeof stars === 'number') {
+      this.#stars = stars;
+      return;
+    }
+
+    if (!popularity) {
+      this.#stars = 0;
+      return;
+    }
+
     if (role === CharacterRole.Background || popularity < 50_000) {
       this.#stars = 1;
     } //
@@ -42,14 +56,10 @@ export default class Rating {
       } else {
         this.#stars = 4;
       }
-    } //
-    //
-    else {
+    } else {
       captureException(
         `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
       );
-
-      this.#stars = 0;
     }
   }
 

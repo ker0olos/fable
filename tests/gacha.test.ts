@@ -1578,6 +1578,18 @@ Deno.test('rating', async (test) => {
     );
   });
 
+  await test.step('fixed rating', () => {
+    const rating = new Rating({
+      stars: 1,
+    });
+
+    assertEquals(rating.stars, 1);
+    assertEquals(
+      rating.emotes,
+      '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+    );
+  });
+
   await test.step('fails', async (test) => {
     await test.step('test', () => {
       const rating = new Rating({

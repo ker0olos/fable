@@ -717,7 +717,7 @@ export class Message {
     group.push(
       new Component().setId('_')
         .setLabel(
-          `${index + 1}/${total ? total : next ? index + 2 : index + 1}`,
+          `${index + 1}${total ? `/${total}` : ''}`,
         )
         .toggle(),
     );
@@ -734,19 +734,20 @@ export class Message {
   }
 
   static anchor(
-    { message, type, anchor, page, total }: {
+    { message, type, anchor, page, total, id }: {
       type: string;
       message: Message;
       anchor: string | number;
       page?: number;
       total?: number;
+      id?: string;
     },
   ): Message {
     const group: Component[] = [];
 
     group.push(
       new Component()
-        .setId('anchor', type, `${anchor}`, 'prev')
+        .setId('anchor', type, id ?? '', `${anchor}`, 'prev')
         .setLabel(`Prev`),
     );
 
@@ -758,7 +759,7 @@ export class Message {
 
     group.push(
       new Component()
-        .setId('anchor', type, `${anchor}`, 'next')
+        .setId('anchor', type, id ?? '', `${anchor}`, 'next')
         .setLabel(`Next`),
     );
 

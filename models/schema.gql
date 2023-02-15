@@ -83,10 +83,19 @@ type Gacha @embedded {
 #   to: User!
 # }
 
+type CharacterNode @embedded {
+  character: Character
+  anchor: String
+  total: Int!
+}
+
 type Query {
   #
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")
+  #
+  getUserCharacters(userId: String!, guildId: String!, on: String, before: String, after: String): CharacterNode!
+    @resolver(name: "get_user_characters")
   #
   findCharacter(characterId: String!, guildId: String!): Character
     @resolver(name: "find_character")

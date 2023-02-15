@@ -479,7 +479,7 @@ Deno.test('manifest embeds', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'anchor=builtin=pack-id=prev',
+              custom_id: 'anchor=builtin==pack-id=prev',
               label: 'Prev',
               style: 2,
               type: 2,
@@ -490,7 +490,7 @@ Deno.test('manifest embeds', async (test) => {
               style: 2,
               type: 2,
             }, {
-              custom_id: 'anchor=builtin=pack-id=next',
+              custom_id: 'anchor=builtin==pack-id=next',
               label: 'Next',
               style: 2,
               type: 2,
@@ -536,7 +536,7 @@ Deno.test('manifest embeds', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'anchor=manual=pack-id=prev',
+              custom_id: 'anchor=manual==pack-id=prev',
               label: 'Prev',
               style: 2,
               type: 2,
@@ -547,7 +547,7 @@ Deno.test('manifest embeds', async (test) => {
               style: 2,
               type: 2,
             }, {
-              custom_id: 'anchor=manual=pack-id=next',
+              custom_id: 'anchor=manual==pack-id=next',
               label: 'Next',
               style: 2,
               type: 2,
@@ -594,7 +594,7 @@ Deno.test('manifest embeds', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'anchor=builtin=pack-id=prev',
+              custom_id: 'anchor=builtin==pack-id=prev',
               label: 'Prev',
               style: 2,
               type: 2,
@@ -605,7 +605,7 @@ Deno.test('manifest embeds', async (test) => {
               style: 2,
               type: 2,
             }, {
-              custom_id: 'anchor=builtin=pack-id=next',
+              custom_id: 'anchor=builtin==pack-id=next',
               label: 'Next',
               style: 2,
               type: 2,

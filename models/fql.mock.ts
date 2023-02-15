@@ -9,10 +9,31 @@ export const FakeIndex = () => stub(fql, 'Index', (name) => name as any);
 export const FakeRef = () =>
   stub(fql, 'Ref', (obj: any) => ({ ref: obj }) as any);
 
-export const FakeVar = () => stub(fql, 'Var', (name) => name as any);
+export const FakeVar = (obj?: any) =>
+  stub(
+    fql,
+    'Var',
+    (name) =>
+      (obj?.[name as string]
+        ? JSON.parse(JSON.stringify(obj?.[name as string]))
+        : name) as any,
+  );
+
 export const FakeLet = () => stub(fql, 'Let', (params, cb) => cb(params));
-export const FakeGet = () => stub(fql, 'Get', (r) => r);
+
+export const FakeGet = () =>
+  stub(fql, 'Get', (refOrMatch) => {
+    if (Array.isArray(refOrMatch)) {
+      return refOrMatch.shift();
+    } else {
+      return refOrMatch;
+    }
+  });
+
 export const FakeAppend = () => stub(fql, 'Append', (a: any, b: any) => [a, b]);
+
+export const FakeLength = () =>
+  stub(fql, 'Length', (array: any) => array.length);
 
 export const FakeGTE = () => stub(fql, 'GTE', (a: any, b: any) => a >= b);
 export const FakeLTE = () => stub(fql, 'LTE', (a: any, b: any) => a <= b);
@@ -20,11 +41,47 @@ export const FakeLTE = () => stub(fql, 'LTE', (a: any, b: any) => a <= b);
 export const FakeSubtract = () =>
   stub(fql, 'Subtract', (a: any, b: any) => a - b);
 
-export const FakeAnd = () => stub(fql, 'And', (a: any, b: any) => a && b);
-export const FakeIsNonEmpty = () =>
-  stub(fql, 'IsNonEmpty', ((match: any) => Boolean(match)) as any);
+export const FakeIsNull = () =>
+  stub(fql, 'IsNull', (a: any) => a === undefined);
 
-export const FakeSelect = (obj?: any) => stub(fql, 'Select', () => obj);
+export const FakeAnd = () => stub(fql, 'And', (a: any, b: any) => a && b);
+
+export const FakeId = () => stub(fql, 'Id', (_: any, id: any) => id);
+
+export const FakePaginate = () =>
+  stub(fql, 'Paginate', (set: any, opts?: any) => {
+    if (opts['before']) {
+      set = set.toReversed();
+      const index = set.findIndex((item: any) => item === opts['before']);
+      if (index !== -1) {
+        set.splice(index, 1);
+        return set.slice(index, opts['size']);
+      }
+      return [];
+    }
+
+    if (opts['after']) {
+      const index = set.findIndex((item: any) => item === opts['after']);
+      if (index !== -1) {
+        return set.slice(index, opts['size']);
+      }
+      return [];
+    }
+
+    return set.slice(0, opts['size']);
+  });
+
+export const FakeIsNonEmpty = () =>
+  stub(fql, 'IsNonEmpty', (match: any) => {
+    return (Array.isArray(match) ? match.length > 0 : Boolean(match)) as any;
+  });
+
+export const FakeReverse = () =>
+  stub(fql, 'Reverse', (array: any) => array.toReversed() as any);
+
+export const FakeSelect = (obj?: any) =>
+  stub(fql, 'Select', (_, __, _d) => obj === undefined ? _d : obj);
+
 export const FakeMatch = (obj?: any) =>
   stub(
     fql,

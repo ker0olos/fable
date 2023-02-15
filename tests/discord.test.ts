@@ -583,6 +583,42 @@ Deno.test('page messages', async (test) => {
     });
   });
 
+  await test.step('1/?', () => {
+    const message = discord.Message.page({
+      index: 0,
+      type: 'type',
+      target: 'target',
+      next: true,
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          title: 'title',
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: '_',
+            disabled: true,
+            label: '1',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'type=target=1',
+            label: 'Next',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+
   await test.step('1/1', () => {
     const message = discord.Message.page({
       index: 0,
@@ -637,7 +673,7 @@ Deno.test('anchor messages', async (test) => {
         components: [{
           type: 1,
           components: [{
-            custom_id: 'anchor=type=anchor=prev',
+            custom_id: 'anchor=type==anchor=prev',
             label: 'Prev',
             style: 2,
             type: 2,
@@ -648,7 +684,49 @@ Deno.test('anchor messages', async (test) => {
             style: 2,
             type: 2,
           }, {
-            custom_id: 'anchor=type=anchor=next',
+            custom_id: 'anchor=type==anchor=next',
+            label: 'Next',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+
+  await test.step('1/2 with id', () => {
+    const message = discord.Message.anchor({
+      page: 1,
+      total: 2,
+      anchor: 'anchor',
+      type: 'type',
+      id: 'id',
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          title: 'title',
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: 'anchor=type=id=anchor=prev',
+            label: 'Prev',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: '_',
+            disabled: true,
+            label: '1/2',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'anchor=type=id=anchor=next',
             label: 'Next',
             style: 2,
             type: 2,
@@ -678,7 +756,7 @@ Deno.test('anchor messages', async (test) => {
         components: [{
           type: 1,
           components: [{
-            custom_id: 'anchor=type=anchor=prev',
+            custom_id: 'anchor=type==anchor=prev',
             label: 'Prev',
             style: 2,
             type: 2,
@@ -689,7 +767,7 @@ Deno.test('anchor messages', async (test) => {
             style: 2,
             type: 2,
           }, {
-            custom_id: 'anchor=type=anchor=next',
+            custom_id: 'anchor=type==anchor=next',
             label: 'Next',
             style: 2,
             type: 2,
@@ -718,7 +796,7 @@ Deno.test('anchor messages', async (test) => {
         components: [{
           type: 1,
           components: [{
-            custom_id: 'anchor=type=anchor=prev',
+            custom_id: 'anchor=type==anchor=prev',
             label: 'Prev',
             style: 2,
             type: 2,
@@ -729,7 +807,7 @@ Deno.test('anchor messages', async (test) => {
             style: 2,
             type: 2,
           }, {
-            custom_id: 'anchor=type=anchor=next',
+            custom_id: 'anchor=type==anchor=next',
             label: 'Next',
             style: 2,
             type: 2,
@@ -757,7 +835,7 @@ Deno.test('anchor messages', async (test) => {
         components: [{
           type: 1,
           components: [{
-            custom_id: 'anchor=type=anchor=prev',
+            custom_id: 'anchor=type==anchor=prev',
             label: 'Prev',
             style: 2,
             type: 2,
@@ -768,7 +846,7 @@ Deno.test('anchor messages', async (test) => {
             style: 2,
             type: 2,
           }, {
-            custom_id: 'anchor=type=anchor=next',
+            custom_id: 'anchor=type==anchor=next',
             label: 'Next',
             style: 2,
             type: 2,
