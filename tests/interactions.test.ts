@@ -2620,6 +2620,7 @@ Deno.test('media characters', async (test) => {
           next: true,
           media: {
             id: '1',
+            packId: 'pack-id',
             type: MediaType.Anime,
             title: {
               english: 'title',
@@ -2627,6 +2628,7 @@ Deno.test('media characters', async (test) => {
           },
           character: {
             id: '2',
+            packId: 'pack-id',
             name: {
               english: 'name',
             },
@@ -2962,12 +2964,6 @@ Deno.test('gacha', async (test) => {
                 style: 2,
                 type: 2,
               },
-              {
-                custom_id: 'collection=user-id=pack-id-2:2',
-                label: '/collection',
-                style: 2,
-                type: 2,
-              },
             ],
           }],
         },
@@ -3059,377 +3055,470 @@ Deno.test('gacha', async (test) => {
   });
 });
 
-// Deno.test('collection', async (test) => {
-//   await test.step('normal', async () => {
-//     const character: AniListCharacter = {
-//       id: '1',
-//       name: {
-//         full: 'title',
-//       },
-//       media: {
-//         edges: [{
-//           characterRole: CharacterRole.Main,
-//           node: {
-//             id: '2',
-//             type: MediaType.Anime,
-//             format: MediaFormat.TV,
-//             title: {
-//               english: 'name',
-//             },
-//             popularity: 0,
-//           },
-//         }],
-//       },
-//     };
+Deno.test('collection', async (test) => {
+  await test.step('normal', async () => {
+    const media: AniListMedia = {
+      id: '2',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'name',
+      },
+      popularity: 0,
+    };
 
-//     const fetchStub = stub(
-//       globalThis,
-//       'fetch',
-//       returnsNext([
-//         {
-//           ok: true,
-//           json: (() =>
-//             Promise.resolve({
-//               data: {
-//                 getUserInventory: {
-//                   characters: [{ id: 'anilist:1' }],
-//                 },
-//               },
-//             })),
-//         } as any,
-//         {
-//           ok: true,
-//           json: (() =>
-//             Promise.resolve({
-//               data: {
-//                 Page: {
-//                   characters: [character],
-//                 },
-//               },
-//             })),
-//         } as any,
-//       ]),
-//     );
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'title',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: media,
+        }],
+      },
+    };
 
-//     const listStub = stub(
-//       packs,
-//       'list',
-//       () => [],
-//     );
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                getUserCharacters: {
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:2',
+                    rating: 1,
+                  },
+                  anchor: 'anchor',
+                  total: 1,
+                },
+              },
+            })),
+        } as any,
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                Page: {
+                  characters: [character],
+                  media: [media],
+                },
+              },
+            })),
+        } as any,
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                Page: {
+                  characters: [character],
+                  media: [media],
+                },
+              },
+            })),
+        } as any,
+      ]),
+    );
 
-//     try {
-//       const message = await user.collection({
-//         userId: '1',
-//         guildId: '2',
-//         channelId: '3',
-//       });
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
 
-//       assertEquals(message.json(), {
-//         type: 4,
-//         data: {
-//           components: [{
-//             type: 1,
-//             components: [
-//               {
-//                 custom_id: '_',
-//                 disabled: true,
-//                 label: '1/1',
-//                 style: 2,
-//                 type: 2,
-//               },
-//               {
-//                 custom_id: 'media=anilist:2',
-//                 label: 'name (Anime)',
-//                 style: 2,
-//                 type: 2,
-//               },
-//             ],
-//           }],
-//           embeds: [
-//             {
-//               type: 'rich',
-//               title: new Rating({ popularity: 0 }).emotes,
-//               fields: [{
-//                 name: 'name',
-//                 value: '**title**',
-//               }],
-//               image: {
-//                 url: 'undefined/external/',
-//               },
-//             },
-//           ],
-//         },
-//       });
-//     } finally {
-//       fetchStub.restore();
-//       listStub.restore();
-//       packs.clear();
-//     }
-//   });
+    try {
+      const message = await user.collection({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
 
-//   await test.step('external links', async () => {
-//     const character: AniListCharacter = {
-//       id: '1',
-//       name: {
-//         full: 'title',
-//       },
-//       externalLinks: [{
-//         site: 'YouTube',
-//         url: 'https://www.youtube.com',
-//       }, {
-//         site: 'Crunchyroll',
-//         url: 'https://crunchyroll.com',
-//       }],
-//       media: {
-//         edges: [{
-//           characterRole: CharacterRole.Main,
-//           node: {
-//             id: '2',
-//             type: MediaType.Anime,
-//             format: MediaFormat.TV,
-//             title: {
-//               english: 'name',
-//             },
-//             popularity: 10,
-//           },
-//         }],
-//       },
-//     };
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'anchor=collection=user_id=anchor=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '?/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'anchor=collection=user_id=anchor=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'media=anilist:2',
+                label: 'name (Anime)',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              title: new Rating({ stars: 1 }).emotes,
+              fields: [{
+                name: 'name',
+                value: '**title**',
+              }],
+              image: {
+                url: 'undefined/external/',
+              },
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
 
-//     const fetchStub = stub(
-//       globalThis,
-//       'fetch',
-//       returnsNext([
-//         {
-//           ok: true,
-//           json: (() =>
-//             Promise.resolve({
-//               data: {
-//                 getUserInventory: {
-//                   characters: [{ id: 'anilist:1' }],
-//                 },
-//               },
-//             })),
-//         } as any,
-//         {
-//           ok: true,
-//           json: (() =>
-//             Promise.resolve({
-//               data: {
-//                 Page: {
-//                   characters: [character],
-//                 },
-//               },
-//             })),
-//         } as any,
-//       ]),
-//     );
+  await test.step('disabled media', async () => {
+    const media: AniListMedia = {
+      id: '2',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'name',
+      },
+      popularity: 0,
+    };
 
-//     const listStub = stub(
-//       packs,
-//       'list',
-//       () => [],
-//     );
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'title',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: media,
+        }],
+      },
+    };
 
-//     try {
-//       const message = await user.collection({
-//         userId: '1',
-//         guildId: '2',
-//         channelId: '3',
-//       });
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                getUserCharacters: {
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:2',
+                    rating: 1,
+                  },
+                  anchor: 'anchor',
+                  total: 1,
+                },
+              },
+            })),
+        } as any,
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                Page: {
+                  characters: [character],
+                  media: [media],
+                },
+              },
+            })),
+        } as any,
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                Page: {
+                  characters: [character],
+                  media: [media],
+                },
+              },
+            })),
+        } as any,
+      ]),
+    );
 
-//       assertEquals(message.json(), {
-//         type: 4,
-//         data: {
-//           components: [{
-//             type: 1,
-//             components: [
-//               {
-//                 custom_id: '_',
-//                 disabled: true,
-//                 label: '1/1',
-//                 style: 2,
-//                 type: 2,
-//               },
-//               {
-//                 label: 'YouTube',
-//                 url: 'https://www.youtube.com',
-//                 style: 5,
-//                 type: 2,
-//               },
-//               {
-//                 label: 'Crunchyroll',
-//                 url: 'https://crunchyroll.com',
-//                 style: 5,
-//                 type: 2,
-//               },
-//               {
-//                 custom_id: 'media=anilist:2',
-//                 label: 'name (Anime)',
-//                 style: 2,
-//                 type: 2,
-//               },
-//             ],
-//           }],
-//           embeds: [
-//             {
-//               type: 'rich',
-//               title: new Rating({ popularity: 0 }).emotes,
-//               fields: [{
-//                 name: 'name',
-//                 value: '**title**',
-//               }],
-//               image: {
-//                 url: 'undefined/external/',
-//               },
-//             },
-//           ],
-//         },
-//       });
-//     } finally {
-//       fetchStub.restore();
-//       listStub.restore();
-//       packs.clear();
-//     }
-//   });
+    const disabledStub = stub(packs, 'isDisabled', returnsNext([true, true]));
 
-//   await test.step('character disabled', async () => {
-//     const fetchStub = stub(
-//       globalThis,
-//       'fetch',
-//       returnsNext([
-//         {
-//           ok: true,
-//           json: (() =>
-//             Promise.resolve({
-//               data: {
-//                 getUserInventory: {
-//                   characters: [{ id: 'anilist:1' }],
-//                 },
-//               },
-//             })),
-//         } as any,
-//         {
-//           ok: true,
-//           json: (() =>
-//             Promise.resolve({
-//               data: {
-//                 Page: {
-//                   characters: [],
-//                 },
-//               },
-//             })),
-//         } as any,
-//       ]),
-//     );
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
 
-//     const listStub = stub(
-//       packs,
-//       'list',
-//       () => [],
-//     );
+    try {
+      const message = await user.collection({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
 
-//     try {
-//       const message = await user.collection({
-//         userId: '1',
-//         guildId: '2',
-//         channelId: '3',
-//       });
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'anchor=collection=user_id=anchor=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '?/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'anchor=collection=user_id=anchor=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'This media was removed or disabled',
+              image: {
+                url: 'undefined/external/',
+              },
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      disabledStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
 
-//       assertEquals(message.json(), {
-//         type: 4,
-//         data: {
-//           components: [{
-//             type: 1,
-//             components: [
-//               {
-//                 custom_id: '_',
-//                 disabled: true,
-//                 label: '1/1',
-//                 style: 2,
-//                 type: 2,
-//               },
-//             ],
-//           }],
-//           embeds: [
-//             {
-//               type: 'rich',
-//               description: 'This character was removed or disabled',
-//               image: {
-//                 url: 'undefined/external/',
-//               },
-//             },
-//           ],
-//         },
-//       });
-//     } finally {
-//       fetchStub.restore();
-//       listStub.restore();
-//       packs.clear();
-//     }
-//   });
+  await test.step('disabled character', async () => {
+    const media: AniListMedia = {
+      id: '2',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'name',
+      },
+      popularity: 0,
+    };
 
-//   await test.step('no characters', async () => {
-//     const fetchStub = stub(
-//       globalThis,
-//       'fetch',
-//       returnsNext([
-//         {
-//           ok: true,
-//           json: (() =>
-//             Promise.resolve({
-//               data: {
-//                 getUserInventory: {
-//                   characters: [],
-//                 },
-//               },
-//             })),
-//         } as any,
-//       ]),
-//     );
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'title',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: media,
+        }],
+      },
+    };
 
-//     const listStub = stub(
-//       packs,
-//       'list',
-//       () => [],
-//     );
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                getUserCharacters: {
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:2',
+                    rating: 1,
+                  },
+                  anchor: 'anchor',
+                  total: 1,
+                },
+              },
+            })),
+        } as any,
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                Page: {
+                  characters: [character],
+                  media: [media],
+                },
+              },
+            })),
+        } as any,
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                Page: {
+                  characters: [character],
+                  media: [media],
+                },
+              },
+            })),
+        } as any,
+      ]),
+    );
 
-//     try {
-//       const message = await user.collection({
-//         userId: '1',
-//         guildId: '2',
-//         channelId: '3',
-//       });
+    const disabledStub = stub(packs, 'isDisabled', returnsNext([false, true]));
 
-//       assertEquals(message.json(), {
-//         type: 4,
-//         data: {
-//           components: [{
-//             type: 1,
-//             components: [
-//               {
-//                 custom_id: 'gacha=1',
-//                 label: '/gacha',
-//                 style: 2,
-//                 type: 2,
-//               },
-//             ],
-//           }],
-//           embeds: [
-//             {
-//               type: 'rich',
-//               description: 'You don\'t have any characters',
-//             },
-//           ],
-//         },
-//       });
-//     } finally {
-//       fetchStub.restore();
-//       listStub.restore();
-//       packs.clear();
-//     }
-//   });
-// });
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await user.collection({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'anchor=collection=user_id=anchor=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '?/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'anchor=collection=user_id=anchor=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'This character was removed or disabled',
+              image: {
+                url: 'undefined/external/',
+              },
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      disabledStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('empty', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                getUserCharacters: {
+                  total: 0,
+                },
+              },
+            })),
+        } as any,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await user.collection({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'gacha=user_id',
+                label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You don\'t have any characters',
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+});
 
 Deno.test('music', async (test) => {
   await test.step('normal search', async () => {
@@ -3663,12 +3752,6 @@ Deno.test('user', async (test) => {
                 {
                   custom_id: 'gacha=user',
                   label: '/gacha',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'collection=user=0',
-                  label: '/collection',
                   style: 2,
                   type: 2,
                 },

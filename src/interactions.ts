@@ -211,16 +211,16 @@ const handler = async (r: Request) => {
             return gacha
               .start({ token, characterId: options['id'] as string })
               .send();
-          // case 'collection':
-          // case 'list':
-          // case 'mm': {
-          //   return (await user.collection({
-          //     userId: member.user.id,
-          //     guildId,
-          //     channelId,
-          //   }))
-          //     .send();
-          // }
+          case 'collection':
+          case 'list':
+          case 'mm': {
+            return (await user.collection({
+              userId: member.user.id,
+              guildId,
+              channelId,
+            }))
+              .send();
+          }
           case 'packs': {
             return packs.embed({
               // deno-lint-ignore no-non-null-assertion
@@ -266,13 +266,14 @@ const handler = async (r: Request) => {
           // case 'collection': {
           //   // deno-lint-ignore no-non-null-assertion
           //   const userId = customValues![0];
+          //   // deno-lint-ignore no-non-null-assertion
+          //   const characterRef = customValues![1];
 
           //   return (await user.collection({
           //     userId,
           //     guildId,
           //     channelId,
-          //     // deno-lint-ignore no-non-null-assertion
-          //     targetId: customValues![1],
+          //     on: characterRef,
           //   }))
           //     .setType(discord.MessageType.Update)
           //     .send();
@@ -300,9 +301,11 @@ const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const type = customValues![0];
             // deno-lint-ignore no-non-null-assertion
-            const anchor = customValues![1];
+            const id = customValues![1];
             // deno-lint-ignore no-non-null-assertion
-            const action = customValues![2];
+            const anchor = customValues![2];
+            // deno-lint-ignore no-non-null-assertion
+            const action = customValues![3];
 
             switch (type) {
               case 'builtin':
@@ -312,6 +315,17 @@ const handler = async (r: Request) => {
                   action,
                   type: type as ManifestType,
                 }).setType(discord.MessageType.Update).send();
+              }
+              case 'collection': {
+                return (await user.collection({
+                  guildId,
+                  channelId,
+                  userId: id,
+                  after: action === 'next' ? anchor : undefined,
+                  before: action === 'prev' ? anchor : undefined,
+                }))
+                  .setType(discord.MessageType.Update)
+                  .send();
               }
               default:
                 break;

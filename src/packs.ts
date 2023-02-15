@@ -584,7 +584,7 @@ function formatToString(format?: MediaFormat): string {
 
 function mediaToString(
   { media, relation }: {
-    media: Media;
+    media: Media | DisaggregatedMedia;
     relation?: MediaRelation;
   },
 ): string {

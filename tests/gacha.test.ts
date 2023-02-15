@@ -1590,24 +1590,24 @@ Deno.test('rating', async (test) => {
     );
   });
 
-  await test.step('fails', async (test) => {
-    await test.step('test', () => {
+  await test.step('defaults', async (test) => {
+    await test.step('undefined popularity with role', () => {
       const rating = new Rating({
         role: CharacterRole.Main,
         // deno-lint-ignore no-explicit-any
         popularity: undefined as any,
       });
 
-      assertEquals(rating.stars, 0);
+      assertEquals(rating.stars, 1);
     });
 
-    await test.step('test', () => {
+    await test.step('undefined popularity', () => {
       const rating = new Rating({
         // deno-lint-ignore no-explicit-any
         popularity: undefined as any,
       });
 
-      assertEquals(rating.stars, 0);
+      assertEquals(rating.stars, 1);
     });
   });
 });

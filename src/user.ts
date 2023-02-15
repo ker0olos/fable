@@ -10,7 +10,13 @@ import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
-import { Character, DisaggregatedCharacter, Inventory } from './types.ts';
+import {
+  Character,
+  DisaggregatedCharacter,
+  DisaggregatedMedia,
+  Inventory,
+  Media,
+} from './types.ts';
 
 import Rating from './rating.ts';
 
@@ -20,7 +26,7 @@ export async function now({
 }: {
   userId: string;
   guildId: string;
-  channelId: string;
+  channelId?: string;
 }): Promise<discord.Message> {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -66,9 +72,9 @@ export async function now({
         .setId('gacha', userId)
         .setLabel('/gacha'),
       // `/collections` shortcut
-      new discord.Component()
-        .setId('collection', userId, '0')
-        .setLabel('/collection'),
+      // new discord.Component()
+      //   .setId('collection', userId, '0')
+      //   .setLabel('/collection'),
     ]);
   } else {
     // if user has no pulls
@@ -89,27 +95,37 @@ export async function now({
 export async function collection({
   userId,
   guildId,
-  targetId,
+  before,
+  after,
+  on,
 }: {
   userId: string;
   guildId: string;
-  channelId: string;
-  targetId?: string;
+  channelId?: string;
+  before?: string;
+  after?: string;
+  on?: string;
 }): Promise<discord.Message> {
-  let pid: string | number = utils.parseInt(targetId) ?? targetId ?? 0;
-
   const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        characters {
+    query ($userId: String!, $guildId: String!, $on: String, $before: String, $after: String) {
+      getUserCharacters(userId: $userId, guildId: $guildId, on: $on, before: $before, after: $after) {
+        character {
           id
+          mediaId
+          rating
         }
+        anchor
+        total
       }
     }
   `;
 
-  const { characters } = (await request<{
-    getUserInventory: Inventory;
+  const { character, anchor, total } = (await request<{
+    getUserCharacters: {
+      character?: Inventory['characters'][0];
+      anchor?: string;
+      total: number;
+    };
   }>({
     url: faunaUrl,
     query,
@@ -119,10 +135,13 @@ export async function collection({
     variables: {
       userId,
       guildId,
+      before,
+      after,
+      on,
     },
-  })).getUserInventory;
+  })).getUserCharacters;
 
-  if (!characters?.length) {
+  if (!character || !anchor) {
     return new discord.Message()
       .addEmbed(
         new discord.Embed()
@@ -136,16 +155,24 @@ export async function collection({
       ]);
   }
 
-  if (typeof pid === 'string') {
-    pid = characters.findIndex(({ id }) => id === targetId);
-  }
-
-  const results: (Character | DisaggregatedCharacter)[] = await packs
-    .characters({ ids: [characters[pid].id] });
+  const results: [
+    (Media | DisaggregatedMedia)[],
+    (Character | DisaggregatedCharacter)[],
+  ] = await Promise.all([
+    packs.media({ ids: [character.mediaId] }),
+    packs.characters({ ids: [character.id] }),
+  ]);
 
   let message: discord.Message;
 
-  if (!results.length) {
+  if (!results[0].length) {
+    message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription('This media was removed or disabled')
+          .setImage({ default: true }),
+      );
+  } else if (!results[1].length) {
     message = new discord.Message()
       .addEmbed(
         new discord.Embed()
@@ -153,27 +180,23 @@ export async function collection({
           .setImage({ default: true }),
       );
   } else {
-    const character = await packs.aggregate<Character>({
-      character: results[0],
-      end: 1,
-    });
-
     message = characterMessage(
-      character,
+      results[1][0],
       {
-        relations: 1,
-        rating: Rating.fromCharacter(character),
+        relations: [results[0][0] as DisaggregatedMedia],
+        rating: new Rating({ stars: character.rating }),
         media: {
-          title: true,
+          title: packs.aliasToArray(results[0][0].title)[0],
         },
       },
     );
   }
 
   return discord.Message.anchor({
-    page,
-    total: characters.length,
-    id: discord.join('collection', userId),
+    id: userId,
+    type: 'collection',
+    anchor,
+    total,
     message,
   });
 }

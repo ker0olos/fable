@@ -338,19 +338,15 @@ function start(
             new discord.Component()
               .setId('gacha', userId)
               .setLabel('/gacha'),
+            // new discord.Component()
+            //   .setId(
+            //     `collection`,
+            //     userId,
+            //     `${pull.character.packId}:${pull.character.id}`,
+            //   )
+            //   .setLabel('/collection'),
           ]);
         }
-
-        message.addComponents([
-          new discord.Component()
-            .setId(
-              `collection`,
-              // deno-lint-ignore no-non-null-assertion
-              userId!,
-              `${pull.character.packId}:${pull.character.id}`,
-            )
-            .setLabel('/collection'),
-        ]);
 
         await message.patch(token);
       })

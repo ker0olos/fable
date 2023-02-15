@@ -174,7 +174,7 @@ export interface Manifest {
 export type Inventory = {
   lastPull?: string;
   availablePulls: number;
-  characters: { id: string }[];
+  characters: { id: string; mediaId: string; rating: number }[];
 };
 
 export type Mutation = {

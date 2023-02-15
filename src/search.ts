@@ -207,10 +207,10 @@ export async function character(
 }
 
 export function characterMessage(
-  character: Character,
+  character: Character | DisaggregatedCharacter,
   options?: Parameters<typeof characterEmbed>[1] & {
     externalLinks?: boolean;
-    relations?: boolean | number;
+    relations?: boolean | number | DisaggregatedMedia[];
   },
 ): discord.Message {
   options = {
@@ -238,37 +238,45 @@ export function characterMessage(
       });
   }
 
+  let relations: (Media | DisaggregatedMedia)[] = [];
+
   // relation components
   // sort media by popularity
-  if (options.relations) {
-    let edges = character.media?.edges;
+  if (Array.isArray(options.relations)) {
+    relations = options.relations.slice(0, 4);
+  } else if (
+    options.relations && character.media && 'edges' in character.media
+  ) {
+    let edges = character.media.edges;
 
     if (typeof options.relations === 'number') {
-      edges = edges?.slice(0, Math.min(Math.max(options.relations, 1), 4));
+      edges = edges.slice(0, Math.min(Math.max(options.relations, 1), 4));
     } else {
-      edges = edges?.slice(0, 4);
+      edges = edges.slice(0, 4);
     }
 
-    edges?.forEach(({ node: media }) => {
-      const label = packs.mediaToString({ media });
-
-      const component = new discord.Component()
-        .setLabel(label)
-        .setId('media', `${media.packId}:${media.id}`);
-
-      group.push(component);
-    });
+    relations = edges.map(({ node }) => node);
   }
+
+  relations.forEach((media) => {
+    const label = packs.mediaToString({ media });
+
+    const component = new discord.Component()
+      .setLabel(label)
+      .setId('media', `${media.packId}:${media.id}`);
+
+    group.push(component);
+  });
 
   return message.addComponents(group);
 }
 
 export function characterEmbed(
-  character: Character,
+  character: Character | DisaggregatedCharacter,
   options?: {
     rating?: Rating;
     media?: {
-      title?: boolean;
+      title?: boolean | string;
     };
     mode?: 'thumbnail' | 'full';
     description?: boolean;
@@ -303,12 +311,22 @@ export function characterEmbed(
     ? utils.truncate(utils.decodeDescription(character.description), 128)
     : utils.decodeDescription(character.description);
 
-  if (options.media?.title && character.media?.edges?.[0]) {
-    // deno-lint-ignore no-non-null-assertion
-    const titles = packs.aliasToArray(character.media!.edges[0].node.title);
+  let mediaTitle: string | undefined = undefined;
 
+  if (typeof options.media?.title === 'string') {
+    mediaTitle = options.media.title;
+  } else if (
+    options.media?.title && character.media && 'edges' in character.media &&
+    character.media?.edges[0]
+  ) {
+    mediaTitle = packs.aliasToArray(
+      character.media.edges[0].node.title,
+    )[0];
+  }
+
+  if (mediaTitle) {
     embed.addField({
-      name: utils.wrap(titles[0]),
+      name: utils.wrap(mediaTitle),
       value: `**${utils.wrap(alias[0])}**`,
     });
 
@@ -424,12 +442,8 @@ export async function mediaCharacter(
   });
 
   const message = characterMessage(character, {
-    relations: false,
-  }).addComponents([
-    new discord.Component()
-      .setLabel(titles[0])
-      .setId('media', mediaId),
-  ]);
+    relations: [media as DisaggregatedMedia],
+  });
 
   return discord.Message.page({
     total,
