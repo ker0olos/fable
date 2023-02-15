@@ -2,7 +2,12 @@ import { gql, request } from '../../src/graphql.ts';
 
 import { AniListCharacter, AniListMedia } from './types.ts';
 
-import { Character, Media } from '../../src/types.ts';
+import {
+  Character,
+  CharacterEdge,
+  CharacterRole,
+  Media,
+} from '../../src/types.ts';
 
 import packs from '../../src/packs.ts';
 
@@ -29,7 +34,6 @@ genres
 synonyms
 coverImage {
   extraLarge
-  color
 }
 externalLinks {
   site
@@ -76,7 +80,6 @@ export function transform<T>(
           !item.coverImage?.extraLarge.endsWith('default.jpg')
         ? [{
           url: item.coverImage.extraLarge,
-          color: item.coverImage.color,
         }]
         : undefined,
       relations: undefined,
@@ -134,6 +137,31 @@ export function transform<T>(
             node: transform({ item: edge.node as AniListMedia }),
           })),
       };
+
+      if (t.media.edges.length) {
+        let index = 0;
+
+        // check if a primary media swap is required
+        t.media.edges.forEach((e, i) => {
+          if (
+            // ignore background roles
+            (t.media?.edges[index].role === CharacterRole.Background) ||
+            // sort by popularity
+            (
+              e.role !== CharacterRole.Background &&
+              // deno-lint-ignore no-non-null-assertion
+              e.node.popularity! > t.media!.edges[index].node.popularity!
+            )
+          ) {
+            index = i;
+          }
+        });
+
+        // swap position
+        const _ = t.media.edges[0];
+        t.media.edges[0] = t.media.edges[index];
+        t.media.edges[index] = _;
+      }
     }
 
     Object.keys(t).forEach((key) =>
@@ -166,8 +194,6 @@ export async function media(
               relationType
             }
           }
-          # FIXME view characters maxes out at 25 on anilist media
-          # (see #54)
           characters(sort: ${characterDefaultSort}, perPage: 25) {
             edges {
               node { ${characterDefaultQuery} }
@@ -219,6 +245,66 @@ export async function characters(
   } = await request({ url, query, variables });
 
   return data.Page.characters;
+}
+
+export async function mediaCharacter(
+  { id, index }: {
+    id: string;
+    index: number;
+  },
+): Promise<{
+  media?: Media;
+  character?: Character;
+  next: boolean;
+}> {
+  const query = gql`
+    query ($id: Int, $page: Int) {
+      Media(id: $id) {
+        ${mediaDefaultQuery}
+        characters(sort: ${characterDefaultSort}, page: $page, perPage: 1) {
+          pageInfo {
+            hasNextPage
+          }
+          edges {
+            node { ${characterDefaultQuery} }
+            role
+          }
+        }
+      }
+    }
+  `;
+
+  const data: {
+    Media?: AniListMedia & {
+      characters?: {
+        pageInfo: {
+          hasNextPage: boolean;
+        };
+        edges: CharacterEdge[];
+      };
+    };
+  } = await request({
+    url,
+    query,
+    variables: {
+      id,
+      // anilist pages starts from 1 not 0
+      // so 'page' is always one greater than 'index'
+      page: index + 1,
+    },
+  });
+
+  return {
+    next: Boolean(data.Media?.characters?.pageInfo.hasNextPage),
+    media: data.Media
+      ? transform({ item: data.Media as AniListMedia })
+      : undefined,
+    character: data.Media?.characters?.edges[0]?.node
+      ? transform({
+        item: data.Media?.characters?.edges[0]?.node as AniListCharacter,
+      })
+      : undefined,
+  };
 }
 
 export async function nextEpisode(

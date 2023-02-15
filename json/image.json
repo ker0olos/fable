@@ -10,10 +10,6 @@
         "type": "string",
         "description": "A url of the image (recommended: 450x635)"
       },
-      "color": {
-        "type": "string",
-        "description": "The color used in discord embeds (in #hex)"
-      },
       "artist": {
         "description": "The artist responsible for the image",
         "required": ["username"],

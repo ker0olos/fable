@@ -1,3 +1,5 @@
 .env
 .faunarc
+cov_profile
 deno.lock
+lcov.info

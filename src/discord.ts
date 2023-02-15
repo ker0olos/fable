@@ -179,8 +179,6 @@ export class Interaction<Options> {
         if (data.options?.[0].type === 1) {
           this.subcommand = data.options?.[0].name;
 
-          this.name += `_${this.subcommand}`;
-
           data.options?.[0].options?.forEach((option) => {
             this.options[option.name] = option.value as Options;
 
@@ -242,10 +240,13 @@ export class Component {
 
   setId(...id: string[]): Component {
     const cid = join(...id);
+
     // (see https://discord.com/developers/docs/interactions/message-components#custom-id)
-    if (cid.length <= 100) {
-      this.#data.custom_id = cid;
+    if (cid.length > 100) {
+      throw new Error(`id length (${cid.length}) is > 100`);
     }
+
+    this.#data.custom_id = cid;
     return this;
   }
 
@@ -407,6 +408,7 @@ export class Embed {
 
     if (image.url || image.default) {
       if (
+        image.url?.startsWith('attachment://') ||
         (config.origin && image.url?.startsWith(config.origin) ||
           (!image.default && !image.proxy))
       ) {
@@ -433,6 +435,7 @@ export class Embed {
 
     if (thumbnail.url || thumbnail.default) {
       if (
+        thumbnail.url?.startsWith('attachment://') ||
         (config.origin && thumbnail.url?.startsWith(config.origin) ||
           (!thumbnail.default && !thumbnail.proxy))
       ) {
@@ -471,14 +474,15 @@ export class Embed {
 export class Message {
   #type?: MessageType;
 
-  // #files: File[];
+  #files: File[];
 
   #suggestions: { [name: string]: Suggestion };
 
   #data: {
     flags?: number;
     content?: string;
-    // attachments?: any[];
+    // deno-lint-ignore no-explicit-any
+    attachments?: any[];
     embeds: unknown[];
     components: unknown[];
     // title?: string;
@@ -487,7 +491,7 @@ export class Message {
 
   constructor(type: MessageType = MessageType.New) {
     this.#type = type;
-    // this.#files = [];
+    this.#files = [];
     this.#suggestions = {};
     this.#data = {
       embeds: [],
@@ -521,28 +525,30 @@ export class Message {
   //   return this;
   // }
 
-  // addAttachment(
-  //   { arrayBuffer, filename, type }: {
-  //     arrayBuffer: ArrayBuffer;
-  //     filename: string;
-  //     type: string;
-  //   },
-  // ): void {
-  //   if (!this.#data.attachments) {
-  //     this.#data.attachments = [];
-  //   }
+  addAttachment(
+    { arrayBuffer, filename, type }: {
+      arrayBuffer: ArrayBuffer;
+      filename: string;
+      type: string;
+    },
+  ): Message {
+    if (!this.#data.attachments) {
+      this.#data.attachments = [];
+    }
 
-  //   this.#data.attachments.push({
-  //     id: `${this.#data.attachments.length}`,
-  //     filename,
-  //   });
+    this.#data.attachments.push({
+      id: `${this.#data.attachments.length}`,
+      filename,
+    });
 
-  //   this.#files.push(
-  //     new File([arrayBuffer], filename, {
-  //       type,
-  //     }),
-  //   );
-  // }
+    this.#files.push(
+      new File([arrayBuffer], filename, {
+        type,
+      }),
+    );
+
+    return this;
+  }
 
   addEmbed(embed: Embed): Message {
     // discord allows up to 10 embeds
@@ -655,9 +661,9 @@ export class Message {
     // if an upload will take longer than 3 seconds
     // respond first with a loading message
     // then add the attachments the follow-up message
-    // this.#files.forEach((file, index) => {
-    //   formData.append(`files[${index}]`, file, file.name);
-    // });
+    this.#files.forEach((file, index) => {
+      formData.append(`files[${index}]`, file, file.name);
+    });
 
     return new Response(formData, {
       status: 200,
@@ -672,9 +678,9 @@ export class Message {
 
     formData.append('payload_json', JSON.stringify(this.json().data));
 
-    // Object.entries(this.#files).forEach(([name, blob], index) => {
-    //   formData.append(`files[${index}]`, blob, name);
-    // });
+    Object.entries(this.#files).forEach(([name, blob], index) => {
+      formData.append(`files[${index}]`, blob, name);
+    });
 
     return await fetch(url, {
       method: 'PATCH',
@@ -689,38 +695,73 @@ export class Message {
   }
 
   static page(
-    { message, id, page, total }: {
-      id: string;
-      page?: number;
-      total: number;
+    { message, type, target, index, total, next }: {
+      type: string;
+      target: string;
       message: Message;
+      index: number;
+      next?: boolean;
+      total?: number;
     },
   ): Message {
-    page = page ?? 0;
+    const group: Component[] = [];
 
-    const group = [];
-
-    const prev = new Component()
-      .setId(id, `${page - 1}`)
-      .setLabel(`Prev`);
-
-    const next = new Component()
-      .setId(id, `${page + 1}`)
-      .setLabel(`Next`);
-
-    const indicator = new Component().setId('_')
-      .setLabel(`${page + 1}/${total}`)
-      .toggle();
-
-    if (page - 1 >= 0) {
-      group.push(prev);
+    if (index - 1 >= 0) {
+      group.push(
+        new Component()
+          .setId(type, target, `${index - 1}`)
+          .setLabel(`Prev`),
+      );
     }
 
-    group.push(indicator);
+    group.push(
+      new Component().setId('_')
+        .setLabel(
+          `${index + 1}${total ? `/${total}` : ''}`,
+        )
+        .toggle(),
+    );
 
-    if (page + 1 < total) {
-      group.push(next);
+    if (next) {
+      group.push(
+        new Component()
+          .setId(type, target, `${index + 1}`)
+          .setLabel(`Next`),
+      );
     }
+
+    return message.insertComponents(group);
+  }
+
+  static anchor(
+    { message, type, anchor, page, total, id }: {
+      type: string;
+      message: Message;
+      anchor: string | number;
+      page?: number;
+      total?: number;
+      id?: string;
+    },
+  ): Message {
+    const group: Component[] = [];
+
+    group.push(
+      new Component()
+        .setId('anchor', type, id ?? '', `${anchor}`, 'prev')
+        .setLabel(`Prev`),
+    );
+
+    group.push(
+      new Component().setId('_')
+        .setLabel(`${page ?? '?'}${total ? `/${total}` : ''}`)
+        .toggle(),
+    );
+
+    group.push(
+      new Component()
+        .setId('anchor', type, id ?? '', `${anchor}`, 'next')
+        .setLabel(`Next`),
+    );
 
     return message.insertComponents(group);
   }

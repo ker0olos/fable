@@ -4,16 +4,16 @@ import {
   assertEquals,
   assertRejects,
   assertThrows,
-} from 'https://deno.land/std@0.175.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.177.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.175.0/testing/mock.ts';
+} from 'https://deno.land/std@0.177.0/testing/mock.ts';
 
-import { FakeTime } from 'https://deno.land/std@0.175.0/testing/time.ts';
+import { FakeTime } from 'https://deno.land/std@0.177.0/testing/time.ts';
 
 import packs from '../src/packs.ts';
 
@@ -26,6 +26,8 @@ import gacha, { Pull } from '../src/gacha.ts';
 import * as search from '../src/search.ts';
 
 import * as user from '../src/user.ts';
+
+import utils from '../src/utils.ts';
 
 import {
   Character,
@@ -56,7 +58,6 @@ Deno.test('media', async (test) => {
         native: 'native title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
     };
@@ -95,7 +96,6 @@ Deno.test('media', async (test) => {
               name: 'Anime',
             },
             title: 'english title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
@@ -123,7 +123,6 @@ Deno.test('media', async (test) => {
         native: 'native title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
     };
@@ -162,7 +161,6 @@ Deno.test('media', async (test) => {
               name: 'Anime',
             },
             title: 'native title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
@@ -190,7 +188,6 @@ Deno.test('media', async (test) => {
         english: 'english title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
     };
@@ -229,7 +226,6 @@ Deno.test('media', async (test) => {
               name: 'Novel',
             },
             title: 'english title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
@@ -257,7 +253,6 @@ Deno.test('media', async (test) => {
         english: 'english title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
       externalLinks: [
@@ -302,7 +297,6 @@ Deno.test('media', async (test) => {
               name: 'Anime',
             },
             title: 'english title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
@@ -386,7 +380,6 @@ Deno.test('media', async (test) => {
             author: {
               name: 'Anime',
             },
-            color: undefined,
             description: undefined,
             title: 'english title',
             image: {
@@ -415,7 +408,6 @@ Deno.test('media', async (test) => {
         english: 'english title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
       trailer: {
@@ -458,7 +450,6 @@ Deno.test('media', async (test) => {
               name: 'Anime',
             },
             title: 'english title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
@@ -498,7 +489,6 @@ Deno.test('media', async (test) => {
         english: 'english title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
       characters: {
@@ -578,7 +568,6 @@ Deno.test('media', async (test) => {
               name: 'Anime',
             },
             title: 'english title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
@@ -588,17 +577,19 @@ Deno.test('media', async (test) => {
             footer: {
               text: 'Male, 69',
             },
-            title: 'main character name',
-            color: 16777215,
-            description: 'main character description',
+            fields: [{
+              name: 'main character name',
+              value: 'main character description',
+            }],
             thumbnail: {
               url: 'undefined/external/main%20character%20url?size=thumbnail',
             },
           }, {
             type: 'rich',
-            title: 'supporting character name',
-            color: 16777215,
-            description: 'supporting character description',
+            fields: [{
+              name: 'supporting character name',
+              value: 'supporting character description',
+            }],
             thumbnail: {
               url:
                 'undefined/external/supporting%20character%20url?size=thumbnail',
@@ -607,7 +598,7 @@ Deno.test('media', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'characters=anilist:1=0',
+              custom_id: 'mcharacter=anilist:1',
               label: 'View Characters',
               style: 2,
               type: 2,
@@ -634,7 +625,6 @@ Deno.test('media', async (test) => {
         english: 'english title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
       relations: {
@@ -742,7 +732,6 @@ Deno.test('media', async (test) => {
               name: 'Anime',
             },
             title: 'english title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
@@ -800,7 +789,6 @@ Deno.test('media', async (test) => {
         english: 'english title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
       relations: {
@@ -886,7 +874,6 @@ Deno.test('media', async (test) => {
               name: 'Anime',
             },
             title: 'english title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
@@ -944,7 +931,6 @@ Deno.test('media', async (test) => {
         english: 'english title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
       relations: {
@@ -953,7 +939,6 @@ Deno.test('media', async (test) => {
           node: {
             id: '5',
             type: MediaType.Anime,
-            format: MediaFormat.Internet,
             popularity: 0,
             title: {
               english: 'branch',
@@ -997,7 +982,6 @@ Deno.test('media', async (test) => {
               name: 'Anime',
             },
             title: 'english title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
@@ -1037,7 +1021,6 @@ Deno.test('media', async (test) => {
         english: 'english title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
       relations: {
@@ -1115,7 +1098,6 @@ Deno.test('media', async (test) => {
               name: 'Anime',
             },
             title: 'english title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
@@ -1161,7 +1143,6 @@ Deno.test('media', async (test) => {
         english: 'english title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
       relations: {
@@ -1236,7 +1217,6 @@ Deno.test('media', async (test) => {
               name: 'Anime',
             },
             title: 'english title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
@@ -1247,6 +1227,12 @@ Deno.test('media', async (test) => {
               type: 1,
               components: [
                 {
+                  custom_id: 'media=anilist:5',
+                  label: 'title (Anime)',
+                  style: 2,
+                  type: 2,
+                },
+                {
                   custom_id: 'media=anilist:10',
                   label: 'title (Anime)',
                   style: 2,
@@ -1254,12 +1240,6 @@ Deno.test('media', async (test) => {
                 },
                 {
                   custom_id: 'media=anilist:15',
-                  label: 'title (Anime)',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'media=anilist:5',
                   label: 'title (Anime)',
                   style: 2,
                   type: 2,
@@ -1288,7 +1268,6 @@ Deno.test('media', async (test) => {
         english: 'english title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
       characters: {
@@ -1357,24 +1336,25 @@ Deno.test('media', async (test) => {
               name: 'Anime',
             },
             title: 'english title',
-            color: 16777215,
             description: 'long description',
             image: {
               url: 'undefined/external/image_url',
             },
           }, {
             type: 'rich',
-            title: 'supporting character name',
-            color: 16777215,
-            description: undefined,
+            fields: [{
+              name: 'main character name',
+              value: '\u200B',
+            }],
             thumbnail: {
               url: 'undefined/external/?size=thumbnail',
             },
           }, {
             type: 'rich',
-            title: 'background character name',
-            color: 16777215,
-            description: undefined,
+            fields: [{
+              name: 'supporting character name',
+              value: '\u200B',
+            }],
             thumbnail: {
               url: 'undefined/external/?size=thumbnail',
             },
@@ -1382,7 +1362,7 @@ Deno.test('media', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'characters=anilist:1=0',
+              custom_id: 'mcharacter=anilist:1',
               label: 'View Characters',
               style: 2,
               type: 2,
@@ -1474,7 +1454,6 @@ Deno.test('media debug', async (test) => {
         native: 'native title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'image_url',
       },
     };
@@ -1513,7 +1492,6 @@ Deno.test('media debug', async (test) => {
           embeds: [{
             type: 'rich',
             description: 'romaji title\nnative title',
-            color: 16777215,
             fields: [
               {
                 name: 'Id',
@@ -1595,7 +1573,6 @@ Deno.test('media debug', async (test) => {
           embeds: [{
             type: 'rich',
             description: undefined,
-            color: undefined,
             fields: [
               {
                 name: 'Id',
@@ -1642,7 +1619,6 @@ Deno.test('media debug', async (test) => {
         english: 'english title',
       },
       coverImage: {
-        color: '#ffffff',
         extraLarge: 'default.jpg',
       },
     };
@@ -1681,7 +1657,6 @@ Deno.test('media debug', async (test) => {
           embeds: [{
             type: 'rich',
             description: undefined,
-            color: undefined,
             fields: [
               {
                 name: 'Id',
@@ -1741,7 +1716,6 @@ Deno.test('character', async (test) => {
       },
       images: [{
         url: 'image_url',
-        color: '#ffffff',
       }],
       age: '420',
       gender: 'male',
@@ -1784,9 +1758,12 @@ Deno.test('character', async (test) => {
         data: {
           embeds: [{
             type: 'rich',
-            title: 'full name',
-            description: 'long description',
-            color: 16777215,
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: 'long description',
+              },
+            ],
             image: {
               url: 'undefined/external/image_url',
             },
@@ -1848,9 +1825,12 @@ Deno.test('character', async (test) => {
         data: {
           embeds: [{
             type: 'rich',
-            title: 'full name',
-            description: 'long description',
-            color: undefined,
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: 'long description',
+              },
+            ],
             image: {
               url: 'undefined/external/image_url',
             },
@@ -1912,9 +1892,12 @@ Deno.test('character', async (test) => {
         data: {
           embeds: [{
             type: 'rich',
-            title: 'full name',
-            description: 'long description',
-            color: undefined,
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: 'long description',
+              },
+            ],
             image: {
               url: 'undefined/external/image_url',
             },
@@ -1989,9 +1972,12 @@ Deno.test('character', async (test) => {
         data: {
           embeds: [{
             type: 'rich',
-            title: 'full name',
-            description: 'long description',
-            color: undefined,
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: 'long description',
+              },
+            ],
             image: {
               url: 'undefined/external/image_url',
             },
@@ -2053,9 +2039,12 @@ Deno.test('character', async (test) => {
         data: {
           embeds: [{
             type: 'rich',
-            title: 'full name',
-            description: undefined,
-            color: undefined,
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: '\u200B',
+              },
+            ],
             image: {
               url: 'undefined/external/',
             },
@@ -2112,9 +2101,12 @@ Deno.test('character', async (test) => {
         data: {
           embeds: [{
             type: 'rich',
-            title: 'full name',
-            description: undefined,
-            color: undefined,
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: '\u200B',
+              },
+            ],
             image: {
               url: 'undefined/external/',
             },
@@ -2176,301 +2168,6 @@ Deno.test('character', async (test) => {
   });
 });
 
-Deno.test('characters', async (test) => {
-  await test.step('normal', async () => {
-    const media: AniListMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'title',
-      },
-      characters: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: '2',
-            name: {
-              full: 'name',
-            },
-            popularity: 10,
-          },
-        }, {
-          role: CharacterRole.Supporting,
-          node: {
-            id: '3',
-            name: {
-              full: 'another name',
-            },
-            popularity: 100,
-            media: {
-              edges: [{
-                characterRole: CharacterRole.Main,
-                node: {
-                  id: '10',
-                  type: MediaType.Anime,
-                  format: MediaFormat.TV,
-                  title: {
-                    english: 'name',
-                  },
-                  popularity: 10,
-                },
-              }],
-            },
-          },
-        }],
-      },
-    };
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        json: (() =>
-          Promise.resolve({
-            data: {
-              Page: {
-                media: [media],
-              },
-            },
-          })),
-      } as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      const message = await search.characterPages({
-        mediaId: 'anilist:1',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '1/2',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'characters=anilist:1=1',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'media=anilist:10',
-                label: 'name (Anime)',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [
-            {
-              type: 'rich',
-              color: undefined,
-              description: undefined,
-              image: {
-                url: 'undefined/external/',
-              },
-              title: 'another name',
-            },
-          ],
-        },
-      });
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      packs.clear();
-    }
-  });
-
-  await test.step('external links', async () => {
-    const media: AniListMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'title',
-      },
-      characters: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: '1',
-            name: {
-              full: 'name',
-            },
-            popularity: 10,
-            media: {
-              edges: [{
-                characterRole: CharacterRole.Main,
-                node: {
-                  id: '2',
-                  type: MediaType.Anime,
-                  format: MediaFormat.TV,
-                  title: {
-                    english: 'name',
-                  },
-                  popularity: 10,
-                },
-              }],
-            },
-            externalLinks: [{
-              site: 'YouTube',
-              url: 'https://www.youtube.com',
-            }, {
-              site: 'Crunchyroll',
-              url: 'https://crunchyroll.com',
-            }],
-          },
-        }],
-      },
-    };
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        json: (() =>
-          Promise.resolve({
-            data: {
-              Page: {
-                media: [media],
-              },
-            },
-          })),
-      } as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      const message = await search.characterPages({
-        mediaId: 'anilist:1',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '1/1',
-                style: 2,
-                type: 2,
-              },
-              {
-                label: 'YouTube',
-                url: 'https://www.youtube.com',
-                style: 5,
-                type: 2,
-              },
-              {
-                label: 'Crunchyroll',
-                url: 'https://crunchyroll.com',
-                style: 5,
-                type: 2,
-              },
-              {
-                custom_id: 'media=anilist:2',
-                label: 'name (Anime)',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [
-            {
-              type: 'rich',
-              color: undefined,
-              description: undefined,
-              image: {
-                url: 'undefined/external/',
-              },
-              title: 'name',
-            },
-          ],
-        },
-      });
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      packs.clear();
-    }
-  });
-
-  await test.step('empty', async () => {
-    const media: AniListMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'title',
-      },
-      characters: {
-        edges: [],
-      },
-    };
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        json: (() =>
-          Promise.resolve({
-            data: {
-              Page: {
-                media: [media],
-              },
-            },
-          })),
-      } as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      await assertRejects(
-        async () =>
-          await search.characterPages({
-            mediaId: 'anilist:1',
-          }),
-        NonFetalError,
-        'title contains no characters',
-      );
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      packs.clear();
-    }
-  });
-});
-
 Deno.test('character debug', async (test) => {
   await test.step('no media', async () => {
     const character: DisaggregatedCharacter = {
@@ -2481,7 +2178,6 @@ Deno.test('character debug', async (test) => {
       },
       images: [{
         url: 'image_url',
-        color: '#ffffff',
       }],
       age: '420',
       gender: 'male',
@@ -2532,7 +2228,6 @@ Deno.test('character debug', async (test) => {
               type: 'rich',
               title: 'full name',
               description: undefined,
-              color: 16777215,
               thumbnail: {
                 url: 'undefined/external/image_url?size=thumbnail',
               },
@@ -2641,7 +2336,6 @@ Deno.test('character debug', async (test) => {
               type: 'rich',
               title: 'full name',
               description: undefined,
-              color: undefined,
               thumbnail: {
                 url: 'undefined/external/image_url?size=thumbnail',
               },
@@ -2743,7 +2437,6 @@ Deno.test('character debug', async (test) => {
               type: 'rich',
               title: 'full name',
               description: undefined,
-              color: undefined,
               thumbnail: {
                 url: 'undefined/external/?size=thumbnail',
               },
@@ -2865,7 +2558,6 @@ Deno.test('character debug', async (test) => {
               type: 'rich',
               title: 'full name',
               description: undefined,
-              color: undefined,
               thumbnail: {
                 url: 'undefined/external/image_url?size=thumbnail',
               },
@@ -2918,10 +2610,194 @@ Deno.test('character debug', async (test) => {
   });
 });
 
+Deno.test('media characters', async (test) => {
+  await test.step('normal', async () => {
+    const characterStub = stub(
+      packs,
+      'mediaCharacter',
+      () =>
+        Promise.resolve({
+          next: true,
+          media: {
+            id: '1',
+            packId: 'pack-id',
+            type: MediaType.Anime,
+            title: {
+              english: 'title',
+            },
+          },
+          character: {
+            id: '2',
+            packId: 'pack-id',
+            name: {
+              english: 'name',
+            },
+          },
+        }),
+    );
+
+    try {
+      const message = await search.mediaCharacter({
+        mediaId: 'pack-id:1',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'mcharacter=pack-id:1=1',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'media=pack-id:1',
+                label: 'title',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
+              image: {
+                url: 'undefined/external/',
+              },
+            },
+          ],
+        },
+      });
+    } finally {
+      characterStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled character', async () => {
+    const characterStub = stub(
+      packs,
+      'mediaCharacter',
+      () =>
+        Promise.resolve({
+          next: false,
+          media: {
+            id: '1',
+            type: MediaType.Anime,
+            title: {
+              english: 'title',
+            },
+          },
+          character: {
+            id: '2',
+            name: {
+              english: 'name',
+            },
+          },
+        }),
+    );
+
+    const disabledStub = stub(packs, 'isDisabled', () => true);
+
+    try {
+      await assertRejects(
+        async () =>
+          await search.mediaCharacter({
+            mediaId: 'pack-id:1',
+            index: 0,
+          }),
+        NonFetalError,
+        'character is disabled or invalid',
+      );
+    } finally {
+      disabledStub.restore();
+      characterStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('no characters', async () => {
+    const characterStub = stub(
+      packs,
+      'mediaCharacter',
+      () =>
+        Promise.resolve({
+          next: false,
+          media: {
+            id: '1',
+            type: MediaType.Anime,
+            title: {
+              english: 'title',
+            },
+          },
+        }),
+    );
+
+    try {
+      await assertRejects(
+        async () =>
+          await search.mediaCharacter({
+            mediaId: 'pack-id:1',
+            index: 0,
+          }),
+        NonFetalError,
+        'title contains no characters',
+      );
+    } finally {
+      characterStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('not found', async () => {
+    const characterStub = stub(
+      packs,
+      'mediaCharacter',
+      () =>
+        Promise.resolve({
+          next: false,
+        }),
+    );
+
+    try {
+      await assertRejects(
+        async () =>
+          await search.mediaCharacter({
+            mediaId: 'pack-id:1',
+            index: 0,
+          }),
+        Error,
+        '404',
+      );
+    } finally {
+      characterStub.restore();
+      packs.clear();
+    }
+  });
+});
+
 Deno.test('gacha', async (test) => {
   await test.step('normal', async () => {
     const media: Media = {
       id: '1',
+      packId: 'pack-id',
       type: MediaType.Anime,
       format: MediaFormat.TV,
       popularity: 100,
@@ -2935,12 +2811,19 @@ Deno.test('gacha', async (test) => {
 
     const character: Character = {
       id: '2',
+      packId: 'pack-id-2',
       name: {
         english: 'name',
       },
       images: [{
         url: 'character_image_url',
       }],
+      media: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: media,
+        }],
+      },
     };
 
     const pull: Pull = {
@@ -2971,9 +2854,7 @@ Deno.test('gacha', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const formData = new FormData();
-
-      const message = gacha.start({ token: 'test_token' });
+      const message = gacha.start({ token: 'test_token', userId: 'user-id' });
 
       assertEquals(message.json(), {
         type: 4,
@@ -2988,9 +2869,24 @@ Deno.test('gacha', async (test) => {
         },
       });
 
-      formData.append(
-        'payload_json',
-        JSON.stringify({
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             title: 'title',
@@ -2999,30 +2895,27 @@ Deno.test('gacha', async (test) => {
             },
           }],
           components: [],
-        }),
+        },
       );
-
-      await timeStub.tickAsync(0);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [
-          'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-          {
-            method: 'PATCH',
-            body: formData,
-          },
-        ],
-      });
 
       await timeStub.tickAsync(4000);
 
-      formData.delete('payload_json');
+      assertSpyCalls(fetchStub, 2);
 
-      formData.append(
-        'payload_json',
-        JSON.stringify({
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             image: {
@@ -3030,28 +2923,27 @@ Deno.test('gacha', async (test) => {
             },
           }],
           components: [],
-        }),
+        },
       );
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertSpyCall(fetchStub, 1, {
-        args: [
-          'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-          {
-            method: 'PATCH',
-            body: formData,
-          },
-        ],
-      });
 
       await timeStub.tickAsync(6000);
 
-      formData.delete('payload_json');
+      assertSpyCalls(fetchStub, 3);
 
-      formData.append(
-        'payload_json',
-        JSON.stringify({
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             title: new Rating({ popularity: 100 }).emotes,
@@ -3060,25 +2952,22 @@ Deno.test('gacha', async (test) => {
               value: '**name**',
             }],
             image: {
-              url:
-                'http://localhost:8000/external/character_image_url?size=medium',
+              url: 'http://localhost:8000/external/character_image_url',
             },
           }],
-          components: [],
-        }),
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'gacha=user-id',
+                label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+        },
       );
-
-      assertSpyCalls(fetchStub, 3);
-
-      assertSpyCall(fetchStub, 2, {
-        args: [
-          'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-          {
-            method: 'PATCH',
-            body: formData,
-          },
-        ],
-      });
     } finally {
       delete config.appId;
       delete config.origin;
@@ -3168,6 +3057,16 @@ Deno.test('gacha', async (test) => {
 
 Deno.test('collection', async (test) => {
   await test.step('normal', async () => {
+    const media: AniListMedia = {
+      id: '2',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'name',
+      },
+      popularity: 0,
+    };
+
     const character: AniListCharacter = {
       id: '1',
       name: {
@@ -3176,15 +3075,7 @@ Deno.test('collection', async (test) => {
       media: {
         edges: [{
           characterRole: CharacterRole.Main,
-          node: {
-            id: '2',
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            title: {
-              english: 'name',
-            },
-            popularity: 10,
-          },
+          node: media,
         }],
       },
     };
@@ -3198,8 +3089,14 @@ Deno.test('collection', async (test) => {
           json: (() =>
             Promise.resolve({
               data: {
-                getUserInventory: {
-                  characters: [{ id: 'anilist:1' }],
+                getUserCharacters: {
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:2',
+                    rating: 1,
+                  },
+                  anchor: 'anchor',
+                  total: 1,
                 },
               },
             })),
@@ -3211,6 +3108,19 @@ Deno.test('collection', async (test) => {
               data: {
                 Page: {
                   characters: [character],
+                  media: [media],
+                },
+              },
+            })),
+        } as any,
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                Page: {
+                  characters: [character],
+                  media: [media],
                 },
               },
             })),
@@ -3226,9 +3136,8 @@ Deno.test('collection', async (test) => {
 
     try {
       const message = await user.collection({
-        userId: '1',
-        guildId: '2',
-        channelId: '3',
+        userId: 'user_id',
+        guildId: 'guild_id',
       });
 
       assertEquals(message.json(), {
@@ -3238,9 +3147,21 @@ Deno.test('collection', async (test) => {
             type: 1,
             components: [
               {
+                custom_id: 'anchor=collection=user_id=anchor=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
                 custom_id: '_',
                 disabled: true,
-                label: '1/1',
+                label: '?/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'anchor=collection=user_id=anchor=next',
+                label: 'Next',
                 style: 2,
                 type: 2,
               },
@@ -3255,12 +3176,14 @@ Deno.test('collection', async (test) => {
           embeds: [
             {
               type: 'rich',
-              color: undefined,
-              description: undefined,
+              title: new Rating({ stars: 1 }).emotes,
+              fields: [{
+                name: 'name',
+                value: '**title**',
+              }],
               image: {
                 url: 'undefined/external/',
               },
-              title: 'title',
             },
           ],
         },
@@ -3272,31 +3195,26 @@ Deno.test('collection', async (test) => {
     }
   });
 
-  await test.step('external links', async () => {
+  await test.step('disabled media', async () => {
+    const media: AniListMedia = {
+      id: '2',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'name',
+      },
+      popularity: 0,
+    };
+
     const character: AniListCharacter = {
       id: '1',
       name: {
         full: 'title',
       },
-      externalLinks: [{
-        site: 'YouTube',
-        url: 'https://www.youtube.com',
-      }, {
-        site: 'Crunchyroll',
-        url: 'https://crunchyroll.com',
-      }],
       media: {
         edges: [{
           characterRole: CharacterRole.Main,
-          node: {
-            id: '2',
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            title: {
-              english: 'name',
-            },
-            popularity: 10,
-          },
+          node: media,
         }],
       },
     };
@@ -3310,8 +3228,14 @@ Deno.test('collection', async (test) => {
           json: (() =>
             Promise.resolve({
               data: {
-                getUserInventory: {
-                  characters: [{ id: 'anilist:1' }],
+                getUserCharacters: {
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:2',
+                    rating: 1,
+                  },
+                  anchor: 'anchor',
+                  total: 1,
                 },
               },
             })),
@@ -3323,91 +3247,7 @@ Deno.test('collection', async (test) => {
               data: {
                 Page: {
                   characters: [character],
-                },
-              },
-            })),
-        } as any,
-      ]),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      const message = await user.collection({
-        userId: '1',
-        guildId: '2',
-        channelId: '3',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '1/1',
-                style: 2,
-                type: 2,
-              },
-              {
-                label: 'YouTube',
-                url: 'https://www.youtube.com',
-                style: 5,
-                type: 2,
-              },
-              {
-                label: 'Crunchyroll',
-                url: 'https://crunchyroll.com',
-                style: 5,
-                type: 2,
-              },
-              {
-                custom_id: 'media=anilist:2',
-                label: 'name (Anime)',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [
-            {
-              type: 'rich',
-              color: undefined,
-              description: undefined,
-              image: {
-                url: 'undefined/external/',
-              },
-              title: 'title',
-            },
-          ],
-        },
-      });
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      packs.clear();
-    }
-  });
-
-  await test.step('character disabled', async () => {
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          json: (() =>
-            Promise.resolve({
-              data: {
-                getUserInventory: {
-                  characters: [{ id: 'anilist:1' }],
+                  media: [media],
                 },
               },
             })),
@@ -3418,13 +3258,16 @@ Deno.test('collection', async (test) => {
             Promise.resolve({
               data: {
                 Page: {
-                  characters: [],
+                  characters: [character],
+                  media: [media],
                 },
               },
             })),
         } as any,
       ]),
     );
+
+    const disabledStub = stub(packs, 'isDisabled', returnsNext([true, true]));
 
     const listStub = stub(
       packs,
@@ -3434,9 +3277,8 @@ Deno.test('collection', async (test) => {
 
     try {
       const message = await user.collection({
-        userId: '1',
-        guildId: '2',
-        channelId: '3',
+        userId: 'user_id',
+        guildId: 'guild_id',
       });
 
       assertEquals(message.json(), {
@@ -3446,9 +3288,153 @@ Deno.test('collection', async (test) => {
             type: 1,
             components: [
               {
+                custom_id: 'anchor=collection=user_id=anchor=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
                 custom_id: '_',
                 disabled: true,
-                label: '1/1',
+                label: '?/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'anchor=collection=user_id=anchor=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'This media was removed or disabled',
+              image: {
+                url: 'undefined/external/',
+              },
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      disabledStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('disabled character', async () => {
+    const media: AniListMedia = {
+      id: '2',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'name',
+      },
+      popularity: 0,
+    };
+
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'title',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: media,
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                getUserCharacters: {
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:2',
+                    rating: 1,
+                  },
+                  anchor: 'anchor',
+                  total: 1,
+                },
+              },
+            })),
+        } as any,
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                Page: {
+                  characters: [character],
+                  media: [media],
+                },
+              },
+            })),
+        } as any,
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                Page: {
+                  characters: [character],
+                  media: [media],
+                },
+              },
+            })),
+        } as any,
+      ]),
+    );
+
+    const disabledStub = stub(packs, 'isDisabled', returnsNext([false, true]));
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await user.collection({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'anchor=collection=user_id=anchor=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '?/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'anchor=collection=user_id=anchor=next',
+                label: 'Next',
                 style: 2,
                 type: 2,
               },
@@ -3467,12 +3453,13 @@ Deno.test('collection', async (test) => {
       });
     } finally {
       fetchStub.restore();
+      disabledStub.restore();
       listStub.restore();
       packs.clear();
     }
   });
 
-  await test.step('no characters', async () => {
+  await test.step('empty', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -3482,8 +3469,8 @@ Deno.test('collection', async (test) => {
           json: (() =>
             Promise.resolve({
               data: {
-                getUserInventory: {
-                  characters: [],
+                getUserCharacters: {
+                  total: 0,
                 },
               },
             })),
@@ -3499,9 +3486,8 @@ Deno.test('collection', async (test) => {
 
     try {
       const message = await user.collection({
-        userId: '1',
-        guildId: '2',
-        channelId: '3',
+        userId: 'user_id',
+        guildId: 'guild_id',
       });
 
       assertEquals(message.json(), {
@@ -3511,7 +3497,7 @@ Deno.test('collection', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha=1',
+                custom_id: 'gacha=user_id',
                 label: '/gacha',
                 style: 2,
                 type: 2,
@@ -3703,6 +3689,12 @@ Deno.test('music', async (test) => {
 
 Deno.test('user', async (test) => {
   await test.step('now with pulls', async () => {
+    const textStub = stub(
+      utils,
+      'text',
+      () => Promise.resolve(new Uint8Array()),
+    );
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -3720,8 +3712,6 @@ Deno.test('user', async (test) => {
       } as any),
     );
 
-    config.origin = 'http://localhost:8000';
-
     try {
       const message = await user.now({
         userId: 'user',
@@ -3729,16 +3719,29 @@ Deno.test('user', async (test) => {
         channelId: 'channel',
       });
 
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(textStub, 1);
+
+      assertSpyCall(textStub, 0, {
+        args: [5],
+      });
+
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [
+            {
+              filename: 'pulls.png',
+              id: '0',
+            },
+          ],
           embeds: [
             {
               footer: {
                 text: 'Available Pulls',
               },
               image: {
-                url: 'http://localhost:8000/i/5',
+                url: 'attachment://pulls.png',
               },
               type: 'rich',
             },
@@ -3752,29 +3755,26 @@ Deno.test('user', async (test) => {
                   style: 2,
                   type: 2,
                 },
-                {
-                  custom_id: 'collection=user=0',
-                  label: '/collection',
-                  style: 2,
-                  type: 2,
-                },
               ],
               type: 1,
             },
           ],
         },
       });
-
-      assertSpyCalls(fetchStub, 1);
     } finally {
-      delete config.origin;
-
+      textStub.restore();
       fetchStub.restore();
     }
   });
 
   await test.step('now with no pulls', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const textStub = stub(
+      utils,
+      'text',
+      () => Promise.resolve(new Uint8Array()),
+    );
 
     const fetchStub = stub(
       globalThis,
@@ -3793,8 +3793,6 @@ Deno.test('user', async (test) => {
       } as any),
     );
 
-    config.origin = 'http://localhost:8000';
-
     try {
       const message = await user.now({
         userId: 'guild',
@@ -3802,16 +3800,29 @@ Deno.test('user', async (test) => {
         channelId: 'channel',
       });
 
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(textStub, 1);
+
+      assertSpyCall(textStub, 0, {
+        args: [0],
+      });
+
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [
+            {
+              filename: 'pulls.png',
+              id: '0',
+            },
+          ],
           embeds: [
             {
               footer: {
                 text: 'Available Pulls',
               },
               image: {
-                url: 'http://localhost:8000/i/0',
+                url: 'attachment://pulls.png',
               },
               type: 'rich',
             },
@@ -3820,11 +3831,8 @@ Deno.test('user', async (test) => {
           components: [],
         },
       });
-
-      assertSpyCalls(fetchStub, 1);
     } finally {
-      delete config.origin;
-
+      textStub.restore();
       fetchStub.restore();
     }
   });

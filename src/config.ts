@@ -1,11 +1,4 @@
-import { load as Dotenv } from 'https://deno.land/std@0.175.0/dotenv/mod.ts';
-
-// export const colors = {
-//   background: '#2b2d42',
-//   purple: '#6b3ebd',
-//   gold: '#feb500',
-//   yellow: '#fed33c',
-// };
+import { load as Dotenv } from 'https://deno.land/std@0.177.0/dotenv/mod.ts';
 
 export const emotes = {
   star: '<:star:1061016362832642098>',

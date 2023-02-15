@@ -10,7 +10,15 @@ import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
-import { Character, DisaggregatedCharacter, Inventory } from './types.ts';
+import {
+  Character,
+  DisaggregatedCharacter,
+  DisaggregatedMedia,
+  Inventory,
+  Media,
+} from './types.ts';
+
+import Rating from './rating.ts';
 
 export async function now({
   userId,
@@ -18,13 +26,13 @@ export async function now({
 }: {
   userId: string;
   guildId: string;
-  channelId: string;
+  channelId?: string;
 }): Promise<discord.Message> {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
       getUserInventory(userId: $userId, guildId: $guildId) {
-        availablePulls
         lastPull
+        availablePulls
       }
     }
   `;
@@ -45,9 +53,15 @@ export async function now({
     },
   })).getUserInventory;
 
+  message.addAttachment({
+    arrayBuffer: await utils.text(availablePulls),
+    filename: 'pulls.png',
+    type: 'image/png',
+  });
+
   message.addEmbed(
     new discord.Embed()
-      .setImage({ url: `${config.origin}/i/${availablePulls}` })
+      .setImage({ url: `attachment://pulls.png` })
       .setFooter({ text: 'Available Pulls' }),
   );
 
@@ -55,13 +69,17 @@ export async function now({
     message.addComponents([
       // `/gacha` shortcut
       new discord.Component()
-        .setId(discord.join('gacha', userId))
+        .setId('gacha', userId)
         .setLabel('/gacha'),
-      new discord.Component()
-        .setId(discord.join('collection', userId, '0'))
-        .setLabel('/collection'),
+      // `/collections` shortcut
+      // new discord.Component()
+      //   .setId('collection', userId, '0')
+      //   .setLabel('/collection'),
     ]);
   } else {
+    // if user has no pulls
+    // inform display the refill timestamp in the same message
+
     message.addEmbed(
       new discord.Embed()
         .setDescription(
@@ -77,27 +95,37 @@ export async function now({
 export async function collection({
   userId,
   guildId,
-  page,
+  before,
+  after,
+  on,
 }: {
   userId: string;
   guildId: string;
-  channelId: string;
-  page?: number;
+  channelId?: string;
+  before?: string;
+  after?: string;
+  on?: string;
 }): Promise<discord.Message> {
-  page = page ?? 0;
-
   const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        characters {
+    query ($userId: String!, $guildId: String!, $on: String, $before: String, $after: String) {
+      getUserCharacters(userId: $userId, guildId: $guildId, on: $on, before: $before, after: $after) {
+        character {
           id
+          mediaId
+          rating
         }
+        anchor
+        total
       }
     }
   `;
 
-  const { characters } = (await request<{
-    getUserInventory: { characters: { id: string }[] };
+  const { character, anchor, total } = (await request<{
+    getUserCharacters: {
+      character?: Inventory['characters'][0];
+      anchor?: string;
+      total: number;
+    };
   }>({
     url: faunaUrl,
     query,
@@ -107,10 +135,13 @@ export async function collection({
     variables: {
       userId,
       guildId,
+      before,
+      after,
+      on,
     },
-  })).getUserInventory;
+  })).getUserCharacters;
 
-  if (!characters?.length) {
+  if (!character || !anchor) {
     return new discord.Message()
       .addEmbed(
         new discord.Embed()
@@ -119,17 +150,29 @@ export async function collection({
       .addComponents([
         // `/gacha` shortcut
         new discord.Component()
-          .setId(discord.join('gacha', userId))
+          .setId('gacha', userId)
           .setLabel('/gacha'),
       ]);
   }
 
-  const results: (Character | DisaggregatedCharacter)[] = await packs
-    .characters({ ids: [characters[page].id] });
+  const results: [
+    (Media | DisaggregatedMedia)[],
+    (Character | DisaggregatedCharacter)[],
+  ] = await Promise.all([
+    packs.media({ ids: [character.mediaId] }),
+    packs.characters({ ids: [character.id] }),
+  ]);
 
   let message: discord.Message;
 
-  if (!results.length) {
+  if (!results[0].length) {
+    message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription('This media was removed or disabled')
+          .setImage({ default: true }),
+      );
+  } else if (!results[1].length) {
     message = new discord.Message()
       .addEmbed(
         new discord.Embed()
@@ -138,14 +181,22 @@ export async function collection({
       );
   } else {
     message = characterMessage(
-      await packs.aggregate<Character>({ character: results[0] }),
+      results[1][0],
+      {
+        relations: [results[0][0] as DisaggregatedMedia],
+        rating: new Rating({ stars: character.rating }),
+        media: {
+          title: packs.aliasToArray(results[0][0].title)[0],
+        },
+      },
     );
   }
 
-  return discord.Message.page({
-    page,
-    total: characters.length,
-    id: discord.join('collection', userId),
+  return discord.Message.anchor({
+    id: userId,
+    type: 'collection',
+    anchor,
+    total,
     message,
   });
 }

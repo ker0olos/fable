@@ -10,6 +10,8 @@ import Rating from './rating.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import { characterMessage } from './search.ts';
+
 import packs from './packs.ts';
 
 import * as discord from './discord.ts';
@@ -17,6 +19,7 @@ import * as discord from './discord.ts';
 import {
   Character,
   CharacterRole,
+  Inventory,
   Media,
   Mutation,
   PoolInfo,
@@ -26,6 +29,8 @@ import { NoPullsError, PoolError } from './errors.ts';
 
 export type Pull = {
   role?: CharacterRole;
+  index?: number;
+  remaining?: number;
   character: Character;
   media: Media;
   rating: Rating;
@@ -58,7 +63,10 @@ async function forcePull(characterId: string): Promise<Pull> {
   }
 
   // aggregate the media by populating any references to other media/character objects
-  const character = await packs.aggregate<Character>({ character: results[0] });
+  const character = await packs.aggregate<Character>({
+    character: results[0],
+    end: 1,
+  });
 
   const edge = character.media?.edges?.[0];
 
@@ -97,6 +105,8 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
     : utils.rng(gacha.variables.roles);
 
   const pool = await packs.pool({ range, role });
+
+  let inventory: Inventory | undefined = undefined;
 
   let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
@@ -149,6 +159,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
     // aggregate will filter out any disabled media
     const candidate = await packs.aggregate<Character>({
       character: results[0],
+      end: 1,
     });
 
     const edge = candidate.media?.edges?.[0];
@@ -164,6 +175,13 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
       continue;
     }
 
+    // const popularity = candidate.popularity || edge.node.popularity || lowest;
+    rating = Rating.fromCharacter(candidate);
+
+    if (rating.stars < 1) {
+      continue;
+    }
+
     // add character to user's inventory
     if (userId && guildId) {
       const mutation = gql`
@@ -171,6 +189,8 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           $userId: String!
           $guildId: String!
           $characterId: String!
+          $mediaId: String!
+          $rating: Int!
           $pool: Int!
           $popularityChance: Int!
           $popularityGreater: Int!
@@ -182,6 +202,8 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
             userId: $userId
             guildId: $guildId
             characterId: $characterId
+            mediaId: $mediaId
+            rating: $rating
             pool: $pool
             popularityChance: $popularityChance
             popularityGreater: $popularityGreater
@@ -193,6 +215,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
             error
             inventory {
               lastPull
+              availablePulls
             }
           }
         }
@@ -210,11 +233,15 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           userId,
           guildId,
           characterId,
+          mediaId: `${edge.node.packId}:${edge.node.id}`,
+          rating: rating.stars,
           ...poolInfo,
         },
       })).addCharacterToInventory;
 
-      if (!response.ok) {
+      if (response.ok) {
+        inventory = response.inventory;
+      } else {
         switch (response.error) {
           case 'CHARACTER_EXISTS':
             continue;
@@ -229,10 +256,6 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
 
     media = edge.node;
     character = candidate;
-    rating = new Rating({
-      popularity,
-      role: character.popularity ? undefined : edge.role,
-    });
 
     break;
   }
@@ -246,6 +269,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
     media: media,
     rating: rating,
     character: character,
+    remaining: inventory?.availablePulls,
     ...poolInfo,
   };
 }
@@ -298,21 +322,31 @@ function start(
 
         await utils.sleep(6);
 
-        const characterAliases = packs.aliasToArray(pull.character.name);
+        message = characterMessage(pull.character, {
+          relations: false,
+          rating: pull.rating,
+          description: false,
+          externalLinks: false,
+          footer: false,
+          media: {
+            title: true,
+          },
+        });
 
-        message = new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setTitle(pull.rating.emotes)
-              .addField({
-                name: utils.wrap(mediaTitles[0]),
-                value: `**${utils.wrap(characterAliases[0])}**`,
-              })
-              .setImage({
-                size: ImageSize.Medium,
-                url: pull.character.images?.[0].url,
-              }),
-          );
+        if (userId) {
+          message.addComponents([
+            new discord.Component()
+              .setId('gacha', userId)
+              .setLabel('/gacha'),
+            // new discord.Component()
+            //   .setId(
+            //     `collection`,
+            //     userId,
+            //     `${pull.character.packId}:${pull.character.id}`,
+            //   )
+            //   .setLabel('/collection'),
+          ]);
+        }
 
         await message.patch(token);
       })

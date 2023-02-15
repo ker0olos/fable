@@ -37,6 +37,10 @@ function Ref(document: Expr): RefExpr {
   return _fql.Select('ref', document);
 }
 
+function Id(name: StringExpr, id: StringExpr): RefExpr {
+  return _fql.Ref(_fql.Collection(name), id);
+}
+
 function Create<T = Expr>(collection: string, data: T): Expr {
   return _fql.Create(_fql.Collection(collection), {
     data,
@@ -63,6 +67,17 @@ function Get(refOrMatch: RefExpr | MatchExpr): Expr {
 
 function Append(ref: RefExpr, items: Expr): RefExpr[] {
   return _fql.Append(ref, items) as unknown as RefExpr[];
+}
+
+function Paginate(
+  expr: Expr,
+  { size, before, after }: { size?: number; before?: RefExpr; after?: RefExpr },
+): Expr {
+  return _fql.Paginate(expr, {
+    size,
+    before,
+    after,
+  });
 }
 
 // function Map<T = Expr>(
@@ -94,15 +109,20 @@ function Subtract(a: NumberExpr, b: NumberExpr): NumberExpr {
 
 function If<A = Expr, B = Expr>(
   cond: BooleanExpr,
-  _then: Expr,
-  _else: Expr,
+  _then: Expr | ExprArg,
+  _else: Expr | ExprArg,
 ): A | B {
   return _fql.If(cond, _then, _else) as A | B;
 }
 
-function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
+// function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
+//   // deno-lint-ignore no-non-null-assertion
+//   return _fql.Equals(a!, b!);
+// }
+
+function IsNull(expr?: ExprArg): BooleanExpr {
   // deno-lint-ignore no-non-null-assertion
-  return _fql.Equals(a!, b!);
+  return _fql.Equals(expr!, fql.Null());
 }
 
 function Let<T, U>(
@@ -122,8 +142,20 @@ function Var(name: StringExpr): Expr {
   return _fql.Var(name);
 }
 
-function Select(path: (StringExpr | NumberExpr)[], from: Expr): Expr {
-  return _fql.Select(path, from);
+function Length(expr: Expr): NumberExpr {
+  return _fql.Count(expr);
+}
+
+function Select(
+  path: (StringExpr | NumberExpr)[],
+  from: Expr,
+  _default?: Expr,
+): Expr {
+  return _fql.Select(path, from, _default);
+}
+
+function Reverse(expr: Expr): Expr {
+  return _fql.Reverse(expr);
 }
 
 function TimeDiffInMinutes(a: TimeExpr, b: TimeExpr): NumberExpr {
@@ -138,35 +170,6 @@ function Null(): NullExpr {
   return null as unknown as NullExpr;
 }
 
-// function Pagination(
-//   match: MatchExpr,
-//   size?: NumberExpr,
-//   after?: StringExpr,
-//   before?: StringExpr,
-// ): Expr {
-//   // "fql" is intended to be "fql" not "_fql"
-//   // since this is a logic unique to this script
-//   // not a built-in fql function
-//   // and should follow mocks
-
-//   return fql.If(
-//     fql.Equals(size, fql.Null()),
-//     _fql.Paginate(match),
-//     fql.If(
-//       fql.Equals(before, fql.Null()),
-//       fql.If(
-//         fql.Equals(after, fql.Null()),
-//         // deno-lint-ignore no-non-null-assertion
-//         _fql.Paginate(match, { size: size! }),
-//         // deno-lint-ignore no-non-null-assertion
-//         _fql.Paginate(match, { size: size!, after }),
-//       ),
-//       // deno-lint-ignore no-non-null-assertion
-//       _fql.Paginate(match, { size: size!, before }),
-//     ),
-//   );
-// }
-
 function Indexer(
   { client, name, unique, collection, terms }: {
     client: Client;
@@ -177,7 +180,7 @@ function Indexer(
       field: string[];
     }[];
   },
-): Promise<void> {
+): () => Promise<void> {
   const params = {
     name,
     unique,
@@ -185,13 +188,14 @@ function Indexer(
     terms,
   };
 
-  return client.query(
-    _fql.If(
-      _fql.Exists(_fql.FaunaIndex(name)),
-      _fql.Update(_fql.FaunaIndex(name), params),
-      _fql.CreateIndex(params),
-    ),
-  );
+  return () =>
+    client.query(
+      _fql.If(
+        _fql.Exists(_fql.FaunaIndex(name)),
+        _fql.Update(_fql.FaunaIndex(name), params),
+        _fql.CreateIndex(params),
+      ),
+    );
 }
 
 function Resolver(
@@ -200,41 +204,46 @@ function Resolver(
     client: Client;
     lambda: (...vars: any[]) => ExprArg;
   },
-): Promise<void> {
+): () => Promise<void> {
   const params = {
     name,
     body: _fql.Query(lambda),
   };
 
-  return client.query(
-    _fql.If(
-      _fql.Exists(_fql.FaunaFunction(name)),
-      _fql.Update(_fql.FaunaFunction(name), params),
-      _fql.CreateFunction(params),
-    ),
-  );
+  return () =>
+    client.query(
+      _fql.If(
+        _fql.Exists(_fql.FaunaFunction(name)),
+        _fql.Update(_fql.FaunaFunction(name), params),
+        _fql.CreateFunction(params),
+      ),
+    );
 }
 
 export const fql = {
+  // Map,
+  // Equals,
   And,
   Append,
   Create,
-  Equals,
   Get,
   GTE,
+  Id,
   If,
   Index,
   Indexer,
   IsNonEmpty,
+  IsNull,
+  Length,
   Let,
   LTE,
-  // Map,
   Match,
   Now,
   Null,
-  // Pagination,
+  Paginate,
   Ref,
   Resolver,
+  Reverse,
   Select,
   Subtract,
   TimeDiffInMinutes,

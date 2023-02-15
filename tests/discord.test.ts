@@ -3,13 +3,13 @@
 import {
   assert,
   assertEquals,
-} from 'https://deno.land/std@0.175.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.177.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   stub,
-} from 'https://deno.land/std@0.175.0/testing/mock.ts';
+} from 'https://deno.land/std@0.177.0/testing/mock.ts';
 
 import * as discord from '../src/discord.ts';
 
@@ -109,7 +109,7 @@ Deno.test('interactions', async (test) => {
 // because embeds can contain all parameters
 // while components have parameters that can't overlap
 
-Deno.test('embeds', async (test) => {
+Deno.test('embeds', () => {
   const embed = new discord.Embed();
 
   embed
@@ -125,63 +125,45 @@ Deno.test('embeds', async (test) => {
   assertEquals(embed.json().type, 'rich');
   assertEquals(embed.json().fields, undefined);
 
-  await test.step('author', () => {
-    assertEquals(embed.json().author!.name, 'a');
-    assertEquals(embed.json().author!.url, 'b');
-    assertEquals(embed.json().author!.icon_url, 'c');
+  assertEquals(embed.json().author!.name, 'a');
+  assertEquals(embed.json().author!.url, 'b');
+  assertEquals(embed.json().author!.icon_url, 'c');
+
+  assertEquals(embed.json().title, 'abc');
+
+  assertEquals(embed.json().description!, 'abc');
+
+  assertEquals(embed.json().url, 'abc');
+
+  assertEquals(embed.json().color!, 4087690);
+
+  assertEquals(
+    embed.json().thumbnail!.url,
+    'undefined/external/abc?size=thumbnail',
+  );
+
+  assertEquals(
+    embed.json().image!.url,
+    'undefined/external/abc',
+  );
+
+  assertEquals(embed.json().footer!.text, 'a');
+  assertEquals(embed.json().footer!.icon_url, 'b');
+
+  embed.addField({ name: 'a', value: 'b' });
+  embed.addField({ name: 'c', value: 'd', inline: true });
+
+  assertEquals(embed.json().fields!.length, 2);
+
+  assertEquals(embed.json().fields![0], {
+    name: 'a',
+    value: 'b',
   });
 
-  await test.step('title', () => {
-    assertEquals(embed.json().title, 'abc');
-  });
-
-  await test.step('description', () => {
-    assertEquals(embed.json().description!, 'abc');
-  });
-
-  await test.step('url', () => {
-    assertEquals(embed.json().url, 'abc');
-  });
-
-  await test.step('color', () => {
-    assertEquals(embed.json().color!, 4087690);
-  });
-
-  await test.step('thumbnail', () => {
-    assertEquals(
-      embed.json().thumbnail!.url,
-      'undefined/external/abc?size=thumbnail',
-    );
-  });
-
-  await test.step('image', () => {
-    assertEquals(
-      embed.json().image!.url,
-      'undefined/external/abc',
-    );
-  });
-
-  await test.step('fields', () => {
-    embed.addField({ name: 'a', value: 'b' });
-    embed.addField({ name: 'c', value: 'd', inline: true });
-
-    assertEquals(embed.json().fields!.length, 2);
-
-    assertEquals(embed.json().fields![0], {
-      name: 'a',
-      value: 'b',
-    });
-
-    assertEquals(embed.json().fields![1], {
-      name: 'c',
-      value: 'd',
-      inline: true,
-    });
-  });
-
-  await test.step('footer', () => {
-    assertEquals(embed.json().footer!.text, 'a');
-    assertEquals(embed.json().footer!.icon_url, 'b');
+  assertEquals(embed.json().fields![1], {
+    name: 'c',
+    value: 'd',
+    inline: true,
   });
 });
 
@@ -487,8 +469,11 @@ Deno.test('patch messages', async () => {
 Deno.test('page messages', async (test) => {
   await test.step('1/2', () => {
     const message = discord.Message.page({
-      id: 'id',
+      index: 0,
       total: 2,
+      type: 'type',
+      target: 'target',
+      next: true,
       message: new discord.Message()
         .addEmbed(new discord.Embed().setTitle('title')),
     });
@@ -509,7 +494,7 @@ Deno.test('page messages', async (test) => {
             style: 2,
             type: 2,
           }, {
-            custom_id: 'id=1',
+            custom_id: 'type=target=1',
             label: 'Next',
             style: 2,
             type: 2,
@@ -521,9 +506,11 @@ Deno.test('page messages', async (test) => {
 
   await test.step('2/2', () => {
     const message = discord.Message.page({
-      id: 'id',
-      page: 1,
+      index: 1,
       total: 2,
+      type: 'type',
+      target: 'target',
+      next: false,
       message: new discord.Message()
         .addEmbed(new discord.Embed().setTitle('title')),
     });
@@ -538,7 +525,7 @@ Deno.test('page messages', async (test) => {
         components: [{
           type: 1,
           components: [{
-            custom_id: 'id=0',
+            custom_id: 'type=target=0',
             label: 'Prev',
             style: 2,
             type: 2,
@@ -556,9 +543,11 @@ Deno.test('page messages', async (test) => {
 
   await test.step('2/3', () => {
     const message = discord.Message.page({
-      id: 'id',
-      page: 1,
+      index: 1,
       total: 3,
+      type: 'type',
+      target: 'target',
+      next: true,
       message: new discord.Message()
         .addEmbed(new discord.Embed().setTitle('title')),
     });
@@ -573,7 +562,7 @@ Deno.test('page messages', async (test) => {
         components: [{
           type: 1,
           components: [{
-            custom_id: 'id=0',
+            custom_id: 'type=target=0',
             label: 'Prev',
             style: 2,
             type: 2,
@@ -584,7 +573,43 @@ Deno.test('page messages', async (test) => {
             style: 2,
             type: 2,
           }, {
-            custom_id: 'id=2',
+            custom_id: 'type=target=2',
+            label: 'Next',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+
+  await test.step('1/?', () => {
+    const message = discord.Message.page({
+      index: 0,
+      type: 'type',
+      target: 'target',
+      next: true,
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          title: 'title',
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: '_',
+            disabled: true,
+            label: '1',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'type=target=1',
             label: 'Next',
             style: 2,
             type: 2,
@@ -596,8 +621,11 @@ Deno.test('page messages', async (test) => {
 
   await test.step('1/1', () => {
     const message = discord.Message.page({
-      id: 'id',
+      index: 0,
       total: 1,
+      type: 'type',
+      target: 'target',
+      next: false,
       message: new discord.Message()
         .addEmbed(new discord.Embed().setTitle('title')),
     });
@@ -615,6 +643,211 @@ Deno.test('page messages', async (test) => {
             custom_id: '_',
             disabled: true,
             label: '1/1',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+});
+
+Deno.test('anchor messages', async (test) => {
+  await test.step('1/2', () => {
+    const message = discord.Message.anchor({
+      page: 1,
+      total: 2,
+      anchor: 'anchor',
+      type: 'type',
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          title: 'title',
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: 'anchor=type==anchor=prev',
+            label: 'Prev',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: '_',
+            disabled: true,
+            label: '1/2',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'anchor=type==anchor=next',
+            label: 'Next',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+
+  await test.step('1/2 with id', () => {
+    const message = discord.Message.anchor({
+      page: 1,
+      total: 2,
+      anchor: 'anchor',
+      type: 'type',
+      id: 'id',
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          title: 'title',
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: 'anchor=type=id=anchor=prev',
+            label: 'Prev',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: '_',
+            disabled: true,
+            label: '1/2',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'anchor=type=id=anchor=next',
+            label: 'Next',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+
+  await test.step('2/2', () => {
+    const message = discord.Message.anchor({
+      page: 2,
+      total: 2,
+      anchor: 'anchor',
+      type: 'type',
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          title: 'title',
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: 'anchor=type==anchor=prev',
+            label: 'Prev',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: '_',
+            disabled: true,
+            label: '2/2',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'anchor=type==anchor=next',
+            label: 'Next',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+
+  await test.step('1/?', () => {
+    const message = discord.Message.anchor({
+      page: 1,
+      anchor: 'anchor',
+      type: 'type',
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          title: 'title',
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: 'anchor=type==anchor=prev',
+            label: 'Prev',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: '_',
+            disabled: true,
+            label: '1',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'anchor=type==anchor=next',
+            label: 'Next',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+
+  await test.step('?', () => {
+    const message = discord.Message.anchor({
+      anchor: 'anchor',
+      type: 'type',
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          title: 'title',
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: 'anchor=type==anchor=prev',
+            label: 'Prev',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: '_',
+            disabled: true,
+            label: '?',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'anchor=type==anchor=next',
+            label: 'Next',
             style: 2,
             type: 2,
           }],

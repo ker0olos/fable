@@ -6,119 +6,6 @@ snapshot[`model 1`] = `
     raw: {
       else: Expr {
         raw: {
-          create_index: Expr {
-            raw: {
-              object: {
-                name: "characters_instance_id",
-                source: Expr {
-                  raw: {
-                    collection: "character",
-                  },
-                },
-                terms: Expr {
-                  raw: [
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "id",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "instance",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-                unique: true,
-              },
-            },
-          },
-        },
-      },
-      if: Expr {
-        raw: {
-          exists: Expr {
-            raw: {
-              index: "characters_instance_id",
-            },
-          },
-        },
-      },
-      then: Expr {
-        raw: {
-          params: Expr {
-            raw: {
-              object: {
-                name: "characters_instance_id",
-                source: Expr {
-                  raw: {
-                    collection: "character",
-                  },
-                },
-                terms: Expr {
-                  raw: [
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "id",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "instance",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-                unique: true,
-              },
-            },
-          },
-          update: Expr {
-            raw: {
-              index: "characters_instance_id",
-            },
-          },
-        },
-      },
-    },
-  },
-]
-`;
-
-snapshot[`model 2`] = `
-[
-  Expr {
-    raw: {
-      else: Expr {
-        raw: {
           create_function: Expr {
             raw: {
               object: {
@@ -139,6 +26,16 @@ snapshot[`model 2`] = `
                                             in: Expr {
                                               raw: {
                                                 object: {
+                                                  inventory: Expr {
+                                                    raw: {
+                                                      from: Expr {
+                                                        raw: {
+                                                          var: "inventory",
+                                                        },
+                                                      },
+                                                      select: "ref",
+                                                    },
+                                                  },
                                                   ok: true,
                                                 },
                                               },
@@ -237,6 +134,16 @@ snapshot[`model 2`] = `
                                                                       },
                                                                     },
                                                                     select: "ref",
+                                                                  },
+                                                                },
+                                                                mediaId: Expr {
+                                                                  raw: {
+                                                                    var: "mediaId",
+                                                                  },
+                                                                },
+                                                                rating: Expr {
+                                                                  raw: {
+                                                                    var: "rating",
                                                                   },
                                                                 },
                                                                 user: Expr {
@@ -1095,6 +1002,8 @@ snapshot[`model 2`] = `
                             "userId",
                             "guildId",
                             "characterId",
+                            "mediaId",
+                            "rating",
                             "pool",
                             "popularityChance",
                             "popularityGreater",
@@ -1144,6 +1053,16 @@ snapshot[`model 2`] = `
                                             in: Expr {
                                               raw: {
                                                 object: {
+                                                  inventory: Expr {
+                                                    raw: {
+                                                      from: Expr {
+                                                        raw: {
+                                                          var: "inventory",
+                                                        },
+                                                      },
+                                                      select: "ref",
+                                                    },
+                                                  },
                                                   ok: true,
                                                 },
                                               },
@@ -1242,6 +1161,16 @@ snapshot[`model 2`] = `
                                                                       },
                                                                     },
                                                                     select: "ref",
+                                                                  },
+                                                                },
+                                                                mediaId: Expr {
+                                                                  raw: {
+                                                                    var: "mediaId",
+                                                                  },
+                                                                },
+                                                                rating: Expr {
+                                                                  raw: {
+                                                                    var: "rating",
                                                                   },
                                                                 },
                                                                 user: Expr {
@@ -2100,6 +2029,8 @@ snapshot[`model 2`] = `
                             "userId",
                             "guildId",
                             "characterId",
+                            "mediaId",
+                            "rating",
                             "pool",
                             "popularityChance",
                             "popularityGreater",

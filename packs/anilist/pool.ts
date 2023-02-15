@@ -1,16 +1,18 @@
-import { join } from 'https://deno.land/std@0.175.0/path/mod.ts';
-
-import { gql, request } from './graphql.ts';
+import { join } from 'https://deno.land/std@0.177.0/path/mod.ts';
 
 import utils from '../../src/utils.ts';
 
 import gacha from '../../src/gacha.ts';
+
+import { gql, request } from '../../src/graphql.ts';
 
 import { CharacterRole } from '../../src/types.ts';
 
 import { AniListCharacter, AniListMedia, Pool } from './types.ts';
 
 const filepath = './pool.json';
+
+const url = 'https://graphql.anilist.co';
 
 const dirname = new URL('.', import.meta.url).pathname;
 
@@ -42,7 +44,7 @@ async function queryMedia(
   pageInfo: PageInfo;
   media: AniListMedia[];
 }> {
-  const _ = gql`
+  const query = gql`
     query ($page: Int!, $popularity_greater: Int!, $popularity_lesser: Int) {
       Page(page: $page, perPage: 50) {
         pageInfo {
@@ -63,7 +65,11 @@ async function queryMedia(
   const response: {
     pageInfo: PageInfo;
     media: AniListMedia[];
-  } = (await request(_, variables)).Page;
+  } = (await request({
+    url,
+    query,
+    variables,
+  })).Page;
 
   return response;
 }
@@ -77,7 +83,7 @@ async function queryCharacters(
   pageInfo: PageInfo;
   nodes: AniListCharacter[];
 }> {
-  const _ = gql`
+  const query = gql`
     query ($id: Int!, $page: Int!) {
       Media(id: $id) {
         characters(page: $page, perPage: 25) {
@@ -104,7 +110,11 @@ async function queryCharacters(
 
   const response: {
     Media: AniListMedia;
-  } = await request(_, variables);
+  } = await request({
+    url,
+    query,
+    variables,
+  });
 
   return {
     // deno-lint-ignore ban-ts-comment
@@ -157,16 +167,32 @@ for (const range of ranges) {
             nodes.forEach((character) => {
               const id = `anilist:${character.id}`;
 
-              const edge = character.media?.edges[0];
+              let primely = character.media?.edges[0];
+
+              // check if a primary media swap is required
+              character.media?.edges.forEach((e) => {
+                if (
+                  // ignore background roles
+                  (primely?.characterRole === CharacterRole.Background) ||
+                  // sort by popularity
+                  (
+                    e.characterRole !== CharacterRole.Background &&
+                    // deno-lint-ignore no-non-null-assertion
+                    e.node.popularity! > primely!.node.popularity!
+                  )
+                ) {
+                  primely = e;
+                }
+              });
 
               if (
-                edge?.node.popularity &&
-                edge.node.popularity >= range[0] &&
-                (isNaN(range[1]) || edge.node.popularity <= range[1])
+                primely?.node.popularity &&
+                primely.node.popularity >= range[0] &&
+                (isNaN(range[1]) || primely.node.popularity <= range[1])
               ) {
                 characters.ALL.push({ id });
 
-                characters[edge.characterRole].push({ id });
+                characters[primely.characterRole].push({ id });
               }
             });
 

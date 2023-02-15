@@ -16,7 +16,6 @@ export enum MediaFormat {
   Manga = 'MANGA',
   Novel = 'NOVEL',
   OneShot = 'ONE_SHOT',
-  Internet = 'INTERNET',
 }
 
 export enum MediaRelation {
@@ -50,18 +49,21 @@ export type Alias = {
 
 export type Image = {
   url: string;
-  color?: string;
   artist?: {
     username: string;
     url?: string;
   };
 };
 
+export type MediaEdge = { node: Media; relation?: MediaRelation };
+export type CharacterEdge = { node: Character; role?: CharacterRole };
+export type CharacterMediaEdge = { node: Media; role?: CharacterRole };
+
 export interface Media {
   id: string;
   packId?: string;
   type: MediaType;
-  format: MediaFormat;
+  format?: MediaFormat;
   title: Alias;
   description?: string;
   popularity?: number;
@@ -75,13 +77,10 @@ export interface Media {
     site: string;
   };
   relations?: {
-    edges: {
-      relation: MediaRelation;
-      node: Media;
-    }[];
+    edges: MediaEdge[];
   };
   characters?: {
-    edges: { role: CharacterRole; node: Character }[];
+    edges: CharacterEdge[];
   };
 }
 
@@ -110,7 +109,7 @@ export interface Character {
     url: string;
   }[];
   media?: {
-    edges: { role: CharacterRole; node: Media }[];
+    edges: CharacterMediaEdge[];
   };
 }
 
@@ -175,14 +174,18 @@ export interface Manifest {
 export type Inventory = {
   lastPull?: string;
   availablePulls: number;
+  characters: { id: string; mediaId: string; rating: number }[];
 };
 
-export type Mutation = { ok: true } | {
+export type Mutation = {
   ok: false;
   error: 'CHARACTER_EXISTS';
 } | {
   ok: false;
   error: 'NO_PULLS_AVAILABLE';
+  inventory: Inventory;
+} | {
+  ok: true;
   inventory: Inventory;
 };
 

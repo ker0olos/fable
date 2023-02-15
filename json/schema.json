@@ -64,7 +64,7 @@
           "description": "A list of new media to add",
           "items": {
             "allOf": [{ "$ref": "media.json" }],
-            "required": ["id", "title", "type", "format"]
+            "required": ["id", "title", "type"]
           }
         },
         "conflicts": {

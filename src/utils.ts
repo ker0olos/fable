@@ -6,8 +6,6 @@ import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weih
 
 import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
 
-import { ConnInfo, PathParams } from 'https://deno.land/x/sift@0.6.0/mod.ts';
-
 export enum ImageSize {
   Large = 'large', // 450x635,
   Medium = 'medium', // 230x325
@@ -137,7 +135,11 @@ function distance(a: string, b: string): number {
   return 100 - 100 * _distance(a, b) / (a.length + b.length);
 }
 
-function parseId(query: string): number | undefined {
+function _parseInt(query?: string): number | undefined {
+  if (query === undefined) {
+    return;
+  }
+
   const id = parseInt(query);
 
   if (!isNaN(id) && id.toString() === query) {
@@ -150,35 +152,29 @@ function decodeDescription(s?: string): string | undefined {
     return;
   }
 
-  s = decodeURI(s);
-
   s = s.replaceAll('&lt;', '<');
   s = s.replaceAll('&gt;', '>');
   s = s.replaceAll('&#039;', '\'');
   s = s.replaceAll('&quot;', '"');
   s = s.replaceAll('&apos;', '\'');
+  s = s.replaceAll('&rsquo;', '\'');
   s = s.replaceAll('&amp;', '&');
 
-  s = s.replace(/~!.+!~/gm, '');
-  s = s.replace(/\|\|.+\|\|/gm, '');
+  s = s.replace(/~![\S\s]+!~/gm, '');
+  s = s.replace(/\|\|[\S\s]+\|\|/gm, '');
 
-  s = s.replace(/<i.*?>(.*?)<\/?i>/g, (_, s) => `*${s.trim()}*`);
-  s = s.replace(/<b.*?>(.*?)<\/?b>/g, (_, s) => `**${s.trim()}**`);
+  s = s.replace(/<i.*?>([\S\s]*?)<\/?i>/g, (_, s) => `*${s.trim()}*`);
+  s = s.replace(/<b.*?>([\S\s]*?)<\/?b>/g, (_, s) => `**${s.trim()}**`);
   s = s.replace(
-    /<strike.*?>(.*?)<\/?strike>/g,
+    /<strike.*?>([\S\s]*)<\/?strike>/g,
     (_, s) => `~~${s.trim()}~~`,
   );
 
   s = s.replace(/<\/?br\/?>|<\/?hr\/?>/gm, '\n');
 
-  s = s.replace(/<a.*?href=("|')(.*?)("|').*?>(.*?)<\/?a>/g, '[$4]($2)');
+  s = s.replace(/<a.*?href=("|')(.*?)("|').*?>([\S\s]*?)<\/?a>/g, '[$4]($2)');
 
-  // s = s.replace(/<a.*?href=("|')(.*?)("|').*?>(.*?)<\/a>/g, '$4');
-  // s = s.replace(/\[(.*)\]\((.*)\)/g, '$1');
-  // s = s.replace(/(?:https?):\/\/[\n\S]+/gm, '');
-
-  // max characters for discord descriptions is 4096
-  return truncate(s, 4096);
+  return s;
 }
 
 function hexToUint8Array(hex: string): Uint8Array | undefined {
@@ -212,11 +208,7 @@ function verifySignature(
   return { valid, body };
 }
 
-async function text(
-  _: Request,
-  __: ConnInfo,
-  params: PathParams,
-): Promise<Response> {
+async function text(s: string | number): Promise<Uint8Array> {
   font = font ?? new Uint8Array(
     await (await fetch(
       'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
@@ -226,7 +218,7 @@ async function text(
   const text = imagescript.Image.renderText(
     font,
     28,
-    params?.text?.substring(0, 2) ?? '?',
+    `${s}`.substring(0, 2),
     0xffffffff,
     new imagescript.TextLayout({
       maxWidth: 48,
@@ -234,15 +226,7 @@ async function text(
     }),
   );
 
-  const t = await text.encode(2);
-
-  const response = new Response(t);
-
-  response.headers.set('content-type', 'image/png');
-  response.headers.set('content-length', `${t.byteLength}`);
-  response.headers.set('cache-control', 'public, max-age=604800');
-
-  return response;
+  return text.encode(2);
 }
 
 async function proxy(r: Request): Promise<Response> {
@@ -256,7 +240,7 @@ async function proxy(r: Request): Promise<Response> {
     );
 
     const response = await globalCache.match(url as unknown as Request) ??
-      (cached = false, await fetch(url));
+      (cached = false, await fetch(url, { signal: AbortSignal.timeout(3000) }));
 
     const type = response?.headers.get('content-type');
 
@@ -367,7 +351,7 @@ const utils = {
   distance,
   hexToInt,
   lastPullToRefillTimestamp,
-  parseId,
+  parseInt: _parseInt,
   proxy,
   randint,
   readJson,

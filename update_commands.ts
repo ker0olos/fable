@@ -1,6 +1,6 @@
-import { load as Dotenv } from 'https://deno.land/std@0.175.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.177.0/dotenv/mod.ts';
 
-import { green } from 'https://deno.land/std@0.175.0/fmt/colors.ts';
+import { green } from 'https://deno.land/std@0.177.0/fmt/colors.ts';
 
 import { Manifest } from './src/types.ts';
 
@@ -44,20 +44,33 @@ enum Permission {
   'MANAGE_GUILD' = 1 << 5,
 }
 
+type Option = {
+  type: Type;
+  name: string;
+  description: string;
+  autocomplete?: boolean;
+  options?: Option[];
+  optional?: boolean;
+};
+
+type Command = {
+  name: string;
+  description: string;
+  options?: ReturnType<typeof Option>[];
+  aliases?: string[];
+  defaultPermission?: Permission;
+  devOnly?: boolean;
+};
+
 const Option = (
-  { name, description, type, autocomplete, optional }: {
-    type: Type;
-    name: string;
-    description: string;
-    autocomplete?: boolean;
-    optional?: boolean;
-  },
+  { name, description, type, autocomplete, options, optional }: Option,
 ) => ({
   name,
   description,
   autocomplete,
   type: type.valueOf(),
   required: !optional,
+  options,
 });
 
 const Command = ({
@@ -67,14 +80,7 @@ const Command = ({
   aliases,
   defaultPermission,
   devOnly,
-}: {
-  name: string;
-  description: string;
-  options?: ReturnType<typeof Option>[];
-  aliases?: string[];
-  defaultPermission?: Permission;
-  devOnly?: boolean;
-}) => {
+}: Command) => {
   if (devOnly && !GUILD_ID) {
     return [];
   }
@@ -100,39 +106,39 @@ const Command = ({
   return commands;
 };
 
-type CommandsArray = ReturnType<typeof Command>;
-
-const Pack = (path: string): CommandsArray => {
+const Pack = (path: string): Command => {
   const data = Deno.readTextFileSync(path + '/manifest.json');
+
   const manifest: Manifest = JSON.parse(data);
 
-  const commands: CommandsArray = [];
-
-  if (manifest.commands) {
-    Object.entries(manifest.commands).forEach(([name, command]) => {
-      const options = command.options;
-
-      const description = `${command.description} (${
-        manifest.title || manifest.id
-      })`;
-
-      commands.push(...Command({
-        name,
-        description,
-        options: options.map((opt) => (Option({
-          name: opt.id,
-          description: opt.description,
-          type: Type[opt.type.toUpperCase() as keyof typeof Type],
-          optional: !opt.required,
-        }))),
-      }));
-    });
+  if (!manifest.commands) {
+    throw new Error('no commands found');
   }
 
-  return commands;
+  return Command({
+    name: manifest.id,
+    // deno-lint-ignore no-non-null-assertion
+    description: manifest.description!,
+    options: Object.entries(manifest.commands).map(([name, command]) => {
+      return Option({
+        name,
+        description: command.description,
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: command.options.map((opt) =>
+          Option({
+            name: opt.id,
+            description: opt.description,
+            type: Type[opt.type.toUpperCase() as keyof typeof Type],
+            optional: !opt.required,
+          })
+        ),
+      });
+    }),
+  })[0];
 };
 
-async function put(commands: CommandsArray): Promise<void> {
+async function put(commands: Command[]): Promise<void> {
   if (!GUILD_ID) {
     console.log('Updating global commands for production bot\n\n');
   } else {
@@ -170,7 +176,7 @@ await put([
   ...Command({
     name: 'search',
     aliases: ['anime', 'manga', 'media'],
-    description: 'Search for a media',
+    description: 'Search for a specific series',
     options: [
       Option({
         name: 'query',
@@ -188,7 +194,7 @@ await put([
   }),
   ...Command({
     name: 'character',
-    description: 'Search for a character',
+    description: 'Search for a specific character',
     aliases: ['char'],
     options: [
       Option({
@@ -267,5 +273,5 @@ await put([
     ],
   }),
   // non-standard commands (pack commands)
-  ...Pack('./packs/anilist'),
+  Pack('./packs/anilist'),
 ]);

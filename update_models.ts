@@ -1,6 +1,6 @@
-import { load as Dotenv } from 'https://deno.land/std@0.175.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.177.0/dotenv/mod.ts';
 
-import { green } from 'https://deno.land/std@0.175.0/fmt/colors.ts';
+import { green } from 'https://deno.land/std@0.177.0/fmt/colors.ts';
 
 try {
   await Dotenv({ export: true, allowEmptyValues: true });
@@ -14,6 +14,8 @@ import getUserInventory from './models/get_user_inventory.ts';
 
 import addCharacterToInventory from './models/add_character_to_inventory.ts';
 
+import findCharacter from './models/find_character.ts';
+
 const FAUNA_SECRET = Deno.env.get('FAUNA_SECRET');
 
 if (!FAUNA_SECRET) {
@@ -24,12 +26,20 @@ const client = new Client({
   secret: FAUNA_SECRET,
 });
 
-async function update(queries: Promise<unknown>[]): Promise<void> {
-  await Promise.all(queries);
-  console.log(green('\n\nOK'));
+async function update(queries: (() => Promise<unknown>)[]): Promise<void> {
+  for (let i = 0; i < queries.length; i++) {
+    const query = queries[i];
+
+    console.log(`${i + 1}/${queries.length}`);
+
+    await query();
+  }
+
+  console.log(green('\nOK'));
 }
 
 await update([
   ...getUserInventory(client),
+  ...findCharacter(client),
   ...addCharacterToInventory(client),
 ]);

@@ -2,6 +2,31 @@ import utils from './utils.ts';
 
 import { PoolInfo } from './types.ts';
 
+export class GraphQLError extends Error {
+  url: string;
+  query: string;
+  // deno-lint-ignore no-explicit-any
+  variables: any;
+  response: string;
+
+  constructor(
+    url: string,
+    query: string,
+    // deno-lint-ignore no-explicit-any
+    variables: any,
+    response: string,
+    message: string,
+  ) {
+    super(message);
+
+    this.name = 'GraphQLError';
+    this.url = url;
+    this.query = query;
+    this.variables = variables;
+    this.response = response;
+  }
+}
+
 export class NoPermissionError extends Error {
   constructor() {
     super('Forbidden');

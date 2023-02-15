@@ -17,12 +17,13 @@ snapshot[`list > anilist 1`] = `
       source: "nextEpisode",
     },
   },
-  description: "A pack powered by AniList. Contains a huge list of anime and manga characters",
+  description: "A pack powered by [AniList](https://anilist.co).
+
+Contains over 100K of anime and manga characters.",
   id: "anilist",
   image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png",
   title: "AniList",
   type: "builtin",
-  url: "https://anilist.co",
 }
 `;
 
@@ -451,7 +452,7 @@ cute...",
       },
     ],
   },
-  description: "A pack containing a set of the most famous vtubers",
+  description: "A pack containing a set of the most famous vtubers.",
   id: "vtubers",
   media: {
     conflicts: [
@@ -471,11 +472,9 @@ cute...",
             url: "https://www.youtube.com/@hololive",
           },
         ],
-        format: "INTERNET",
         id: "hololive",
         images: [
           {
-            color: "#2596be",
             url: "https://i.imgur.com/y4axd06.jpg",
           },
         ],
@@ -529,7 +528,6 @@ holoMyth was the first wave of VTubers under Hololive English.",
             url: "https://www.youtube.com/@hololiveEnglish",
           },
         ],
-        format: "INTERNET",
         id: "holomyth",
         images: [
           {
@@ -586,7 +584,6 @@ holoCouncil is the second wave of VTubers under Hololive English.",
             url: "https://www.youtube.com/@hololiveEnglish",
           },
         ],
-        format: "INTERNET",
         id: "holocouncil",
         images: [
           {

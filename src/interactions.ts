@@ -221,27 +221,20 @@ const handler = async (r: Request) => {
             }))
               .send();
           }
-          case 'packs_builtin':
-          case 'packs_manual': {
+          case 'packs': {
+            return packs.embed({
+              // deno-lint-ignore no-non-null-assertion
+              type: subcommand! as ManifestType,
+            }).send();
+          }
+          case 'anilist': {
             // deno-lint-ignore no-non-null-assertion
-            const list = packs.list(subcommand! as ManifestType);
+            const message = await packs.anilist(subcommand!, interaction);
 
-            return packs
-              .embed({
-                manifest: list[0],
-                total: list.length,
-              })
-              .send();
+            // deno-lint-ignore no-non-null-assertion
+            return message!.send();
           }
           default: {
-            // non-standard commands (handled by individual packs)
-            // deno-lint-ignore no-non-null-assertion
-            const message = await packs.commands(name!, interaction);
-
-            if (message) {
-              return message.send();
-            }
-
             break;
           }
         }
@@ -256,28 +249,35 @@ const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'characters': {
+          case 'mcharacter': {
             // deno-lint-ignore no-non-null-assertion
             const mediaId = customValues![0];
 
             // deno-lint-ignore no-non-null-assertion
-            const page = parseInt(customValues![1]);
+            const index = parseInt(customValues![1]) || 0;
 
-            return (await search.characterPages({ mediaId, page }))
+            return (await search.mediaCharacter({
+              mediaId,
+              index,
+            }))
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'collection': {
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
+          // case 'collection': {
+          //   // deno-lint-ignore no-non-null-assertion
+          //   const userId = customValues![0];
+          //   // deno-lint-ignore no-non-null-assertion
+          //   const characterRef = customValues![1];
 
-            // deno-lint-ignore no-non-null-assertion
-            const page = parseInt(customValues![1]);
-
-            return (await user.collection({ userId, guildId, channelId, page }))
-              .setType(discord.MessageType.Update)
-              .send();
-          }
+          //   return (await user.collection({
+          //     userId,
+          //     guildId,
+          //     channelId,
+          //     on: characterRef,
+          //   }))
+          //     .setType(discord.MessageType.Update)
+          //     .send();
+          // }
           case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
@@ -297,18 +297,40 @@ const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
-          case 'builtin':
-          case 'manual': {
-            const list = packs.list(customType as ManifestType);
-
+          case 'anchor': {
             // deno-lint-ignore no-non-null-assertion
-            const page = parseInt(customValues![0]);
+            const type = customValues![0];
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![1];
+            // deno-lint-ignore no-non-null-assertion
+            const anchor = customValues![2];
+            // deno-lint-ignore no-non-null-assertion
+            const action = customValues![3];
 
-            return packs.embed({
-              page,
-              total: list.length,
-              manifest: list[page],
-            }).setType(discord.MessageType.Update).send();
+            switch (type) {
+              case 'builtin':
+              case 'manual': {
+                return packs.embed({
+                  anchor,
+                  action,
+                  type: type as ManifestType,
+                }).setType(discord.MessageType.Update).send();
+              }
+              case 'collection': {
+                return (await user.collection({
+                  guildId,
+                  channelId,
+                  userId: id,
+                  after: action === 'next' ? anchor : undefined,
+                  before: action === 'prev' ? anchor : undefined,
+                }))
+                  .setType(discord.MessageType.Update)
+                  .send();
+              }
+              default:
+                break;
+            }
+            break;
           }
           default:
             break;
@@ -375,7 +397,6 @@ function cache(
 
 serve({
   '/': handler,
-  '/i/:text': utils.text,
   '/external/*': utils.proxy,
   '/assets/:filename+': serveStatic('../assets/public', {
     baseUrl: import.meta.url,

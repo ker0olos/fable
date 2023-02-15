@@ -36,7 +36,7 @@ export async function media(
   }
 
   // aggregate the media by populating any references to other media/characters
-  const media = await packs.aggregate<Media>({ media: results[0] });
+  const media = await packs.aggregate<Media>({ media: results[0], end: 4 });
 
   if (debug) {
     return mediaDebugMessage(media);
@@ -60,24 +60,12 @@ export function mediaMessage(media: Media): discord.Message {
 
   // character embeds
   // sort characters by popularity
-  packs.sortCharacters(media.characters?.edges)
+  media.characters?.edges
     ?.slice(0, 2)
     .forEach((edge) => {
-      const alias = packs.aliasToArray(edge.node.name);
-
-      const embed = new discord.Embed()
-        .setTitle(alias[0])
-        .setDescription(edge.node.description)
-        .setColor(media.images?.[0].color)
-        .setThumbnail({ url: edge.node.images?.[0].url })
-        .setFooter(
-          {
-            text: [
-              utils.capitalize(edge.node.gender),
-              edge.node.age,
-            ].filter(Boolean).join(', '),
-          },
-        );
+      const embed = characterEmbed(edge.node, {
+        mode: 'thumbnail',
+      });
 
       message.addEmbed(embed);
     });
@@ -106,16 +94,15 @@ export function mediaMessage(media: Media): discord.Message {
   if (media?.characters?.edges.length) {
     linksGroup.push(
       new discord.Component().setLabel('View Characters').setId(
-        'characters',
+        'mcharacter',
         `${media.packId}:${media.id}`,
-        '0',
       ),
     );
   }
 
   // relation components
   // sort media by popularity
-  packs.sortMedia(media.relations?.edges)
+  media.relations?.edges
     ?.slice(0, 4)
     ?.forEach(({ node: media, relation }) => {
       const label = packs.mediaToString({
@@ -153,10 +140,9 @@ export function mediaMessage(media: Media): discord.Message {
 
 export function mediaEmbed(media: Media, titles: string[]): discord.Embed {
   return new discord.Embed()
-    .setTitle(titles[0])
+    .setTitle(utils.wrap(titles[0]))
     .setAuthor({ name: packs.formatToString(media.format) })
-    .setDescription(media.description)
-    .setColor(media.images?.[0].color)
+    .setDescription(utils.decodeDescription(media.description))
     .setImage({ url: media.images?.[0].url });
 }
 
@@ -172,7 +158,6 @@ export function mediaDebugMessage(
   const embed = new discord.Embed()
     .setTitle(titles.shift())
     .setDescription(titles.join('\n'))
-    .setColor(media.images?.[0].color)
     .setThumbnail({ url: media.images?.[0].url })
     .addField({ name: 'Id', value: `${media.packId}:${media.id}` })
     .addField({
@@ -209,7 +194,10 @@ export async function character(
   }
 
   // aggregate the media by populating any references to other media/character objects
-  const character = await packs.aggregate<Character>({ character: results[0] });
+  const character = await packs.aggregate<Character>({
+    character: results[0],
+    end: 4,
+  });
 
   if (debug) {
     return characterDebugMessage(character);
@@ -218,48 +206,144 @@ export async function character(
   return characterMessage(character);
 }
 
-export function characterMessage(character: Character): discord.Message {
+export function characterMessage(
+  character: Character | DisaggregatedCharacter,
+  options?: Parameters<typeof characterEmbed>[1] & {
+    externalLinks?: boolean;
+    relations?: boolean | number | DisaggregatedMedia[];
+  },
+): discord.Message {
+  options = {
+    ...{
+      externalLinks: true,
+      relations: true,
+    },
+    ...options,
+  };
+
   const message = new discord.Message()
-    .addEmbed(characterEmbed(character));
+    .addEmbed(characterEmbed(character, options));
 
   const group: discord.Component[] = [];
 
   // link components
-  character.externalLinks
-    ?.forEach((link) => {
-      const component = new discord.Component()
-        .setLabel(link.site)
-        .setUrl(link.url);
+  if (options.externalLinks) {
+    character.externalLinks
+      ?.forEach((link) => {
+        const component = new discord.Component()
+          .setLabel(link.site)
+          .setUrl(link.url);
 
-      group.push(component);
-    });
+        group.push(component);
+      });
+  }
+
+  let relations: (Media | DisaggregatedMedia)[] = [];
 
   // relation components
   // sort media by popularity
-  packs.sortMedia(character.media?.edges)
-    ?.slice(0, 4)
-    ?.forEach(({ node: media }) => {
-      const label = packs.mediaToString({ media });
+  if (Array.isArray(options.relations)) {
+    relations = options.relations.slice(0, 4);
+  } else if (
+    options.relations && character.media && 'edges' in character.media
+  ) {
+    let edges = character.media.edges;
 
-      const component = new discord.Component()
-        .setLabel(label)
-        .setId('media', `${character.packId}:${media.id}`);
+    if (typeof options.relations === 'number') {
+      edges = edges.slice(0, Math.min(Math.max(options.relations, 1), 4));
+    } else {
+      edges = edges.slice(0, 4);
+    }
 
-      group.push(component);
-    });
+    relations = edges.map(({ node }) => node);
+  }
+
+  relations.forEach((media) => {
+    const label = packs.mediaToString({ media });
+
+    const component = new discord.Component()
+      .setLabel(label)
+      .setId('media', `${media.packId}:${media.id}`);
+
+    group.push(component);
+  });
 
   return message.addComponents(group);
 }
 
-export function characterEmbed(character: Character): discord.Embed {
+export function characterEmbed(
+  character: Character | DisaggregatedCharacter,
+  options?: {
+    rating?: Rating;
+    media?: {
+      title?: boolean | string;
+    };
+    mode?: 'thumbnail' | 'full';
+    description?: boolean;
+    footer?: boolean;
+  },
+): discord.Embed {
+  options = {
+    ...{
+      mode: 'full',
+      description: true,
+      footer: true,
+    },
+    ...options,
+  };
+
   const alias = packs.aliasToArray(character.name);
 
-  return new discord.Embed()
-    .setTitle(alias[0])
-    .setDescription(character.description)
-    .setColor(character.images?.[0].color)
-    .setImage({ url: character.images?.[0].url })
-    .setFooter(
+  const embed = new discord.Embed();
+
+  if (options.mode === 'full') {
+    embed.setImage({ url: character.images?.[0].url });
+  } else {
+    embed
+      .setThumbnail({ url: character.images?.[0].url });
+  }
+
+  if (options?.rating) {
+    embed.setTitle(options.rating.emotes);
+  }
+
+  const description = options.mode === 'thumbnail'
+    ? utils.truncate(utils.decodeDescription(character.description), 128)
+    : utils.decodeDescription(character.description);
+
+  let mediaTitle: string | undefined = undefined;
+
+  if (typeof options.media?.title === 'string') {
+    mediaTitle = options.media.title;
+  } else if (
+    options.media?.title && character.media && 'edges' in character.media &&
+    character.media?.edges[0]
+  ) {
+    mediaTitle = packs.aliasToArray(
+      character.media.edges[0].node.title,
+    )[0];
+  }
+
+  if (mediaTitle) {
+    embed.addField({
+      name: utils.wrap(mediaTitle),
+      value: `**${utils.wrap(alias[0])}**`,
+    });
+
+    if (options.description) {
+      embed.addField({ value: description });
+    }
+  } else {
+    embed.addField({
+      name: options.description && options.mode === 'thumbnail'
+        ? `${utils.wrap(alias[0])}`
+        : `${utils.wrap(alias[0])}\n${discord.empty}`,
+      value: options.description ? description : undefined,
+    });
+  }
+
+  if (options.footer) {
+    embed.setFooter(
       {
         text: [
           utils.capitalize(character.gender),
@@ -267,6 +351,9 @@ export function characterEmbed(character: Character): discord.Embed {
         ].filter(Boolean).join(', '),
       },
     );
+  }
+
+  return embed;
 }
 
 export function characterDebugMessage(character: Character): discord.Message {
@@ -285,7 +372,6 @@ export function characterDebugMessage(character: Character): discord.Message {
   const embed = new discord.Embed()
     .setTitle(titles.splice(0, 1)[0])
     .setDescription(titles.join('\n'))
-    .setColor(character.images?.[0].color)
     .setThumbnail({ url: character.images?.[0].url })
     .addField({ name: 'Id', value: `${character.packId}:${character.id}` })
     .addField({
@@ -325,32 +411,47 @@ export function characterDebugMessage(character: Character): discord.Message {
   return new discord.Message().addEmbed(embed);
 }
 
-export async function characterPages(
-  { mediaId, page }: { mediaId: string; page?: number },
+export async function mediaCharacter(
+  { mediaId, index }: {
+    mediaId: string;
+    index: number;
+  },
 ): Promise<discord.Message> {
-  page = page ?? 0;
+  const { character: node, media, next, total } = await packs.mediaCharacter({
+    mediaId,
+    index,
+  });
 
-  const results = await packs.media({ ids: [mediaId] });
-
-  // aggregate the media by populating any references to other media/characters
-  const media = await packs.aggregate<Media>({ media: results[0] });
-
-  // sort characters by popularity
-  const characters = packs.sortCharacters(media.characters?.edges);
-
-  if (!characters?.length) {
-    throw new NonFetalError(
-      `${packs.aliasToArray(media.title)[0]} contains no characters`,
-    );
+  if (!media) {
+    throw new Error('404');
   }
 
-  const character = characterMessage(characters[page].node);
+  const titles = packs.aliasToArray(media.title);
+
+  if (!node) {
+    throw new NonFetalError(`${titles[0]} contains no characters`);
+  }
+
+  if (packs.isDisabled(`${node.packId}:${node.id}`)) {
+    throw new NonFetalError('character is disabled or invalid');
+  }
+
+  const character = await packs.aggregate<Character>({
+    character: node,
+    end: 1,
+  });
+
+  const message = characterMessage(character, {
+    relations: [media as DisaggregatedMedia],
+  });
 
   return discord.Message.page({
-    page,
-    total: characters.length,
-    id: discord.join('characters', mediaId),
-    message: character,
+    total,
+    type: 'mcharacter',
+    target: mediaId,
+    message,
+    index,
+    next,
   });
 }
 
@@ -374,7 +475,7 @@ export async function music(
 
   const group: discord.Component[] = [];
 
-  packs.sortMedia(media.relations?.edges)
+  media.relations?.edges
     ?.forEach((edge) => {
       if (
         edge.relation === MediaRelation.Other &&

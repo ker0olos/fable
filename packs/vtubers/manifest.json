@@ -2,7 +2,7 @@
   "author": "Fable",
   "id": "vtubers",
   "title": "Vtubers",
-  "description": "A pack containing a set of the most famous vtubers",
+  "description": "A pack containing a set of the most famous vtubers.",
   "type": "builtin",
   "media": {
     "conflicts": [
@@ -14,7 +14,6 @@
     "new": [{
       "id": "hololive",
       "type": "ANIME",
-      "format": "INTERNET",
       "title": {
         "english": "Hololive",
         "romaji": "Hololive",
@@ -24,8 +23,7 @@
       "description": "Hololive Production is a streamer agency under COVER Corporation which encompasses the VTuber groups hololive and holostars, along with the Inonaka Music record label. The agency houses virtual talents whose activities include live streaming on platforms such as YouTube and interacting with fans on Twitter. The talents perform using intricate 2D and 3D avatars provided by the company.\n\n(Source: COVER Corporation)",
       "images": [
         {
-          "url": "https://i.imgur.com/y4axd06.jpg",
-          "color": "#2596be"
+          "url": "https://i.imgur.com/y4axd06.jpg"
         }
       ],
       "externalLinks": [{
@@ -42,7 +40,6 @@
     }, {
       "id": "holomyth",
       "type": "ANIME",
-      "format": "INTERNET",
       "title": {
         "english": "hololive English -Myth-",
         "alternative": ["holoMyth"]
@@ -84,7 +81,6 @@
     }, {
       "id": "holocouncil",
       "type": "ANIME",
-      "format": "INTERNET",
       "title": {
         "english": "hololive English -Council-",
         "alternative": ["holoCouncil"]
