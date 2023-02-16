@@ -109,22 +109,20 @@ export async function collection({
   const query = gql`
     query ($userId: String!, $guildId: String!, $on: String, $before: String, $after: String) {
       getUserCharacters(userId: $userId, guildId: $guildId, on: $on, before: $before, after: $after) {
+        anchor
         character {
           id
           mediaId
           rating
         }
-        anchor
-        total
       }
     }
   `;
 
-  const { character, anchor, total } = (await request<{
+  const { character, anchor } = (await request<{
     getUserCharacters: {
       character?: Schema.Inventory['characters'][0];
       anchor?: string;
-      total: number;
     };
   }>({
     url: faunaUrl,
@@ -196,7 +194,6 @@ export async function collection({
     id: userId,
     type: 'collection',
     anchor,
-    total,
     message,
   });
 }

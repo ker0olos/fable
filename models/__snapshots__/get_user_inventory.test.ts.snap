@@ -1785,11 +1785,6 @@ snapshot[`model 6`] = `
                                           var: "character",
                                         },
                                       },
-                                      total: Expr {
-                                        raw: {
-                                          var: "total",
-                                        },
-                                      },
                                     },
                                   },
                                 },
@@ -1810,17 +1805,6 @@ snapshot[`model 6`] = `
                                               },
                                             },
                                             select: "ref",
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                  {
-                                    total: Expr {
-                                      raw: {
-                                        count: Expr {
-                                          raw: {
-                                            var: "characters",
                                           },
                                         },
                                       },
@@ -2693,11 +2677,6 @@ snapshot[`model 6`] = `
                                           var: "character",
                                         },
                                       },
-                                      total: Expr {
-                                        raw: {
-                                          var: "total",
-                                        },
-                                      },
                                     },
                                   },
                                 },
@@ -2718,17 +2697,6 @@ snapshot[`model 6`] = `
                                               },
                                             },
                                             select: "ref",
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                  {
-                                    total: Expr {
-                                      raw: {
-                                        count: Expr {
-                                          raw: {
-                                            var: "characters",
                                           },
                                         },
                                       },

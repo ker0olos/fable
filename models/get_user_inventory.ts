@@ -41,7 +41,6 @@ export interface Inventory {
 export interface CharacterNode {
   character: CharacterExpr;
   anchor: StringExpr;
-  total: NumberExpr;
 }
 
 export const PULLS_DEFAULT = 5;
@@ -162,7 +161,6 @@ export function getCharacterNode(
       fql.Index('characters_inventory'),
       fql.Ref(inventory),
     ),
-    total: fql.Length(fql.Var('characters')),
     character: fql.If(
       fql.IsNonEmpty(fql.Var('characters')),
       fql.If(
@@ -207,9 +205,8 @@ export function getCharacterNode(
       ),
       fql.Null(),
     ),
-  }, ({ total, character }) => {
+  }, ({ character }) => {
     return {
-      total,
       character,
       anchor: fql.Select(['id'], character, fql.Null()),
     };

@@ -87,7 +87,6 @@ type Gacha @embedded {
 type CharacterNode @embedded {
   character: Character
   anchor: String
-  total: Int!
 }
 
 type Query {

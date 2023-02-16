@@ -752,11 +752,13 @@ export class Message {
         .setLabel(`Prev`),
     );
 
-    group.push(
-      new Component().setId('_')
-        .setLabel(`${page ?? '?'}${total ? `/${total}` : ''}`)
-        .toggle(),
-    );
+    if (page || total) {
+      group.push(
+        new Component().setId('_')
+          .setLabel(`${page ?? '?'}${total ? `/${total}` : ''}`)
+          .toggle(),
+      );
+    }
 
     group.push(
       new Component()

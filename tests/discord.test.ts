@@ -831,8 +831,9 @@ Deno.test('anchor messages', async (test) => {
     });
   });
 
-  await test.step('?', () => {
+  await test.step('?/1', () => {
     const message = discord.Message.anchor({
+      total: 1,
       anchor: 'anchor',
       type: 'type',
       message: new discord.Message()
@@ -857,7 +858,41 @@ Deno.test('anchor messages', async (test) => {
           }, {
             custom_id: '_',
             disabled: true,
-            label: '?',
+            label: '?/1',
+            style: 2,
+            type: 2,
+          }, {
+            custom_id: 'anchor=type==anchor=next',
+            label: 'Next',
+            style: 2,
+            type: 2,
+          }],
+        }],
+      },
+    });
+  });
+
+  await test.step('?', () => {
+    const message = discord.Message.anchor({
+      anchor: 'anchor',
+      type: 'type',
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          title: 'title',
+        }],
+        attachments: [],
+        components: [{
+          type: 1,
+          components: [{
+            custom_id: 'anchor=type==anchor=prev',
+            label: 'Prev',
             style: 2,
             type: 2,
           }, {

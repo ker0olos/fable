@@ -510,7 +510,6 @@ Deno.test('get character node', async (test) => {
         character: {
           ref: '0',
         },
-        total: 2,
       });
     } finally {
       ifStub.restore();
@@ -595,7 +594,6 @@ Deno.test('get character node', async (test) => {
       assertEquals(match, {
         anchor: {},
         character: {},
-        total: 2,
       });
     } finally {
       ifStub.restore();
@@ -683,7 +681,6 @@ Deno.test('get character node', async (test) => {
       assertEquals(match, {
         anchor: {},
         character: {},
-        total: 2,
       });
     } finally {
       ifStub.restore();
@@ -772,7 +769,6 @@ Deno.test('get character node', async (test) => {
       assertEquals(match, {
         anchor: {},
         character: {},
-        total: 2,
       });
     } finally {
       ifStub.restore();
@@ -834,7 +830,6 @@ Deno.test('get character node', async (test) => {
       assertEquals(match, {
         anchor: fql.Null(),
         character: fql.Null(),
-        total: 0,
       });
     } finally {
       ifStub.restore();
