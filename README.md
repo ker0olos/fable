@@ -87,7 +87,7 @@ great quick start guide.
 No, Fable was built from the ground up to only support slash commands, prefixes
 are an entirely different thing that requires the bot to manually monitor all
 incoming messages in a server. We won't add prefixes to Fable, but you can go
-tell discord to add custom prefixes to "slash" commands instead of slash for all
+tell discord to add custom prefixes to "slash" commands instead of "/" for all
 bots.
 
 > How are you keeping Fable free?
@@ -102,16 +102,16 @@ we'll have to offer cosmetics; tl;dr Fable will always remain 100% free.
 Our core team who are responsible for reviewing code and making decisions on the
 direction of the project:
 
-- [@ker0olos](https://github.com/ker0olos) — Kerolos Zaki (aka. Wholesome) —
+- [@ker0olos](https://github.com/ker0olos) — Kerolos Zaki (Wholesome) —
   Wholesome#6355
 
-- This project wouldn't been possible without Deno. Want to learn about running
-  discord bots with low-cost? Check the official guide at
-  <https://deno.com/deploy/docs/tutorial-discord-slash>
+- Checkout our friends at <https://anilist.co>. It can help you track those 2000
+  animes you watch, it can also tell you whenever a new episode or season is
+  available.
 
-- Checkout our friends at <https://anilist.co>. Your support will mean a lot to
-  them. Tracking your anime through their app might just help you rank up your
-  favorite characters to 5 stars.
+- This project wouldn't been possible without Deno. Want to learn about running
+  your own discord bot with low-cost? Check the official guide at
+  <https://deno.com/deploy/docs/tutorial-discord-slash>
 
 [discord]: https://discord.gg/ceKyEfhyPQ
 [contributing]: https://github.com/ker0olos/fable/wiki/Contributing

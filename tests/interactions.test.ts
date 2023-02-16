@@ -34,6 +34,7 @@ import {
   CharacterRole,
   DisaggregatedCharacter,
   Manifest,
+  ManifestType,
   Media,
   MediaFormat,
   MediaRelation,
@@ -102,6 +103,7 @@ Deno.test('media', async (test) => {
             },
           }],
           components: [],
+          attachments: [],
         },
       });
 
@@ -167,6 +169,7 @@ Deno.test('media', async (test) => {
             },
           }],
           components: [],
+          attachments: [],
         },
       });
 
@@ -232,6 +235,7 @@ Deno.test('media', async (test) => {
             },
           }],
           components: [],
+          attachments: [],
         },
       });
 
@@ -327,6 +331,7 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
+          attachments: [],
         },
       });
 
@@ -387,6 +392,7 @@ Deno.test('media', async (test) => {
             },
           }],
           components: [],
+          attachments: [],
         },
       });
 
@@ -468,6 +474,7 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
+          attachments: [],
         },
       });
 
@@ -604,6 +611,7 @@ Deno.test('media', async (test) => {
               type: 2,
             }],
           }],
+          attachments: [],
         },
       });
 
@@ -768,6 +776,7 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
+          attachments: [],
         },
       });
 
@@ -910,6 +919,7 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
+          attachments: [],
         },
       });
 
@@ -1000,6 +1010,7 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
+          attachments: [],
         },
       });
 
@@ -1122,6 +1133,7 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
+          attachments: [],
         },
       });
 
@@ -1247,6 +1259,7 @@ Deno.test('media', async (test) => {
               ],
             },
           ],
+          attachments: [],
         },
       });
 
@@ -1368,6 +1381,7 @@ Deno.test('media', async (test) => {
               type: 2,
             }],
           }],
+          attachments: [],
         },
       });
 
@@ -1519,6 +1533,7 @@ Deno.test('media debug', async (test) => {
             title: 'english title',
           }],
           components: [],
+          attachments: [],
         },
       });
 
@@ -1600,6 +1615,7 @@ Deno.test('media debug', async (test) => {
             title: 'english title',
           }],
           components: [],
+          attachments: [],
         },
       });
 
@@ -1684,6 +1700,7 @@ Deno.test('media debug', async (test) => {
             title: 'english title',
           }],
           components: [],
+          attachments: [],
         },
       });
 
@@ -1772,6 +1789,7 @@ Deno.test('character', async (test) => {
             },
           }],
           components: [],
+          attachments: [],
         },
       });
 
@@ -1839,6 +1857,7 @@ Deno.test('character', async (test) => {
             },
           }],
           components: [],
+          attachments: [],
         },
       });
 
@@ -1906,6 +1925,7 @@ Deno.test('character', async (test) => {
             },
           }],
           components: [],
+          attachments: [],
         },
       });
 
@@ -1970,6 +1990,7 @@ Deno.test('character', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
           embeds: [{
             type: 'rich',
             fields: [
@@ -2050,6 +2071,7 @@ Deno.test('character', async (test) => {
             },
           }],
           components: [],
+          attachments: [],
         },
       });
 
@@ -2111,6 +2133,7 @@ Deno.test('character', async (test) => {
               url: 'undefined/external/',
             },
           }],
+          attachments: [],
           components: [],
         },
       });
@@ -2222,6 +2245,7 @@ Deno.test('character debug', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
           components: [],
           embeds: [
             {
@@ -2330,7 +2354,7 @@ Deno.test('character debug', async (test) => {
         type: 4,
         data: {
           components: [],
-
+          attachments: [],
           embeds: [
             {
               type: 'rich',
@@ -2431,6 +2455,7 @@ Deno.test('character debug', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
           components: [],
           embeds: [
             {
@@ -2552,6 +2577,7 @@ Deno.test('character debug', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
           components: [],
           embeds: [
             {
@@ -2645,6 +2671,7 @@ Deno.test('media characters', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
           components: [{
             type: 1,
             components: [
@@ -2859,6 +2886,7 @@ Deno.test('gacha', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
           components: [],
           embeds: [{
             type: 'rich',
@@ -2895,6 +2923,7 @@ Deno.test('gacha', async (test) => {
             },
           }],
           components: [],
+          attachments: [],
         },
       );
 
@@ -2923,6 +2952,7 @@ Deno.test('gacha', async (test) => {
             },
           }],
           components: [],
+          attachments: [],
         },
       );
 
@@ -2944,6 +2974,7 @@ Deno.test('gacha', async (test) => {
           ) as any,
         ),
         {
+          attachments: [],
           embeds: [{
             type: 'rich',
             title: new Rating({ popularity: 100 }).emotes,
@@ -3007,6 +3038,7 @@ Deno.test('gacha', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
           components: [],
           embeds: [{
             type: 'rich',
@@ -3027,6 +3059,7 @@ Deno.test('gacha', async (test) => {
             },
             { type: 'rich', description: 'Refill <t:1675734789:R>' },
           ],
+          attachments: [],
           components: [],
         }),
       );
@@ -3143,6 +3176,7 @@ Deno.test('collection', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
           components: [{
             type: 1,
             components: [
@@ -3284,6 +3318,7 @@ Deno.test('collection', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
           components: [{
             type: 1,
             components: [
@@ -3416,6 +3451,7 @@ Deno.test('collection', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
           components: [{
             type: 1,
             components: [
@@ -3493,6 +3529,7 @@ Deno.test('collection', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
           components: [{
             type: 1,
             components: [
@@ -3576,6 +3613,7 @@ Deno.test('music', async (test) => {
         type: 4,
         data: {
           embeds: [],
+          attachments: [],
           components: [
             {
               type: 1,
@@ -3682,6 +3720,211 @@ Deno.test('music', async (test) => {
       assertSpyCalls(fetchStub, 1);
     } finally {
       fetchStub.restore();
+      listStub.restore();
+    }
+  });
+});
+
+Deno.test('manifest embeds', async (test) => {
+  await test.step('builtin packs', () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      type: ManifestType.Builtin,
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const message = packs.embed({
+        type: ManifestType.Builtin,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'anchor=builtin==pack-id=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'anchor=builtin==pack-id=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'Builtin packs are developed and maintained directly by Fable',
+          }, {
+            type: 'rich',
+            description: undefined,
+            title: 'pack-id',
+            url: undefined,
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
+  });
+
+  await test.step('manual packs', () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      type: ManifestType.Manual,
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const message = packs.embed({
+        type: ManifestType.Manual,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'anchor=manual==pack-id=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'anchor=manual==pack-id=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'The following third-party packs were manually added by your server members',
+          }, {
+            type: 'rich',
+            description: undefined,
+            title: 'pack-id',
+            url: undefined,
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
+  });
+
+  await test.step('use title and id ', () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      type: ManifestType.Builtin,
+      title: 'Title',
+    };
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [manifest],
+    );
+
+    try {
+      const message = packs.embed({
+        type: ManifestType.Builtin,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'anchor=builtin==pack-id=prev',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'anchor=builtin==pack-id=next',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'Builtin packs are developed and maintained directly by Fable',
+          }, {
+            type: 'rich',
+            description: undefined,
+            title: 'Title',
+            url: undefined,
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
+  });
+
+  await test.step('no manifest', () => {
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = packs.embed({
+        type: ManifestType.Builtin,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [],
+          attachments: [],
+          embeds: [{
+            type: 'rich',
+            description: 'No packs have been added yet',
+          }],
+        },
+      });
+    } finally {
       listStub.restore();
     }
   });

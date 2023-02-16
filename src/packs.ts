@@ -386,9 +386,7 @@ async function mediaCharacter({ mediaId, index }: {
   } else {
     // search for the id in packs
     const match: Media | DisaggregatedMedia | undefined = dict()[packId]?.media
-      ?.new?.find((
-        m,
-      ) => m.id === id);
+      ?.new?.find((m) => m.id === id);
 
     if (!match) {
       return { next: false };

@@ -308,6 +308,7 @@ Deno.test('messages', async (test) => {
     assertEquals(message.json(), {
       type: 4,
       data: {
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -338,6 +339,7 @@ Deno.test('messages', async (test) => {
     assertEquals(message.json(), {
       type: 4,
       data: {
+        attachments: [],
         components: [{
           type: 1,
           components: [
@@ -389,6 +391,7 @@ Deno.test('messages', async (test) => {
         type: 4,
         data: {
           embeds: [],
+          attachments: [],
           components: [],
           content: 'content',
         },
@@ -419,6 +422,7 @@ Deno.test('static messages', async (test) => {
         content:
           'An Internal Error occurred and was reported.\n```ref_id: id```',
         components: [],
+        attachments: [],
         embeds: [],
       },
     });
@@ -444,6 +448,7 @@ Deno.test('patch messages', async () => {
       'payload_json',
       JSON.stringify({
         embeds: [],
+        attachments: [],
         components: [],
       }),
     );
@@ -485,6 +490,7 @@ Deno.test('page messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -522,6 +528,7 @@ Deno.test('page messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -559,6 +566,7 @@ Deno.test('page messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -600,6 +608,7 @@ Deno.test('page messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -637,6 +646,7 @@ Deno.test('page messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -670,6 +680,7 @@ Deno.test('anchor messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -712,6 +723,7 @@ Deno.test('anchor messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -753,6 +765,7 @@ Deno.test('anchor messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -793,6 +806,7 @@ Deno.test('anchor messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -832,6 +846,7 @@ Deno.test('anchor messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{

@@ -482,7 +482,7 @@ export class Message {
     flags?: number;
     content?: string;
     // deno-lint-ignore no-explicit-any
-    attachments?: any[];
+    attachments: any[];
     embeds: unknown[];
     components: unknown[];
     // title?: string;
@@ -495,6 +495,7 @@ export class Message {
     this.#suggestions = {};
     this.#data = {
       embeds: [],
+      attachments: [],
       components: [],
     };
   }

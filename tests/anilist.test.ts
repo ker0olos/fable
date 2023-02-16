@@ -380,6 +380,7 @@ Deno.test('next episode', async (test) => {
         data: {
           embeds: [],
           components: [],
+          attachments: [],
           content: 'The next episode of `anime` is <t:0:R>.',
         },
       });
@@ -419,6 +420,7 @@ Deno.test('next episode', async (test) => {
         data: {
           embeds: [],
           components: [],
+          attachments: [],
           content: '`anime` is coming soon.',
         },
       });
@@ -458,6 +460,7 @@ Deno.test('next episode', async (test) => {
         data: {
           embeds: [],
           components: [],
+          attachments: [],
           content: '`anime` is taking a short break.',
         },
       });
@@ -497,6 +500,7 @@ Deno.test('next episode', async (test) => {
         data: {
           embeds: [],
           components: [],
+          attachments: [],
           content:
             'Unfortunately, `anime` has already aired its final episode.',
         },
@@ -537,6 +541,7 @@ Deno.test('next episode', async (test) => {
         data: {
           embeds: [],
           components: [],
+          attachments: [],
           content:
             'Unfortunately, `anime` has already aired its final episode.',
         },

@@ -314,7 +314,9 @@ const handler = async (r: Request) => {
                   anchor,
                   action,
                   type: type as ManifestType,
-                }).setType(discord.MessageType.Update).send();
+                })
+                  .setType(discord.MessageType.Update)
+                  .send();
               }
               case 'collection': {
                 return (await user.collection({
