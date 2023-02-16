@@ -26,6 +26,16 @@ snapshot[`model 1`] = `
                                             in: Expr {
                                               raw: {
                                                 object: {
+                                                  character: Expr {
+                                                    raw: {
+                                                      from: Expr {
+                                                        raw: {
+                                                          var: "createdCharacter",
+                                                        },
+                                                      },
+                                                      select: "ref",
+                                                    },
+                                                  },
                                                   inventory: Expr {
                                                     raw: {
                                                       from: Expr {
@@ -1053,6 +1063,16 @@ snapshot[`model 1`] = `
                                             in: Expr {
                                               raw: {
                                                 object: {
+                                                  character: Expr {
+                                                    raw: {
+                                                      from: Expr {
+                                                        raw: {
+                                                          var: "createdCharacter",
+                                                        },
+                                                      },
+                                                      select: "ref",
+                                                    },
+                                                  },
                                                   inventory: Expr {
                                                     raw: {
                                                       from: Expr {

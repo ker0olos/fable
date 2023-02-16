@@ -125,9 +125,10 @@ export function addCharacter(
               ),
             }),
           },
-          () => ({
+          ({ createdCharacter }) => ({
             ok: true,
             inventory: fql.Ref(inventory),
+            character: fql.Ref(createdCharacter),
             // deno-lint-ignore no-explicit-any
           } as any),
         ),

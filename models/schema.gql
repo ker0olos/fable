@@ -5,6 +5,7 @@
 type Response @embedded {
   ok: Boolean!
   error: String
+  character: Character
   inventory: Inventory
 }
 

@@ -100,7 +100,7 @@ Deno.test('get or create user', async (test) => {
     const matchStub = FakeMatch();
 
     try {
-      const match = getUser('user_id') as any;
+      getUser('user_id') as any;
 
       assertSpyCall(indexStub, 0, {
         args: ['users_discord_id'],
@@ -111,11 +111,15 @@ Deno.test('get or create user', async (test) => {
       });
 
       assertSpyCallArg(ifStub, 0, 0, false);
-      assertSpyCallArg(createStub, 0, 0, 'user');
 
-      assertEquals(match, {
-        id: 'user_id',
-        inventories: [],
+      assertSpyCall(createStub, 0, {
+        args: [
+          'user' as any,
+          {
+            id: 'user_id',
+            inventories: [],
+          },
+        ],
       });
     } finally {
       ifStub.restore();
@@ -177,7 +181,7 @@ Deno.test('get or create guild', async (test) => {
     const matchStub = FakeMatch();
 
     try {
-      const match = getGuild('guild_id') as any;
+      getGuild('guild_id') as any;
 
       assertSpyCall(indexStub, 0, {
         args: ['guilds_discord_id'],
@@ -188,11 +192,15 @@ Deno.test('get or create guild', async (test) => {
       });
 
       assertSpyCallArg(ifStub, 0, 0, false);
-      assertSpyCallArg(createStub, 0, 0, 'guild');
 
-      assertEquals(match, {
-        id: 'guild_id',
-        instances: [],
+      assertSpyCall(createStub, 0, {
+        args: [
+          'guild' as any,
+          {
+            id: 'guild_id',
+            instances: [],
+          },
+        ],
       });
     } finally {
       ifStub.restore();
@@ -249,7 +257,7 @@ Deno.test('get or create instance', async (test) => {
     const updateStub = FakeUpdate();
 
     try {
-      const match = getInstance('guild' as any) as any;
+      getInstance('guild' as any) as any;
 
       assertSpyCall(selectStub, 0, {
         args: [['data', 'instances'], 'guild' as any],
@@ -277,12 +285,6 @@ Deno.test('get or create instance', async (test) => {
             instances: [{ ref: 'createdInstance' }],
           },
         ],
-      });
-
-      assertEquals(match, {
-        main: true,
-        guild: { ref: 'guild' },
-        inventories: [],
       });
     } finally {
       ifStub.restore();
@@ -374,7 +376,7 @@ Deno.test('get or create inventory', async (test) => {
     const updateStub = FakeUpdate();
 
     try {
-      const match = getInventory({
+      getInventory({
         instance: 'instance' as any,
         user: 'user' as any,
       }) as any;
@@ -434,14 +436,6 @@ Deno.test('get or create inventory', async (test) => {
             inventories: [{ ref: 'createdInventory' }, { select: true }],
           },
         ],
-      });
-
-      assertEquals(match, {
-        lastPull: null,
-        availablePulls: 5,
-        characters: [],
-        instance: { ref: 'instance' },
-        user: { ref: 'user' },
       });
     } finally {
       ifStub.restore();
@@ -972,7 +966,7 @@ Deno.test('check for pulls refill', async (test) => {
     const updateStub = FakeUpdate();
 
     try {
-      const result = refillPulls({ inventory: 'inventory' as any }) as any;
+      refillPulls({ inventory: 'inventory' as any }) as any;
 
       assertSpyCall(selectStub, 0, {
         args: [['data', 'availablePulls'], 'inventory' as any],
@@ -988,10 +982,6 @@ Deno.test('check for pulls refill', async (test) => {
         args: [{ ref: 'inventory' } as any, {
           availablePulls: 5,
         }],
-      });
-
-      assertEquals(result, {
-        availablePulls: 5,
       });
     } finally {
       ifStub.restore();

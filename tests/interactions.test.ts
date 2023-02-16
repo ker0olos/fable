@@ -2856,6 +2856,7 @@ Deno.test('gacha', async (test) => {
     const pull: Pull = {
       media,
       character,
+      anchor: 'anchor',
       popularityChance: 0,
       popularityGreater: 0,
       popularityLesser: 100,
@@ -2992,6 +2993,12 @@ Deno.test('gacha', async (test) => {
               {
                 custom_id: 'gacha=user-id',
                 label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'collection=user-id=anchor',
+                label: '/collection',
                 style: 2,
                 type: 2,
               },
@@ -3995,6 +4002,12 @@ Deno.test('user', async (test) => {
                 {
                   custom_id: 'gacha=user',
                   label: '/gacha',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'collection=user',
+                  label: '/collection',
                   style: 2,
                   type: 2,
                 },

@@ -280,6 +280,9 @@ Deno.test('add character to inventory', async (test) => {
 
       assertEquals(response, {
         ok: true,
+        character: {
+          ref: 'character',
+        },
         inventory: {
           ref: 'inventory',
         },

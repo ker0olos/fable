@@ -14,8 +14,8 @@ import {
   Character,
   DisaggregatedCharacter,
   DisaggregatedMedia,
-  Inventory,
   Media,
+  Schema,
 } from './types.ts';
 
 import Rating from './rating.ts';
@@ -40,7 +40,7 @@ export async function now({
   const message = new discord.Message();
 
   const { availablePulls, lastPull } = (await request<{
-    getUserInventory: Inventory;
+    getUserInventory: Schema.Inventory;
   }>({
     url: faunaUrl,
     query,
@@ -72,9 +72,9 @@ export async function now({
         .setId('gacha', userId)
         .setLabel('/gacha'),
       // `/collections` shortcut
-      // new discord.Component()
-      //   .setId('collection', userId, '0')
-      //   .setLabel('/collection'),
+      new discord.Component()
+        .setId('collection', userId)
+        .setLabel('/collection'),
     ]);
   } else {
     // if user has no pulls
@@ -122,7 +122,7 @@ export async function collection({
 
   const { character, anchor, total } = (await request<{
     getUserCharacters: {
-      character?: Inventory['characters'][0];
+      character?: Schema.Inventory['characters'][0];
       anchor?: string;
       total: number;
     };

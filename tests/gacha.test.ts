@@ -782,6 +782,7 @@ Deno.test('valid pool', async (test) => {
         popularityChance: 0,
         popularityGreater: 2000,
         popularityLesser: 3000,
+        anchor: undefined,
         remaining: undefined,
         rating: new Rating({ role: CharacterRole.Main, popularity: 75 }),
         roleChance: 0,
@@ -888,6 +889,7 @@ Deno.test('valid pool', async (test) => {
         popularityChance: 0,
         popularityGreater: 2000,
         popularityLesser: 3000,
+        anchor: undefined,
         remaining: undefined,
         rating: new Rating({ role: CharacterRole.Main, popularity: 100 }),
         roleChance: 0,
@@ -996,6 +998,7 @@ Deno.test('valid pool', async (test) => {
         popularityChance: 0,
         popularityGreater: 100_000,
         popularityLesser: 500_000,
+        anchor: undefined,
         remaining: undefined,
         rating: new Rating({ role: CharacterRole.Main, popularity: 500_000 }),
         roleChance: 0,
@@ -1107,6 +1110,7 @@ Deno.test('valid pool', async (test) => {
         popularityChance: 0,
         popularityGreater: 2000,
         popularityLesser: 3000,
+        anchor: undefined,
         remaining: undefined,
         rating: new Rating({ role: CharacterRole.Main, popularity: 2500 }),
         roleChance: 0,
@@ -1381,6 +1385,9 @@ Deno.test('adding character to inventory', async (test) => {
             data: {
               addCharacterToInventory: {
                 ok: true,
+                character: {
+                  _id: 'anchor',
+                },
                 inventory: {
                   availablePulls: 2,
                 },

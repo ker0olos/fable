@@ -16,14 +16,7 @@ import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
-import {
-  Character,
-  CharacterRole,
-  Inventory,
-  Media,
-  Mutation,
-  PoolInfo,
-} from './types.ts';
+import { Character, CharacterRole, Media, PoolInfo, Schema } from './types.ts';
 
 import { NoPullsError, PoolError } from './errors.ts';
 
@@ -31,6 +24,7 @@ export type Pull = {
   role?: CharacterRole;
   index?: number;
   remaining?: number;
+  anchor?: string;
   character: Character;
   media: Media;
   rating: Rating;
@@ -106,7 +100,8 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
 
   const pool = await packs.pool({ range, role });
 
-  let inventory: Inventory | undefined = undefined;
+  let anchor: string | undefined = undefined;
+  let inventory: Schema.Inventory | undefined = undefined;
 
   let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
@@ -213,6 +208,9 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           ) {
             ok
             error
+            character {
+              _id
+            }
             inventory {
               lastPull
               availablePulls
@@ -222,7 +220,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
       `;
 
       const response = (await request<{
-        addCharacterToInventory: Mutation;
+        addCharacterToInventory: Schema.Mutation;
       }>({
         url: faunaUrl,
         query: mutation,
@@ -240,6 +238,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
       })).addCharacterToInventory;
 
       if (response.ok) {
+        anchor = response.character._id;
         inventory = response.inventory;
       } else {
         switch (response.error) {
@@ -265,6 +264,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
   }
 
   return {
+    anchor,
     role: role,
     media: media,
     rating: rating,
@@ -333,18 +333,18 @@ function start(
           },
         });
 
-        if (userId) {
+        if (userId && pull.anchor) {
           message.addComponents([
             new discord.Component()
               .setId('gacha', userId)
               .setLabel('/gacha'),
-            // new discord.Component()
-            //   .setId(
-            //     `collection`,
-            //     userId,
-            //     `${pull.character.packId}:${pull.character.id}`,
-            //   )
-            //   .setLabel('/collection'),
+            new discord.Component()
+              .setId(
+                `collection`,
+                userId,
+                pull.anchor,
+              )
+              .setLabel('/collection'),
           ]);
         }
 

@@ -263,21 +263,21 @@ const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          // case 'collection': {
-          //   // deno-lint-ignore no-non-null-assertion
-          //   const userId = customValues![0];
-          //   // deno-lint-ignore no-non-null-assertion
-          //   const characterRef = customValues![1];
+          case 'collection': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+            // deno-lint-ignore no-non-null-assertion
+            const characterRef = customValues![1];
 
-          //   return (await user.collection({
-          //     userId,
-          //     guildId,
-          //     channelId,
-          //     on: characterRef,
-          //   }))
-          //     .setType(discord.MessageType.Update)
-          //     .send();
-          // }
+            return (await user.collection({
+              userId,
+              guildId,
+              channelId,
+              on: characterRef,
+            }))
+              .setType(discord.MessageType.Update)
+              .send();
+          }
           case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];

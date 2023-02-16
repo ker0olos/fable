@@ -43,7 +43,7 @@ export async function request<T = any, V = Variables>(
     const json = await response.json();
 
     if (json.errors || !response.ok) {
-      throw new Error(json.errors || json);
+      throw new Error(JSON.stringify(json.errors || json));
     }
 
     return json.data;

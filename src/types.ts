@@ -171,23 +171,32 @@ export interface Manifest {
   type?: ManifestType;
 }
 
-export type Inventory = {
-  lastPull?: string;
-  availablePulls: number;
-  characters: { id: string; mediaId: string; rating: number }[];
-};
-
-export type Mutation = {
-  ok: false;
-  error: 'CHARACTER_EXISTS';
-} | {
-  ok: false;
-  error: 'NO_PULLS_AVAILABLE';
-  inventory: Inventory;
-} | {
-  ok: true;
-  inventory: Inventory;
-};
+// deno-lint-ignore no-namespace
+export namespace Schema {
+  export type Character = {
+    id: string;
+    _id: string;
+    mediaId: string;
+    rating: number;
+  };
+  export type Inventory = {
+    lastPull?: string;
+    availablePulls: number;
+    characters: Character[];
+  };
+  export type Mutation = {
+    ok: false;
+    error: 'CHARACTER_EXISTS';
+  } | {
+    ok: false;
+    error: 'NO_PULLS_AVAILABLE';
+    inventory: Inventory;
+  } | {
+    ok: true;
+    inventory: Inventory;
+    character: Character;
+  };
+}
 
 type Command = {
   source: string;

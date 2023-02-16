@@ -98,10 +98,8 @@ export const FakeTimeDiff = () =>
     return (diff / 60000);
   });
 
-export const FakeCreate = () =>
-  stub(fql, 'Create', (_: any, data: any) => data);
-export const FakeUpdate = () =>
-  stub(fql, 'Update', (_: any, data: any) => data);
+export const FakeCreate = () => stub(fql, 'Create', (name: any) => name);
+export const FakeUpdate = () => stub(fql, 'Update', (name: any) => name);
 
 export const FakeIf = () =>
   stub(
