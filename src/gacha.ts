@@ -48,7 +48,7 @@ const variables = {
   },
 };
 
-async function forcePull(characterId: string): Promise<Pull> {
+async function fakePull(characterId: string): Promise<Pull> {
   const results = await packs.characters({ ids: [characterId] });
 
   if (!results.length) {
@@ -281,9 +281,7 @@ function start(
   },
 ): discord.Message {
   const _ =
-    (characterId
-      ? gacha.forcePull(characterId)
-      : gacha.rngPull(userId, guildId))
+    (characterId ? gacha.fakePull(characterId) : gacha.rngPull(userId, guildId))
       .then(async (pull) => {
         const media = pull.media;
 
@@ -379,7 +377,7 @@ function start(
 const gacha = {
   lowest,
   variables,
-  forcePull,
+  fakePull,
   rngPull,
   start,
 };

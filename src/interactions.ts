@@ -194,7 +194,7 @@ const handler = async (r: Request) => {
                 channelId,
               })
               .send();
-          case 'force_pull':
+          case 'fake_pull':
             return gacha
               .start({ token, characterId: options['id'] as string })
               .send();

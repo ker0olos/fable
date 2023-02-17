@@ -222,9 +222,8 @@ await put([
     aliases: ['pull', 'roll', 'w'],
   }),
   ...Command({
-    name: 'force_pull',
-    description: 'Force a gacha pull',
-    defaultPermission: Permission.ADMINISTRATORS,
+    name: 'fake_pull',
+    description: 'Preform a fake gacha pull',
     devOnly: true,
     options: [
       Option({
