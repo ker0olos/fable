@@ -81,7 +81,7 @@ We recommend that you check
 [fable-community/example](https://github.com/fable-community/example), it has a
 great quick start guide.
 
-> Can I use prefixes like "$"?
+> Can I use prefixes like `$`
 
 No, Fable was built from the ground up to only support slash commands, prefixes
 are an entirely different thing that requires the bot to manually monitor all
@@ -89,12 +89,22 @@ incoming messages in a server. We won't add prefixes to Fable, but you can go
 tell discord to add custom prefixes to "slash" commands instead of "/" for all
 bots.
 
-> How are you keeping Fable free?
+> How/why are you keeping Fable free?
 
 We're using serverless for the servers and the database, which is much cheaper
-to maintain. If it ever starts hurting our wallet, we'll have to actively ask
-for support, but no one is getting special rewards for donations, worst-case
-we'll have to offer cosmetics; tl;dr Fable will always remain 100% free.
+to maintain right now.
+
+If things get out of hand we'll rate limit big servers for something like 1M
+command calls per month. So most people won't be affected, only big server
+owners will be required to cover for what "their" server costs us (their portion
+of the bill), we'll keep covering the bill for small servers with less activity.
+
+TL;DR Fable will always remain 100% free-to-play to the players.
+
+Alternatively, you can donate to a dev member account directly if you want (not
+Fable itself), Obviously, you won't be getting special rewards for those
+donations. We're not shameless to take money for IPs we don't own, even if was
+legal, which I doubt it is.
 
 ## Credits
 
