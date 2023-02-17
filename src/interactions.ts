@@ -171,19 +171,6 @@ const handler = async (r: Request) => {
             }))
               .send();
           }
-          case 'music':
-          case 'songs':
-          case 'themes': {
-            const query = options['query'] as string;
-
-            return (await search.music({
-              id: query.startsWith(idPrefix)
-                ? query.substring(idPrefix.length)
-                : undefined,
-              search: query,
-            }))
-              .send();
-          }
           case 'now':
           case 'checklist':
           case 'cl':

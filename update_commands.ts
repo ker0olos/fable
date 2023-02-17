@@ -212,19 +212,6 @@ await put([
     ],
   }),
   ...Command({
-    name: 'music',
-    description: 'Look up the music and theme songs of a media',
-    aliases: ['songs', 'themes'],
-    options: [
-      Option({
-        name: 'query',
-        description: 'The title of the media',
-        autocomplete: true,
-        type: Type.STRING,
-      }),
-    ],
-  }),
-  ...Command({
     name: 'now',
     description: 'Check what you can do right now',
     aliases: ['checklist', 'cl', 'tu'],
