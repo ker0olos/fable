@@ -235,11 +235,6 @@ await put([
     aliases: ['pull', 'roll', 'w'],
   }),
   ...Command({
-    name: 'collection',
-    description: 'View all your characters',
-    aliases: ['list', 'mm'],
-  }),
-  ...Command({
     name: 'force_pull',
     description: 'Force a gacha pull',
     defaultPermission: Permission.ADMINISTRATORS,

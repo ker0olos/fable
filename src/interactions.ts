@@ -211,16 +211,6 @@ const handler = async (r: Request) => {
             return gacha
               .start({ token, characterId: options['id'] as string })
               .send();
-          case 'collection':
-          case 'list':
-          case 'mm': {
-            return (await user.collection({
-              userId: member.user.id,
-              guildId,
-              channelId,
-            }))
-              .send();
-          }
           case 'packs': {
             return packs.embed({
               // deno-lint-ignore no-non-null-assertion
@@ -249,6 +239,14 @@ const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
+          case 'character': {
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+
+            return (await search.character({ id }))
+              .setType(discord.MessageType.Update)
+              .send();
+          }
           case 'mcharacter': {
             // deno-lint-ignore no-non-null-assertion
             const mediaId = customValues![0];
@@ -259,21 +257,6 @@ const handler = async (r: Request) => {
             return (await search.mediaCharacter({
               mediaId,
               index,
-            }))
-              .setType(discord.MessageType.Update)
-              .send();
-          }
-          case 'collection': {
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
-            // deno-lint-ignore no-non-null-assertion
-            const characterRef = customValues![1];
-
-            return (await user.collection({
-              userId,
-              guildId,
-              channelId,
-              on: characterRef,
             }))
               .setType(discord.MessageType.Update)
               .send();
@@ -301,7 +284,7 @@ const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const type = customValues![0];
             // deno-lint-ignore no-non-null-assertion
-            const id = customValues![1];
+            const _id = customValues![1];
             // deno-lint-ignore no-non-null-assertion
             const anchor = customValues![2];
             // deno-lint-ignore no-non-null-assertion
@@ -318,17 +301,17 @@ const handler = async (r: Request) => {
                   .setType(discord.MessageType.Update)
                   .send();
               }
-              case 'collection': {
-                return (await user.collection({
-                  guildId,
-                  channelId,
-                  userId: id,
-                  after: action === 'next' ? anchor : undefined,
-                  before: action === 'prev' ? anchor : undefined,
-                }))
-                  .setType(discord.MessageType.Update)
-                  .send();
-              }
+              // case 'collection': {
+              //   return (await user.collection({
+              //     guildId,
+              //     channelId,
+              //     userId: id,
+              //     after: action === 'next' ? anchor : undefined,
+              //     before: action === 'prev' ? anchor : undefined,
+              //   }))
+              //     .setType(discord.MessageType.Update)
+              //     .send();
+              // }
               default:
                 break;
             }

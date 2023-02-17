@@ -429,7 +429,11 @@ export async function mediaCharacter(
   const titles = packs.aliasToArray(media.title);
 
   if (!node) {
-    throw new NonFetalError(`${titles[0]} contains no characters`);
+    throw new NonFetalError(
+      index > 0
+        ? `${titles[0]} contains no more characters`
+        : `${titles[0]} contains no characters`,
+    );
   }
 
   if (packs.isDisabled(`${node.packId}:${node.id}`)) {

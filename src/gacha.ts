@@ -21,10 +21,9 @@ import { Character, CharacterRole, Media, PoolInfo, Schema } from './types.ts';
 import { NoPullsError, PoolError } from './errors.ts';
 
 export type Pull = {
-  role?: CharacterRole;
   index?: number;
+  role?: CharacterRole;
   remaining?: number;
-  anchor?: string;
   character: Character;
   media: Media;
   rating: Rating;
@@ -100,7 +99,6 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
 
   const pool = await packs.pool({ range, role });
 
-  let anchor: string | undefined = undefined;
   let inventory: Schema.Inventory | undefined = undefined;
 
   let rating: Rating | undefined = undefined;
@@ -208,9 +206,6 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           ) {
             ok
             error
-            character {
-              _id
-            }
             inventory {
               lastPull
               availablePulls
@@ -238,7 +233,6 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
       })).addCharacterToInventory;
 
       if (response.ok) {
-        anchor = response.character._id;
         inventory = response.inventory;
       } else {
         switch (response.error) {
@@ -264,7 +258,6 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
   }
 
   return {
-    anchor,
     role: role,
     media: media,
     rating: rating,
@@ -333,18 +326,17 @@ function start(
           },
         });
 
-        if (userId && pull.anchor) {
+        if (userId) {
           message.addComponents([
             new discord.Component()
               .setId('gacha', userId)
               .setLabel('/gacha'),
             new discord.Component()
+              .setLabel('/character')
               .setId(
-                `collection`,
-                userId,
-                pull.anchor,
-              )
-              .setLabel('/collection'),
+                `character`,
+                `${pull.character.packId}:${pull.character.id}`,
+              ),
           ]);
         }
 
