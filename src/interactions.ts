@@ -89,13 +89,10 @@ const handler = async (r: Request) => {
     switch (type) {
       case discord.InteractionType.Partial: {
         switch (name) {
-          case 'search': // search
+          case 'search':
           case 'anime':
           case 'manga':
-          case 'media':
-          case 'music': // music also takes the same input
-          case 'songs':
-          case 'themes': {
+          case 'media': {
             const query = options['query'] as string;
 
             const message = new discord.Message(
@@ -117,7 +114,8 @@ const handler = async (r: Request) => {
             return message.send();
           }
           case 'character':
-          case 'char': {
+          case 'char':
+          case 'im': {
             const query = options['query'] as string;
 
             const message = new discord.Message(
@@ -159,7 +157,8 @@ const handler = async (r: Request) => {
               .send();
           }
           case 'character':
-          case 'char': {
+          case 'char':
+          case 'im': {
             const query = options['query'] as string;
 
             return (await search.character({

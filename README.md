@@ -54,9 +54,8 @@ our best to include term naturel commands along with anime analogies).
 
 - `/gacha`, `/w`: to start a new gacha pull
 - `/now`, `/tu`: to check what you can do right now
-- `/collection`, or `/mm`: to view all your characters
 - `/search`, `/anime` or `/manga`: to search for specific series
-- `/character`: to search for a specific character
+- `/character`, `/im`: to search for a specific character
 
 ### Get Involved
 

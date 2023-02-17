@@ -195,7 +195,7 @@ await put([
   ...Command({
     name: 'character',
     description: 'Search for a specific character',
-    aliases: ['char'],
+    aliases: ['char', 'im'],
     options: [
       Option({
         name: 'query',
