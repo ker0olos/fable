@@ -2,23 +2,11 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import { characterMessage } from './search.ts';
-
 import utils from './utils.ts';
-
-import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
-import {
-  Character,
-  DisaggregatedCharacter,
-  DisaggregatedMedia,
-  Media,
-  Schema,
-} from './types.ts';
-
-import Rating from './rating.ts';
+import { Schema } from './types.ts';
 
 export async function now({
   userId,
@@ -86,6 +74,65 @@ export async function now({
   }
 
   return message;
+}
+
+export async function findCharacter({
+  guildId,
+  characterId,
+}: {
+  guildId?: string;
+  channelId?: string;
+  characterId?: string;
+}): Promise<
+  {
+    userId: string;
+    mediaId: string;
+    rating: number;
+  } | undefined
+> {
+  if (!guildId || !characterId) {
+    return undefined;
+  }
+
+  const query = gql`
+    query ($guildId: String!, $characterId: String!) {
+      findCharacter(guildId: $guildId, characterId: $characterId) {
+        mediaId
+        rating
+        user {
+          id
+        }
+      }
+    }
+  `;
+
+  const result = (await request<{
+    findCharacter?: {
+      user: { id: string };
+      mediaId: string;
+      rating: number;
+    };
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      characterId,
+      guildId,
+    },
+  })).findCharacter;
+
+  if (!result) {
+    return undefined;
+  }
+
+  return {
+    userId: result.user.id,
+    mediaId: result.mediaId,
+    rating: result.rating,
+  };
 }
 
 // export async function collection({

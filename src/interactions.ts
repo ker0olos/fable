@@ -162,6 +162,7 @@ const handler = async (r: Request) => {
             const query = options['query'] as string;
 
             return (await search.character({
+              guildId,
               debug: Boolean(options['debug']),
               id: query.startsWith(idPrefix)
                 ? query.substring(idPrefix.length)
@@ -229,7 +230,7 @@ const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return (await search.character({ id }))
+            return (await search.character({ id, guildId }))
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -241,6 +242,7 @@ const handler = async (r: Request) => {
             const index = parseInt(customValues![1]) || 0;
 
             return (await search.mediaCharacter({
+              guildId,
               mediaId,
               index,
             }))

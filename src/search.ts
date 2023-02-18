@@ -4,6 +4,8 @@ import Rating from './rating.ts';
 
 import utils from './utils.ts';
 
+import * as users from './user.ts';
+
 import * as discord from './discord.ts';
 
 import {
@@ -65,6 +67,7 @@ export function mediaMessage(media: Media): discord.Message {
     .forEach((edge) => {
       const embed = characterEmbed(edge.node, {
         mode: 'thumbnail',
+        rating: false,
       });
 
       message.addEmbed(embed);
@@ -180,8 +183,9 @@ export function mediaDebugMessage(
 }
 
 export async function character(
-  { id, search, debug }: {
+  { id, guildId, search, debug }: {
     id?: string;
+    guildId?: string;
     search?: string;
     debug?: boolean;
   },
@@ -193,17 +197,26 @@ export async function character(
     throw new Error('404');
   }
 
-  // aggregate the media by populating any references to other media/character objects
-  const character = await packs.aggregate<Character>({
-    character: results[0],
-    end: 4,
-  });
+  const [character, existing] = await Promise.all([
+    // aggregate the media by populating any references to other media/character objects
+    await packs.aggregate<Character>({
+      character: results[0],
+      end: 4,
+    }),
+    // find if the character is owned
+    await users.findCharacter({
+      guildId,
+      characterId: `${results[0].packId}:${results[0].id}`,
+    }),
+  ]);
 
   if (debug) {
     return characterDebugMessage(character);
   }
 
-  return characterMessage(character);
+  return characterMessage(character, {
+    existing,
+  });
 }
 
 export function characterMessage(
@@ -274,7 +287,12 @@ export function characterMessage(
 export function characterEmbed(
   character: Character | DisaggregatedCharacter,
   options?: {
-    rating?: Rating;
+    existing?: {
+      userId: string;
+      mediaId: string;
+      rating: number;
+    };
+    rating?: Rating | boolean;
     media?: {
       title?: boolean | string;
     };
@@ -286,6 +304,7 @@ export function characterEmbed(
   options = {
     ...{
       mode: 'full',
+      rating: true,
       description: true,
       footer: true,
     },
@@ -303,8 +322,18 @@ export function characterEmbed(
       .setThumbnail({ url: character.images?.[0].url });
   }
 
-  if (options?.rating) {
-    embed.setTitle(options.rating.emotes);
+  if (options?.existing) {
+    const rating = new Rating({ stars: options.existing.rating });
+
+    // FIXME #63
+
+    embed.setDescription(`<@${options.existing.userId}>\n\n${rating.emotes}`);
+  } else if (options?.rating) {
+    if (typeof options.rating === 'boolean' && options.rating) {
+      options.rating = Rating.fromCharacter(character);
+    }
+
+    embed.setDescription(options.rating.emotes);
   }
 
   const description = options.mode === 'thumbnail'
@@ -330,12 +359,12 @@ export function characterEmbed(
       value: `**${utils.wrap(alias[0])}**`,
     });
 
-    if (options.description) {
+    if (options.description && description) {
       embed.addField({ value: description });
     }
   } else {
     embed.addField({
-      name: options.description && options.mode === 'thumbnail'
+      name: options.description && options.mode === 'thumbnail' || !description
         ? `${utils.wrap(alias[0])}`
         : `${utils.wrap(alias[0])}\n${discord.empty}`,
       value: options.description ? description : undefined,
@@ -376,7 +405,7 @@ export function characterDebugMessage(character: Character): discord.Message {
     .addField({ name: 'Id', value: `${character.packId}:${character.id}` })
     .addField({
       name: 'Rating',
-      value: rating.emotes,
+      value: `${rating.stars}*`,
     })
     .addField({
       name: 'Gender',
@@ -412,8 +441,9 @@ export function characterDebugMessage(character: Character): discord.Message {
 }
 
 export async function mediaCharacter(
-  { mediaId, index }: {
+  { mediaId, guildId, index }: {
     mediaId: string;
+    guildId?: string;
     index: number;
   },
 ): Promise<discord.Message> {
@@ -440,12 +470,21 @@ export async function mediaCharacter(
     throw new NonFetalError('character is disabled or invalid');
   }
 
-  const character = await packs.aggregate<Character>({
-    character: node,
-    end: 1,
-  });
+  const [character, existing] = await Promise.all([
+    // aggregate the media by populating any references to other media/character objects
+    await packs.aggregate<Character>({
+      character: node,
+      end: 1,
+    }),
+    // find if the character is owned
+    await users.findCharacter({
+      guildId,
+      characterId: `${node.packId}:${node.id}`,
+    }),
+  ]);
 
   const message = characterMessage(character, {
+    existing,
     relations: [media as DisaggregatedMedia],
   });
 

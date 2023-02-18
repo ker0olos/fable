@@ -1734,6 +1734,7 @@ Deno.test('character', async (test) => {
       images: [{
         url: 'image_url',
       }],
+      popularity: 1_000_000,
       age: '420',
       gender: 'male',
     };
@@ -1775,6 +1776,8 @@ Deno.test('character', async (test) => {
         data: {
           embeds: [{
             type: 'rich',
+            description:
+              '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             fields: [
               {
                 name: 'full name\n\u200B',
@@ -1800,7 +1803,93 @@ Deno.test('character', async (test) => {
     }
   });
 
-  await test.step('gender only', async () => {
+  await test.step('with owner', async () => {
+    const character: AniListCharacter = {
+      id: '1',
+      description: 'long description',
+      name: {
+        full: 'full name',
+      },
+      image: {
+        large: 'image_url',
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                Page: {
+                  characters: [character],
+                },
+              },
+            })),
+        } as any,
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: {
+                findCharacter: {
+                  user: {
+                    id: 'user_id',
+                  },
+                  mediaId: 'media_id',
+                  rating: 3,
+                },
+              },
+            })),
+        } as any,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await search.character({
+        search: 'full name',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [{
+            type: 'rich',
+            description:
+              '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: 'long description',
+              },
+            ],
+            image: {
+              url: 'undefined/external/image_url',
+            },
+          }],
+          components: [],
+          attachments: [],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 2);
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('with gender', async () => {
     const character: AniListCharacter = {
       id: '1',
       description: 'long description',
@@ -1843,6 +1932,8 @@ Deno.test('character', async (test) => {
         data: {
           embeds: [{
             type: 'rich',
+            description:
+              '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
             fields: [
               {
                 name: 'full name\n\u200B',
@@ -1868,7 +1959,7 @@ Deno.test('character', async (test) => {
     }
   });
 
-  await test.step('age only', async () => {
+  await test.step('with age', async () => {
     const character: AniListCharacter = {
       id: '1',
       description: 'long description',
@@ -1911,6 +2002,8 @@ Deno.test('character', async (test) => {
         data: {
           embeds: [{
             type: 'rich',
+            description:
+              '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
             fields: [
               {
                 name: 'full name\n\u200B',
@@ -1936,7 +2029,7 @@ Deno.test('character', async (test) => {
     }
   });
 
-  await test.step('relations', async () => {
+  await test.step('with relations', async () => {
     const character: AniListCharacter = {
       id: '1',
       description: 'long description',
@@ -1993,6 +2086,8 @@ Deno.test('character', async (test) => {
           attachments: [],
           embeds: [{
             type: 'rich',
+            description:
+              '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
             fields: [
               {
                 name: 'full name\n\u200B',
@@ -2060,9 +2155,11 @@ Deno.test('character', async (test) => {
         data: {
           embeds: [{
             type: 'rich',
+            description:
+              '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
             fields: [
               {
-                name: 'full name\n\u200B',
+                name: 'full name',
                 value: '\u200B',
               },
             ],
@@ -2123,9 +2220,11 @@ Deno.test('character', async (test) => {
         data: {
           embeds: [{
             type: 'rich',
+            description:
+              '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
             fields: [
               {
-                name: 'full name\n\u200B',
+                name: 'full name',
                 value: '\u200B',
               },
             ],
@@ -2262,8 +2361,7 @@ Deno.test('character debug', async (test) => {
                 },
                 {
                   name: 'Rating',
-                  value:
-                    '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+                  value: '5*',
                 },
                 {
                   inline: true,
@@ -2370,8 +2468,7 @@ Deno.test('character debug', async (test) => {
                 },
                 {
                   name: 'Rating',
-                  value:
-                    '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                  value: '1*',
                 },
                 {
                   inline: true,
@@ -2472,8 +2569,7 @@ Deno.test('character debug', async (test) => {
                 },
                 {
                   name: 'Rating',
-                  value:
-                    '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                  value: '1*',
                 },
                 {
                   inline: true,
@@ -2594,8 +2690,7 @@ Deno.test('character debug', async (test) => {
                 },
                 {
                   name: 'Rating',
-                  value:
-                    '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                  value: '1*',
                 },
                 {
                   inline: true,
@@ -2699,9 +2794,11 @@ Deno.test('media characters', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               fields: [
                 {
-                  name: 'name\n\u200B',
+                  name: 'name',
                   value: '\u200B',
                 },
               ],
@@ -2714,6 +2811,113 @@ Deno.test('media characters', async (test) => {
       });
     } finally {
       characterStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('with owner', async () => {
+    const characterStub = stub(
+      packs,
+      'mediaCharacter',
+      () =>
+        Promise.resolve({
+          next: true,
+          media: {
+            id: '1',
+            packId: 'pack-id',
+            type: MediaType.Anime,
+            title: {
+              english: 'title',
+            },
+          },
+          character: {
+            id: '2',
+            packId: 'pack-id',
+            name: {
+              english: 'name',
+            },
+          },
+        }),
+    );
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              findCharacter: {
+                user: {
+                  id: 'user_id',
+                },
+                mediaId: 'media_id',
+                rating: 3,
+              },
+            },
+          })),
+      } as any),
+    );
+
+    try {
+      const message = await search.mediaCharacter({
+        guildId: 'guild_id',
+        mediaId: 'pack-id:1',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'mcharacter=pack-id:1=1',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'media=pack-id:1',
+                label: 'title',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              fields: [
+                {
+                  name: 'name',
+                  value: '\u200B',
+                },
+              ],
+              image: {
+                url: 'undefined/external/',
+              },
+            },
+          ],
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      characterStub.restore();
+      fetchStub.restore();
       packs.clear();
     }
   });
@@ -3010,7 +3214,7 @@ Deno.test('gacha', async (test) => {
           attachments: [],
           embeds: [{
             type: 'rich',
-            title: new Rating({ popularity: 100 }).emotes,
+            description: new Rating({ popularity: 100 }).emotes,
             fields: [{
               name: 'title',
               value: '**name**',

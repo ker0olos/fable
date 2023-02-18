@@ -50,6 +50,7 @@ type Option = {
   description: string;
   autocomplete?: boolean;
   options?: Option[];
+  choices?: Choice[];
   optional?: boolean;
 };
 
@@ -62,14 +63,20 @@ type Command = {
   devOnly?: boolean;
 };
 
+type Choice = {
+  name: string;
+  value: string | number;
+};
+
 const Option = (
-  { name, description, type, autocomplete, options, optional }: Option,
+  { name, description, type, autocomplete, choices, options, optional }: Option,
 ) => ({
   name,
   description,
   autocomplete,
   type: type.valueOf(),
   required: !optional,
+  choices,
   options,
 });
 
@@ -233,10 +240,46 @@ await put([
       }),
     ],
   }),
+  // collection browsing
+  ...Command({
+    name: 'collection',
+    description: 'collection browsing commands',
+    options: [
+      Option({
+        name: 'stars',
+        description: 'List all your stars',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'amount',
+            description: 'The star rating',
+            type: Type.INTEGER,
+            choices: [{
+              name: '1*',
+              value: 1,
+            }, {
+              name: '2*',
+              value: 2,
+            }, {
+              name: '3*',
+              value: 3,
+            }, {
+              name: '4*',
+              value: 4,
+            }, {
+              name: '5*',
+              value: 5,
+            }],
+          }),
+        ],
+      }),
+    ],
+  }),
   // pack management commands
   ...Command({
     name: 'packs',
-    description: 'Pack management commands',
+    description: 'pack management commands',
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
       Option({
