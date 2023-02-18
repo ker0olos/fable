@@ -281,12 +281,21 @@ async function proxy(r: Request): Promise<Response> {
           break;
       }
 
-      const t = await transformed.encode(2);
+      if (type === 'image/png') {
+        const t = await transformed.encode(2);
 
-      proxy = new Response(t);
+        proxy = new Response(t);
 
-      proxy.headers.set('content-type', 'image/png');
-      proxy.headers.set('content-length', `${t.byteLength}`);
+        proxy.headers.set('content-type', 'image/png');
+        proxy.headers.set('content-length', `${t.byteLength}`);
+      } else {
+        const t = await transformed.encodeJPEG(70);
+
+        proxy = new Response(t);
+
+        proxy.headers.set('content-type', 'image/jpeg');
+        proxy.headers.set('content-length', `${t.byteLength}`);
+      }
     } else if (transformed instanceof imagescript.GIF) {
       switch (size) {
         case ImageSize.Thumbnail:

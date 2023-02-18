@@ -275,7 +275,7 @@ Deno.test('external images', async (test) => {
 
       assertEquals(response.status, 200);
 
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
+      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
 
       assertEquals(
         response.headers.get('Cache-Control'),
@@ -470,7 +470,7 @@ Deno.test('external images', async (test) => {
 
       assertEquals(response.status, 200);
 
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
+      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
 
       assertEquals(
         response.headers.get('Cache-Control'),
@@ -520,7 +520,7 @@ Deno.test('external images', async (test) => {
 
       assertEquals(response.status, 200);
 
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
+      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
 
       assertEquals(
         response.headers.get('Cache-Control'),
