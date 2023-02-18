@@ -252,19 +252,17 @@ const handler = async (r: Request) => {
             const userId = customValues![0];
 
             // verify user id
-            if (userId === member.user.id) {
-              return gacha
-                .start({
-                  token,
-                  userId: member.user.id,
-                  guildId,
-                  channelId,
-                  messageType: discord.MessageType.Update,
-                })
-                .send();
-            }
-
-            throw new NoPermissionError();
+            return gacha
+              .start({
+                token,
+                userId: member.user.id,
+                guildId,
+                channelId,
+                messageType: userId === member.user.id
+                  ? discord.MessageType.Update
+                  : discord.MessageType.New,
+              })
+              .send();
           }
           case 'anchor': {
             // deno-lint-ignore no-non-null-assertion
