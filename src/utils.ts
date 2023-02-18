@@ -2,6 +2,10 @@ import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 
 import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
+const notoSans = await (await fetch(
+  'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
+)).arrayBuffer();
+
 import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
 
 import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
@@ -12,7 +16,7 @@ export enum ImageSize {
   Thumbnail = 'thumbnail', // 110x155
 }
 
-let font: Uint8Array | undefined = undefined;
+const TEN_MIB = 1024 * 1024 * 10;
 
 const globalCache = inMemoryCache(20);
 
@@ -208,15 +212,9 @@ function verifySignature(
   return { valid, body };
 }
 
-async function text(s: string | number): Promise<Uint8Array> {
-  font = font ?? new Uint8Array(
-    await (await fetch(
-      'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
-    )).arrayBuffer(),
-  );
-
+function text(s: string | number): Promise<Uint8Array> {
   const text = imagescript.Image.renderText(
-    font,
+    new Uint8Array(notoSans),
     28,
     `${s}`.substring(0, 2),
     0xffffffff,
@@ -245,6 +243,10 @@ async function proxy(r: Request): Promise<Response> {
     const type = response?.headers.get('content-type');
 
     const size = searchParams.get('size') as ImageSize || ImageSize.Large;
+
+    if (Number(response.headers.get('content-length')) > TEN_MIB) {
+      throw new Error();
+    }
 
     // FIXME discord doesn't allow any gif that doesn't end with the file extension
     // (see #39)

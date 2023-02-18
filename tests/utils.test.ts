@@ -726,6 +726,49 @@ Deno.test('external images', async (test) => {
     }
   });
 
+  await test.step('over 10 mib', async () => {
+    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          // 11 Mib
+          'Content-Length': `${1024 * 1024 * 11}`,
+          'Content-Type': 'image/png',
+        }),
+      } as any),
+    );
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.png')
+        }`,
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.png'), {
+          signal: 'timeout' as any,
+        }],
+      });
+
+      assertEquals(response.status, 302);
+
+      assertEquals(
+        response.headers.get('location'),
+        'http://localhost:8000/assets/medium.png',
+      );
+    } finally {
+      abortStub.restore();
+      fetchStub.restore();
+    }
+  });
+
   await test.step('empty url', async () => {
     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
 
