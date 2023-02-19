@@ -397,78 +397,7 @@ snapshot[`model 5`] = `
                           raw: {
                             in: Expr {
                               raw: {
-                                else: Expr {
-                                  raw: {
-                                    var: "inventory",
-                                  },
-                                },
-                                if: Expr {
-                                  raw: {
-                                    and: Expr {
-                                      raw: [
-                                        Expr {
-                                          raw: {
-                                            lte: Expr {
-                                              raw: [
-                                                Expr {
-                                                  raw: {
-                                                    from: Expr {
-                                                      raw: {
-                                                        var: "inventory",
-                                                      },
-                                                    },
-                                                    select: Expr {
-                                                      raw: [
-                                                        "data",
-                                                        "availablePulls",
-                                                      ],
-                                                    },
-                                                  },
-                                                },
-                                                0,
-                                              ],
-                                            },
-                                          },
-                                        },
-                                        Expr {
-                                          raw: {
-                                            gte: Expr {
-                                              raw: [
-                                                Expr {
-                                                  raw: {
-                                                    other: Expr {
-                                                      raw: {
-                                                        now: null,
-                                                      },
-                                                    },
-                                                    time_diff: Expr {
-                                                      raw: {
-                                                        from: Expr {
-                                                          raw: {
-                                                            var: "inventory",
-                                                          },
-                                                        },
-                                                        select: Expr {
-                                                          raw: [
-                                                            "data",
-                                                            "lastPull",
-                                                          ],
-                                                        },
-                                                      },
-                                                    },
-                                                    unit: "minutes",
-                                                  },
-                                                },
-                                                60,
-                                              ],
-                                            },
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                },
-                                then: Expr {
+                                in: Expr {
                                   raw: {
                                     params: Expr {
                                       raw: {
@@ -476,7 +405,54 @@ snapshot[`model 5`] = `
                                           data: Expr {
                                             raw: {
                                               object: {
-                                                availablePulls: 5,
+                                                availablePulls: Expr {
+                                                  raw: {
+                                                    var: "rechargedPulls",
+                                                  },
+                                                },
+                                                rechargeTimestamp: Expr {
+                                                  raw: {
+                                                    else: Expr {
+                                                      raw: {
+                                                        offset: Expr {
+                                                          raw: {
+                                                            multiply: Expr {
+                                                              raw: [
+                                                                Expr {
+                                                                  raw: {
+                                                                    var: "diffPulls",
+                                                                  },
+                                                                },
+                                                                15,
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                        time_add: Expr {
+                                                          raw: {
+                                                            var: "rechargeTimestamp",
+                                                          },
+                                                        },
+                                                        unit: "minutes",
+                                                      },
+                                                    },
+                                                    if: Expr {
+                                                      raw: {
+                                                        gte: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                var: "rechargedPulls",
+                                                              },
+                                                            },
+                                                            5,
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    then: null,
+                                                  },
+                                                },
                                               },
                                             },
                                           },
@@ -495,6 +471,122 @@ snapshot[`model 5`] = `
                                     },
                                   },
                                 },
+                                let: [
+                                  {
+                                    rechargeTimestamp: Expr {
+                                      raw: {
+                                        default: Expr {
+                                          raw: {
+                                            now: null,
+                                          },
+                                        },
+                                        from: Expr {
+                                          raw: {
+                                            var: "inventory",
+                                          },
+                                        },
+                                        select: Expr {
+                                          raw: [
+                                            "data",
+                                            "rechargeTimestamp",
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    currentPulls: Expr {
+                                      raw: {
+                                        from: Expr {
+                                          raw: {
+                                            var: "inventory",
+                                          },
+                                        },
+                                        select: Expr {
+                                          raw: [
+                                            "data",
+                                            "availablePulls",
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    newPulls: Expr {
+                                      raw: {
+                                        divide: Expr {
+                                          raw: [
+                                            Expr {
+                                              raw: {
+                                                other: Expr {
+                                                  raw: {
+                                                    now: null,
+                                                  },
+                                                },
+                                                time_diff: Expr {
+                                                  raw: {
+                                                    var: "rechargeTimestamp",
+                                                  },
+                                                },
+                                                unit: "minutes",
+                                              },
+                                            },
+                                            15,
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    rechargedPulls: Expr {
+                                      raw: {
+                                        min: Expr {
+                                          raw: [
+                                            5,
+                                            Expr {
+                                              raw: {
+                                                add: Expr {
+                                                  raw: [
+                                                    Expr {
+                                                      raw: {
+                                                        var: "currentPulls",
+                                                      },
+                                                    },
+                                                    Expr {
+                                                      raw: {
+                                                        var: "newPulls",
+                                                      },
+                                                    },
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    diffPulls: Expr {
+                                      raw: {
+                                        subtract: Expr {
+                                          raw: [
+                                            Expr {
+                                              raw: {
+                                                var: "rechargedPulls",
+                                              },
+                                            },
+                                            Expr {
+                                              raw: {
+                                                var: "currentPulls",
+                                              },
+                                            },
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
                               },
                             },
                             let: [
@@ -840,6 +932,7 @@ snapshot[`model 5`] = `
                                                                   },
                                                                 },
                                                                 lastPull: null,
+                                                                rechargeTimestamp: null,
                                                                 user: Expr {
                                                                   raw: {
                                                                     from: Expr {
@@ -1077,78 +1170,7 @@ snapshot[`model 5`] = `
                           raw: {
                             in: Expr {
                               raw: {
-                                else: Expr {
-                                  raw: {
-                                    var: "inventory",
-                                  },
-                                },
-                                if: Expr {
-                                  raw: {
-                                    and: Expr {
-                                      raw: [
-                                        Expr {
-                                          raw: {
-                                            lte: Expr {
-                                              raw: [
-                                                Expr {
-                                                  raw: {
-                                                    from: Expr {
-                                                      raw: {
-                                                        var: "inventory",
-                                                      },
-                                                    },
-                                                    select: Expr {
-                                                      raw: [
-                                                        "data",
-                                                        "availablePulls",
-                                                      ],
-                                                    },
-                                                  },
-                                                },
-                                                0,
-                                              ],
-                                            },
-                                          },
-                                        },
-                                        Expr {
-                                          raw: {
-                                            gte: Expr {
-                                              raw: [
-                                                Expr {
-                                                  raw: {
-                                                    other: Expr {
-                                                      raw: {
-                                                        now: null,
-                                                      },
-                                                    },
-                                                    time_diff: Expr {
-                                                      raw: {
-                                                        from: Expr {
-                                                          raw: {
-                                                            var: "inventory",
-                                                          },
-                                                        },
-                                                        select: Expr {
-                                                          raw: [
-                                                            "data",
-                                                            "lastPull",
-                                                          ],
-                                                        },
-                                                      },
-                                                    },
-                                                    unit: "minutes",
-                                                  },
-                                                },
-                                                60,
-                                              ],
-                                            },
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                },
-                                then: Expr {
+                                in: Expr {
                                   raw: {
                                     params: Expr {
                                       raw: {
@@ -1156,7 +1178,54 @@ snapshot[`model 5`] = `
                                           data: Expr {
                                             raw: {
                                               object: {
-                                                availablePulls: 5,
+                                                availablePulls: Expr {
+                                                  raw: {
+                                                    var: "rechargedPulls",
+                                                  },
+                                                },
+                                                rechargeTimestamp: Expr {
+                                                  raw: {
+                                                    else: Expr {
+                                                      raw: {
+                                                        offset: Expr {
+                                                          raw: {
+                                                            multiply: Expr {
+                                                              raw: [
+                                                                Expr {
+                                                                  raw: {
+                                                                    var: "diffPulls",
+                                                                  },
+                                                                },
+                                                                15,
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                        time_add: Expr {
+                                                          raw: {
+                                                            var: "rechargeTimestamp",
+                                                          },
+                                                        },
+                                                        unit: "minutes",
+                                                      },
+                                                    },
+                                                    if: Expr {
+                                                      raw: {
+                                                        gte: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                var: "rechargedPulls",
+                                                              },
+                                                            },
+                                                            5,
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    then: null,
+                                                  },
+                                                },
                                               },
                                             },
                                           },
@@ -1175,6 +1244,122 @@ snapshot[`model 5`] = `
                                     },
                                   },
                                 },
+                                let: [
+                                  {
+                                    rechargeTimestamp: Expr {
+                                      raw: {
+                                        default: Expr {
+                                          raw: {
+                                            now: null,
+                                          },
+                                        },
+                                        from: Expr {
+                                          raw: {
+                                            var: "inventory",
+                                          },
+                                        },
+                                        select: Expr {
+                                          raw: [
+                                            "data",
+                                            "rechargeTimestamp",
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    currentPulls: Expr {
+                                      raw: {
+                                        from: Expr {
+                                          raw: {
+                                            var: "inventory",
+                                          },
+                                        },
+                                        select: Expr {
+                                          raw: [
+                                            "data",
+                                            "availablePulls",
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    newPulls: Expr {
+                                      raw: {
+                                        divide: Expr {
+                                          raw: [
+                                            Expr {
+                                              raw: {
+                                                other: Expr {
+                                                  raw: {
+                                                    now: null,
+                                                  },
+                                                },
+                                                time_diff: Expr {
+                                                  raw: {
+                                                    var: "rechargeTimestamp",
+                                                  },
+                                                },
+                                                unit: "minutes",
+                                              },
+                                            },
+                                            15,
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    rechargedPulls: Expr {
+                                      raw: {
+                                        min: Expr {
+                                          raw: [
+                                            5,
+                                            Expr {
+                                              raw: {
+                                                add: Expr {
+                                                  raw: [
+                                                    Expr {
+                                                      raw: {
+                                                        var: "currentPulls",
+                                                      },
+                                                    },
+                                                    Expr {
+                                                      raw: {
+                                                        var: "newPulls",
+                                                      },
+                                                    },
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    diffPulls: Expr {
+                                      raw: {
+                                        subtract: Expr {
+                                          raw: [
+                                            Expr {
+                                              raw: {
+                                                var: "rechargedPulls",
+                                              },
+                                            },
+                                            Expr {
+                                              raw: {
+                                                var: "currentPulls",
+                                              },
+                                            },
+                                          ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
                               },
                             },
                             let: [
@@ -1520,6 +1705,7 @@ snapshot[`model 5`] = `
                                                                   },
                                                                 },
                                                                 lastPull: null,
+                                                                rechargeTimestamp: null,
                                                                 user: Expr {
                                                                   raw: {
                                                                     from: Expr {

@@ -207,8 +207,8 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
             ok
             error
             inventory {
-              lastPull
               availablePulls
+              rechargeTimestamp
             }
           }
         }
@@ -239,8 +239,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           case 'CHARACTER_EXISTS':
             continue;
           case 'NO_PULLS_AVAILABLE':
-            // deno-lint-ignore no-non-null-assertion
-            throw new NoPullsError(response.inventory.lastPull!);
+            throw new NoPullsError(response.inventory.rechargeTimestamp);
           default:
             throw new Error(response);
         }
@@ -311,7 +310,7 @@ function start(
 
         await message.patch(token);
 
-        await utils.sleep(6);
+        await utils.sleep(pull.rating.stars + 2);
 
         message = characterMessage(pull.character, {
           relations: false,
@@ -345,12 +344,12 @@ function start(
           return await new discord.Message()
             .addEmbed(
               new discord.Embed().setDescription(
-                '**You don\'t have any pulls available!**',
+                '**You don\'t have any more pulls!**',
               ),
             )
             .addEmbed(
               new discord.Embed()
-                .setDescription(`Refill <t:${err.refillTimestamp}:R>`),
+                .setDescription(`+1 <t:${err.rechargeTimestamp}:R>`),
             )
             .patch(token);
         }

@@ -33,6 +33,7 @@ export interface Instance {
 export interface Inventory {
   lastPull: TimeExpr | NullExpr;
   availablePulls: NumberExpr;
+  rechargeTimestamp: TimeExpr | NullExpr;
   characters: RefExpr[];
   instance: RefExpr;
   user: RefExpr;
@@ -43,7 +44,8 @@ export interface CharacterNode {
   anchor: StringExpr;
 }
 
-export const PULLS_DEFAULT = 5;
+export const MAX_PULLS = 5;
+export const RECHARGE_MINS = 15;
 
 export function getUser(id: StringExpr): UserExpr {
   return fql.Let({
@@ -123,7 +125,8 @@ export function getInventory(
           // create a new inventory
           createdInventory: fql.Create<Inventory>('inventory', {
             lastPull: fql.Null(),
-            availablePulls: PULLS_DEFAULT,
+            availablePulls: MAX_PULLS,
+            rechargeTimestamp: fql.Null(),
             characters: [],
             instance: fql.Ref(instance),
             user: fql.Ref(user),
@@ -213,29 +216,45 @@ export function getInventory(
 //   });
 // }
 
-export function refillPulls(
+export function rechargePulls(
   { inventory }: { inventory: InventoryExpr },
 ): InventoryExpr {
-  return fql.If(
-    fql.And(
-      // if available pulls is less than or equal to 0
-      fql.LTE(fql.Select(['data', 'availablePulls'], inventory), 0),
-      // and difference in time between the last pull and now
-      // is greater than or equal to 60 minutes
-      fql.GTE(
+  return fql.Let(
+    {
+      rechargeTimestamp: fql.Select(
+        ['data', 'rechargeTimestamp'],
+        inventory,
+        fql.Now(), // fallback
+      ),
+      currentPulls: fql.Select(['data', 'availablePulls'], inventory),
+      newPulls: fql.Divide(
         fql.TimeDiffInMinutes(
-          fql.Select(['data', 'lastPull'], inventory),
+          fql.Var('rechargeTimestamp'),
           fql.Now(),
         ),
-        60,
+        RECHARGE_MINS,
       ),
-    ),
-    // refill the available pulls to default
-    fql.Update<Inventory>(fql.Ref(inventory), {
-      availablePulls: PULLS_DEFAULT,
-    }),
-    // return inventory as is
-    inventory,
+      rechargedPulls: fql.Min(
+        MAX_PULLS,
+        fql.Add(fql.Var('currentPulls'), fql.Var('newPulls')),
+      ),
+      diffPulls: fql.Subtract(
+        fql.Var('rechargedPulls'),
+        fql.Var('currentPulls'),
+      ),
+    },
+    ({ rechargeTimestamp, diffPulls, rechargedPulls }) =>
+      fql.Update<Inventory>(fql.Ref(inventory), {
+        availablePulls: rechargedPulls,
+        rechargeTimestamp: fql.If(
+          fql.GTE(rechargedPulls, MAX_PULLS),
+          fql.Null(),
+          fql.TimeAddInMinutes(
+            rechargeTimestamp,
+            fql.Multiply(diffPulls, RECHARGE_MINS),
+          ),
+        ),
+      }),
   );
 }
 
@@ -283,7 +302,7 @@ export default function (client: Client): (() => Promise<void>)[] {
               instance: fql.Var('instance'),
             }),
           },
-          refillPulls,
+          rechargePulls,
         );
       },
     }),

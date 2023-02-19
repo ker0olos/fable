@@ -95,6 +95,10 @@ function And(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
   return _fql.And(a, b);
 }
 
+function Min(a: NumberExpr, b: NumberExpr): NumberExpr {
+  return _fql.Min(a, b);
+}
+
 function GTE(a: NumberExpr, b: NumberExpr): BooleanExpr {
   return _fql.GTE(a, b);
 }
@@ -103,8 +107,20 @@ function LTE(a: NumberExpr, b: NumberExpr): BooleanExpr {
   return _fql.LTE(a, b);
 }
 
+function Multiply(a: NumberExpr, b: NumberExpr): NumberExpr {
+  return _fql.Multiply(a, b);
+}
+
+function Divide(a: NumberExpr, b: NumberExpr): NumberExpr {
+  return _fql.Divide(a, b);
+}
+
 function Subtract(a: NumberExpr, b: NumberExpr): NumberExpr {
   return _fql.Subtract(a, b);
+}
+
+function Add(a: NumberExpr, b: NumberExpr): NumberExpr {
+  return _fql.Add(a, b);
 }
 
 function If<A = Expr, B = Expr>(
@@ -160,6 +176,10 @@ function Reverse(expr: Expr): Expr {
 
 function TimeDiffInMinutes(a: TimeExpr, b: TimeExpr): NumberExpr {
   return _fql.TimeDiff(a, b, 'minutes');
+}
+
+function TimeAddInMinutes(t: TimeExpr, offset: NumberExpr): NumberExpr {
+  return _fql.TimeAdd(t, offset, 'minutes');
 }
 
 function Now(): TimeExpr {
@@ -221,11 +241,13 @@ function Resolver(
 }
 
 export const fql = {
-  // Map,
   // Equals,
+  // Map,
+  Add,
   And,
   Append,
   Create,
+  Divide,
   Get,
   GTE,
   Id,
@@ -238,6 +260,8 @@ export const fql = {
   Let,
   LTE,
   Match,
+  Min,
+  Multiply,
   Now,
   Null,
   Paginate,
@@ -246,6 +270,7 @@ export const fql = {
   Reverse,
   Select,
   Subtract,
+  TimeAddInMinutes,
   TimeDiffInMinutes,
   Update,
   Var,

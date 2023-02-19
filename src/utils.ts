@@ -342,16 +342,20 @@ async function readJson<T>(filePath: string): Promise<T> {
   }
 }
 
-function lastPullToRefillTimestamp(lastPull: string): string {
-  const refill = new Date(lastPull);
+function rechargeTimestamp(
+  { rechargeTimestamp }: {
+    rechargeTimestamp?: string;
+  },
+): string {
+  const ts = new Date(rechargeTimestamp ?? new Date());
 
-  refill.setMinutes(refill.getMinutes() + 60);
+  ts.setMinutes(ts.getMinutes() + 15);
 
-  const refillTimestamp = refill.getTime().toString();
+  const tsISO = ts.getTime().toString();
 
   // discord apparently uses black magic and requires us to cut 3 digits
   // or go 30,000 years into the future
-  return refillTimestamp.substring(0, refillTimestamp.length - 3);
+  return tsISO.substring(0, tsISO.length - 3);
 }
 
 const utils = {
@@ -361,7 +365,7 @@ const utils = {
   decodeDescription,
   distance,
   hexToInt,
-  lastPullToRefillTimestamp,
+  rechargeTimestamp,
   parseInt: _parseInt,
   proxy,
   randint,

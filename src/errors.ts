@@ -41,13 +41,15 @@ export class NonFetalError extends Error {
 }
 
 export class NoPullsError extends Error {
-  refillTimestamp: string;
+  rechargeTimestamp: string;
 
-  constructor(lastPull: string) {
+  constructor(rechargeTimestamp?: string) {
     super('NO_PULLS_AVAILABLE');
 
     this.name = 'NoPullsError';
-    this.refillTimestamp = utils.lastPullToRefillTimestamp(lastPull);
+    this.rechargeTimestamp = utils.rechargeTimestamp(
+      { rechargeTimestamp },
+    );
   }
 }
 

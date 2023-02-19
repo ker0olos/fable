@@ -19,15 +19,15 @@ export async function now({
   const query = gql`
     query ($userId: String!, $guildId: String!) {
       getUserInventory(userId: $userId, guildId: $guildId) {
-        lastPull
         availablePulls
+        rechargeTimestamp
       }
     }
   `;
 
   const message = new discord.Message();
 
-  const { availablePulls, lastPull } = (await request<{
+  const { availablePulls, rechargeTimestamp } = (await request<{
     getUserInventory: Schema.Inventory;
   }>({
     url: faunaUrl,
@@ -60,15 +60,13 @@ export async function now({
         .setId('gacha', userId)
         .setLabel('/gacha'),
     ]);
-  } else {
-    // if user has no pulls
-    // inform display the refill timestamp in the same message
+  }
 
+  if (availablePulls < 5) {
     message.addEmbed(
       new discord.Embed()
         .setDescription(
-          // deno-lint-ignore no-non-null-assertion
-          `Refill <t:${utils.lastPullToRefillTimestamp(lastPull!)}:R>`,
+          `+1 <t:${utils.rechargeTimestamp({ rechargeTimestamp })}:R>`,
         ),
     );
   }

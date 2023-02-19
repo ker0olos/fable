@@ -14,7 +14,7 @@ export const FakeVar = (obj?: any) =>
     fql,
     'Var',
     (name) =>
-      (obj?.[name as string]
+      (obj?.[name as string] !== undefined
         ? JSON.parse(JSON.stringify(obj?.[name as string]))
         : name) as any,
   );
@@ -38,13 +38,23 @@ export const FakeLength = () =>
 export const FakeGTE = () => stub(fql, 'GTE', (a: any, b: any) => a >= b);
 export const FakeLTE = () => stub(fql, 'LTE', (a: any, b: any) => a <= b);
 
+export const FakMultiply = () =>
+  stub(fql, 'Multiply', (a: any, b: any) => a * b);
+
+export const FakeDivide = () => stub(fql, 'Divide', (a: any, b: any) => a / b);
+
 export const FakeSubtract = () =>
   stub(fql, 'Subtract', (a: any, b: any) => a - b);
+
+export const FakeAdd = () => stub(fql, 'Add', (a: any, b: any) => a + b);
 
 export const FakeIsNull = () =>
   stub(fql, 'IsNull', (a: any) => a === undefined);
 
 export const FakeAnd = () => stub(fql, 'And', (a: any, b: any) => a && b);
+
+export const FakeMin = () =>
+  stub(fql, 'Min', (a: any, b: any) => Math.min(a, b));
 
 export const FakeId = () => stub(fql, 'Id', (_: any, id: any) => id);
 
@@ -94,8 +104,13 @@ export const FakeNow = (date?: Date) =>
 
 export const FakeTimeDiff = () =>
   stub(fql, 'TimeDiffInMinutes', (a: any, b: any) => {
-    const diff = b.getTime() - a.getTime();
+    const diff = new Date(b).getTime() - new Date(a).getTime();
     return (diff / 60000);
+  });
+
+export const FakeTimeAdd = () =>
+  stub(fql, 'TimeAddInMinutes', (t: any, offset: any) => {
+    return new Date(t.getTime() + offset * 60000) as any;
   });
 
 export const FakeCreate = () => stub(fql, 'Create', (name: any) => name);

@@ -181,6 +181,7 @@ export namespace Schema {
   };
   export type Inventory = {
     lastPull?: string;
+    rechargeTimestamp?: string;
     availablePulls: number;
     characters: Character[];
   };

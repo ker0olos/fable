@@ -199,12 +199,12 @@ export async function character(
 
   const [character, existing] = await Promise.all([
     // aggregate the media by populating any references to other media/character objects
-    await packs.aggregate<Character>({
+    packs.aggregate<Character>({
       character: results[0],
       end: 4,
     }),
     // find if the character is owned
-    await users.findCharacter({
+    users.findCharacter({
       guildId,
       characterId: `${results[0].packId}:${results[0].id}`,
     }),
@@ -472,12 +472,12 @@ export async function mediaCharacter(
 
   const [character, existing] = await Promise.all([
     // aggregate the media by populating any references to other media/character objects
-    await packs.aggregate<Character>({
+    packs.aggregate<Character>({
       character: node,
       end: 1,
     }),
     // find if the character is owned
-    await users.findCharacter({
+    users.findCharacter({
       guildId,
       characterId: `${node.packId}:${node.id}`,
     }),

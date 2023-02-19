@@ -3298,9 +3298,9 @@ Deno.test('gacha', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**You don\'t have any pulls available!**',
+              description: '**You don\'t have any more pulls!**',
             },
-            { type: 'rich', description: 'Refill <t:1675734789:R>' },
+            { type: 'rich', description: '+1 <t:1675732089:R>' },
           ],
           attachments: [],
           components: [],
@@ -3635,7 +3635,7 @@ Deno.test('user', async (test) => {
             data: {
               getUserInventory: {
                 availablePulls: 0,
-                lastPull: time.toISOString(),
+                rechargeTimestamp: time.toISOString(),
               },
             },
           })),
@@ -3675,7 +3675,7 @@ Deno.test('user', async (test) => {
               },
               type: 'rich',
             },
-            { type: 'rich', description: 'Refill <t:1675570906:R>' },
+            { type: 'rich', description: '+1 <t:1675568206:R>' },
           ],
           components: [],
         },

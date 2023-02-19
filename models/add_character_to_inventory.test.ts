@@ -179,7 +179,9 @@ Deno.test('add character to inventory', async (test) => {
     const selectStub = stub(
       fql,
       'Select',
-      returnsNext([1, 1, { ref: 'anotherCharacter' }]) as any,
+      returnsNext([1, new Date('2023-02-19T18:29:17.549Z'), 1, {
+        ref: 'anotherCharacter',
+      }]) as any,
     );
 
     const nowStub = FakeNow(new Date('2023-02-06T00:44:59.295Z'));
@@ -265,6 +267,7 @@ Deno.test('add character to inventory', async (test) => {
           { ref: 'inventory' } as any,
           {
             lastPull: new Date('2023-02-06T00:44:59.295Z'),
+            rechargeTimestamp: new Date('2023-02-19T18:29:17.549Z'),
             availablePulls: 0,
             characters: [
               {

@@ -35,6 +35,8 @@ type Instance @collection(name: "instance") {
 type Inventory @collection(name: "inventory") {
   # the time the user last pulled a gacha
   lastPull: Time
+  # 
+  rechargeTimestamp: Time
   # the amount of pulls available to the user
   availablePulls: Int!
   #

@@ -16,7 +16,7 @@ import {
   getInventory,
   getUser,
   Inventory,
-  refillPulls,
+  rechargePulls,
 } from './get_user_inventory.ts';
 
 export interface Character {
@@ -115,6 +115,11 @@ export function addCharacter(
             // update the inventory
             updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
               lastPull: fql.Now(),
+              rechargeTimestamp: fql.Select(
+                ['data', 'rechargeTimestamp'],
+                inventory,
+                fql.Now(),
+              ),
               availablePulls: fql.Subtract(
                 fql.Select(['data', 'availablePulls'], inventory),
                 1,
@@ -163,7 +168,7 @@ export default function (client: Client): (() => Promise<void>)[] {
               user: fql.Var('user'),
               instance: fql.Var('instance'),
             }),
-            inventory: refillPulls({
+            inventory: rechargePulls({
               inventory: fql.Var('_inventory'),
             }),
           },
