@@ -17,6 +17,10 @@
 
 </h1>
 
+> **Warning** Fable is in early access. Some core features might be missing.
+> Missing features include "Trading" (see
+> [#20](https://github.com/ker0olos/fable/issues/20) for a full roadmap)
+
 <i>
   <h6 align="right">(Animated Pulls)</h6>
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/215555794-c8e52906-99a5-485c-9cdd-8961e168f587.gif" alt="Animated Pulls">
@@ -27,8 +31,9 @@ alternative. Like Mudae, you can pull anime characters. Unlike Mudae, there are
 no premiums and no pay-to-win bullshit.
 
 There's a intuitive system to manage and customize the characters in your
-servers, you can add community-made packs that are full of new characters with a
-single command.
+servers, like adding extensions to chrome and installing apps on your phone, you
+can add community-made packs that are full of new characters with a single
+command.
 
 Fable is actively developed with new game modes and features frequently.
 
@@ -36,10 +41,6 @@ Fable is actively developed with new game modes and features frequently.
 other packs, e.g. video game characters or real life celebrities. And you can
 disable the anime packs entirety (Incase it's a sports server or else, we try
 our best to include term naturel commands along with anime analogies).
-
-> **Warning** Fable is in early access. Some features might be missing. Missing
-> features include "Trading" (see
-> [#20](https://github.com/ker0olos/fable/issues/20) for a full roadmap)
 
 <br clear="right"/>
 
@@ -66,6 +67,19 @@ our best to include term naturel commands along with anime analogies).
 - [Contribute to the code][contributing]
 
 <br clear="right"/>
+<br/>
+<br/>
+
+<h6 align="center">(Check when is the next episode is airing)</h6>
+<h6 align="center">
+  <img width="500" src="https://user-images.githubusercontent.com/52022280/219866921-5209e2c1-08c8-4183-9dce-f961099dc89a.png" alt="Searching">
+</h6>
+<h6 align="center">(Search for any anime or manga you want to know more about)</h6>
+<h6 align="center">
+  <img  width="500" src="https://user-images.githubusercontent.com/52022280/219867337-4f99626a-802e-412c-b26c-d3e75ed9fbae.png" alt="Searching">
+</h6>
+
+---
 
 ## FAQ
 
@@ -77,9 +91,10 @@ our best to include term naturel commands along with anime analogies).
 
 > How can I create a new pack?
 
-We recommend that you check
-[fable-community/example](https://github.com/fable-community/example), it has a
-great quick start guide.
+We are in the process of making GUI tools to streamline the process, currently
+it's only possible through editing JSON files directly, we recommend that you
+check [fable-community/example](https://github.com/fable-community/example), it
+has a great quick start guide for working with `manifest.json`
 
 > Can I use prefixes like `$`
 
@@ -95,16 +110,17 @@ We're using serverless for the servers and the database, which is much cheaper
 to maintain right now.
 
 If things get out of hand we'll rate limit big servers for something like 1M
-command calls per month. So most people won't be affected, only big server
-owners will be required to cover for what "their" server costs us (their portion
-of the bill), we'll keep covering the bill for small servers with less activity.
+command calls per month. So most people won't be affected, only server owners
+will be required to cover for what "their" server costs us (their portion of the
+bill), we'll keep covering the bill for small servers with less activity.
 
 TL;DR Fable will always remain 100% free-to-play to the players.
 
-Alternatively, you can donate to a dev member account directly if you want (not
-Fable itself), Obviously, you won't be getting special rewards for those
-donations. We're not shameless to take money for IPs we don't own, even if was
-legal, which I doubt it is.
+Alternatively, you can donate to our dev members to help us cover the bills for
+small servers and maybe buy a few coffees. (donations won't get you any special
+rewards or advantages, it's a literal donation, you only get a thank you note).
+
+---
 
 ## Credits
 
