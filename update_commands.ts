@@ -244,6 +244,7 @@ await put([
   ...Command({
     name: 'collection',
     description: 'collection browsing commands',
+    aliases: ['mm'],
     options: [
       Option({
         name: 'stars',

@@ -2,11 +2,23 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import Rating from './rating.ts';
+
+import packs from './packs.ts';
+
 import utils from './utils.ts';
 
 import * as discord from './discord.ts';
 
-import { Schema } from './types.ts';
+import { characterMessage } from './search.ts';
+
+import {
+  Character,
+  DisaggregatedCharacter,
+  DisaggregatedMedia,
+  Media,
+  Schema,
+} from './types.ts';
 
 export async function now({
   userId,
@@ -133,108 +145,107 @@ export async function findCharacter({
   };
 }
 
-// export async function collection({
-//   userId,
-//   guildId,
-//   before,
-//   after,
-//   on,
-// }: {
-//   userId: string;
-//   guildId: string;
-//   channelId?: string;
-//   before?: string;
-//   after?: string;
-//   on?: string;
-// }): Promise<discord.Message> {
-//   const query = gql`
-//     query ($userId: String!, $guildId: String!, $on: String, $before: String, $after: String) {
-//       getUserCharacters(userId: $userId, guildId: $guildId, on: $on, before: $before, after: $after) {
-//         anchor
-//         character {
-//           id
-//           mediaId
-//           rating
-//         }
-//       }
-//     }
-//   `;
+export async function stars({
+  userId,
+  guildId,
+  stars,
+  before,
+  after,
+}: {
+  userId: string;
+  guildId: string;
+  channelId?: string;
+  stars: number;
+  before?: string;
+  after?: string;
+}): Promise<discord.Message> {
+  const query = gql`
+    query ($userId: String!, $guildId: String!, $stars: Int!, $before: String, $after: String) {
+      getUserStars(userId: $userId, guildId: $guildId, stars: $stars, before: $before, after: $after) {
+        anchor
+        character {
+          id
+          mediaId
+          rating
+        }
+      }
+    }
+  `;
 
-//   const { character, anchor } = (await request<{
-//     getUserCharacters: {
-//       character?: Schema.Inventory['characters'][0];
-//       anchor?: string;
-//     };
-//   }>({
-//     url: faunaUrl,
-//     query,
-//     headers: {
-//       'authorization': `Bearer ${config.faunaSecret}`,
-//     },
-//     variables: {
-//       userId,
-//       guildId,
-//       before,
-//       after,
-//       on,
-//     },
-//   })).getUserCharacters;
+  const { character, anchor } = (await request<{
+    getUserStars: {
+      character?: Schema.Inventory['characters'][0];
+      anchor?: string;
+    };
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+      stars,
+      before,
+      after,
+    },
+  })).getUserStars;
 
-//   if (!character || !anchor) {
-//     return new discord.Message()
-//       .addEmbed(
-//         new discord.Embed()
-//           .setDescription('You don\'t have any characters'),
-//       )
-//       .addComponents([
-//         // `/gacha` shortcut
-//         new discord.Component()
-//           .setId('gacha', userId)
-//           .setLabel('/gacha'),
-//       ]);
-//   }
+  if (!character || !anchor) {
+    return new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription(`You don't have any ${stars}* characters`),
+      )
+      .addComponents([
+        // `/gacha` shortcut
+        new discord.Component()
+          .setId('gacha', userId)
+          .setLabel('/gacha'),
+      ]);
+  }
 
-//   const results: [
-//     (Media | DisaggregatedMedia)[],
-//     (Character | DisaggregatedCharacter)[],
-//   ] = await Promise.all([
-//     packs.media({ ids: [character.mediaId] }),
-//     packs.characters({ ids: [character.id] }),
-//   ]);
+  const results: [
+    (Media | DisaggregatedMedia)[],
+    (Character | DisaggregatedCharacter)[],
+  ] = await Promise.all([
+    packs.media({ ids: [character.mediaId] }),
+    packs.characters({ ids: [character.id] }),
+  ]);
 
-//   let message: discord.Message;
+  let message: discord.Message;
 
-//   if (!results[0].length) {
-//     message = new discord.Message()
-//       .addEmbed(
-//         new discord.Embed()
-//           .setDescription('This media was removed or disabled')
-//           .setImage({ default: true }),
-//       );
-//   } else if (!results[1].length) {
-//     message = new discord.Message()
-//       .addEmbed(
-//         new discord.Embed()
-//           .setDescription('This character was removed or disabled')
-//           .setImage({ default: true }),
-//       );
-//   } else {
-//     message = characterMessage(
-//       results[1][0],
-//       {
-//         relations: [results[0][0] as DisaggregatedMedia],
-//         rating: new Rating({ stars: character.rating }),
-//         media: {
-//           title: packs.aliasToArray(results[0][0].title)[0],
-//         },
-//       },
-//     );
-//   }
+  if (!results[0].length) {
+    message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription('This media was removed or disabled'),
+      );
+  } else if (!results[1].length) {
+    message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription('This character was removed or disabled'),
+      );
+  } else {
+    message = characterMessage(
+      results[1][0],
+      {
+        relations: [results[0][0] as DisaggregatedMedia],
+        rating: new Rating({ stars: character.rating }),
+        media: {
+          title: packs.aliasToArray(results[0][0].title)[0],
+        },
+      },
+    );
+  }
 
-//   return discord.Message.anchor({
-//     id: userId,
-//     type: 'collection',
-//     anchor,
-//     message,
-//   });
-// }
+  return discord.Message.anchor({
+    id: userId,
+    type: 'stars',
+    target: stars,
+    anchor,
+    message,
+  });
+}

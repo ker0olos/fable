@@ -171,6 +171,26 @@ const handler = async (r: Request) => {
             }))
               .send();
           }
+          case 'collection':
+          case 'mm': {
+            // deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'stars': {
+                const stars = options['amount'] as number;
+
+                return (await user.stars({
+                  userId: member.user.id,
+                  guildId,
+                  channelId,
+                  stars,
+                }))
+                  .send();
+              }
+              default:
+                break;
+            }
+            break;
+          }
           case 'now':
           case 'checklist':
           case 'cl':
@@ -200,6 +220,7 @@ const handler = async (r: Request) => {
               .send();
           case 'packs': {
             return packs.embed({
+              index: 0,
               // deno-lint-ignore no-non-null-assertion
               type: subcommand! as ManifestType,
             }).send();
@@ -249,6 +270,18 @@ const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
+          case 'builtin':
+          case 'manual': {
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            return packs.embed({
+              index,
+              type: customType as ManifestType,
+            })
+              .setType(discord.MessageType.Update)
+              .send();
+          }
           case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
@@ -266,42 +299,26 @@ const handler = async (r: Request) => {
               })
               .send();
           }
-          case 'anchor': {
+          case 'stars': {
             // deno-lint-ignore no-non-null-assertion
-            const type = customValues![0];
+            const stars = parseInt(customValues![0]);
             // deno-lint-ignore no-non-null-assertion
-            const _id = customValues![1];
+            const userId = customValues![1];
             // deno-lint-ignore no-non-null-assertion
             const anchor = customValues![2];
             // deno-lint-ignore no-non-null-assertion
             const action = customValues![3];
 
-            switch (type) {
-              case 'builtin':
-              case 'manual': {
-                return packs.embed({
-                  anchor,
-                  action,
-                  type: type as ManifestType,
-                })
-                  .setType(discord.MessageType.Update)
-                  .send();
-              }
-              // case 'collection': {
-              //   return (await user.collection({
-              //     guildId,
-              //     channelId,
-              //     userId: id,
-              //     after: action === 'next' ? anchor : undefined,
-              //     before: action === 'prev' ? anchor : undefined,
-              //   }))
-              //     .setType(discord.MessageType.Update)
-              //     .send();
-              // }
-              default:
-                break;
-            }
-            break;
+            return (await user.stars({
+              stars,
+              guildId,
+              channelId,
+              userId,
+              after: action === 'next' ? anchor : undefined,
+              before: action === 'prev' ? anchor : undefined,
+            }))
+              .setType(discord.MessageType.Update)
+              .send();
           }
           default:
             break;

@@ -112,10 +112,9 @@ function dict(): { [key: string]: Manifest } {
 }
 
 function embed(
-  { type, anchor, action }: {
+  { type, index }: {
     type: ManifestType;
-    anchor?: string;
-    action?: string;
+    index: number;
   },
 ): discord.Message {
   const list = packs.list(type);
@@ -127,14 +126,6 @@ function embed(
 
     return new discord.Message()
       .addEmbed(embed);
-  }
-
-  let index = anchor ? list.findIndex(({ id }) => anchor === id) : 0;
-
-  if (action === 'prev') {
-    index = index - 1 < 0 ? list.length - 1 : index - 1;
-  } else if (action === 'next') {
-    index = index + 1 < list.length ? index + 1 : 0;
   }
 
   const manifest = list[index];
@@ -162,10 +153,10 @@ function embed(
     .addEmbed(disclaimer)
     .addEmbed(pack);
 
-  return discord.Message.anchor({
-    page: index + 1,
+  return discord.Message.page({
+    index,
     total: list.length,
-    anchor: manifest.id,
+    next: list.length > index + 1,
     message,
     type,
   });

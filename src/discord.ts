@@ -698,9 +698,9 @@ export class Message {
   static page(
     { message, type, target, index, total, next }: {
       type: string;
-      target: string;
       message: Message;
       index: number;
+      target?: string;
       next?: boolean;
       total?: number;
     },
@@ -710,7 +710,7 @@ export class Message {
     if (index - 1 >= 0) {
       group.push(
         new Component()
-          .setId(type, target, `${index - 1}`)
+          .setId(type, target ?? '', `${index - 1}`)
           .setLabel(`Prev`),
       );
     }
@@ -726,7 +726,7 @@ export class Message {
     if (next) {
       group.push(
         new Component()
-          .setId(type, target, `${index + 1}`)
+          .setId(type, target ?? '', `${index + 1}`)
           .setLabel(`Next`),
       );
     }
@@ -735,34 +735,25 @@ export class Message {
   }
 
   static anchor(
-    { message, type, anchor, page, total, id }: {
+    { message, type, target, id, anchor }: {
+      id: string;
+      target: string | number;
       type: string;
+      anchor: string;
       message: Message;
-      anchor: string | number;
-      page?: number;
-      total?: number;
-      id?: string;
     },
   ): Message {
     const group: Component[] = [];
 
     group.push(
       new Component()
-        .setId('anchor', type, id ?? '', `${anchor}`, 'prev')
+        .setId(type, `${target}`, id, `${anchor}`, 'prev')
         .setLabel(`Prev`),
     );
 
-    if (page || total) {
-      group.push(
-        new Component().setId('_')
-          .setLabel(`${page ?? '?'}${total ? `/${total}` : ''}`)
-          .toggle(),
-      );
-    }
-
     group.push(
       new Component()
-        .setId('anchor', type, id ?? '', `${anchor}`, 'next')
+        .setId(type, `${target}`, id, `${anchor}`, 'next')
         .setLabel(`Next`),
     );
 
