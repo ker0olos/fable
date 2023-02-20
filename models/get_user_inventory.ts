@@ -1,6 +1,5 @@
 import {
   BooleanExpr,
-  CharacterExpr,
   Client,
   fql,
   GuildExpr,
@@ -37,11 +36,6 @@ export interface Inventory {
   characters: RefExpr[];
   instance: RefExpr;
   user: RefExpr;
-}
-
-export interface CharacterNode {
-  character: CharacterExpr;
-  anchor: StringExpr;
 }
 
 export const MAX_PULLS = 5;
@@ -151,71 +145,6 @@ export function getInventory(
     ));
 }
 
-// export function getCharacterNode(
-//   { inventory, on, before, after }: {
-//     inventory: InventoryExpr;
-//     on?: string;
-//     before?: string;
-//     after?: string;
-//   },
-// ): CharacterNode {
-//   return fql.Let({
-//     characters: fql.Match(
-//       fql.Index('characters_inventory'),
-//       fql.Ref(inventory),
-//     ),
-//     character: fql.If(
-//       fql.IsNonEmpty(fql.Var('characters')),
-//       fql.If(
-//         fql.IsNull(before),
-//         fql.If(
-//           fql.And(fql.IsNull(after), fql.IsNull(on)),
-//           fql.Ref(fql.Get(fql.Var('characters'))),
-//           fql.Let({
-//             // after returns itself then a new item
-//             match: fql.Paginate(fql.Var('characters'), {
-//               after: fql.Id(
-//                 'character',
-//                 // deno-lint-ignore no-non-null-assertion
-//                 fql.If(fql.IsNull(after), on!, after!),
-//               ),
-//               size: 2,
-//             }),
-//           }, ({ match }) => {
-//             return fql.Select(
-//               ['data', fql.If(fql.IsNull(after), 0, 1)],
-//               match,
-//               // or first item
-//               fql.Ref(fql.Get(fql.Var('characters'))),
-//             );
-//           }),
-//         ),
-//         fql.Let({
-//           // before doesn't return itself
-//           match: fql.Paginate(fql.Var('characters'), {
-//             // deno-lint-ignore no-non-null-assertion
-//             before: fql.Id('character', before!),
-//             size: 1,
-//           }),
-//         }, ({ match }) => {
-//           return fql.Select(
-//             ['data', 0],
-//             match,
-//             // or last item
-//             fql.Ref(fql.Get(fql.Reverse(fql.Var('characters')))),
-//           );
-//         }),
-//       ),
-//       fql.Null(),
-//     ),
-//   }, ({ character }) => {
-//     return {
-//       character,
-//       anchor: fql.Select(['id'], character, fql.Null()),
-//     };
-//   });
-// }
-
 export function rechargePulls(
   { inventory }: { inventory: InventoryExpr },
 ): InventoryExpr {
@@ -281,13 +210,6 @@ export default function (client: Client): (() => Promise<void>)[] {
       name: 'inventories_instance_user',
       terms: [{ field: ['data', 'instance'] }, { field: ['data', 'user'] }],
     }),
-    fql.Indexer({
-      client,
-      unique: false,
-      collection: 'character',
-      name: 'characters_inventory',
-      terms: [{ field: ['data', 'inventory'] }],
-    }),
     fql.Resolver({
       client,
       name: 'get_user_inventory',
@@ -306,35 +228,5 @@ export default function (client: Client): (() => Promise<void>)[] {
         );
       },
     }),
-    // fql.Resolver({
-    //   client,
-    //   name: 'get_user_characters',
-    //   lambda: (
-    //     userId: string,
-    //     guildId: string,
-    //     on?: string,
-    //     before?: string,
-    //     after?: string,
-    //   ) => {
-    //     return fql.Let(
-    //       {
-    //         user: getUser(userId),
-    //         guild: getGuild(guildId),
-    //         instance: getInstance(fql.Var('guild')),
-    //         inventory: getInventory({
-    //           user: fql.Var('user'),
-    //           instance: fql.Var('instance'),
-    //         }),
-    //       },
-    //       ({ inventory }) =>
-    //         getCharacterNode({
-    //           inventory,
-    //           on,
-    //           before,
-    //           after,
-    //         }),
-    //     );
-    //   },
-    // }),
   ];
 }

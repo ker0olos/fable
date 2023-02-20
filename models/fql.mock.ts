@@ -32,9 +32,6 @@ export const FakeGet = () =>
 
 export const FakeAppend = () => stub(fql, 'Append', (a: any, b: any) => [a, b]);
 
-export const FakeLength = () =>
-  stub(fql, 'Length', (array: any) => array.length);
-
 export const FakeGTE = () => stub(fql, 'GTE', (a: any, b: any) => a >= b);
 export const FakeLTE = () => stub(fql, 'LTE', (a: any, b: any) => a <= b);
 
@@ -50,8 +47,6 @@ export const FakeAdd = () => stub(fql, 'Add', (a: any, b: any) => a + b);
 
 export const FakeIsNull = () =>
   stub(fql, 'IsNull', (a: any) => a === undefined);
-
-export const FakeAnd = () => stub(fql, 'And', (a: any, b: any) => a && b);
 
 export const FakeMin = () =>
   stub(fql, 'Min', (a: any, b: any) => Math.min(a, b));

@@ -17,10 +17,6 @@
 
 </h1>
 
-> **Warning** Fable is in early access. Some core features might be missing.
-> Missing features include "Trading" (see
-> [#20](https://github.com/ker0olos/fable/issues/20) for a full roadmap)
-
 <i>
   <h6 align="right">(Animated Pulls)</h6>
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/215555794-c8e52906-99a5-485c-9cdd-8961e168f587.gif" alt="Animated Pulls">
@@ -41,6 +37,10 @@ Fable is actively developed with new game modes and features frequently.
 other packs, e.g. video game characters or real life celebrities. And you can
 disable the anime packs entirety (Incase it's a sports server or else, we try
 our best to include term naturel commands along with anime analogies).
+
+> Fable is in early access. Some core features might be missing. Missing
+> features include "Trading" (see
+> [#20](https://github.com/ker0olos/fable/issues/20) for a full roadmap)
 
 <br clear="right"/>
 
@@ -67,8 +67,6 @@ our best to include term naturel commands along with anime analogies).
 - [Contribute to the code][contributing]
 
 <br clear="right"/>
-<br/>
-<br/>
 
 <h6 align="center">(Check when is the next episode is airing)</h6>
 <h6 align="center">
@@ -91,10 +89,9 @@ our best to include term naturel commands along with anime analogies).
 
 > How can I create a new pack?
 
-We are in the process of making GUI tools to streamline the process, currently
-it's only possible through editing JSON files directly, we recommend that you
+Currently, it's only possible through editing JSON files, we recommend that you
 check [fable-community/example](https://github.com/fable-community/example), it
-has a great quick start guide for working with `manifest.json`
+has a great quick start guide.
 
 > Can I use prefixes like `$`
 
@@ -110,15 +107,11 @@ We're using serverless for the servers and the database, which is much cheaper
 to maintain right now.
 
 If things get out of hand we'll rate limit big servers for something like 1M
-command calls per month. So most people won't be affected, only server owners
-will be required to cover for what "their" server costs us (their portion of the
-bill), we'll keep covering the bill for small servers with less activity.
+command calls per month. only server owners will be required to cover for what
+"their" server costs us (their portion of the bill), we'll keep covering the
+bill for small servers with less activity.
 
-TL;DR Fable will always remain 100% free-to-play to the players.
-
-Alternatively, you can donate to our dev members to help us cover the bills for
-small servers and maybe buy a few coffees. (donations won't get you any special
-rewards or advantages, it's a literal donation, you only get a thank you note).
+Fable will always remain 100% free-to-play to the players.
 
 ---
 
@@ -131,7 +124,7 @@ direction of the project:
   Wholesome#6355
 
 - Checkout our friends at <https://anilist.co>. It can help you track those 2000
-  animes you watch, it can also tell you whenever a new episode or season is
+  anime you watch, it can also tell you whenever a new episode or season is
   available.
 
 - This project wouldn't been possible without Deno. Want to learn about running

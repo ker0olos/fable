@@ -96,8 +96,8 @@ type Query {
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")
   #
-  # getUserCharacters(userId: String!, guildId: String!, on: String, before: String, after: String): CharacterNode!
-  #   @resolver(name: "get_user_characters")
+  getUserStars(userId: String!, guildId: String!, stars: Int!, before: String, after: String): CharacterNode!
+    @resolver(name: "get_user_stars")
   #
   findCharacter(characterId: String!, guildId: String!): Character
     @resolver(name: "find_character")

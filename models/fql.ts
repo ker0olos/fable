@@ -91,10 +91,6 @@ function IsNonEmpty(expr: Expr): BooleanExpr {
   return _fql.IsNonEmpty(expr);
 }
 
-function And(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
-  return _fql.And(a, b);
-}
-
 function Min(a: NumberExpr, b: NumberExpr): NumberExpr {
   return _fql.Min(a, b);
 }
@@ -156,10 +152,6 @@ function Let<T, U>(
 
 function Var(name: StringExpr): Expr {
   return _fql.Var(name);
-}
-
-function Length(expr: Expr): NumberExpr {
-  return _fql.Count(expr);
 }
 
 function Select(
@@ -244,7 +236,6 @@ export const fql = {
   // Equals,
   // Map,
   Add,
-  And,
   Append,
   Create,
   Divide,
@@ -256,7 +247,6 @@ export const fql = {
   Indexer,
   IsNonEmpty,
   IsNull,
-  Length,
   Let,
   LTE,
   Match,

@@ -9,10 +9,10 @@ snapshot[`model 1`] = `
           create_index: Expr {
             raw: {
               object: {
-                name: "users_discord_id",
+                name: "characters_rating_inventory",
                 source: Expr {
                   raw: {
-                    collection: "user",
+                    collection: "character",
                   },
                 },
                 terms: Expr {
@@ -23,7 +23,19 @@ snapshot[`model 1`] = `
                           field: Expr {
                             raw: [
                               "data",
-                              "id",
+                              "rating",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                    Expr {
+                      raw: {
+                        object: {
+                          field: Expr {
+                            raw: [
+                              "data",
+                              "inventory",
                             ],
                           },
                         },
@@ -31,7 +43,7 @@ snapshot[`model 1`] = `
                     },
                   ],
                 },
-                unique: true,
+                unique: false,
               },
             },
           },
@@ -41,7 +53,7 @@ snapshot[`model 1`] = `
         raw: {
           exists: Expr {
             raw: {
-              index: "users_discord_id",
+              index: "characters_rating_inventory",
             },
           },
         },
@@ -51,10 +63,10 @@ snapshot[`model 1`] = `
           params: Expr {
             raw: {
               object: {
-                name: "users_discord_id",
+                name: "characters_rating_inventory",
                 source: Expr {
                   raw: {
-                    collection: "user",
+                    collection: "character",
                   },
                 },
                 terms: Expr {
@@ -65,7 +77,19 @@ snapshot[`model 1`] = `
                           field: Expr {
                             raw: [
                               "data",
-                              "id",
+                              "rating",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                    Expr {
+                      raw: {
+                        object: {
+                          field: Expr {
+                            raw: [
+                              "data",
+                              "inventory",
                             ],
                           },
                         },
@@ -73,13 +97,13 @@ snapshot[`model 1`] = `
                     },
                   ],
                 },
-                unique: true,
+                unique: false,
               },
             },
           },
           update: Expr {
             raw: {
-              index: "users_discord_id",
+              index: "characters_rating_inventory",
             },
           },
         },
@@ -90,208 +114,6 @@ snapshot[`model 1`] = `
 `;
 
 snapshot[`model 2`] = `
-[
-  Expr {
-    raw: {
-      else: Expr {
-        raw: {
-          create_index: Expr {
-            raw: {
-              object: {
-                name: "guilds_discord_id",
-                source: Expr {
-                  raw: {
-                    collection: "guild",
-                  },
-                },
-                terms: Expr {
-                  raw: [
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "id",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-                unique: true,
-              },
-            },
-          },
-        },
-      },
-      if: Expr {
-        raw: {
-          exists: Expr {
-            raw: {
-              index: "guilds_discord_id",
-            },
-          },
-        },
-      },
-      then: Expr {
-        raw: {
-          params: Expr {
-            raw: {
-              object: {
-                name: "guilds_discord_id",
-                source: Expr {
-                  raw: {
-                    collection: "guild",
-                  },
-                },
-                terms: Expr {
-                  raw: [
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "id",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-                unique: true,
-              },
-            },
-          },
-          update: Expr {
-            raw: {
-              index: "guilds_discord_id",
-            },
-          },
-        },
-      },
-    },
-  },
-]
-`;
-
-snapshot[`model 3`] = `
-[
-  Expr {
-    raw: {
-      else: Expr {
-        raw: {
-          create_index: Expr {
-            raw: {
-              object: {
-                name: "inventories_instance_user",
-                source: Expr {
-                  raw: {
-                    collection: "inventory",
-                  },
-                },
-                terms: Expr {
-                  raw: [
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "instance",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "user",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-                unique: true,
-              },
-            },
-          },
-        },
-      },
-      if: Expr {
-        raw: {
-          exists: Expr {
-            raw: {
-              index: "inventories_instance_user",
-            },
-          },
-        },
-      },
-      then: Expr {
-        raw: {
-          params: Expr {
-            raw: {
-              object: {
-                name: "inventories_instance_user",
-                source: Expr {
-                  raw: {
-                    collection: "inventory",
-                  },
-                },
-                terms: Expr {
-                  raw: [
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "instance",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "user",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-                unique: true,
-              },
-            },
-          },
-          update: Expr {
-            raw: {
-              index: "inventories_instance_user",
-            },
-          },
-        },
-      },
-    },
-  },
-]
-`;
-
-snapshot[`model 4`] = `
 [
   Expr {
     raw: {
@@ -310,189 +132,251 @@ snapshot[`model 4`] = `
                               raw: {
                                 in: Expr {
                                   raw: {
-                                    params: Expr {
-                                      raw: {
-                                        object: {
-                                          data: Expr {
+                                    object: {
+                                      anchor: Expr {
+                                        raw: {
+                                          default: null,
+                                          from: Expr {
                                             raw: {
-                                              object: {
-                                                availablePulls: Expr {
-                                                  raw: {
-                                                    var: "rechargedPulls",
-                                                  },
-                                                },
-                                                rechargeTimestamp: Expr {
-                                                  raw: {
-                                                    else: Expr {
-                                                      raw: {
-                                                        offset: Expr {
-                                                          raw: {
-                                                            multiply: Expr {
-                                                              raw: [
-                                                                Expr {
-                                                                  raw: {
-                                                                    var: "diffPulls",
-                                                                  },
-                                                                },
-                                                                15,
-                                                              ],
-                                                            },
-                                                          },
-                                                        },
-                                                        time_add: Expr {
-                                                          raw: {
-                                                            var: "rechargeTimestamp",
-                                                          },
-                                                        },
-                                                        unit: "minutes",
-                                                      },
-                                                    },
-                                                    if: Expr {
-                                                      raw: {
-                                                        gte: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                var: "rechargedPulls",
-                                                              },
-                                                            },
-                                                            5,
-                                                          ],
-                                                        },
-                                                      },
-                                                    },
-                                                    then: null,
-                                                  },
-                                                },
-                                              },
+                                              var: "character",
                                             },
+                                          },
+                                          select: Expr {
+                                            raw: [
+                                              "id",
+                                            ],
                                           },
                                         },
                                       },
-                                    },
-                                    update: Expr {
-                                      raw: {
-                                        from: Expr {
-                                          raw: {
-                                            var: "inventory",
-                                          },
+                                      character: Expr {
+                                        raw: {
+                                          var: "character",
                                         },
-                                        select: "ref",
                                       },
                                     },
                                   },
                                 },
                                 let: [
                                   {
-                                    rechargeTimestamp: Expr {
+                                    characters: Expr {
                                       raw: {
-                                        default: Expr {
+                                        match: Expr {
                                           raw: {
-                                            now: null,
+                                            index: "characters_rating_inventory",
                                           },
                                         },
-                                        from: Expr {
-                                          raw: {
-                                            var: "inventory",
-                                          },
-                                        },
-                                        select: Expr {
-                                          raw: [
-                                            "data",
-                                            "rechargeTimestamp",
-                                          ],
-                                        },
-                                      },
-                                    },
-                                  },
-                                  {
-                                    currentPulls: Expr {
-                                      raw: {
-                                        from: Expr {
-                                          raw: {
-                                            var: "inventory",
-                                          },
-                                        },
-                                        select: Expr {
-                                          raw: [
-                                            "data",
-                                            "availablePulls",
-                                          ],
-                                        },
-                                      },
-                                    },
-                                  },
-                                  {
-                                    newPulls: Expr {
-                                      raw: {
-                                        divide: Expr {
+                                        terms: Expr {
                                           raw: [
                                             Expr {
                                               raw: {
-                                                other: Expr {
-                                                  raw: {
-                                                    now: null,
-                                                  },
-                                                },
-                                                time_diff: Expr {
-                                                  raw: {
-                                                    var: "rechargeTimestamp",
-                                                  },
-                                                },
-                                                unit: "minutes",
+                                                var: "stars",
                                               },
                                             },
-                                            15,
+                                            Expr {
+                                              raw: {
+                                                from: Expr {
+                                                  raw: {
+                                                    var: "inventory",
+                                                  },
+                                                },
+                                                select: "ref",
+                                              },
+                                            },
                                           ],
                                         },
                                       },
                                     },
                                   },
                                   {
-                                    rechargedPulls: Expr {
+                                    character: Expr {
                                       raw: {
-                                        min: Expr {
-                                          raw: [
-                                            5,
-                                            Expr {
+                                        else: null,
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
                                               raw: {
-                                                add: Expr {
+                                                var: "characters",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            else: Expr {
+                                              raw: {
+                                                in: Expr {
+                                                  raw: {
+                                                    default: Expr {
+                                                      raw: {
+                                                        from: Expr {
+                                                          raw: {
+                                                            get: Expr {
+                                                              raw: {
+                                                                reverse: Expr {
+                                                                  raw: {
+                                                                    var: "characters",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                        select: "ref",
+                                                      },
+                                                    },
+                                                    from: Expr {
+                                                      raw: {
+                                                        var: "match",
+                                                      },
+                                                    },
+                                                    select: Expr {
+                                                      raw: [
+                                                        "data",
+                                                        0,
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                                let: [
+                                                  {
+                                                    match: Expr {
+                                                      raw: {
+                                                        after: undefined,
+                                                        before: Expr {
+                                                          raw: {
+                                                            id: Expr {
+                                                              raw: {
+                                                                var: "before",
+                                                              },
+                                                            },
+                                                            ref: Expr {
+                                                              raw: {
+                                                                collection: "character",
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                        paginate: Expr {
+                                                          raw: {
+                                                            var: "characters",
+                                                          },
+                                                        },
+                                                        size: 1,
+                                                      },
+                                                    },
+                                                  },
+                                                ],
+                                              },
+                                            },
+                                            if: Expr {
+                                              raw: {
+                                                equals: Expr {
                                                   raw: [
                                                     Expr {
                                                       raw: {
-                                                        var: "currentPulls",
+                                                        var: "before",
                                                       },
                                                     },
-                                                    Expr {
-                                                      raw: {
-                                                        var: "newPulls",
-                                                      },
-                                                    },
+                                                    null,
                                                   ],
                                                 },
                                               },
                                             },
-                                          ],
-                                        },
-                                      },
-                                    },
-                                  },
-                                  {
-                                    diffPulls: Expr {
-                                      raw: {
-                                        subtract: Expr {
-                                          raw: [
-                                            Expr {
+                                            then: Expr {
                                               raw: {
-                                                var: "rechargedPulls",
+                                                else: Expr {
+                                                  raw: {
+                                                    in: Expr {
+                                                      raw: {
+                                                        default: Expr {
+                                                          raw: {
+                                                            from: Expr {
+                                                              raw: {
+                                                                get: Expr {
+                                                                  raw: {
+                                                                    var: "characters",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                            select: "ref",
+                                                          },
+                                                        },
+                                                        from: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                        select: Expr {
+                                                          raw: [
+                                                            "data",
+                                                            1,
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    let: [
+                                                      {
+                                                        match: Expr {
+                                                          raw: {
+                                                            after: Expr {
+                                                              raw: {
+                                                                id: Expr {
+                                                                  raw: {
+                                                                    var: "after",
+                                                                  },
+                                                                },
+                                                                ref: Expr {
+                                                                  raw: {
+                                                                    collection: "character",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                            before: undefined,
+                                                            paginate: Expr {
+                                                              raw: {
+                                                                var: "characters",
+                                                              },
+                                                            },
+                                                            size: 2,
+                                                          },
+                                                        },
+                                                      },
+                                                    ],
+                                                  },
+                                                },
+                                                if: Expr {
+                                                  raw: {
+                                                    equals: Expr {
+                                                      raw: [
+                                                        Expr {
+                                                          raw: {
+                                                            var: "after",
+                                                          },
+                                                        },
+                                                        null,
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                                then: Expr {
+                                                  raw: {
+                                                    from: Expr {
+                                                      raw: {
+                                                        get: Expr {
+                                                          raw: {
+                                                            var: "characters",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    select: "ref",
+                                                  },
+                                                },
                                               },
                                             },
-                                            Expr {
-                                              raw: {
-                                                var: "currentPulls",
-                                              },
-                                            },
-                                          ],
+                                          },
                                         },
                                       },
                                     },
@@ -1047,13 +931,16 @@ snapshot[`model 4`] = `
                           raw: [
                             "userId",
                             "guildId",
+                            "stars",
+                            "before",
+                            "after",
                           ],
                         },
                       },
                     },
                   },
                 },
-                name: "get_user_inventory",
+                name: "get_user_stars",
               },
             },
           },
@@ -1063,7 +950,7 @@ snapshot[`model 4`] = `
         raw: {
           exists: Expr {
             raw: {
-              function: "get_user_inventory",
+              function: "get_user_stars",
             },
           },
         },
@@ -1083,189 +970,251 @@ snapshot[`model 4`] = `
                               raw: {
                                 in: Expr {
                                   raw: {
-                                    params: Expr {
-                                      raw: {
-                                        object: {
-                                          data: Expr {
+                                    object: {
+                                      anchor: Expr {
+                                        raw: {
+                                          default: null,
+                                          from: Expr {
                                             raw: {
-                                              object: {
-                                                availablePulls: Expr {
-                                                  raw: {
-                                                    var: "rechargedPulls",
-                                                  },
-                                                },
-                                                rechargeTimestamp: Expr {
-                                                  raw: {
-                                                    else: Expr {
-                                                      raw: {
-                                                        offset: Expr {
-                                                          raw: {
-                                                            multiply: Expr {
-                                                              raw: [
-                                                                Expr {
-                                                                  raw: {
-                                                                    var: "diffPulls",
-                                                                  },
-                                                                },
-                                                                15,
-                                                              ],
-                                                            },
-                                                          },
-                                                        },
-                                                        time_add: Expr {
-                                                          raw: {
-                                                            var: "rechargeTimestamp",
-                                                          },
-                                                        },
-                                                        unit: "minutes",
-                                                      },
-                                                    },
-                                                    if: Expr {
-                                                      raw: {
-                                                        gte: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                var: "rechargedPulls",
-                                                              },
-                                                            },
-                                                            5,
-                                                          ],
-                                                        },
-                                                      },
-                                                    },
-                                                    then: null,
-                                                  },
-                                                },
-                                              },
+                                              var: "character",
                                             },
+                                          },
+                                          select: Expr {
+                                            raw: [
+                                              "id",
+                                            ],
                                           },
                                         },
                                       },
-                                    },
-                                    update: Expr {
-                                      raw: {
-                                        from: Expr {
-                                          raw: {
-                                            var: "inventory",
-                                          },
+                                      character: Expr {
+                                        raw: {
+                                          var: "character",
                                         },
-                                        select: "ref",
                                       },
                                     },
                                   },
                                 },
                                 let: [
                                   {
-                                    rechargeTimestamp: Expr {
+                                    characters: Expr {
                                       raw: {
-                                        default: Expr {
+                                        match: Expr {
                                           raw: {
-                                            now: null,
+                                            index: "characters_rating_inventory",
                                           },
                                         },
-                                        from: Expr {
-                                          raw: {
-                                            var: "inventory",
-                                          },
-                                        },
-                                        select: Expr {
-                                          raw: [
-                                            "data",
-                                            "rechargeTimestamp",
-                                          ],
-                                        },
-                                      },
-                                    },
-                                  },
-                                  {
-                                    currentPulls: Expr {
-                                      raw: {
-                                        from: Expr {
-                                          raw: {
-                                            var: "inventory",
-                                          },
-                                        },
-                                        select: Expr {
-                                          raw: [
-                                            "data",
-                                            "availablePulls",
-                                          ],
-                                        },
-                                      },
-                                    },
-                                  },
-                                  {
-                                    newPulls: Expr {
-                                      raw: {
-                                        divide: Expr {
+                                        terms: Expr {
                                           raw: [
                                             Expr {
                                               raw: {
-                                                other: Expr {
-                                                  raw: {
-                                                    now: null,
-                                                  },
-                                                },
-                                                time_diff: Expr {
-                                                  raw: {
-                                                    var: "rechargeTimestamp",
-                                                  },
-                                                },
-                                                unit: "minutes",
+                                                var: "stars",
                                               },
                                             },
-                                            15,
+                                            Expr {
+                                              raw: {
+                                                from: Expr {
+                                                  raw: {
+                                                    var: "inventory",
+                                                  },
+                                                },
+                                                select: "ref",
+                                              },
+                                            },
                                           ],
                                         },
                                       },
                                     },
                                   },
                                   {
-                                    rechargedPulls: Expr {
+                                    character: Expr {
                                       raw: {
-                                        min: Expr {
-                                          raw: [
-                                            5,
-                                            Expr {
+                                        else: null,
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
                                               raw: {
-                                                add: Expr {
+                                                var: "characters",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            else: Expr {
+                                              raw: {
+                                                in: Expr {
+                                                  raw: {
+                                                    default: Expr {
+                                                      raw: {
+                                                        from: Expr {
+                                                          raw: {
+                                                            get: Expr {
+                                                              raw: {
+                                                                reverse: Expr {
+                                                                  raw: {
+                                                                    var: "characters",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                        select: "ref",
+                                                      },
+                                                    },
+                                                    from: Expr {
+                                                      raw: {
+                                                        var: "match",
+                                                      },
+                                                    },
+                                                    select: Expr {
+                                                      raw: [
+                                                        "data",
+                                                        0,
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                                let: [
+                                                  {
+                                                    match: Expr {
+                                                      raw: {
+                                                        after: undefined,
+                                                        before: Expr {
+                                                          raw: {
+                                                            id: Expr {
+                                                              raw: {
+                                                                var: "before",
+                                                              },
+                                                            },
+                                                            ref: Expr {
+                                                              raw: {
+                                                                collection: "character",
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                        paginate: Expr {
+                                                          raw: {
+                                                            var: "characters",
+                                                          },
+                                                        },
+                                                        size: 1,
+                                                      },
+                                                    },
+                                                  },
+                                                ],
+                                              },
+                                            },
+                                            if: Expr {
+                                              raw: {
+                                                equals: Expr {
                                                   raw: [
                                                     Expr {
                                                       raw: {
-                                                        var: "currentPulls",
+                                                        var: "before",
                                                       },
                                                     },
-                                                    Expr {
-                                                      raw: {
-                                                        var: "newPulls",
-                                                      },
-                                                    },
+                                                    null,
                                                   ],
                                                 },
                                               },
                                             },
-                                          ],
-                                        },
-                                      },
-                                    },
-                                  },
-                                  {
-                                    diffPulls: Expr {
-                                      raw: {
-                                        subtract: Expr {
-                                          raw: [
-                                            Expr {
+                                            then: Expr {
                                               raw: {
-                                                var: "rechargedPulls",
+                                                else: Expr {
+                                                  raw: {
+                                                    in: Expr {
+                                                      raw: {
+                                                        default: Expr {
+                                                          raw: {
+                                                            from: Expr {
+                                                              raw: {
+                                                                get: Expr {
+                                                                  raw: {
+                                                                    var: "characters",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                            select: "ref",
+                                                          },
+                                                        },
+                                                        from: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                        select: Expr {
+                                                          raw: [
+                                                            "data",
+                                                            1,
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    let: [
+                                                      {
+                                                        match: Expr {
+                                                          raw: {
+                                                            after: Expr {
+                                                              raw: {
+                                                                id: Expr {
+                                                                  raw: {
+                                                                    var: "after",
+                                                                  },
+                                                                },
+                                                                ref: Expr {
+                                                                  raw: {
+                                                                    collection: "character",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                            before: undefined,
+                                                            paginate: Expr {
+                                                              raw: {
+                                                                var: "characters",
+                                                              },
+                                                            },
+                                                            size: 2,
+                                                          },
+                                                        },
+                                                      },
+                                                    ],
+                                                  },
+                                                },
+                                                if: Expr {
+                                                  raw: {
+                                                    equals: Expr {
+                                                      raw: [
+                                                        Expr {
+                                                          raw: {
+                                                            var: "after",
+                                                          },
+                                                        },
+                                                        null,
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                                then: Expr {
+                                                  raw: {
+                                                    from: Expr {
+                                                      raw: {
+                                                        get: Expr {
+                                                          raw: {
+                                                            var: "characters",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    select: "ref",
+                                                  },
+                                                },
                                               },
                                             },
-                                            Expr {
-                                              raw: {
-                                                var: "currentPulls",
-                                              },
-                                            },
-                                          ],
+                                          },
                                         },
                                       },
                                     },
@@ -1820,19 +1769,22 @@ snapshot[`model 4`] = `
                           raw: [
                             "userId",
                             "guildId",
+                            "stars",
+                            "before",
+                            "after",
                           ],
                         },
                       },
                     },
                   },
                 },
-                name: "get_user_inventory",
+                name: "get_user_stars",
               },
             },
           },
           update: Expr {
             raw: {
-              function: "get_user_inventory",
+              function: "get_user_stars",
             },
           },
         },

@@ -327,15 +327,14 @@ const handler = async (r: Request) => {
     if (err instanceof NonFetalError) {
       return new discord.Message()
         .setFlags(discord.MessageFlags.Ephemeral)
-        .addEmbed(
-          new discord.Embed().setDescription(err.message),
-        ).send();
+        .addEmbed(new discord.Embed().setDescription(err.message))
+        .send();
     }
 
     if (err instanceof NoPermissionError) {
       return new discord.Message()
         .setFlags(discord.MessageFlags.Ephemeral)
-        .setContent('Forbidden')
+        .setContent('You don\'t permission to complete this interaction!')
         .send();
     }
 
@@ -350,10 +349,10 @@ const handler = async (r: Request) => {
     return discord.Message.internal(refId).send();
   }
 
-  return new discord.Message().setContent(`Unimplemented!`).send();
+  return new discord.Message().setContent(`Unimplemented`).send();
 };
 
-function cache(
+function override(
   age: number,
   type?: string,
 ): (req: Request, res: Response) => Response {
@@ -370,11 +369,11 @@ serve({
   '/': handler,
   '/external/*': utils.proxy,
   '/assets/:filename+': serveStatic('../assets/public', {
+    intervene: override(604800),
     baseUrl: import.meta.url,
-    intervene: cache(604800),
   }),
   '/:filename+': serveStatic('../json', {
+    intervene: override(86400, 'application/schema+json'),
     baseUrl: import.meta.url,
-    intervene: cache(86400, 'application/schema+json'),
   }),
 });
