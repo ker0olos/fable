@@ -67,12 +67,17 @@ export type Member = {
   user: User;
 };
 
-type User = {
+export type User = {
   id: string;
   username: string;
   discriminator: string;
   avatar: string;
   banner?: string;
+};
+
+type Resolved = {
+  users?: Record<string, User>;
+  members?: Record<string, Omit<Member, 'user'>>;
 };
 
 export type Emote = {
@@ -90,8 +95,7 @@ export class Interaction<Options> {
   channelId: string;
   targetId?: string;
 
-  message?: unknown;
-  data?: unknown;
+  resolved?: Resolved;
 
   name?: string;
   options: {
@@ -130,8 +134,8 @@ export class Interaction<Options> {
       type: string;
       guild_id: string;
       channel_id: string;
-      // target_id?: string;
-      // resolved?: unknown[];
+      resolved?: Resolved;
+      target_id?: string;
       options?: {
         type: number;
         name: string;
@@ -151,7 +155,7 @@ export class Interaction<Options> {
     } & { // Modal Submit
       custom_id: string;
       components: { type: 1; components: unknown[] }[];
-    } = this.data = obj.data;
+    } = obj.data;
 
     this.id = obj.id;
     this.token = obj.token;
@@ -174,7 +178,8 @@ export class Interaction<Options> {
       case InteractionType.Command: {
         this.name = data.name;
 
-        // this.targetId = data!.target_id;
+        this.resolved = data.resolved;
+        this.targetId = data.target_id;
 
         if (data.options?.[0].type === 1) {
           this.subcommand = data.options?.[0].name;

@@ -3448,7 +3448,66 @@ Deno.test('collection stars', async (test) => {
     }
   });
 
-  await test.step('no characters', async () => {
+  await test.step('no characters (Dave)', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              data: { getUserStars: {} },
+            })),
+        } as any,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'list',
+      () => [],
+    );
+
+    try {
+      const message = await user.stars({
+        nick: 'Dave',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        stars: 5,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'gacha=user_id',
+                label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Dave doesn\'t have any 5* characters',
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      packs.clear();
+    }
+  });
+
+  await test.step('no characters (Self)', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',

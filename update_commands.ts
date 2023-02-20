@@ -253,7 +253,7 @@ await put([
         optional: true,
         options: [
           Option({
-            name: 'amount',
+            name: 'rating',
             description: 'The star rating',
             type: Type.INTEGER,
             choices: [{
@@ -272,6 +272,12 @@ await put([
               name: '5*',
               value: 5,
             }],
+          }),
+          Option({
+            name: 'user',
+            description: 'List someone else\'s stars',
+            type: Type.USER,
+            optional: true,
           }),
         ],
       }),

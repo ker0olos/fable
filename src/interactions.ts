@@ -72,6 +72,7 @@ const handler = async (r: Request) => {
     token,
     guildId,
     channelId,
+    resolved,
     member,
     options,
     subcommand,
@@ -176,13 +177,21 @@ const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'stars': {
-                const stars = options['amount'] as number;
+                const rating = options['rating'] as number;
+                const userId = options['user'] as string;
+
+                const nick = userId && resolved?.members?.[userId]
+                  ? resolved.members[userId].nick ??
+                    // deno-lint-ignore no-non-null-assertion
+                    resolved.users![userId].username
+                  : undefined;
 
                 return (await user.stars({
-                  userId: member.user.id,
+                  nick,
+                  userId: userId ?? member.user.id,
+                  stars: rating,
                   guildId,
                   channelId,
-                  stars,
                 }))
                   .send();
               }

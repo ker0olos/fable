@@ -149,6 +149,7 @@ export async function stars({
   userId,
   guildId,
   stars,
+  nick,
   before,
   after,
 }: {
@@ -156,6 +157,7 @@ export async function stars({
   guildId: string;
   channelId?: string;
   stars: number;
+  nick?: string;
   before?: string;
   after?: string;
 }): Promise<discord.Message> {
@@ -196,7 +198,11 @@ export async function stars({
     return new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setDescription(`You don't have any ${stars}* characters`),
+          .setDescription(
+            `${
+              nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
+            } have any ${stars}* characters`,
+          ),
       )
       .addComponents([
         // `/gacha` shortcut
