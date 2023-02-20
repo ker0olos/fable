@@ -19,6 +19,8 @@ import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
 
+import { help } from './help.ts';
+
 import config, { initConfig } from './config.ts';
 
 import { Character, ManifestType, Media } from './types.ts';
@@ -241,6 +243,11 @@ const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             return message!.send();
           }
+          case 'help':
+          case 'start':
+          case 'tutorial': {
+            return help(member.user.id).send();
+          }
           default: {
             break;
           }
@@ -291,6 +298,22 @@ const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
+          case 'now': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            return (await user.now({
+              userId: member.user.id,
+              guildId,
+              channelId,
+            }))
+              .setType(
+                userId === member.user.id
+                  ? discord.MessageType.Update
+                  : discord.MessageType.New,
+              )
+              .send();
+          }
           case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
@@ -302,10 +325,12 @@ const handler = async (r: Request) => {
                 userId: member.user.id,
                 guildId,
                 channelId,
-                messageType: userId === member.user.id
+              })
+              .setType(
+                userId === member.user.id
                   ? discord.MessageType.Update
                   : discord.MessageType.New,
-              })
+              )
               .send();
           }
           case 'stars': {

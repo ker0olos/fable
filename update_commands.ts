@@ -219,6 +219,11 @@ await put([
     ],
   }),
   ...Command({
+    name: 'help',
+    description: 'New to Fable? Don\'t worry, we got you.',
+    aliases: ['start', 'tutorial'],
+  }),
+  ...Command({
     name: 'now',
     description: 'Check what you can do right now',
     aliases: ['checklist', 'cl', 'tu'],

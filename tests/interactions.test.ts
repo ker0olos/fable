@@ -44,6 +44,7 @@ import {
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 import { NonFetalError, NoPullsError } from '../src/errors.ts';
+import { help } from '../src/help.ts';
 
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {
@@ -4026,6 +4027,46 @@ Deno.test('manifest embeds', async (test) => {
     } finally {
       listStub.restore();
     }
+  });
+});
+
+Deno.test('start / tutorial', () => {
+  const message = help('user_id');
+
+  assertEquals(message.json(), {
+    data: {
+      attachments: [],
+      components: [
+        {
+          components: [
+            {
+              custom_id: 'now=user_id',
+              label: '/now',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'gacha=user_id',
+              label: '/gacha',
+              style: 2,
+              type: 2,
+            },
+          ],
+          type: 1,
+        },
+      ],
+      embeds: [
+        {
+          description:
+            `- **\`/now\`**, **\`/tu\`**:   _check what you can do right now_
+- **\`/gacha\`**, **\`/w\`**:   _start a new gacha pull_
+- **\`/search\`**, **\`/anime\`**, **\`/manga\`**:   _search for specific series_
+- **\`/character\`**: _search for a specific character_`,
+          type: 'rich',
+        },
+      ],
+    },
+    type: 4,
   });
 });
 

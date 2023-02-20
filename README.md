@@ -53,10 +53,10 @@ our best to include term naturel commands along with anime analogies).
 
 ### Essential Commands
 
-- `/gacha`, `/w`: to start a new gacha pull
-- `/now`, `/tu`: to check what you can do right now
-- `/search`, `/anime` or `/manga`: to search for specific series
-- `/character`, `/im`: to search for a specific character
+- **`/now`, `/tu`**: _check what you can do right now_
+- **`/gacha`, `/w`**: _start a new gacha pull_
+- **`/search`, `/anime`, `/manga`**: _to search for specific series_
+- **`/character`, `/im`**: _to search for a specific character_
 
 ### Get Involved
 

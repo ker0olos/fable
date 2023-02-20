@@ -270,13 +270,12 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
  * start the pull's animation
  */
 function start(
-  { token, userId, guildId, characterId, messageType }: {
+  { token, userId, guildId, characterId }: {
     token: string;
     userId?: string;
     guildId?: string;
     channelId?: string;
     characterId?: string;
-    messageType?: discord.MessageType;
   },
 ): discord.Message {
   const _ =
@@ -363,7 +362,7 @@ function start(
         await discord.Message.internal(refId).patch(token);
       });
 
-  const spinner = new discord.Message(messageType)
+  const spinner = new discord.Message()
     .addEmbed(
       new discord.Embed().setImage(
         { url: `${config.origin}/assets/spinner.gif` },
