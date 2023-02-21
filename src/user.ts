@@ -249,8 +249,121 @@ export async function stars({
 
   return discord.Message.anchor({
     id: userId,
-    type: 'stars',
+    type: 'cstars',
     target: stars,
+    anchor,
+    message,
+  });
+}
+
+export async function media({
+  userId,
+  guildId,
+  id,
+  search,
+  nick,
+  before,
+  after,
+}: {
+  userId: string;
+  guildId: string;
+  channelId?: string;
+  id?: string;
+  search?: string;
+  nick?: string;
+  before?: string;
+  after?: string;
+}): Promise<discord.Message> {
+  const results: (Media | DisaggregatedMedia)[] = await packs
+    .media(id ? { ids: [id] } : { search });
+
+  if (!results.length) {
+    throw new Error('404');
+  }
+
+  const media = results[0];
+  const mediaId = `${media.packId}:${media.id}`;
+
+  const titles = packs.aliasToArray(media.title);
+
+  const query = gql`
+    query ($userId: String!, $guildId: String!, $mediaId: String!, $before: String, $after: String) {
+      getUserMedia(userId: $userId, guildId: $guildId, mediaId: $mediaId, before: $before, after: $after) {
+        anchor
+        character {
+          id
+          mediaId
+          rating
+        }
+      }
+    }
+  `;
+
+  const { character, anchor } = (await request<{
+    getUserMedia: {
+      character?: Schema.Inventory['characters'][0];
+      anchor?: string;
+    };
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+      mediaId,
+      before,
+      after,
+    },
+  })).getUserMedia;
+
+  if (!character || !anchor) {
+    return new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription(
+            `${
+              nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
+            } have any ${titles[0]} characters`,
+          ),
+      )
+      .addComponents([
+        // `/gacha` shortcut
+        new discord.Component()
+          .setId('gacha', userId)
+          .setLabel('/gacha'),
+      ]);
+  }
+
+  const characters = await packs.characters({ ids: [character.id] });
+
+  let message: discord.Message;
+
+  if (!characters.length) {
+    message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription('This character was removed or disabled'),
+      );
+  } else {
+    message = characterMessage(
+      characters[0],
+      {
+        relations: [media as DisaggregatedMedia],
+        rating: new Rating({ stars: character.rating }),
+        media: {
+          title: titles[0],
+        },
+      },
+    );
+  }
+
+  return discord.Message.anchor({
+    id: userId,
+    type: 'cmedia',
+    target: mediaId,
     anchor,
     message,
   });

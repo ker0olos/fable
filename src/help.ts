@@ -19,8 +19,8 @@ export function help(userId: string): discord.Message {
 
   message.addEmbed(
     new discord.Embed().setDescription(
-      `- **\`/now\`**, **\`/tu\`**:   _check what you can do right now_
-- **\`/gacha\`**, **\`/w\`**:   _start a new gacha pull_
+      `- **\`/gacha\`**, **\`/w\`**:   _start a new gacha pull_
+- **\`/now\`**, **\`/tu\`**:   _check what you can do right now_
 - **\`/search\`**, **\`/anime\`**, **\`/manga\`**:   _search for specific series_
 - **\`/character\`**: _search for a specific character_`,
     ),

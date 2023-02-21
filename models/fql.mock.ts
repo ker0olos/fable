@@ -57,19 +57,31 @@ export const FakePaginate = () =>
   stub(fql, 'Paginate', (set: any, opts?: any) => {
     if (opts['before']) {
       set = set.toReversed();
-      const index = set.findIndex((item: any) => item === opts['before']);
+      const index = set.findIndex((item: any) => {
+        return Array.isArray(opts['before'])
+          ? item === opts['before'][1]
+          : item === opts['before'];
+      });
+
       if (index !== -1) {
         set.splice(index, 1);
         return set.slice(index, opts['size']);
       }
+
       return [];
     }
 
     if (opts['after']) {
-      const index = set.findIndex((item: any) => item === opts['after']);
+      const index = set.findIndex((item: any) => {
+        return Array.isArray(opts['after'])
+          ? item === opts['after'][1]
+          : item === opts['after'];
+      });
+
       if (index !== -1) {
         return set.slice(index, opts['size']);
       }
+
       return [];
     }
 

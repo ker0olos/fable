@@ -220,8 +220,8 @@ await put([
   }),
   ...Command({
     name: 'help',
-    description: 'New to Fable? Don\'t worry, we got you.',
-    aliases: ['start', 'tutorial'],
+    description: 'New to Fable? We got you',
+    aliases: ['start', 'guide', 'tuto'],
   }),
   ...Command({
     name: 'now',
@@ -277,6 +277,26 @@ await put([
               name: '5*',
               value: 5,
             }],
+          }),
+          Option({
+            name: 'user',
+            description: 'List someone else\'s stars',
+            type: Type.USER,
+            optional: true,
+          }),
+        ],
+      }),
+      Option({
+        name: 'media',
+        description: 'List all your characters from a specific media',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'query',
+            description: 'The title of the media',
+            autocomplete: true,
+            type: Type.STRING,
           }),
           Option({
             name: 'user',

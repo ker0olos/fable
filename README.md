@@ -53,8 +53,8 @@ our best to include term naturel commands along with anime analogies).
 
 ### Essential Commands
 
-- **`/now`, `/tu`**: _check what you can do right now_
 - **`/gacha`, `/w`**: _start a new gacha pull_
+- **`/now`, `/tu`**: _check what you can do right now_
 - **`/search`, `/anime`, `/manga`**: _to search for specific series_
 - **`/character`, `/im`**: _to search for a specific character_
 
@@ -107,11 +107,13 @@ We're using serverless for the servers and the database, which is much cheaper
 to maintain right now.
 
 If things get out of hand we'll rate limit big servers for something like 1M
-command calls per month. only server owners will be required to cover for what
-"their" server costs us (their portion of the bill), we'll keep covering the
-bill for small servers with less activity.
+command calls per month[^2]. only server owners will be required to cover for
+what "their" server costs us (their portion of the bill), we'll keep covering
+the bill for small servers with less activity.
 
 Fable will always remain 100% free-to-play to the players.
+
+[^2]: Currently there are no limits on any server.
 
 ---
 
@@ -120,12 +122,10 @@ Fable will always remain 100% free-to-play to the players.
 Our core team who are responsible for reviewing code and making decisions on the
 direction of the project:
 
-- [@ker0olos](https://github.com/ker0olos) — Kerolos Zaki (Wholesome) —
-  Wholesome#6355
+- ker0olos#6355 — [@ker0olos](https://github.com/ker0olos) — Kerolos Zaki
 
-- Checkout our friends at <https://anilist.co>. It can help you track those 2000
-  anime you watch, it can also tell you whenever a new episode or season is
-  available.
+- Checkout <https://anilist.co>. It will help you track those 2000 anime you
+  watch, and let you know when a new episode or season is out.
 
 - This project wouldn't been possible without Deno. Want to learn about running
   your own discord bot with low-cost? Check the official guide at

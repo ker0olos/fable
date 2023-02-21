@@ -71,7 +71,7 @@ function Append(ref: RefExpr, items: Expr): RefExpr[] {
 
 function Paginate(
   expr: Expr,
-  { size, before, after }: { size?: number; before?: RefExpr; after?: RefExpr },
+  { size, before, after }: { size?: number; before?: any; after?: any },
 ): Expr {
   return _fql.Paginate(expr, {
     size,
@@ -80,12 +80,12 @@ function Paginate(
   });
 }
 
-// function Map<T = Expr>(
-//   refOrMatch: RefExpr | MatchExpr,
-//   map: (ref: RefExpr) => Expr,
-// ): T[] {
-//   return _fql.Map(refOrMatch, map) as unknown as T[];
-// }
+function Map<T = Expr>(
+  refOrMatch: RefExpr | MatchExpr,
+  map: (...args: ExprArg[]) => Expr,
+): T[] {
+  return _fql.Map(refOrMatch, map) as unknown as T[];
+}
 
 function IsNonEmpty(expr: Expr): BooleanExpr {
   return _fql.IsNonEmpty(expr);
@@ -183,13 +183,17 @@ function Null(): NullExpr {
 }
 
 function Indexer(
-  { client, name, unique, collection, terms }: {
+  { client, name, unique, collection, values, terms }: {
     client: Client;
     unique: boolean;
     collection: string;
     name: string;
-    terms: {
+    terms?: {
       field: string[];
+    }[];
+    values?: {
+      field: string[];
+      reverse?: boolean;
     }[];
   },
 ): () => Promise<void> {
@@ -198,6 +202,7 @@ function Indexer(
     unique,
     source: _fql.Collection(collection),
     terms,
+    values,
   };
 
   return () =>
@@ -234,7 +239,7 @@ function Resolver(
 
 export const fql = {
   // Equals,
-  // Map,
+  Map,
   Add,
   Append,
   Create,
