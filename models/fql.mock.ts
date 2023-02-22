@@ -54,7 +54,8 @@ export const FakeSubtract = () =>
 
 export const FakeAdd = () => stub(fql, 'Add', (a: any, b: any) => a + b);
 
-export const FakeIsNull = () => stub(fql, 'IsNull', (a: any) => a === null);
+export const FakeIsNull = () =>
+  stub(fql, 'IsNull', (a: any) => (a === null) || a === undefined);
 
 export const FakeMin = () =>
   stub(fql, 'Min', (a: any, b: any) => Math.min(a, b));
