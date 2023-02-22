@@ -712,10 +712,15 @@ export class Message {
   ): Message {
     const group: Component[] = [];
 
-    if (index - 1 >= 0) {
+    if (index - 1 >= 0 || total) {
       group.push(
         new Component()
-          .setId(type, target ?? '', `${index - 1}`)
+          .setId(
+            type,
+            target ?? '',
+            // deno-lint-ignore no-non-null-assertion
+            `${index - 1 >= 0 ? index - 1 : total! - 1}`,
+          )
           .setLabel(`Prev`),
       );
     }
@@ -728,10 +733,10 @@ export class Message {
         .toggle(),
     );
 
-    if (next) {
+    if (next || total) {
       group.push(
         new Component()
-          .setId(type, target ?? '', `${index + 1}`)
+          .setId(type, target ?? '', `${next ? `${index + 1}` : 0}`)
           .setLabel(`Next`),
       );
     }

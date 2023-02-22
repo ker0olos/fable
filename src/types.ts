@@ -140,7 +140,7 @@ export type PoolInfo = {
 
 export enum ManifestType {
   Builtin = 'builtin',
-  Manual = 'manual',
+  Community = 'community',
 }
 
 export interface Manifest {
@@ -151,12 +151,12 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
-  // TODO BLOCKED load manual packs
+  // TODO BLOCKED load community packs
   depends?: string[];
-  // TODO BLOCKED load manual packs
+  // TODO BLOCKED load community packs
   conflicts?: string[];
-  // TODO BLOCKED load manual packs
-  addedBy?: string;
+  // TODO BLOCKED load community packs
+  installedBy?: string;
   media?: {
     conflicts?: string[];
     new?: DisaggregatedMedia[];

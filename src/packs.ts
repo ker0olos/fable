@@ -33,7 +33,7 @@ type All = Media | DisaggregatedMedia | Character | DisaggregatedCharacter;
 
 // TODO FIX this should be cached on database for each server
 // updated each time a pack is installed
-let manual: Manifest[] | undefined = undefined;
+let community: Manifest[] | undefined = undefined;
 
 // TODO FIX this should be cached on database for each server
 // updated each time a pack is installed
@@ -55,7 +55,7 @@ const packs = {
   mediaToString,
   // used in tests to clear cache
   clear: () => {
-    manual = undefined;
+    community = undefined;
     disabled = undefined;
   },
 };
@@ -76,13 +76,13 @@ async function anilist(
 
 function list(type?: ManifestType): Manifest[] {
   // TODO FIX this should be cached on database for each server
-  if (!manual) {
-    // TODO BLOCKED load manual packs
+  if (!community) {
+    // TODO BLOCKED load community packs
     // (see https://github.com/ker0olos/fable/issues/10)
     // then map each loaded pack to 'dict'
     // 1^ block loading packs if name is used for builtins
     // for example never accept packs named anilist even if the builtin anilist is disabled
-    manual = [];
+    community = [];
   }
 
   switch (type) {
@@ -91,12 +91,12 @@ function list(type?: ManifestType): Manifest[] {
         anilistManifest,
         vtubersManifest,
       ];
-    case ManifestType.Manual:
-      return [...manual];
+    case ManifestType.Community:
+      return [...community];
     default:
       return [
         vtubersManifest,
-        ...manual,
+        ...community,
       ];
   }
 }
@@ -121,7 +121,7 @@ function embed(
 
   if (!list.length) {
     const embed = new discord.Embed().setDescription(
-      'No packs have been added yet',
+      'No packs have been installed yet',
     );
 
     return new discord.Message()
@@ -135,7 +135,7 @@ function embed(
       'Builtin packs are developed and maintained directly by Fable',
     )
     : new discord.Embed().setDescription(
-      'The following third-party packs were manually added by your server members',
+      'The following third-party packs were manually installed by your server members',
     );
 
   const pack = new discord.Embed()

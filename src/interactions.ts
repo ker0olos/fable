@@ -265,7 +265,7 @@ const handler = async (r: Request) => {
           case 'start':
           case 'guide':
           case 'tuto': {
-            return help(member.user.id).send();
+            return help({ userId: member.user.id, index: 0 }).send();
           }
           default: {
             break;
@@ -348,7 +348,7 @@ const handler = async (r: Request) => {
               .send();
           }
           case 'builtin':
-          case 'manual': {
+          case 'community': {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
@@ -392,6 +392,14 @@ const handler = async (r: Request) => {
                   ? discord.MessageType.Update
                   : discord.MessageType.New,
               )
+              .send();
+          }
+          case 'help': {
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            return help({ userId: member.user.id, index })
+              .setType(discord.MessageType.Update)
               .send();
           }
           default:

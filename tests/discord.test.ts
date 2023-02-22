@@ -493,18 +493,27 @@ Deno.test('page messages', async (test) => {
         attachments: [],
         components: [{
           type: 1,
-          components: [{
-            custom_id: '_',
-            disabled: true,
-            label: '1/2',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: 'type=target=1',
-            label: 'Next',
-            style: 2,
-            type: 2,
-          }],
+          components: [
+            {
+              custom_id: 'type=target=1',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: '_',
+              disabled: true,
+              label: '1/2',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'type=target=1',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            },
+          ],
         }],
       },
     });
@@ -531,18 +540,27 @@ Deno.test('page messages', async (test) => {
         attachments: [],
         components: [{
           type: 1,
-          components: [{
-            custom_id: 'type=target=0',
-            label: 'Prev',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: '_',
-            disabled: true,
-            label: '2/2',
-            style: 2,
-            type: 2,
-          }],
+          components: [
+            {
+              custom_id: 'type=target=0',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: '_',
+              disabled: true,
+              label: '2/2',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'type=target=0',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            },
+          ],
         }],
       },
     });
@@ -649,13 +667,27 @@ Deno.test('page messages', async (test) => {
         attachments: [],
         components: [{
           type: 1,
-          components: [{
-            custom_id: '_',
-            disabled: true,
-            label: '1/1',
-            style: 2,
-            type: 2,
-          }],
+          components: [
+            {
+              custom_id: 'type=target=0',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'type=target=0',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            },
+          ],
         }],
       },
     });

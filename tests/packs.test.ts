@@ -60,8 +60,8 @@ Deno.test('list', async (test) => {
     await assertSnapshot(test, manifest);
   });
 
-  await test.step('manual', () => {
-    const list = packs.list(ManifestType.Manual);
+  await test.step('community', () => {
+    const list = packs.list(ManifestType.Community);
 
     assertEquals(list.length, 0);
   });

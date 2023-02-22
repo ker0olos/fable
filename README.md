@@ -28,15 +28,15 @@ no premiums and no pay-to-win bullshit.
 
 There's a intuitive system to manage and customize the characters in your
 servers, like adding extensions to chrome and installing apps on your phone, you
-can add community-made packs that are full of new characters with a single
+can install community-made packs that are full of new characters with a single
 command.
 
 Fable is actively developed with new game modes and features frequently.
 
-[^1]: Currently the default packs include anime/manga/vtubers, but you can add
-other packs, e.g. video game characters or real life celebrities. And you can
-disable the anime packs entirety (Incase it's a sports server or else, we try
-our best to include term naturel commands along with anime analogies).
+[^1]: Currently the default packs include anime/manga/vtubers, but you can
+install other packs, e.g. video game characters or real life celebrities. And
+you can disable the anime packs entirety (Incase it's a sports server or else,
+we try our best to include term naturel commands along with anime analogies).
 
 > Fable is in early access. Some core features might be missing. Missing
 > features include "Trading" (see
@@ -55,7 +55,7 @@ our best to include term naturel commands along with anime analogies).
 
 - **`/gacha`, `/w`**: _start a new gacha pull_
 - **`/now`, `/tu`**: _check what you can do right now_
-- **`/search`, `/anime`, `/manga`**: _to search for specific series_
+- **`/search`, `/anime`, `/manga`**: _to search for specific media_
 - **`/character`, `/im`**: _to search for a specific character_
 
 ### Get Involved

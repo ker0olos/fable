@@ -321,8 +321,8 @@ await put([
         optional: true,
       }),
       Option({
-        name: 'manual',
-        description: 'List all the manually instated packs',
+        name: 'community',
+        description: 'List all instated community packs',
         type: Type.SUB_COMMAND,
         optional: true,
       }),

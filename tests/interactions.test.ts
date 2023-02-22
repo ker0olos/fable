@@ -13,6 +13,8 @@ import {
   stub,
 } from 'https://deno.land/std@0.177.0/testing/mock.ts';
 
+import { assertSnapshot } from 'https://deno.land/std@0.177.0/testing/snapshot.ts';
+
 import { FakeTime } from 'https://deno.land/std@0.177.0/testing/time.ts';
 
 import packs from '../src/packs.ts';
@@ -4364,18 +4366,27 @@ Deno.test('manifest embeds', async (test) => {
           attachments: [],
           components: [{
             type: 1,
-            components: [{
-              custom_id: '_',
-              disabled: true,
-              label: '1/2',
-              style: 2,
-              type: 2,
-            }, {
-              custom_id: 'builtin==1',
-              label: 'Next',
-              style: 2,
-              type: 2,
-            }],
+            components: [
+              {
+                custom_id: 'builtin==1',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/2',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'builtin==1',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
           }],
           embeds: [{
             type: 'rich',
@@ -4394,10 +4405,10 @@ Deno.test('manifest embeds', async (test) => {
     }
   });
 
-  await test.step('manual packs', () => {
+  await test.step('community packs', () => {
     const manifest: Manifest = {
       id: 'pack-id',
-      type: ManifestType.Manual,
+      type: ManifestType.Community,
     };
 
     const listStub = stub(
@@ -4409,7 +4420,7 @@ Deno.test('manifest embeds', async (test) => {
     try {
       const message = packs.embed({
         index: 1,
-        type: ManifestType.Manual,
+        type: ManifestType.Community,
       });
 
       assertEquals(message.json(), {
@@ -4418,23 +4429,32 @@ Deno.test('manifest embeds', async (test) => {
           attachments: [],
           components: [{
             type: 1,
-            components: [{
-              custom_id: 'manual==0',
-              label: 'Prev',
-              style: 2,
-              type: 2,
-            }, {
-              custom_id: '_',
-              disabled: true,
-              label: '2/2',
-              style: 2,
-              type: 2,
-            }],
+            components: [
+              {
+                custom_id: 'community==0',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '2/2',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'community==0',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
           }],
           embeds: [{
             type: 'rich',
             description:
-              'The following third-party packs were manually added by your server members',
+              'The following third-party packs were manually installed by your server members',
           }, {
             type: 'rich',
             description: undefined,
@@ -4473,13 +4493,27 @@ Deno.test('manifest embeds', async (test) => {
           attachments: [],
           components: [{
             type: 1,
-            components: [{
-              custom_id: '_',
-              disabled: true,
-              label: '1/1',
-              style: 2,
-              type: 2,
-            }],
+            components: [
+              {
+                custom_id: 'builtin==0',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'builtin==0',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
           }],
           embeds: [{
             type: 'rich',
@@ -4518,7 +4552,7 @@ Deno.test('manifest embeds', async (test) => {
           attachments: [],
           embeds: [{
             type: 'rich',
-            description: 'No packs have been added yet',
+            description: 'No packs have been installed yet',
           }],
         },
       });
@@ -4528,42 +4562,49 @@ Deno.test('manifest embeds', async (test) => {
   });
 });
 
-Deno.test('start / tutorial', () => {
-  const message = help('user_id');
+Deno.test('help guide', async (test) => {
+  await test.step('navigation', () => {
+    const message = help({ userId: 'user_id', index: 0 });
 
-  assertEquals(message.json(), {
-    data: {
-      attachments: [],
-      components: [
-        {
-          components: [
-            {
-              custom_id: 'now=user_id',
-              label: '/now',
-              style: 2,
-              type: 2,
-            },
-            {
-              custom_id: 'gacha=user_id',
-              label: '/gacha',
-              style: 2,
-              type: 2,
-            },
-          ],
-          type: 1,
-        },
-      ],
-      embeds: [
-        {
-          description: `- **\`/gacha\`**, **\`/w\`**:   _start a new gacha pull_
-- **\`/now\`**, **\`/tu\`**:   _check what you can do right now_
-- **\`/search\`**, **\`/anime\`**, **\`/manga\`**:   _search for specific series_
-- **\`/character\`**: _search for a specific character_`,
-          type: 'rich',
-        },
-      ],
-    },
-    type: 4,
+    assertEquals(message.json().data.components[0].components[0], {
+      custom_id: 'help==2',
+      label: 'Prev',
+      style: 2,
+      type: 2,
+    });
+
+    assertEquals(message.json().data.components[0].components[1], {
+      custom_id: '_',
+      disabled: true,
+      label: '1/3',
+      style: 2,
+      type: 2,
+    });
+
+    assertEquals(message.json().data.components[0].components[2], {
+      custom_id: 'help==1',
+      label: 'Next',
+      style: 2,
+      type: 2,
+    });
+  });
+
+  await test.step('page 1', () => {
+    const message = help({ userId: 'user_id', index: 0 });
+
+    assertSnapshot(test, message.json());
+  });
+
+  await test.step('page 2', () => {
+    const message = help({ userId: 'user_id', index: 1 });
+
+    assertSnapshot(test, message.json());
+  });
+
+  await test.step('page 3', () => {
+    const message = help({ userId: 'user_id', index: 2 });
+
+    assertSnapshot(test, message.json());
   });
 });
 
