@@ -450,7 +450,7 @@ Deno.test('get character media', async (test) => {
         returned: ['0'] as any,
       });
 
-      assertSpyCall(selectStub, 2, {
+      assertSpyCall(selectStub, 1, {
         args: [
           ['data', 'rating'],
           '1' as any,
@@ -551,7 +551,7 @@ Deno.test('get character media', async (test) => {
         ],
       });
 
-      assertSpyCall(selectStub, 1, {
+      assertSpyCall(selectStub, 2, {
         args: [
           ['data', 1, 1],
           [

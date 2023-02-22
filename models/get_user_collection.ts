@@ -18,6 +18,66 @@ export interface CharacterNode {
   anchor: StringExpr;
 }
 
+const paginate = ({
+  after,
+  before,
+  afterCursor,
+  beforeCursor,
+  afterSelector,
+  beforeSelector,
+}: {
+  after?: string;
+  before?: string;
+  // deno-lint-ignore no-explicit-any
+  afterCursor: any;
+  // deno-lint-ignore no-explicit-any
+  beforeCursor: any;
+  // deno-lint-ignore no-explicit-any
+  afterSelector: any[];
+  // deno-lint-ignore no-explicit-any
+  beforeSelector: any[];
+}) => {
+  return fql.If(
+    fql.IsNonEmpty(fql.Var('characters')),
+    fql.If(
+      fql.IsNull(before),
+      fql.If(
+        fql.IsNull(after),
+        fql.Ref(fql.Get(fql.Var('characters'))),
+        fql.Let({
+          // after returns itself then a new item
+          match: fql.Paginate(fql.Var('characters'), {
+            after: afterCursor,
+            size: 2,
+          }),
+        }, ({ match }) => {
+          return fql.Select(
+            afterSelector,
+            match,
+            // or first item
+            fql.Ref(fql.Get(fql.Var('characters'))),
+          );
+        }),
+      ),
+      fql.Let({
+        // before doesn't return itself
+        match: fql.Paginate(fql.Var('characters'), {
+          before: beforeCursor,
+          size: 1,
+        }),
+      }, ({ match }) => {
+        return fql.Select(
+          beforeSelector,
+          match,
+          // or last item
+          fql.Ref(fql.Get(fql.Reverse(fql.Var('characters')))),
+        );
+      }),
+    ),
+    fql.Null(),
+  );
+};
+
 export function getCharacterStars(
   { inventory, stars, before, after }: {
     inventory: InventoryExpr;
@@ -32,47 +92,16 @@ export function getCharacterStars(
       stars,
       fql.Ref(inventory),
     ),
-    character: fql.If(
-      fql.IsNonEmpty(fql.Var('characters')),
-      fql.If(
-        fql.IsNull(before),
-        fql.If(
-          fql.IsNull(after),
-          fql.Ref(fql.Get(fql.Var('characters'))),
-          fql.Let({
-            // after returns itself then a new item
-            match: fql.Paginate(fql.Var('characters'), {
-              // deno-lint-ignore no-non-null-assertion
-              after: fql.Id('character', after!),
-              size: 2,
-            }),
-          }, ({ match }) => {
-            return fql.Select(
-              ['data', 1],
-              match,
-              // or first item
-              fql.Ref(fql.Get(fql.Var('characters'))),
-            );
-          }),
-        ),
-        fql.Let({
-          // before doesn't return itself
-          match: fql.Paginate(fql.Var('characters'), {
-            // deno-lint-ignore no-non-null-assertion
-            before: fql.Id('character', before!),
-            size: 1,
-          }),
-        }, ({ match }) => {
-          return fql.Select(
-            ['data', 0],
-            match,
-            // or last item
-            fql.Ref(fql.Get(fql.Reverse(fql.Var('characters')))),
-          );
-        }),
-      ),
-      fql.Null(),
-    ),
+    character: paginate({
+      after,
+      before,
+      // deno-lint-ignore no-non-null-assertion
+      afterCursor: fql.Id('character', after!),
+      // deno-lint-ignore no-non-null-assertion
+      beforeCursor: fql.Id('character', before!),
+      afterSelector: ['data', 1],
+      beforeSelector: ['data', 0],
+    }),
   }, ({ character }) => {
     return {
       character,
@@ -95,65 +124,34 @@ export function getCharacterMedia(
       mediaId,
       fql.Ref(inventory),
     ),
-    character: fql.If(
-      fql.IsNonEmpty(fql.Var('characters')),
-      fql.If(
-        fql.IsNull(before),
-        fql.If(
-          fql.IsNull(after),
-          fql.Ref(fql.Get(fql.Var('characters'))),
-          fql.Let({
-            // after returns itself then a new item
-            match: fql.Paginate(fql.Var('characters'), {
-              after: [
-                fql.Select(
-                  ['data', 'rating'],
-                  // deno-lint-ignore no-non-null-assertion
-                  fql.Get(fql.Id('character', after!)),
-                ),
-                // deno-lint-ignore no-non-null-assertion
-                fql.Id('character', after!),
-                // deno-lint-ignore no-non-null-assertion
-                fql.Id('character', after!),
-              ],
-              size: 2,
-            }),
-          }, ({ match }) => {
-            return fql.Select(
-              ['data', 1, 1],
-              match,
-              // or first item
-              fql.Ref(fql.Get(fql.Var('characters'))),
-            );
-          }),
+    character: paginate({
+      after,
+      before,
+      afterCursor: [
+        fql.Select(
+          ['data', 'rating'],
+          // deno-lint-ignore no-non-null-assertion
+          fql.Get(fql.Id('character', after!)),
         ),
-        fql.Let({
-          // before doesn't return itself
-          match: fql.Paginate(fql.Var('characters'), {
-            before: [
-              fql.Select(
-                ['data', 'rating'],
-                // deno-lint-ignore no-non-null-assertion
-                fql.Get(fql.Id('character', before!)),
-              ),
-              // deno-lint-ignore no-non-null-assertion
-              fql.Id('character', before!),
-              // deno-lint-ignore no-non-null-assertion
-              fql.Id('character', before!),
-            ],
-            size: 1,
-          }),
-        }, ({ match }) => {
-          return fql.Select(
-            ['data', 0, 1],
-            match,
-            // or last item
-            fql.Ref(fql.Get(fql.Reverse(fql.Var('characters')))),
-          );
-        }),
-      ),
-      fql.Null(),
-    ),
+        // deno-lint-ignore no-non-null-assertion
+        fql.Id('character', after!),
+        // deno-lint-ignore no-non-null-assertion
+        fql.Id('character', after!),
+      ],
+      beforeCursor: [
+        fql.Select(
+          ['data', 'rating'],
+          // deno-lint-ignore no-non-null-assertion
+          fql.Get(fql.Id('character', before!)),
+        ),
+        // deno-lint-ignore no-non-null-assertion
+        fql.Id('character', before!),
+        // deno-lint-ignore no-non-null-assertion
+        fql.Id('character', before!),
+      ],
+      afterSelector: ['data', 1, 1],
+      beforeSelector: ['data', 0, 1],
+    }),
   }, ({ character }) => {
     return {
       character,

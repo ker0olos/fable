@@ -38,132 +38,6 @@ import {
 import { fql } from './fql.ts';
 
 Deno.test('add character to inventory', async (test) => {
-  await test.step('character exists', () => {
-    const ifStub = FakeIf();
-    const letStub = FakeLet();
-    const refStub = FakeRef();
-    const indexStub = FakeIndex();
-    const isNonEmptyStub = FakeIsNonEmpty();
-    const lteStub = FakeLTE();
-
-    const selectStub = FakeSelect(1);
-
-    const matchStub = FakeMatch({ match: true });
-
-    try {
-      const response = addCharacter({
-        characterId: 'character_id',
-        inventory: 'inventory',
-        instance: 'instance',
-        user: 'user',
-        pool: 1,
-        popularityChance: 1,
-        popularityGreater: 0,
-        popularityLesser: 100,
-        roleChance: 1,
-        role: 'role',
-      } as any) as any;
-
-      assertSpyCall(indexStub, 0, {
-        args: ['characters_instance_id'],
-      });
-
-      assertSpyCall(matchStub, 0, {
-        args: [
-          'characters_instance_id' as any,
-          'character_id',
-          {
-            ref: 'instance',
-          },
-        ],
-      });
-
-      assertSpyCallArg(ifStub, 0, 0, true);
-      assertSpyCallArg(ifStub, 1, 0, false);
-
-      assertEquals(response, {
-        ok: false,
-        error: 'CHARACTER_EXISTS',
-      });
-    } finally {
-      ifStub.restore();
-      letStub.restore();
-      refStub.restore();
-      indexStub.restore();
-      isNonEmptyStub.restore();
-      selectStub.restore();
-      lteStub.restore();
-      matchStub.restore();
-    }
-  });
-
-  await test.step('no available pulls', () => {
-    const ifStub = FakeIf();
-    const letStub = FakeLet();
-    const refStub = FakeRef();
-    const indexStub = FakeIndex();
-    const isNonEmptyStub = FakeIsNonEmpty();
-    const matchStub = FakeMatch();
-    const lteStub = FakeLTE();
-
-    const selectStub = FakeSelect(0);
-
-    try {
-      const response = addCharacter({
-        characterId: 'character_id',
-        inventory: 'inventory',
-        instance: 'instance',
-        user: 'user',
-        pool: 1,
-        popularityChance: 1,
-        popularityGreater: 0,
-        popularityLesser: 100,
-        roleChance: 1,
-        role: 'role',
-      } as any) as any;
-
-      assertSpyCall(indexStub, 0, {
-        args: ['characters_instance_id'],
-      });
-
-      assertSpyCall(matchStub, 0, {
-        args: [
-          'characters_instance_id' as any,
-          'character_id',
-          {
-            ref: 'instance',
-          },
-        ],
-      });
-
-      assertSpyCall(selectStub, 0, {
-        args: [
-          ['data', 'availablePulls'],
-          'inventory' as any,
-        ],
-      });
-
-      assertSpyCallArg(ifStub, 0, 0, false);
-
-      assertEquals(response, {
-        ok: false,
-        error: 'NO_PULLS_AVAILABLE',
-        inventory: {
-          ref: 'inventory',
-        },
-      });
-    } finally {
-      ifStub.restore();
-      letStub.restore();
-      refStub.restore();
-      indexStub.restore();
-      isNonEmptyStub.restore();
-      matchStub.restore();
-      selectStub.restore();
-      lteStub.restore();
-    }
-  });
-
   await test.step('ok', () => {
     const ifStub = FakeIf();
     const letStub = FakeLet();
@@ -305,6 +179,132 @@ Deno.test('add character to inventory', async (test) => {
       nowStub.restore();
       createStub.restore();
       updateStub.restore();
+    }
+  });
+
+  await test.step('character exists', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const refStub = FakeRef();
+    const indexStub = FakeIndex();
+    const isNonEmptyStub = FakeIsNonEmpty();
+    const lteStub = FakeLTE();
+
+    const selectStub = FakeSelect(1);
+
+    const matchStub = FakeMatch({ match: true });
+
+    try {
+      const response = addCharacter({
+        characterId: 'character_id',
+        inventory: 'inventory',
+        instance: 'instance',
+        user: 'user',
+        pool: 1,
+        popularityChance: 1,
+        popularityGreater: 0,
+        popularityLesser: 100,
+        roleChance: 1,
+        role: 'role',
+      } as any) as any;
+
+      assertSpyCall(indexStub, 0, {
+        args: ['characters_instance_id'],
+      });
+
+      assertSpyCall(matchStub, 0, {
+        args: [
+          'characters_instance_id' as any,
+          'character_id',
+          {
+            ref: 'instance',
+          },
+        ],
+      });
+
+      assertSpyCallArg(ifStub, 0, 0, true);
+      assertSpyCallArg(ifStub, 1, 0, false);
+
+      assertEquals(response, {
+        ok: false,
+        error: 'CHARACTER_EXISTS',
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      refStub.restore();
+      indexStub.restore();
+      isNonEmptyStub.restore();
+      selectStub.restore();
+      lteStub.restore();
+      matchStub.restore();
+    }
+  });
+
+  await test.step('no available pulls', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const refStub = FakeRef();
+    const indexStub = FakeIndex();
+    const isNonEmptyStub = FakeIsNonEmpty();
+    const matchStub = FakeMatch();
+    const lteStub = FakeLTE();
+
+    const selectStub = FakeSelect(0);
+
+    try {
+      const response = addCharacter({
+        characterId: 'character_id',
+        inventory: 'inventory',
+        instance: 'instance',
+        user: 'user',
+        pool: 1,
+        popularityChance: 1,
+        popularityGreater: 0,
+        popularityLesser: 100,
+        roleChance: 1,
+        role: 'role',
+      } as any) as any;
+
+      assertSpyCall(indexStub, 0, {
+        args: ['characters_instance_id'],
+      });
+
+      assertSpyCall(matchStub, 0, {
+        args: [
+          'characters_instance_id' as any,
+          'character_id',
+          {
+            ref: 'instance',
+          },
+        ],
+      });
+
+      assertSpyCall(selectStub, 0, {
+        args: [
+          ['data', 'availablePulls'],
+          'inventory' as any,
+        ],
+      });
+
+      assertSpyCallArg(ifStub, 0, 0, false);
+
+      assertEquals(response, {
+        ok: false,
+        error: 'NO_PULLS_AVAILABLE',
+        inventory: {
+          ref: 'inventory',
+        },
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      refStub.restore();
+      indexStub.restore();
+      isNonEmptyStub.restore();
+      matchStub.restore();
+      selectStub.restore();
+      lteStub.restore();
     }
   });
 });

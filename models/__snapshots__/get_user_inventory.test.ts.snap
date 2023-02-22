@@ -848,8 +848,6 @@ snapshot[`model 4`] = `
                                                                     select: "ref",
                                                                   },
                                                                 },
-                                                                lastPull: null,
-                                                                rechargeTimestamp: null,
                                                                 user: Expr {
                                                                   raw: {
                                                                     from: Expr {
@@ -1621,8 +1619,6 @@ snapshot[`model 4`] = `
                                                                     select: "ref",
                                                                   },
                                                                 },
-                                                                lastPull: null,
-                                                                rechargeTimestamp: null,
                                                                 user: Expr {
                                                                   raw: {
                                                                     from: Expr {

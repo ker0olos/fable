@@ -410,8 +410,6 @@ Deno.test('get or create inventory', async (test) => {
           {
             availablePulls: 5,
             characters: [],
-            lastPull: null,
-            rechargeTimestamp: null,
             user: {
               ref: 'user',
             },

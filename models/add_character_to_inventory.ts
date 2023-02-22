@@ -83,12 +83,10 @@ export function addCharacter(
         ok: false,
         error: 'NO_PULLS_AVAILABLE',
         inventory: fql.Ref(inventory),
-        // deno-lint-ignore no-explicit-any
-      } as any,
+      },
       fql.If(
         fql.IsNonEmpty(match),
-        // deno-lint-ignore no-explicit-any
-        { ok: false, error: 'CHARACTER_EXISTS' } as any,
+        { ok: false, error: 'CHARACTER_EXISTS' },
         fql.Let(
           {
             createdCharacter: fql.Create<Character>('character', {
@@ -134,8 +132,7 @@ export function addCharacter(
             ok: true,
             inventory: fql.Ref(inventory),
             character: fql.Ref(createdCharacter),
-            // deno-lint-ignore no-explicit-any
-          } as any),
+          }),
         ),
       ),
     ));

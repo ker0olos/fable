@@ -80,12 +80,12 @@ function Paginate(
   });
 }
 
-function Map<T = Expr>(
-  refOrMatch: RefExpr | MatchExpr,
-  map: (...args: ExprArg[]) => Expr,
-): T[] {
-  return _fql.Map(refOrMatch, map) as unknown as T[];
-}
+// function Map<T = Expr>(
+//   refOrMatch: RefExpr | MatchExpr,
+//   map: (...args: ExprArg[]) => Expr,
+// ): T[] {
+//   return _fql.Map(refOrMatch, map) as unknown as T[];
+// }
 
 function IsNonEmpty(expr: Expr): BooleanExpr {
   return _fql.IsNonEmpty(expr);
@@ -127,10 +127,10 @@ function If<A = Expr, B = Expr>(
   return _fql.If(cond, _then, _else) as A | B;
 }
 
-// function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
-//   // deno-lint-ignore no-non-null-assertion
-//   return _fql.Equals(a!, b!);
-// }
+function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
+  // deno-lint-ignore no-non-null-assertion
+  return _fql.Equals(a!, b!);
+}
 
 function IsNull(expr?: ExprArg): BooleanExpr {
   // deno-lint-ignore no-non-null-assertion
@@ -157,9 +157,16 @@ function Var(name: StringExpr): Expr {
 function Select(
   path: (StringExpr | NumberExpr)[],
   from: Expr,
-  _default?: Expr,
+  _default?: any,
 ): Expr {
   return _fql.Select(path, from, _default);
+}
+
+function Merge(
+  obj1: Record<string, any>,
+  obj2: Record<string, any>,
+): Expr {
+  return _fql.Merge(obj1, obj2);
 }
 
 function Reverse(expr: Expr): Expr {
@@ -238,12 +245,12 @@ function Resolver(
 }
 
 export const fql = {
-  // Equals,
-  Map,
+  // Map,
   Add,
   Append,
   Create,
   Divide,
+  Equals,
   Get,
   GTE,
   Id,
@@ -255,6 +262,7 @@ export const fql = {
   Let,
   LTE,
   Match,
+  Merge,
   Min,
   Multiply,
   Now,

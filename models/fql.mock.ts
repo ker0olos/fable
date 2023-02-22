@@ -32,6 +32,15 @@ export const FakeGet = () =>
 
 export const FakeAppend = () => stub(fql, 'Append', (a: any, b: any) => [a, b]);
 
+export const FakeEquals = () =>
+  stub(fql, 'Equals', (a: any, b: any) => {
+    if (typeof a === 'object' && typeof b === 'object') {
+      return Object.keys(a).every((key) => a[key] === b[key]);
+    } else {
+      return a === b;
+    }
+  });
+
 export const FakeGTE = () => stub(fql, 'GTE', (a: any, b: any) => a >= b);
 export const FakeLTE = () => stub(fql, 'LTE', (a: any, b: any) => a <= b);
 
@@ -45,8 +54,7 @@ export const FakeSubtract = () =>
 
 export const FakeAdd = () => stub(fql, 'Add', (a: any, b: any) => a + b);
 
-export const FakeIsNull = () =>
-  stub(fql, 'IsNull', (a: any) => a === undefined);
+export const FakeIsNull = () => stub(fql, 'IsNull', (a: any) => a === null);
 
 export const FakeMin = () =>
   stub(fql, 'Min', (a: any, b: any) => Math.min(a, b));
@@ -98,6 +106,13 @@ export const FakeReverse = () =>
 
 export const FakeSelect = (obj?: any) =>
   stub(fql, 'Select', (_, __, _d) => obj === undefined ? _d : obj);
+
+export const FakeMerge = () =>
+  stub(fql, 'Merge', (obj1, obj2) =>
+    ({
+      ...obj1,
+      ...obj2,
+    }) as any);
 
 export const FakeMatch = (obj?: any) =>
   stub(

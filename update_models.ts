@@ -14,6 +14,7 @@ import getUserInventory from './models/get_user_inventory.ts';
 import getUserCollection from './models/get_user_collection.ts';
 
 import addCharacterToInventory from './models/add_character_to_inventory.ts';
+import setCharacterToParty from './models/set_character_to_party.ts';
 
 import findCharacter from './models/find_character.ts';
 
@@ -44,4 +45,5 @@ await update([
   ...getUserCollection(client),
   ...findCharacter(client),
   ...addCharacterToInventory(client),
+  ...setCharacterToParty(client),
 ]);

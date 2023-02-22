@@ -33,12 +33,14 @@ type Instance @collection(name: "instance") {
 }
 
 type Inventory @collection(name: "inventory") {
-  # the time the user last pulled a gacha
-  lastPull: Time
-  # 
-  rechargeTimestamp: Time
   # the amount of pulls available to the user
   availablePulls: Int!
+  #
+  rechargeTimestamp: Time
+  # the time the user last pulled a gacha
+  lastPull: Time
+  #
+  party: Party
   #
   characters: [Character!]!
   #
@@ -91,6 +93,14 @@ type CharacterNode @embedded {
   anchor: String
 }
 
+type Party @embedded {
+  member1: Character
+  member2: Character
+  member3: Character
+  member4: Character
+  member5: Character
+}
+
 type Query {
   #
   getUserInventory(userId: String!, guildId: String!): Inventory!
@@ -123,4 +133,8 @@ type Mutation {
     roleChance: Int
     role: String
   ): Response! @resolver(name: "add_character_to_inventory")
+
+  #
+  setCharacterToParty(userId: String!, guildId: String!, characterId: String!, member: Int!): Response!
+    @resolver(name: "set_character_to_party")
 }

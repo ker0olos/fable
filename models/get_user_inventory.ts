@@ -5,7 +5,6 @@ import {
   GuildExpr,
   InstanceExpr,
   InventoryExpr,
-  NullExpr,
   NumberExpr,
   RefExpr,
   StringExpr,
@@ -30,9 +29,16 @@ export interface Instance {
 }
 
 export interface Inventory {
-  lastPull: TimeExpr | NullExpr;
   availablePulls: NumberExpr;
-  rechargeTimestamp: TimeExpr | NullExpr;
+  lastPull?: TimeExpr;
+  rechargeTimestamp?: TimeExpr;
+  party?: {
+    member1?: RefExpr;
+    member2?: RefExpr;
+    member3?: RefExpr;
+    member4?: RefExpr;
+    member5?: RefExpr;
+  };
   characters: RefExpr[];
   instance: RefExpr;
   user: RefExpr;
@@ -118,9 +124,7 @@ export function getInventory(
         {
           // create a new inventory
           createdInventory: fql.Create<Inventory>('inventory', {
-            lastPull: fql.Null(),
             availablePulls: MAX_PULLS,
-            rechargeTimestamp: fql.Null(),
             characters: [],
             instance: fql.Ref(instance),
             user: fql.Ref(user),
