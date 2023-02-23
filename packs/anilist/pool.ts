@@ -18,6 +18,11 @@ const dirname = new URL('.', import.meta.url).pathname;
 
 const ranges = Object.values(gacha.variables.ranges);
 
+const excludeList = [
+  '235', // (Case Closed, Detective Conan) (it has so many characters causing it to appear more often)
+  // (which makes gacha pulls seem a lot more biased towards case closed than other media)
+];
+
 // (see https://github.com/ker0olos/fable/issues/9)
 // (see https://github.com/ker0olos/fable/issues/45)
 
@@ -156,6 +161,11 @@ for (const range of ranges) {
 
       for (const { id } of media) {
         let charactersPage = 1;
+
+        // exclude specific media from the pool
+        if (excludeList.includes(`${id}`)) {
+          continue;
+        }
 
         while (true) {
           try {
