@@ -26,11 +26,15 @@ export async function nextEpisode(
 
   switch (anime.status) {
     case Status.RELEASING:
-      message.setContent(
-        `The next episode of \`${titles.shift()}\` is <t:${
-          // deno-lint-ignore no-non-null-assertion
-          anime.nextAiringEpisode!.airingAt}:R>.`,
-      );
+      if (anime.nextAiringEpisode?.airingAt) {
+        message.setContent(
+          `The next episode of \`${titles.shift()}\` is <t:${anime.nextAiringEpisode.airingAt}:R>.`,
+        );
+      } else {
+        message.setContent(
+          `\`${titles.shift()}\` is releasing new episodes but we can't figure out when the next episode will be.`,
+        );
+      }
       break;
     case Status.NOT_YET_RELEASED:
       message.setContent(

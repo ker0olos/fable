@@ -363,7 +363,7 @@ Deno.test('next episode', async (test) => {
                   english: 'anime',
                 },
                 nextAiringEpisode: {
-                  airingAt: 0,
+                  airingAt: 1,
                 },
               },
             },
@@ -381,7 +381,48 @@ Deno.test('next episode', async (test) => {
           embeds: [],
           components: [],
           attachments: [],
-          content: 'The next episode of `anime` is <t:0:R>.',
+          content: 'The next episode of `anime` is <t:1:R>.',
+        },
+      });
+
+      assertSpyCalls(fetchStub, 1);
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('releasing with no date', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() =>
+          Promise.resolve({
+            data: {
+              Media: {
+                status: Status.RELEASING,
+                title: {
+                  english: 'anime',
+                },
+              },
+            },
+          })),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const message = await anilist.default.nextEpisode({ title: 'title' });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [],
+          components: [],
+          attachments: [],
+          content:
+            '`anime` is releasing new episodes but we can\'t figure out when the next episode will be.',
         },
       });
 
