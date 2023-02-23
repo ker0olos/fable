@@ -23,6 +23,8 @@ import config from '../src/config.ts';
 
 import Rating from '../src/rating.ts';
 
+import { help } from '../src/help.ts';
+
 import gacha, { Pull } from '../src/gacha.ts';
 
 import * as search from '../src/search.ts';
@@ -46,7 +48,6 @@ import {
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 import { NonFetalError, NoPullsError } from '../src/errors.ts';
-import { help } from '../src/help.ts';
 
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {

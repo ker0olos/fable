@@ -55,6 +55,8 @@ __You get a free pull every 15 minutes (maxed at 5 pulls)__. Use \`/now\` to che
 __Characters are exclusive__, once a player on the server finds a character, no one else can find that character in gacha again. You will need trade to get them.
 
 __Characters vary in ranks from 1* to 5*__, A character rating is based on their popularity (as of right now, a character rating cannot be raised).
+
+__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5* appearing is equal or less than 1%.
 ​",
         footer: {
           text: "aliases: /pull, /roll, /w",
