@@ -187,6 +187,9 @@ async function findById<T>(
 
   const results: { [key: string]: T } = {};
 
+  // filter out disabled ids
+  ids = ids.filter((id) => !packs.isDisabled(id));
+
   for (const literal of [...new Set(ids)]) {
     const [packId, id] = parseId(literal, defaultPackId);
 
@@ -197,14 +200,10 @@ async function findById<T>(
     if (packId === 'anilist') {
       const n = utils.parseInt(id);
 
-      if (typeof n === 'number' && !packs.isDisabled(`anilist:${n}`)) {
+      if (typeof n === 'number') {
         anilistIds.push(n);
       }
     } else {
-      if (packs.isDisabled(`${packId}:${id}`)) {
-        continue;
-      }
-
       // search for the id in packs
       // deno-lint-ignore no-explicit-any
       const match: All = (dict()[packId]?.[key]?.new as Array<any>)?.find((
@@ -251,6 +250,7 @@ async function searchMany<
 
   for (const pack of [anilistPack, ...packs.list()]) {
     for (const item of pack[key]?.new ?? []) {
+      // filter out disabled ids
       if (packs.isDisabled(`${pack.id}:${item.id}`)) {
         continue;
       }
@@ -301,7 +301,6 @@ async function searchOne<
   search: string,
 ): Promise<T | undefined> {
   const possibilities = await searchMany<T>(key, search);
-
   return possibilities?.[0];
 }
 
@@ -419,6 +418,18 @@ async function aggregate<T>({ media, character, start, end }: {
       (media.relations && 'edges' in media.relations) ||
       (media.characters && 'edges' in media.characters)
     ) {
+      if (media.relations && 'edges' in media.relations) {
+        media.relations.edges = media.relations.edges.filter((edge) =>
+          !packs.isDisabled(`anilist:${edge.node.id}`)
+        );
+      }
+
+      if (media.characters && 'edges' in media.characters) {
+        media.characters.edges = media.characters.edges.filter((edge) =>
+          !packs.isDisabled(`anilist:${edge.node.id}`)
+        );
+      }
+
       return media as T;
     }
 
@@ -449,6 +460,11 @@ async function aggregate<T>({ media, character, start, end }: {
       ...media,
       relations: {
         edges: media.relations?.slice(start, end)
+          ?.filter(({ mediaId }) => {
+            // deno-lint-ignore no-non-null-assertion
+            const [packId, id] = parseId(mediaId, media!.packId);
+            return !packs.isDisabled(`${packId}:${id}`);
+          })
           ?.map(({ relation, mediaId }) => ({
             relation,
             node: mediaRefs[mediaId],
@@ -456,6 +472,11 @@ async function aggregate<T>({ media, character, start, end }: {
       },
       characters: {
         edges: media.characters?.slice(start, end)
+          ?.filter(({ characterId }) => {
+            // deno-lint-ignore no-non-null-assertion
+            const [packId, id] = parseId(characterId, media!.packId);
+            return !packs.isDisabled(`${packId}:${id}`);
+          })
           ?.map(({ role, characterId }) => ({
             role,
             node: characterRefs[characterId],
@@ -466,6 +487,9 @@ async function aggregate<T>({ media, character, start, end }: {
     return t as T;
   } else if (character) {
     if (character.media && 'edges' in character.media) {
+      character.media.edges = character.media.edges.filter((edge) =>
+        !packs.isDisabled(`anilist:${edge.node.id}`)
+      );
       return character as T;
     }
 
@@ -488,6 +512,11 @@ async function aggregate<T>({ media, character, start, end }: {
       ...character,
       media: {
         edges: character.media?.slice(start, end)
+          ?.filter(({ mediaId }) => {
+            // deno-lint-ignore no-non-null-assertion
+            const [packId, id] = parseId(mediaId, character!.packId);
+            return !packs.isDisabled(`${packId}:${id}`);
+          })
           ?.map(({ role, mediaId }) => ({
             role,
             node: mediaRefs[mediaId],

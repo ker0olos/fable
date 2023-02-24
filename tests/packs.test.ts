@@ -144,7 +144,7 @@ Deno.test('disabled embeds', async (test) => {
 });
 
 Deno.test('disabled relations', async (test) => {
-  await test.step('disabled anilist media relations', () => {
+  await test.step('disabled anilist media relations', async () => {
     const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
@@ -182,7 +182,9 @@ Deno.test('disabled relations', async (test) => {
 
     try {
       assertEquals(
-        anilist.transform<Media>({ item: media })
+        (await packs.aggregate<Media>({
+          media: anilist.transform<Media>({ item: media }),
+        }))
           .relations?.edges.length,
         0,
       );
@@ -192,7 +194,7 @@ Deno.test('disabled relations', async (test) => {
     }
   });
 
-  await test.step('disabled anilist media characters', () => {
+  await test.step('disabled anilist media characters', async () => {
     const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
@@ -228,7 +230,9 @@ Deno.test('disabled relations', async (test) => {
 
     try {
       assertEquals(
-        anilist.transform<Media>({ item: media })
+        (await packs.aggregate<Media>({
+          media: anilist.transform<Media>({ item: media }),
+        }))
           .characters?.edges.length,
         0,
       );
@@ -238,7 +242,7 @@ Deno.test('disabled relations', async (test) => {
     }
   });
 
-  await test.step('disabled anilist character media', () => {
+  await test.step('disabled anilist character media', async () => {
     const character: AniListCharacter = {
       id: '1',
       name: {
@@ -274,7 +278,9 @@ Deno.test('disabled relations', async (test) => {
 
     try {
       assertEquals(
-        anilist.transform<Character>({ item: character })
+        (await packs.aggregate<Character>({
+          character: anilist.transform<Character>({ item: character }),
+        }))
           .media?.edges.length,
         0,
       );
@@ -2617,7 +2623,7 @@ Deno.test('aggregate media', async (test) => {
       assertEquals(await packs.aggregate<Media>({ media }), media);
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
+      assertSpyCalls(listStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -3269,7 +3275,7 @@ Deno.test('aggregate characters', async (test) => {
       assertEquals(await packs.aggregate<Character>({ character }), character);
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
+      assertSpyCalls(listStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();

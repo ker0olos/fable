@@ -9,8 +9,6 @@ import {
   Media,
 } from '../../src/types.ts';
 
-import packs from '../../src/packs.ts';
-
 const url = 'https://graphql.anilist.co';
 
 /** Order by trending than popularity */
@@ -89,7 +87,6 @@ export function transform<T>(
     if (item.relations?.edges?.length) {
       t.relations = {
         edges: item.relations.edges
-          .filter((edge) => !packs.isDisabled(`anilist:${edge.node.id}`))
           .map((edge) => ({
             relation: edge.relationType,
             node: transform({ item: edge.node as AniListMedia }),
@@ -100,7 +97,6 @@ export function transform<T>(
     if (item.characters?.edges?.length) {
       t.characters = {
         edges: item.characters.edges
-          .filter((edge) => !packs.isDisabled(`anilist:${edge.node.id}`))
           .map((edge) => ({
             role: edge.role,
             node: transform({ item: edge.node as AniListCharacter }),
@@ -131,7 +127,6 @@ export function transform<T>(
     if (item.media?.edges?.length) {
       t.media = {
         edges: item.media.edges
-          .filter((edge) => !packs.isDisabled(`anilist:${edge.node.id}`))
           .map((edge) => ({
             role: edge.characterRole,
             node: transform({ item: edge.node as AniListMedia }),
