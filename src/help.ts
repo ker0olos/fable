@@ -27,9 +27,11 @@ export function help(
             '__Characters vary in ranks from 1* to 5*__, A character rating is based on their popularity (as of right now, a character rating cannot be raised).',
             '',
             '__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5* appearing is equal or less than 1%.',
+            '',
+            '> _`/pull` allows you to do gacha with no animations._',
             '\u200B',
           ].join('\n'))
-          .setFooter({ text: 'aliases: /pull, /roll, /w' }),
+          .setFooter({ text: 'aliases: /w, /p' }),
       ),
     new discord.Message()
       .addEmbed(

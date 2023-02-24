@@ -231,16 +231,17 @@ const handler = async (r: Request) => {
             }))
               .send();
           }
-          case 'gacha':
           case 'pull':
-          case 'roll':
+          case 'gacha':
           case 'w':
+          case 'p':
             return gacha
               .start({
-                token,
+                reduceMotion: ['pull', 'p'].includes(name),
                 userId: member.user.id,
                 channelId,
                 guildId,
+                token,
               })
               .send();
           case 'fake_pull':

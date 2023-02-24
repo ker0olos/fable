@@ -270,12 +270,13 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
  * start the pull's animation
  */
 function start(
-  { token, userId, guildId, characterId }: {
+  { token, userId, guildId, characterId, reduceMotion }: {
     token: string;
     userId?: string;
     guildId?: string;
     channelId?: string;
     characterId?: string;
+    reduceMotion?: boolean;
   },
 ): discord.Message {
   const _ =
@@ -295,21 +296,23 @@ function start(
               }),
           );
 
-        await message.patch(token);
+        if (!reduceMotion) {
+          await message.patch(token);
 
-        await utils.sleep(4);
+          await utils.sleep(4);
 
-        message = new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setImage({
-                url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
-              }),
-          );
+          message = new discord.Message()
+            .addEmbed(
+              new discord.Embed()
+                .setImage({
+                  url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
+                }),
+            );
 
-        await message.patch(token);
+          await message.patch(token);
 
-        await utils.sleep(pull.rating.stars + 2);
+          await utils.sleep(pull.rating.stars + 2);
+        }
 
         message = characterMessage(pull.character, {
           relations: false,

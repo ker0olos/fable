@@ -231,7 +231,12 @@ await put([
   ...Command({
     name: 'gacha',
     description: 'Start a gacha pull',
-    aliases: ['pull', 'roll', 'w'],
+    aliases: ['w'],
+  }),
+  ...Command({
+    name: 'pull',
+    description: 'Start a insta gacha pull with no animation',
+    aliases: ['p'],
   }),
   ...Command({
     name: 'fake_pull',
@@ -253,7 +258,7 @@ await put([
     options: [
       Option({
         name: 'stars',
-        description: 'List all your stars',
+        description: 'View all your stars',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -288,7 +293,7 @@ await put([
       }),
       Option({
         name: 'media',
-        description: 'List all your characters from a specific media',
+        description: 'View your characters from a specific media',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -300,7 +305,7 @@ await put([
           }),
           Option({
             name: 'user',
-            description: 'List someone else\'s stars',
+            description: 'View someone else\'s stars',
             type: Type.USER,
             optional: true,
           }),

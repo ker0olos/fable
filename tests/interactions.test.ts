@@ -28,7 +28,6 @@ import { help } from '../src/help.ts';
 import gacha, { Pull } from '../src/gacha.ts';
 
 import * as search from '../src/search.ts';
-
 import * as user from '../src/user.ts';
 
 import utils from '../src/utils.ts';
@@ -4218,6 +4217,145 @@ Deno.test('gacha', async (test) => {
       assertEquals(
         JSON.parse(
           (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          embeds: [{
+            type: 'rich',
+            description: new Rating({ popularity: 100 }).emotes,
+            fields: [{
+              name: 'title',
+              value: '**name**',
+            }],
+            image: {
+              url: 'http://localhost:8000/external/character_image_url',
+            },
+          }],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'gacha=user-id',
+                label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'character=pack-id-2:2',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      pullStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('reduced motion', async () => {
+    const media: Media = {
+      id: '1',
+      packId: 'pack-id',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      popularity: 100,
+      title: {
+        english: 'title',
+      },
+      images: [{
+        url: 'media_image_url',
+      }],
+    };
+
+    const character: Character = {
+      id: '2',
+      packId: 'pack-id-2',
+      name: {
+        english: 'name',
+      },
+      images: [{
+        url: 'character_image_url',
+      }],
+      media: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: media,
+        }],
+      },
+    };
+
+    const pull: Pull = {
+      media,
+      character,
+      popularityChance: 0,
+      popularityGreater: 0,
+      popularityLesser: 100,
+      rating: new Rating({ popularity: 100 }),
+      pool: 1,
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const pullStub = stub(
+      gacha,
+      'rngPull',
+      returnsNext([Promise.resolve(pull)]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = gacha.start({
+        token: 'test_token',
+        userId: 'user-id',
+        reduceMotion: true,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
