@@ -4326,7 +4326,7 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         token: 'test_token',
         userId: 'user-id',
-        reduceMotion: true,
+        quiet: true,
       });
 
       assertEquals(message.json(), {

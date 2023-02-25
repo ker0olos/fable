@@ -309,10 +309,10 @@ const handler = async (r: Request) => {
           case 'pull':
           case 'gacha':
           case 'w':
-          case 'n':
+          case 'q':
             return gacha
               .start({
-                reduceMotion: ['pull', 'n'].includes(name),
+                quiet: ['pull', 'q'].includes(name),
                 userId: member.user.id,
                 channelId,
                 guildId,
@@ -460,7 +460,7 @@ const handler = async (r: Request) => {
             return gacha
               .start({
                 token,
-                reduceMotion: customType === 'pull',
+                quiet: customType === 'pull',
                 userId: member.user.id,
                 guildId,
                 channelId,
