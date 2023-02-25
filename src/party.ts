@@ -205,7 +205,11 @@ export async function assign({
           new discord.Embed().setDescription(
             `${names[0]} hasn't been found by anyone yet.`,
           ),
-        );
+        ).addComponents([
+          new discord.Component()
+            .setLabel('/character')
+            .setId(`character`, characterId),
+        ]);
       }
       case 'CHARACTER_NOT_OWNED':
         return message.addEmbed(
@@ -214,22 +218,35 @@ export async function assign({
               names[0]
             } is owned by <@${response.character.user.id}> and cannot be assigned to your party.`,
           ),
-        );
+        ).addComponents([
+          new discord.Component()
+            .setLabel('/character')
+            .setId(
+              `character`,
+              response.character.id,
+            ),
+        ]);
       default:
         throw new Error(response.error);
     }
-  } else {
-    const embed = characterEmbed(results[0], {
+  }
+
+  return message
+    .addEmbed(new discord.Embed().setDescription('ASSIGNED'))
+    .addEmbed(characterEmbed(results[0], {
       mode: 'thumbnail',
       rating: new Rating({ stars: response.character.rating }),
-      description: false,
+      description: true,
       footer: false,
-    });
-
-    return message
-      .addEmbed(new discord.Embed().setDescription(`SPOT #${spot}`))
-      .addEmbed(embed);
-  }
+    }))
+    .addComponents([
+      new discord.Component()
+        .setLabel('/character')
+        .setId(
+          `character`,
+          response.character.id,
+        ),
+    ]);
 }
 
 export async function remove({
@@ -297,14 +314,22 @@ export async function remove({
           'This character was removed or disabled',
         ),
       );
-  } else {
-    return message
-      .addEmbed(new discord.Embed().setDescription(`REMOVED FROM #${spot}`))
-      .addEmbed(characterEmbed(characters[0], {
-        mode: 'thumbnail',
-        rating: new Rating({ stars: response.character.rating }),
-        description: false,
-        footer: false,
-      }));
   }
+
+  return message
+    .addEmbed(new discord.Embed().setDescription('REMOVED'))
+    .addEmbed(characterEmbed(characters[0], {
+      mode: 'thumbnail',
+      rating: new Rating({ stars: response.character.rating }),
+      description: true,
+      footer: false,
+    }))
+    .addComponents([
+      new discord.Component()
+        .setLabel('/character')
+        .setId(
+          `character`,
+          response.character.id,
+        ),
+    ]);
 }

@@ -5096,7 +5096,7 @@ Deno.test('/party assign', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'SPOT #1',
+              description: 'ASSIGNED',
             },
             {
               type: 'rich',
@@ -5113,7 +5113,17 @@ Deno.test('/party assign', async (test) => {
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
             },
           ],
-          components: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
         },
       });
@@ -5188,7 +5198,17 @@ Deno.test('/party assign', async (test) => {
               description: 'name 1 hasn\'t been found by anyone yet.',
             },
           ],
-          components: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
         },
       });
@@ -5272,7 +5292,17 @@ Deno.test('/party assign', async (test) => {
                 'name 1 is owned by <@user_2> and cannot be assigned to your party.',
             },
           ],
-          components: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
         },
       });
@@ -5349,7 +5379,7 @@ Deno.test('/party remove', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'REMOVED FROM #1',
+              description: 'REMOVED',
             },
             {
               type: 'rich',
@@ -5366,7 +5396,17 @@ Deno.test('/party remove', async (test) => {
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
             },
           ],
-          components: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
         },
       });
