@@ -333,7 +333,7 @@ await put([
   ...Command({
     name: 'collection',
     description: 'collection browsing commands',
-    aliases: ['mm'],
+    aliases: ['coll', 'mm'],
     options: [
       Option({
         name: 'stars',

@@ -63,14 +63,14 @@ function fakePool(
     'fetch',
     () => ({
       ok: true,
-      json: (() =>
-        Promise.resolve({
+      text: (() =>
+        Promise.resolve(JSON.stringify({
           data: {
             Page: {
               characters: nodes,
             },
           },
-        })),
+        }))),
       // deno-lint-ignore no-explicit-any
     } as any),
   );
@@ -1154,8 +1154,8 @@ Deno.test('adding character to inventory', async (test) => {
       'fetch',
       returnsNext([{
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [{
@@ -1181,19 +1181,19 @@ Deno.test('adding character to inventory', async (test) => {
                 }],
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any, {
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               addCharacterToInventory: {
                 ok: false,
                 error: 'CHARACTER_EXISTS',
               },
             },
-          })),
+          }))),
       }]),
     );
 
@@ -1248,8 +1248,8 @@ Deno.test('adding character to inventory', async (test) => {
       'fetch',
       returnsNext([{
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [{
@@ -1275,12 +1275,12 @@ Deno.test('adding character to inventory', async (test) => {
                 }],
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any, {
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               addCharacterToInventory: {
                 ok: false,
@@ -1290,7 +1290,7 @@ Deno.test('adding character to inventory', async (test) => {
                 },
               },
             },
-          })),
+          }))),
       }]),
     );
 
@@ -1345,8 +1345,8 @@ Deno.test('adding character to inventory', async (test) => {
       'fetch',
       returnsNext([{
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [{
@@ -1372,12 +1372,12 @@ Deno.test('adding character to inventory', async (test) => {
                 }],
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any, {
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               addCharacterToInventory: {
                 ok: true,
@@ -1389,7 +1389,7 @@ Deno.test('adding character to inventory', async (test) => {
                 },
               },
             },
-          })),
+          }))),
       }]),
     );
 

@@ -14,8 +14,8 @@ Deno.test('find character', async () => {
     'fetch',
     () => ({
       ok: true,
-      json: (() =>
-        Promise.resolve({
+      text: (() =>
+        Promise.resolve(JSON.stringify({
           data: {
             findCharacter: {
               rating: 1,
@@ -25,7 +25,7 @@ Deno.test('find character', async () => {
               },
             },
           },
-        })),
+        }))),
       // deno-lint-ignore no-explicit-any
     } as any),
   );
@@ -61,14 +61,14 @@ Deno.test('all characters', async () => {
     'fetch',
     () => ({
       ok: true,
-      json: (() =>
-        Promise.resolve({
+      text: (() =>
+        Promise.resolve(JSON.stringify({
           data: {
             getUserInventory: {
               characters: ['1', '2'],
             },
           },
-        })),
+        }))),
       // deno-lint-ignore no-explicit-any
     } as any),
   );

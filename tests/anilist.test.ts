@@ -20,8 +20,8 @@ Deno.test('media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [{
@@ -29,7 +29,7 @@ Deno.test('media', async (test) => {
                 }],
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -62,14 +62,14 @@ Deno.test('media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [],
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -102,8 +102,8 @@ Deno.test('character', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [{
@@ -111,7 +111,7 @@ Deno.test('character', async (test) => {
                 }],
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -144,14 +144,14 @@ Deno.test('character', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [],
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -184,8 +184,8 @@ Deno.test('media character', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Media: {
                 id: '1',
@@ -201,7 +201,7 @@ Deno.test('media character', async (test) => {
                 },
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -252,12 +252,12 @@ Deno.test('media character', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Media: undefined,
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -294,8 +294,8 @@ Deno.test('media character', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Media: {
                 id: '1',
@@ -307,7 +307,7 @@ Deno.test('media character', async (test) => {
                 },
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -354,8 +354,8 @@ Deno.test('next episode', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Media: {
                 status: Status.RELEASING,
@@ -367,7 +367,7 @@ Deno.test('next episode', async (test) => {
                 },
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -397,8 +397,8 @@ Deno.test('next episode', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Media: {
                 status: Status.RELEASING,
@@ -407,7 +407,7 @@ Deno.test('next episode', async (test) => {
                 },
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -438,8 +438,8 @@ Deno.test('next episode', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Media: {
                 status: Status.NOT_YET_RELEASED,
@@ -448,7 +448,7 @@ Deno.test('next episode', async (test) => {
                 },
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -478,8 +478,8 @@ Deno.test('next episode', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Media: {
                 status: Status.HIATUS,
@@ -488,7 +488,7 @@ Deno.test('next episode', async (test) => {
                 },
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -518,8 +518,8 @@ Deno.test('next episode', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Media: {
                 status: Status.FINISHED,
@@ -528,7 +528,7 @@ Deno.test('next episode', async (test) => {
                 },
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -559,8 +559,8 @@ Deno.test('next episode', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Media: {
                 status: Status.CANCELLED,
@@ -569,7 +569,7 @@ Deno.test('next episode', async (test) => {
                 },
               },
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
@@ -600,12 +600,12 @@ Deno.test('next episode', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Media: {},
             },
-          })),
+          }))),
         // deno-lint-ignore no-explicit-any
       } as any),
     );
