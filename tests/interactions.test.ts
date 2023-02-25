@@ -4482,6 +4482,16 @@ Deno.test('/gacha', async (test) => {
 
 Deno.test('/party view', async (test) => {
   await test.step('normal', async () => {
+    const media: AniListMedia[] = [
+      {
+        id: '0',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
+      },
+    ];
+
     const characters: AniListCharacter[] = [
       {
         id: '1',
@@ -4562,6 +4572,19 @@ Deno.test('/party view', async (test) => {
             Promise.resolve(JSON.stringify({
               data: {
                 Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
                   characters,
                 },
               },
@@ -4591,8 +4614,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 1',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 1**',
                 },
               ],
               thumbnail: {
@@ -4605,8 +4628,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 2',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 2**',
                 },
               ],
               thumbnail: {
@@ -4619,8 +4642,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 3',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 3**',
                 },
               ],
               thumbnail: {
@@ -4633,8 +4656,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 4',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 4**',
                 },
               ],
               thumbnail: {
@@ -4647,8 +4670,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 5',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 5**',
                 },
               ],
               thumbnail: {
@@ -4670,6 +4693,16 @@ Deno.test('/party view', async (test) => {
   });
 
   await test.step('unassigned members', async () => {
+    const media: AniListMedia[] = [
+      {
+        id: '0',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
+      },
+    ];
+
     const characters: AniListCharacter[] = [
       {
         id: '1',
@@ -4740,6 +4773,19 @@ Deno.test('/party view', async (test) => {
             Promise.resolve(JSON.stringify({
               data: {
                 Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
                   characters,
                 },
               },
@@ -4769,8 +4815,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 1',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 1**',
                 },
               ],
               thumbnail: {
@@ -4783,8 +4829,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 2',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 2**',
                 },
               ],
               thumbnail: {
@@ -4805,8 +4851,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 5',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 5**',
                 },
               ],
               thumbnail: {
@@ -4828,6 +4874,16 @@ Deno.test('/party view', async (test) => {
   });
 
   await test.step('disabled characters', async () => {
+    const media: AniListMedia[] = [
+      {
+        id: '0',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
+      },
+    ];
+
     const characters: AniListCharacter[] = [
       {
         id: '1',
@@ -4908,6 +4964,19 @@ Deno.test('/party view', async (test) => {
             Promise.resolve(JSON.stringify({
               data: {
                 Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
                   characters,
                 },
               },
@@ -4920,6 +4989,11 @@ Deno.test('/party view', async (test) => {
       packs,
       'isDisabled',
       returnsNext([
+        false,
+        false,
+        false,
+        false,
+        false,
         false,
         false,
         false,
@@ -4959,8 +5033,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 1',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 1**',
                 },
               ],
               thumbnail: {
@@ -4973,8 +5047,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 2',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 2**',
                 },
               ],
               thumbnail: {
@@ -4987,8 +5061,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 3',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 3**',
                 },
               ],
               thumbnail: {
@@ -5005,8 +5079,8 @@ Deno.test('/party view', async (test) => {
               type: 'rich',
               fields: [
                 {
-                  name: 'name 5',
-                  value: '\u200B',
+                  name: 'title',
+                  value: '**name 5**',
                 },
               ],
               thumbnail: {
