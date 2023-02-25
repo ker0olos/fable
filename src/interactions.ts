@@ -99,7 +99,8 @@ const handler = async (r: Request) => {
         // suggest media
         if (
           ['search', 'anime', 'manga', 'media'].includes(name) ||
-          (['collection', 'mm'].includes(name) && subcommand === 'media')
+          (['collection', 'coll', 'mm'].includes(name) &&
+            subcommand === 'media')
         ) {
           const title = options['title'] as string;
 
@@ -250,6 +251,7 @@ const handler = async (r: Request) => {
             break;
           }
           case 'collection':
+          case 'coll':
           case 'mm': {
             const userId = options['user'] as string;
 
