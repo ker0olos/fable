@@ -95,6 +95,7 @@ export async function findCharacter({
   characterId?: string;
 }): Promise<
   {
+    id: string;
     userId: string;
     mediaId: string;
     rating: number;
@@ -107,6 +108,7 @@ export async function findCharacter({
   const query = gql`
     query ($guildId: String!, $characterId: String!) {
       findCharacter(guildId: $guildId, characterId: $characterId) {
+        id
         mediaId
         rating
         user {
@@ -135,6 +137,7 @@ export async function findCharacter({
   }
 
   return {
+    id: result.id,
     userId: result.user.id,
     mediaId: result.mediaId,
     rating: result.rating,
@@ -228,7 +231,7 @@ export async function stars({
   })).getUserStars;
 
   if (!character || !anchor) {
-    return new discord.Message()
+    const message = new discord.Message()
       .addEmbed(
         new discord.Embed()
           .setDescription(
@@ -236,13 +239,18 @@ export async function stars({
               nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
             } have any ${stars}* characters`,
           ),
-      )
-      .addComponents([
+      );
+
+    if (!nick) {
+      message.addComponents([
         // `/gacha` shortcut
         new discord.Component()
           .setId('gacha', userId)
           .setLabel('/gacha'),
       ]);
+    }
+
+    return message;
   }
 
   const results: [
@@ -278,6 +286,9 @@ export async function stars({
         relations: false,
       },
     ).addComponents([
+      new discord.Component()
+        .setId('passign', character.id)
+        .setLabel(`/p assign`),
       new discord.Component()
         .setId('media', `${media.packId}:${media.id}`)
         .setLabel(`/${media.type.toLowerCase()}`),
@@ -357,7 +368,7 @@ export async function media({
   })).getUserMedia;
 
   if (!character || !anchor) {
-    return new discord.Message()
+    const message = new discord.Message()
       .addEmbed(
         new discord.Embed()
           .setDescription(
@@ -365,13 +376,18 @@ export async function media({
               nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
             } have any ${titles[0]} characters`,
           ),
-      )
-      .addComponents([
+      );
+
+    if (!nick) {
+      message.insertComponents([
         // `/gacha` shortcut
         new discord.Component()
           .setId('gacha', userId)
           .setLabel('/gacha'),
       ]);
+    }
+
+    return message;
   }
 
   const characters = await packs.characters({ ids: [character.id] });
@@ -392,6 +408,9 @@ export async function media({
         relations: false,
       },
     ).addComponents([
+      new discord.Component()
+        .setId('passign', character.id)
+        .setLabel(`/p assign`),
       new discord.Component()
         .setId('media', `${media.packId}:${media.id}`)
         .setLabel(`/${media.type.toLowerCase()}`),

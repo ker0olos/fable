@@ -1843,6 +1843,7 @@ Deno.test('/character', async (test) => {
                   user: {
                     id: 'user_id',
                   },
+                  id: 'character_id',
                   mediaId: 'media_id',
                   rating: 3,
                 },
@@ -1861,6 +1862,7 @@ Deno.test('/character', async (test) => {
     try {
       const message = await search.character({
         search: 'full name',
+        userId: 'user_id',
         guildId: 'guild_id',
       });
 
@@ -1881,7 +1883,19 @@ Deno.test('/character', async (test) => {
               url: 'undefined/external/image_url',
             },
           }],
-          components: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'passign=character_id',
+                  label: '/p assign',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
           attachments: [],
         },
       });
@@ -2856,6 +2870,7 @@ Deno.test('media characters', async (test) => {
                 user: {
                   id: 'user_id',
                 },
+                id: 'character_id',
                 mediaId: 'media_id',
                 rating: 3,
               },
@@ -2866,6 +2881,7 @@ Deno.test('media characters', async (test) => {
 
     try {
       const message = await search.mediaCharacter({
+        userId: 'user_id',
         guildId: 'guild_id',
         mediaId: 'pack-id:1',
         index: 0,
@@ -2888,6 +2904,12 @@ Deno.test('media characters', async (test) => {
               {
                 custom_id: 'mcharacter=pack-id:1=1',
                 label: 'Next',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'passign=character_id',
+                label: '/p assign',
                 style: 2,
                 type: 2,
               },
@@ -3162,6 +3184,12 @@ Deno.test('/collection stars', async (test) => {
               {
                 custom_id: 'cstars=5=user_id=anchor=next',
                 label: 'Next',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'passign=anilist:1',
+                label: '/p assign',
                 style: 2,
                 type: 2,
               },
@@ -3485,17 +3513,7 @@ Deno.test('/collection stars', async (test) => {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'gacha=user_id',
-                label: '/gacha',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
+          components: [],
           embeds: [
             {
               type: 'rich',
@@ -3670,6 +3688,12 @@ Deno.test('/collection media', async (test) => {
               {
                 custom_id: 'cmedia=anilist:2=user_id=anchor=next',
                 label: 'Next',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'passign=anilist:1',
+                label: '/p assign',
                 style: 2,
                 type: 2,
               },
@@ -3961,17 +3985,7 @@ Deno.test('/collection media', async (test) => {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'gacha=user_id',
-                label: '/gacha',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
+          components: [],
           embeds: [
             {
               type: 'rich',
