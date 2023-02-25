@@ -14,6 +14,7 @@ import * as discord from './discord.ts';
 
 import * as search from './search.ts';
 import * as user from './user.ts';
+import * as party from './party.ts';
 
 import packs from './packs.ts';
 import utils from './utils.ts';
@@ -98,9 +99,9 @@ const handler = async (r: Request) => {
         // suggest media
         if (
           ['search', 'anime', 'manga', 'media'].includes(name) ||
-          (name === 'collection' && subcommand === 'media')
+          (['collection', 'mm'].includes(name) && subcommand === 'media')
         ) {
-          const query = options['query'] as string;
+          const title = options['title'] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
@@ -108,7 +109,7 @@ const handler = async (r: Request) => {
 
           const results = await packs.searchMany<Media>(
             'media',
-            query,
+            title,
           );
 
           results?.forEach((media) => {
@@ -120,8 +121,8 @@ const handler = async (r: Request) => {
 
           return message.send();
         } // suggest characters
-        else if (['character', 'char', 'im', 'media'].includes(name)) {
-          const query = options['query'] as string;
+        else if (['character', 'char', 'im'].includes(name)) {
+          const name = options['name'] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
@@ -129,7 +130,7 @@ const handler = async (r: Request) => {
 
           const results = await packs.searchMany<Character>(
             'characters',
-            query,
+            name,
           );
 
           results?.forEach((character) => {
@@ -137,6 +138,41 @@ const handler = async (r: Request) => {
               name: `${packs.aliasToArray(character.name)[0]}`,
               value: `${idPrefix}${character.packId}:${character.id}`,
             });
+          });
+
+          return message.send();
+        } else if (
+          ['party', 'team', 'p'].includes(name) && subcommand === 'assign'
+        ) {
+          const name = options['name'] as string;
+
+          const message = new discord.Message(
+            discord.MessageType.Suggestions,
+          );
+
+          const results = await Promise.all([
+            packs.searchMany<Character>(
+              'characters',
+              name,
+              35,
+            ),
+            user.allCharacters({
+              userId: member.user.id,
+              channelId,
+              guildId,
+            }),
+          ]);
+
+          results?.[0].forEach((character) => {
+            const id = `${character.packId}:${character.id}`;
+
+            // filter out results that are not in the user's inventory
+            if (results?.[1].some((character) => character.id === id)) {
+              message.addSuggestions({
+                name: `${packs.aliasToArray(character.name)[0]}`,
+                value: `${idPrefix}${id}`,
+              });
+            }
           });
 
           return message.send();
@@ -150,13 +186,13 @@ const handler = async (r: Request) => {
           case 'anime':
           case 'manga':
           case 'media': {
-            const query = options['query'] as string;
+            const title = options['title'] as string;
 
             return (await search.media({
-              search: query,
+              search: title,
               debug: Boolean(options['debug']),
-              id: query.startsWith(idPrefix)
-                ? query.substring(idPrefix.length)
+              id: title.startsWith(idPrefix)
+                ? title.substring(idPrefix.length)
                 : undefined,
             }))
               .send();
@@ -164,17 +200,54 @@ const handler = async (r: Request) => {
           case 'character':
           case 'char':
           case 'im': {
-            const query = options['query'] as string;
+            const name = options['name'] as string;
 
             return (await search.character({
               guildId,
-              search: query,
+              search: name,
               debug: Boolean(options['debug']),
-              id: query.startsWith(idPrefix)
-                ? query.substring(idPrefix.length)
+              id: name.startsWith(idPrefix)
+                ? name.substring(idPrefix.length)
                 : undefined,
             }))
               .send();
+          }
+          case 'party':
+          case 'team':
+          case 'p': {
+            const spot = options['spot'] as number;
+            const character = options['name'] as string;
+
+            // deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'view':
+                return (await party.view({
+                  userId: member.user.id,
+                  channelId,
+                  guildId,
+                })).send();
+              case 'assign':
+                return (await party.set({
+                  spot,
+                  userId: member.user.id,
+                  channelId,
+                  guildId,
+                  search: character,
+                  id: character.startsWith(idPrefix)
+                    ? character.substring(idPrefix.length)
+                    : undefined,
+                })).send();
+              case 'remove':
+                return (await party.remove({
+                  spot,
+                  userId: member.user.id,
+                  channelId,
+                  guildId,
+                })).send();
+              default:
+                break;
+            }
+            break;
           }
           case 'collection':
           case 'mm': {
@@ -201,13 +274,13 @@ const handler = async (r: Request) => {
                   .send();
               }
               case 'media': {
-                const query = options['query'] as string;
+                const title = options['title'] as string;
 
                 return (await user.media({
-                  search: query,
+                  search: title,
                   userId: userId ?? member.user.id,
-                  id: query.startsWith(idPrefix)
-                    ? query.substring(idPrefix.length)
+                  id: title.startsWith(idPrefix)
+                    ? title.substring(idPrefix.length)
                     : undefined,
                   channelId,
                   guildId,
@@ -233,11 +306,11 @@ const handler = async (r: Request) => {
           }
           case 'pull':
           case 'gacha':
+          case 'w':
           case 'n':
-          case 'p':
             return gacha
               .start({
-                reduceMotion: ['pull', 'p'].includes(name),
+                reduceMotion: ['pull', 'n'].includes(name),
                 userId: member.user.id,
                 channelId,
                 guildId,

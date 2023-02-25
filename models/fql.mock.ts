@@ -54,6 +54,11 @@ export const FakeSubtract = () =>
 
 export const FakeAdd = () => stub(fql, 'Add', (a: any, b: any) => a + b);
 
+export const FakeToString = () => stub(fql, 'ToString', (n: any) => `${n}`);
+
+export const FakeConcat = () =>
+  stub(fql, 'Concat', (s: any[], sep?: any) => s.join(sep ?? ''));
+
 export const FakeIsNull = () =>
   stub(fql, 'IsNull', (a: any) => (a === null) || a === undefined);
 

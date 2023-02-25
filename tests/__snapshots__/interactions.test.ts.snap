@@ -1,6 +1,6 @@
 export const snapshot = {};
 
-snapshot[`help guide 1`] = `
+snapshot[`/help 1`] = `
 {
   data: {
     attachments: [
@@ -72,7 +72,7 @@ __Gacha rates depend on multiple variables__, but generally speaking the chances
 }
 `;
 
-snapshot[`help guide 2`] = `
+snapshot[`/help 2`] = `
 {
   data: {
     attachments: [
@@ -125,7 +125,7 @@ snapshot[`help guide 2`] = `
 }
 `;
 
-snapshot[`help guide 3`] = `
+snapshot[`/help 3`] = `
 {
   data: {
     attachments: [

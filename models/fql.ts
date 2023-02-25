@@ -132,6 +132,14 @@ function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
   return _fql.Equals(a!, b!);
 }
 
+function Concat(s: StringExpr[], sep?: StringExpr): StringExpr {
+  return _fql.Concat(s, sep ?? '');
+}
+
+function ToString(n: NumberExpr): StringExpr {
+  return _fql.ToString(n);
+}
+
 function IsNull(expr?: ExprArg): BooleanExpr {
   // deno-lint-ignore no-non-null-assertion
   return _fql.Equals(expr!, fql.Null());
@@ -248,6 +256,7 @@ export const fql = {
   // Map,
   Add,
   Append,
+  Concat,
   Create,
   Divide,
   Equals,
@@ -275,6 +284,7 @@ export const fql = {
   Subtract,
   TimeAddInMinutes,
   TimeDiffInMinutes,
+  ToString,
   Update,
   Var,
 };

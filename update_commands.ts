@@ -186,7 +186,7 @@ await put([
     description: 'Search for a specific series',
     options: [
       Option({
-        name: 'query',
+        name: 'title',
         description: 'The title of the media',
         autocomplete: true,
         type: Type.STRING,
@@ -205,7 +205,7 @@ await put([
     aliases: ['char', 'im'],
     options: [
       Option({
-        name: 'query',
+        name: 'name',
         description: 'The name of the character',
         autocomplete: true,
         type: Type.STRING,
@@ -247,6 +247,84 @@ await put([
         name: 'id',
         description: 'The id of the character',
         type: Type.STRING,
+      }),
+    ],
+  }),
+  // party management
+  ...Command({
+    name: 'party',
+    description: 'party management commands',
+    aliases: ['team', 'p'],
+    options: [
+      Option({
+        name: 'view',
+        description: 'View your current party',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+      Option({
+        name: 'assign',
+        description: 'Assign a character to your party',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'name',
+            description: 'The name of the character',
+            autocomplete: true,
+            type: Type.STRING,
+          }),
+          Option({
+            name: 'spot',
+            description: 'The spot where you want this character',
+            type: Type.INTEGER,
+            choices: [{
+              name: '1',
+              value: 1,
+            }, {
+              name: '2',
+              value: 2,
+            }, {
+              name: '3',
+              value: 3,
+            }, {
+              name: '4',
+              value: 4,
+            }, {
+              name: '5',
+              value: 5,
+            }],
+          }),
+        ],
+      }),
+      Option({
+        name: 'remove',
+        description: 'Remove a character from your party',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'spot',
+            description: 'The spot the character occupies',
+            type: Type.INTEGER,
+            choices: [{
+              name: '1',
+              value: 1,
+            }, {
+              name: '2',
+              value: 2,
+            }, {
+              name: '3',
+              value: 3,
+            }, {
+              name: '4',
+              value: 4,
+            }, {
+              name: '5',
+              value: 5,
+            }],
+          }),
+        ],
       }),
     ],
   }),
@@ -298,7 +376,7 @@ await put([
         optional: true,
         options: [
           Option({
-            name: 'query',
+            name: 'title',
             description: 'The title of the media',
             autocomplete: true,
             type: Type.STRING,

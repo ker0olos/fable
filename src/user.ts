@@ -117,11 +117,7 @@ export async function findCharacter({
   `;
 
   const result = (await request<{
-    findCharacter?: {
-      user: { id: string };
-      mediaId: string;
-      rating: number;
-    };
+    findCharacter?: Schema.Character;
   }>({
     url: faunaUrl,
     query,
@@ -143,6 +139,43 @@ export async function findCharacter({
     mediaId: result.mediaId,
     rating: result.rating,
   };
+}
+
+export async function allCharacters({
+  userId,
+  guildId,
+}: {
+  userId: string;
+  guildId: string;
+  channelId?: string;
+}): Promise<Schema.Inventory['characters']> {
+  const query = gql`
+    query ($userId: String!, $guildId: String!) {
+      getUserInventory(userId: $userId, guildId: $guildId) {
+        characters {
+          id
+          mediaId
+          rating
+        }
+      }
+    }
+  `;
+
+  const { characters } = (await request<{
+    getUserInventory: Schema.Inventory;
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+    },
+  })).getUserInventory;
+
+  return characters;
 }
 
 export async function stars({

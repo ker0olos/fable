@@ -467,7 +467,7 @@ export async function mediaCharacter(
   }
 
   if (packs.isDisabled(`${node.packId}:${node.id}`)) {
-    throw new NonFetalError('character is disabled or invalid');
+    throw new NonFetalError('This character was removed or disabled');
   }
 
   const [character, existing] = await Promise.all([

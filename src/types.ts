@@ -175,15 +175,22 @@ export interface Manifest {
 export namespace Schema {
   export type Character = {
     id: string;
-    _id: string;
-    mediaId: string;
     rating: number;
+    mediaId: string;
+    user: { id: string };
   };
   export type Inventory = {
-    lastPull?: string;
-    rechargeTimestamp?: string;
     availablePulls: number;
+    rechargeTimestamp?: string;
+    lastPull?: string;
     characters: Character[];
+    party?: {
+      member1?: Character;
+      member2?: Character;
+      member3?: Character;
+      member4?: Character;
+      member5?: Character;
+    };
   };
   export type Mutation = {
     ok: false;
@@ -192,6 +199,13 @@ export namespace Schema {
     ok: false;
     error: 'NO_PULLS_AVAILABLE';
     inventory: Inventory;
+  } | {
+    ok: false;
+    error: 'CHARACTER_NOT_FOUND';
+  } | {
+    ok: false;
+    error: 'CHARACTER_NOT_OWNED';
+    character: Character;
   } | {
     ok: true;
     inventory: Inventory;

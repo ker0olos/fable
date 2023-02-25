@@ -3,8 +3,7 @@ import {
   fql,
   InstanceExpr,
   InventoryExpr,
-  MatchExpr,
-  NullExpr,
+  ResponseExpr,
   StringExpr,
   UserExpr,
 } from './fql.ts';
@@ -23,15 +22,15 @@ export function setCharacterToParty(
     inventory,
     instance,
     characterId,
-    member,
+    spot,
   }: {
     user: UserExpr;
     inventory: InventoryExpr;
     instance: InstanceExpr;
     characterId: StringExpr;
-    member: number;
+    spot: number;
   },
-): MatchExpr | NullExpr {
+): unknown {
   return fql.Let({
     _match: fql.Match(
       fql.Index('characters_instance_id'),
@@ -61,7 +60,7 @@ export function setCharacterToParty(
       return fql.Merge(
         opts?.initial ?? fql.Var(`member${n - 1}`),
         fql.If(
-          fql.Equals(member, n),
+          fql.Equals(spot, n),
           { [`member${n}`]: fql.Ref(character) },
           {},
         ),
@@ -105,10 +104,56 @@ export function setCharacterToParty(
         {
           ok: false,
           error: 'CHARACTER_NOT_OWNED',
+          character: fql.Ref(character),
         },
       ),
     );
   });
+}
+
+export function removeCharacterFromParty(
+  {
+    inventory,
+    spot,
+  }: {
+    inventory: InventoryExpr;
+    spot: number;
+  },
+): unknown {
+  const getMember = (n: 1 | 2 | 3 | 4 | 5) => {
+    return fql.If(
+      fql.Equals(spot, n),
+      fql.Null(),
+      fql.Select(
+        ['data', 'party', `member${n}`],
+        inventory,
+        fql.Null(),
+      ),
+    );
+  };
+
+  return fql.Let({
+    party: {
+      member1: getMember(1),
+      member2: getMember(2),
+      member3: getMember(3),
+      member4: getMember(4),
+      member5: getMember(5),
+    },
+    character: fql.Select(
+      ['data', 'party', fql.Concat(['member', fql.ToString(spot)])],
+      inventory,
+      fql.Null(),
+    ),
+    updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
+      // deno-lint-ignore no-explicit-any
+      party: fql.Var('party') as any,
+    }),
+  }, ({ character, updatedInventory }) => ({
+    ok: true,
+    character,
+    inventory: fql.Ref(updatedInventory),
+  }));
 }
 
 export default function (client: Client): (() => Promise<void>)[] {
@@ -120,7 +165,7 @@ export default function (client: Client): (() => Promise<void>)[] {
         userId: string,
         guildId: string,
         characterId: string,
-        member: number,
+        spot: number,
       ) => {
         return fql.Let(
           {
@@ -138,8 +183,34 @@ export default function (client: Client): (() => Promise<void>)[] {
               inventory,
               instance,
               characterId,
-              member,
+              spot,
+            }) as ResponseExpr,
+        );
+      },
+    }),
+    fql.Resolver({
+      client,
+      name: 'remove_character_from_party',
+      lambda: (
+        userId: string,
+        guildId: string,
+        spot: number,
+      ) => {
+        return fql.Let(
+          {
+            user: getUser(userId),
+            guild: getGuild(guildId),
+            instance: getInstance(fql.Var('guild')),
+            inventory: getInventory({
+              user: fql.Var('user'),
+              instance: fql.Var('instance'),
             }),
+          },
+          ({ inventory }) =>
+            removeCharacterFromParty({
+              inventory,
+              spot,
+            }) as ResponseExpr,
         );
       },
     }),

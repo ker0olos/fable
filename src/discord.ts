@@ -558,8 +558,7 @@ export class Message {
 
   addEmbed(embed: Embed): Message {
     // discord allows up to 10 embeds
-    // but any more than 3 and they look cluttered
-    if (this.#data.embeds.length < 3) {
+    if (this.#data.embeds.length < 10) {
       this.#data.embeds.push(embed.json());
     }
 

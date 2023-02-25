@@ -11,6 +11,7 @@ import { assertSnapshot } from 'https://deno.land/std@0.177.0/testing/snapshot.t
 
 import {
   FakeClient,
+  FakeConcat,
   FakeEquals,
   FakeGet,
   FakeIf,
@@ -22,12 +23,14 @@ import {
   FakeMerge,
   FakeRef,
   FakeSelect,
+  FakeToString,
   FakeUpdate,
   FakeVar,
 } from './fql.mock.ts';
 
 import {
   default as Model,
+  removeCharacterFromParty,
   setCharacterToParty,
 } from './set_character_to_party.ts';
 
@@ -63,7 +66,7 @@ Deno.test('set character to party', async (test) => {
         inventory: 'inventory',
         instance: 'instance',
         user: 'user',
-        member: 1,
+        spot: 1,
       } as any) as any;
 
       assertSpyCall(indexStub, 0, {
@@ -210,6 +213,9 @@ Deno.test('set character to party', async (test) => {
       assertEquals(response, {
         ok: false,
         error: 'CHARACTER_NOT_OWNED',
+        character: {
+          ref: '_match',
+        },
       });
     } finally {
       ifStub.restore();
@@ -289,12 +295,82 @@ Deno.test('set character to party', async (test) => {
   });
 });
 
+Deno.test('remove character from party', async (test) => {
+  await test.step('ok', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const refStub = FakeRef();
+    const concatStub = FakeConcat();
+    const toStringStub = FakeToString();
+
+    const equalsStub = FakeEquals();
+    const updateStub = FakeUpdate();
+
+    const selectStub = FakeSelect({
+      ref: 'character',
+    });
+
+    const varStub = FakeVar({
+      'character': {
+        ref: 'character',
+      },
+    });
+
+    try {
+      const response = removeCharacterFromParty({
+        mediaId: 'media_id',
+        inventory: 'inventory',
+        spot: 1,
+      } as any) as any;
+
+      assertSpyCall(concatStub, 0, {
+        args: [
+          ['member', '1'],
+        ],
+        returned: 'member1',
+      });
+
+      assertSpyCall(updateStub, 0, {
+        args: [
+          { ref: 'inventory' } as any,
+          {
+            party: 'party',
+          },
+        ],
+      });
+
+      assertEquals(response, {
+        ok: true,
+        character: {
+          ref: 'character',
+        },
+        inventory: {
+          ref: {
+            ref: 'inventory',
+          },
+        },
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      varStub.restore();
+      refStub.restore();
+      concatStub.restore();
+      toStringStub.restore();
+      selectStub.restore();
+      equalsStub.restore();
+      updateStub.restore();
+    }
+  });
+});
+
 Deno.test('model', async (test) => {
   const client = FakeClient();
 
   Model(client as any).forEach((q) => q());
 
-  assertSpyCalls(client.query, 1);
+  assertSpyCalls(client.query, 2);
 
   await assertSnapshot(test, client.query.calls[0].args);
+  await assertSnapshot(test, client.query.calls[1].args);
 });
