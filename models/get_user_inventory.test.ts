@@ -13,42 +13,44 @@ import {
 import { assertSnapshot } from 'https://deno.land/std@0.177.0/testing/snapshot.ts';
 
 import {
-  FakeAnd,
+  FakeAdd,
   FakeAppend,
   FakeClient,
   FakeCreate,
+  FakeDivide,
   FakeGet,
   FakeGTE,
   FakeId,
   FakeIf,
   FakeIndex,
   FakeIsNonEmpty,
-  FakeIsNull,
-  FakeLength,
   FakeLet,
   FakeLTE,
   FakeMatch,
+  FakeMin,
   FakeNow,
-  FakePaginate,
   FakeRef,
-  FakeReverse,
   FakeSelect,
+  FakeSubtract,
+  FakeTimeAdd,
   FakeTimeDiff,
   FakeUpdate,
   FakeVar,
+  FakMultiply,
 } from './fql.mock.ts';
 
 import { fql } from './fql.ts';
 
 import {
   default as Model,
-  getCharacterNode,
+  // getCharacterNode,
   getGuild,
   getInstance,
   getInventory,
   getUser,
-  PULLS_DEFAULT,
-  refillPulls,
+  MAX_PULLS,
+  RECHARGE_MINS,
+  rechargePulls,
 } from './get_user_inventory.ts';
 
 Deno.test('get or create user', async (test) => {
@@ -94,13 +96,14 @@ Deno.test('get or create user', async (test) => {
     const ifStub = FakeIf();
     const letStub = FakeLet();
     const indexStub = FakeIndex();
+    const idStub = FakeId();
     const isNonEmptyStub = FakeIsNonEmpty();
     const createStub = FakeCreate();
 
     const matchStub = FakeMatch();
 
     try {
-      const match = getUser('user_id') as any;
+      getUser('user_id') as any;
 
       assertSpyCall(indexStub, 0, {
         args: ['users_discord_id'],
@@ -111,16 +114,24 @@ Deno.test('get or create user', async (test) => {
       });
 
       assertSpyCallArg(ifStub, 0, 0, false);
-      assertSpyCallArg(createStub, 0, 0, 'user');
 
-      assertEquals(match, {
-        id: 'user_id',
-        inventories: [],
+      assertSpyCall(createStub, 0, {
+        args: [
+          'user' as any,
+          {
+            badges: [
+              '357600097731608662',
+            ],
+            inventories: [],
+            id: 'user_id',
+          },
+        ],
       });
     } finally {
       ifStub.restore();
       letStub.restore();
       indexStub.restore();
+      idStub.restore();
       isNonEmptyStub.restore();
       createStub.restore();
       matchStub.restore();
@@ -177,7 +188,7 @@ Deno.test('get or create guild', async (test) => {
     const matchStub = FakeMatch();
 
     try {
-      const match = getGuild('guild_id') as any;
+      getGuild('guild_id') as any;
 
       assertSpyCall(indexStub, 0, {
         args: ['guilds_discord_id'],
@@ -188,11 +199,15 @@ Deno.test('get or create guild', async (test) => {
       });
 
       assertSpyCallArg(ifStub, 0, 0, false);
-      assertSpyCallArg(createStub, 0, 0, 'guild');
 
-      assertEquals(match, {
-        id: 'guild_id',
-        instances: [],
+      assertSpyCall(createStub, 0, {
+        args: [
+          'guild' as any,
+          {
+            id: 'guild_id',
+            instances: [],
+          },
+        ],
       });
     } finally {
       ifStub.restore();
@@ -249,7 +264,7 @@ Deno.test('get or create instance', async (test) => {
     const updateStub = FakeUpdate();
 
     try {
-      const match = getInstance('guild' as any) as any;
+      getInstance('guild' as any) as any;
 
       assertSpyCall(selectStub, 0, {
         args: [['data', 'instances'], 'guild' as any],
@@ -277,12 +292,6 @@ Deno.test('get or create instance', async (test) => {
             instances: [{ ref: 'createdInstance' }],
           },
         ],
-      });
-
-      assertEquals(match, {
-        main: true,
-        guild: { ref: 'guild' },
-        inventories: [],
       });
     } finally {
       ifStub.restore();
@@ -374,7 +383,7 @@ Deno.test('get or create inventory', async (test) => {
     const updateStub = FakeUpdate();
 
     try {
-      const match = getInventory({
+      getInventory({
         instance: 'instance' as any,
         user: 'user' as any,
       }) as any;
@@ -407,7 +416,6 @@ Deno.test('get or create inventory', async (test) => {
           {
             availablePulls: 5,
             characters: [],
-            lastPull: null,
             user: {
               ref: 'user',
             },
@@ -435,14 +443,6 @@ Deno.test('get or create inventory', async (test) => {
           },
         ],
       });
-
-      assertEquals(match, {
-        lastPull: null,
-        availablePulls: 5,
-        characters: [],
-        instance: { ref: 'instance' },
-        user: { ref: 'user' },
-      });
     } finally {
       ifStub.restore();
       letStub.restore();
@@ -458,551 +458,571 @@ Deno.test('get or create inventory', async (test) => {
     }
   });
 });
-``;
 
-Deno.test('get character node', async (test) => {
-  await test.step('no before, no after', () => {
-    const ifStub = FakeIf();
-    const letStub = FakeLet();
-    const getStub = FakeGet();
-    const refStub = FakeRef();
-    const andStub = FakeAnd();
-    const isNonEmptyStub = FakeIsNonEmpty();
-    const lengthStub = FakeLength();
-    const isNullStub = FakeIsNull();
-    const indexStub = FakeIndex();
-    const matchStub = FakeMatch();
-
-    const selectStub = FakeSelect({ select: true });
-
-    const varStub = FakeVar({
-      'characters': ['0', '1'],
-    });
-
-    try {
-      const match = getCharacterNode({
-        inventory: 'inventory' as any,
-      }) as any;
-
-      assertSpyCall(matchStub, 0, {
-        args: [
-          'characters_inventory' as any,
-          {
-            ref: 'inventory',
-          },
-        ],
-      });
-
-      assertSpyCallArg(ifStub, 0, 0, true);
-      assertSpyCallArg(ifStub, 1, 0, true);
-      assertSpyCallArg(ifStub, 2, 0, true);
-      assertSpyCallArg(ifStub, 3, 0, true);
-      assertSpyCallArg(ifStub, 4, 0, true);
-
-      assertSpyCall(selectStub, 2, {
-        args: [
-          ['id'],
-          {
-            ref: '0',
-          } as any,
-          fql.Null(),
-        ],
-      });
-
-      assertEquals(match, {
-        anchor: {
-          select: true,
-        },
-        character: {
-          ref: '0',
-        },
-        total: 2,
-      });
-    } finally {
-      ifStub.restore();
-      letStub.restore();
-      getStub.restore();
-      varStub.restore();
-      refStub.restore();
-      andStub.restore();
-      isNonEmptyStub.restore();
-      lengthStub.restore();
-      isNullStub.restore();
-      indexStub.restore();
-      matchStub.restore();
-      selectStub.restore();
-    }
-  });
-
-  await test.step('before', () => {
-    const ifStub = FakeIf();
-    const fakeId = FakeId();
-    const letStub = FakeLet();
-    const getStub = FakeGet();
-    const refStub = FakeRef();
-    const andStub = FakeAnd();
-    const isNonEmptyStub = FakeIsNonEmpty();
-    const lengthStub = FakeLength();
-    const isNullStub = FakeIsNull();
-    const indexStub = FakeIndex();
-    const matchStub = FakeMatch();
-
-    const reverseStub = FakeReverse();
-    const paginateStub = FakePaginate();
-
-    const selectStub = FakeSelect({});
-
-    const varStub = FakeVar({
-      'characters': ['0', '1'],
-    });
-
-    try {
-      const match = getCharacterNode({
-        inventory: 'inventory' as any,
-        before: '1',
-      }) as any;
-
-      assertSpyCall(matchStub, 0, {
-        args: [
-          'characters_inventory' as any,
-          {
-            ref: 'inventory',
-          },
-        ],
-      });
-
-      assertSpyCallArg(ifStub, 0, 0, true);
-      assertSpyCallArg(ifStub, 1, 0, true);
-      assertSpyCallArg(ifStub, 2, 0, true);
-      assertSpyCallArg(ifStub, 3, 0, false);
-      assertSpyCallArg(ifStub, 4, 0, true);
-
-      assertSpyCall(paginateStub, 1, {
-        args: [
-          ['0', '1'] as any,
-          {
-            before: '1',
-            size: 1,
-          } as any,
-        ],
-        returned: ['0'] as any,
-      });
-
-      assertSpyCall(selectStub, 1, {
-        args: [
-          ['data', 0],
-          [
-            '0',
-          ] as any,
-          { ref: '1' } as any,
-        ],
-      });
-
-      assertEquals(match, {
-        anchor: {},
-        character: {},
-        total: 2,
-      });
-    } finally {
-      ifStub.restore();
-      fakeId.restore();
-      letStub.restore();
-      getStub.restore();
-      varStub.restore();
-      refStub.restore();
-      andStub.restore();
-      isNonEmptyStub.restore();
-      lengthStub.restore();
-      isNullStub.restore();
-      indexStub.restore();
-      matchStub.restore();
-      reverseStub.restore();
-      paginateStub.restore();
-      selectStub.restore();
-    }
-  });
-
-  await test.step('on', () => {
-    const ifStub = FakeIf();
-    const fakeId = FakeId();
-    const letStub = FakeLet();
-    const getStub = FakeGet();
-    const refStub = FakeRef();
-    const andStub = FakeAnd();
-    const isNonEmptyStub = FakeIsNonEmpty();
-    const lengthStub = FakeLength();
-    const isNullStub = FakeIsNull();
-    const indexStub = FakeIndex();
-    const matchStub = FakeMatch();
-
-    const reverseStub = FakeReverse();
-    const paginateStub = FakePaginate();
-
-    const selectStub = FakeSelect({});
-
-    const varStub = FakeVar({
-      'characters': ['0', '1'],
-    });
-
-    try {
-      const match = getCharacterNode({
-        inventory: 'inventory' as any,
-        on: '1',
-      }) as any;
-
-      assertSpyCall(matchStub, 0, {
-        args: [
-          'characters_inventory' as any,
-          {
-            ref: 'inventory',
-          },
-        ],
-      });
-
-      assertSpyCallArg(ifStub, 0, 0, true);
-      assertSpyCallArg(ifStub, 1, 0, true);
-      assertSpyCallArg(ifStub, 2, 0, false);
-      assertSpyCallArg(ifStub, 3, 0, true);
-      assertSpyCallArg(ifStub, 4, 0, true);
-
-      assertSpyCall(paginateStub, 0, {
-        args: [
-          ['0', '1'] as any,
-          {
-            after: '1',
-            size: 2,
-          } as any,
-        ],
-        returned: ['1'] as any,
-      });
-
-      assertSpyCall(selectStub, 0, {
-        args: [
-          ['data', 0],
-          [
-            '1',
-          ] as any,
-          { ref: '0' } as any,
-        ],
-      });
-
-      assertEquals(match, {
-        anchor: {},
-        character: {},
-        total: 2,
-      });
-    } finally {
-      ifStub.restore();
-      fakeId.restore();
-      letStub.restore();
-      getStub.restore();
-      varStub.restore();
-      refStub.restore();
-      andStub.restore();
-      isNonEmptyStub.restore();
-      lengthStub.restore();
-      isNullStub.restore();
-      indexStub.restore();
-      matchStub.restore();
-      reverseStub.restore();
-      paginateStub.restore();
-      selectStub.restore();
-    }
-  });
-
-  await test.step('after', () => {
-    const ifStub = FakeIf();
-    const fakeId = FakeId();
-    const letStub = FakeLet();
-    const getStub = FakeGet();
-    const refStub = FakeRef();
-    const andStub = FakeAnd();
-    const isNonEmptyStub = FakeIsNonEmpty();
-    const lengthStub = FakeLength();
-    const isNullStub = FakeIsNull();
-    const indexStub = FakeIndex();
-    const matchStub = FakeMatch();
-
-    const reverseStub = FakeReverse();
-    const paginateStub = FakePaginate();
-
-    const selectStub = FakeSelect({});
-
-    const varStub = FakeVar({
-      'characters': ['0', '1'],
-    });
-
-    try {
-      const match = getCharacterNode({
-        inventory: 'inventory' as any,
-        after: '0',
-      }) as any;
-
-      assertSpyCall(matchStub, 0, {
-        args: [
-          'characters_inventory' as any,
-          {
-            ref: 'inventory',
-          },
-        ],
-      });
-
-      assertSpyCallArg(ifStub, 0, 0, false);
-      assertSpyCallArg(ifStub, 1, 0, false);
-      assertSpyCallArg(ifStub, 2, 0, false);
-      assertSpyCallArg(ifStub, 3, 0, true);
-      assertSpyCallArg(ifStub, 4, 0, true);
-
-      assertSpyCall(paginateStub, 0, {
-        args: [
-          ['0', '1'] as any,
-          {
-            after: '0',
-            size: 2,
-          } as any,
-        ],
-        returned: ['0', '1'] as any,
-      });
-
-      assertSpyCall(selectStub, 0, {
-        args: [
-          ['data', 1],
-          [
-            '0',
-            '1',
-          ] as any,
-          { ref: '0' } as any,
-        ],
-      });
-
-      assertEquals(match, {
-        anchor: {},
-        character: {},
-        total: 2,
-      });
-    } finally {
-      ifStub.restore();
-      fakeId.restore();
-      letStub.restore();
-      getStub.restore();
-      varStub.restore();
-      refStub.restore();
-      andStub.restore();
-      isNonEmptyStub.restore();
-      lengthStub.restore();
-      isNullStub.restore();
-      indexStub.restore();
-      matchStub.restore();
-      reverseStub.restore();
-      paginateStub.restore();
-      selectStub.restore();
-    }
-  });
-
-  await test.step('empty', () => {
-    const ifStub = FakeIf();
-    const letStub = FakeLet();
-    const getStub = FakeGet();
-    const refStub = FakeRef();
-    const andStub = FakeAnd();
-    const isNonEmptyStub = FakeIsNonEmpty();
-    const lengthStub = FakeLength();
-    const isNullStub = FakeIsNull();
-    const indexStub = FakeIndex();
-    const matchStub = FakeMatch();
-
-    const selectStub = FakeSelect();
-
-    const varStub = FakeVar({
-      'characters': [],
-    });
-
-    try {
-      const match = getCharacterNode({
-        inventory: 'inventory' as any,
-      }) as any;
-
-      assertSpyCall(matchStub, 0, {
-        args: [
-          'characters_inventory' as any,
-          {
-            ref: 'inventory',
-          },
-        ],
-      });
-
-      assertSpyCallArg(ifStub, 0, 0, true);
-      assertSpyCallArg(ifStub, 1, 0, true);
-      assertSpyCallArg(ifStub, 2, 0, true);
-      assertSpyCallArg(ifStub, 3, 0, true);
-      assertSpyCallArg(ifStub, 4, 0, false);
-
-      assertEquals(match, {
-        anchor: fql.Null(),
-        character: fql.Null(),
-        total: 0,
-      });
-    } finally {
-      ifStub.restore();
-      letStub.restore();
-      getStub.restore();
-      varStub.restore();
-      refStub.restore();
-      andStub.restore();
-      isNonEmptyStub.restore();
-      lengthStub.restore();
-      isNullStub.restore();
-      indexStub.restore();
-      matchStub.restore();
-      selectStub.restore();
-    }
-  });
-});
-
-Deno.test('check for pulls refill', async (test) => {
+Deno.test('recharge pulls', async (test) => {
   await test.step('available pulls is 5', () => {
-    const ifStub = FakeIf();
-    const andStub = FakeAnd();
-    const lteStub = FakeLTE();
-    const gteStub = FakeGTE();
-
-    const nowStub = FakeNow();
-    const timeDiffStub = FakeTimeDiff();
-
-    const selectStub = stub(
-      fql,
-      'Select',
-      returnsNext([
-        5,
-        new Date(),
-      ]) as any,
-    );
-
-    try {
-      const result = refillPulls({ inventory: 'inventory' as any }) as any;
-
-      assertSpyCall(selectStub, 0, {
-        args: [['data', 'availablePulls'], 'inventory' as any],
-      });
-
-      assertSpyCall(selectStub, 1, {
-        args: [['data', 'lastPull'], 'inventory' as any],
-      });
-
-      assertSpyCallArg(ifStub, 0, 0, false);
-
-      assertEquals(result, 'inventory');
-    } finally {
-      ifStub.restore();
-      andStub.restore();
-      lteStub.restore();
-      gteStub.restore();
-      nowStub.restore();
-      timeDiffStub.restore();
-      selectStub.restore();
-    }
-  });
-
-  await test.step('date is t-0', () => {
-    const ifStub = FakeIf();
-    const andStub = FakeAnd();
-    const lteStub = FakeLTE();
-    const gteStub = FakeGTE();
-
-    const nowStub = FakeNow();
-    const timeDiffStub = FakeTimeDiff();
-
-    const selectStub = stub(
-      fql,
-      'Select',
-      returnsNext([
-        0,
-        new Date(),
-      ]) as any,
-    );
-
-    try {
-      const result = refillPulls({ inventory: 'inventory' as any }) as any;
-
-      assertSpyCall(selectStub, 0, {
-        args: [['data', 'availablePulls'], 'inventory' as any],
-      });
-
-      assertSpyCall(selectStub, 1, {
-        args: [['data', 'lastPull'], 'inventory' as any],
-      });
-
-      assertSpyCallArg(ifStub, 0, 0, false);
-
-      assertEquals(result, 'inventory');
-    } finally {
-      ifStub.restore();
-      andStub.restore();
-      lteStub.restore();
-      gteStub.restore();
-      nowStub.restore();
-      timeDiffStub.restore();
-      selectStub.restore();
-    }
-  });
-
-  await test.step('date is t-60 mins', () => {
-    const ifStub = FakeIf();
-    const andStub = FakeAnd();
-    const lteStub = FakeLTE();
-    const gteStub = FakeGTE();
-
-    const nowStub = FakeNow();
-    const timeDiffStub = FakeTimeDiff();
-
-    const selectStub = stub(
-      fql,
-      'Select',
-      returnsNext([
-        0,
-        (() => {
-          const a = new Date();
-          a.setMinutes(a.getMinutes() - 60);
-          return a;
-        })(),
-      ]) as any,
-    );
-
+    const letStub = FakeLet();
     const refStub = FakeRef();
+    const ifStub = FakeIf();
+
+    const minStub = FakeMin();
+    const lteStub = FakeLTE();
+    const gteStub = FakeGTE();
+
+    const divideStub = FakeDivide();
+    const multiplyStub = FakMultiply();
+    const addStub = FakeAdd();
+    const subtractStub = FakeSubtract();
+
+    const now = new Date();
+
+    const nowStub = FakeNow(now);
+
+    const timeDiffStub = FakeTimeDiff();
+    const timeAddStub = FakeTimeAdd();
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        now,
+        5,
+      ]) as any,
+    );
+
+    const varStub = FakeVar({
+      'rechargeTimestamp': now,
+      'newPulls': 0,
+      'currentPulls': 5,
+      'rechargedPulls': 5,
+      'diffPulls': 0,
+    });
+
     const updateStub = FakeUpdate();
 
     try {
-      const result = refillPulls({ inventory: 'inventory' as any }) as any;
+      const result = rechargePulls({ inventory: 'inventory' as any }) as any;
 
       assertSpyCall(selectStub, 0, {
-        args: [['data', 'availablePulls'], 'inventory' as any],
+        args: [
+          [
+            'data',
+            'rechargeTimestamp',
+          ],
+          'inventory' as any,
+          now as any,
+        ],
       });
 
       assertSpyCall(selectStub, 1, {
-        args: [['data', 'lastPull'], 'inventory' as any],
+        args: [
+          [
+            'data',
+            'availablePulls',
+          ],
+          'inventory' as any,
+        ],
       });
 
-      assertSpyCallArg(ifStub, 0, 0, true);
+      assertSpyCall(divideStub, 0, {
+        args: [0, 15],
+      });
+
+      assertSpyCall(minStub, 0, {
+        args: [5, 5],
+      });
+
+      assertSpyCall(subtractStub, 0, {
+        args: [5, 5],
+      });
+
+      assertSpyCall(timeAddStub, 0, {
+        args: [now as any, 0],
+      });
 
       assertSpyCall(updateStub, 0, {
         args: [{ ref: 'inventory' } as any, {
           availablePulls: 5,
+          rechargeTimestamp: null,
         }],
       });
 
       assertEquals(result, {
-        availablePulls: 5,
+        ref: 'inventory',
       });
     } finally {
+      letStub.restore();
+      refStub.restore();
       ifStub.restore();
-      andStub.restore();
+      varStub.restore();
+      minStub.restore();
       lteStub.restore();
       gteStub.restore();
+      divideStub.restore();
+      multiplyStub.restore();
+      addStub.restore();
+      subtractStub.restore();
       nowStub.restore();
       timeDiffStub.restore();
-      selectStub.restore();
-      refStub.restore();
+      timeAddStub.restore();
       updateStub.restore();
+      selectStub.restore();
+    }
+  });
+
+  await test.step('available pulls is 4 (add 1)', () => {
+    const letStub = FakeLet();
+    const refStub = FakeRef();
+    const ifStub = FakeIf();
+
+    const minStub = FakeMin();
+    const lteStub = FakeLTE();
+    const gteStub = FakeGTE();
+
+    const divideStub = FakeDivide();
+    const multiplyStub = FakMultiply();
+    const addStub = FakeAdd();
+    const subtractStub = FakeSubtract();
+
+    const now = new Date();
+
+    const timestamp = new Date();
+
+    timestamp.setMinutes(timestamp.getMinutes() - 15);
+
+    const nowStub = FakeNow(now);
+
+    const timeDiffStub = FakeTimeDiff();
+    const timeAddStub = FakeTimeAdd();
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        timestamp,
+        5,
+      ]) as any,
+    );
+
+    const varStub = FakeVar({
+      'rechargeTimestamp': timestamp,
+      'newPulls': 1,
+      'currentPulls': 4,
+      'rechargedPulls': 5,
+      'diffPulls': 1,
+    });
+
+    const updateStub = FakeUpdate();
+
+    try {
+      const result = rechargePulls({ inventory: 'inventory' as any }) as any;
+
+      assertSpyCall(selectStub, 0, {
+        args: [
+          [
+            'data',
+            'rechargeTimestamp',
+          ],
+          'inventory' as any,
+          now as any,
+        ],
+      });
+
+      assertSpyCall(selectStub, 1, {
+        args: [
+          [
+            'data',
+            'availablePulls',
+          ],
+          'inventory' as any,
+        ],
+      });
+
+      assertSpyCall(divideStub, 0, {
+        args: [15, 15],
+      });
+
+      assertSpyCall(minStub, 0, {
+        args: [5, 5],
+      });
+
+      assertSpyCall(subtractStub, 0, {
+        args: [5, 4],
+      });
+
+      assertSpyCall(timeAddStub, 0, {
+        args: [timestamp as any, 15],
+      });
+
+      assertSpyCall(updateStub, 0, {
+        args: [{ ref: 'inventory' } as any, {
+          availablePulls: 5,
+          rechargeTimestamp: null,
+        }],
+      });
+
+      assertEquals(result, {
+        ref: 'inventory',
+      });
+    } finally {
+      letStub.restore();
+      refStub.restore();
+      ifStub.restore();
+      varStub.restore();
+      minStub.restore();
+      lteStub.restore();
+      gteStub.restore();
+      divideStub.restore();
+      multiplyStub.restore();
+      addStub.restore();
+      subtractStub.restore();
+      nowStub.restore();
+      timeDiffStub.restore();
+      timeAddStub.restore();
+      updateStub.restore();
+      selectStub.restore();
+    }
+  });
+
+  await test.step('available pulls is 4 (add 5)', () => {
+    const letStub = FakeLet();
+    const refStub = FakeRef();
+    const ifStub = FakeIf();
+
+    const minStub = FakeMin();
+    const lteStub = FakeLTE();
+    const gteStub = FakeGTE();
+
+    const divideStub = FakeDivide();
+    const multiplyStub = FakMultiply();
+    const addStub = FakeAdd();
+    const subtractStub = FakeSubtract();
+
+    const now = new Date();
+
+    const timestamp = new Date();
+
+    timestamp.setMinutes(timestamp.getMinutes() - 60);
+
+    const nowStub = FakeNow(now);
+
+    const timeDiffStub = FakeTimeDiff();
+    const timeAddStub = FakeTimeAdd();
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        timestamp,
+        5,
+      ]) as any,
+    );
+
+    const varStub = FakeVar({
+      'rechargeTimestamp': timestamp,
+      'newPulls': 5,
+      'currentPulls': 4,
+      'rechargedPulls': 5,
+      'diffPulls': 1,
+    });
+
+    const updateStub = FakeUpdate();
+
+    try {
+      const result = rechargePulls({ inventory: 'inventory' as any }) as any;
+
+      assertSpyCall(selectStub, 0, {
+        args: [
+          [
+            'data',
+            'rechargeTimestamp',
+          ],
+          'inventory' as any,
+          now as any,
+        ],
+      });
+
+      assertSpyCall(selectStub, 1, {
+        args: [
+          [
+            'data',
+            'availablePulls',
+          ],
+          'inventory' as any,
+        ],
+      });
+
+      assertSpyCall(divideStub, 0, {
+        args: [60, 15],
+      });
+
+      assertSpyCall(minStub, 0, {
+        args: [5, 9],
+      });
+
+      assertSpyCall(subtractStub, 0, {
+        args: [5, 4],
+      });
+
+      assertSpyCall(timeAddStub, 0, {
+        args: [timestamp as any, 15],
+      });
+
+      assertSpyCall(updateStub, 0, {
+        args: [{ ref: 'inventory' } as any, {
+          availablePulls: 5,
+          rechargeTimestamp: null,
+        }],
+      });
+
+      assertEquals(result, {
+        ref: 'inventory',
+      });
+    } finally {
+      letStub.restore();
+      refStub.restore();
+      ifStub.restore();
+      varStub.restore();
+      minStub.restore();
+      lteStub.restore();
+      gteStub.restore();
+      divideStub.restore();
+      multiplyStub.restore();
+      addStub.restore();
+      subtractStub.restore();
+      nowStub.restore();
+      timeDiffStub.restore();
+      timeAddStub.restore();
+      updateStub.restore();
+      selectStub.restore();
+    }
+  });
+
+  await test.step('available pulls is 0 (add 1)', () => {
+    const letStub = FakeLet();
+    const refStub = FakeRef();
+    const ifStub = FakeIf();
+
+    const minStub = FakeMin();
+    const lteStub = FakeLTE();
+    const gteStub = FakeGTE();
+
+    const divideStub = FakeDivide();
+    const multiplyStub = FakMultiply();
+    const addStub = FakeAdd();
+    const subtractStub = FakeSubtract();
+
+    const now = new Date();
+
+    const timestamp = new Date();
+
+    timestamp.setMinutes(timestamp.getMinutes() - 15);
+
+    const nowStub = FakeNow(now);
+
+    const timeDiffStub = FakeTimeDiff();
+    const timeAddStub = FakeTimeAdd();
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        timestamp,
+        5,
+      ]) as any,
+    );
+
+    const varStub = FakeVar({
+      'rechargeTimestamp': timestamp,
+      'newPulls': 1,
+      'currentPulls': 0,
+      'rechargedPulls': 1,
+      'diffPulls': 1,
+    });
+
+    const updateStub = FakeUpdate();
+
+    try {
+      const result = rechargePulls({ inventory: 'inventory' as any }) as any;
+
+      assertSpyCall(selectStub, 0, {
+        args: [
+          [
+            'data',
+            'rechargeTimestamp',
+          ],
+          'inventory' as any,
+          now as any,
+        ],
+      });
+
+      assertSpyCall(selectStub, 1, {
+        args: [
+          [
+            'data',
+            'availablePulls',
+          ],
+          'inventory' as any,
+        ],
+      });
+
+      assertSpyCall(divideStub, 0, {
+        args: [15, 15],
+      });
+
+      assertSpyCall(minStub, 0, {
+        args: [5, 1],
+      });
+
+      assertSpyCall(subtractStub, 0, {
+        args: [1, 0],
+      });
+
+      assertSpyCall(timeAddStub, 0, {
+        args: [timestamp as any, 15],
+      });
+
+      assertSpyCall(updateStub, 0, {
+        args: [{ ref: 'inventory' } as any, {
+          availablePulls: 1,
+          rechargeTimestamp: now,
+        }],
+      });
+
+      assertEquals(result, {
+        ref: 'inventory',
+      });
+    } finally {
+      letStub.restore();
+      refStub.restore();
+      ifStub.restore();
+      varStub.restore();
+      minStub.restore();
+      lteStub.restore();
+      gteStub.restore();
+      divideStub.restore();
+      multiplyStub.restore();
+      addStub.restore();
+      subtractStub.restore();
+      nowStub.restore();
+      timeDiffStub.restore();
+      timeAddStub.restore();
+      updateStub.restore();
+      selectStub.restore();
+    }
+  });
+
+  await test.step('available pulls is 0 (add 5)', () => {
+    const letStub = FakeLet();
+    const refStub = FakeRef();
+    const ifStub = FakeIf();
+
+    const minStub = FakeMin();
+    const lteStub = FakeLTE();
+    const gteStub = FakeGTE();
+
+    const divideStub = FakeDivide();
+    const multiplyStub = FakMultiply();
+    const addStub = FakeAdd();
+    const subtractStub = FakeSubtract();
+
+    const now = new Date();
+
+    const timestamp = new Date();
+
+    timestamp.setMinutes(timestamp.getMinutes() - 120);
+
+    const nowStub = FakeNow(now);
+
+    const timeDiffStub = FakeTimeDiff();
+    const timeAddStub = FakeTimeAdd();
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        timestamp,
+        5,
+      ]) as any,
+    );
+
+    const varStub = FakeVar({
+      'rechargeTimestamp': timestamp,
+      'newPulls': 8,
+      'currentPulls': 0,
+      'rechargedPulls': 5,
+      'diffPulls': 5,
+    });
+
+    const updateStub = FakeUpdate();
+
+    try {
+      const result = rechargePulls({ inventory: 'inventory' as any }) as any;
+
+      assertSpyCall(selectStub, 0, {
+        args: [
+          [
+            'data',
+            'rechargeTimestamp',
+          ],
+          'inventory' as any,
+          now as any,
+        ],
+      });
+
+      assertSpyCall(selectStub, 1, {
+        args: [
+          [
+            'data',
+            'availablePulls',
+          ],
+          'inventory' as any,
+        ],
+      });
+
+      assertSpyCall(divideStub, 0, {
+        args: [120, 15],
+      });
+
+      assertSpyCall(minStub, 0, {
+        args: [5, 8],
+      });
+
+      assertSpyCall(subtractStub, 0, {
+        args: [5, 0],
+      });
+
+      assertSpyCall(timeAddStub, 0, {
+        args: [timestamp as any, 75],
+      });
+
+      assertSpyCall(updateStub, 0, {
+        args: [{ ref: 'inventory' } as any, {
+          availablePulls: 5,
+          rechargeTimestamp: null,
+        }],
+      });
+
+      assertEquals(result, {
+        ref: 'inventory',
+      });
+    } finally {
+      letStub.restore();
+      refStub.restore();
+      ifStub.restore();
+      varStub.restore();
+      minStub.restore();
+      lteStub.restore();
+      gteStub.restore();
+      divideStub.restore();
+      multiplyStub.restore();
+      addStub.restore();
+      subtractStub.restore();
+      nowStub.restore();
+      timeDiffStub.restore();
+      timeAddStub.restore();
+      updateStub.restore();
+      selectStub.restore();
     }
   });
 });
@@ -1012,16 +1032,15 @@ Deno.test('model', async (test) => {
 
   Model(client as any).forEach((q) => q());
 
-  assertSpyCalls(client.query, 6);
+  assertSpyCalls(client.query, 4);
 
   await assertSnapshot(test, client.query.calls[0].args);
   await assertSnapshot(test, client.query.calls[1].args);
   await assertSnapshot(test, client.query.calls[2].args);
   await assertSnapshot(test, client.query.calls[3].args);
-  await assertSnapshot(test, client.query.calls[4].args);
-  await assertSnapshot(test, client.query.calls[5].args);
 });
 
 Deno.test('variables', () => {
-  assertEquals(PULLS_DEFAULT, 5);
+  assertEquals(MAX_PULLS, 5);
+  assertEquals(RECHARGE_MINS, 15);
 });

@@ -33,7 +33,7 @@ type All = Media | DisaggregatedMedia | Character | DisaggregatedCharacter;
 
 // TODO FIX this should be cached on database for each server
 // updated each time a pack is installed
-let manual: Manifest[] | undefined = undefined;
+let community: Manifest[] | undefined = undefined;
 
 // TODO FIX this should be cached on database for each server
 // updated each time a pack is installed
@@ -55,7 +55,7 @@ const packs = {
   mediaToString,
   // used in tests to clear cache
   clear: () => {
-    manual = undefined;
+    community = undefined;
     disabled = undefined;
   },
 };
@@ -76,13 +76,13 @@ async function anilist(
 
 function list(type?: ManifestType): Manifest[] {
   // TODO FIX this should be cached on database for each server
-  if (!manual) {
-    // TODO BLOCKED load manual packs
+  if (!community) {
+    // TODO BLOCKED load community packs
     // (see https://github.com/ker0olos/fable/issues/10)
     // then map each loaded pack to 'dict'
     // 1^ block loading packs if name is used for builtins
     // for example never accept packs named anilist even if the builtin anilist is disabled
-    manual = [];
+    community = [];
   }
 
   switch (type) {
@@ -91,12 +91,12 @@ function list(type?: ManifestType): Manifest[] {
         anilistManifest,
         vtubersManifest,
       ];
-    case ManifestType.Manual:
-      return [...manual];
+    case ManifestType.Community:
+      return [...community];
     default:
       return [
         vtubersManifest,
-        ...manual,
+        ...community,
       ];
   }
 }
@@ -112,29 +112,20 @@ function dict(): { [key: string]: Manifest } {
 }
 
 function embed(
-  { type, anchor, action }: {
+  { type, index }: {
     type: ManifestType;
-    anchor?: string;
-    action?: string;
+    index: number;
   },
 ): discord.Message {
   const list = packs.list(type);
 
   if (!list.length) {
     const embed = new discord.Embed().setDescription(
-      'No packs have been added yet',
+      'No packs have been installed yet',
     );
 
     return new discord.Message()
       .addEmbed(embed);
-  }
-
-  let index = anchor ? list.findIndex(({ id }) => anchor === id) : 0;
-
-  if (action === 'prev') {
-    index = index - 1 < 0 ? list.length - 1 : index - 1;
-  } else if (action === 'next') {
-    index = index + 1 < list.length ? index + 1 : 0;
   }
 
   const manifest = list[index];
@@ -144,7 +135,7 @@ function embed(
       'Builtin packs are developed and maintained directly by Fable',
     )
     : new discord.Embed().setDescription(
-      'The following third-party packs were manually added by your server members',
+      'The following third-party packs were manually installed by your server members',
     );
 
   const pack = new discord.Embed()
@@ -162,10 +153,10 @@ function embed(
     .addEmbed(disclaimer)
     .addEmbed(pack);
 
-  return discord.Message.anchor({
-    page: index + 1,
+  return discord.Message.page({
+    index,
     total: list.length,
-    anchor: manifest.id,
+    next: list.length > index + 1,
     message,
     type,
   });
@@ -196,6 +187,9 @@ async function findById<T>(
 
   const results: { [key: string]: T } = {};
 
+  // filter out disabled ids
+  ids = ids.filter((id) => !packs.isDisabled(id));
+
   for (const literal of [...new Set(ids)]) {
     const [packId, id] = parseId(literal, defaultPackId);
 
@@ -206,14 +200,10 @@ async function findById<T>(
     if (packId === 'anilist') {
       const n = utils.parseInt(id);
 
-      if (typeof n === 'number' && !packs.isDisabled(`anilist:${n}`)) {
+      if (typeof n === 'number') {
         anilistIds.push(n);
       }
     } else {
-      if (packs.isDisabled(`${packId}:${id}`)) {
-        continue;
-      }
-
       // search for the id in packs
       // deno-lint-ignore no-explicit-any
       const match: All = (dict()[packId]?.[key]?.new as Array<any>)?.find((
@@ -260,6 +250,7 @@ async function searchMany<
 
   for (const pack of [anilistPack, ...packs.list()]) {
     for (const item of pack[key]?.new ?? []) {
+      // filter out disabled ids
       if (packs.isDisabled(`${pack.id}:${item.id}`)) {
         continue;
       }
@@ -310,7 +301,6 @@ async function searchOne<
   search: string,
 ): Promise<T | undefined> {
   const possibilities = await searchMany<T>(key, search);
-
   return possibilities?.[0];
 }
 
@@ -386,9 +376,7 @@ async function mediaCharacter({ mediaId, index }: {
   } else {
     // search for the id in packs
     const match: Media | DisaggregatedMedia | undefined = dict()[packId]?.media
-      ?.new?.find((
-        m,
-      ) => m.id === id);
+      ?.new?.find((m) => m.id === id);
 
     if (!match) {
       return { next: false };
@@ -430,6 +418,18 @@ async function aggregate<T>({ media, character, start, end }: {
       (media.relations && 'edges' in media.relations) ||
       (media.characters && 'edges' in media.characters)
     ) {
+      if (media.relations && 'edges' in media.relations) {
+        media.relations.edges = media.relations.edges.filter((edge) =>
+          !packs.isDisabled(`anilist:${edge.node.id}`)
+        );
+      }
+
+      if (media.characters && 'edges' in media.characters) {
+        media.characters.edges = media.characters.edges.filter((edge) =>
+          !packs.isDisabled(`anilist:${edge.node.id}`)
+        );
+      }
+
       return media as T;
     }
 
@@ -460,6 +460,11 @@ async function aggregate<T>({ media, character, start, end }: {
       ...media,
       relations: {
         edges: media.relations?.slice(start, end)
+          ?.filter(({ mediaId }) => {
+            // deno-lint-ignore no-non-null-assertion
+            const [packId, id] = parseId(mediaId, media!.packId);
+            return !packs.isDisabled(`${packId}:${id}`);
+          })
           ?.map(({ relation, mediaId }) => ({
             relation,
             node: mediaRefs[mediaId],
@@ -467,6 +472,11 @@ async function aggregate<T>({ media, character, start, end }: {
       },
       characters: {
         edges: media.characters?.slice(start, end)
+          ?.filter(({ characterId }) => {
+            // deno-lint-ignore no-non-null-assertion
+            const [packId, id] = parseId(characterId, media!.packId);
+            return !packs.isDisabled(`${packId}:${id}`);
+          })
           ?.map(({ role, characterId }) => ({
             role,
             node: characterRefs[characterId],
@@ -477,6 +487,9 @@ async function aggregate<T>({ media, character, start, end }: {
     return t as T;
   } else if (character) {
     if (character.media && 'edges' in character.media) {
+      character.media.edges = character.media.edges.filter((edge) =>
+        !packs.isDisabled(`anilist:${edge.node.id}`)
+      );
       return character as T;
     }
 
@@ -499,6 +512,11 @@ async function aggregate<T>({ media, character, start, end }: {
       ...character,
       media: {
         edges: character.media?.slice(start, end)
+          ?.filter(({ mediaId }) => {
+            // deno-lint-ignore no-non-null-assertion
+            const [packId, id] = parseId(mediaId, character!.packId);
+            return !packs.isDisabled(`${packId}:${id}`);
+          })
           ?.map(({ role, mediaId }) => ({
             role,
             node: mediaRefs[mediaId],

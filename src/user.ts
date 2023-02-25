@@ -2,23 +2,23 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import { characterMessage } from './search.ts';
-
-import utils from './utils.ts';
+import Rating from './rating.ts';
 
 import packs from './packs.ts';
 
+import utils from './utils.ts';
+
 import * as discord from './discord.ts';
+
+import { characterMessage } from './search.ts';
 
 import {
   Character,
   DisaggregatedCharacter,
   DisaggregatedMedia,
-  Inventory,
   Media,
+  Schema,
 } from './types.ts';
-
-import Rating from './rating.ts';
 
 export async function now({
   userId,
@@ -31,16 +31,16 @@ export async function now({
   const query = gql`
     query ($userId: String!, $guildId: String!) {
       getUserInventory(userId: $userId, guildId: $guildId) {
-        lastPull
         availablePulls
+        rechargeTimestamp
       }
     }
   `;
 
   const message = new discord.Message();
 
-  const { availablePulls, lastPull } = (await request<{
-    getUserInventory: Inventory;
+  const { availablePulls, rechargeTimestamp } = (await request<{
+    getUserInventory: Schema.Inventory;
   }>({
     url: faunaUrl,
     query,
@@ -71,20 +71,14 @@ export async function now({
       new discord.Component()
         .setId('gacha', userId)
         .setLabel('/gacha'),
-      // `/collections` shortcut
-      // new discord.Component()
-      //   .setId('collection', userId, '0')
-      //   .setLabel('/collection'),
     ]);
-  } else {
-    // if user has no pulls
-    // inform display the refill timestamp in the same message
+  }
 
+  if (availablePulls < 5) {
     message.addEmbed(
       new discord.Embed()
         .setDescription(
-          // deno-lint-ignore no-non-null-assertion
-          `Refill <t:${utils.lastPullToRefillTimestamp(lastPull!)}:R>`,
+          `+1 <t:${utils.rechargeTimestamp({ rechargeTimestamp })}:R>`,
         ),
     );
   }
@@ -92,39 +86,131 @@ export async function now({
   return message;
 }
 
-export async function collection({
+export async function findCharacter({
+  guildId,
+  characterId,
+}: {
+  guildId?: string;
+  channelId?: string;
+  characterId?: string;
+}): Promise<
+  {
+    userId: string;
+    mediaId: string;
+    rating: number;
+  } | undefined
+> {
+  if (!guildId || !characterId) {
+    return undefined;
+  }
+
+  const query = gql`
+    query ($guildId: String!, $characterId: String!) {
+      findCharacter(guildId: $guildId, characterId: $characterId) {
+        mediaId
+        rating
+        user {
+          id
+        }
+      }
+    }
+  `;
+
+  const result = (await request<{
+    findCharacter?: Schema.Character;
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      characterId,
+      guildId,
+    },
+  })).findCharacter;
+
+  if (!result) {
+    return undefined;
+  }
+
+  return {
+    userId: result.user.id,
+    mediaId: result.mediaId,
+    rating: result.rating,
+  };
+}
+
+export async function allCharacters({
   userId,
   guildId,
-  before,
-  after,
-  on,
 }: {
   userId: string;
   guildId: string;
   channelId?: string;
+}): Promise<Schema.Inventory['characters']> {
+  const query = gql`
+    query ($userId: String!, $guildId: String!) {
+      getUserInventory(userId: $userId, guildId: $guildId) {
+        characters {
+          id
+          mediaId
+          rating
+        }
+      }
+    }
+  `;
+
+  const { characters } = (await request<{
+    getUserInventory: Schema.Inventory;
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+    },
+  })).getUserInventory;
+
+  return characters;
+}
+
+export async function stars({
+  userId,
+  guildId,
+  stars,
+  nick,
+  before,
+  after,
+}: {
+  userId: string;
+  guildId: string;
+  channelId?: string;
+  stars: number;
+  nick?: string;
   before?: string;
   after?: string;
-  on?: string;
 }): Promise<discord.Message> {
   const query = gql`
-    query ($userId: String!, $guildId: String!, $on: String, $before: String, $after: String) {
-      getUserCharacters(userId: $userId, guildId: $guildId, on: $on, before: $before, after: $after) {
+    query ($userId: String!, $guildId: String!, $stars: Int!, $before: String, $after: String) {
+      getUserStars(userId: $userId, guildId: $guildId, stars: $stars, before: $before, after: $after) {
+        anchor
         character {
           id
           mediaId
           rating
         }
-        anchor
-        total
       }
     }
   `;
 
-  const { character, anchor, total } = (await request<{
-    getUserCharacters: {
-      character?: Inventory['characters'][0];
+  const { character, anchor } = (await request<{
+    getUserStars: {
+      character?: Schema.Inventory['characters'][0];
       anchor?: string;
-      total: number;
     };
   }>({
     url: faunaUrl,
@@ -135,17 +221,21 @@ export async function collection({
     variables: {
       userId,
       guildId,
+      stars,
       before,
       after,
-      on,
     },
-  })).getUserCharacters;
+  })).getUserStars;
 
   if (!character || !anchor) {
     return new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setDescription('You don\'t have any characters'),
+          .setDescription(
+            `${
+              nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
+            } have any ${stars}* characters`,
+          ),
       )
       .addComponents([
         // `/gacha` shortcut
@@ -169,15 +259,13 @@ export async function collection({
     message = new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setDescription('This media was removed or disabled')
-          .setImage({ default: true }),
+          .setDescription('This media was removed or disabled'),
       );
   } else if (!results[1].length) {
     message = new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setDescription('This character was removed or disabled')
-          .setImage({ default: true }),
+          .setDescription('This character was removed or disabled'),
       );
   } else {
     message = characterMessage(
@@ -194,9 +282,122 @@ export async function collection({
 
   return discord.Message.anchor({
     id: userId,
-    type: 'collection',
+    type: 'cstars',
+    target: stars,
     anchor,
-    total,
+    message,
+  });
+}
+
+export async function media({
+  userId,
+  guildId,
+  id,
+  search,
+  nick,
+  before,
+  after,
+}: {
+  userId: string;
+  guildId: string;
+  channelId?: string;
+  id?: string;
+  search?: string;
+  nick?: string;
+  before?: string;
+  after?: string;
+}): Promise<discord.Message> {
+  const results: (Media | DisaggregatedMedia)[] = await packs
+    .media(id ? { ids: [id] } : { search });
+
+  if (!results.length) {
+    throw new Error('404');
+  }
+
+  const media = results[0];
+  const mediaId = `${media.packId}:${media.id}`;
+
+  const titles = packs.aliasToArray(media.title);
+
+  const query = gql`
+    query ($userId: String!, $guildId: String!, $mediaId: String!, $before: String, $after: String) {
+      getUserMedia(userId: $userId, guildId: $guildId, mediaId: $mediaId, before: $before, after: $after) {
+        anchor
+        character {
+          id
+          mediaId
+          rating
+        }
+      }
+    }
+  `;
+
+  const { character, anchor } = (await request<{
+    getUserMedia: {
+      character?: Schema.Inventory['characters'][0];
+      anchor?: string;
+    };
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+      mediaId,
+      before,
+      after,
+    },
+  })).getUserMedia;
+
+  if (!character || !anchor) {
+    return new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription(
+            `${
+              nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
+            } have any ${titles[0]} characters`,
+          ),
+      )
+      .addComponents([
+        // `/gacha` shortcut
+        new discord.Component()
+          .setId('gacha', userId)
+          .setLabel('/gacha'),
+      ]);
+  }
+
+  const characters = await packs.characters({ ids: [character.id] });
+
+  let message: discord.Message;
+
+  if (!characters.length) {
+    message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription('This character was removed or disabled'),
+      );
+  } else {
+    message = characterMessage(
+      characters[0],
+      {
+        relations: [media as DisaggregatedMedia],
+        rating: new Rating({ stars: character.rating }),
+        media: {
+          title: titles[0],
+        },
+      },
+    );
+  }
+
+  return discord.Message.anchor({
+    id: userId,
+    type: 'cmedia',
+    target: mediaId,
+    anchor,
     message,
   });
 }

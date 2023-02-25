@@ -50,6 +50,7 @@ type Option = {
   description: string;
   autocomplete?: boolean;
   options?: Option[];
+  choices?: Choice[];
   optional?: boolean;
 };
 
@@ -62,14 +63,20 @@ type Command = {
   devOnly?: boolean;
 };
 
+type Choice = {
+  name: string;
+  value: string | number;
+};
+
 const Option = (
-  { name, description, type, autocomplete, options, optional }: Option,
+  { name, description, type, autocomplete, choices, options, optional }: Option,
 ) => ({
   name,
   description,
   autocomplete,
   type: type.valueOf(),
   required: !optional,
+  choices,
   options,
 });
 
@@ -179,7 +186,7 @@ await put([
     description: 'Search for a specific series',
     options: [
       Option({
-        name: 'query',
+        name: 'title',
         description: 'The title of the media',
         autocomplete: true,
         type: Type.STRING,
@@ -195,10 +202,10 @@ await put([
   ...Command({
     name: 'character',
     description: 'Search for a specific character',
-    aliases: ['char'],
+    aliases: ['char', 'im'],
     options: [
       Option({
-        name: 'query',
+        name: 'name',
         description: 'The name of the character',
         autocomplete: true,
         type: Type.STRING,
@@ -212,17 +219,9 @@ await put([
     ],
   }),
   ...Command({
-    name: 'music',
-    description: 'Look up the music and theme songs of a media',
-    aliases: ['songs', 'themes'],
-    options: [
-      Option({
-        name: 'query',
-        description: 'The title of the media',
-        autocomplete: true,
-        type: Type.STRING,
-      }),
-    ],
+    name: 'help',
+    description: 'New to Fable? We got you',
+    aliases: ['start', 'guide', 'tuto'],
   }),
   ...Command({
     name: 'now',
@@ -232,17 +231,16 @@ await put([
   ...Command({
     name: 'gacha',
     description: 'Start a gacha pull',
-    aliases: ['pull', 'roll', 'w'],
+    aliases: ['w'],
   }),
   ...Command({
-    name: 'collection',
-    description: 'View all your characters',
-    aliases: ['list', 'mm'],
+    name: 'pull',
+    description: 'Start a insta gacha pull with no animation',
+    aliases: ['n'],
   }),
   ...Command({
-    name: 'force_pull',
-    description: 'Force a gacha pull',
-    defaultPermission: Permission.ADMINISTRATORS,
+    name: 'fake_pull',
+    description: 'Preform a fake gacha pull',
     devOnly: true,
     options: [
       Option({
@@ -252,10 +250,152 @@ await put([
       }),
     ],
   }),
+  // party management
+  ...Command({
+    name: 'party',
+    description: 'party management commands',
+    aliases: ['team', 'p'],
+    options: [
+      Option({
+        name: 'view',
+        description: 'View your current party',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+      Option({
+        name: 'assign',
+        description: 'Assign a character to your party',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'name',
+            description: 'The name of the character',
+            autocomplete: true,
+            type: Type.STRING,
+          }),
+          Option({
+            name: 'spot',
+            description: 'The spot where you want this character',
+            type: Type.INTEGER,
+            optional: true,
+            choices: [{
+              name: '1',
+              value: 1,
+            }, {
+              name: '2',
+              value: 2,
+            }, {
+              name: '3',
+              value: 3,
+            }, {
+              name: '4',
+              value: 4,
+            }, {
+              name: '5',
+              value: 5,
+            }],
+          }),
+        ],
+      }),
+      Option({
+        name: 'remove',
+        description: 'Remove a character from your party',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'spot',
+            description: 'The spot the character occupies',
+            type: Type.INTEGER,
+            choices: [{
+              name: '1',
+              value: 1,
+            }, {
+              name: '2',
+              value: 2,
+            }, {
+              name: '3',
+              value: 3,
+            }, {
+              name: '4',
+              value: 4,
+            }, {
+              name: '5',
+              value: 5,
+            }],
+          }),
+        ],
+      }),
+    ],
+  }),
+  // collection browsing
+  ...Command({
+    name: 'collection',
+    description: 'collection browsing commands',
+    aliases: ['mm'],
+    options: [
+      Option({
+        name: 'stars',
+        description: 'View all your stars',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'rating',
+            description: 'The star rating',
+            type: Type.INTEGER,
+            choices: [{
+              name: '1',
+              value: 1,
+            }, {
+              name: '2',
+              value: 2,
+            }, {
+              name: '3',
+              value: 3,
+            }, {
+              name: '4',
+              value: 4,
+            }, {
+              name: '5',
+              value: 5,
+            }],
+          }),
+          Option({
+            name: 'user',
+            description: 'List someone else\'s stars',
+            type: Type.USER,
+            optional: true,
+          }),
+        ],
+      }),
+      Option({
+        name: 'media',
+        description: 'View your characters from a specific media',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'title',
+            description: 'The title of the media',
+            autocomplete: true,
+            type: Type.STRING,
+          }),
+          Option({
+            name: 'user',
+            description: 'View someone else\'s stars',
+            type: Type.USER,
+            optional: true,
+          }),
+        ],
+      }),
+    ],
+  }),
   // pack management commands
   ...Command({
     name: 'packs',
-    description: 'Pack management commands',
+    description: 'pack management commands',
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
       Option({
@@ -265,8 +405,8 @@ await put([
         optional: true,
       }),
       Option({
-        name: 'manual',
-        description: 'List all the manually instated packs',
+        name: 'community',
+        description: 'List all instated community packs',
         type: Type.SUB_COMMAND,
         optional: true,
       }),

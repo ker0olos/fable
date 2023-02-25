@@ -14,7 +14,7 @@ export const FakeVar = (obj?: any) =>
     fql,
     'Var',
     (name) =>
-      (obj?.[name as string]
+      (obj?.[name as string] !== undefined
         ? JSON.parse(JSON.stringify(obj?.[name as string]))
         : name) as any,
   );
@@ -32,19 +32,40 @@ export const FakeGet = () =>
 
 export const FakeAppend = () => stub(fql, 'Append', (a: any, b: any) => [a, b]);
 
-export const FakeLength = () =>
-  stub(fql, 'Length', (array: any) => array.length);
+export const FakeEquals = () =>
+  stub(fql, 'Equals', (a: any, b: any) => {
+    if (typeof a === 'object' && typeof b === 'object') {
+      return Object.keys(a).every((key) => a[key] === b[key]);
+    } else {
+      return a === b;
+    }
+  });
 
 export const FakeGTE = () => stub(fql, 'GTE', (a: any, b: any) => a >= b);
 export const FakeLTE = () => stub(fql, 'LTE', (a: any, b: any) => a <= b);
 
+export const FakMultiply = () =>
+  stub(fql, 'Multiply', (a: any, b: any) => a * b);
+
+export const FakeDivide = () => stub(fql, 'Divide', (a: any, b: any) => a / b);
+
 export const FakeSubtract = () =>
   stub(fql, 'Subtract', (a: any, b: any) => a - b);
 
-export const FakeIsNull = () =>
-  stub(fql, 'IsNull', (a: any) => a === undefined);
+export const FakeAdd = () => stub(fql, 'Add', (a: any, b: any) => a + b);
 
-export const FakeAnd = () => stub(fql, 'And', (a: any, b: any) => a && b);
+export const FakeAnd = () => stub(fql, 'Add', (a: any, b: any) => a && b);
+
+export const FakeToString = () => stub(fql, 'ToString', (n: any) => `${n}`);
+
+export const FakeConcat = () =>
+  stub(fql, 'Concat', (s: any[], sep?: any) => s.join(sep ?? ''));
+
+export const FakeIsNull = () =>
+  stub(fql, 'IsNull', (a: any) => (a === null) || a === undefined);
+
+export const FakeMin = () =>
+  stub(fql, 'Min', (a: any, b: any) => Math.min(a, b));
 
 export const FakeId = () => stub(fql, 'Id', (_: any, id: any) => id);
 
@@ -52,19 +73,31 @@ export const FakePaginate = () =>
   stub(fql, 'Paginate', (set: any, opts?: any) => {
     if (opts['before']) {
       set = set.toReversed();
-      const index = set.findIndex((item: any) => item === opts['before']);
+      const index = set.findIndex((item: any) => {
+        return Array.isArray(opts['before'])
+          ? item === opts['before'][1]
+          : item === opts['before'];
+      });
+
       if (index !== -1) {
         set.splice(index, 1);
         return set.slice(index, opts['size']);
       }
+
       return [];
     }
 
     if (opts['after']) {
-      const index = set.findIndex((item: any) => item === opts['after']);
+      const index = set.findIndex((item: any) => {
+        return Array.isArray(opts['after'])
+          ? item === opts['after'][1]
+          : item === opts['after'];
+      });
+
       if (index !== -1) {
         return set.slice(index, opts['size']);
       }
+
       return [];
     }
 
@@ -82,6 +115,13 @@ export const FakeReverse = () =>
 export const FakeSelect = (obj?: any) =>
   stub(fql, 'Select', (_, __, _d) => obj === undefined ? _d : obj);
 
+export const FakeMerge = () =>
+  stub(fql, 'Merge', (obj1, obj2) =>
+    ({
+      ...obj1,
+      ...obj2,
+    }) as any);
+
 export const FakeMatch = (obj?: any) =>
   stub(
     fql,
@@ -94,14 +134,17 @@ export const FakeNow = (date?: Date) =>
 
 export const FakeTimeDiff = () =>
   stub(fql, 'TimeDiffInMinutes', (a: any, b: any) => {
-    const diff = b.getTime() - a.getTime();
+    const diff = new Date(b).getTime() - new Date(a).getTime();
     return (diff / 60000);
   });
 
-export const FakeCreate = () =>
-  stub(fql, 'Create', (_: any, data: any) => data);
-export const FakeUpdate = () =>
-  stub(fql, 'Update', (_: any, data: any) => data);
+export const FakeTimeAdd = () =>
+  stub(fql, 'TimeAddInMinutes', (t: any, offset: any) => {
+    return new Date(t.getTime() + offset * 60000) as any;
+  });
+
+export const FakeCreate = () => stub(fql, 'Create', (name: any) => name);
+export const FakeUpdate = () => stub(fql, 'Update', (name: any) => name);
 
 export const FakeIf = () =>
   stub(

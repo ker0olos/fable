@@ -2,6 +2,10 @@ import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 
 import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
+const notoSans = await (await fetch(
+  'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
+)).arrayBuffer();
+
 import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
 
 import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
@@ -12,7 +16,7 @@ export enum ImageSize {
   Thumbnail = 'thumbnail', // 110x155
 }
 
-let font: Uint8Array | undefined = undefined;
+const TEN_MIB = 1024 * 1024 * 10;
 
 const globalCache = inMemoryCache(20);
 
@@ -208,15 +212,9 @@ function verifySignature(
   return { valid, body };
 }
 
-async function text(s: string | number): Promise<Uint8Array> {
-  font = font ?? new Uint8Array(
-    await (await fetch(
-      'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
-    )).arrayBuffer(),
-  );
-
+function text(s: string | number): Promise<Uint8Array> {
   const text = imagescript.Image.renderText(
-    font,
+    new Uint8Array(notoSans),
     28,
     `${s}`.substring(0, 2),
     0xffffffff,
@@ -246,9 +244,12 @@ async function proxy(r: Request): Promise<Response> {
 
     const size = searchParams.get('size') as ImageSize || ImageSize.Large;
 
-    // FIXME discord doesn't allow any gif that doesn't end with the file extension
-    // (see #39)
-    if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
+    if (Number(response.headers.get('content-length')) > TEN_MIB) {
+      throw new Error();
+    }
+
+    // if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
+    if (type === 'image/gif') {
       throw new Error();
     }
 
@@ -279,31 +280,21 @@ async function proxy(r: Request): Promise<Response> {
           break;
       }
 
-      const t = await transformed.encode(2);
+      if (type === 'image/png') {
+        const t = await transformed.encode(2);
 
-      proxy = new Response(t);
+        proxy = new Response(t);
 
-      proxy.headers.set('content-type', 'image/png');
-      proxy.headers.set('content-length', `${t.byteLength}`);
-    } else if (transformed instanceof imagescript.GIF) {
-      switch (size) {
-        case ImageSize.Thumbnail:
-          transformed.resize(110, -1);
-          break;
-        case ImageSize.Medium:
-          transformed.resize(230, -1);
-          break;
-        default:
-          transformed.resize(450, -1);
-          break;
+        proxy.headers.set('content-type', 'image/png');
+        proxy.headers.set('content-length', `${t.byteLength}`);
+      } else {
+        const t = await transformed.encodeJPEG(70);
+
+        proxy = new Response(t);
+
+        proxy.headers.set('content-type', 'image/jpeg');
+        proxy.headers.set('content-length', `${t.byteLength}`);
       }
-
-      const t = await transformed.encode(22);
-
-      proxy = new Response(t);
-
-      proxy.headers.set('content-type', 'image/gif');
-      proxy.headers.set('content-length', `${t.byteLength}`);
     }
 
     if (!proxy) {
@@ -331,16 +322,20 @@ async function readJson<T>(filePath: string): Promise<T> {
   }
 }
 
-function lastPullToRefillTimestamp(lastPull: string): string {
-  const refill = new Date(lastPull);
+function rechargeTimestamp(
+  { rechargeTimestamp }: {
+    rechargeTimestamp?: string;
+  },
+): string {
+  const ts = new Date(rechargeTimestamp ?? new Date());
 
-  refill.setMinutes(refill.getMinutes() + 60);
+  ts.setMinutes(ts.getMinutes() + 15);
 
-  const refillTimestamp = refill.getTime().toString();
+  const tsISO = ts.getTime().toString();
 
   // discord apparently uses black magic and requires us to cut 3 digits
   // or go 30,000 years into the future
-  return refillTimestamp.substring(0, refillTimestamp.length - 3);
+  return tsISO.substring(0, tsISO.length - 3);
 }
 
 const utils = {
@@ -350,7 +345,7 @@ const utils = {
   decodeDescription,
   distance,
   hexToInt,
-  lastPullToRefillTimestamp,
+  rechargeTimestamp,
   parseInt: _parseInt,
   proxy,
   randint,

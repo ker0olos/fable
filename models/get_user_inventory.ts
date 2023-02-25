@@ -1,12 +1,10 @@
 import {
   BooleanExpr,
-  CharacterExpr,
   Client,
   fql,
   GuildExpr,
   InstanceExpr,
   InventoryExpr,
-  NullExpr,
   NumberExpr,
   RefExpr,
   StringExpr,
@@ -17,6 +15,7 @@ import {
 export interface User {
   id: StringExpr;
   inventories: RefExpr[];
+  badges: RefExpr[];
 }
 
 export interface Guild {
@@ -31,20 +30,23 @@ export interface Instance {
 }
 
 export interface Inventory {
-  lastPull: TimeExpr | NullExpr;
   availablePulls: NumberExpr;
+  lastPull?: TimeExpr;
+  rechargeTimestamp?: TimeExpr;
+  party?: {
+    member1?: RefExpr;
+    member2?: RefExpr;
+    member3?: RefExpr;
+    member4?: RefExpr;
+    member5?: RefExpr;
+  };
   characters: RefExpr[];
   instance: RefExpr;
   user: RefExpr;
 }
 
-export interface CharacterNode {
-  character: CharacterExpr;
-  anchor: StringExpr;
-  total: NumberExpr;
-}
-
-export const PULLS_DEFAULT = 5;
+export const MAX_PULLS = 5;
+export const RECHARGE_MINS = 15;
 
 export function getUser(id: StringExpr): UserExpr {
   return fql.Let({
@@ -58,6 +60,10 @@ export function getUser(id: StringExpr): UserExpr {
       fql.Create<User>('user', {
         id,
         inventories: [],
+        badges: [
+          // Early Bird Gets the Worm
+          fql.Id('badge', '357600097731608662'),
+        ],
       }),
     ));
 }
@@ -123,8 +129,7 @@ export function getInventory(
         {
           // create a new inventory
           createdInventory: fql.Create<Inventory>('inventory', {
-            lastPull: fql.Null(),
-            availablePulls: PULLS_DEFAULT,
+            availablePulls: MAX_PULLS,
             characters: [],
             instance: fql.Ref(instance),
             user: fql.Ref(user),
@@ -149,96 +154,45 @@ export function getInventory(
     ));
 }
 
-export function getCharacterNode(
-  { inventory, on, before, after }: {
-    inventory: InventoryExpr;
-    on?: string;
-    before?: string;
-    after?: string;
-  },
-): CharacterNode {
-  return fql.Let({
-    characters: fql.Match(
-      fql.Index('characters_inventory'),
-      fql.Ref(inventory),
-    ),
-    total: fql.Length(fql.Var('characters')),
-    character: fql.If(
-      fql.IsNonEmpty(fql.Var('characters')),
-      fql.If(
-        fql.IsNull(before),
-        fql.If(
-          fql.And(fql.IsNull(after), fql.IsNull(on)),
-          fql.Ref(fql.Get(fql.Var('characters'))),
-          fql.Let({
-            // after returns itself then a new item
-            match: fql.Paginate(fql.Var('characters'), {
-              after: fql.Id(
-                'character',
-                // deno-lint-ignore no-non-null-assertion
-                fql.If(fql.IsNull(after), on!, after!),
-              ),
-              size: 2,
-            }),
-          }, ({ match }) => {
-            return fql.Select(
-              ['data', fql.If(fql.IsNull(after), 0, 1)],
-              match,
-              // or first item
-              fql.Ref(fql.Get(fql.Var('characters'))),
-            );
-          }),
-        ),
-        fql.Let({
-          // before doesn't return itself
-          match: fql.Paginate(fql.Var('characters'), {
-            // deno-lint-ignore no-non-null-assertion
-            before: fql.Id('character', before!),
-            size: 1,
-          }),
-        }, ({ match }) => {
-          return fql.Select(
-            ['data', 0],
-            match,
-            // or last item
-            fql.Ref(fql.Get(fql.Reverse(fql.Var('characters')))),
-          );
-        }),
-      ),
-      fql.Null(),
-    ),
-  }, ({ total, character }) => {
-    return {
-      total,
-      character,
-      anchor: fql.Select(['id'], character, fql.Null()),
-    };
-  });
-}
-
-export function refillPulls(
+export function rechargePulls(
   { inventory }: { inventory: InventoryExpr },
 ): InventoryExpr {
-  return fql.If(
-    fql.And(
-      // if available pulls is less than or equal to 0
-      fql.LTE(fql.Select(['data', 'availablePulls'], inventory), 0),
-      // and difference in time between the last pull and now
-      // is greater than or equal to 60 minutes
-      fql.GTE(
+  return fql.Let(
+    {
+      rechargeTimestamp: fql.Select(
+        ['data', 'rechargeTimestamp'],
+        inventory,
+        fql.Now(), // fallback
+      ),
+      currentPulls: fql.Select(['data', 'availablePulls'], inventory),
+      newPulls: fql.Divide(
         fql.TimeDiffInMinutes(
-          fql.Select(['data', 'lastPull'], inventory),
+          fql.Var('rechargeTimestamp'),
           fql.Now(),
         ),
-        60,
+        RECHARGE_MINS,
       ),
-    ),
-    // refill the available pulls to default
-    fql.Update<Inventory>(fql.Ref(inventory), {
-      availablePulls: PULLS_DEFAULT,
-    }),
-    // return inventory as is
-    inventory,
+      rechargedPulls: fql.Min(
+        MAX_PULLS,
+        fql.Add(fql.Var('currentPulls'), fql.Var('newPulls')),
+      ),
+      diffPulls: fql.Subtract(
+        fql.Var('rechargedPulls'),
+        fql.Var('currentPulls'),
+      ),
+    },
+    ({ rechargeTimestamp, diffPulls, rechargedPulls }) =>
+      fql.Update<Inventory>(fql.Ref(inventory), {
+        availablePulls: rechargedPulls,
+        rechargeTimestamp: fql.If(
+          fql.GTE(rechargedPulls, MAX_PULLS),
+          fql.Null(),
+          fql.TimeAddInMinutes(
+            rechargeTimestamp,
+            fql.Multiply(diffPulls, RECHARGE_MINS),
+          ),
+        ),
+      }),
   );
 }
 
@@ -265,13 +219,6 @@ export default function (client: Client): (() => Promise<void>)[] {
       name: 'inventories_instance_user',
       terms: [{ field: ['data', 'instance'] }, { field: ['data', 'user'] }],
     }),
-    fql.Indexer({
-      client,
-      unique: false,
-      collection: 'character',
-      name: 'characters_inventory',
-      terms: [{ field: ['data', 'inventory'] }],
-    }),
     fql.Resolver({
       client,
       name: 'get_user_inventory',
@@ -286,37 +233,7 @@ export default function (client: Client): (() => Promise<void>)[] {
               instance: fql.Var('instance'),
             }),
           },
-          refillPulls,
-        );
-      },
-    }),
-    fql.Resolver({
-      client,
-      name: 'get_user_characters',
-      lambda: (
-        userId: string,
-        guildId: string,
-        on?: string,
-        before?: string,
-        after?: string,
-      ) => {
-        return fql.Let(
-          {
-            user: getUser(userId),
-            guild: getGuild(guildId),
-            instance: getInstance(fql.Var('guild')),
-            inventory: getInventory({
-              user: fql.Var('user'),
-              instance: fql.Var('instance'),
-            }),
-          },
-          ({ inventory }) =>
-            getCharacterNode({
-              inventory,
-              on,
-              before,
-              after,
-            }),
+          rechargePulls,
         );
       },
     }),

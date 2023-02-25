@@ -308,6 +308,7 @@ Deno.test('messages', async (test) => {
     assertEquals(message.json(), {
       type: 4,
       data: {
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -338,6 +339,7 @@ Deno.test('messages', async (test) => {
     assertEquals(message.json(), {
       type: 4,
       data: {
+        attachments: [],
         components: [{
           type: 1,
           components: [
@@ -389,6 +391,7 @@ Deno.test('messages', async (test) => {
         type: 4,
         data: {
           embeds: [],
+          attachments: [],
           components: [],
           content: 'content',
         },
@@ -419,6 +422,7 @@ Deno.test('static messages', async (test) => {
         content:
           'An Internal Error occurred and was reported.\n```ref_id: id```',
         components: [],
+        attachments: [],
         embeds: [],
       },
     });
@@ -444,6 +448,7 @@ Deno.test('patch messages', async () => {
       'payload_json',
       JSON.stringify({
         embeds: [],
+        attachments: [],
         components: [],
       }),
     );
@@ -485,20 +490,30 @@ Deno.test('page messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
-          components: [{
-            custom_id: '_',
-            disabled: true,
-            label: '1/2',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: 'type=target=1',
-            label: 'Next',
-            style: 2,
-            type: 2,
-          }],
+          components: [
+            {
+              custom_id: 'type=target=1',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: '_',
+              disabled: true,
+              label: '1/2',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'type=target=1',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            },
+          ],
         }],
       },
     });
@@ -522,20 +537,30 @@ Deno.test('page messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
-          components: [{
-            custom_id: 'type=target=0',
-            label: 'Prev',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: '_',
-            disabled: true,
-            label: '2/2',
-            style: 2,
-            type: 2,
-          }],
+          components: [
+            {
+              custom_id: 'type=target=0',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: '_',
+              disabled: true,
+              label: '2/2',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'type=target=0',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            },
+          ],
         }],
       },
     });
@@ -559,6 +584,7 @@ Deno.test('page messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -600,6 +626,7 @@ Deno.test('page messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
@@ -637,15 +664,30 @@ Deno.test('page messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
-          components: [{
-            custom_id: '_',
-            disabled: true,
-            label: '1/1',
-            style: 2,
-            type: 2,
-          }],
+          components: [
+            {
+              custom_id: 'type=target=0',
+              label: 'Prev',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: '_',
+              disabled: true,
+              label: '1/1',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'type=target=0',
+              label: 'Next',
+              style: 2,
+              type: 2,
+            },
+          ],
         }],
       },
     });
@@ -653,93 +695,10 @@ Deno.test('page messages', async (test) => {
 });
 
 Deno.test('anchor messages', async (test) => {
-  await test.step('1/2', () => {
+  await test.step('normal', () => {
     const message = discord.Message.anchor({
-      page: 1,
-      total: 2,
-      anchor: 'anchor',
-      type: 'type',
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
-    });
-
-    assertEquals(message.json(), {
-      type: 4,
-      data: {
-        embeds: [{
-          type: 'rich',
-          title: 'title',
-        }],
-        components: [{
-          type: 1,
-          components: [{
-            custom_id: 'anchor=type==anchor=prev',
-            label: 'Prev',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: '_',
-            disabled: true,
-            label: '1/2',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: 'anchor=type==anchor=next',
-            label: 'Next',
-            style: 2,
-            type: 2,
-          }],
-        }],
-      },
-    });
-  });
-
-  await test.step('1/2 with id', () => {
-    const message = discord.Message.anchor({
-      page: 1,
-      total: 2,
-      anchor: 'anchor',
-      type: 'type',
       id: 'id',
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
-    });
-
-    assertEquals(message.json(), {
-      type: 4,
-      data: {
-        embeds: [{
-          type: 'rich',
-          title: 'title',
-        }],
-        components: [{
-          type: 1,
-          components: [{
-            custom_id: 'anchor=type=id=anchor=prev',
-            label: 'Prev',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: '_',
-            disabled: true,
-            label: '1/2',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: 'anchor=type=id=anchor=next',
-            label: 'Next',
-            style: 2,
-            type: 2,
-          }],
-        }],
-      },
-    });
-  });
-
-  await test.step('2/2', () => {
-    const message = discord.Message.anchor({
-      page: 2,
-      total: 2,
+      target: 'target',
       anchor: 'anchor',
       type: 'type',
       message: new discord.Message()
@@ -753,100 +712,16 @@ Deno.test('anchor messages', async (test) => {
           type: 'rich',
           title: 'title',
         }],
+        attachments: [],
         components: [{
           type: 1,
           components: [{
-            custom_id: 'anchor=type==anchor=prev',
+            custom_id: 'type=target=id=anchor=prev',
             label: 'Prev',
             style: 2,
             type: 2,
           }, {
-            custom_id: '_',
-            disabled: true,
-            label: '2/2',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: 'anchor=type==anchor=next',
-            label: 'Next',
-            style: 2,
-            type: 2,
-          }],
-        }],
-      },
-    });
-  });
-
-  await test.step('1/?', () => {
-    const message = discord.Message.anchor({
-      page: 1,
-      anchor: 'anchor',
-      type: 'type',
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
-    });
-
-    assertEquals(message.json(), {
-      type: 4,
-      data: {
-        embeds: [{
-          type: 'rich',
-          title: 'title',
-        }],
-        components: [{
-          type: 1,
-          components: [{
-            custom_id: 'anchor=type==anchor=prev',
-            label: 'Prev',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: '_',
-            disabled: true,
-            label: '1',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: 'anchor=type==anchor=next',
-            label: 'Next',
-            style: 2,
-            type: 2,
-          }],
-        }],
-      },
-    });
-  });
-
-  await test.step('?', () => {
-    const message = discord.Message.anchor({
-      anchor: 'anchor',
-      type: 'type',
-      message: new discord.Message()
-        .addEmbed(new discord.Embed().setTitle('title')),
-    });
-
-    assertEquals(message.json(), {
-      type: 4,
-      data: {
-        embeds: [{
-          type: 'rich',
-          title: 'title',
-        }],
-        components: [{
-          type: 1,
-          components: [{
-            custom_id: 'anchor=type==anchor=prev',
-            label: 'Prev',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: '_',
-            disabled: true,
-            label: '?',
-            style: 2,
-            type: 2,
-          }, {
-            custom_id: 'anchor=type==anchor=next',
+            custom_id: 'type=target=id=anchor=next',
             label: 'Next',
             style: 2,
             type: 2,

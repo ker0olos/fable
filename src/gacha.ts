@@ -16,20 +16,13 @@ import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
-import {
-  Character,
-  CharacterRole,
-  Inventory,
-  Media,
-  Mutation,
-  PoolInfo,
-} from './types.ts';
+import { Character, CharacterRole, Media, PoolInfo, Schema } from './types.ts';
 
 import { NoPullsError, PoolError } from './errors.ts';
 
 export type Pull = {
-  role?: CharacterRole;
   index?: number;
+  role?: CharacterRole;
   remaining?: number;
   character: Character;
   media: Media;
@@ -55,7 +48,7 @@ const variables = {
   },
 };
 
-async function forcePull(characterId: string): Promise<Pull> {
+async function fakePull(characterId: string): Promise<Pull> {
   const results = await packs.characters({ ids: [characterId] });
 
   if (!results.length) {
@@ -106,7 +99,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
 
   const pool = await packs.pool({ range, role });
 
-  let inventory: Inventory | undefined = undefined;
+  let inventory: Schema.Inventory | undefined = undefined;
 
   let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
@@ -214,15 +207,15 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
             ok
             error
             inventory {
-              lastPull
               availablePulls
+              rechargeTimestamp
             }
           }
         }
       `;
 
       const response = (await request<{
-        addCharacterToInventory: Mutation;
+        addCharacterToInventory: Schema.Mutation;
       }>({
         url: faunaUrl,
         query: mutation,
@@ -246,10 +239,9 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           case 'CHARACTER_EXISTS':
             continue;
           case 'NO_PULLS_AVAILABLE':
-            // deno-lint-ignore no-non-null-assertion
-            throw new NoPullsError(response.inventory.lastPull!);
+            throw new NoPullsError(response.inventory.rechargeTimestamp);
           default:
-            throw new Error(response);
+            throw new Error(response.error);
         }
       }
     }
@@ -278,19 +270,17 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
  * start the pull's animation
  */
 function start(
-  { token, userId, guildId, characterId, messageType }: {
+  { token, userId, guildId, characterId, reduceMotion }: {
     token: string;
     userId?: string;
     guildId?: string;
     channelId?: string;
     characterId?: string;
-    messageType?: discord.MessageType;
+    reduceMotion?: boolean;
   },
 ): discord.Message {
   const _ =
-    (characterId
-      ? gacha.forcePull(characterId)
-      : gacha.rngPull(userId, guildId))
+    (characterId ? gacha.fakePull(characterId) : gacha.rngPull(userId, guildId))
       .then(async (pull) => {
         const media = pull.media;
 
@@ -306,21 +296,23 @@ function start(
               }),
           );
 
-        await message.patch(token);
+        if (!reduceMotion) {
+          await message.patch(token);
 
-        await utils.sleep(4);
+          await utils.sleep(4);
 
-        message = new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setImage({
-                url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
-              }),
-          );
+          message = new discord.Message()
+            .addEmbed(
+              new discord.Embed()
+                .setImage({
+                  url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
+                }),
+            );
 
-        await message.patch(token);
+          await message.patch(token);
 
-        await utils.sleep(6);
+          await utils.sleep(pull.rating.stars + 2);
+        }
 
         message = characterMessage(pull.character, {
           relations: false,
@@ -336,17 +328,19 @@ function start(
         if (userId) {
           message.addComponents([
             new discord.Component()
-              .setId('gacha', userId)
-              .setLabel('/gacha'),
-            // new discord.Component()
-            //   .setId(
-            //     `collection`,
-            //     userId,
-            //     `${pull.character.packId}:${pull.character.id}`,
-            //   )
-            //   .setLabel('/collection'),
+              .setId(reduceMotion ? 'pull' : 'gacha', userId)
+              .setLabel(`/${reduceMotion ? 'pull' : 'gacha'}`),
           ]);
         }
+
+        message.addComponents([
+          new discord.Component()
+            .setLabel('/character')
+            .setId(
+              `character`,
+              `${pull.character.packId}:${pull.character.id}`,
+            ),
+        ]);
 
         await message.patch(token);
       })
@@ -355,12 +349,12 @@ function start(
           return await new discord.Message()
             .addEmbed(
               new discord.Embed().setDescription(
-                '**You don\'t have any pulls available!**',
+                '**You don\'t have any more pulls!**',
               ),
             )
             .addEmbed(
               new discord.Embed()
-                .setDescription(`Refill <t:${err.refillTimestamp}:R>`),
+                .setDescription(`+1 <t:${err.rechargeTimestamp}:R>`),
             )
             .patch(token);
         }
@@ -374,7 +368,7 @@ function start(
         await discord.Message.internal(refId).patch(token);
       });
 
-  const spinner = new discord.Message(messageType)
+  const spinner = new discord.Message()
     .addEmbed(
       new discord.Embed().setImage(
         { url: `${config.origin}/assets/spinner.gif` },
@@ -387,7 +381,7 @@ function start(
 const gacha = {
   lowest,
   variables,
-  forcePull,
+  fakePull,
   rngPull,
   start,
 };

@@ -16,7 +16,7 @@ import {
   getInventory,
   getUser,
   Inventory,
-  refillPulls,
+  rechargePulls,
 } from './get_user_inventory.ts';
 
 export interface Character {
@@ -83,12 +83,10 @@ export function addCharacter(
         ok: false,
         error: 'NO_PULLS_AVAILABLE',
         inventory: fql.Ref(inventory),
-        // deno-lint-ignore no-explicit-any
-      } as any,
+      },
       fql.If(
         fql.IsNonEmpty(match),
-        // deno-lint-ignore no-explicit-any
-        { ok: false, error: 'CHARACTER_EXISTS' } as any,
+        { ok: false, error: 'CHARACTER_EXISTS' },
         fql.Let(
           {
             createdCharacter: fql.Create<Character>('character', {
@@ -115,6 +113,11 @@ export function addCharacter(
             // update the inventory
             updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
               lastPull: fql.Now(),
+              rechargeTimestamp: fql.Select(
+                ['data', 'rechargeTimestamp'],
+                inventory,
+                fql.Now(),
+              ),
               availablePulls: fql.Subtract(
                 fql.Select(['data', 'availablePulls'], inventory),
                 1,
@@ -125,11 +128,11 @@ export function addCharacter(
               ),
             }),
           },
-          () => ({
+          ({ createdCharacter }) => ({
             ok: true,
             inventory: fql.Ref(inventory),
-            // deno-lint-ignore no-explicit-any
-          } as any),
+            character: fql.Ref(createdCharacter),
+          }),
         ),
       ),
     ));
@@ -162,7 +165,7 @@ export default function (client: Client): (() => Promise<void>)[] {
               user: fql.Var('user'),
               instance: fql.Var('instance'),
             }),
-            inventory: refillPulls({
+            inventory: rechargePulls({
               inventory: fql.Var('_inventory'),
             }),
           },

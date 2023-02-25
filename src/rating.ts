@@ -2,9 +2,7 @@ import {
   captureException,
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
 
-import { Character, CharacterRole } from './types.ts';
-
-import gacha from './gacha.ts';
+import { Character, CharacterRole, DisaggregatedCharacter } from './types.ts';
 
 import { emotes } from './config.ts';
 
@@ -65,17 +63,22 @@ export default class Rating {
     }`;
   }
 
-  static fromCharacter(character: Character): Rating {
-    const edge = character.media?.edges?.[0];
+  static fromCharacter(character: Character | DisaggregatedCharacter): Rating {
     if (character.popularity) {
       return new Rating({ popularity: character.popularity });
-    } else if (edge) {
-      return new Rating({
-        popularity: edge.node.popularity || gacha.lowest,
-        role: edge.role,
-      });
     }
 
-    return new Rating({ popularity: -1 });
+    if (character.media && 'edges' in character.media) {
+      const edge = character.media.edges[0];
+
+      if (edge) {
+        return new Rating({
+          popularity: edge.node.popularity,
+          role: edge.role,
+        });
+      }
+    }
+
+    return new Rating({ popularity: 0 });
   }
 }

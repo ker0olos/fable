@@ -275,7 +275,7 @@ Deno.test('external images', async (test) => {
 
       assertEquals(response.status, 200);
 
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
+      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
 
       assertEquals(
         response.headers.get('Cache-Control'),
@@ -373,58 +373,6 @@ Deno.test('external images', async (test) => {
         }],
       });
 
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/gif');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.GIF);
-
-      assertEquals(`${image}`, 'GIF<450x450x1000ms>');
-    } finally {
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('invalid image/gif', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'image/gif',
-        }),
-        arrayBuffer: () => new TextEncoder().encode('data'),
-      } as any),
-    );
-
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image')
-        }`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
       assertEquals(response.status, 302);
 
       assertEquals(
@@ -432,7 +380,6 @@ Deno.test('external images', async (test) => {
         'http://localhost:8000/assets/medium.png',
       );
     } finally {
-      delete config.origin;
       abortStub.restore();
       fetchStub.restore();
     }
@@ -470,7 +417,7 @@ Deno.test('external images', async (test) => {
 
       assertEquals(response.status, 200);
 
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
+      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
 
       assertEquals(
         response.headers.get('Cache-Control'),
@@ -520,7 +467,7 @@ Deno.test('external images', async (test) => {
 
       assertEquals(response.status, 200);
 
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
+      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
 
       assertEquals(
         response.headers.get('Cache-Control'),
@@ -532,106 +479,6 @@ Deno.test('external images', async (test) => {
       assert(image instanceof imagescript.Image);
 
       assertEquals(`${image}`, 'Image<230x325>');
-    } finally {
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('image/gif (thumbnail)', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'image/gif',
-        }),
-        arrayBuffer: () => Deno.readFile('tests/images/test.gif'),
-      } as any),
-    );
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.gif')
-        }?size=thumbnail`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.gif'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/gif');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.GIF);
-
-      assertEquals(`${image}`, 'GIF<110x110x1000ms>');
-    } finally {
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('image/gif (medium)', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'image/gif',
-        }),
-        arrayBuffer: () => Deno.readFile('tests/images/test.gif'),
-      } as any),
-    );
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.gif')
-        }?size=medium`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.gif'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/gif');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.GIF);
-
-      assertEquals(`${image}`, 'GIF<230x230x1000ms>');
     } finally {
       abortStub.restore();
       fetchStub.restore();
@@ -721,6 +568,49 @@ Deno.test('external images', async (test) => {
       );
     } finally {
       delete config.origin;
+      abortStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('over 10 mib', async () => {
+    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          // 11 Mib
+          'Content-Length': `${1024 * 1024 * 11}`,
+          'Content-Type': 'image/png',
+        }),
+      } as any),
+    );
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.png')
+        }`,
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.png'), {
+          signal: 'timeout' as any,
+        }],
+      });
+
+      assertEquals(response.status, 302);
+
+      assertEquals(
+        response.headers.get('location'),
+        'http://localhost:8000/assets/medium.png',
+      );
+    } finally {
       abortStub.restore();
       fetchStub.restore();
     }

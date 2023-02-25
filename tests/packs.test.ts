@@ -60,8 +60,8 @@ Deno.test('list', async (test) => {
     await assertSnapshot(test, manifest);
   });
 
-  await test.step('manual', () => {
-    const list = packs.list(ManifestType.Manual);
+  await test.step('community', () => {
+    const list = packs.list(ManifestType.Community);
 
     assertEquals(list.length, 0);
   });
@@ -144,7 +144,7 @@ Deno.test('disabled embeds', async (test) => {
 });
 
 Deno.test('disabled relations', async (test) => {
-  await test.step('disabled anilist media relations', () => {
+  await test.step('disabled anilist media relations', async () => {
     const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
@@ -182,7 +182,9 @@ Deno.test('disabled relations', async (test) => {
 
     try {
       assertEquals(
-        anilist.transform<Media>({ item: media })
+        (await packs.aggregate<Media>({
+          media: anilist.transform<Media>({ item: media }),
+        }))
           .relations?.edges.length,
         0,
       );
@@ -192,7 +194,7 @@ Deno.test('disabled relations', async (test) => {
     }
   });
 
-  await test.step('disabled anilist media characters', () => {
+  await test.step('disabled anilist media characters', async () => {
     const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
@@ -228,7 +230,9 @@ Deno.test('disabled relations', async (test) => {
 
     try {
       assertEquals(
-        anilist.transform<Media>({ item: media })
+        (await packs.aggregate<Media>({
+          media: anilist.transform<Media>({ item: media }),
+        }))
           .characters?.edges.length,
         0,
       );
@@ -238,7 +242,7 @@ Deno.test('disabled relations', async (test) => {
     }
   });
 
-  await test.step('disabled anilist character media', () => {
+  await test.step('disabled anilist character media', async () => {
     const character: AniListCharacter = {
       id: '1',
       name: {
@@ -274,7 +278,9 @@ Deno.test('disabled relations', async (test) => {
 
     try {
       assertEquals(
-        anilist.transform<Character>({ item: character })
+        (await packs.aggregate<Character>({
+          character: anilist.transform<Character>({ item: character }),
+        }))
           .media?.edges.length,
         0,
       );
@@ -451,207 +457,6 @@ Deno.test('disabled relations', async (test) => {
     } finally {
       listStub.restore();
       packs.clear();
-    }
-  });
-});
-
-Deno.test('manifest embeds', async (test) => {
-  await test.step('builtin packs', () => {
-    const manifest: Manifest = {
-      id: 'pack-id',
-      type: ManifestType.Builtin,
-    };
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [manifest],
-    );
-
-    try {
-      const message = packs.embed({
-        type: ManifestType.Builtin,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [{
-            type: 1,
-            components: [{
-              custom_id: 'anchor=builtin==pack-id=prev',
-              label: 'Prev',
-              style: 2,
-              type: 2,
-            }, {
-              custom_id: '_',
-              disabled: true,
-              label: '1/1',
-              style: 2,
-              type: 2,
-            }, {
-              custom_id: 'anchor=builtin==pack-id=next',
-              label: 'Next',
-              style: 2,
-              type: 2,
-            }],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'Builtin packs are developed and maintained directly by Fable',
-          }, {
-            type: 'rich',
-            description: undefined,
-            title: 'pack-id',
-            url: undefined,
-          }],
-        },
-      });
-    } finally {
-      listStub.restore();
-    }
-  });
-
-  await test.step('manual packs', () => {
-    const manifest: Manifest = {
-      id: 'pack-id',
-      type: ManifestType.Manual,
-    };
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [manifest],
-    );
-
-    try {
-      const message = packs.embed({
-        type: ManifestType.Manual,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [{
-            type: 1,
-            components: [{
-              custom_id: 'anchor=manual==pack-id=prev',
-              label: 'Prev',
-              style: 2,
-              type: 2,
-            }, {
-              custom_id: '_',
-              disabled: true,
-              label: '1/1',
-              style: 2,
-              type: 2,
-            }, {
-              custom_id: 'anchor=manual==pack-id=next',
-              label: 'Next',
-              style: 2,
-              type: 2,
-            }],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'The following third-party packs were manually added by your server members',
-          }, {
-            type: 'rich',
-            description: undefined,
-            title: 'pack-id',
-            url: undefined,
-          }],
-        },
-      });
-    } finally {
-      listStub.restore();
-    }
-  });
-
-  await test.step('use title and id ', () => {
-    const manifest: Manifest = {
-      id: 'pack-id',
-      type: ManifestType.Builtin,
-      title: 'Title',
-    };
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [manifest],
-    );
-
-    try {
-      const message = packs.embed({
-        type: ManifestType.Builtin,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [{
-            type: 1,
-            components: [{
-              custom_id: 'anchor=builtin==pack-id=prev',
-              label: 'Prev',
-              style: 2,
-              type: 2,
-            }, {
-              custom_id: '_',
-              disabled: true,
-              label: '1/1',
-              style: 2,
-              type: 2,
-            }, {
-              custom_id: 'anchor=builtin==pack-id=next',
-              label: 'Next',
-              style: 2,
-              type: 2,
-            }],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'Builtin packs are developed and maintained directly by Fable',
-          }, {
-            type: 'rich',
-            description: undefined,
-            title: 'Title',
-            url: undefined,
-          }],
-        },
-      });
-    } finally {
-      listStub.restore();
-    }
-  });
-
-  await test.step('no manifest', () => {
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
-    try {
-      const message = packs.embed({
-        type: ManifestType.Builtin,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          embeds: [{
-            type: 'rich',
-            description: 'No packs have been added yet',
-          }],
-        },
-      });
-    } finally {
-      listStub.restore();
     }
   });
 });
@@ -2818,7 +2623,7 @@ Deno.test('aggregate media', async (test) => {
       assertEquals(await packs.aggregate<Media>({ media }), media);
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
+      assertSpyCalls(listStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -3470,7 +3275,7 @@ Deno.test('aggregate characters', async (test) => {
       assertEquals(await packs.aggregate<Character>({ character }), character);
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
+      assertSpyCalls(listStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();

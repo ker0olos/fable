@@ -7,14 +7,12 @@ export class GraphQLError extends Error {
   query: string;
   // deno-lint-ignore no-explicit-any
   variables: any;
-  response: string;
 
   constructor(
     url: string,
     query: string,
     // deno-lint-ignore no-explicit-any
     variables: any,
-    response: string,
     message: string,
   ) {
     super(message);
@@ -23,7 +21,6 @@ export class GraphQLError extends Error {
     this.url = url;
     this.query = query;
     this.variables = variables;
-    this.response = response;
   }
 }
 
@@ -44,13 +41,15 @@ export class NonFetalError extends Error {
 }
 
 export class NoPullsError extends Error {
-  refillTimestamp: string;
+  rechargeTimestamp: string;
 
-  constructor(lastPull: string) {
+  constructor(rechargeTimestamp?: string) {
     super('NO_PULLS_AVAILABLE');
 
     this.name = 'NoPullsError';
-    this.refillTimestamp = utils.lastPullToRefillTimestamp(lastPull);
+    this.rechargeTimestamp = utils.rechargeTimestamp(
+      { rechargeTimestamp },
+    );
   }
 }
 

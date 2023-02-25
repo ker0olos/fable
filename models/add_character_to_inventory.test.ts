@@ -38,6 +38,150 @@ import {
 import { fql } from './fql.ts';
 
 Deno.test('add character to inventory', async (test) => {
+  await test.step('ok', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const varStub = FakeVar();
+    const refStub = FakeRef();
+    const indexStub = FakeIndex();
+    const appendStub = FakeAppend();
+    const isNonEmptyStub = FakeIsNonEmpty();
+    const subtractStub = FakeSubtract();
+    const matchStub = FakeMatch();
+    const lteStub = FakeLTE();
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([1, new Date('2023-02-19T18:29:17.549Z'), 1, {
+        ref: 'anotherCharacter',
+      }]) as any,
+    );
+
+    const nowStub = FakeNow(new Date('2023-02-06T00:44:59.295Z'));
+
+    const createStub = FakeCreate();
+    const updateStub = FakeUpdate();
+
+    try {
+      const response = addCharacter({
+        characterId: 'character_id',
+        mediaId: 'media_id',
+        rating: 4,
+        inventory: 'inventory',
+        instance: 'instance',
+        user: 'user',
+        pool: 1,
+        popularityChance: 1,
+        popularityGreater: 0,
+        popularityLesser: 100,
+        roleChance: 1,
+        role: 'role',
+      } as any) as any;
+
+      assertSpyCall(indexStub, 0, {
+        args: ['characters_instance_id'],
+      });
+
+      assertSpyCall(matchStub, 0, {
+        args: [
+          'characters_instance_id' as any,
+          'character_id',
+          {
+            ref: 'instance',
+          },
+        ],
+      });
+
+      assertSpyCall(selectStub, 0, {
+        args: [
+          ['data', 'availablePulls'],
+          'inventory' as any,
+        ],
+      });
+
+      assertSpyCallArg(ifStub, 1, 0, false);
+      assertSpyCallArg(ifStub, 0, 0, false);
+
+      assertSpyCall(createStub, 0, {
+        args: [
+          'character' as any,
+          {
+            id: 'character_id',
+            mediaId: 'media_id',
+            rating: 4,
+            inventory: {
+              ref: 'inventory',
+            },
+            user: {
+              ref: 'user',
+            },
+            instance: {
+              ref: 'instance',
+            },
+            history: [{
+              gacha: {
+                by: {
+                  ref: 'user',
+                },
+                pool: 1,
+                popularityChance: 1,
+                popularityGreater: 0,
+                popularityLesser: 100,
+                roleChance: 1,
+                role: 'role',
+              },
+            }],
+          },
+        ],
+      });
+
+      assertSpyCall(updateStub, 0, {
+        args: [
+          { ref: 'inventory' } as any,
+          {
+            lastPull: new Date('2023-02-06T00:44:59.295Z'),
+            rechargeTimestamp: new Date('2023-02-19T18:29:17.549Z'),
+            availablePulls: 0,
+            characters: [
+              {
+                ref: 'createdCharacter',
+              },
+              {
+                ref: 'anotherCharacter',
+              },
+            ],
+          },
+        ],
+      });
+
+      assertEquals(response, {
+        ok: true,
+        character: {
+          ref: 'character',
+        },
+        inventory: {
+          ref: 'inventory',
+        },
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      varStub.restore();
+      refStub.restore();
+      indexStub.restore();
+      appendStub.restore();
+      isNonEmptyStub.restore();
+      subtractStub.restore();
+      matchStub.restore();
+      selectStub.restore();
+      lteStub.restore();
+      nowStub.restore();
+      createStub.restore();
+      updateStub.restore();
+    }
+  });
+
   await test.step('character exists', () => {
     const ifStub = FakeIf();
     const letStub = FakeLet();
@@ -161,144 +305,6 @@ Deno.test('add character to inventory', async (test) => {
       matchStub.restore();
       selectStub.restore();
       lteStub.restore();
-    }
-  });
-
-  await test.step('ok', () => {
-    const ifStub = FakeIf();
-    const letStub = FakeLet();
-    const varStub = FakeVar();
-    const refStub = FakeRef();
-    const indexStub = FakeIndex();
-    const appendStub = FakeAppend();
-    const isNonEmptyStub = FakeIsNonEmpty();
-    const subtractStub = FakeSubtract();
-    const matchStub = FakeMatch();
-    const lteStub = FakeLTE();
-
-    const selectStub = stub(
-      fql,
-      'Select',
-      returnsNext([1, 1, { ref: 'anotherCharacter' }]) as any,
-    );
-
-    const nowStub = FakeNow(new Date('2023-02-06T00:44:59.295Z'));
-
-    const createStub = FakeCreate();
-    const updateStub = FakeUpdate();
-
-    try {
-      const response = addCharacter({
-        characterId: 'character_id',
-        mediaId: 'media_id',
-        rating: 4,
-        inventory: 'inventory',
-        instance: 'instance',
-        user: 'user',
-        pool: 1,
-        popularityChance: 1,
-        popularityGreater: 0,
-        popularityLesser: 100,
-        roleChance: 1,
-        role: 'role',
-      } as any) as any;
-
-      assertSpyCall(indexStub, 0, {
-        args: ['characters_instance_id'],
-      });
-
-      assertSpyCall(matchStub, 0, {
-        args: [
-          'characters_instance_id' as any,
-          'character_id',
-          {
-            ref: 'instance',
-          },
-        ],
-      });
-
-      assertSpyCall(selectStub, 0, {
-        args: [
-          ['data', 'availablePulls'],
-          'inventory' as any,
-        ],
-      });
-
-      assertSpyCallArg(ifStub, 1, 0, false);
-      assertSpyCallArg(ifStub, 0, 0, false);
-
-      assertSpyCall(createStub, 0, {
-        args: [
-          'character' as any,
-          {
-            id: 'character_id',
-            mediaId: 'media_id',
-            rating: 4,
-            inventory: {
-              ref: 'inventory',
-            },
-            user: {
-              ref: 'user',
-            },
-            instance: {
-              ref: 'instance',
-            },
-            history: [{
-              gacha: {
-                by: {
-                  ref: 'user',
-                },
-                pool: 1,
-                popularityChance: 1,
-                popularityGreater: 0,
-                popularityLesser: 100,
-                roleChance: 1,
-                role: 'role',
-              },
-            }],
-          },
-        ],
-      });
-
-      assertSpyCall(updateStub, 0, {
-        args: [
-          { ref: 'inventory' } as any,
-          {
-            lastPull: new Date('2023-02-06T00:44:59.295Z'),
-            availablePulls: 0,
-            characters: [
-              {
-                ref: 'createdCharacter',
-              },
-              {
-                ref: 'anotherCharacter',
-              },
-            ],
-          },
-        ],
-      });
-
-      assertEquals(response, {
-        ok: true,
-        inventory: {
-          ref: 'inventory',
-        },
-      });
-    } finally {
-      ifStub.restore();
-      letStub.restore();
-      varStub.restore();
-      refStub.restore();
-      indexStub.restore();
-      appendStub.restore();
-      isNonEmptyStub.restore();
-      subtractStub.restore();
-      matchStub.restore();
-      selectStub.restore();
-      lteStub.restore();
-      nowStub.restore();
-      createStub.restore();
-      updateStub.restore();
     }
   });
 });

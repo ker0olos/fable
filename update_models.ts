@@ -11,8 +11,10 @@ try {
 import { Client } from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.js';
 
 import getUserInventory from './models/get_user_inventory.ts';
+import getUserCollection from './models/get_user_collection.ts';
 
 import addCharacterToInventory from './models/add_character_to_inventory.ts';
+import setCharacterToParty from './models/set_character_to_party.ts';
 
 import findCharacter from './models/find_character.ts';
 
@@ -40,6 +42,8 @@ async function update(queries: (() => Promise<unknown>)[]): Promise<void> {
 
 await update([
   ...getUserInventory(client),
+  ...getUserCollection(client),
   ...findCharacter(client),
   ...addCharacterToInventory(client),
+  ...setCharacterToParty(client),
 ]);

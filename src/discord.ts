@@ -67,12 +67,17 @@ export type Member = {
   user: User;
 };
 
-type User = {
+export type User = {
   id: string;
   username: string;
   discriminator: string;
   avatar: string;
   banner?: string;
+};
+
+type Resolved = {
+  users?: Record<string, User>;
+  members?: Record<string, Omit<Member, 'user'>>;
 };
 
 export type Emote = {
@@ -90,8 +95,7 @@ export class Interaction<Options> {
   channelId: string;
   targetId?: string;
 
-  message?: unknown;
-  data?: unknown;
+  resolved?: Resolved;
 
   name?: string;
   options: {
@@ -130,8 +134,8 @@ export class Interaction<Options> {
       type: string;
       guild_id: string;
       channel_id: string;
-      // target_id?: string;
-      // resolved?: unknown[];
+      resolved?: Resolved;
+      target_id?: string;
       options?: {
         type: number;
         name: string;
@@ -151,7 +155,7 @@ export class Interaction<Options> {
     } & { // Modal Submit
       custom_id: string;
       components: { type: 1; components: unknown[] }[];
-    } = this.data = obj.data;
+    } = obj.data;
 
     this.id = obj.id;
     this.token = obj.token;
@@ -174,7 +178,8 @@ export class Interaction<Options> {
       case InteractionType.Command: {
         this.name = data.name;
 
-        // this.targetId = data!.target_id;
+        this.resolved = data.resolved;
+        this.targetId = data.target_id;
 
         if (data.options?.[0].type === 1) {
           this.subcommand = data.options?.[0].name;
@@ -482,7 +487,7 @@ export class Message {
     flags?: number;
     content?: string;
     // deno-lint-ignore no-explicit-any
-    attachments?: any[];
+    attachments: any[];
     embeds: unknown[];
     components: unknown[];
     // title?: string;
@@ -495,6 +500,7 @@ export class Message {
     this.#suggestions = {};
     this.#data = {
       embeds: [],
+      attachments: [],
       components: [],
     };
   }
@@ -552,8 +558,7 @@ export class Message {
 
   addEmbed(embed: Embed): Message {
     // discord allows up to 10 embeds
-    // but any more than 3 and they look cluttered
-    if (this.#data.embeds.length < 3) {
+    if (this.#data.embeds.length < 10) {
       this.#data.embeds.push(embed.json());
     }
 
@@ -697,19 +702,24 @@ export class Message {
   static page(
     { message, type, target, index, total, next }: {
       type: string;
-      target: string;
       message: Message;
       index: number;
+      target?: string;
       next?: boolean;
       total?: number;
     },
   ): Message {
     const group: Component[] = [];
 
-    if (index - 1 >= 0) {
+    if (index - 1 >= 0 || total) {
       group.push(
         new Component()
-          .setId(type, target, `${index - 1}`)
+          .setId(
+            type,
+            target ?? '',
+            // deno-lint-ignore no-non-null-assertion
+            `${index - 1 >= 0 ? index - 1 : total! - 1}`,
+          )
           .setLabel(`Prev`),
       );
     }
@@ -722,10 +732,10 @@ export class Message {
         .toggle(),
     );
 
-    if (next) {
+    if (next || total) {
       group.push(
         new Component()
-          .setId(type, target, `${index + 1}`)
+          .setId(type, target ?? '', `${next ? `${index + 1}` : 0}`)
           .setLabel(`Next`),
       );
     }
@@ -734,32 +744,25 @@ export class Message {
   }
 
   static anchor(
-    { message, type, anchor, page, total, id }: {
+    { message, type, target, id, anchor }: {
+      id: string;
+      target: string | number;
       type: string;
+      anchor: string;
       message: Message;
-      anchor: string | number;
-      page?: number;
-      total?: number;
-      id?: string;
     },
   ): Message {
     const group: Component[] = [];
 
     group.push(
       new Component()
-        .setId('anchor', type, id ?? '', `${anchor}`, 'prev')
+        .setId(type, `${target}`, id, `${anchor}`, 'prev')
         .setLabel(`Prev`),
     );
 
     group.push(
-      new Component().setId('_')
-        .setLabel(`${page ?? '?'}${total ? `/${total}` : ''}`)
-        .toggle(),
-    );
-
-    group.push(
       new Component()
-        .setId('anchor', type, id ?? '', `${anchor}`, 'next')
+        .setId(type, `${target}`, id, `${anchor}`, 'next')
         .setLabel(`Next`),
     );
 

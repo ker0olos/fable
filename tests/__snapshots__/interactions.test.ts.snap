@@ -1,0 +1,172 @@
+export const snapshot = {};
+
+snapshot[`/help 1`] = `
+{
+  data: {
+    attachments: [
+    ],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==2",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "1/3",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==1",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "gacha=user_id",
+            label: "/gacha",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "now=user_id",
+            label: "/now",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "1.",
+        },
+        description: "Before anything: You will need characters.
+
+__You get a free pull every 15 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your pulls recharge.
+
+__Characters are exclusive__, once a player on the server finds a character, no one else can find that character in gacha again. You will need trade to get them.
+
+__Characters vary in ranks from 1* to 5*__, A character rating is based on their popularity (as of right now, a character rating cannot be raised).
+
+__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5* appearing is equal or less than 1%.
+
+> _\`/pull\` allows you to do gacha with no animations._
+​",
+        footer: {
+          text: "aliases: /w, /p",
+        },
+        title: "\`/gacha\`",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;
+
+snapshot[`/help 2`] = `
+{
+  data: {
+    attachments: [
+    ],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==0",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "2/3",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==2",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "All Commands",
+        },
+        description: "- \`/gacha\` \`/pull\` \`/w\`: _start a new gacha pull_
+- \`/now\` \`/cl\` \`/tu\`: _check what you can do right now_
+- \`/search\` \`/anime\` \`/manga\`: _search for specific media
+- \`/character\` \`/char\` \`/im\`: _search for a specific character_
+
+- \`/collection stars\` \`/mm stars\`: _list all your stars_
+- \`/collection media\` \`/mm media\`: _list all your characters from a specific media_
+
+- \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;
+
+snapshot[`/help 3`] = `
+{
+  data: {
+    attachments: [
+    ],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==1",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "3/3",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==0",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "Admin Commands",
+        },
+        description: "- \`/packs community\`: _list all instated community packs_
+- \`/packs builtin\`: _list all the builtin packs_",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;

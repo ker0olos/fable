@@ -37,13 +37,13 @@ export async function request<T = any, V = Variables>(
   options.headers.append('Content-Type', 'application/json');
   options.headers.append('Accept', 'application/json');
 
-  const response = await fetch(url, options);
-
   try {
+    const response = await fetch(url, options);
+
     const json = await response.json();
 
     if (json.errors || !response.ok) {
-      throw new Error(json.errors ?? json);
+      throw new Error(JSON.stringify(json.errors || json));
     }
 
     return json.data;
@@ -52,7 +52,6 @@ export async function request<T = any, V = Variables>(
       url,
       query,
       variables,
-      await response.text(),
       err.message,
     );
   }

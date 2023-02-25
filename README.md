@@ -27,17 +27,18 @@ alternative. Like Mudae, you can pull anime characters. Unlike Mudae, there are
 no premiums and no pay-to-win bullshit.
 
 There's a intuitive system to manage and customize the characters in your
-servers, you can add community-made packs that are full of new characters with a
-single command.
+servers, like adding extensions to chrome and installing apps on your phone, you
+can install community-made packs that are full of new characters with a single
+command.
 
 Fable is actively developed with new game modes and features frequently.
 
-[^1]: Currently the default packs include anime/manga/vtubers, but you can add
-other packs, e.g. video game characters or real life celebrities. And you can
-disable the anime packs entirety (Incase it's a sports server or else, we try
-our best to include term naturel commands along with anime analogies).
+[^1]: Currently the default packs include anime/manga/vtubers, but you can
+install other packs, e.g. video game characters or real life celebrities. And
+you can disable the anime packs entirety (Incase it's a sports server or else,
+we try our best to include term naturel commands along with anime analogies).
 
-> **Warning** Fable is in early access. Some features might be missing. Missing
+> Fable is in early access. Some core features might be missing. Missing
 > features include "Trading" (see
 > [#20](https://github.com/ker0olos/fable/issues/20) for a full roadmap)
 
@@ -52,11 +53,10 @@ our best to include term naturel commands along with anime analogies).
 
 ### Essential Commands
 
-- `/gacha`, `/w`: to start a new gacha pull
-- `/now`, `/tu`: to check what you can do right now
-- `/collection`, or `/mm`: to view all your characters
-- `/search`, `/anime` or `/manga`: to search for specific series
-- `/character`: to search for a specific character
+- **`/gacha`, `/w`**: _start a new gacha pull_
+- **`/now`, `/tu`**: _check what you can do right now_
+- **`/search`, `/anime`, `/manga`**: _to search for specific media_
+- **`/character`, `/im`**: _to search for a specific character_
 
 ### Get Involved
 
@@ -68,6 +68,17 @@ our best to include term naturel commands along with anime analogies).
 
 <br clear="right"/>
 
+<h6 align="center">(Check when is the next episode is airing)</h6>
+<h6 align="center">
+  <img width="500" src="https://user-images.githubusercontent.com/52022280/219866921-5209e2c1-08c8-4183-9dce-f961099dc89a.png" alt="Searching">
+</h6>
+<h6 align="center">(Search for any anime or manga you want to know more about)</h6>
+<h6 align="center">
+  <img  width="500" src="https://user-images.githubusercontent.com/52022280/219867337-4f99626a-802e-412c-b26c-d3e75ed9fbae.png" alt="Searching">
+</h6>
+
+---
+
 ## FAQ
 
 <!-- TODO -->
@@ -78,40 +89,47 @@ our best to include term naturel commands along with anime analogies).
 
 > How can I create a new pack?
 
-We recommend that you check
-[fable-community/example](https://github.com/fable-community/example), it has a
-great quick start guide.
+Currently, it's only possible through editing JSON files, we recommend that you
+check [fable-community/example](https://github.com/fable-community/example), it
+has a great quick start guide.
 
-> Can I use prefixes like "$"?
+> Can I use prefixes like `$`
 
 No, Fable was built from the ground up to only support slash commands, prefixes
 are an entirely different thing that requires the bot to manually monitor all
 incoming messages in a server. We won't add prefixes to Fable, but you can go
-tell discord to add custom prefixes to "slash" commands instead of slash for all
+tell discord to add custom prefixes to "slash" commands instead of "/" for all
 bots.
 
-> How are you keeping Fable free?
+> How/why are you keeping Fable free?
 
 We're using serverless for the servers and the database, which is much cheaper
-to maintain. If it ever starts hurting our wallet, we'll have to actively ask
-for support, but no one is getting special rewards for donations, worst-case
-we'll have to offer cosmetics; tl;dr Fable will always remain 100% free.
+to maintain right now.
+
+If things get out of hand we'll rate limit big servers for something like 1M
+command calls per month[^2]. only server owners will be required to cover for
+what "their" server costs us (their portion of the bill), we'll keep covering
+the bill for small servers with less activity.
+
+Fable will always remain 100% free-to-play to the players.
+
+[^2]: Currently there are no limits on any server.
+
+---
 
 ## Credits
 
 Our core team who are responsible for reviewing code and making decisions on the
 direction of the project:
 
-- [@ker0olos](https://github.com/ker0olos) — Kerolos Zaki (aka. Wholesome) —
-  Wholesome#6355
+- ker0olos#6355 — [@ker0olos](https://github.com/ker0olos) — Kerolos Zaki
+
+- Checkout <https://anilist.co>. It will help you track those 2000 anime you
+  watch, and let you know when a new episode or season is out.
 
 - This project wouldn't been possible without Deno. Want to learn about running
-  discord bots with low-cost? Check the official guide at
+  your own discord bot with low-cost? Check the official guide at
   <https://deno.com/deploy/docs/tutorial-discord-slash>
-
-- Checkout our friends at <https://anilist.co>. Your support will mean a lot to
-  them. Tracking your anime through their app might just help you rank up your
-  favorite characters to 5 stars.
 
 [discord]: https://discord.gg/ceKyEfhyPQ
 [contributing]: https://github.com/ker0olos/fable/wiki/Contributing

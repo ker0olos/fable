@@ -140,7 +140,7 @@ export type PoolInfo = {
 
 export enum ManifestType {
   Builtin = 'builtin',
-  Manual = 'manual',
+  Community = 'community',
 }
 
 export interface Manifest {
@@ -151,12 +151,12 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
-  // TODO BLOCKED load manual packs
+  // TODO BLOCKED load community packs
   depends?: string[];
-  // TODO BLOCKED load manual packs
+  // TODO BLOCKED load community packs
   conflicts?: string[];
-  // TODO BLOCKED load manual packs
-  addedBy?: string;
+  // TODO BLOCKED load community packs
+  installedBy?: string;
   media?: {
     conflicts?: string[];
     new?: DisaggregatedMedia[];
@@ -171,23 +171,47 @@ export interface Manifest {
   type?: ManifestType;
 }
 
-export type Inventory = {
-  lastPull?: string;
-  availablePulls: number;
-  characters: { id: string; mediaId: string; rating: number }[];
-};
-
-export type Mutation = {
-  ok: false;
-  error: 'CHARACTER_EXISTS';
-} | {
-  ok: false;
-  error: 'NO_PULLS_AVAILABLE';
-  inventory: Inventory;
-} | {
-  ok: true;
-  inventory: Inventory;
-};
+// deno-lint-ignore no-namespace
+export namespace Schema {
+  export type Character = {
+    id: string;
+    rating: number;
+    mediaId: string;
+    user: { id: string };
+  };
+  export type Inventory = {
+    availablePulls: number;
+    rechargeTimestamp?: string;
+    lastPull?: string;
+    characters: Character[];
+    party?: {
+      member1?: Character;
+      member2?: Character;
+      member3?: Character;
+      member4?: Character;
+      member5?: Character;
+    };
+  };
+  export type Mutation = {
+    ok: false;
+    error: 'CHARACTER_EXISTS';
+  } | {
+    ok: false;
+    error: 'NO_PULLS_AVAILABLE';
+    inventory: Inventory;
+  } | {
+    ok: false;
+    error: 'CHARACTER_NOT_FOUND';
+  } | {
+    ok: false;
+    error: 'CHARACTER_NOT_OWNED';
+    character: Character;
+  } | {
+    ok: true;
+    inventory: Inventory;
+    character: Character;
+  };
+}
 
 type Command = {
   source: string;
