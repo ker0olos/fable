@@ -485,8 +485,12 @@ export async function mediaCharacter(
 
   const message = characterMessage(character, {
     existing,
-    relations: [media as DisaggregatedMedia],
-  });
+    relations: false,
+  }).addComponents([
+    new discord.Component()
+      .setId('media', `${media.packId}:${media.id}`)
+      .setLabel(`/${media.type.toLowerCase()}`),
+  ]);
 
   return discord.Message.page({
     total,

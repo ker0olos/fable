@@ -268,16 +268,20 @@ export async function stars({
           .setDescription('This character was removed or disabled'),
       );
   } else {
+    const media = results[0][0];
+
     message = characterMessage(
       results[1][0],
       {
-        relations: [results[0][0] as DisaggregatedMedia],
         rating: new Rating({ stars: character.rating }),
-        media: {
-          title: packs.aliasToArray(results[0][0].title)[0],
-        },
+        media: { title: packs.aliasToArray(media.title)[0] },
+        relations: false,
       },
-    );
+    ).addComponents([
+      new discord.Component()
+        .setId('media', `${media.packId}:${media.id}`)
+        .setLabel(`/${media.type.toLowerCase()}`),
+    ]);
   }
 
   return discord.Message.anchor({
@@ -384,13 +388,14 @@ export async function media({
     message = characterMessage(
       characters[0],
       {
-        relations: [media as DisaggregatedMedia],
         rating: new Rating({ stars: character.rating }),
-        media: {
-          title: titles[0],
-        },
+        relations: false,
       },
-    );
+    ).addComponents([
+      new discord.Component()
+        .setId('media', `${media.packId}:${media.id}`)
+        .setLabel(`/${media.type.toLowerCase()}`),
+    ]);
   }
 
   return discord.Message.anchor({

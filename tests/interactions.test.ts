@@ -2789,7 +2789,7 @@ Deno.test('media characters', async (test) => {
               },
               {
                 custom_id: 'media=pack-id:1',
-                label: 'title',
+                label: '/anime',
                 style: 2,
                 type: 2,
               },
@@ -2829,7 +2829,7 @@ Deno.test('media characters', async (test) => {
           media: {
             id: '1',
             packId: 'pack-id',
-            type: MediaType.Anime,
+            type: MediaType.Manga,
             title: {
               english: 'title',
             },
@@ -2893,7 +2893,7 @@ Deno.test('media characters', async (test) => {
               },
               {
                 custom_id: 'media=pack-id:1',
-                label: 'title',
+                label: '/manga',
                 style: 2,
                 type: 2,
               },
@@ -3167,7 +3167,7 @@ Deno.test('/collection stars', async (test) => {
               },
               {
                 custom_id: 'media=anilist:2',
-                label: 'name (Anime)',
+                label: '/anime',
                 style: 2,
                 type: 2,
               },
@@ -3574,10 +3574,9 @@ Deno.test('/collection media', async (test) => {
   await test.step('normal', async () => {
     const media: AniListMedia = {
       id: '2',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
+      type: MediaType.Manga,
       title: {
-        english: 'name',
+        english: 'title',
       },
       popularity: 0,
     };
@@ -3585,7 +3584,7 @@ Deno.test('/collection media', async (test) => {
     const character: AniListCharacter = {
       id: '1',
       name: {
-        full: 'title',
+        full: 'name',
       },
       media: {
         edges: [{
@@ -3676,7 +3675,7 @@ Deno.test('/collection media', async (test) => {
               },
               {
                 custom_id: 'media=anilist:2',
-                label: 'name (Anime)',
+                label: '/manga',
                 style: 2,
                 type: 2,
               },
@@ -3690,7 +3689,7 @@ Deno.test('/collection media', async (test) => {
               fields: [
                 {
                   name: 'name',
-                  value: '**title**',
+                  value: '\u200B',
                 },
               ],
               image: {
