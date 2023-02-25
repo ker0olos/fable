@@ -2958,7 +2958,7 @@ Deno.test('media characters', async (test) => {
             index: 0,
           }),
         NonFetalError,
-        'character is disabled or invalid',
+        'This character was removed or disabled',
       );
     } finally {
       disabledStub.restore();
@@ -4376,8 +4376,8 @@ Deno.test('gacha', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha=user-id',
-                label: '/gacha',
+                custom_id: 'pull=user-id',
+                label: '/pull',
                 style: 2,
                 type: 2,
               },

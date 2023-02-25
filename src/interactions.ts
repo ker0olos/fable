@@ -233,7 +233,7 @@ const handler = async (r: Request) => {
           }
           case 'pull':
           case 'gacha':
-          case 'w':
+          case 'n':
           case 'p':
             return gacha
               .start({
@@ -376,6 +376,7 @@ const handler = async (r: Request) => {
               )
               .send();
           }
+          case 'pull':
           case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
@@ -384,6 +385,7 @@ const handler = async (r: Request) => {
             return gacha
               .start({
                 token,
+                reduceMotion: customType === 'pull',
                 userId: member.user.id,
                 guildId,
                 channelId,

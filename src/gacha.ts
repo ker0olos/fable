@@ -241,7 +241,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
           case 'NO_PULLS_AVAILABLE':
             throw new NoPullsError(response.inventory.rechargeTimestamp);
           default:
-            throw new Error(response);
+            throw new Error(response.error);
         }
       }
     }
@@ -328,16 +328,19 @@ function start(
         if (userId) {
           message.addComponents([
             new discord.Component()
-              .setId('gacha', userId)
-              .setLabel('/gacha'),
-            new discord.Component()
-              .setLabel('/character')
-              .setId(
-                `character`,
-                `${pull.character.packId}:${pull.character.id}`,
-              ),
+              .setId(reduceMotion ? 'pull' : 'gacha', userId)
+              .setLabel(`/${reduceMotion ? 'pull' : 'gacha'}`),
           ]);
         }
+
+        message.addComponents([
+          new discord.Component()
+            .setLabel('/character')
+            .setId(
+              `character`,
+              `${pull.character.packId}:${pull.character.id}`,
+            ),
+        ]);
 
         await message.patch(token);
       })

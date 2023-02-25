@@ -236,7 +236,7 @@ await put([
   ...Command({
     name: 'pull',
     description: 'Start a insta gacha pull with no animation',
-    aliases: ['p'],
+    aliases: ['n'],
   }),
   ...Command({
     name: 'fake_pull',
