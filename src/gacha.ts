@@ -270,13 +270,13 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
  * start the pull's animation
  */
 function start(
-  { token, userId, guildId, characterId, reduceMotion }: {
+  { token, userId, guildId, characterId, quiet }: {
     token: string;
     userId?: string;
     guildId?: string;
     channelId?: string;
     characterId?: string;
-    reduceMotion?: boolean;
+    quiet?: boolean;
   },
 ): discord.Message {
   const _ =
@@ -296,7 +296,7 @@ function start(
               }),
           );
 
-        if (!reduceMotion) {
+        if (!quiet) {
           await message.patch(token);
 
           await utils.sleep(4);
@@ -328,8 +328,8 @@ function start(
         if (userId) {
           message.addComponents([
             new discord.Component()
-              .setId(reduceMotion ? 'pull' : 'gacha', userId)
-              .setLabel(`/${reduceMotion ? 'pull' : 'gacha'}`),
+              .setId(quiet ? 'pull' : 'gacha', userId)
+              .setLabel(`/${quiet ? 'pull' : 'gacha'}`),
           ]);
         }
 

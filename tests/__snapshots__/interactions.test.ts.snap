@@ -61,7 +61,7 @@ __Gacha rates depend on multiple variables__, but generally speaking the chances
 > _\`/pull\` allows you to do gacha with no animations._
 ​",
         footer: {
-          text: "aliases: /w, /p",
+          text: "aliases: /w, /q",
         },
         title: "\`/gacha\`",
         type: "rich",
@@ -108,7 +108,7 @@ snapshot[`/help 2`] = `
         author: {
           name: "All Commands",
         },
-        description: "- \`/gacha\` \`/pull\` \`/w\`: _start a new gacha pull_
+        description: "- \`/gacha\` \`/w\`: _start a new gacha pull_
 - \`/now\` \`/cl\` \`/tu\`: _check what you can do right now_
 - \`/search\` \`/anime\` \`/manga\`: _search for specific media
 - \`/character\` \`/char\` \`/im\`: _search for a specific character_
