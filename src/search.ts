@@ -183,9 +183,11 @@ export function mediaDebugMessage(
 }
 
 export async function character(
-  { id, guildId, search, debug }: {
+  { id, userId, guildId, search, debug }: {
     id?: string;
+    userId?: string;
     guildId?: string;
+    channelId?: string;
     search?: string;
     debug?: boolean;
   },
@@ -214,9 +216,19 @@ export async function character(
     return characterDebugMessage(character);
   }
 
-  return characterMessage(character, {
+  const message = characterMessage(character, {
     existing,
   });
+
+  if (userId && existing?.userId === userId) {
+    message.insertComponents([
+      new discord.Component()
+        .setId('passign', existing.id)
+        .setLabel(`/p assign`),
+    ]);
+  }
+
+  return message;
 }
 
 export function characterMessage(
@@ -441,9 +453,11 @@ export function characterDebugMessage(character: Character): discord.Message {
 }
 
 export async function mediaCharacter(
-  { mediaId, guildId, index }: {
+  { mediaId, userId, guildId, index }: {
     mediaId: string;
+    userId?: string;
     guildId?: string;
+    channelId?: string;
     index: number;
   },
 ): Promise<discord.Message> {
@@ -485,8 +499,20 @@ export async function mediaCharacter(
 
   const message = characterMessage(character, {
     existing,
-    relations: [media as DisaggregatedMedia],
-  });
+    relations: false,
+  }).addComponents([
+    new discord.Component()
+      .setId('media', `${media.packId}:${media.id}`)
+      .setLabel(`/${media.type.toLowerCase()}`),
+  ]);
+
+  if (userId && existing?.userId === userId) {
+    message.insertComponents([
+      new discord.Component()
+        .setId('passign', existing.id)
+        .setLabel(`/p assign`),
+    ]);
+  }
 
   return discord.Message.page({
     total,

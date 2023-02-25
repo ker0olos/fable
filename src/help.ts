@@ -31,14 +31,14 @@ export function help(
             '> _`/pull` allows you to do gacha with no animations._',
             '\u200B',
           ].join('\n'))
-          .setFooter({ text: 'aliases: /w, /p' }),
+          .setFooter({ text: 'aliases: /w, /q' }),
       ),
     new discord.Message()
       .addEmbed(
         new discord.Embed()
           .setAuthor({ name: 'All Commands' })
           .setDescription([
-            '- `/gacha` `/pull` `/w`: _start a new gacha pull_',
+            '- `/gacha` `/w`: _start a new gacha pull_',
             '- `/now` `/cl` `/tu`: _check what you can do right now_',
             '- `/search` `/anime` `/manga`: _search for specific media',
             '- `/character` `/char` `/im`: _search for a specific character_',

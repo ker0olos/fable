@@ -97,8 +97,8 @@ export async function view({
     party?.member5?.rating,
   ];
 
-  const [characters] = await Promise.all([
-    // packs.media({ ids: mediaIds }),
+  const [media, characters] = await Promise.all([
+    packs.media({ ids: mediaIds.filter(Boolean) }),
     packs.characters({ ids: ids.filter(Boolean) }),
   ]);
 
@@ -112,8 +112,14 @@ export async function view({
       characterId === `${packId}:${id}`
     );
 
+    const mediaIndex = media.findIndex(({ packId, id }) =>
+      // deno-lint-ignore no-non-null-assertion
+      mediaIds[i]! === `${packId}:${id}`
+    );
+
     if (
       !character ||
+      mediaIndex === -1 ||
       packs.isDisabled(characterId) ||
       // deno-lint-ignore no-non-null-assertion
       packs.isDisabled(mediaIds[i]!)
@@ -127,6 +133,7 @@ export async function view({
 
     const embed = characterEmbed(character, {
       mode: 'thumbnail',
+      media: { title: packs.aliasToArray(media[mediaIndex].title)[0] },
       rating: new Rating({ stars: ratings[i] }),
       description: false,
       footer: false,

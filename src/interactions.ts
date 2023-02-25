@@ -204,6 +204,8 @@ const handler = async (r: Request) => {
             const name = options['name'] as string;
 
             return (await search.character({
+              userId: member.user.id,
+              channelId,
               guildId,
               search: name,
               debug: Boolean(options['debug']),
@@ -309,10 +311,10 @@ const handler = async (r: Request) => {
           case 'pull':
           case 'gacha':
           case 'w':
-          case 'n':
+          case 'q':
             return gacha
               .start({
-                reduceMotion: ['pull', 'n'].includes(name),
+                quiet: ['pull', 'q'].includes(name),
                 userId: member.user.id,
                 channelId,
                 guildId,
@@ -362,7 +364,12 @@ const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return (await search.character({ id, guildId }))
+            return (await search.character({
+              userId: member.user.id,
+              channelId,
+              guildId,
+              id,
+            }))
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -374,9 +381,24 @@ const handler = async (r: Request) => {
             const index = parseInt(customValues![1]) || 0;
 
             return (await search.mediaCharacter({
+              userId: member.user.id,
+              channelId,
               guildId,
               mediaId,
               index,
+            }))
+              .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'passign': {
+            // deno-lint-ignore no-non-null-assertion
+            const characterId = customValues![0];
+
+            return (await party.assign({
+              id: characterId,
+              userId: member.user.id,
+              channelId,
+              guildId,
             }))
               .setType(discord.MessageType.Update)
               .send();
@@ -460,7 +482,7 @@ const handler = async (r: Request) => {
             return gacha
               .start({
                 token,
-                reduceMotion: customType === 'pull',
+                quiet: customType === 'pull',
                 userId: member.user.id,
                 guildId,
                 channelId,
