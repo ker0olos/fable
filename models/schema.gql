@@ -14,6 +14,8 @@ type User @collection(name: "user") {
   id: String!
   #
   inventories: [Inventory!]!
+  #
+  badges: [Badge!]!
 }
 
 type Guild @collection(name: "guild") {
@@ -64,6 +66,15 @@ type Character @collection(name: "character") {
   instance: Instance!
   #
   user: User!
+}
+
+type Badge @collection(name: "badge") {
+  #
+  name: String!
+  #
+  description: String!
+  #
+  users: [User!]!
 }
 
 type History @embedded {
@@ -135,6 +146,9 @@ type Mutation {
   ): Response! @resolver(name: "add_character_to_inventory")
 
   #
-  setCharacterToParty(userId: String!, guildId: String!, characterId: String!, member: Int!): Response!
+  setCharacterToParty(userId: String!, guildId: String!, characterId: String!, spot: Int!): Response!
     @resolver(name: "set_character_to_party")
+  #
+  removeCharacterFromParty(userId: String!, guildId: String!, spot: Int!): Response!
+    @resolver(name: "remove_character_from_party")
 }

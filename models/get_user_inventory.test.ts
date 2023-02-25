@@ -20,6 +20,7 @@ import {
   FakeDivide,
   FakeGet,
   FakeGTE,
+  FakeId,
   FakeIf,
   FakeIndex,
   FakeIsNonEmpty,
@@ -95,6 +96,7 @@ Deno.test('get or create user', async (test) => {
     const ifStub = FakeIf();
     const letStub = FakeLet();
     const indexStub = FakeIndex();
+    const idStub = FakeId();
     const isNonEmptyStub = FakeIsNonEmpty();
     const createStub = FakeCreate();
 
@@ -117,8 +119,11 @@ Deno.test('get or create user', async (test) => {
         args: [
           'user' as any,
           {
-            id: 'user_id',
+            badges: [
+              '357600097731608662',
+            ],
             inventories: [],
+            id: 'user_id',
           },
         ],
       });
@@ -126,6 +131,7 @@ Deno.test('get or create user', async (test) => {
       ifStub.restore();
       letStub.restore();
       indexStub.restore();
+      idStub.restore();
       isNonEmptyStub.restore();
       createStub.restore();
       matchStub.restore();

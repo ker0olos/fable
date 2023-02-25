@@ -15,6 +15,7 @@ import {
 export interface User {
   id: StringExpr;
   inventories: RefExpr[];
+  badges: RefExpr[];
 }
 
 export interface Guild {
@@ -59,6 +60,10 @@ export function getUser(id: StringExpr): UserExpr {
       fql.Create<User>('user', {
         id,
         inventories: [],
+        badges: [
+          // Early Bird Gets the Worm
+          fql.Id('badge', '357600097731608662'),
+        ],
       }),
     ));
 }
