@@ -37,22 +37,28 @@ export async function request<T = any, V = Variables>(
   options.headers.append('Content-Type', 'application/json');
   options.headers.append('Accept', 'application/json');
 
+  const response = await fetch(url, options);
+
+  const text = await response.text();
+
   try {
-    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(text);
+    }
 
-    const json = await response.json();
+    const json = JSON.parse(text);
 
-    if (json.errors || !response.ok) {
-      throw new Error(JSON.stringify(json.errors || json));
+    if (json.errors) {
+      throw new Error(JSON.stringify(json.errors));
     }
 
     return json.data;
-  } catch (err) {
+  } catch {
     throw new GraphQLError(
       url,
       query,
       variables,
-      err.message,
+      text,
     );
   }
 }

@@ -468,8 +468,8 @@ Deno.test('search many', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [{
@@ -487,7 +487,7 @@ Deno.test('search many', async (test) => {
                 }],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -529,8 +529,8 @@ Deno.test('search many', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [{
@@ -554,7 +554,7 @@ Deno.test('search many', async (test) => {
                 }],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -599,8 +599,8 @@ Deno.test('search many', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [{
@@ -618,7 +618,7 @@ Deno.test('search many', async (test) => {
                 }],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -676,14 +676,14 @@ Deno.test('search for media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -736,14 +736,14 @@ Deno.test('search for media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -783,14 +783,14 @@ Deno.test('search for media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -833,14 +833,14 @@ Deno.test('search for media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -921,14 +921,14 @@ Deno.test('search for media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -965,14 +965,14 @@ Deno.test('search for media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1009,14 +1009,14 @@ Deno.test('search for media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1055,14 +1055,14 @@ Deno.test('search for media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1107,14 +1107,14 @@ Deno.test('search for media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1162,14 +1162,14 @@ Deno.test('search for media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1205,14 +1205,14 @@ Deno.test('search for media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1260,14 +1260,14 @@ Deno.test('search for characters', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [character],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1321,14 +1321,14 @@ Deno.test('search for characters', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [character],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1368,14 +1368,14 @@ Deno.test('search for characters', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [character],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1409,14 +1409,14 @@ Deno.test('search for characters', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [character],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1453,14 +1453,14 @@ Deno.test('search for characters', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [character],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1497,14 +1497,14 @@ Deno.test('search for characters', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [character],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1540,14 +1540,14 @@ Deno.test('search for characters', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 characters: [character],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1599,12 +1599,12 @@ Deno.test('media character', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Media: media,
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -1889,15 +1889,15 @@ Deno.test('aggregate media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [parent],
                 characters: [character],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -2086,14 +2086,14 @@ Deno.test('aggregate media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -2341,15 +2341,15 @@ Deno.test('aggregate media', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [],
                 characters: [],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -2702,14 +2702,14 @@ Deno.test('aggregate characters', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -2852,14 +2852,14 @@ Deno.test('aggregate characters', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [media],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
@@ -3028,15 +3028,15 @@ Deno.test('aggregate characters', async (test) => {
       'fetch',
       () => ({
         ok: true,
-        json: (() =>
-          Promise.resolve({
+        text: (() =>
+          Promise.resolve(JSON.stringify({
             data: {
               Page: {
                 media: [],
                 characters: [],
               },
             },
-          })),
+          }))),
       } as any),
     );
 
