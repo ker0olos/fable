@@ -248,9 +248,8 @@ async function proxy(r: Request): Promise<Response> {
       throw new Error();
     }
 
-    // FIXME discord doesn't allow any gif that doesn't end with the file extension
-    // (see #39)
-    if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
+    // if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
+    if (type === 'image/gif') {
       throw new Error();
     }
 
@@ -296,25 +295,6 @@ async function proxy(r: Request): Promise<Response> {
         proxy.headers.set('content-type', 'image/jpeg');
         proxy.headers.set('content-length', `${t.byteLength}`);
       }
-    } else if (transformed instanceof imagescript.GIF) {
-      switch (size) {
-        case ImageSize.Thumbnail:
-          transformed.resize(110, -1);
-          break;
-        case ImageSize.Medium:
-          transformed.resize(230, -1);
-          break;
-        default:
-          transformed.resize(450, -1);
-          break;
-      }
-
-      const t = await transformed.encode(22);
-
-      proxy = new Response(t);
-
-      proxy.headers.set('content-type', 'image/gif');
-      proxy.headers.set('content-length', `${t.byteLength}`);
     }
 
     if (!proxy) {
