@@ -138,22 +138,22 @@ export async function view({
   return message;
 }
 
-export async function set({
+export async function assign({
   spot,
   userId,
   guildId,
   search,
   id,
 }: {
-  spot: number;
   userId: string;
   guildId: string;
   channelId?: string;
+  spot?: number;
   search?: string;
   id?: string;
 }): Promise<discord.Message> {
   const query = gql`
-    mutation ($userId: String!, $guildId: String!, $characterId: String!, $spot: Int!) {
+    mutation ($userId: String!, $guildId: String!, $characterId: String!, $spot: Int) {
       setCharacterToParty(userId: $userId, guildId: $guildId, characterId: $characterId, spot: $spot) {
         ok
         error

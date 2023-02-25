@@ -54,6 +54,8 @@ export const FakeSubtract = () =>
 
 export const FakeAdd = () => stub(fql, 'Add', (a: any, b: any) => a + b);
 
+export const FakeAnd = () => stub(fql, 'Add', (a: any, b: any) => a && b);
+
 export const FakeToString = () => stub(fql, 'ToString', (n: any) => `${n}`);
 
 export const FakeConcat = () =>

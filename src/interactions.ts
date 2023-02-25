@@ -227,7 +227,7 @@ const handler = async (r: Request) => {
                   guildId,
                 })).send();
               case 'assign':
-                return (await party.set({
+                return (await party.assign({
                   spot,
                   userId: member.user.id,
                   channelId,

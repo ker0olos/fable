@@ -10,6 +10,7 @@ import { assertEquals } from 'https://deno.land/std@0.177.0/testing/asserts.ts';
 import { assertSnapshot } from 'https://deno.land/std@0.177.0/testing/snapshot.ts';
 
 import {
+  FakeAnd,
   FakeClient,
   FakeConcat,
   FakeEquals,
@@ -36,6 +37,7 @@ import {
 
 Deno.test('set character to party', async (test) => {
   // TODO improve the test case for this
+
   await test.step('ok', () => {
     const ifStub = FakeIf();
     const letStub = FakeLet();
@@ -47,6 +49,7 @@ Deno.test('set character to party', async (test) => {
     const equalsStub = FakeEquals();
     const updateStub = FakeUpdate();
     const isNotEmptyStub = FakeIsNonEmpty();
+    const andStub = FakeAnd();
     const isNullStub = FakeIsNull();
 
     const selectStub = FakeSelect({
@@ -54,6 +57,7 @@ Deno.test('set character to party', async (test) => {
     });
 
     const varStub = FakeVar({
+      'spot': 1,
       'character': {
         ref: 'user',
       },
@@ -152,6 +156,7 @@ Deno.test('set character to party', async (test) => {
       equalsStub.restore();
       updateStub.restore();
       isNotEmptyStub.restore();
+      andStub.restore();
       isNullStub.restore();
     }
   });
@@ -165,6 +170,7 @@ Deno.test('set character to party', async (test) => {
     const indexStub = FakeIndex();
     const equalsStub = FakeEquals();
     const isNotEmptyStub = FakeIsNonEmpty();
+    const andStub = FakeAnd();
     const isNullStub = FakeIsNull();
 
     const selectStub = FakeSelect({
@@ -172,6 +178,7 @@ Deno.test('set character to party', async (test) => {
     });
 
     const varStub = FakeVar({
+      'spot': 1,
       'character': {
         ref: 'user',
       },
@@ -184,7 +191,7 @@ Deno.test('set character to party', async (test) => {
         inventory: 'inventory',
         instance: 'instance',
         user: 'user',
-        member: 1,
+        spot: 1,
       } as any) as any;
 
       assertSpyCall(indexStub, 0, {
@@ -228,6 +235,7 @@ Deno.test('set character to party', async (test) => {
       selectStub.restore();
       equalsStub.restore();
       isNotEmptyStub.restore();
+      andStub.restore();
       isNullStub.restore();
     }
   });
@@ -241,6 +249,7 @@ Deno.test('set character to party', async (test) => {
     const indexStub = FakeIndex();
     const equalsStub = FakeEquals();
     const isNotEmptyStub = FakeIsNonEmpty();
+    const andStub = FakeAnd();
     const isNullStub = FakeIsNull();
 
     const varStub = FakeVar({
@@ -290,6 +299,7 @@ Deno.test('set character to party', async (test) => {
       indexStub.restore();
       equalsStub.restore();
       isNotEmptyStub.restore();
+      andStub.restore();
       isNullStub.restore();
     }
   });

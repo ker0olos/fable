@@ -28,7 +28,7 @@ export function setCharacterToParty(
     inventory: InventoryExpr;
     instance: InstanceExpr;
     characterId: StringExpr;
-    spot: number;
+    spot?: number;
   },
 ): unknown {
   return fql.Let({
@@ -60,7 +60,7 @@ export function setCharacterToParty(
       return fql.Merge(
         opts?.initial ?? fql.Var(`member${n - 1}`),
         fql.If(
-          fql.Equals(spot, n),
+          fql.Equals(fql.Var('spot'), n),
           { [`member${n}`]: fql.Ref(character) },
           {},
         ),
@@ -79,6 +79,48 @@ export function setCharacterToParty(
           fql.Ref(user),
         ),
         fql.Let({
+          spot: fql.If(
+            fql.IsNull(spot),
+            fql.If(
+              fql.IsNull(
+                fql.Select(['data', 'party', 'member1'], inventory, fql.Null()),
+              ),
+              1,
+              fql.If(
+                fql.IsNull(
+                  fql.Select(
+                    ['data', 'party', 'member2'],
+                    inventory,
+                    fql.Null(),
+                  ),
+                ),
+                2,
+                fql.If(
+                  fql.IsNull(
+                    fql.Select(
+                      ['data', 'party', 'member3'],
+                      inventory,
+                      fql.Null(),
+                    ),
+                  ),
+                  3,
+                  fql.If(
+                    fql.IsNull(
+                      fql.Select(
+                        ['data', 'party', 'member4'],
+                        inventory,
+                        fql.Null(),
+                      ),
+                    ),
+                    4,
+                    5,
+                  ),
+                ),
+              ),
+            ),
+            // deno-lint-ignore no-non-null-assertion
+            spot!,
+          ),
           member1: updateParty(1, {
             initial: {
               member1: getMember(1),
@@ -165,7 +207,7 @@ export default function (client: Client): (() => Promise<void>)[] {
         userId: string,
         guildId: string,
         characterId: string,
-        spot: number,
+        spot?: number,
       ) => {
         return fql.Let(
           {

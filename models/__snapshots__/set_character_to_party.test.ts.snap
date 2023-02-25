@@ -103,6 +103,156 @@ snapshot[`model 1`] = `
                                             },
                                             let: [
                                               {
+                                                spot: Expr {
+                                                  raw: {
+                                                    else: Expr {
+                                                      raw: {
+                                                        var: "spot",
+                                                      },
+                                                    },
+                                                    if: Expr {
+                                                      raw: {
+                                                        equals: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                var: "spot",
+                                                              },
+                                                            },
+                                                            null,
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    then: Expr {
+                                                      raw: {
+                                                        else: Expr {
+                                                          raw: {
+                                                            else: Expr {
+                                                              raw: {
+                                                                else: Expr {
+                                                                  raw: {
+                                                                    else: 5,
+                                                                    if: Expr {
+                                                                      raw: {
+                                                                        equals: Expr {
+                                                                          raw: [
+                                                                            Expr {
+                                                                              raw: {
+                                                                                default: null,
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "inventory",
+                                                                                  },
+                                                                                },
+                                                                                select: Expr {
+                                                                                  raw: [
+                                                                                    "data",
+                                                                                    "party",
+                                                                                    "member4",
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                            null,
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    then: 4,
+                                                                  },
+                                                                },
+                                                                if: Expr {
+                                                                  raw: {
+                                                                    equals: Expr {
+                                                                      raw: [
+                                                                        Expr {
+                                                                          raw: {
+                                                                            default: null,
+                                                                            from: Expr {
+                                                                              raw: {
+                                                                                var: "inventory",
+                                                                              },
+                                                                            },
+                                                                            select: Expr {
+                                                                              raw: [
+                                                                                "data",
+                                                                                "party",
+                                                                                "member3",
+                                                                              ],
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                        null,
+                                                                      ],
+                                                                    },
+                                                                  },
+                                                                },
+                                                                then: 3,
+                                                              },
+                                                            },
+                                                            if: Expr {
+                                                              raw: {
+                                                                equals: Expr {
+                                                                  raw: [
+                                                                    Expr {
+                                                                      raw: {
+                                                                        default: null,
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "inventory",
+                                                                          },
+                                                                        },
+                                                                        select: Expr {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "party",
+                                                                            "member2",
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    null,
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                            then: 2,
+                                                          },
+                                                        },
+                                                        if: Expr {
+                                                          raw: {
+                                                            equals: Expr {
+                                                              raw: [
+                                                                Expr {
+                                                                  raw: {
+                                                                    default: null,
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "inventory",
+                                                                      },
+                                                                    },
+                                                                    select: Expr {
+                                                                      raw: [
+                                                                        "data",
+                                                                        "party",
+                                                                        "member1",
+                                                                      ],
+                                                                    },
+                                                                  },
+                                                                },
+                                                                null,
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                        then: 1,
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                              {
                                                 member1: Expr {
                                                   raw: {
                                                     merge: Expr {
@@ -1439,6 +1589,156 @@ snapshot[`model 1`] = `
                                               },
                                             },
                                             let: [
+                                              {
+                                                spot: Expr {
+                                                  raw: {
+                                                    else: Expr {
+                                                      raw: {
+                                                        var: "spot",
+                                                      },
+                                                    },
+                                                    if: Expr {
+                                                      raw: {
+                                                        equals: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                var: "spot",
+                                                              },
+                                                            },
+                                                            null,
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    then: Expr {
+                                                      raw: {
+                                                        else: Expr {
+                                                          raw: {
+                                                            else: Expr {
+                                                              raw: {
+                                                                else: Expr {
+                                                                  raw: {
+                                                                    else: 5,
+                                                                    if: Expr {
+                                                                      raw: {
+                                                                        equals: Expr {
+                                                                          raw: [
+                                                                            Expr {
+                                                                              raw: {
+                                                                                default: null,
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "inventory",
+                                                                                  },
+                                                                                },
+                                                                                select: Expr {
+                                                                                  raw: [
+                                                                                    "data",
+                                                                                    "party",
+                                                                                    "member4",
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                            null,
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    then: 4,
+                                                                  },
+                                                                },
+                                                                if: Expr {
+                                                                  raw: {
+                                                                    equals: Expr {
+                                                                      raw: [
+                                                                        Expr {
+                                                                          raw: {
+                                                                            default: null,
+                                                                            from: Expr {
+                                                                              raw: {
+                                                                                var: "inventory",
+                                                                              },
+                                                                            },
+                                                                            select: Expr {
+                                                                              raw: [
+                                                                                "data",
+                                                                                "party",
+                                                                                "member3",
+                                                                              ],
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                        null,
+                                                                      ],
+                                                                    },
+                                                                  },
+                                                                },
+                                                                then: 3,
+                                                              },
+                                                            },
+                                                            if: Expr {
+                                                              raw: {
+                                                                equals: Expr {
+                                                                  raw: [
+                                                                    Expr {
+                                                                      raw: {
+                                                                        default: null,
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "inventory",
+                                                                          },
+                                                                        },
+                                                                        select: Expr {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "party",
+                                                                            "member2",
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    null,
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                            then: 2,
+                                                          },
+                                                        },
+                                                        if: Expr {
+                                                          raw: {
+                                                            equals: Expr {
+                                                              raw: [
+                                                                Expr {
+                                                                  raw: {
+                                                                    default: null,
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "inventory",
+                                                                      },
+                                                                    },
+                                                                    select: Expr {
+                                                                      raw: [
+                                                                        "data",
+                                                                        "party",
+                                                                        "member1",
+                                                                      ],
+                                                                    },
+                                                                  },
+                                                                },
+                                                                null,
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                        then: 1,
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
                                               {
                                                 member1: Expr {
                                                   raw: {

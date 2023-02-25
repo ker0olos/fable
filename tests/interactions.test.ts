@@ -5082,7 +5082,7 @@ Deno.test('/party assign', async (test) => {
     );
 
     try {
-      const message = await party.set({
+      const message = await party.assign({
         spot: 1,
         userId: 'user',
         guildId: 'guild',
@@ -5171,7 +5171,7 @@ Deno.test('/party assign', async (test) => {
     );
 
     try {
-      const message = await party.set({
+      const message = await party.assign({
         spot: 1,
         userId: 'user',
         guildId: 'guild',
@@ -5254,7 +5254,7 @@ Deno.test('/party assign', async (test) => {
     );
 
     try {
-      const message = await party.set({
+      const message = await party.assign({
         spot: 1,
         userId: 'user',
         guildId: 'guild',

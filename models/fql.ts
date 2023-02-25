@@ -185,6 +185,10 @@ function TimeDiffInMinutes(a: TimeExpr, b: TimeExpr): NumberExpr {
   return _fql.TimeDiff(a, b, 'minutes');
 }
 
+function And(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
+  return _fql.And(a, b);
+}
+
 function TimeAddInMinutes(t: TimeExpr, offset: NumberExpr): NumberExpr {
   return _fql.TimeAdd(t, offset, 'minutes');
 }
@@ -255,6 +259,7 @@ function Resolver(
 export const fql = {
   // Map,
   Add,
+  And,
   Append,
   Concat,
   Create,
