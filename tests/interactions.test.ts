@@ -5552,6 +5552,7 @@ Deno.test('/party assign', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          flags: 64,
           embeds: [
             {
               type: 'rich',
@@ -5645,6 +5646,7 @@ Deno.test('/party assign', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          flags: 64,
           embeds: [
             {
               type: 'rich',
