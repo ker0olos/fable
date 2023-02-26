@@ -1,6 +1,6 @@
 // deno-lint-ignore-file camelcase
-// @deno-types="https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.d.ts"
-import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.js';
+
+import utils from './utils.ts';
 
 import { Manifest } from './types.ts';
 
@@ -118,9 +118,7 @@ interface Repo {
   subscribers_count: number;
 }
 
-const url = 'https://api.github.com/repositories';
-
-async function get(url: string): Promise<Repo> {
+function resolve(url: string): { username: string; reponame: string } {
   // try username/repo
   let array = /^([-_a-z0-9]+)\/([-_a-z0-9]+)$/.exec(
     url,
@@ -141,6 +139,15 @@ async function get(url: string): Promise<Repo> {
     ? array[2].substring(0, array[2].length - 4)
     : array[2];
 
+  return {
+    username,
+    reponame,
+  };
+}
+
+async function get(url: string): Promise<Repo> {
+  const { username, reponame } = resolve(url);
+
   const api = `https://api.github.com/repos/${username}/${reponame}`;
 
   const response = await fetch(api);
@@ -159,17 +166,25 @@ async function get(url: string): Promise<Repo> {
 }
 
 async function manifest(
-  { id, ref }: { id: number; ref?: string },
-): Promise<Manifest[]> {
-  const { entries } = await unzip(
-    `${url}/${id}/zipball/${ref ?? ''}`,
+  { url, ref }: { url: string; ref?: string },
+): Promise<Manifest> {
+  const { username, reponame } = resolve(url);
+
+  const { entries } = await utils.unzip(
+    `https://api.github.com/repos/${username}/${reponame}/zipball/${ref ?? ''}`,
   );
 
   const manifests = Object.values(entries)
     .filter(({ name }) => name.endsWith('manifest.json'))
     .map((entry) => entry.json() as Promise<Manifest>);
 
-  return Promise.all(manifests);
+  const results = await Promise.all(manifests);
+
+  if (!results.length) {
+    throw new Error('No `manifest.json` found at root');
+  }
+
+  return results[0];
 }
 
 const github = {

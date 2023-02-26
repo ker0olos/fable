@@ -26,7 +26,7 @@ Fable is a free, open-source gacha[^1] bot — a simple, powerful Mudae
 alternative. Like Mudae, you can pull anime characters. Unlike Mudae, there are
 no premiums and no pay-to-win bullshit.
 
-There's a intuitive system to manage and customize the characters in your
+There's an intuitive system to manage and customize the characters in your
 servers, like adding extensions to chrome and installing apps on your phone, you
 can install community-made packs that are full of new characters with a single
 command.
@@ -34,9 +34,9 @@ command.
 Fable is actively developed with new game modes and features frequently.
 
 [^1]: Currently the default packs include anime/manga/vtubers, but you can
-install other packs, e.g. video game characters or real life celebrities. And
-you can disable the anime packs entirety (Incase it's a sports server or else,
-we try our best to include term naturel commands along with anime analogies).
+install other packs, e.g. video game characters or real-life celebrities. And
+you can disable all anime packs entirely (In case it's a sports server or else,
+we try our best to include term natural commands along with anime analogies).
 
 > Fable is in early access. Some core features might be missing. Missing
 > features include "Trading" (see
@@ -91,7 +91,7 @@ we try our best to include term naturel commands along with anime analogies).
 
 Currently, it's only possible through editing JSON files, we recommend that you
 check [fable-community/example](https://github.com/fable-community/example), it
-has a great quick start guide.
+has a great quick-start guide.
 
 > Can I use prefixes like `$`
 
@@ -107,9 +107,9 @@ We're using serverless for the servers and the database, which is much cheaper
 to maintain right now.
 
 If things get out of hand we'll rate limit big servers for something like 1M
-command calls per month[^2]. only server owners will be required to cover for
-what "their" server costs us (their portion of the bill), we'll keep covering
-the bill for small servers with less activity.
+command calls per month[^2]. only server owners will be required to cover what
+"their" server costs us (their portion of the bill), we'll keep covering the
+bill for small servers with less activity.
 
 Fable will always remain 100% free-to-play to the players.
 
@@ -120,15 +120,15 @@ Fable will always remain 100% free-to-play to the players.
 ## Credits
 
 Our core team who are responsible for reviewing code and making decisions on the
-direction of the project:
+the direction of the project:
 
 - ker0olos#6355 — [@ker0olos](https://github.com/ker0olos) — Kerolos Zaki
 
 - Checkout <https://anilist.co>. It will help you track those 2000 anime you
   watch, and let you know when a new episode or season is out.
 
-- This project wouldn't been possible without Deno. Want to learn about running
-  your own discord bot with low-cost? Check the official guide at
+- This project wouldn't be possible without Deno. Want to learn about running
+  your own discord bot at a low cost? Check the official guide at
   <https://deno.com/deploy/docs/tutorial-discord-slash>
 
 [discord]: https://discord.gg/ceKyEfhyPQ

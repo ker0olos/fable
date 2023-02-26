@@ -711,16 +711,15 @@ export class Message {
   ): Message {
     const group: Component[] = [];
 
+    // deno-lint-ignore no-non-null-assertion
+    const prevId = index - 1 >= 0 ? index - 1 : total! - 1;
+
+    const nextId = next ? index + 1 : 0;
+
     if (index - 1 >= 0 || total) {
       group.push(
         new Component()
-          .setId(
-            type,
-            target ?? '',
-            // deno-lint-ignore no-non-null-assertion
-            `${index - 1 >= 0 ? index - 1 : total! - 1}`,
-            'prev',
-          )
+          .setId(type, target ?? '', `${prevId}`, 'prev')
           .setLabel(`Prev`),
       );
     }
@@ -736,7 +735,7 @@ export class Message {
     if (next || total) {
       group.push(
         new Component()
-          .setId(type, target ?? '', `${next ? `${index + 1}` : 0}`, 'next')
+          .setId(type, target ?? '', `${nextId}`, 'next')
           .setLabel(`Next`),
       );
     }

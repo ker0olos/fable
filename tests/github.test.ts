@@ -9,6 +9,7 @@ import {
   stub,
 } from 'https://deno.land/std@0.177.0/testing/mock.ts';
 
+import utils from '../src/utils.ts';
 import github from '../src/github.ts';
 
 Deno.test('get repo', async (test) => {
@@ -190,6 +191,38 @@ Deno.test('get repo', async (test) => {
       });
     } finally {
       fetchStub.restore();
+    }
+  });
+});
+
+Deno.test('get manifest', async (test) => {
+  await test.step('normal', async () => {
+    const unzipStub = stub(
+      utils,
+      'unzip',
+      () => ({
+        entries: {
+          '0': {
+            name: 'manifest.json',
+            json: (() => Promise.resolve({ id: 'manifest' })),
+          },
+        },
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const manifest = await github.manifest({ url: 'username/reponame' });
+
+      assertSpyCall(unzipStub, 0, {
+        args: [`https://api.github.com/repos/username/reponame/zipball/`],
+      });
+
+      assertEquals(manifest, {
+        id: 'manifest',
+      });
+    } finally {
+      unzipStub.restore();
     }
   });
 });

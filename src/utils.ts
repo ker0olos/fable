@@ -1,3 +1,6 @@
+// @deno-types="https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.d.ts"
+import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.js';
+
 import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 
 import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
@@ -345,16 +348,17 @@ const utils = {
   decodeDescription,
   distance,
   hexToInt,
-  rechargeTimestamp,
   parseInt: _parseInt,
   proxy,
   randint,
   readJson,
+  rechargeTimestamp,
   rng,
   shuffle,
   sleep,
   text,
   truncate,
+  unzip,
   verifySignature,
   wrap,
 };
