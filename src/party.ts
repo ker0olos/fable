@@ -206,6 +206,8 @@ export async function assign({
   if (!response.ok) {
     const names = packs.aliasToArray(results[0].name);
 
+    message.setFlags(discord.MessageFlags.Ephemeral);
+
     switch (response.error) {
       case 'CHARACTER_NOT_FOUND': {
         return message.addEmbed(
