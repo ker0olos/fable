@@ -2796,7 +2796,7 @@ Deno.test('media characters', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'mcharacter=pack-id:1=1',
+                custom_id: 'mcharacter=pack-id:1=1=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -2902,7 +2902,7 @@ Deno.test('media characters', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'mcharacter=pack-id:1=1',
+                custom_id: 'mcharacter=pack-id:1=1=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -6015,7 +6015,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'builtin==1',
+                custom_id: 'builtin==1=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
@@ -6028,7 +6028,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'builtin==1',
+                custom_id: 'builtin==1=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -6078,7 +6078,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'community==0',
+                custom_id: 'community==0=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
@@ -6091,7 +6091,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'community==0',
+                custom_id: 'community==0=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -6142,7 +6142,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'builtin==0',
+                custom_id: 'builtin==0=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
@@ -6155,7 +6155,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'builtin==0',
+                custom_id: 'builtin==0=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -6214,7 +6214,7 @@ Deno.test('/help', async (test) => {
     const message = help({ userId: 'user_id', index: 0 });
 
     assertEquals(message.json().data.components[0].components[0], {
-      custom_id: 'help==2',
+      custom_id: 'help==2=prev',
       label: 'Prev',
       style: 2,
       type: 2,
@@ -6229,7 +6229,7 @@ Deno.test('/help', async (test) => {
     });
 
     assertEquals(message.json().data.components[0].components[2], {
-      custom_id: 'help==1',
+      custom_id: 'help==1=next',
       label: 'Next',
       style: 2,
       type: 2,

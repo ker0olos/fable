@@ -495,7 +495,7 @@ Deno.test('page messages', async (test) => {
           type: 1,
           components: [
             {
-              custom_id: 'type=target=1',
+              custom_id: 'type=target=1=prev',
               label: 'Prev',
               style: 2,
               type: 2,
@@ -508,7 +508,7 @@ Deno.test('page messages', async (test) => {
               type: 2,
             },
             {
-              custom_id: 'type=target=1',
+              custom_id: 'type=target=1=next',
               label: 'Next',
               style: 2,
               type: 2,
@@ -542,7 +542,7 @@ Deno.test('page messages', async (test) => {
           type: 1,
           components: [
             {
-              custom_id: 'type=target=0',
+              custom_id: 'type=target=0=prev',
               label: 'Prev',
               style: 2,
               type: 2,
@@ -555,7 +555,7 @@ Deno.test('page messages', async (test) => {
               type: 2,
             },
             {
-              custom_id: 'type=target=0',
+              custom_id: 'type=target=0=next',
               label: 'Next',
               style: 2,
               type: 2,
@@ -588,7 +588,7 @@ Deno.test('page messages', async (test) => {
         components: [{
           type: 1,
           components: [{
-            custom_id: 'type=target=0',
+            custom_id: 'type=target=0=prev',
             label: 'Prev',
             style: 2,
             type: 2,
@@ -599,7 +599,7 @@ Deno.test('page messages', async (test) => {
             style: 2,
             type: 2,
           }, {
-            custom_id: 'type=target=2',
+            custom_id: 'type=target=2=next',
             label: 'Next',
             style: 2,
             type: 2,
@@ -636,7 +636,7 @@ Deno.test('page messages', async (test) => {
             style: 2,
             type: 2,
           }, {
-            custom_id: 'type=target=1',
+            custom_id: 'type=target=1=next',
             label: 'Next',
             style: 2,
             type: 2,
@@ -669,7 +669,7 @@ Deno.test('page messages', async (test) => {
           type: 1,
           components: [
             {
-              custom_id: 'type=target=0',
+              custom_id: 'type=target=0=prev',
               label: 'Prev',
               style: 2,
               type: 2,
@@ -682,7 +682,7 @@ Deno.test('page messages', async (test) => {
               type: 2,
             },
             {
-              custom_id: 'type=target=0',
+              custom_id: 'type=target=0=next',
               label: 'Next',
               style: 2,
               type: 2,

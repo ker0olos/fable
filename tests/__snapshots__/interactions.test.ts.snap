@@ -9,7 +9,7 @@ snapshot[`/help 1`] = `
       {
         components: [
           {
-            custom_id: "help==2",
+            custom_id: "help==2=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -22,7 +22,7 @@ snapshot[`/help 1`] = `
             type: 2,
           },
           {
-            custom_id: "help==1",
+            custom_id: "help==1=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -81,7 +81,7 @@ snapshot[`/help 2`] = `
       {
         components: [
           {
-            custom_id: "help==0",
+            custom_id: "help==0=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -94,7 +94,7 @@ snapshot[`/help 2`] = `
             type: 2,
           },
           {
-            custom_id: "help==2",
+            custom_id: "help==2=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -134,7 +134,7 @@ snapshot[`/help 3`] = `
       {
         components: [
           {
-            custom_id: "help==1",
+            custom_id: "help==1=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -147,7 +147,7 @@ snapshot[`/help 3`] = `
             type: 2,
           },
           {
-            custom_id: "help==0",
+            custom_id: "help==0=next",
             label: "Next",
             style: 2,
             type: 2,

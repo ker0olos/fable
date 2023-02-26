@@ -719,6 +719,7 @@ export class Message {
             target ?? '',
             // deno-lint-ignore no-non-null-assertion
             `${index - 1 >= 0 ? index - 1 : total! - 1}`,
+            'prev',
           )
           .setLabel(`Prev`),
       );
@@ -735,7 +736,7 @@ export class Message {
     if (next || total) {
       group.push(
         new Component()
-          .setId(type, target ?? '', `${next ? `${index + 1}` : 0}`)
+          .setId(type, target ?? '', `${next ? `${index + 1}` : 0}`, 'next')
           .setLabel(`Next`),
       );
     }
