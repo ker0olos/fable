@@ -287,12 +287,17 @@ export async function stars({
       },
     ).addComponents([
       new discord.Component()
-        .setId('passign', character.id)
-        .setLabel(`/p assign`),
-      new discord.Component()
         .setId('media', `${media.packId}:${media.id}`)
         .setLabel(`/${media.type.toLowerCase()}`),
     ]);
+
+    if (!nick) {
+      message.insertComponents([
+        new discord.Component()
+          .setId('passign', character.id)
+          .setLabel(`/p assign`),
+      ]);
+    }
   }
 
   return discord.Message.anchor({
@@ -409,12 +414,17 @@ export async function media({
       },
     ).addComponents([
       new discord.Component()
-        .setId('passign', character.id)
-        .setLabel(`/p assign`),
-      new discord.Component()
         .setId('media', `${media.packId}:${media.id}`)
         .setLabel(`/${media.type.toLowerCase()}`),
     ]);
+
+    if (!nick) {
+      message.insertComponents([
+        new discord.Component()
+          .setId('passign', character.id)
+          .setLabel(`/p assign`),
+      ]);
+    }
   }
 
   return discord.Message.anchor({
