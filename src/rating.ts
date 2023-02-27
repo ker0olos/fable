@@ -1,8 +1,6 @@
-import {
-  captureException,
-} from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
-
 import { Character, CharacterRole, DisaggregatedCharacter } from './types.ts';
+
+import utils from './utils.ts';
 
 import { emotes } from './config.ts';
 
@@ -47,7 +45,7 @@ export default class Rating {
         this.#stars = 4;
       }
     } else {
-      captureException(
+      utils.captureException(
         `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
       );
     }

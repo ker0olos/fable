@@ -1,7 +1,3 @@
-import {
-  captureException,
-} from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
-
 import { gql, request } from './graphql.ts';
 
 import utils, { ImageSize } from './utils.ts';
@@ -363,7 +359,7 @@ function start(
           throw err;
         }
 
-        const refId = captureException(err);
+        const refId = utils.captureException(err);
 
         await discord.Message.internal(refId).patch(token);
       });

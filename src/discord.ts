@@ -20,6 +20,7 @@ export enum MessageFlags {
 export enum MessageType {
   Pong = 1,
   New = 4,
+  Loading = 5,
   Update = 7,
   Suggestions = 8,
   // Modal = 9,
@@ -119,17 +120,16 @@ export class Interaction<Options> {
     user: User;
   };
 
-  /** available on all interaction types except PING */
-  locale?: string;
+  // /** available on all interaction types except PING */
+  // locale?: string;
 
-  /** guild's preferred locale (if invoked in a guild) */
-  guildLocale?: string;
+  // /** guild's preferred locale (if invoked in a guild) */
+  // guildLocale?: string;
 
   constructor(body: string) {
     const obj = JSON.parse(body);
 
     const data: {
-      // id: string;
       name: string;
       type: string;
       guild_id: string;

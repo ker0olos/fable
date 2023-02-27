@@ -151,11 +151,11 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
-  // TODO BLOCKED load community packs
+  // TODO load community packs
   depends?: string[];
-  // TODO BLOCKED load community packs
+  // TODO load community packs
   conflicts?: string[];
-  // TODO BLOCKED load community packs
+  // TODO load community packs
   installedBy?: string;
   media?: {
     conflicts?: string[];

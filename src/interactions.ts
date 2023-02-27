@@ -1,15 +1,3 @@
-import {
-  captureException,
-  init as initSentry,
-} from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
-
-import {
-  json,
-  serve,
-  serveStatic,
-  validateRequest,
-} from 'https://deno.land/x/sift@0.6.0/mod.ts';
-
 import * as discord from './discord.ts';
 
 import * as search from './search.ts';
@@ -28,23 +16,19 @@ import { Character, ManifestType, Media } from './types.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
 
-await initConfig();
-
 const idPrefix = 'id=';
 
-const handler = async (r: Request) => {
+export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
 
-  initSentry({ dsn: config.sentry });
-
-  const { error } = await validateRequest(r, {
+  const { error } = await utils.validateRequest(r, {
     POST: {
       headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
     },
   });
 
   if (error) {
-    return json(
+    return utils.json(
       { error: error.message },
       { status: error.status },
     );
@@ -61,7 +45,7 @@ const handler = async (r: Request) => {
   });
 
   if (!valid) {
-    return json(
+    return utils.json(
       { error: 'Invalid request' },
       { status: 401 },
     );
@@ -325,25 +309,41 @@ const handler = async (r: Request) => {
             return gacha
               .start({ token, characterId: options['id'] as string })
               .send();
-          case 'packs': {
-            return packs.embed({
-              index: 0,
-              // deno-lint-ignore no-non-null-assertion
-              type: subcommand! as ManifestType,
-            }).send();
-          }
           case 'anilist': {
             // deno-lint-ignore no-non-null-assertion
-            const message = await packs.anilist(subcommand!, interaction);
-
-            // deno-lint-ignore no-non-null-assertion
-            return message!.send();
+            return (await packs.anilist(subcommand!, interaction))!
+              .send();
           }
           case 'help':
           case 'start':
           case 'guide':
           case 'tuto': {
             return help({ userId: member.user.id, index: 0 }).send();
+          }
+          case 'packs': {
+            //deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'builtin':
+              case 'community': {
+                return packs.embed({
+                  index: 0,
+                  type: subcommand as ManifestType,
+                }).send();
+              }
+              // case 'install': {
+              //   return packs.install({
+              //     token,
+              //     guildId,
+              //     channelId,
+              //     userId: member.user.id,
+              //     url: options['github'] as string,
+              //     ref: options['ref'] as string,
+              //   }).send();
+              // }
+              default:
+                break;
+            }
+            break;
           }
           default: {
             break;
@@ -445,16 +445,24 @@ const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'builtin':
-          case 'community': {
+          case 'pull':
+          case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
+            const userId = customValues![0];
 
-            return packs.embed({
-              index,
-              type: customType as ManifestType,
-            })
-              .setType(discord.MessageType.Update)
+            return gacha
+              .start({
+                token,
+                quiet: customType === 'pull',
+                userId: member.user.id,
+                guildId,
+                channelId,
+              })
+              .setType(
+                userId === member.user.id
+                  ? discord.MessageType.Update
+                  : discord.MessageType.New,
+              )
               .send();
           }
           case 'now': {
@@ -473,32 +481,23 @@ const handler = async (r: Request) => {
               )
               .send();
           }
-          case 'pull':
-          case 'gacha': {
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
-
-            // verify user id
-            return gacha
-              .start({
-                token,
-                quiet: customType === 'pull',
-                userId: member.user.id,
-                guildId,
-                channelId,
-              })
-              .setType(
-                userId === member.user.id
-                  ? discord.MessageType.Update
-                  : discord.MessageType.New,
-              )
-              .send();
-          }
           case 'help': {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
             return help({ userId: member.user.id, index })
+              .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'builtin':
+          case 'community': {
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            return packs.embed({
+              index,
+              type: customType as ManifestType,
+            })
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -541,7 +540,7 @@ const handler = async (r: Request) => {
       throw err;
     }
 
-    const refId = captureException(err, {
+    const refId = utils.captureException(err, {
       extra: { ...interaction },
     });
 
@@ -564,15 +563,21 @@ function override(
   };
 }
 
-serve({
-  '/': handler,
-  '/external/*': utils.proxy,
-  '/assets/:filename+': serveStatic('../assets/public', {
-    intervene: override(604800),
-    baseUrl: import.meta.url,
-  }),
-  '/:filename+': serveStatic('../json', {
-    intervene: override(86400, 'application/schema+json'),
-    baseUrl: import.meta.url,
-  }),
-});
+if (import.meta.main) {
+  await initConfig();
+
+  utils.initSentry({ dsn: config.sentry });
+
+  utils.serve({
+    '/': handler,
+    '/external/*': utils.proxy,
+    '/assets/:filename+': utils.serveStatic('../assets/public', {
+      intervene: override(604800),
+      baseUrl: import.meta.url,
+    }),
+    '/:filename+': utils.serveStatic('../json', {
+      intervene: override(86400, 'application/schema+json'),
+      baseUrl: import.meta.url,
+    }),
+  });
+}
