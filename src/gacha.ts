@@ -6,7 +6,7 @@ import Rating from './rating.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import { characterMessage } from './search.ts';
+import search from './search.ts';
 
 import packs from './packs.ts';
 
@@ -310,7 +310,7 @@ function start(
           await utils.sleep(pull.rating.stars + 2);
         }
 
-        message = characterMessage(pull.character, {
+        message = search.characterMessage(pull.character, {
           relations: false,
           rating: pull.rating,
           description: false,

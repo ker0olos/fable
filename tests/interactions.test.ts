@@ -23,13 +23,13 @@ import config from '../src/config.ts';
 
 import Rating from '../src/rating.ts';
 
-import { help } from '../src/help.ts';
+import help from '../src/help.ts';
 
 import gacha, { Pull } from '../src/gacha.ts';
 
-import * as party from '../src/party.ts';
-import * as search from '../src/search.ts';
-import * as user from '../src/user.ts';
+import party from '../src/party.ts';
+import search from '../src/search.ts';
+import user from '../src/user.ts';
 
 import utils from '../src/utils.ts';
 
@@ -6211,7 +6211,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
 
 Deno.test('/help', async (test) => {
   await test.step('navigation', () => {
-    const message = help({ userId: 'user_id', index: 0 });
+    const message = help.pages({ userId: 'user_id', index: 0 });
 
     assertEquals(message.json().data.components[0].components[0], {
       custom_id: 'help==2=prev',
@@ -6237,19 +6237,19 @@ Deno.test('/help', async (test) => {
   });
 
   await test.step('page 1', () => {
-    const message = help({ userId: 'user_id', index: 0 });
+    const message = help.pages({ userId: 'user_id', index: 0 });
 
     assertSnapshot(test, message.json());
   });
 
   await test.step('page 2', () => {
-    const message = help({ userId: 'user_id', index: 1 });
+    const message = help.pages({ userId: 'user_id', index: 1 });
 
     assertSnapshot(test, message.json());
   });
 
   await test.step('page 3', () => {
-    const message = help({ userId: 'user_id', index: 2 });
+    const message = help.pages({ userId: 'user_id', index: 2 });
 
     assertSnapshot(test, message.json());
   });

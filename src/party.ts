@@ -11,11 +11,11 @@ import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
-import { characterEmbed } from './search.ts';
+import { default as srch } from './search.ts';
 
 import { Character, DisaggregatedCharacter, Schema } from './types.ts';
 
-export async function view({
+async function view({
   userId,
   guildId,
 }: {
@@ -131,7 +131,7 @@ export async function view({
       );
     }
 
-    const embed = characterEmbed(character, {
+    const embed = srch.characterEmbed(character, {
       mode: 'thumbnail',
       media: { title: packs.aliasToArray(media[mediaIndex].title)[0] },
       rating: new Rating({ stars: ratings[i] }),
@@ -145,7 +145,7 @@ export async function view({
   return message;
 }
 
-export async function assign({
+async function assign({
   spot,
   userId,
   guildId,
@@ -242,7 +242,7 @@ export async function assign({
 
   return message
     .addEmbed(new discord.Embed().setDescription('ASSIGNED'))
-    .addEmbed(characterEmbed(results[0], {
+    .addEmbed(srch.characterEmbed(results[0], {
       mode: 'thumbnail',
       rating: new Rating({ stars: response.character.rating }),
       description: true,
@@ -258,7 +258,7 @@ export async function assign({
     ]);
 }
 
-export async function remove({
+async function remove({
   spot,
   userId,
   guildId,
@@ -327,7 +327,7 @@ export async function remove({
 
   return message
     .addEmbed(new discord.Embed().setDescription('REMOVED'))
-    .addEmbed(characterEmbed(characters[0], {
+    .addEmbed(srch.characterEmbed(characters[0], {
       mode: 'thumbnail',
       rating: new Rating({ stars: response.character.rating }),
       description: true,
@@ -342,3 +342,11 @@ export async function remove({
         ),
     ]);
 }
+
+const user = {
+  view,
+  assign,
+  remove,
+};
+
+export default user;

@@ -1,6 +1,6 @@
 import * as discord from './discord.ts';
 
-export function help(
+function pages(
   { userId, index }: { userId: string; index: number },
 ): discord.Message {
   const pages = [
@@ -67,3 +67,9 @@ export function help(
     index,
   });
 }
+
+const help = {
+  pages,
+};
+
+export default help;

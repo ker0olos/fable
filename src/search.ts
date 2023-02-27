@@ -4,7 +4,7 @@ import Rating from './rating.ts';
 
 import utils from './utils.ts';
 
-import * as users from './user.ts';
+import users from './user.ts';
 
 import * as discord from './discord.ts';
 
@@ -23,7 +23,7 @@ const musicUrlRegex = /youtube|spotify/;
 const externalUrlRegex =
   /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoon\.com|amazon\.com)[\S]*$/;
 
-export async function media(
+async function media(
   { id, search, debug }: {
     id?: string;
     search?: string;
@@ -47,7 +47,7 @@ export async function media(
   return mediaMessage(media);
 }
 
-export function mediaMessage(media: Media): discord.Message {
+function mediaMessage(media: Media): discord.Message {
   const titles = packs.aliasToArray(media.title);
 
   if (!titles?.length) {
@@ -141,7 +141,7 @@ export function mediaMessage(media: Media): discord.Message {
   return message.addComponents([...linksGroup, ...musicGroup]);
 }
 
-export function mediaEmbed(media: Media, titles: string[]): discord.Embed {
+function mediaEmbed(media: Media, titles: string[]): discord.Embed {
   return new discord.Embed()
     .setTitle(utils.wrap(titles[0]))
     .setAuthor({ name: packs.formatToString(media.format) })
@@ -149,7 +149,7 @@ export function mediaEmbed(media: Media, titles: string[]): discord.Embed {
     .setImage({ url: media.images?.[0].url });
 }
 
-export function mediaDebugMessage(
+function mediaDebugMessage(
   media: Media | DisaggregatedMedia,
 ): discord.Message | discord.Message {
   const titles = packs.aliasToArray(media.title);
@@ -182,7 +182,7 @@ export function mediaDebugMessage(
   return new discord.Message().addEmbed(embed);
 }
 
-export async function character(
+async function character(
   { id, userId, guildId, search, debug }: {
     id?: string;
     userId?: string;
@@ -231,7 +231,7 @@ export async function character(
   return message;
 }
 
-export function characterMessage(
+function characterMessage(
   character: Character | DisaggregatedCharacter,
   options?: Parameters<typeof characterEmbed>[1] & {
     externalLinks?: boolean;
@@ -296,7 +296,7 @@ export function characterMessage(
   return message.addComponents(group);
 }
 
-export function characterEmbed(
+function characterEmbed(
   character: Character | DisaggregatedCharacter,
   options?: {
     existing?: {
@@ -397,7 +397,7 @@ export function characterEmbed(
   return embed;
 }
 
-export function characterDebugMessage(character: Character): discord.Message {
+function characterDebugMessage(character: Character): discord.Message {
   const media = character.media?.edges?.[0];
 
   const role = media?.role;
@@ -452,7 +452,7 @@ export function characterDebugMessage(character: Character): discord.Message {
   return new discord.Message().addEmbed(embed);
 }
 
-export async function mediaCharacter(
+async function mediaCharacter(
   { mediaId, userId, guildId, index }: {
     mediaId: string;
     userId?: string;
@@ -523,3 +523,17 @@ export async function mediaCharacter(
     next,
   });
 }
+
+const search = {
+  media,
+  mediaMessage,
+  mediaEmbed,
+  mediaDebugMessage,
+  character,
+  characterMessage,
+  characterEmbed,
+  characterDebugMessage,
+  mediaCharacter,
+};
+
+export default search;

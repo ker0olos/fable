@@ -6,7 +6,7 @@ import {
   stub,
 } from 'https://deno.land/std@0.177.0/testing/mock.ts';
 
-import * as user from '../src/user.ts';
+import user from '../src/user.ts';
 
 Deno.test('find character', async () => {
   const fetchStub = stub(
@@ -18,6 +18,7 @@ Deno.test('find character', async () => {
         Promise.resolve(JSON.stringify({
           data: {
             findCharacter: {
+              id: 'id',
               rating: 1,
               mediaId: 'media_id',
               user: {
@@ -46,6 +47,7 @@ Deno.test('find character', async () => {
     );
 
     assertEquals(characters, {
+      id: 'id',
       rating: 1,
       mediaId: 'media_id',
       userId: 'user_id',

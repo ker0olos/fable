@@ -9,6 +9,8 @@ import _vtubersManifest from '../packs/vtubers/manifest.json' assert {
 import * as _anilist from '../packs/anilist/index.ts';
 
 import utils from './utils.ts';
+// import github from './github.ts';
+// import config from './config.ts';
 
 import * as discord from './discord.ts';
 
@@ -40,19 +42,20 @@ let community: Manifest[] | undefined = undefined;
 let disabled: { [key: string]: boolean } | undefined = undefined;
 
 const packs = {
-  embed,
-  list,
-  searchMany,
-  media,
-  characters,
-  mediaCharacter,
   aggregate,
-  anilist,
-  pool,
-  isDisabled,
   aliasToArray,
+  anilist,
+  characters,
+  embed,
   formatToString,
+  // install,
+  isDisabled,
+  list,
+  media,
+  mediaCharacter,
   mediaToString,
+  pool,
+  searchMany,
   // used in tests to clear cache
   clear: () => {
     community = undefined;
@@ -63,7 +66,7 @@ const packs = {
 async function anilist(
   name: string,
   interaction: discord.Interaction<unknown>,
-): Promise<discord.Message | undefined> {
+): Promise<discord.Message> {
   // deno-lint-ignore no-non-null-assertion
   const command = anilistManifest.commands![name];
 
@@ -77,7 +80,7 @@ async function anilist(
 function list(type?: ManifestType): Manifest[] {
   // TODO FIX this should be cached on database for each server
   if (!community) {
-    // TODO BLOCKED load community packs
+    // TODO load community packs
     // (see https://github.com/ker0olos/fable/issues/10)
     // then map each loaded pack to 'dict'
     // 1^ block loading packs if name is used for builtins
@@ -161,6 +164,46 @@ function embed(
     type,
   });
 }
+
+// function install({
+//   token,
+//   userId,
+//   guildId,
+//   url,
+//   ref,
+// }: {
+//   token: string;
+//   userId: string;
+//   guildId: string;
+//   channelId?: string;
+//   url: string;
+//   ref?: string;
+// }): discord.Message {
+//   github.manifest({ url, ref })
+//     .then(async (manifest) => {
+//       const message = new discord.Message();
+
+//       // TODO validate
+//       // TODO test invalid manifest messages
+//       // TODO add pack to the guild database
+
+//       message.setContent(manifest.id);
+
+//       await message.patch(token);
+//     })
+//     .catch(async (err) => {
+//       if (!config.sentry) {
+//         throw err;
+//       }
+
+//       const refId = utils.captureException(err);
+
+//       await discord.Message.internal(refId).patch(token);
+//     });
+
+//   return new discord.Message()
+//     .setType(discord.MessageType.Loading);
+// }
 
 function parseId(
   literal: string,

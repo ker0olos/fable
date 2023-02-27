@@ -1,14 +1,14 @@
 import * as discord from './discord.ts';
 
-import * as search from './search.ts';
-import * as user from './user.ts';
-import * as party from './party.ts';
+import search from './search.ts';
+import user from './user.ts';
+import party from './party.ts';
 
 import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
 
-import { help } from './help.ts';
+import help from './help.ts';
 
 import config, { initConfig } from './config.ts';
 
@@ -250,11 +250,11 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'stars': {
-                const rating = options['rating'] as number;
+                const stars = options['rating'] as number;
 
                 return (await user.stars({
                   userId: userId ?? member.user.id,
-                  stars: rating,
+                  stars,
                   channelId,
                   guildId,
                   nick,
@@ -292,8 +292,8 @@ export const handler = async (r: Request) => {
             }))
               .send();
           }
-          case 'pull':
           case 'gacha':
+          case 'pull':
           case 'w':
           case 'q':
             return gacha
@@ -318,7 +318,7 @@ export const handler = async (r: Request) => {
           case 'start':
           case 'guide':
           case 'tuto': {
-            return help({ userId: member.user.id, index: 0 }).send();
+            return help.pages({ userId: member.user.id, index: 0 }).send();
           }
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion
@@ -485,7 +485,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return help({ userId: member.user.id, index })
+            return help.pages({ userId: member.user.id, index })
               .setType(discord.MessageType.Update)
               .send();
           }
