@@ -21,6 +21,7 @@ import search from '../src/search.ts';
 import party from '../src/party.ts';
 import gacha from '../src/gacha.ts';
 import help from '../src/help.ts';
+
 import { ManifestType } from '../src/types.ts';
 
 Deno.test('media components', async () => {

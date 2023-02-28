@@ -8,11 +8,13 @@ import _vtubersManifest from '../packs/vtubers/manifest.json' assert {
 
 import * as _anilist from '../packs/anilist/index.ts';
 
-import utils from './utils.ts';
-// import github from './github.ts';
-// import config from './config.ts';
-
 import * as discord from './discord.ts';
+
+import utils from './utils.ts';
+import github from './github.ts';
+import config from './config.ts';
+
+import validate from './validate.ts';
 
 import {
   Alias,
@@ -48,7 +50,7 @@ const packs = {
   characters,
   embed,
   formatToString,
-  // install,
+  install,
   isDisabled,
   list,
   media,
@@ -165,45 +167,56 @@ function embed(
   });
 }
 
-// function install({
-//   token,
-//   userId,
-//   guildId,
-//   url,
-//   ref,
-// }: {
-//   token: string;
-//   userId: string;
-//   guildId: string;
-//   channelId?: string;
-//   url: string;
-//   ref?: string;
-// }): discord.Message {
-//   github.manifest({ url, ref })
-//     .then(async (manifest) => {
-//       const message = new discord.Message();
+function install({
+  token,
+  shallow,
+  // userId,
+  // guildId,
+  url,
+  ref,
+}: {
+  token: string;
+  userId: string;
+  guildId: string;
+  channelId?: string;
+  url: string;
+  ref?: string;
+  shallow?: boolean;
+}): discord.Message {
+  github.manifest({ url, ref })
+    .then((manifest) => {
+      const message = new discord.Message();
 
-//       // TODO validate
-//       // TODO test invalid manifest messages
-//       // TODO add pack to the guild database
+      // validate against json schema
+      const valid = validate(manifest);
 
-//       message.setContent(manifest.id);
+      if (valid.error) {
+        return message.setContent(valid.error).patch(token);
+      }
 
-//       await message.patch(token);
-//     })
-//     .catch(async (err) => {
-//       if (!config.sentry) {
-//         throw err;
-//       }
+      if (shallow) {
+        return message.setContent('No Errors').patch(token);
+      }
 
-//       const refId = utils.captureException(err);
+      message.setContent(manifest.id);
 
-//       await discord.Message.internal(refId).patch(token);
-//     });
+      // TODO add pack to the guild database
 
-//   return new discord.Message()
-//     .setType(discord.MessageType.Loading);
-// }
+      return message.patch(token);
+    })
+    .catch(async (err) => {
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  return new discord.Message()
+    .setType(discord.MessageType.Loading);
+}
 
 function parseId(
   literal: string,

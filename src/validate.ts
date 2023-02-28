@@ -32,6 +32,8 @@ import builtin from '../json/schema.builtin.json' assert {
   type: 'json',
 };
 
+import { Manifest } from './types.ts';
+
 const replacerWithPath = (
   replacer: (value: any, path: string) => string,
 ) => {
@@ -132,7 +134,7 @@ export const prettify = (
   return json;
 };
 
-export const assertValidManifest = (data: any) => {
+export const assertValidManifest = (data: Manifest) => {
   const validate = new Ajv({ strict: false, allErrors: true })
     .addSchema(alias)
     .addSchema(image)
@@ -143,6 +145,23 @@ export const assertValidManifest = (data: any) => {
   if (!validate(data)) {
     throw new AssertionError(prettify(data, validate));
   }
+};
+
+export default (data: Manifest): { error?: string } => {
+  const validate = new Ajv({ strict: false, allErrors: true })
+    .addSchema(alias)
+    .addSchema(image)
+    .addSchema(media)
+    .addSchema(character)
+    .compile(index);
+
+  if (!validate(data)) {
+    return {
+      error: prettify(data, validate, { markdown: true }),
+    };
+  }
+
+  return {};
 };
 
 // if being called directly

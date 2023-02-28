@@ -330,16 +330,18 @@ export const handler = async (r: Request) => {
                   type: subcommand as ManifestType,
                 }).send();
               }
-              // case 'install': {
-              //   return packs.install({
-              //     token,
-              //     guildId,
-              //     channelId,
-              //     userId: member.user.id,
-              //     url: options['github'] as string,
-              //     ref: options['ref'] as string,
-              //   }).send();
-              // }
+              case 'install':
+              case 'validate': {
+                return packs.install({
+                  token,
+                  guildId,
+                  channelId,
+                  userId: member.user.id,
+                  shallow: subcommand === 'validate',
+                  url: options['github'] as string,
+                  ref: options['ref'] as string,
+                }).send();
+              }
               default:
                 break;
             }

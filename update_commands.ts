@@ -410,6 +410,25 @@ await put([
         type: Type.SUB_COMMAND,
         optional: true,
       }),
+      Option({
+        name: 'validate',
+        description: 'Validate a community pack\'s manifest',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'github',
+            description: 'A github repository url',
+            type: Type.STRING,
+          }),
+          Option({
+            name: 'ref',
+            description: 'A ref to a branch or commit sha',
+            type: Type.STRING,
+            optional: true,
+          }),
+        ],
+      }),
     ],
   }),
   // non-standard commands (pack commands)
