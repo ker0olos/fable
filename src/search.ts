@@ -97,7 +97,7 @@ function mediaMessage(media: Media): discord.Message {
   if (media?.characters?.edges.length) {
     linksGroup.push(
       new discord.Component().setLabel('View Characters').setId(
-        'mcharacter',
+        'mcharacters',
         `${media.packId}:${media.id}`,
       ),
     );
@@ -452,7 +452,7 @@ function characterDebugMessage(character: Character): discord.Message {
   return new discord.Message().addEmbed(embed);
 }
 
-async function mediaCharacter(
+async function mediaCharacters(
   { mediaId, userId, guildId, index }: {
     mediaId: string;
     userId?: string;
@@ -461,7 +461,7 @@ async function mediaCharacter(
     index: number;
   },
 ): Promise<discord.Message> {
-  const { character: node, media, next, total } = await packs.mediaCharacter({
+  const { character: node, media, next, total } = await packs.mediaCharacters({
     mediaId,
     index,
   });
@@ -516,7 +516,7 @@ async function mediaCharacter(
 
   return discord.Message.page({
     total,
-    type: 'mcharacter',
+    type: 'mcharacters',
     target: mediaId,
     message,
     index,
@@ -533,7 +533,7 @@ const search = {
   characterMessage,
   characterEmbed,
   characterDebugMessage,
-  mediaCharacter,
+  mediaCharacters,
 };
 
 export default search;

@@ -373,14 +373,14 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'mcharacter': {
+          case 'mcharacters': {
             // deno-lint-ignore no-non-null-assertion
             const mediaId = customValues![0];
 
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]) || 0;
 
-            return (await search.mediaCharacter({
+            return (await search.mediaCharacters({
               userId: member.user.id,
               channelId,
               guildId,
@@ -532,8 +532,11 @@ export const handler = async (r: Request) => {
     if (err instanceof NoPermissionError) {
       return new discord.Message()
         .setFlags(discord.MessageFlags.Ephemeral)
-        .setContent('You don\'t permission to complete this interaction!')
-        .send();
+        .addEmbed(
+          new discord.Embed().setDescription(
+            'You don\'t permission to complete this interaction!',
+          ),
+        ).send();
     }
 
     if (!config.sentry) {

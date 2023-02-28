@@ -1615,7 +1615,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await packs.mediaCharacter({
+      const result = await packs.mediaCharacters({
         mediaId: 'anilist:1',
         index: 0,
       });
@@ -1700,7 +1700,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await packs.mediaCharacter({
+      const result = await packs.mediaCharacters({
         mediaId: 'pack-id:1',
         index: 0,
       });
@@ -1778,7 +1778,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await packs.mediaCharacter({
+      const result = await packs.mediaCharacters({
         mediaId: 'pack-id:1',
         index: 0,
       });
@@ -1833,7 +1833,7 @@ Deno.test('media character', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await packs.mediaCharacter({
+          await packs.mediaCharacters({
             mediaId: 'anilist:1',
             index: 0,
           }),

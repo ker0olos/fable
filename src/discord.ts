@@ -23,7 +23,7 @@ export enum MessageType {
   Loading = 5,
   Update = 7,
   Suggestions = 8,
-  // Modal = 9,
+  Modal = 9,
 }
 
 export enum InteractionType {
@@ -31,7 +31,7 @@ export enum InteractionType {
   Command = 2,
   Component = 3,
   Partial = 4,
-  // Modal = 5,
+  Modal = 5,
 }
 
 export enum ComponentType {
@@ -203,7 +203,7 @@ export class Interaction<Options> {
 
         break;
       }
-      // case InteractionType.Modal:
+      case InteractionType.Modal:
       case InteractionType.Component: {
         const custom = data.custom_id.split(splitter);
 
@@ -484,6 +484,8 @@ export class Message {
   #suggestions: { [name: string]: Suggestion };
 
   #data: {
+    title?: string;
+    custom_id?: string;
     flags?: number;
     content?: string;
     // deno-lint-ignore no-explicit-any
@@ -520,16 +522,16 @@ export class Message {
     return this;
   }
 
-  // setId(id: string) {
-  //   this.#data.custom_id = id;
-  //   return this;
-  // }
+  setId(id: string): Message {
+    this.#data.custom_id = id;
+    return this;
+  }
 
-  // setTitle(title: string) {
-  //   this.#type = MessageType.Modal;
-  //   this.#data.title = title;
-  //   return this;
-  // }
+  setTitle(title: string): Message {
+    this.#type = MessageType.Modal;
+    this.#data.title = title;
+    return this;
+  }
 
   addAttachment(
     { arrayBuffer, filename, type }: {
@@ -612,13 +614,6 @@ export class Message {
   // deno-lint-ignore no-explicit-any
   json(): any {
     switch (this.#type) {
-      // case MessageType.Modal:
-      //   data = {
-      //     title: this.#data.title,
-      //     custom_id: this.#data.custom_id,
-      //     components: this.#data.components,
-      //   };
-      //   break;
       case MessageType.Suggestions:
         return {
           type: MessageType.Suggestions,
@@ -645,6 +640,17 @@ export class Message {
             components: chunk,
           });
         });
+
+        if (this.#type === MessageType.Modal) {
+          return {
+            type: MessageType.Modal,
+            data: {
+              title: this.#data.title,
+              custom_id: this.#data.custom_id,
+              components,
+            },
+          };
+        }
 
         return {
           type: this.#type,
@@ -770,8 +776,11 @@ export class Message {
   }
 
   static internal(id: string): Message {
-    return new Message().setContent(
-      `An Internal Error occurred and was reported.\n\`\`\`ref_id: ${id}\`\`\``,
-    );
+    return new Message()
+      .addEmbed(
+        new Embed().setDescription(
+          `An Internal Error occurred and was reported.\n\`\`\`ref_id: ${id}\`\`\``,
+        ),
+      );
   }
 }

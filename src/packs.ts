@@ -52,7 +52,7 @@ const packs = {
   isDisabled,
   list,
   media,
-  mediaCharacter,
+  mediaCharacters,
   mediaToString,
   pool,
   searchMany,
@@ -394,7 +394,7 @@ async function characters({ ids, search }: {
   }
 }
 
-async function mediaCharacter({ mediaId, index }: {
+async function mediaCharacters({ mediaId, index }: {
   mediaId: string;
   index: number;
 }): Promise<
@@ -412,7 +412,7 @@ async function mediaCharacter({ mediaId, index }: {
   }
 
   if (packId === 'anilist') {
-    return _anilist.mediaCharacter({
+    return _anilist.mediaCharacters({
       id,
       index,
     });

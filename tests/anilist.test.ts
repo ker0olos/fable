@@ -207,7 +207,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await anilist.mediaCharacter({ id: '1', index: 0 });
+      const result = await anilist.mediaCharacters({ id: '1', index: 0 });
 
       assertEquals(result, {
         next: true,
@@ -263,7 +263,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await anilist.mediaCharacter({ id: '1', index: 0 });
+      const result = await anilist.mediaCharacters({ id: '1', index: 0 });
 
       assertEquals(result, {
         next: false,
@@ -313,7 +313,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await anilist.mediaCharacter({ id: '1', index: 0 });
+      const result = await anilist.mediaCharacters({ id: '1', index: 0 });
 
       assertEquals(result, {
         next: false,

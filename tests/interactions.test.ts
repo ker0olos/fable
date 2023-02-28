@@ -609,7 +609,7 @@ Deno.test('/media', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'mcharacter=anilist:1',
+              custom_id: 'mcharacters=anilist:1',
               label: 'View Characters',
               style: 2,
               type: 2,
@@ -1379,7 +1379,7 @@ Deno.test('/media', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'mcharacter=anilist:1',
+              custom_id: 'mcharacters=anilist:1',
               label: 'View Characters',
               style: 2,
               type: 2,
@@ -2753,7 +2753,7 @@ Deno.test('media characters', async (test) => {
   await test.step('normal', async () => {
     const characterStub = stub(
       packs,
-      'mediaCharacter',
+      'mediaCharacters',
       () =>
         Promise.resolve({
           next: true,
@@ -2776,7 +2776,7 @@ Deno.test('media characters', async (test) => {
     );
 
     try {
-      const message = await search.mediaCharacter({
+      const message = await search.mediaCharacters({
         mediaId: 'pack-id:1',
         index: 0,
       });
@@ -2796,7 +2796,7 @@ Deno.test('media characters', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'mcharacter=pack-id:1=1=next',
+                custom_id: 'mcharacters=pack-id:1=1=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -2836,7 +2836,7 @@ Deno.test('media characters', async (test) => {
   await test.step('with owner', async () => {
     const characterStub = stub(
       packs,
-      'mediaCharacter',
+      'mediaCharacters',
       () =>
         Promise.resolve({
           next: true,
@@ -2880,7 +2880,7 @@ Deno.test('media characters', async (test) => {
     );
 
     try {
-      const message = await search.mediaCharacter({
+      const message = await search.mediaCharacters({
         userId: 'user_id',
         guildId: 'guild_id',
         mediaId: 'pack-id:1',
@@ -2902,7 +2902,7 @@ Deno.test('media characters', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'mcharacter=pack-id:1=1=next',
+                custom_id: 'mcharacters=pack-id:1=1=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -2951,7 +2951,7 @@ Deno.test('media characters', async (test) => {
   await test.step('disabled character', async () => {
     const characterStub = stub(
       packs,
-      'mediaCharacter',
+      'mediaCharacters',
       () =>
         Promise.resolve({
           next: false,
@@ -2976,7 +2976,7 @@ Deno.test('media characters', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await search.mediaCharacter({
+          await search.mediaCharacters({
             mediaId: 'pack-id:1',
             index: 0,
           }),
@@ -2993,7 +2993,7 @@ Deno.test('media characters', async (test) => {
   await test.step('no characters', async () => {
     const characterStub = stub(
       packs,
-      'mediaCharacter',
+      'mediaCharacters',
       () =>
         Promise.resolve({
           next: false,
@@ -3010,7 +3010,7 @@ Deno.test('media characters', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await search.mediaCharacter({
+          await search.mediaCharacters({
             mediaId: 'pack-id:1',
             index: 0,
           }),
@@ -3026,7 +3026,7 @@ Deno.test('media characters', async (test) => {
   await test.step('no more characters', async () => {
     const characterStub = stub(
       packs,
-      'mediaCharacter',
+      'mediaCharacters',
       () =>
         Promise.resolve({
           next: false,
@@ -3043,7 +3043,7 @@ Deno.test('media characters', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await search.mediaCharacter({
+          await search.mediaCharacters({
             mediaId: 'pack-id:1',
             index: 1,
           }),
@@ -3059,7 +3059,7 @@ Deno.test('media characters', async (test) => {
   await test.step('not found', async () => {
     const characterStub = stub(
       packs,
-      'mediaCharacter',
+      'mediaCharacters',
       () =>
         Promise.resolve({
           next: false,
@@ -3069,7 +3069,7 @@ Deno.test('media characters', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await search.mediaCharacter({
+          await search.mediaCharacters({
             mediaId: 'pack-id:1',
             index: 0,
           }),

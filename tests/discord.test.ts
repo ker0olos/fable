@@ -419,11 +419,15 @@ Deno.test('static messages', async (test) => {
     assertEquals(message.json(), {
       type: 4,
       data: {
-        content:
-          'An Internal Error occurred and was reported.\n```ref_id: id```',
+        embeds: [
+          {
+            description:
+              'An Internal Error occurred and was reported.\n```ref_id: id```',
+            type: 'rich',
+          },
+        ],
         components: [],
         attachments: [],
-        embeds: [],
       },
     });
   });
