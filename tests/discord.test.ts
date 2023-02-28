@@ -368,6 +368,23 @@ Deno.test('messages', async (test) => {
     });
   });
 
+  await test.step('modals', () => {
+    const component = new discord.Message();
+
+    component
+      .setTitle('title')
+      .setId('custom_id');
+
+    assertEquals(component.json(), {
+      type: 9,
+      data: {
+        components: [],
+        custom_id: 'custom_id',
+        title: 'title',
+      },
+    });
+  });
+
   await test.step('send', async () => {
     const message = new discord.Message().setContent('content');
 
