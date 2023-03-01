@@ -1,6 +1,6 @@
-import { load as Dotenv } from 'https://deno.land/std@0.177.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.178.0/dotenv/mod.ts';
 
-import { green } from 'https://deno.land/std@0.177.0/fmt/colors.ts';
+import { green } from 'https://deno.land/std@0.178.0/fmt/colors.ts';
 
 import { Manifest } from './src/types.ts';
 
@@ -105,8 +105,6 @@ const Command = ({
     options: options?.map((option) => transformOption(option)),
   }];
 
-  console.log(commands[0].options);
-
   options?.forEach((option, index) => {
     option.aliases?.forEach((alias) => {
       commands[0].options?.push({
@@ -188,7 +186,6 @@ async function put(commands: Command[]): Promise<void> {
   if (response.status !== 200) {
     throw new Error(JSON.stringify(await response.json(), undefined, 2));
   } else {
-    // console.log(response.status, response.statusText);
     console.log(green('OK'));
   }
 }
