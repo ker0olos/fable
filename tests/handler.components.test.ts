@@ -343,7 +343,7 @@ Deno.test('party assign components', async () => {
     });
 
     assertSpyCall(setTypeSpy, 0, {
-      args: [discord.MessageType.Update],
+      args: [discord.MessageType.New],
     });
 
     assertSpyCall(partyStub, 0, {

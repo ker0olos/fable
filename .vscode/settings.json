@@ -9,11 +9,12 @@
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
     "README.md": "LICENSE,.gitignore",
+    ".env.example": ".env,.faunarc",
     "deno.json": "deno.lock"
   },
   //
-  "deno.enable": true,
   "deno.lint": true,
+  "deno.enable": true,
   "deno.unstable": false,
   "deno.config": "deno.json",
   //

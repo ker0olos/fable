@@ -402,7 +402,7 @@ export const handler = async (r: Request) => {
               channelId,
               guildId,
             }))
-              .setType(discord.MessageType.Update)
+              .setType(discord.MessageType.New)
               .send();
           }
           case 'cstars': {

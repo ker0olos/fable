@@ -31,7 +31,8 @@ servers, like adding extensions to chrome and installing apps on your phone, you
 can install community-made packs that are full of new characters with a single
 command.
 
-Fable is actively developed with new game modes and features frequently.
+You can also create a party with the characters you find, challenge the tower,
+your friends or other discord servers.
 
 [^1]: Currently the default packs include anime/manga/vtubers, but you can
 install other packs, e.g. video game characters or real-life celebrities. And
@@ -39,8 +40,10 @@ you can disable all anime packs entirely (In case it's a sports server or else,
 we try our best to include term natural commands along with anime analogies).
 
 > Fable is in early access. Some core features might be missing. Missing
-> features include "Trading" (see
+> features include "Trading", "PVE", "PVP" (see
 > [#20](https://github.com/ker0olos/fable/issues/20) for a full roadmap)
+
+Fable is actively developed with new game modes and features frequently.
 
 <br clear="right"/>
 
@@ -57,10 +60,10 @@ we try our best to include term natural commands along with anime analogies).
 - **`/now`, `/tu`**: _check what you can do right now_
 - **`/search`, `/anime`, `/manga`**: _to search for specific media_
 - **`/character`, `/im`**: _to search for a specific character_
+- **`/help`, `/tuto`**: _to learn more information and commands_
 
 ### Get Involved
 
-- Star the github repo
 - Send our links to a couple of friends
 - Tell your favorite server's admins about us
 - [Join our discord][discord]
@@ -81,27 +84,34 @@ we try our best to include term natural commands along with anime analogies).
 
 ## FAQ
 
-<!-- TODO -->
-<!-- > How can I add a new pack to my server? -->
+> How can I add/install a new pack on my server?
 
-<!-- TODO -->
-<!-- > How to disable/remove a pack from my server? -->
+We plan to have a Marketplace command where you can browse and install popular
+packs, but as of right now you'll need to know the pack's github url and run
+`/packs install https://github.com/username/packname`
 
 > How can I create a new pack?
 
 Currently, it's only possible through editing JSON files, we recommend that you
 check [fable-community/example](https://github.com/fable-community/example), it
-has a great quick-start guide.
+includes most of the info you need.
 
-> Can I use prefixes like `$`
+> Can I use prefixes like `$`?
 
-No, Fable was built from the ground up to only support slash commands, prefixes
-are an entirely different thing that requires the bot to manually monitor all
-incoming messages in a server. We won't add prefixes to Fable, but you can go
-tell discord to add custom prefixes to "slash" commands instead of "/" for all
-bots.
+**No**. Fable was built from the ground up to only support slash commands,
+prefixes are an entirely different thing that requires the bot to manually
+monitor all incoming messages in a server. We won't add prefixes to Fable, but
+you can go tell discord to add custom prefixes to "slash" commands instead of
+"/" for all bots.
 
-> How/why are you keeping Fable free?
+> How to remove/uninstall a pack from my server?
+
+Like installing packs, run `/packs remove [pack-id]`. If you don't know the id
+of the pack you want to remove, then use `/packs community` instead.\
+Removing a pack will disable any characters your server members have from said
+pack.
+
+> How are you keeping Fable free?
 
 We're using serverless for the servers and the database, which is much cheaper
 to maintain right now.
@@ -117,15 +127,8 @@ Fable will always remain 100% free-to-play to the players.
 
 ---
 
-## Credits
-
-Our core team who are responsible for reviewing code and making decisions on the
-the direction of the project:
-
-- ker0olos#6355 — [@ker0olos](https://github.com/ker0olos) — Kerolos Zaki
-
 - Checkout <https://anilist.co>. It will help you track those 2000 anime you
-  watch, and let you know when a new episode or season is out.
+  watch, and let you know when a new episode is out.
 
 - This project wouldn't be possible without Deno. Want to learn about running
   your own discord bot at a low cost? Check the official guide at
