@@ -6218,7 +6218,8 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          id: 'id',
+          repo: { id: 'repo_id' },
+          manifest: { id: 'manifest_id' },
         }) as any,
     );
 
@@ -6271,8 +6272,13 @@ Deno.test('/packs [install-validate]', async (test) => {
           ) as any,
         ),
         {
-          content: 'No Errors',
-          embeds: [],
+          embeds: [
+            {
+              type: 'rich',
+              color: 2924395,
+              description: 'Valid',
+            },
+          ],
           components: [],
           attachments: [],
         },
@@ -6293,7 +6299,8 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          id: '$&*#&$*#',
+          repo: { id: 'repo_id' },
+          manifest: { id: '$&*#&$*#' },
         }) as any,
     );
 
@@ -6345,9 +6352,14 @@ Deno.test('/packs [install-validate]', async (test) => {
           ) as any,
         ),
         {
-          content:
-            'Errors: 1\n```json\n{\n  "id": "$&*#&$*#" >>> must match pattern "^[-_a-z0-9]+$"\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n}\n```',
-          embeds: [],
+          embeds: [
+            {
+              type: 'rich',
+              color: 9907244,
+              description:
+                'Errors: 1\n```json\n{\n  "id": "$&*#&$*#" >>> must match pattern "^[-_a-z0-9]+$"\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n}\n```',
+            },
+          ],
           components: [],
           attachments: [],
         },

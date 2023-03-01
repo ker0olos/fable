@@ -8,6 +8,12 @@ const API = `https://discord.com/api/v10`;
 const splitter = '=';
 
 export const empty = '\u200B';
+
+export const colors = {
+  red: '#972c2c',
+  green: '#2c9f6b',
+};
+
 export const join = (...args: string[]): string => {
   return args.join(splitter);
 };

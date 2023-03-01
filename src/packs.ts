@@ -30,6 +30,8 @@ import {
   Pool,
 } from './types.ts';
 
+import { NonFetalError } from './errors.ts';
+
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
 
@@ -184,27 +186,46 @@ function install({
   shallow?: boolean;
 }): discord.Message {
   github.manifest({ url, ref })
-    .then((manifest) => {
+    .then(async ({ repo, manifest }) => {
       const message = new discord.Message();
 
       // validate against json schema
       const valid = validate(manifest);
 
       if (valid.error) {
-        return message.setContent(valid.error).patch(token);
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setColor(discord.colors.red)
+              .setDescription(valid.error),
+          )
+          .patch(token);
       }
 
       if (shallow) {
-        return message.setContent('No Errors').patch(token);
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setColor(discord.colors.green)
+              .setDescription('Valid'),
+          )
+          .patch(token);
       }
 
-      message.setContent(manifest.id);
+      message.setContent(`${repo.id}: ${manifest.id}`);
 
       // TODO add pack to the guild database
 
       return message.patch(token);
     })
     .catch(async (err) => {
+      if (err instanceof NonFetalError) {
+        return await new discord.Message()
+          .setFlags(discord.MessageFlags.Ephemeral)
+          .addEmbed(new discord.Embed().setDescription(err.message))
+          .patch(token);
+      }
+
       if (!config.sentry) {
         throw err;
       }
