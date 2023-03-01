@@ -6368,7 +6368,7 @@ Deno.test('/help', async (test) => {
     const message = help.pages({ userId: 'user_id', index: 0 });
 
     assertEquals(message.json().data.components[0].components[0], {
-      custom_id: 'help==2=prev',
+      custom_id: 'help==3=prev',
       label: 'Prev',
       style: 2,
       type: 2,
@@ -6377,7 +6377,7 @@ Deno.test('/help', async (test) => {
     assertEquals(message.json().data.components[0].components[1], {
       custom_id: '_',
       disabled: true,
-      label: '1/3',
+      label: '1/4',
       style: 2,
       type: 2,
     });

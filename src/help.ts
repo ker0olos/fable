@@ -34,17 +34,52 @@ function pages(
           .setFooter({ text: 'aliases: /w, /q' }),
       ),
     new discord.Message()
+      .addComponents([
+        new discord.Component()
+          .setId('cstars', '5', userId)
+          .setLabel('/collection stars 5'),
+        new discord.Component()
+          .setId('cstars', '4', userId)
+          .setLabel('/collection stars 4'),
+      ])
+      .addEmbed(
+        new discord.Embed()
+          .setAuthor({ name: '2.' })
+          .setTitle('`/party`')
+          .setDescription([
+            'You will need a party to use combat features, but all combat features are still in development, so parties are only an aesthetic right now.',
+            '',
+            '__You can\'t have more than 1 party__ or save your current party to a preset and switch between presets.',
+            '',
+            '`/party view` to view your current party.',
+            '',
+            '`/party assign [name] [spot?]` to assign a character you found to your party;',
+            'leaving the `[spot]` parameter empty will assign the character to the first empty spot, or override spot #5 if no empty spots exist.',
+            '',
+            '`/party remove [spot]` to remove a character from your party.',
+            '',
+            '> Use `/collection stars` and `/collection media` to browse your characters and select your party members.',
+            '\u200B',
+          ].join('\n'))
+          .setFooter({ text: 'aliases: /team, /p' }),
+      ),
+    new discord.Message()
       .addEmbed(
         new discord.Embed()
           .setAuthor({ name: 'All Commands' })
           .setDescription([
             '- `/gacha` `/w`: _start a new gacha pull_',
-            '- `/now` `/cl` `/tu`: _check what you can do right now_',
+            '- `/pull` `/q`: _start a quiet gacha pull with no animation_',
+            '- `/now` `/checklist` `/cl` `/tu`: _check what you can do right now_',
             '- `/search` `/anime` `/manga`: _search for specific media',
             '- `/character` `/char` `/im`: _search for a specific character_',
             '',
-            '- `/collection stars` `/mm stars`: _list all your stars_',
-            '- `/collection media` `/mm media`: _list all your characters from a specific media_',
+            '- `/party view` `/team view` `/p view`: _view your current party_',
+            '- `/party assign` `/team assign` `/p assign`: _assign a character to your party_',
+            '- `/party remove` `/team remove` `/p remove`: _remove a character from your party_',
+            '',
+            '- `/collection stars` `/coll stars` `/mm stars`: _list all your stars_',
+            '- `/collection media` `/coll media` `/mm media`: _list all your characters from a specific media_',
             '',
             '- `/anilist next_episode`: _find when the next episode of an anime is airing_',
           ].join('\n')),
