@@ -52,6 +52,7 @@ type Option = {
   options?: Option[];
   choices?: Choice[];
   optional?: boolean;
+  aliases?: (string | { name: string; desc: string })[];
 };
 
 type Command = {
@@ -68,17 +69,7 @@ type Choice = {
   value: string | number;
 };
 
-const Option = (
-  { name, description, type, autocomplete, choices, options, optional }: Option,
-) => ({
-  name,
-  description,
-  autocomplete,
-  type: type.valueOf(),
-  required: !optional,
-  choices,
-  options,
-});
+const Option = (option: Option): Option => option;
 
 const Command = ({
   name,
@@ -96,12 +87,37 @@ const Command = ({
     description = `${description} (Developer Only)`;
   }
 
+  // deno-lint-ignore no-explicit-any
+  const transformOption: any = (option: Option) => ({
+    name: option.name,
+    description: option.description,
+    autocomplete: option.autocomplete,
+    type: option.type.valueOf(),
+    choices: option.choices,
+    required: !option.optional,
+    options: option.options?.map((option) => transformOption(option)),
+  });
+
   const commands = [{
     name,
     description,
     'default_member_permissions': defaultPermission,
-    options,
+    options: options?.map((option) => transformOption(option)),
   }];
+
+  console.log(commands[0].options);
+
+  options?.forEach((option, index) => {
+    option.aliases?.forEach((alias) => {
+      commands[0].options?.push({
+        ...commands[0].options[index],
+        name: typeof alias === 'object' ? alias.name : alias,
+        description: typeof alias === 'object'
+          ? alias.desc
+          : commands[0].options[index].description,
+      });
+    });
+  });
 
   aliases?.forEach((alias) =>
     commands.push({
@@ -177,7 +193,7 @@ async function put(commands: Command[]): Promise<void> {
   }
 }
 
-await put([
+export const commands = [
   // standard gacha commands
   // uses characters and media from all packs
   ...Command({
@@ -411,9 +427,13 @@ await put([
         optional: true,
       }),
       Option({
-        name: 'validate',
-        description: 'Validate a community pack\'s manifest',
+        name: 'install',
+        description: 'Install a community pack',
         type: Type.SUB_COMMAND,
+        aliases: [{
+          name: 'validate',
+          desc: 'Validate a community pack\'s manifest',
+        }],
         optional: true,
         options: [
           Option({
@@ -433,4 +453,8 @@ await put([
   }),
   // non-standard commands (pack commands)
   Pack('./packs/anilist'),
-]);
+];
+
+if (import.meta.main) {
+  await put(commands);
+}
