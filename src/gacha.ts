@@ -44,42 +44,6 @@ const variables = {
   },
 };
 
-async function fakePull(characterId: string): Promise<Pull> {
-  const results = await packs.characters({ ids: [characterId] });
-
-  if (!results.length) {
-    throw new Error('404');
-  }
-
-  // aggregate the media by populating any references to other media/character objects
-  const character = await packs.aggregate<Character>({
-    character: results[0],
-    end: 1,
-  });
-
-  const edge = character.media?.edges?.[0];
-
-  if (!edge) {
-    throw new Error('404');
-  }
-
-  const popularity = character.popularity || edge.node.popularity || lowest;
-
-  return {
-    pool: 1,
-    character,
-    media: edge.node,
-    role: edge.role,
-    popularityGreater: -1,
-    popularityLesser: -1,
-    popularityChance: -1,
-    rating: new Rating({
-      popularity,
-      role: character.popularity ? undefined : edge.role,
-    }),
-  };
-}
-
 async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
   // rng for popularity range
   const { value: range, chance: rangeChance } = utils.rng(
@@ -266,103 +230,101 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
  * start the pull's animation
  */
 function start(
-  { token, userId, guildId, characterId, quiet }: {
+  { token, userId, guildId, quiet }: {
     token: string;
     userId?: string;
     guildId?: string;
     channelId?: string;
-    characterId?: string;
     quiet?: boolean;
   },
 ): discord.Message {
-  const _ =
-    (characterId ? gacha.fakePull(characterId) : gacha.rngPull(userId, guildId))
-      .then(async (pull) => {
-        const media = pull.media;
+  gacha.rngPull(userId, guildId)
+    .then(async (pull) => {
+      const media = pull.media;
 
-        const mediaTitles = packs.aliasToArray(media.title);
+      const mediaTitles = packs.aliasToArray(media.title);
 
-        let message = new discord.Message()
+      let message = new discord.Message()
+        .addEmbed(
+          new discord.Embed()
+            .setTitle(utils.wrap(mediaTitles[0]))
+            .setImage({
+              size: ImageSize.Medium,
+              url: media.images?.[0].url,
+            }),
+        );
+
+      if (!quiet) {
+        await message.patch(token);
+
+        await utils.sleep(4);
+
+        message = new discord.Message()
           .addEmbed(
             new discord.Embed()
-              .setTitle(utils.wrap(mediaTitles[0]))
               .setImage({
-                size: ImageSize.Medium,
-                url: media.images?.[0].url,
+                url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
               }),
           );
 
-        if (!quiet) {
-          await message.patch(token);
+        await message.patch(token);
 
-          await utils.sleep(4);
+        await utils.sleep(pull.rating.stars + 2);
+      }
 
-          message = new discord.Message()
-            .addEmbed(
-              new discord.Embed()
-                .setImage({
-                  url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
-                }),
-            );
+      message = search.characterMessage(pull.character, {
+        relations: false,
+        rating: pull.rating,
+        description: false,
+        externalLinks: false,
+        footer: false,
+        media: {
+          title: true,
+        },
+      });
 
-          await message.patch(token);
-
-          await utils.sleep(pull.rating.stars + 2);
-        }
-
-        message = search.characterMessage(pull.character, {
-          relations: false,
-          rating: pull.rating,
-          description: false,
-          externalLinks: false,
-          footer: false,
-          media: {
-            title: true,
-          },
-        });
-
-        if (userId) {
-          message.addComponents([
-            new discord.Component()
-              .setId(quiet ? 'pull' : 'gacha', userId)
-              .setLabel(`/${quiet ? 'pull' : 'gacha'}`),
-          ]);
-        }
-
+      if (userId) {
         message.addComponents([
           new discord.Component()
-            .setLabel('/character')
-            .setId(
-              `character`,
-              `${pull.character.packId}:${pull.character.id}`,
-            ),
+            .setId(quiet ? 'pull' : 'gacha', userId)
+            .setLabel(`/${quiet ? 'pull' : 'gacha'}`),
         ]);
+      }
 
-        await message.patch(token);
-      })
-      .catch(async (err) => {
-        if (err instanceof NoPullsError) {
-          return await new discord.Message()
-            .addEmbed(
-              new discord.Embed().setDescription(
-                '**You don\'t have any more pulls!**',
-              ),
-            )
-            .addEmbed(
-              new discord.Embed()
-                .setDescription(`+1 <t:${err.rechargeTimestamp}:R>`),
-            )
-            .patch(token);
-        }
+      message.addComponents([
+        new discord.Component()
+          .setLabel('/character')
+          .setId(
+            `character`,
+            `${pull.character.packId}:${pull.character.id}`,
+          ),
+      ]);
 
-        if (!config.sentry) {
-          throw err;
-        }
+      await message.patch(token);
+    })
+    .catch(async (err) => {
+      if (err instanceof NoPullsError) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              '**You don\'t have any more pulls!**',
+            ),
+          )
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(`+1 <t:${err.rechargeTimestamp}:R>`),
+          )
+          .patch(token);
+      }
 
-        const refId = utils.captureException(err);
+      if (!config.sentry) {
+        throw err;
+      }
 
-        await discord.Message.internal(refId).patch(token);
-      });
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
 
   const spinner = new discord.Message()
     .addEmbed(
@@ -377,7 +339,6 @@ function start(
 const gacha = {
   lowest,
   variables,
-  fakePull,
   rngPull,
   start,
 };

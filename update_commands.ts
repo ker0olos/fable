@@ -10,20 +10,6 @@ try {
   //
 }
 
-const APP_ID = Deno.env.get('APP_ID');
-
-const BOT_TOKEN = Deno.env.get('BOT_TOKEN');
-
-const GUILD_ID = Deno.env.get('GUILD_ID');
-
-if (!APP_ID) {
-  throw new Error('APP_ID is not defined');
-}
-
-if (!BOT_TOKEN) {
-  throw new Error('BOT_TOKEN is not defined');
-}
-
 enum Type {
   'SUB_COMMAND' = 1,
   'SUB_COMMAND_GROUP' = 2,
@@ -61,7 +47,6 @@ type Command = {
   options?: ReturnType<typeof Option>[];
   aliases?: string[];
   defaultPermission?: Permission;
-  devOnly?: boolean;
 };
 
 type Choice = {
@@ -77,16 +62,7 @@ const Command = ({
   options,
   aliases,
   defaultPermission,
-  devOnly,
 }: Command) => {
-  if (devOnly && !GUILD_ID) {
-    return [];
-  }
-
-  if (devOnly) {
-    description = `${description} (Developer Only)`;
-  }
-
   // deno-lint-ignore no-explicit-any
   const transformOption: any = (option: Option) => ({
     name: option.name,
@@ -159,7 +135,15 @@ const Pack = (path: string): Command => {
   })[0];
 };
 
-async function put(commands: Command[]): Promise<void> {
+async function put(commands: Command[], {
+  BOT_TOKEN,
+  GUILD_ID,
+  APP_ID,
+}: {
+  APP_ID: string;
+  BOT_TOKEN: string;
+  GUILD_ID?: string;
+}): Promise<void> {
   if (!GUILD_ID) {
     console.log('Updating global commands for production bot\n\n');
   } else {
@@ -250,18 +234,6 @@ export const commands = [
     name: 'pull',
     description: 'Start a quiet gacha pull with no animation',
     aliases: ['q'],
-  }),
-  ...Command({
-    name: 'fake_pull',
-    description: 'Preform a fake gacha pull',
-    devOnly: true,
-    options: [
-      Option({
-        name: 'id',
-        description: 'The id of the character',
-        type: Type.STRING,
-      }),
-    ],
   }),
   // party management
   ...Command({
@@ -453,5 +425,23 @@ export const commands = [
 ];
 
 if (import.meta.main) {
-  await put(commands);
+  const APP_ID = Deno.env.get('APP_ID');
+
+  const BOT_TOKEN = Deno.env.get('BOT_TOKEN');
+
+  const GUILD_ID = Deno.env.get('GUILD_ID');
+
+  if (!APP_ID) {
+    throw new Error('APP_ID is not defined');
+  }
+
+  if (!BOT_TOKEN) {
+    throw new Error('BOT_TOKEN is not defined');
+  }
+
+  await put(commands, {
+    APP_ID,
+    BOT_TOKEN,
+    GUILD_ID,
+  });
 }

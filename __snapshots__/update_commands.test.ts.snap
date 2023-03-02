@@ -251,22 +251,6 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Preform a fake gacha pull (Developer Only)",
-    name: "fake_pull",
-    options: [
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "The id of the character",
-        name: "id",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-  },
-  {
-    default_member_permissions: undefined,
     description: "party management commands",
     name: "party",
     options: [

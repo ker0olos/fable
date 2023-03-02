@@ -153,8 +153,6 @@ async function get(url: string): Promise<Repo> {
 
   const response = await fetch(api);
 
-  console.log(response);
-
   if (!response.ok) {
     throw new NonFetalError(
       `**${response.status}** ${response.statusText}\nFailed to Fetch Repository.`,

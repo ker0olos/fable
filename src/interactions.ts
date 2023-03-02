@@ -305,10 +305,6 @@ export const handler = async (r: Request) => {
                 token,
               })
               .send();
-          case 'fake_pull':
-            return gacha
-              .start({ token, characterId: options['id'] as string })
-              .send();
           case 'anilist': {
             // deno-lint-ignore no-non-null-assertion
             return (await packs.anilist(subcommand!, interaction))!

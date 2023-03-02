@@ -202,6 +202,7 @@ function install({
           .patch(token);
       }
 
+      // shallow install is only meant as validation test
       if (shallow) {
         return await new discord.Message()
           .addEmbed(
@@ -212,9 +213,8 @@ function install({
           .patch(token);
       }
 
-      message.setContent(`${repo.id}: ${manifest.id}`);
-
       // TODO add pack to the guild database
+      message.setContent(`${repo.id}: ${manifest.id}`);
 
       return message.patch(token);
     })
