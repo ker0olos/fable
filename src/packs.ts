@@ -30,8 +30,6 @@ import {
   Pool,
 } from './types.ts';
 
-import { NonFetalError } from './errors.ts';
-
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
 
@@ -213,19 +211,73 @@ function install({
           .patch(token);
       }
 
+      // check installed packs for dependencies and conflicts
+
+      const ids = packs.list().map(({ id }) => id);
+
+      // if this pack conflicts existing
+      const conflicts = (manifest.conflicts ?? []).filter((conflictId) =>
+        ids.includes(conflictId)
+      ).concat(
+        // if existing conflicts this pack
+        packs.list().filter((pack) => pack.conflicts?.includes(manifest.id))
+          .map(({ id }) => id),
+      );
+
+      const missing = manifest.depends?.filter((dependId) =>
+        !ids.includes(dependId)
+      );
+
+      if (
+        (conflicts && conflicts?.length > 0) ||
+        (missing && missing?.length > 0)
+      ) {
+        const message = new discord.Message();
+
+        if (conflicts && conflicts?.length) {
+          message.addEmbed(
+            new discord.Embed()
+              .setDescription(
+                '__Conflicts must be removed before you can install this pack__.',
+              ),
+          );
+
+          conflicts.forEach((conflict) => {
+            message.addEmbed(
+              new discord.Embed().setDescription(
+                `This pack conflicts with ${conflict}`,
+              ),
+            );
+          });
+        }
+
+        if (missing && missing?.length) {
+          message.addEmbed(
+            new discord.Embed()
+              .setDescription(
+                '__Dependencies must be installed before you can install this pack__.',
+              ),
+          );
+
+          missing.forEach((dependency) => {
+            message.addEmbed(
+              new discord.Embed().setDescription(
+                `This pack requires ${dependency}`,
+              ),
+            );
+          });
+        }
+
+        return await message.patch(token);
+      }
+
       // TODO add pack to the guild database
+
       message.setContent(`${repo.id}: ${manifest.id}`);
 
       return message.patch(token);
     })
     .catch(async (err) => {
-      if (err instanceof NonFetalError) {
-        return await new discord.Message()
-          .setFlags(discord.MessageFlags.Ephemeral)
-          .addEmbed(new discord.Embed().setDescription(err.message))
-          .patch(token);
-      }
-
       if (!config.sentry) {
         throw err;
       }
