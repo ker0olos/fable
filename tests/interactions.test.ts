@@ -6293,7 +6293,7 @@ Deno.test('/packs [install-validate]', async (test) => {
     }
   });
 
-  await test.step('invalid', async () => {
+  await test.step('invalid manifest', async () => {
     const manifestStub = stub(
       github,
       'manifest',
@@ -6416,6 +6416,12 @@ Deno.test('/help', async (test) => {
 
   await test.step('page 3', () => {
     const message = help.pages({ userId: 'user_id', index: 2 });
+
+    assertSnapshot(test, message.json());
+  });
+
+  await test.step('page 4', () => {
+    const message = help.pages({ userId: 'user_id', index: 3 });
 
     assertSnapshot(test, message.json());
   });

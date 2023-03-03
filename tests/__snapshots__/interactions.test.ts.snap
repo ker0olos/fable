@@ -202,3 +202,50 @@ snapshot[`/help 3`] = `
   type: 4,
 }
 `;
+
+snapshot[`/help 4`] = `
+{
+  data: {
+    attachments: [
+    ],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==2=prev",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "4/4",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==0=next",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "Admin Commands",
+        },
+        description: "- \`/packs install\`: _install a community pack_
+- \`/packs community\`: _list all installed community packs_
+- \`/packs builtin\`: _list all the builtin packs_",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;
