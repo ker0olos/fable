@@ -1,9 +1,11 @@
 {
-  "$id": "character.json",
+  "$id": "https://fable.deno.dev/character.json",
   "type": "object",
+  "title": "character",
   "additionalProperties": false,
   "properties": {
     "id": {
+      "title": "id",
       "type": "string",
       "description": "A unique alphanumeric id",
       "pattern": "^[-_a-z0-9]+$",
@@ -11,37 +13,44 @@
       "maxLength": 20
     },
     "name": {
-      "type": "object",
+      "title": "name",
       "description": "The name of the character",
       "$ref": "alias.json"
     },
     "description": {
+      "title": "description",
       "type": "string",
       "description": "Add a description about this character",
       "maxLength": 2048
     },
     "popularity": {
+      "title": "popularity",
       "type": "integer",
       "description": "Set the popularity of the character (the number of followers or people who likes them)",
       "minimum": 0
     },
     "gender": {
+      "title": "gender",
       "description": "The gender of the character",
       "type": "string"
     },
     "age": {
+      "title": "age",
       "description": "The age of the character",
       "type": "string"
     },
     "images": {
+      "title": "images",
       "description": "A set of images featuring this character",
       "$ref": "image.json"
     },
     "externalLinks": {
+      "title": "external links",
       "type": "array",
       "description": "A list of urls for the media's pages on various platforms",
       "items": {
         "type": "object",
+        "title": "external link",
         "required": ["site", "url"],
         "additionalProperties": false,
         "properties": {
@@ -58,18 +67,23 @@
       }
     },
     "media": {
+      "title": "media",
       "type": "array",
       "description": "A list of media that the character appears in",
       "items": {
+        "title": "media",
         "type": "object",
         "required": ["role", "mediaId"],
         "additionalProperties": false,
         "properties": {
           "role": {
+            "title": "role",
+            "type": "string",
             "description": "Choose the role the character plays in the media",
             "enum": ["MAIN", "SUPPORTING", "BACKGROUND"]
           },
           "mediaId": {
+            "title": "mediaId",
             "type": "string",
             "description": "Reference an existing character ([pack:]id)",
             "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"

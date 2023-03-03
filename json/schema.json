@@ -1,9 +1,11 @@
 {
-  "$id": "schema.json",
+  "$id": "https://fable.deno.dev/schema.json",
+  "title": "manifest",
   "type": "object",
   "required": ["id"],
   "properties": {
     "id": {
+      "title": "id",
       "type": "string",
       "description": "A unique alphanumeric id",
       "pattern": "^[-_a-z0-9]+$",
@@ -11,66 +13,81 @@
       "maxLength": 20
     },
     "title": {
+      "title": "title",
       "type": "string",
       "description": "The display title of the pack",
       "maxLength": 128
     },
     "description": {
+      "title": "description",
       "type": "string",
       "description": "Small description about the pack and what it contains",
       "maxLength": 2048
     },
     "nsfw": {
+      "title": "nsfw",
       "type": "boolean",
       "description": "If the pack contains nsfw (adult) content"
     },
     "author": {
+      "title": "author",
       "type": "string",
       "description": "The name of the pack's author"
     },
     "image": {
+      "title": "image",
       "type": "string",
       "description": "The icon of the pack or its author"
     },
     "url": {
+      "title": "url",
       "type": "string",
       "description": "The url to pack's homepage"
     },
     "depends": {
+      "title": "depends",
       "type": "array",
       "description": "A list of packs that are required to make your pack function properly.",
       "items": {
+        "title": "dependency",
         "type": "string",
         "description": "Reference a pack",
         "pattern": "^[-_a-z0-9]+$"
       }
     },
     "conflicts": {
+      "title": "conflicts",
       "type": "array",
       "description": "A list of packs that might conflict with your pack.",
       "items": {
+        "title": "conflict",
         "type": "string",
         "description": "Reference a pack",
         "pattern": "^[-_a-z0-9]+$"
       }
     },
     "media": {
+      "title": "media",
       "type": "object",
       "description": "Media to add, or overwrite",
       "additionalProperties": false,
       "properties": {
         "new": {
+          "title": "new",
           "type": "array",
           "description": "A list of new media to add",
           "items": {
+            "title": "media",
             "allOf": [{ "$ref": "media.json" }],
             "required": ["id", "title", "type"]
           }
         },
         "conflicts": {
+          "title": "conflicts",
           "type": "array",
           "description": "A list of media that might conflict with your pack. All media listed here will be entirely disabled.",
           "items": {
+            "title": "conflict",
             "type": "string",
             "description": "Reference an existing media (pack:id)",
             "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
@@ -79,22 +96,27 @@
       }
     },
     "characters": {
+      "title": "characters",
       "type": "object",
       "description": "Characters to add, or overwrite",
       "additionalProperties": false,
       "properties": {
         "new": {
+          "title": "new",
           "type": "array",
           "description": "A list of new characters to add",
           "items": {
+            "title": "character",
             "allOf": [{ "$ref": "character.json" }],
             "required": ["id", "name"]
           }
         },
         "conflicts": {
+          "title": "conflicts",
           "type": "array",
           "description": "A list of characters that might conflict with your pack (All characters listed here will be entirely disabled).",
           "items": {
+            "title": "conflict",
             "type": "string",
             "description": "Reference an existing character (pack:id)",
             "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
