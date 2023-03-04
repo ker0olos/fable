@@ -28,7 +28,7 @@ function pages(
             '',
             '__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5* appearing is equal or less than 1%.',
             '',
-            '> _`/pull` allows you to do gacha with no animations._',
+            '`/pull` allows you to do gacha pulls with no animations.',
             '\u200B',
           ].join('\n'))
           .setFooter({ text: 'aliases: /w, /q' }),
@@ -51,6 +51,8 @@ function pages(
             '',
             '__You can\'t have more than 1 party__ or save your current party to a preset and switch between presets.',
             '',
+            '__The more your party members are familiar with each other the better they preform__. This is called synergy, 5 party members from the same anime are better than 5 members from a mix of different series.',
+            '',
             '`/party view` to view your current party.',
             '',
             '`/party assign [name] [spot?]` to assign a character you found to your party;',
@@ -58,7 +60,7 @@ function pages(
             '',
             '`/party remove [spot]` to remove a character from your party.',
             '',
-            '> Use `/collection stars` and `/collection media` to browse your characters and select your party members.',
+            '`/collection stars` and `/collection media` to browse your characters and select your potential party members.',
             '\u200B',
           ].join('\n'))
           .setFooter({ text: 'aliases: /team, /p' }),
