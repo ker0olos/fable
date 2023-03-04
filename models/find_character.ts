@@ -32,34 +32,41 @@ export function findCharacter(
     ));
 }
 
-export default function (client: Client): (() => Promise<void>)[] {
-  return [
-    fql.Indexer({
-      client,
-      unique: true,
-      collection: 'character',
-      name: 'characters_instance_id',
-      terms: [{ field: ['data', 'id'] }, { field: ['data', 'instance'] }],
-    }),
-    fql.Resolver({
-      client,
-      name: 'find_character',
-      lambda: (
-        characterId: string,
-        guildId: string,
-      ) => {
-        return fql.Let(
-          {
-            guild: getGuild(guildId),
-            instance: getInstance(fql.Var('guild')),
-          },
-          ({ instance }) =>
-            findCharacter({
-              characterId,
-              instance,
-            }),
-        );
-      },
-    }),
-  ];
+export default function (client: Client): {
+  indexers?: (() => Promise<void>)[];
+  resolvers?: (() => Promise<void>)[];
+} {
+  return {
+    indexers: [
+      fql.Indexer({
+        client,
+        unique: true,
+        collection: 'character',
+        name: 'characters_instance_id',
+        terms: [{ field: ['data', 'id'] }, { field: ['data', 'instance'] }],
+      }),
+    ],
+    resolvers: [
+      fql.Resolver({
+        client,
+        name: 'find_character',
+        lambda: (
+          characterId: string,
+          guildId: string,
+        ) => {
+          return fql.Let(
+            {
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+            },
+            ({ instance }) =>
+              findCharacter({
+                characterId,
+                instance,
+              }),
+          );
+        },
+      }),
+    ],
+  };
 }

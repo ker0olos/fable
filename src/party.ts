@@ -1,4 +1,3 @@
-/** @see https://github.com/total-typescript/ts-reset */
 import 'https://esm.sh/@total-typescript/ts-reset@0.3.7/filter-boolean';
 
 import { gql, request } from './graphql.ts';

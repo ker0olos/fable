@@ -138,54 +138,59 @@ export function addCharacter(
     ));
 }
 
-export default function (client: Client): (() => Promise<void>)[] {
-  return [
-    fql.Resolver({
-      client,
-      name: 'add_character_to_inventory',
-      lambda: (
-        userId: string,
-        guildId: string,
-        characterId: string,
-        mediaId: string,
-        rating: number,
-        pool: number,
-        popularityChance: number,
-        popularityGreater: number,
-        popularityLesser?: number,
-        roleChance?: number,
-        role?: string,
-      ) => {
-        return fql.Let(
-          {
-            user: getUser(userId),
-            guild: getGuild(guildId),
-            instance: getInstance(fql.Var('guild')),
-            _inventory: getInventory({
-              user: fql.Var('user'),
-              instance: fql.Var('instance'),
-            }),
-            inventory: rechargePulls({
-              inventory: fql.Var('_inventory'),
-            }),
-          },
-          ({ inventory, instance, user }) =>
-            addCharacter({
-              rating,
-              mediaId,
-              characterId,
-              inventory,
-              instance,
-              user,
-              pool,
-              popularityChance,
-              popularityGreater,
-              popularityLesser,
-              roleChance,
-              role,
-            }),
-        );
-      },
-    }),
-  ];
+export default function (client: Client): {
+  indexers?: (() => Promise<void>)[];
+  resolvers?: (() => Promise<void>)[];
+} {
+  return {
+    resolvers: [
+      fql.Resolver({
+        client,
+        name: 'add_character_to_inventory',
+        lambda: (
+          userId: string,
+          guildId: string,
+          characterId: string,
+          mediaId: string,
+          rating: number,
+          pool: number,
+          popularityChance: number,
+          popularityGreater: number,
+          popularityLesser?: number,
+          roleChance?: number,
+          role?: string,
+        ) => {
+          return fql.Let(
+            {
+              user: getUser(userId),
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+              _inventory: getInventory({
+                user: fql.Var('user'),
+                instance: fql.Var('instance'),
+              }),
+              inventory: rechargePulls({
+                inventory: fql.Var('_inventory'),
+              }),
+            },
+            ({ inventory, instance, user }) =>
+              addCharacter({
+                rating,
+                mediaId,
+                characterId,
+                inventory,
+                instance,
+                user,
+                pool,
+                popularityChance,
+                popularityGreater,
+                popularityLesser,
+                roleChance,
+                role,
+              }),
+          );
+        },
+      }),
+    ],
+  };
 }

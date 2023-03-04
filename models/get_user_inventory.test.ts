@@ -281,6 +281,7 @@ Deno.test('get or create instance', async (test) => {
               ref: 'guild',
             },
             inventories: [],
+            packs: [],
           },
         ],
       });
@@ -1030,7 +1031,8 @@ Deno.test('recharge pulls', async (test) => {
 Deno.test('model', async (test) => {
   const client = FakeClient();
 
-  Model(client as any).forEach((q) => q());
+  Model(client as any).indexers?.forEach((q) => q());
+  Model(client as any).resolvers?.forEach((q) => q());
 
   assertSpyCalls(client.query, 4);
 

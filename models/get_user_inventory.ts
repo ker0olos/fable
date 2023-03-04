@@ -26,6 +26,7 @@ export interface Guild {
 export interface Instance {
   main: BooleanExpr;
   inventories: RefExpr[];
+  packs: RefExpr[];
   guild: RefExpr;
 }
 
@@ -100,6 +101,7 @@ export function getInstance(guild: GuildExpr): InstanceExpr {
             main: true,
             guild: fql.Ref(guild),
             inventories: [],
+            packs: [],
           }),
           // update the guild instances list
           updatedGuild: fql.Update<Guild>(fql.Ref(guild), {
@@ -196,46 +198,53 @@ export function rechargePulls(
   );
 }
 
-export default function (client: Client): (() => Promise<void>)[] {
-  return [
-    fql.Indexer({
-      client,
-      unique: true,
-      collection: 'user',
-      name: 'users_discord_id',
-      terms: [{ field: ['data', 'id'] }],
-    }),
-    fql.Indexer({
-      client,
-      unique: true,
-      collection: 'guild',
-      name: 'guilds_discord_id',
-      terms: [{ field: ['data', 'id'] }],
-    }),
-    fql.Indexer({
-      client,
-      unique: true,
-      collection: 'inventory',
-      name: 'inventories_instance_user',
-      terms: [{ field: ['data', 'instance'] }, { field: ['data', 'user'] }],
-    }),
-    fql.Resolver({
-      client,
-      name: 'get_user_inventory',
-      lambda: (userId: string, guildId: string) => {
-        return fql.Let(
-          {
-            user: getUser(userId),
-            guild: getGuild(guildId),
-            instance: getInstance(fql.Var('guild')),
-            inventory: getInventory({
-              user: fql.Var('user'),
-              instance: fql.Var('instance'),
-            }),
-          },
-          rechargePulls,
-        );
-      },
-    }),
-  ];
+export default function (client: Client): {
+  indexers?: (() => Promise<void>)[];
+  resolvers?: (() => Promise<void>)[];
+} {
+  return {
+    indexers: [
+      fql.Indexer({
+        client,
+        unique: true,
+        collection: 'user',
+        name: 'users_discord_id',
+        terms: [{ field: ['data', 'id'] }],
+      }),
+      fql.Indexer({
+        client,
+        unique: true,
+        collection: 'guild',
+        name: 'guilds_discord_id',
+        terms: [{ field: ['data', 'id'] }],
+      }),
+      fql.Indexer({
+        client,
+        unique: true,
+        collection: 'inventory',
+        name: 'inventories_instance_user',
+        terms: [{ field: ['data', 'instance'] }, { field: ['data', 'user'] }],
+      }),
+    ],
+    resolvers: [
+      fql.Resolver({
+        client,
+        name: 'get_user_inventory',
+        lambda: (userId: string, guildId: string) => {
+          return fql.Let(
+            {
+              user: getUser(userId),
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+              inventory: getInventory({
+                user: fql.Var('user'),
+                instance: fql.Var('instance'),
+              }),
+            },
+            rechargePulls,
+          );
+        },
+      }),
+    ],
+  };
 }

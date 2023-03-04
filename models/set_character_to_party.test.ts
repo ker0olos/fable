@@ -10,7 +10,6 @@ import { assertEquals } from 'https://deno.land/std@0.178.0/testing/asserts.ts';
 import { assertSnapshot } from 'https://deno.land/std@0.178.0/testing/snapshot.ts';
 
 import {
-  FakeAnd,
   FakeClient,
   FakeConcat,
   FakeEquals,
@@ -49,7 +48,6 @@ Deno.test('set character to party', async (test) => {
     const equalsStub = FakeEquals();
     const updateStub = FakeUpdate();
     const isNotEmptyStub = FakeIsNonEmpty();
-    const andStub = FakeAnd();
     const isNullStub = FakeIsNull();
 
     const selectStub = FakeSelect({
@@ -156,7 +154,6 @@ Deno.test('set character to party', async (test) => {
       equalsStub.restore();
       updateStub.restore();
       isNotEmptyStub.restore();
-      andStub.restore();
       isNullStub.restore();
     }
   });
@@ -170,7 +167,6 @@ Deno.test('set character to party', async (test) => {
     const indexStub = FakeIndex();
     const equalsStub = FakeEquals();
     const isNotEmptyStub = FakeIsNonEmpty();
-    const andStub = FakeAnd();
     const isNullStub = FakeIsNull();
 
     const selectStub = FakeSelect({
@@ -235,7 +231,6 @@ Deno.test('set character to party', async (test) => {
       selectStub.restore();
       equalsStub.restore();
       isNotEmptyStub.restore();
-      andStub.restore();
       isNullStub.restore();
     }
   });
@@ -249,7 +244,6 @@ Deno.test('set character to party', async (test) => {
     const indexStub = FakeIndex();
     const equalsStub = FakeEquals();
     const isNotEmptyStub = FakeIsNonEmpty();
-    const andStub = FakeAnd();
     const isNullStub = FakeIsNull();
 
     const varStub = FakeVar({
@@ -299,7 +293,6 @@ Deno.test('set character to party', async (test) => {
       indexStub.restore();
       equalsStub.restore();
       isNotEmptyStub.restore();
-      andStub.restore();
       isNullStub.restore();
     }
   });
@@ -377,7 +370,8 @@ Deno.test('remove character from party', async (test) => {
 Deno.test('model', async (test) => {
   const client = FakeClient();
 
-  Model(client as any).forEach((q) => q());
+  Model(client as any).indexers?.forEach((q) => q());
+  Model(client as any).resolvers?.forEach((q) => q());
 
   assertSpyCalls(client.query, 2);
 

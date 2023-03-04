@@ -32,6 +32,8 @@ export type GuildExpr = TypedExpr<'guild'>;
 export type InstanceExpr = TypedExpr<'instance'>;
 export type InventoryExpr = TypedExpr<'inventory'>;
 export type CharacterExpr = TypedExpr<'character'>;
+export type PackExpr = TypedExpr<'pack'>;
+export type ManifestExpr = TypedExpr<'manifest'>;
 
 function Ref(document: Expr): RefExpr {
   return _fql.Select('ref', document);
@@ -69,6 +71,9 @@ function Append(ref: RefExpr, items: Expr): RefExpr[] {
   return _fql.Append(ref, items) as unknown as RefExpr[];
 }
 
+function Includes(value: ExprArg, documentOrArray: Expr): BooleanExpr {
+  return _fql.ContainsValue(value, documentOrArray) as unknown as BooleanExpr;
+}
 function Paginate(
   expr: Expr,
   { size, before, after }: { size?: number; before?: any; after?: any },
@@ -185,9 +190,13 @@ function TimeDiffInMinutes(a: TimeExpr, b: TimeExpr): NumberExpr {
   return _fql.TimeDiff(a, b, 'minutes');
 }
 
-function And(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
-  return _fql.And(a, b);
-}
+// function And(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
+//   return _fql.And(a, b);
+// }
+
+// function Or(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
+//   return _fql.Or(a, b);
+// }
 
 function TimeAddInMinutes(t: TimeExpr, offset: NumberExpr): NumberExpr {
   return _fql.TimeAdd(t, offset, 'minutes');
@@ -259,7 +268,7 @@ function Resolver(
 export const fql = {
   // Map,
   Add,
-  And,
+  // And,
   Append,
   Concat,
   Create,
@@ -269,6 +278,7 @@ export const fql = {
   GTE,
   Id,
   If,
+  Includes,
   Index,
   Indexer,
   IsNonEmpty,
@@ -281,6 +291,7 @@ export const fql = {
   Multiply,
   Now,
   Null,
+  // Or,
   Paginate,
   Ref,
   Resolver,

@@ -1,0 +1,50 @@
+type Response @embedded {
+  ok: Boolean!
+  error: String
+  character: Character
+  inventory: Inventory
+}
+
+type Query {
+  #
+  getUserInventory(userId: String!, guildId: String!): Inventory!
+    @resolver(name: "get_user_inventory")
+  
+  #
+  getUserStars(userId: String!, guildId: String!, stars: Int!, before: String, after: String): CharacterNode!
+    @resolver(name: "get_user_stars")
+  #
+  getUserMedia(userId: String!, guildId: String!, mediaId: String!, before: String, after: String): CharacterNode!
+    @resolver(name: "get_user_media")
+  
+  #
+  findCharacter(characterId: String!, guildId: String!): Character
+    @resolver(name: "find_character")
+}
+
+type Mutation {
+  #
+  addPackToInstance(userId: String!, guildId: String!, githubId: String!, manifest: ManifestInput!): Response!  @resolver(name: "add_pack_to_instance")
+
+  #
+  addCharacterToInventory(
+    userId: String!
+    guildId: String!
+    characterId: String!
+    mediaId: String!
+    rating: Int!
+    pool: Int!
+    popularityChance: Int!
+    popularityGreater: Int!
+    popularityLesser: Int
+    roleChance: Int
+    role: String
+  ): Response! @resolver(name: "add_character_to_inventory")
+
+  #
+  setCharacterToParty(userId: String!, guildId: String!, characterId: String!, spot: Int): Response!
+    @resolver(name: "set_character_to_party")
+  #
+  removeCharacterFromParty(userId: String!, guildId: String!, spot: Int!): Response!
+    @resolver(name: "remove_character_from_party")
+}

@@ -308,6 +308,10 @@ snapshot[`model 2`] = `
                                                                   ],
                                                                 },
                                                                 main: true,
+                                                                packs: Expr {
+                                                                  raw: [
+                                                                  ],
+                                                                },
                                                               },
                                                             },
                                                           },
@@ -630,6 +634,10 @@ snapshot[`model 2`] = `
                                                                   ],
                                                                 },
                                                                 main: true,
+                                                                packs: Expr {
+                                                                  raw: [
+                                                                  ],
+                                                                },
                                                               },
                                                             },
                                                           },

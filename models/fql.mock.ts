@@ -30,7 +30,14 @@ export const FakeGet = () =>
     }
   });
 
-export const FakeAppend = () => stub(fql, 'Append', (a: any, b: any) => [a, b]);
+export const FakeAppend = () =>
+  stub(fql, 'Append', (a: any, b: any) => {
+    if (Array.isArray(b)) {
+      return [...b, a];
+    } else {
+      return [a, b];
+    }
+  });
 
 export const FakeEquals = () =>
   stub(fql, 'Equals', (a: any, b: any) => {
@@ -54,12 +61,23 @@ export const FakeSubtract = () =>
 
 export const FakeAdd = () => stub(fql, 'Add', (a: any, b: any) => a + b);
 
-export const FakeAnd = () => stub(fql, 'Add', (a: any, b: any) => a && b);
+// export const FakeAnd = () => stub(fql, 'And', (a: any, b: any) => a && b);
+
+// export const FakeOr = () => stub(fql, 'Or', (a: any, b: any) => a || b);
 
 export const FakeToString = () => stub(fql, 'ToString', (n: any) => `${n}`);
 
 export const FakeConcat = () =>
   stub(fql, 'Concat', (s: any[], sep?: any) => s.join(sep ?? ''));
+
+export const FakeIncludes = () =>
+  stub(
+    fql,
+    'Includes',
+    ((value: any, array: Array<any>) => {
+      return array.some((item: any) => item.ref === value.ref);
+    }) as any,
+  );
 
 export const FakeIsNull = () =>
   stub(fql, 'IsNull', (a: any) => (a === null) || a === undefined);

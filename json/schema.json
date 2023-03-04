@@ -15,7 +15,7 @@
     "title": {
       "title": "title",
       "type": "string",
-      "description": "The display title of the pack",
+      "description": "The display name of the pack",
       "maxLength": 128
     },
     "description": {
@@ -27,7 +27,7 @@
     "nsfw": {
       "title": "nsfw",
       "type": "boolean",
-      "description": "If the pack contains nsfw (adult) content"
+      "description": "If the pack contains any nsfw (adult) content"
     },
     "author": {
       "title": "author",
@@ -42,12 +42,12 @@
     "url": {
       "title": "url",
       "type": "string",
-      "description": "The url to pack's homepage"
+      "description": "A url to pack's homepage"
     },
     "depends": {
       "title": "depends",
       "type": "array",
-      "description": "A list of packs that are required to make your pack function properly.",
+      "description": "A list of packs that are required to make your pack function properly",
       "items": {
         "title": "dependency",
         "type": "string",
@@ -58,7 +58,7 @@
     "conflicts": {
       "title": "conflicts",
       "type": "array",
-      "description": "A list of packs that might conflict with your pack.",
+      "description": "A list of packs that might conflict with your pack",
       "items": {
         "title": "conflict",
         "type": "string",
@@ -69,7 +69,7 @@
     "media": {
       "title": "media",
       "type": "object",
-      "description": "Media to add, or overwrite",
+      "description": "Media to add, disable or overwrite",
       "additionalProperties": false,
       "properties": {
         "new": {
@@ -98,7 +98,7 @@
     "characters": {
       "title": "characters",
       "type": "object",
-      "description": "Characters to add, or overwrite",
+      "description": "Characters to add, disable or overwrite",
       "additionalProperties": false,
       "properties": {
         "new": {

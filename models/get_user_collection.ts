@@ -160,84 +160,95 @@ export function getCharacterMedia(
   });
 }
 
-export default function (client: Client): (() => Promise<void>)[] {
-  return [
-    fql.Indexer({
-      client,
-      unique: false,
-      collection: 'character',
-      name: 'characters_rating_inventory',
-      terms: [{ field: ['data', 'rating'] }, { field: ['data', 'inventory'] }],
-    }),
-    fql.Indexer({
-      client,
-      unique: false,
-      collection: 'character',
-      name: 'characters_media_inventory',
-      terms: [{ field: ['data', 'mediaId'] }, { field: ['data', 'inventory'] }],
-      values: [{ field: ['data', 'rating'], reverse: true }, {
-        field: ['ref'],
-      }],
-    }),
-    fql.Resolver({
-      client,
-      name: 'get_user_stars',
-      lambda: (
-        userId: string,
-        guildId: string,
-        stars: number,
-        before?: string,
-        after?: string,
-      ) => {
-        return fql.Let(
-          {
-            user: getUser(userId),
-            guild: getGuild(guildId),
-            instance: getInstance(fql.Var('guild')),
-            inventory: getInventory({
-              user: fql.Var('user'),
-              instance: fql.Var('instance'),
-            }),
-          },
-          ({ inventory }) =>
-            getCharacterStars({
-              inventory,
-              stars,
-              before,
-              after,
-            }),
-        );
-      },
-    }),
-    fql.Resolver({
-      client,
-      name: 'get_user_media',
-      lambda: (
-        userId: string,
-        guildId: string,
-        mediaId: string,
-        before?: string,
-        after?: string,
-      ) => {
-        return fql.Let(
-          {
-            user: getUser(userId),
-            guild: getGuild(guildId),
-            instance: getInstance(fql.Var('guild')),
-            inventory: getInventory({
-              user: fql.Var('user'),
-              instance: fql.Var('instance'),
-            }),
-          },
-          ({ inventory }) =>
-            getCharacterMedia({
-              inventory,
-              mediaId,
-              before,
-              after,
-            }),
-        );
-      },
-    }),
-  ];
+export default function (client: Client): {
+  indexers?: (() => Promise<void>)[];
+  resolvers?: (() => Promise<void>)[];
+} {
+  return {
+    indexers: [
+      fql.Indexer({
+        client,
+        unique: false,
+        collection: 'character',
+        name: 'characters_rating_inventory',
+        terms: [{ field: ['data', 'rating'] }, {
+          field: ['data', 'inventory'],
+        }],
+      }),
+      fql.Indexer({
+        client,
+        unique: false,
+        collection: 'character',
+        name: 'characters_media_inventory',
+        terms: [{ field: ['data', 'mediaId'] }, {
+          field: ['data', 'inventory'],
+        }],
+        values: [{ field: ['data', 'rating'], reverse: true }, {
+          field: ['ref'],
+        }],
+      }),
+    ],
+    resolvers: [
+      fql.Resolver({
+        client,
+        name: 'get_user_stars',
+        lambda: (
+          userId: string,
+          guildId: string,
+          stars: number,
+          before?: string,
+          after?: string,
+        ) => {
+          return fql.Let(
+            {
+              user: getUser(userId),
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+              inventory: getInventory({
+                user: fql.Var('user'),
+                instance: fql.Var('instance'),
+              }),
+            },
+            ({ inventory }) =>
+              getCharacterStars({
+                inventory,
+                stars,
+                before,
+                after,
+              }),
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
+        name: 'get_user_media',
+        lambda: (
+          userId: string,
+          guildId: string,
+          mediaId: string,
+          before?: string,
+          after?: string,
+        ) => {
+          return fql.Let(
+            {
+              user: getUser(userId),
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+              inventory: getInventory({
+                user: fql.Var('user'),
+                instance: fql.Var('instance'),
+              }),
+            },
+            ({ inventory }) =>
+              getCharacterMedia({
+                inventory,
+                mediaId,
+                before,
+                after,
+              }),
+          );
+        },
+      }),
+    ],
+  };
 }

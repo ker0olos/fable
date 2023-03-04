@@ -151,12 +151,8 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
-  // TODO load community packs
   depends?: string[];
-  // TODO load community packs
   conflicts?: string[];
-  // TODO load community packs
-  installedBy?: string;
   media?: {
     conflicts?: string[];
     new?: DisaggregatedMedia[];
