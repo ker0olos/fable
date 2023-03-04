@@ -30,6 +30,8 @@ import {
   Pool,
 } from './types.ts';
 
+import { NonFetalError } from './errors.ts';
+
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
 
@@ -191,13 +193,7 @@ function install({
       const valid = validate(manifest);
 
       if (valid.error) {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setColor(discord.colors.red)
-              .setDescription(valid.error),
-          )
-          .patch(token);
+        throw new NonFetalError(valid.error);
       }
 
       // shallow install is only meant as validation test
@@ -278,6 +274,16 @@ function install({
       return message.patch(token);
     })
     .catch(async (err) => {
+      if (err instanceof NonFetalError) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setColor(discord.colors.red)
+              .setDescription(err.message),
+          )
+          .patch(token);
+      }
+
       if (!config.sentry) {
         throw err;
       }

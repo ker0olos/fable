@@ -13,10 +13,12 @@ import { Client } from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.js';
 import getUserInventory from './models/get_user_inventory.ts';
 import getUserCollection from './models/get_user_collection.ts';
 
+import findCharacter from './models/find_character.ts';
+
+import addPackToInstance from './models/add_pack_to_instance.ts';
+
 import addCharacterToInventory from './models/add_character_to_inventory.ts';
 import setCharacterToParty from './models/set_character_to_party.ts';
-
-import findCharacter from './models/find_character.ts';
 
 const FAUNA_SECRET = Deno.env.get('FAUNA_SECRET');
 
@@ -44,6 +46,7 @@ await update([
   ...getUserInventory(client),
   ...getUserCollection(client),
   ...findCharacter(client),
+  ...addPackToInstance(client),
   ...addCharacterToInventory(client),
   ...setCharacterToParty(client),
 ]);

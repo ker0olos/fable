@@ -6293,6 +6293,86 @@ Deno.test('/packs [install-validate]', async (test) => {
     }
   });
 
+  await test.step('reserved id', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 'repo_id' },
+          manifest: { id: 'anilist' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        channelId: 'channel_id',
+        guildId: 'guild_id',
+        userId: 'user_id',
+        token: 'token',
+        url: 'url',
+        ref: 'ref',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              color: 9907244,
+              description: 'anilist is a reserved id',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+    }
+  });
+
   await test.step('existing conflicts with installation', async () => {
     const manifestStub = stub(
       github,

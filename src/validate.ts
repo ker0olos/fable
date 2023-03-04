@@ -34,6 +34,8 @@ import builtin from '../json/schema.builtin.json' assert {
 
 import { Manifest } from './types.ts';
 
+const reservedIds = ['anilist', 'vtubers'];
+
 const replacerWithPath = (
   replacer: (value: any, path: string) => string,
 ) => {
@@ -155,20 +157,20 @@ export default (data: Manifest): { error?: string } => {
     .addSchema(character)
     .compile(index);
 
-  if (!validate(data)) {
-    return {
-      error: prettify(data, validate, { markdown: true }),
-    };
+  if (reservedIds.includes(data.id)) {
+    return { error: `${data.id} is a reserved id` };
+  } else if (!validate(data)) {
+    return { error: prettify(data, validate, { markdown: true }) };
+  } else {
+    return {};
   }
-
-  return {};
 };
 
 // if being called directly
 if (import.meta.main) {
   const filename = Deno.args[0];
 
-  const data = await utils.readJson(filename);
+  const data = (await utils.readJson(filename)) as Manifest;
 
   const validate = new Ajv({ strict: false, allErrors: true })
     .addSchema(alias)
@@ -177,7 +179,10 @@ if (import.meta.main) {
     .addSchema(character)
     .compile(index);
 
-  if (!validate(data)) {
+  if (reservedIds.includes(data.id)) {
+    console.log(red(`${data.id} is a reserved id`));
+    Deno.exit(1);
+  } else if (!validate(data)) {
     console.log(prettify(data, validate, { terminal: true }));
     Deno.exit(1);
   } else {

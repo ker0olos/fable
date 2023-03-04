@@ -14,7 +14,7 @@ import {
 
 import { assertSnapshot } from 'https://deno.land/std@0.178.0/testing/snapshot.ts';
 
-import { assertValidManifest } from '../src/validate.ts';
+import validate, { assertValidManifest } from '../src/validate.ts';
 
 import packs from '../src/packs.ts';
 
@@ -72,6 +72,14 @@ Deno.test('list', async (test) => {
     assertEquals(list.length, 1);
 
     assertEquals(list[0].id, 'vtubers');
+  });
+});
+
+Deno.test('reserved ids', () => {
+  packs.list(ManifestType.Builtin).forEach((manifest) => {
+    assertEquals(validate(manifest), {
+      error: `${manifest.id} is a reserved id`,
+    });
   });
 });
 
