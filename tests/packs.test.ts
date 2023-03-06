@@ -5,16 +5,16 @@ import {
   assertEquals,
   assertObjectMatch,
   assertRejects,
-} from 'https://deno.land/std@0.177.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.178.0/testing/asserts.ts';
 
 import {
   assertSpyCalls,
   stub,
-} from 'https://deno.land/std@0.177.0/testing/mock.ts';
+} from 'https://deno.land/std@0.178.0/testing/mock.ts';
 
-import { assertSnapshot } from 'https://deno.land/std@0.177.0/testing/snapshot.ts';
+import { assertSnapshot } from 'https://deno.land/std@0.178.0/testing/snapshot.ts';
 
-import { assertValidManifest } from '../src/validate.ts';
+import validate, { assertValidManifest } from '../src/validate.ts';
 
 import packs from '../src/packs.ts';
 
@@ -72,6 +72,14 @@ Deno.test('list', async (test) => {
     assertEquals(list.length, 1);
 
     assertEquals(list[0].id, 'vtubers');
+  });
+});
+
+Deno.test('reserved ids', () => {
+  packs.list(ManifestType.Builtin).forEach((manifest) => {
+    assertEquals(validate(manifest), {
+      error: `${manifest.id} is a reserved id`,
+    });
   });
 });
 
@@ -1615,7 +1623,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await packs.mediaCharacter({
+      const result = await packs.mediaCharacters({
         mediaId: 'anilist:1',
         index: 0,
       });
@@ -1700,7 +1708,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await packs.mediaCharacter({
+      const result = await packs.mediaCharacters({
         mediaId: 'pack-id:1',
         index: 0,
       });
@@ -1778,7 +1786,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await packs.mediaCharacter({
+      const result = await packs.mediaCharacters({
         mediaId: 'pack-id:1',
         index: 0,
       });
@@ -1833,7 +1841,7 @@ Deno.test('media character', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await packs.mediaCharacter({
+          await packs.mediaCharacters({
             mediaId: 'anilist:1',
             index: 0,
           }),

@@ -1,9 +1,11 @@
 {
-  "$id": "media.json",
+  "$id": "https://fable.deno.dev/media.json",
   "type": "object",
+  "title": "media",
   "additionalProperties": false,
   "properties": {
     "id": {
+      "title": "id",
       "type": "string",
       "description": "A unique alphanumeric id",
       "pattern": "^[-_a-z0-9]+$",
@@ -11,10 +13,14 @@
       "maxLength": 20
     },
     "type": {
+      "title": "type",
+      "type": "string",
       "enum": ["ANIME", "MANGA"],
       "description": "Choose what type of media this is"
     },
     "format": {
+      "title": "format",
+      "type": "string",
       "description": "Choose what format of media this is",
       "enum": [
         "TV",
@@ -30,35 +36,42 @@
       ]
     },
     "title": {
-      "type": "object",
+      "title": "title",
       "description": "The title of the media",
       "$ref": "alias.json"
     },
     "popularity": {
+      "title": "popularity",
       "type": "integer",
       "description": "Set the popularity of the media (the number of followers or people who read/watch it)",
-      "minimum": 0
+      "minimum": 0,
+      "maximum": 2147483647
     },
     "description": {
+      "title": "description",
       "type": "string",
       "description": "Add a description about this media",
       "maxLength": 2048
     },
     "images": {
+      "title": "images",
       "description": "A set of images featuring this media",
       "$ref": "image.json"
     },
     "trailer": {
+      "title": "trailer",
       "type": "object",
       "description": "A url to a trailer about the media",
       "additionalProperties": false,
       "required": ["site", "id"],
       "properties": {
         "site": {
+          "type": "string",
           "enum": ["youtube"],
           "description": "The name of the site (only supports youtube)"
         },
         "id": {
+          "title": "id",
           "type": "string",
           "description": "The id of the video",
           "pattern": "([A-Za-z0-9_\\-]{11})"
@@ -66,9 +79,11 @@
       }
     },
     "externalLinks": {
+      "title": "external links",
       "type": "array",
       "description": "A list of urls for the media's pages on various platforms",
       "items": {
+        "title": "external link",
         "type": "object",
         "additionalProperties": false,
         "required": ["site", "url"],
@@ -86,14 +101,18 @@
       }
     },
     "relations": {
+      "title": "relations",
       "type": "array",
       "description": "Define the relations between this media and other media",
       "items": {
+        "title": "relation",
         "type": "object",
         "additionalProperties": false,
         "required": ["relation", "mediaId"],
         "properties": {
           "relation": {
+            "title": "relation",
+            "type": "string",
             "description": "Choose the kind of relationship between this media a different media",
             "enum": [
               "PREQUEL",
@@ -107,6 +126,7 @@
             ]
           },
           "mediaId": {
+            "title": "mediaId",
             "type": "string",
             "description": "Reference an existing media ([pack:]id)",
             "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"
@@ -115,18 +135,23 @@
       }
     },
     "characters": {
+      "title": "characters",
       "type": "array",
       "description": "A list of characters that appear in the media",
       "items": {
+        "title": "character",
         "type": "object",
         "additionalProperties": false,
         "required": ["role", "characterId"],
         "properties": {
           "role": {
+            "title": "role",
+            "type": "string",
             "description": "Choose the role the character plays in the media",
             "enum": ["MAIN", "SUPPORTING", "BACKGROUND"]
           },
           "characterId": {
+            "title": "characterId",
             "type": "string",
             "description": "Reference an existing character ([pack:]id)",
             "pattern": "^([-_a-z0-9]+)(:[-_a-z0-9]+)?$"

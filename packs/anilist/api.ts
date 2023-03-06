@@ -242,7 +242,7 @@ export async function characters(
   return data.Page.characters;
 }
 
-export async function mediaCharacter(
+export async function mediaCharacters(
   { id, index }: {
     id: string;
     index: number;

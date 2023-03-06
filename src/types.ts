@@ -151,12 +151,8 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
-  // TODO BLOCKED load community packs
   depends?: string[];
-  // TODO BLOCKED load community packs
   conflicts?: string[];
-  // TODO BLOCKED load community packs
-  installedBy?: string;
   media?: {
     conflicts?: string[];
     new?: DisaggregatedMedia[];
@@ -197,6 +193,10 @@ export namespace Schema {
     error: 'CHARACTER_EXISTS';
   } | {
     ok: false;
+    error: 'PACK_ID_CHANGED';
+    manifest: Manifest;
+  } | {
+    ok: false;
     error: 'NO_PULLS_AVAILABLE';
     inventory: Inventory;
   } | {
@@ -210,6 +210,7 @@ export namespace Schema {
     ok: true;
     inventory: Inventory;
     character: Character;
+    manifest: Manifest;
   };
 }
 

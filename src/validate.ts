@@ -1,10 +1,12 @@
 // deno-lint-ignore-file no-explicit-any
 
-import Ajv, { ValidateFunction } from 'https://esm.sh/ajv@8.12.0';
+import Ajv from 'https://esm.sh/ajv@8.12.0';
 
-import { bold, green, red } from 'https://deno.land/std@0.177.0/fmt/colors.ts';
+import { prettify } from 'https://esm.sh/awesome-ajv-errors@5.1.0';
 
-import { AssertionError } from 'https://deno.land/std@0.177.0/testing/asserts.ts';
+import { green, red } from 'https://deno.land/std@0.178.0/fmt/colors.ts';
+
+import { AssertionError } from 'https://deno.land/std@0.178.0/testing/asserts.ts';
 
 import utils from './utils.ts';
 
@@ -32,107 +34,25 @@ import builtin from '../json/schema.builtin.json' assert {
   type: 'json',
 };
 
-const replacerWithPath = (
-  replacer: (value: any, path: string) => string,
-) => {
-  const m = new Map();
+import { Manifest } from './types.ts';
 
-  return function (this: any, key: string, value: any): string {
-    let path = m.get(this);
+const reservedIds = ['anilist', 'vtubers'];
 
-    path += `/${key}`;
+export const purgeReservedProps = (data: Manifest): Manifest => {
+  const purged: any = {};
 
-    if (value === Object(value)) {
-      m.set(value, path);
+  Object.keys(data).forEach((key) => {
+    if (key.startsWith('$')) {
+      return;
     }
 
-    return replacer.call(
-      this,
-      value,
-      path.replace(/undefined\/\/?/, '/'),
-    );
-  };
-};
-
-export const prettify = (
-  data: any,
-  { errors }: ValidateFunction,
-  opts?: { markdown?: boolean; terminal?: boolean },
-) => {
-  if (!errors) {
-    throw new Error();
-  }
-
-  function appendError(data: any, index: number): any {
-    const key0 = `ERROR/${index}`;
-
-    if (index > -1) {
-      switch (typeof data) {
-        case 'object':
-          if (Array.isArray(data)) {
-            return [
-              key0,
-              ...data,
-            ];
-          } else {
-            return {
-              [key0]: 0,
-              ...data,
-            };
-          }
-        default:
-          return `${data}${key0}`;
-      }
-    } else {
-      return data;
-    }
-  }
-
-  errors.forEach((err, index) => {
-    if (err.instancePath === '') {
-      data = appendError(data, index);
-    }
+    purged[key] = data[key as keyof Manifest];
   });
 
-  let json = JSON.stringify(
-    data,
-    replacerWithPath((value, path) => {
-      // deno-lint-ignore no-non-null-assertion
-      const index = errors!.findIndex((e) => e.instancePath === path);
-
-      return appendError(value, index);
-    }),
-    2,
-  );
-
-  errors.forEach((err, index) => {
-    let message = `${err.message}`;
-
-    // deno-lint-ignore no-non-null-assertion
-    let underline = '^'.repeat(err.message!.length);
-
-    if (opts?.terminal) {
-      message = bold(red(message));
-      underline = bold(red(underline));
-    }
-
-    json = json
-      .replace(new RegExp(`"ERROR/${index}": 0,`), `${message}\n${underline}`)
-      .replace(new RegExp(`"ERROR/${index}",`), `${message}\n${underline}`)
-      .replace(
-        new RegExp(`(.*)ERROR/${index}"`),
-        (_: unknown, s: string) => `${s}" >>> ${message}\n${underline}`,
-      );
-  });
-
-  if (opts?.markdown) {
-    return `Errors: ${errors.length}` + '\n```json\n' + json + '\n```';
-  }
-
-  return json;
+  return purged as Manifest;
 };
 
-export const assertValidManifest = (data: any) => {
+export const assertValidManifest = (data: Manifest) => {
   const validate = new Ajv({ strict: false, allErrors: true })
     .addSchema(alias)
     .addSchema(image)
@@ -141,15 +61,19 @@ export const assertValidManifest = (data: any) => {
     .addSchema(index).compile(builtin);
 
   if (!validate(data)) {
-    throw new AssertionError(prettify(data, validate));
+    throw new AssertionError(prettify(validate, {
+      bigNumbers: false,
+      data,
+    }));
   }
 };
 
-// if being called directly
-if (import.meta.main) {
-  const filename = Deno.args[0];
+export default (data: Manifest): { error?: string } => {
+  data = purgeReservedProps(data);
 
-  const data = await utils.readJson(filename);
+  // deno-lint-ignore ban-ts-comment
+  //@ts-ignore
+  index.additionalProperties = false;
 
   const validate = new Ajv({ strict: false, allErrors: true })
     .addSchema(alias)
@@ -158,8 +82,48 @@ if (import.meta.main) {
     .addSchema(character)
     .compile(index);
 
-  if (!validate(data)) {
-    console.log(prettify(data, validate, { terminal: true }));
+  if (reservedIds.includes(data.id)) {
+    return { error: `${data.id} is a reserved id` };
+  } else if (!validate(data)) {
+    return {
+      error: prettify(validate, {
+        colors: false,
+        bigNumbers: false,
+        data,
+      }),
+    };
+  } else {
+    return {};
+  }
+};
+
+// if being called directly
+if (import.meta.main) {
+  const filename = Deno.args[0];
+
+  let data = (await utils.readJson(filename)) as Manifest;
+
+  data = purgeReservedProps(data);
+
+  // deno-lint-ignore ban-ts-comment
+  //@ts-ignore
+  index.additionalProperties = false;
+
+  const validate = new Ajv({ strict: false, allErrors: true })
+    .addSchema(alias)
+    .addSchema(image)
+    .addSchema(media)
+    .addSchema(character)
+    .compile(index);
+
+  if (reservedIds.includes(data.id)) {
+    console.log(red(`${data.id} is a reserved id`));
+    Deno.exit(1);
+  } else if (!validate(data)) {
+    console.log(prettify(validate, {
+      bigNumbers: false,
+      data,
+    }));
     Deno.exit(1);
   } else {
     console.log(green('Valid'));

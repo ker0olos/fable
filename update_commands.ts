@@ -1,6 +1,6 @@
-import { load as Dotenv } from 'https://deno.land/std@0.177.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.178.0/dotenv/mod.ts';
 
-import { green } from 'https://deno.land/std@0.177.0/fmt/colors.ts';
+import { green } from 'https://deno.land/std@0.178.0/fmt/colors.ts';
 
 import { Manifest } from './src/types.ts';
 
@@ -8,20 +8,6 @@ try {
   await Dotenv({ export: true, allowEmptyValues: true });
 } catch {
   //
-}
-
-const APP_ID = Deno.env.get('APP_ID');
-
-const BOT_TOKEN = Deno.env.get('BOT_TOKEN');
-
-const GUILD_ID = Deno.env.get('GUILD_ID');
-
-if (!APP_ID) {
-  throw new Error('APP_ID is not defined');
-}
-
-if (!BOT_TOKEN) {
-  throw new Error('BOT_TOKEN is not defined');
 }
 
 enum Type {
@@ -52,6 +38,7 @@ type Option = {
   options?: Option[];
   choices?: Choice[];
   optional?: boolean;
+  aliases?: (string | { name: string; desc: string })[];
 };
 
 type Command = {
@@ -60,7 +47,6 @@ type Command = {
   options?: ReturnType<typeof Option>[];
   aliases?: string[];
   defaultPermission?: Permission;
-  devOnly?: boolean;
 };
 
 type Choice = {
@@ -68,17 +54,7 @@ type Choice = {
   value: string | number;
 };
 
-const Option = (
-  { name, description, type, autocomplete, choices, options, optional }: Option,
-) => ({
-  name,
-  description,
-  autocomplete,
-  type: type.valueOf(),
-  required: !optional,
-  choices,
-  options,
-});
+const Option = (option: Option): Option => option;
 
 const Command = ({
   name,
@@ -86,22 +62,36 @@ const Command = ({
   options,
   aliases,
   defaultPermission,
-  devOnly,
 }: Command) => {
-  if (devOnly && !GUILD_ID) {
-    return [];
-  }
-
-  if (devOnly) {
-    description = `${description} (Developer Only)`;
-  }
+  // deno-lint-ignore no-explicit-any
+  const transformOption: any = (option: Option) => ({
+    name: option.name,
+    description: option.description,
+    autocomplete: option.autocomplete,
+    type: option.type.valueOf(),
+    choices: option.choices,
+    required: !option.optional,
+    options: option.options?.map((option) => transformOption(option)),
+  });
 
   const commands = [{
     name,
     description,
     'default_member_permissions': defaultPermission,
-    options,
+    options: options?.map((option) => transformOption(option)),
   }];
+
+  options?.forEach((option, index) => {
+    option.aliases?.forEach((alias) => {
+      commands[0].options?.push({
+        ...commands[0].options[index],
+        name: typeof alias === 'object' ? alias.name : alias,
+        description: typeof alias === 'object'
+          ? alias.desc
+          : commands[0].options[index].description,
+      });
+    });
+  });
 
   aliases?.forEach((alias) =>
     commands.push({
@@ -145,7 +135,15 @@ const Pack = (path: string): Command => {
   })[0];
 };
 
-async function put(commands: Command[]): Promise<void> {
+async function put(commands: Command[], {
+  BOT_TOKEN,
+  GUILD_ID,
+  APP_ID,
+}: {
+  APP_ID: string;
+  BOT_TOKEN: string;
+  GUILD_ID?: string;
+}): Promise<void> {
   if (!GUILD_ID) {
     console.log('Updating global commands for production bot\n\n');
   } else {
@@ -172,12 +170,11 @@ async function put(commands: Command[]): Promise<void> {
   if (response.status !== 200) {
     throw new Error(JSON.stringify(await response.json(), undefined, 2));
   } else {
-    // console.log(response.status, response.statusText);
     console.log(green('OK'));
   }
 }
 
-await put([
+export const commands = [
   // standard gacha commands
   // uses characters and media from all packs
   ...Command({
@@ -237,18 +234,6 @@ await put([
     name: 'pull',
     description: 'Start a quiet gacha pull with no animation',
     aliases: ['q'],
-  }),
-  ...Command({
-    name: 'fake_pull',
-    description: 'Preform a fake gacha pull',
-    devOnly: true,
-    options: [
-      Option({
-        name: 'id',
-        description: 'The id of the character',
-        type: Type.STRING,
-      }),
-    ],
   }),
   // party management
   ...Command({
@@ -410,8 +395,72 @@ await put([
         type: Type.SUB_COMMAND,
         optional: true,
       }),
+      Option({
+        name: 'validate',
+        description: 'Validate a community pack\'s manifest',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'github',
+            description: 'A github repository url',
+            type: Type.STRING,
+          }),
+          Option({
+            name: 'ref',
+            description: 'A ref to a branch or commit sha',
+            type: Type.STRING,
+            optional: true,
+          }),
+        ],
+      }),
+      // Option({
+      //   name: 'install',
+      //   description: 'Install a community pack',
+      //   type: Type.SUB_COMMAND,
+      //   aliases: [{
+      //     name: 'validate',
+      //     desc: 'Validate a community pack\'s manifest',
+      //   }],
+      //   optional: true,
+      //   options: [
+      //     Option({
+      //       name: 'github',
+      //       description: 'A github repository url',
+      //       type: Type.STRING,
+      //     }),
+      //     Option({
+      //       name: 'ref',
+      //       description: 'A ref to a branch or commit sha',
+      //       type: Type.STRING,
+      //       optional: true,
+      //     }),
+      //   ],
+      // }),
     ],
   }),
   // non-standard commands (pack commands)
   Pack('./packs/anilist'),
-]);
+];
+
+if (import.meta.main) {
+  const APP_ID = Deno.env.get('APP_ID');
+
+  const BOT_TOKEN = Deno.env.get('BOT_TOKEN');
+
+  const GUILD_ID = Deno.env.get('GUILD_ID');
+
+  if (!APP_ID) {
+    throw new Error('APP_ID is not defined');
+  }
+
+  if (!BOT_TOKEN) {
+    throw new Error('BOT_TOKEN is not defined');
+  }
+
+  await put(commands, {
+    APP_ID,
+    BOT_TOKEN,
+    GUILD_ID,
+  });
+}

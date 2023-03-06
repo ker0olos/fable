@@ -6,11 +6,11 @@ import Rating from './rating.ts';
 
 import packs from './packs.ts';
 
+import { default as srch } from './search.ts';
+
 import utils from './utils.ts';
 
 import * as discord from './discord.ts';
-
-import { characterMessage } from './search.ts';
 
 import {
   Character,
@@ -20,7 +20,7 @@ import {
   Schema,
 } from './types.ts';
 
-export async function now({
+async function now({
   userId,
   guildId,
 }: {
@@ -86,7 +86,7 @@ export async function now({
   return message;
 }
 
-export async function findCharacter({
+async function findCharacter({
   guildId,
   characterId,
 }: {
@@ -144,7 +144,7 @@ export async function findCharacter({
   };
 }
 
-export async function allCharacters({
+async function allCharacters({
   userId,
   guildId,
 }: {
@@ -181,7 +181,7 @@ export async function allCharacters({
   return characters;
 }
 
-export async function stars({
+async function stars({
   userId,
   guildId,
   stars,
@@ -278,7 +278,7 @@ export async function stars({
   } else {
     const media = results[0][0];
 
-    message = characterMessage(
+    message = srch.characterMessage(
       results[1][0],
       {
         rating: new Rating({ stars: character.rating }),
@@ -309,7 +309,7 @@ export async function stars({
   });
 }
 
-export async function media({
+async function media({
   userId,
   guildId,
   id,
@@ -406,7 +406,7 @@ export async function media({
           .setDescription('This character was removed or disabled'),
       );
   } else {
-    message = characterMessage(
+    message = srch.characterMessage(
       characters[0],
       {
         rating: new Rating({ stars: character.rating }),
@@ -435,3 +435,13 @@ export async function media({
     message,
   });
 }
+
+const user = {
+  now,
+  findCharacter,
+  allCharacters,
+  stars,
+  media,
+};
+
+export default user;

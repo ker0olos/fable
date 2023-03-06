@@ -1,8 +1,10 @@
 // deno-lint-ignore-file camelcase
-// @deno-types="https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.d.ts"
-import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.js';
+
+import utils from './utils.ts';
 
 import { Manifest } from './types.ts';
+
+import { NonFetalError } from './errors.ts';
 
 interface Owner {
   login: string;
@@ -118,9 +120,7 @@ interface Repo {
   subscribers_count: number;
 }
 
-const url = 'https://api.github.com/repositories';
-
-async function get(url: string): Promise<Repo> {
+function resolve(url: string): { username: string; reponame: string } {
   // try username/repo
   let array = /^([-_a-z0-9]+)\/([-_a-z0-9]+)$/.exec(
     url,
@@ -133,7 +133,7 @@ async function get(url: string): Promise<Repo> {
   }
 
   if (!array) {
-    throw new Error(`invalid git url: ${url}`);
+    throw new NonFetalError(`\`${url}\` is not a valid GitHub URL`);
   }
 
   const username = array[1];
@@ -141,35 +141,60 @@ async function get(url: string): Promise<Repo> {
     ? array[2].substring(0, array[2].length - 4)
     : array[2];
 
+  return {
+    username,
+    reponame,
+  };
+}
+
+async function get(url: string): Promise<Repo> {
+  const { username, reponame } = resolve(url);
+
   const api = `https://api.github.com/repos/${username}/${reponame}`;
 
   const response = await fetch(api);
 
   if (!response.ok) {
-    throw new Error('failed to fetch repository');
+    throw new NonFetalError(
+      `**${response.status}** ${response.statusText}\nFailed to Fetch Repository.`,
+    );
   }
 
   const json = await response.json();
 
   if (json.message) {
-    throw new Error(json.message);
+    throw new NonFetalError(json.message);
   }
 
   return json as Repo;
 }
 
 async function manifest(
-  { id, ref }: { id: number; ref?: string },
-): Promise<Manifest[]> {
-  const { entries } = await unzip(
-    `${url}/${id}/zipball/${ref ?? ''}`,
+  { url, ref }: { url: string; ref?: string },
+): Promise<{
+  repo: Repo;
+  manifest: Manifest;
+}> {
+  const repo = await get(url);
+
+  const { entries } = await utils.unzip(
+    `https://api.github.com/repositories/${repo.id}/zipball/${ref ?? ''}`,
   );
 
   const manifests = Object.values(entries)
     .filter(({ name }) => name.endsWith('manifest.json'))
     .map((entry) => entry.json() as Promise<Manifest>);
 
-  return Promise.all(manifests);
+  const results = await Promise.all(manifests);
+
+  if (!results.length) {
+    throw new NonFetalError('No `manifest.json` found in repo root.');
+  }
+
+  return {
+    repo,
+    manifest: results[0],
+  };
 }
 
 const github = {

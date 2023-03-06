@@ -1,6 +1,7 @@
 {
-  "$id": "schema.builtin.json",
+  "$id": "https://fable.deno.dev/schema.builtin.json",
   "$comment": "Only used for the builtin packs. Those properties don't work on normal community packs.",
+  "title": "builtin.manifest",
   "allOf": [{ "$ref": "schema.json" }],
   "required": ["type", "author"],
   "properties": {
@@ -38,6 +39,7 @@
                     "type": "string"
                   },
                   "type": {
+                    "type": "string",
                     "enum": ["string", "integer", "boolean"]
                   },
                   "required": {

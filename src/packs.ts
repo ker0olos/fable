@@ -8,9 +8,16 @@ import _vtubersManifest from '../packs/vtubers/manifest.json' assert {
 
 import * as _anilist from '../packs/anilist/index.ts';
 
-import utils from './utils.ts';
-
 import * as discord from './discord.ts';
+
+import { gql, request } from './graphql.ts';
+
+import config, { faunaUrl } from './config.ts';
+
+import validate, { purgeReservedProps } from './validate.ts';
+
+import utils from './utils.ts';
+import github from './github.ts';
 
 import {
   Alias,
@@ -24,7 +31,10 @@ import {
   MediaFormat,
   MediaRelation,
   Pool,
+  Schema,
 } from './types.ts';
+
+import { NonFetalError } from './errors.ts';
 
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
@@ -40,19 +50,20 @@ let community: Manifest[] | undefined = undefined;
 let disabled: { [key: string]: boolean } | undefined = undefined;
 
 const packs = {
-  embed,
-  list,
-  searchMany,
-  media,
-  characters,
-  mediaCharacter,
   aggregate,
-  anilist,
-  pool,
-  isDisabled,
   aliasToArray,
+  anilist,
+  characters,
+  pages,
   formatToString,
+  install,
+  isDisabled,
+  list,
+  media,
+  mediaCharacters,
   mediaToString,
+  pool,
+  searchMany,
   // used in tests to clear cache
   clear: () => {
     community = undefined;
@@ -63,7 +74,7 @@ const packs = {
 async function anilist(
   name: string,
   interaction: discord.Interaction<unknown>,
-): Promise<discord.Message | undefined> {
+): Promise<discord.Message> {
   // deno-lint-ignore no-non-null-assertion
   const command = anilistManifest.commands![name];
 
@@ -77,7 +88,7 @@ async function anilist(
 function list(type?: ManifestType): Manifest[] {
   // TODO FIX this should be cached on database for each server
   if (!community) {
-    // TODO BLOCKED load community packs
+    // TODO load community packs
     // (see https://github.com/ker0olos/fable/issues/10)
     // then map each loaded pack to 'dict'
     // 1^ block loading packs if name is used for builtins
@@ -111,7 +122,16 @@ function dict(): { [key: string]: Manifest } {
   );
 }
 
-function embed(
+function manifestEmbed(manifest: Manifest): discord.Embed {
+  return new discord.Embed()
+    .setUrl(manifest.url)
+    .setDescription(manifest.description)
+    .setAuthor({ name: manifest.author })
+    .setThumbnail({ url: manifest.image, default: false, proxy: false })
+    .setTitle(manifest.title ?? manifest.id);
+}
+
+function pages(
   { type, index }: {
     type: ManifestType;
     index: number;
@@ -138,12 +158,7 @@ function embed(
       'The following third-party packs were manually installed by your server members',
     );
 
-  const pack = new discord.Embed()
-    .setUrl(manifest.url)
-    .setDescription(manifest.description)
-    .setAuthor({ name: manifest.author })
-    .setThumbnail({ url: manifest.image, default: false, proxy: false })
-    .setTitle(manifest.title ?? manifest.id);
+  const embed = manifestEmbed(manifest);
 
   if (!manifest.type) {
     throw new Error(`Manifest "${manifest.id}" type is undefined`);
@@ -151,7 +166,7 @@ function embed(
 
   const message = new discord.Message()
     .addEmbed(disclaimer)
-    .addEmbed(pack);
+    .addEmbed(embed);
 
   return discord.Message.page({
     index,
@@ -160,6 +175,197 @@ function embed(
     message,
     type,
   });
+}
+
+function install({
+  token,
+  shallow,
+  userId,
+  guildId,
+  url,
+  ref,
+}: {
+  token: string;
+  userId: string;
+  guildId: string;
+  channelId?: string;
+  url: string;
+  ref?: string;
+  shallow?: boolean;
+}): discord.Message {
+  github.manifest({ url, ref })
+    .then(async ({ repo, manifest }) => {
+      const message = new discord.Message();
+
+      // validate against json schema
+      const valid = validate(manifest);
+
+      if (valid.error && shallow) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setColor(discord.colors.red)
+              .setDescription(`\`\`\`json\n${valid.error}\n\`\`\``),
+          )
+          .patch(token);
+      } else if (valid.error) {
+        throw new NonFetalError('Pack is invalid and cannot be installed.');
+      }
+
+      // shallow install is only meant as validation test
+      if (shallow) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setColor(discord.colors.green)
+              .setDescription('Valid'),
+          )
+          .patch(token);
+      }
+
+      // check installed packs for dependencies and conflicts
+
+      const ids = packs.list().map(({ id }) => id);
+
+      // if this pack conflicts existing
+      const conflicts = (manifest.conflicts ?? []).filter((conflictId) =>
+        ids.includes(conflictId)
+      ).concat(
+        // if existing conflicts this pack
+        packs.list().filter((pack) => pack.conflicts?.includes(manifest.id))
+          .map(({ id }) => id),
+      );
+
+      const missing = manifest.depends?.filter((dependId) =>
+        !ids.includes(dependId)
+      );
+
+      if (
+        (conflicts && conflicts?.length > 0) ||
+        (missing && missing?.length > 0)
+      ) {
+        const message = new discord.Message();
+
+        if (conflicts && conflicts?.length) {
+          message.addEmbed(
+            new discord.Embed()
+              .setDescription(
+                '__Conflicts must be removed before you can install this pack__.',
+              ),
+          );
+
+          conflicts.forEach((conflict) => {
+            message.addEmbed(
+              new discord.Embed().setDescription(
+                `This pack conflicts with ${conflict}`,
+              ),
+            );
+          });
+        }
+
+        if (missing && missing?.length) {
+          message.addEmbed(
+            new discord.Embed()
+              .setDescription(
+                '__Dependencies must be installed before you can install this pack__.',
+              ),
+          );
+
+          missing.forEach((dependency) => {
+            message.addEmbed(
+              new discord.Embed().setDescription(
+                `This pack requires ${dependency}`,
+              ),
+            );
+          });
+        }
+
+        return await message.patch(token);
+      }
+
+      // add pack to the guild database
+
+      const mutation = gql`
+        mutation (
+          $userId: String!
+          $guildId: String!
+          $githubId: Int!
+          $manifest: ManifestInput!
+        ) {
+          addPackToInstance(
+            userId: $userId
+            guildId: $guildId
+            githubId: $githubId
+            manifest: $manifest
+          ) {
+            ok
+            error
+            manifest {
+              id
+              title
+              description
+              author
+              image
+              url
+            }
+          }
+        }
+      `;
+
+      const response = (await request<{
+        addPackToInstance: Schema.Mutation;
+      }>({
+        url: faunaUrl,
+        query: mutation,
+        headers: {
+          'authorization': `Bearer ${config.faunaSecret}`,
+        },
+        variables: {
+          userId,
+          guildId,
+          githubId: repo.id,
+          manifest: purgeReservedProps(manifest),
+        },
+      })).addPackToInstance;
+
+      if (response.ok) {
+        message
+          .addEmbed(new discord.Embed().setDescription('INSTALLED'))
+          .addEmbed(manifestEmbed(response.manifest));
+
+        return message.patch(token);
+      } else {
+        switch (response.error) {
+          case 'PACK_ID_CHANGED':
+            throw new NonFetalError(
+              `Pack id changed. Found \`${manifest.id}\` but it should ne \`${response.manifest.id}\``,
+            );
+          default:
+            throw new Error(response.error);
+        }
+      }
+    })
+    .catch(async (err) => {
+      if (err instanceof NonFetalError) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(err.message),
+          )
+          .patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  return new discord.Message()
+    .setType(discord.MessageType.Loading);
 }
 
 function parseId(
@@ -351,7 +557,7 @@ async function characters({ ids, search }: {
   }
 }
 
-async function mediaCharacter({ mediaId, index }: {
+async function mediaCharacters({ mediaId, index }: {
   mediaId: string;
   index: number;
 }): Promise<
@@ -369,7 +575,7 @@ async function mediaCharacter({ mediaId, index }: {
   }
 
   if (packId === 'anilist') {
-    return _anilist.mediaCharacter({
+    return _anilist.mediaCharacters({
       id,
       index,
     });

@@ -1,20 +1,9 @@
-# endpoint: https://graphql.fauna.com/graphql
-# cookbook: https://docs.fauna.com/fauna/current/learn/cookbook/graphql
-# cheatsheet: https://docs.fauna.com/fauna/current/api/fql/cheat_sheet
-
-type Response @embedded {
-  ok: Boolean!
-  error: String
-  character: Character
-  inventory: Inventory
-}
-
 type User @collection(name: "user") {
   # discord user id
   id: String!
-  #
+  # all the inventories this user owns
   inventories: [Inventory!]!
-  #
+  # all the badges this user owns
   badges: [Badge!]!
 }
 
@@ -32,6 +21,8 @@ type Instance @collection(name: "instance") {
   inventories: [Inventory!]!
   # the guild where the instance resides
   guild: Guild!
+  # community packs installed on the instance 
+  packs: [Pack!]!
 }
 
 type Inventory @collection(name: "inventory") {
@@ -41,63 +32,76 @@ type Inventory @collection(name: "inventory") {
   rechargeTimestamp: Time
   # the time the user last pulled a gacha
   lastPull: Time
-  #
+  # the party linked to this user's inventory
   party: Party
-  #
+  # all the characters this user owns
   characters: [Character!]!
-  #
+  # the instance that contains this user's inventory
   instance: Instance!
-  #
+  # the user that owns this inventory
   user: User!
 }
 
 type Character @collection(name: "character") {
-  #
+  # the character pack-id:id
   id: String!
-  #
+  # the media pack-id:id
   mediaId: String!
-  #
+  # the rating of the character
   rating: Int!
-  #
+  # all the ownership transitions of the character
   history: [History!]!
-  #
-  inventory: Inventory!
-  #
+  # the instance that contains this character
   instance: Instance!
-  #
+  # the inventory where this character is currently
+  inventory: Inventory!
+  # the user that owns this character currently
   user: User!
 }
 
+type Pack @collection(name: "pack") {
+  # github repo id
+  id: Int!
+  # all the instances where this pack is installed
+  instances: [Instance!]!
+  # the pack's manifest
+  manifest: Manifest!
+  # the user who installed this pack
+  installedBy: User!
+  # the first time the pack was installed on an instance
+  firstInstall: Time!
+  # the last time the pack was installed on an instance
+  lastInstall: Time!
+}
+
 type Badge @collection(name: "badge") {
-  #
+  # the name of the badge
   name: String!
-  #
+  # short description of the badge
   description: String!
-  #
+  # all users who own this badge
   users: [User!]!
 }
 
 type History @embedded {
   gacha: Gacha
-  # trade: Trade
+  trade: Trade
 }
 
 type Gacha @embedded {
   by: User!
   pool: Int!
-  #
   popularityChance: Int!
   popularityGreater: Int!
   popularityLesser: Int
-  #
   roleChance: Int
   role: String
 }
 
-# type Trade @embedded {
-#   from: User!
-#   to: User!
-# }
+type Trade @embedded {
+  from: User!
+  to: User!
+}
 
 type CharacterNode @embedded {
   character: Character
@@ -110,45 +114,4 @@ type Party @embedded {
   member3: Character
   member4: Character
   member5: Character
-}
-
-type Query {
-  #
-  getUserInventory(userId: String!, guildId: String!): Inventory!
-    @resolver(name: "get_user_inventory")
-  
-  #
-  getUserStars(userId: String!, guildId: String!, stars: Int!, before: String, after: String): CharacterNode!
-    @resolver(name: "get_user_stars")
-  #
-  getUserMedia(userId: String!, guildId: String!, mediaId: String!, before: String, after: String): CharacterNode!
-    @resolver(name: "get_user_media")
-  
-  #
-  findCharacter(characterId: String!, guildId: String!): Character
-    @resolver(name: "find_character")
-}
-
-type Mutation {
-  #
-  addCharacterToInventory(
-    userId: String!
-    guildId: String!
-    characterId: String!
-    mediaId: String!
-    rating: Int!
-    pool: Int!
-    popularityChance: Int!
-    popularityGreater: Int!
-    popularityLesser: Int
-    roleChance: Int
-    role: String
-  ): Response! @resolver(name: "add_character_to_inventory")
-
-  #
-  setCharacterToParty(userId: String!, guildId: String!, characterId: String!, spot: Int): Response!
-    @resolver(name: "set_character_to_party")
-  #
-  removeCharacterFromParty(userId: String!, guildId: String!, spot: Int!): Response!
-    @resolver(name: "remove_character_from_party")
 }

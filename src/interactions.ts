@@ -1,26 +1,14 @@
-import {
-  captureException,
-  init as initSentry,
-} from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
-
-import {
-  json,
-  serve,
-  serveStatic,
-  validateRequest,
-} from 'https://deno.land/x/sift@0.6.0/mod.ts';
-
 import * as discord from './discord.ts';
 
-import * as search from './search.ts';
-import * as user from './user.ts';
-import * as party from './party.ts';
+import search from './search.ts';
+import user from './user.ts';
+import party from './party.ts';
 
 import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
 
-import { help } from './help.ts';
+import help from './help.ts';
 
 import config, { initConfig } from './config.ts';
 
@@ -28,23 +16,19 @@ import { Character, ManifestType, Media } from './types.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
 
-await initConfig();
-
 const idPrefix = 'id=';
 
-const handler = async (r: Request) => {
+export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
 
-  initSentry({ dsn: config.sentry });
-
-  const { error } = await validateRequest(r, {
+  const { error } = await utils.validateRequest(r, {
     POST: {
       headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
     },
   });
 
   if (error) {
-    return json(
+    return utils.json(
       { error: error.message },
       { status: error.status },
     );
@@ -61,7 +45,7 @@ const handler = async (r: Request) => {
   });
 
   if (!valid) {
-    return json(
+    return utils.json(
       { error: 'Invalid request' },
       { status: 401 },
     );
@@ -266,11 +250,11 @@ const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'stars': {
-                const rating = options['rating'] as number;
+                const stars = options['rating'] as number;
 
                 return (await user.stars({
                   userId: userId ?? member.user.id,
-                  stars: rating,
+                  stars,
                   channelId,
                   guildId,
                   nick,
@@ -308,8 +292,8 @@ const handler = async (r: Request) => {
             }))
               .send();
           }
-          case 'pull':
           case 'gacha':
+          case 'pull':
           case 'w':
           case 'q':
             return gacha
@@ -321,29 +305,43 @@ const handler = async (r: Request) => {
                 token,
               })
               .send();
-          case 'fake_pull':
-            return gacha
-              .start({ token, characterId: options['id'] as string })
-              .send();
-          case 'packs': {
-            return packs.embed({
-              index: 0,
-              // deno-lint-ignore no-non-null-assertion
-              type: subcommand! as ManifestType,
-            }).send();
-          }
           case 'anilist': {
             // deno-lint-ignore no-non-null-assertion
-            const message = await packs.anilist(subcommand!, interaction);
-
-            // deno-lint-ignore no-non-null-assertion
-            return message!.send();
+            return (await packs.anilist(subcommand!, interaction))!
+              .send();
           }
           case 'help':
           case 'start':
           case 'guide':
           case 'tuto': {
-            return help({ userId: member.user.id, index: 0 }).send();
+            return help.pages({ userId: member.user.id, index: 0 }).send();
+          }
+          case 'packs': {
+            //deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'builtin':
+              case 'community': {
+                return packs.pages({
+                  index: 0,
+                  type: subcommand as ManifestType,
+                }).send();
+              }
+              case 'install':
+              case 'validate': {
+                return packs.install({
+                  token,
+                  guildId,
+                  channelId,
+                  userId: member.user.id,
+                  shallow: subcommand === 'validate',
+                  url: options['github'] as string,
+                  ref: options['ref'] as string,
+                }).send();
+              }
+              default:
+                break;
+            }
+            break;
           }
           default: {
             break;
@@ -373,14 +371,14 @@ const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'mcharacter': {
+          case 'mcharacters': {
             // deno-lint-ignore no-non-null-assertion
             const mediaId = customValues![0];
 
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]) || 0;
 
-            return (await search.mediaCharacter({
+            return (await search.mediaCharacters({
               userId: member.user.id,
               channelId,
               guildId,
@@ -400,7 +398,7 @@ const handler = async (r: Request) => {
               channelId,
               guildId,
             }))
-              .setType(discord.MessageType.Update)
+              .setType(discord.MessageType.New)
               .send();
           }
           case 'cstars': {
@@ -445,16 +443,24 @@ const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'builtin':
-          case 'community': {
+          case 'pull':
+          case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
+            const userId = customValues![0];
 
-            return packs.embed({
-              index,
-              type: customType as ManifestType,
-            })
-              .setType(discord.MessageType.Update)
+            return gacha
+              .start({
+                token,
+                quiet: customType === 'pull',
+                userId: member.user.id,
+                guildId,
+                channelId,
+              })
+              .setType(
+                userId === member.user.id
+                  ? discord.MessageType.Update
+                  : discord.MessageType.New,
+              )
               .send();
           }
           case 'now': {
@@ -473,32 +479,23 @@ const handler = async (r: Request) => {
               )
               .send();
           }
-          case 'pull':
-          case 'gacha': {
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
-
-            // verify user id
-            return gacha
-              .start({
-                token,
-                quiet: customType === 'pull',
-                userId: member.user.id,
-                guildId,
-                channelId,
-              })
-              .setType(
-                userId === member.user.id
-                  ? discord.MessageType.Update
-                  : discord.MessageType.New,
-              )
-              .send();
-          }
           case 'help': {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return help({ userId: member.user.id, index })
+            return help.pages({ userId: member.user.id, index })
+              .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'builtin':
+          case 'community': {
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            return packs.pages({
+              index,
+              type: customType as ManifestType,
+            })
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -533,15 +530,18 @@ const handler = async (r: Request) => {
     if (err instanceof NoPermissionError) {
       return new discord.Message()
         .setFlags(discord.MessageFlags.Ephemeral)
-        .setContent('You don\'t permission to complete this interaction!')
-        .send();
+        .addEmbed(
+          new discord.Embed().setDescription(
+            'You don\'t permission to complete this interaction!',
+          ),
+        ).send();
     }
 
     if (!config.sentry) {
       throw err;
     }
 
-    const refId = captureException(err, {
+    const refId = utils.captureException(err, {
       extra: { ...interaction },
     });
 
@@ -564,15 +564,21 @@ function override(
   };
 }
 
-serve({
-  '/': handler,
-  '/external/*': utils.proxy,
-  '/assets/:filename+': serveStatic('../assets/public', {
-    intervene: override(604800),
-    baseUrl: import.meta.url,
-  }),
-  '/:filename+': serveStatic('../json', {
-    intervene: override(86400, 'application/schema+json'),
-    baseUrl: import.meta.url,
-  }),
-});
+if (import.meta.main) {
+  await initConfig();
+
+  utils.initSentry({ dsn: config.sentry });
+
+  utils.serve({
+    '/': handler,
+    '/external/*': utils.proxy,
+    '/assets/:filename+': utils.serveStatic('../assets/public', {
+      intervene: override(604800),
+      baseUrl: import.meta.url,
+    }),
+    '/:filename+': utils.serveStatic('../json', {
+      intervene: override(86400, 'application/schema+json'),
+      baseUrl: import.meta.url,
+    }),
+  });
+}

@@ -764,6 +764,10 @@ snapshot[`model 3`] = `
                                                                   ],
                                                                 },
                                                                 main: true,
+                                                                packs: Expr {
+                                                                  raw: [
+                                                                  ],
+                                                                },
                                                               },
                                                             },
                                                           },
@@ -1614,6 +1618,10 @@ snapshot[`model 3`] = `
                                                                   ],
                                                                 },
                                                                 main: true,
+                                                                packs: Expr {
+                                                                  raw: [
+                                                                  ],
+                                                                },
                                                               },
                                                             },
                                                           },
@@ -2563,6 +2571,10 @@ snapshot[`model 4`] = `
                                                                   ],
                                                                 },
                                                                 main: true,
+                                                                packs: Expr {
+                                                                  raw: [
+                                                                  ],
+                                                                },
                                                               },
                                                             },
                                                           },
@@ -3507,6 +3519,10 @@ snapshot[`model 4`] = `
                                                                   ],
                                                                 },
                                                                 main: true,
+                                                                packs: Expr {
+                                                                  raw: [
+                                                                  ],
+                                                                },
                                                               },
                                                             },
                                                           },

@@ -3,13 +3,13 @@
 import {
   assert,
   assertEquals,
-} from 'https://deno.land/std@0.177.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.178.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   stub,
-} from 'https://deno.land/std@0.177.0/testing/mock.ts';
+} from 'https://deno.land/std@0.178.0/testing/mock.ts';
 
 import * as discord from '../src/discord.ts';
 
@@ -368,6 +368,23 @@ Deno.test('messages', async (test) => {
     });
   });
 
+  await test.step('modals', () => {
+    const component = new discord.Message();
+
+    component
+      .setTitle('title')
+      .setId('custom_id');
+
+    assertEquals(component.json(), {
+      type: 9,
+      data: {
+        components: [],
+        custom_id: 'custom_id',
+        title: 'title',
+      },
+    });
+  });
+
   await test.step('send', async () => {
     const message = new discord.Message().setContent('content');
 
@@ -419,11 +436,15 @@ Deno.test('static messages', async (test) => {
     assertEquals(message.json(), {
       type: 4,
       data: {
-        content:
-          'An Internal Error occurred and was reported.\n```ref_id: id```',
+        embeds: [
+          {
+            description:
+              'An Internal Error occurred and was reported.\n```ref_id: id```',
+            type: 'rich',
+          },
+        ],
         components: [],
         attachments: [],
-        embeds: [],
       },
     });
   });

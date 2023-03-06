@@ -1,13 +1,13 @@
 import {
   assertEquals,
   assertRejects,
-} from 'https://deno.land/std@0.177.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.178.0/testing/asserts.ts';
 
 import {
   assertSpyCallArg,
   assertSpyCalls,
   stub,
-} from 'https://deno.land/std@0.177.0/testing/mock.ts';
+} from 'https://deno.land/std@0.178.0/testing/mock.ts';
 
 import * as anilist from '../packs/anilist/index.ts';
 
@@ -207,7 +207,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await anilist.mediaCharacter({ id: '1', index: 0 });
+      const result = await anilist.mediaCharacters({ id: '1', index: 0 });
 
       assertEquals(result, {
         next: true,
@@ -263,7 +263,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await anilist.mediaCharacter({ id: '1', index: 0 });
+      const result = await anilist.mediaCharacters({ id: '1', index: 0 });
 
       assertEquals(result, {
         next: false,
@@ -313,7 +313,7 @@ Deno.test('media character', async (test) => {
     );
 
     try {
-      const result = await anilist.mediaCharacter({ id: '1', index: 0 });
+      const result = await anilist.mediaCharacters({ id: '1', index: 0 });
 
       assertEquals(result, {
         next: false,

@@ -8,6 +8,12 @@ const API = `https://discord.com/api/v10`;
 const splitter = '=';
 
 export const empty = '\u200B';
+
+export const colors = {
+  red: '#972c2c',
+  green: '#2c9f6b',
+};
+
 export const join = (...args: string[]): string => {
   return args.join(splitter);
 };
@@ -20,9 +26,10 @@ export enum MessageFlags {
 export enum MessageType {
   Pong = 1,
   New = 4,
+  Loading = 5,
   Update = 7,
   Suggestions = 8,
-  // Modal = 9,
+  Modal = 9,
 }
 
 export enum InteractionType {
@@ -30,7 +37,7 @@ export enum InteractionType {
   Command = 2,
   Component = 3,
   Partial = 4,
-  // Modal = 5,
+  Modal = 5,
 }
 
 export enum ComponentType {
@@ -119,17 +126,16 @@ export class Interaction<Options> {
     user: User;
   };
 
-  /** available on all interaction types except PING */
-  locale?: string;
+  // /** available on all interaction types except PING */
+  // locale?: string;
 
-  /** guild's preferred locale (if invoked in a guild) */
-  guildLocale?: string;
+  // /** guild's preferred locale (if invoked in a guild) */
+  // guildLocale?: string;
 
   constructor(body: string) {
     const obj = JSON.parse(body);
 
     const data: {
-      // id: string;
       name: string;
       type: string;
       guild_id: string;
@@ -203,7 +209,7 @@ export class Interaction<Options> {
 
         break;
       }
-      // case InteractionType.Modal:
+      case InteractionType.Modal:
       case InteractionType.Component: {
         const custom = data.custom_id.split(splitter);
 
@@ -484,6 +490,8 @@ export class Message {
   #suggestions: { [name: string]: Suggestion };
 
   #data: {
+    title?: string;
+    custom_id?: string;
     flags?: number;
     content?: string;
     // deno-lint-ignore no-explicit-any
@@ -520,16 +528,16 @@ export class Message {
     return this;
   }
 
-  // setId(id: string) {
-  //   this.#data.custom_id = id;
-  //   return this;
-  // }
+  setId(id: string): Message {
+    this.#data.custom_id = id;
+    return this;
+  }
 
-  // setTitle(title: string) {
-  //   this.#type = MessageType.Modal;
-  //   this.#data.title = title;
-  //   return this;
-  // }
+  setTitle(title: string): Message {
+    this.#type = MessageType.Modal;
+    this.#data.title = title;
+    return this;
+  }
 
   addAttachment(
     { arrayBuffer, filename, type }: {
@@ -612,13 +620,6 @@ export class Message {
   // deno-lint-ignore no-explicit-any
   json(): any {
     switch (this.#type) {
-      // case MessageType.Modal:
-      //   data = {
-      //     title: this.#data.title,
-      //     custom_id: this.#data.custom_id,
-      //     components: this.#data.components,
-      //   };
-      //   break;
       case MessageType.Suggestions:
         return {
           type: MessageType.Suggestions,
@@ -645,6 +646,17 @@ export class Message {
             components: chunk,
           });
         });
+
+        if (this.#type === MessageType.Modal) {
+          return {
+            type: MessageType.Modal,
+            data: {
+              title: this.#data.title,
+              custom_id: this.#data.custom_id,
+              components,
+            },
+          };
+        }
 
         return {
           type: this.#type,
@@ -711,16 +723,15 @@ export class Message {
   ): Message {
     const group: Component[] = [];
 
+    // deno-lint-ignore no-non-null-assertion
+    const prevId = index - 1 >= 0 ? index - 1 : total! - 1;
+
+    const nextId = next ? index + 1 : 0;
+
     if (index - 1 >= 0 || total) {
       group.push(
         new Component()
-          .setId(
-            type,
-            target ?? '',
-            // deno-lint-ignore no-non-null-assertion
-            `${index - 1 >= 0 ? index - 1 : total! - 1}`,
-            'prev',
-          )
+          .setId(type, target ?? '', `${prevId}`, 'prev')
           .setLabel(`Prev`),
       );
     }
@@ -736,7 +747,7 @@ export class Message {
     if (next || total) {
       group.push(
         new Component()
-          .setId(type, target ?? '', `${next ? `${index + 1}` : 0}`, 'next')
+          .setId(type, target ?? '', `${nextId}`, 'next')
           .setLabel(`Next`),
       );
     }
@@ -771,8 +782,11 @@ export class Message {
   }
 
   static internal(id: string): Message {
-    return new Message().setContent(
-      `An Internal Error occurred and was reported.\n\`\`\`ref_id: ${id}\`\`\``,
-    );
+    return new Message()
+      .addEmbed(
+        new Embed().setDescription(
+          `An Internal Error occurred and was reported.\n\`\`\`ref_id: ${id}\`\`\``,
+        ),
+      );
   }
 }

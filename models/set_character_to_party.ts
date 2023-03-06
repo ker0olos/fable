@@ -198,63 +198,68 @@ export function removeCharacterFromParty(
   }));
 }
 
-export default function (client: Client): (() => Promise<void>)[] {
-  return [
-    fql.Resolver({
-      client,
-      name: 'set_character_to_party',
-      lambda: (
-        userId: string,
-        guildId: string,
-        characterId: string,
-        spot?: number,
-      ) => {
-        return fql.Let(
-          {
-            user: getUser(userId),
-            guild: getGuild(guildId),
-            instance: getInstance(fql.Var('guild')),
-            inventory: getInventory({
-              user: fql.Var('user'),
-              instance: fql.Var('instance'),
-            }),
-          },
-          ({ user, inventory, instance }) =>
-            setCharacterToParty({
-              user,
-              inventory,
-              instance,
-              characterId,
-              spot,
-            }) as ResponseExpr,
-        );
-      },
-    }),
-    fql.Resolver({
-      client,
-      name: 'remove_character_from_party',
-      lambda: (
-        userId: string,
-        guildId: string,
-        spot: number,
-      ) => {
-        return fql.Let(
-          {
-            user: getUser(userId),
-            guild: getGuild(guildId),
-            instance: getInstance(fql.Var('guild')),
-            inventory: getInventory({
-              user: fql.Var('user'),
-              instance: fql.Var('instance'),
-            }),
-          },
-          ({ inventory }) =>
-            removeCharacterFromParty({
-              inventory,
-              spot,
-            }) as ResponseExpr,
-        );
-      },
-    }),
-  ];
+export default function (client: Client): {
+  indexers?: (() => Promise<void>)[];
+  resolvers?: (() => Promise<void>)[];
+} {
+  return {
+    resolvers: [
+      fql.Resolver({
+        client,
+        name: 'set_character_to_party',
+        lambda: (
+          userId: string,
+          guildId: string,
+          characterId: string,
+          spot?: number,
+        ) => {
+          return fql.Let(
+            {
+              user: getUser(userId),
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+              inventory: getInventory({
+                user: fql.Var('user'),
+                instance: fql.Var('instance'),
+              }),
+            },
+            ({ user, inventory, instance }) =>
+              setCharacterToParty({
+                user,
+                inventory,
+                instance,
+                characterId,
+                spot,
+              }) as ResponseExpr,
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
+        name: 'remove_character_from_party',
+        lambda: (
+          userId: string,
+          guildId: string,
+          spot: number,
+        ) => {
+          return fql.Let(
+            {
+              user: getUser(userId),
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+              inventory: getInventory({
+                user: fql.Var('user'),
+                instance: fql.Var('instance'),
+              }),
+            },
+            ({ inventory }) =>
+              removeCharacterFromParty({
+                inventory,
+                spot,
+              }) as ResponseExpr,
+          );
+        },
+      }),
+    ],
+  };
 }
