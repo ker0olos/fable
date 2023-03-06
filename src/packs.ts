@@ -54,7 +54,6 @@ const packs = {
   aliasToArray,
   anilist,
   characters,
-  pages,
   formatToString,
   install,
   isDisabled,
@@ -62,7 +61,9 @@ const packs = {
   media,
   mediaCharacters,
   mediaToString,
+  pages,
   pool,
+  remove,
   searchMany,
   // used in tests to clear cache
   clear: () => {
@@ -366,6 +367,64 @@ function install({
 
   return new discord.Message()
     .setType(discord.MessageType.Loading);
+}
+
+async function remove({
+  guildId,
+  manifestId,
+}: {
+  guildId: string;
+  manifestId: string;
+}): Promise<discord.Message> {
+  const message = new discord.Message();
+
+  const mutation = gql`
+    mutation ($guildId: String!, $manifestId: String!) {
+      removePackFromInstance(
+        guildId: $guildId
+        manifestId: $manifestId
+      ) {
+        ok
+        error
+        manifest {
+          id
+          title
+          description
+          author
+          image
+          url
+        }
+      }
+    }
+  `;
+
+  const response = (await request<{
+    removePackFromInstance: Schema.Mutation;
+  }>({
+    url: faunaUrl,
+    query: mutation,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      guildId,
+      manifestId,
+    },
+  })).removePackFromInstance;
+
+  if (response.ok) {
+    return message
+      .addEmbed(new discord.Embed().setDescription('REMOVED'))
+      .addEmbed(manifestEmbed(response.manifest));
+  } else {
+    switch (response.error) {
+      case 'PACK_NOT_FOUND':
+      case 'PACK_NOT_INSTALLED':
+        throw new Error('404');
+      default:
+        throw new Error(response.error);
+    }
+  }
 }
 
 function parseId(

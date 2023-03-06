@@ -73,7 +73,7 @@ function pages(
             '- `/gacha` `/w`: _start a new gacha pull_',
             '- `/pull` `/q`: _start a quiet gacha pull with no animation_',
             '- `/now` `/checklist` `/cl` `/tu`: _check what you can do right now_',
-            '- `/search` `/anime` `/manga`: _search for specific media',
+            '- `/search` `/anime` `/manga`: _search for specific media_',
             '- `/character` `/char` `/im`: _search for a specific character_',
             '',
             '- `/party view` `/team view` `/p view`: _view your current party_',
@@ -90,9 +90,10 @@ function pages(
       .addEmbed(
         new discord.Embed().setAuthor({ name: 'Admin Commands' })
           .setDescription([
-            // '- `/packs install`: _install a community pack_',
             '- `/packs community`: _list all installed community packs_',
             '- `/packs builtin`: _list all the builtin packs_',
+            '- `/packs install`: _install a community pack_',
+            '- `/packs remove`: _remove an installed pack_',
           ].join('\n')),
       ),
   ];

@@ -28,6 +28,7 @@ import {
   FakeLTE,
   FakeMatch,
   FakeMin,
+  FakeMultiply,
   FakeNow,
   FakeRef,
   FakeSelect,
@@ -36,7 +37,6 @@ import {
   FakeTimeDiff,
   FakeUpdate,
   FakeVar,
-  FakMultiply,
 } from './fql.mock.ts';
 
 import { fql } from './fql.ts';
@@ -471,7 +471,7 @@ Deno.test('recharge pulls', async (test) => {
     const gteStub = FakeGTE();
 
     const divideStub = FakeDivide();
-    const multiplyStub = FakMultiply();
+    const multiplyStub = FakeMultiply();
     const addStub = FakeAdd();
     const subtractStub = FakeSubtract();
 
@@ -581,7 +581,7 @@ Deno.test('recharge pulls', async (test) => {
     const gteStub = FakeGTE();
 
     const divideStub = FakeDivide();
-    const multiplyStub = FakMultiply();
+    const multiplyStub = FakeMultiply();
     const addStub = FakeAdd();
     const subtractStub = FakeSubtract();
 
@@ -695,7 +695,7 @@ Deno.test('recharge pulls', async (test) => {
     const gteStub = FakeGTE();
 
     const divideStub = FakeDivide();
-    const multiplyStub = FakMultiply();
+    const multiplyStub = FakeMultiply();
     const addStub = FakeAdd();
     const subtractStub = FakeSubtract();
 
@@ -809,7 +809,7 @@ Deno.test('recharge pulls', async (test) => {
     const gteStub = FakeGTE();
 
     const divideStub = FakeDivide();
-    const multiplyStub = FakMultiply();
+    const multiplyStub = FakeMultiply();
     const addStub = FakeAdd();
     const subtractStub = FakeSubtract();
 
@@ -923,7 +923,7 @@ Deno.test('recharge pulls', async (test) => {
     const gteStub = FakeGTE();
 
     const divideStub = FakeDivide();
-    const multiplyStub = FakMultiply();
+    const multiplyStub = FakeMultiply();
     const addStub = FakeAdd();
     const subtractStub = FakeSubtract();
 

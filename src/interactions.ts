@@ -338,6 +338,12 @@ export const handler = async (r: Request) => {
                   ref: options['ref'] as string,
                 }).send();
               }
+              case 'remove': {
+                return (await packs.remove({
+                  guildId,
+                  manifestId: options['id'] as string,
+                })).send();
+              }
               default:
                 break;
             }

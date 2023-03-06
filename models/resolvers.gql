@@ -25,7 +25,12 @@ type Query {
 
 type Mutation {
   #
-  addPackToInstance(userId: String!, guildId: String!, githubId: Int!, manifest: ManifestInput!): Response!  @resolver(name: "add_pack_to_instance")
+  addPackToInstance(userId: String!, guildId: String!, githubId: Int!, manifest: ManifestInput!): Response!
+    @resolver(name: "add_pack_to_instance")
+  
+  #
+  removePackFromInstance(guildId: String!, manifestId: String!): Response!
+    @resolver(name: "remove_pack_from_instance")
 
   #
   addCharacterToInventory(

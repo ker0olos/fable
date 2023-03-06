@@ -7111,6 +7111,142 @@ The .id string must match ^[-_a-z0-9]+$
   });
 });
 
+Deno.test('/packs remove', async (test) => {
+  await test.step('normal', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              removePackFromInstance: {
+                ok: true,
+                manifest: {
+                  id: 'manifest_id',
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await packs.remove({
+        guildId: 'guild_id',
+        manifestId: 'manifest_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              description: 'REMOVED',
+              type: 'rich',
+            },
+            {
+              type: 'rich',
+              url: undefined,
+              description: undefined,
+              title: 'manifest_id',
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not found', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              removePackFromInstance: {
+                ok: false,
+                error: 'PACK_NOT_FOUND',
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      await assertRejects(
+        async () =>
+          await packs.remove({
+            guildId: 'guild_id',
+            manifestId: 'manifest_id',
+          }),
+        Error,
+        '404',
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not installed', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              removePackFromInstance: {
+                ok: false,
+                error: 'PACK_NOT_INSTALLED',
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      await assertRejects(
+        async () =>
+          await packs.remove({
+            guildId: 'guild_id',
+            manifestId: 'manifest_id',
+          }),
+        Error,
+        '404',
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+    }
+  });
+});
+
 Deno.test('/help', async (test) => {
   await test.step('navigation', () => {
     const message = help.pages({ userId: 'user_id', index: 0 });

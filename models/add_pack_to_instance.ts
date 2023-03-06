@@ -119,6 +119,57 @@ export function addPack(
     ));
 }
 
+export function removePack(
+  {
+    instance,
+    manifestId,
+  }: {
+    instance: InstanceExpr;
+    manifestId: StringExpr;
+  },
+): ResponseExpr {
+  return fql.Let({
+    match: fql.Match(
+      fql.Index('pack_manifest_id'),
+      manifestId,
+    ),
+  }, ({ match }) =>
+    fql.If(
+      fql.IsNonEmpty(match),
+      fql.If(
+        fql.Includes(
+          fql.Ref(fql.Get(match)),
+          fql.Select(['data', 'packs'], instance),
+        ),
+        fql.Let({
+          updatedInstance: fql.Update<Instance>(fql.Ref(instance), {
+            packs: fql.Remove(
+              fql.Ref(fql.Get(match)),
+              fql.Select(['data', 'packs'], instance),
+            ),
+          }),
+          updatePack: fql.Update<Pack>(fql.Ref(fql.Get(match)), {
+            instances: fql.Remove(
+              fql.Ref(instance),
+              fql.Select(['data', 'instances'], fql.Get(match)),
+            ),
+          }),
+        }, ({ updatePack }) => ({
+          ok: true,
+          manifest: fql.Select(['data', 'manifest'], updatePack),
+        })),
+        {
+          ok: false,
+          error: 'PACK_NOT_INSTALLED',
+        },
+      ),
+      {
+        ok: false,
+        error: 'PACK_NOT_FOUND',
+      },
+    ));
+}
+
 export default function (client: Client): {
   indexers?: (() => Promise<void>)[];
   resolvers?: (() => Promise<void>)[];
@@ -162,6 +213,26 @@ export default function (client: Client): {
                 instance,
                 githubId,
                 manifest,
+              }),
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
+        name: 'remove_pack_from_instance',
+        lambda: (
+          guildId: StringExpr,
+          manifestId: StringExpr,
+        ) => {
+          return fql.Let(
+            {
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+            },
+            ({ instance }) =>
+              removePack({
+                instance,
+                manifestId,
               }),
           );
         },

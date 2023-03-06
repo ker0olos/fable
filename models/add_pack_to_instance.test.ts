@@ -26,11 +26,16 @@ import {
   FakeMatch,
   FakeNow,
   FakeRef,
+  FakeRemove,
   FakeUpdate,
   FakeVar,
 } from './fql.mock.ts';
 
-import { addPack, default as Model } from './add_pack_to_instance.ts';
+import {
+  addPack,
+  default as Model,
+  removePack,
+} from './add_pack_to_instance.ts';
 import { fql } from './fql.ts';
 
 Deno.test('add pack', async (test) => {
@@ -368,15 +373,239 @@ Deno.test('add pack', async (test) => {
   });
 });
 
+Deno.test('remove pack', async (test) => {
+  await test.step('normal', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const refStub = FakeRef();
+    const getStub = FakeGet();
+    const indexStub = FakeIndex();
+    const isNonEmptyStub = FakeIsNonEmpty();
+    const includesStub = FakeIncludes();
+    const removeStub = FakeRemove();
+
+    const updateStub = FakeUpdate();
+
+    const matchStub = FakeMatch({
+      match: true,
+    });
+
+    const varStub = FakeVar({});
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        [{ ref: 'manifest_id' }],
+        [{ ref: 'manifest_id' }],
+        [{ ref: 'instance' }],
+        'manifest',
+      ]) as any,
+    );
+
+    try {
+      const match = removePack({
+        instance: 'instance' as any,
+        manifestId: 'manifest_id',
+      }) as any;
+
+      assertSpyCall(indexStub, 0, {
+        args: ['pack_manifest_id'],
+      });
+
+      assertSpyCall(matchStub, 0, {
+        args: [
+          'pack_manifest_id' as any,
+          'manifest_id',
+        ],
+      });
+
+      assertSpyCall(removeStub, 0, {
+        args: [
+          { ref: { '0': 'manifest_id', match: true } } as any,
+          [{ ref: 'manifest_id' }],
+        ] as any,
+        returned: [],
+      });
+
+      assertSpyCall(removeStub, 1, {
+        args: [
+          { ref: 'instance' } as any,
+          [{ ref: 'instance' }],
+        ] as any,
+        returned: [],
+      });
+
+      assertSpyCallArg(ifStub, 0, 0, true);
+      assertSpyCallArg(ifStub, 1, 0, true);
+
+      assertEquals(match, {
+        ok: true,
+        manifest: 'manifest',
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      refStub.restore();
+      getStub.restore();
+      indexStub.restore();
+      isNonEmptyStub.restore();
+      includesStub.restore();
+      removeStub.restore();
+      updateStub.restore();
+      varStub.restore();
+      matchStub.restore();
+      selectStub.restore();
+    }
+  });
+
+  await test.step('pack not installed', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const refStub = FakeRef();
+    const getStub = FakeGet();
+    const indexStub = FakeIndex();
+    const isNonEmptyStub = FakeIsNonEmpty();
+    const includesStub = FakeIncludes();
+    const removeStub = FakeRemove();
+
+    const updateStub = FakeUpdate();
+
+    const matchStub = FakeMatch({
+      match: true,
+    });
+
+    const varStub = FakeVar({});
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        [],
+        [],
+        [],
+        'manifest',
+      ]) as any,
+    );
+
+    try {
+      const match = removePack({
+        instance: 'instance' as any,
+        manifestId: 'manifest_id',
+      }) as any;
+
+      assertSpyCall(indexStub, 0, {
+        args: ['pack_manifest_id'],
+      });
+
+      assertSpyCall(matchStub, 0, {
+        args: [
+          'pack_manifest_id' as any,
+          'manifest_id',
+        ],
+      });
+
+      assertSpyCallArg(ifStub, 0, 0, false);
+      assertSpyCallArg(ifStub, 1, 0, true);
+
+      assertEquals(match, {
+        ok: false,
+        error: 'PACK_NOT_INSTALLED',
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      refStub.restore();
+      getStub.restore();
+      indexStub.restore();
+      isNonEmptyStub.restore();
+      includesStub.restore();
+      removeStub.restore();
+      updateStub.restore();
+      varStub.restore();
+      matchStub.restore();
+      selectStub.restore();
+    }
+  });
+
+  await test.step('pack not found', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const refStub = FakeRef();
+    const getStub = FakeGet();
+    const indexStub = FakeIndex();
+    const isNonEmptyStub = FakeIsNonEmpty();
+    const includesStub = FakeIncludes();
+    const removeStub = FakeRemove();
+
+    const updateStub = FakeUpdate();
+
+    const matchStub = FakeMatch();
+
+    const varStub = FakeVar({});
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        [],
+        [],
+        [],
+        'manifest',
+      ]) as any,
+    );
+
+    try {
+      const match = removePack({
+        instance: 'instance' as any,
+        manifestId: 'manifest_id',
+      }) as any;
+
+      assertSpyCall(indexStub, 0, {
+        args: ['pack_manifest_id'],
+      });
+
+      assertSpyCall(matchStub, 0, {
+        args: [
+          'pack_manifest_id' as any,
+          'manifest_id',
+        ],
+      });
+
+      assertSpyCallArg(ifStub, 0, 0, false);
+      assertSpyCallArg(ifStub, 1, 0, false);
+
+      assertEquals(match, {
+        ok: false,
+        error: 'PACK_NOT_FOUND',
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      refStub.restore();
+      getStub.restore();
+      indexStub.restore();
+      isNonEmptyStub.restore();
+      includesStub.restore();
+      removeStub.restore();
+      updateStub.restore();
+      varStub.restore();
+      matchStub.restore();
+      selectStub.restore();
+    }
+  });
+});
+
 Deno.test('model', async (test) => {
   const client = FakeClient();
 
   Model(client as any).indexers?.forEach((q) => q());
   Model(client as any).resolvers?.forEach((q) => q());
 
-  assertSpyCalls(client.query, 3);
+  assertSpyCalls(client.query, 4);
 
   await assertSnapshot(test, client.query.calls[0].args);
   await assertSnapshot(test, client.query.calls[1].args);
   await assertSnapshot(test, client.query.calls[2].args);
+  await assertSnapshot(test, client.query.calls[3].args);
 });
