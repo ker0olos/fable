@@ -229,6 +229,16 @@ export default function (client: Client): {
     resolvers: [
       fql.Resolver({
         client,
+        name: 'get_guild_instance',
+        lambda: (guildId: string) => {
+          return fql.Let(
+            { guild: getGuild(guildId) },
+            ({ guild }) => getInstance(guild),
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
         name: 'get_user_inventory',
         lambda: (userId: string, guildId: string) => {
           return fql.Let(

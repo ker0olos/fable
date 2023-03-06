@@ -36,6 +36,7 @@ import {
   default as Model,
   removePack,
 } from './add_pack_to_instance.ts';
+
 import { fql } from './fql.ts';
 
 Deno.test('add pack', async (test) => {

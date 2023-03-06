@@ -8,6 +8,10 @@ type Response @embedded {
 
 type Query {
   #
+  getGuildInstance(guildId: String!): Instance!
+    @resolver(name: "get_guild_instance")
+
+  #
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")
   
