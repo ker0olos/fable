@@ -90,7 +90,7 @@ function pages(
       .addEmbed(
         new discord.Embed().setAuthor({ name: 'Admin Commands' })
           .setDescription([
-            '- `/packs install`: _install a community pack_',
+            // '- `/packs install`: _install a community pack_',
             '- `/packs community`: _list all installed community packs_',
             '- `/packs builtin`: _list all the builtin packs_',
           ].join('\n')),

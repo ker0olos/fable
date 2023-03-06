@@ -842,34 +842,6 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Install a community pack",
-        name: "install",
-        options: [
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "A github repository url",
-            name: "github",
-            options: undefined,
-            required: true,
-            type: 3,
-          },
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "A ref to a branch or commit sha",
-            name: "ref",
-            options: undefined,
-            required: false,
-            type: 3,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-      {
-        autocomplete: undefined,
-        choices: undefined,
         description: "Validate a community pack's manifest",
         name: "validate",
         options: [

@@ -241,8 +241,7 @@ snapshot[`/help 4`] = `
         author: {
           name: "Admin Commands",
         },
-        description: "- \`/packs install\`: _install a community pack_
-- \`/packs community\`: _list all installed community packs_
+        description: "- \`/packs community\`: _list all installed community packs_
 - \`/packs builtin\`: _list all the builtin packs_",
         type: "rich",
       },

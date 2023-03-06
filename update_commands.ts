@@ -396,13 +396,9 @@ export const commands = [
         optional: true,
       }),
       Option({
-        name: 'install',
-        description: 'Install a community pack',
+        name: 'validate',
+        description: 'Validate a community pack\'s manifest',
         type: Type.SUB_COMMAND,
-        aliases: [{
-          name: 'validate',
-          desc: 'Validate a community pack\'s manifest',
-        }],
         optional: true,
         options: [
           Option({
@@ -418,6 +414,29 @@ export const commands = [
           }),
         ],
       }),
+      // Option({
+      //   name: 'install',
+      //   description: 'Install a community pack',
+      //   type: Type.SUB_COMMAND,
+      //   aliases: [{
+      //     name: 'validate',
+      //     desc: 'Validate a community pack\'s manifest',
+      //   }],
+      //   optional: true,
+      //   options: [
+      //     Option({
+      //       name: 'github',
+      //       description: 'A github repository url',
+      //       type: Type.STRING,
+      //     }),
+      //     Option({
+      //       name: 'ref',
+      //       description: 'A ref to a branch or commit sha',
+      //       type: Type.STRING,
+      //       optional: true,
+      //     }),
+      //   ],
+      // }),
     ],
   }),
   // non-standard commands (pack commands)
