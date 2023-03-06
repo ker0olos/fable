@@ -1,8 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
 
-import Ajv, { ValidateFunction } from 'https://esm.sh/ajv@8.12.0';
+import Ajv from 'https://esm.sh/ajv@8.12.0';
 
-import { bold, green, red } from 'https://deno.land/std@0.178.0/fmt/colors.ts';
+import { prettify } from 'https://esm.sh/awesome-ajv-errors@5.1.0';
+
+import { green, red } from 'https://deno.land/std@0.178.0/fmt/colors.ts';
 
 import { AssertionError } from 'https://deno.land/std@0.178.0/testing/asserts.ts';
 
@@ -36,104 +38,18 @@ import { Manifest } from './types.ts';
 
 const reservedIds = ['anilist', 'vtubers'];
 
-const replacerWithPath = (
-  replacer: (value: any, path: string) => string,
-) => {
-  const m = new Map();
+export const purgeReservedProps = (data: Manifest): Manifest => {
+  const purged: any = {};
 
-  return function (this: any, key: string, value: any): string {
-    let path = m.get(this);
-
-    path += `/${key}`;
-
-    if (value === Object(value)) {
-      m.set(value, path);
+  Object.keys(data).forEach((key) => {
+    if (key.startsWith('$')) {
+      return;
     }
 
-    return replacer.call(
-      this,
-      value,
-      path.replace(/undefined\/\/?/, '/'),
-    );
-  };
-};
-
-export const prettify = (
-  data: any,
-  { errors }: ValidateFunction,
-  opts?: { markdown?: boolean; terminal?: boolean },
-) => {
-  if (!errors) {
-    throw new Error();
-  }
-
-  function appendError(data: any, index: number): any {
-    const key0 = `ERROR/${index}`;
-
-    if (index > -1) {
-      switch (typeof data) {
-        case 'object':
-          if (Array.isArray(data)) {
-            return [
-              key0,
-              ...data,
-            ];
-          } else {
-            return {
-              [key0]: 0,
-              ...data,
-            };
-          }
-        default:
-          return `${data}${key0}`;
-      }
-    } else {
-      return data;
-    }
-  }
-
-  errors.forEach((err, index) => {
-    if (err.instancePath === '') {
-      data = appendError(data, index);
-    }
+    purged[key] = data[key as keyof Manifest];
   });
 
-  let json = JSON.stringify(
-    data,
-    replacerWithPath((value, path) => {
-      // deno-lint-ignore no-non-null-assertion
-      const index = errors!.findIndex((e) => e.instancePath === path);
-
-      return appendError(value, index);
-    }),
-    2,
-  );
-
-  errors.forEach((err, index) => {
-    let message = `${err.message}`;
-
-    // deno-lint-ignore no-non-null-assertion
-    let underline = '^'.repeat(err.message!.length);
-
-    if (opts?.terminal) {
-      message = bold(red(message));
-      underline = bold(red(underline));
-    }
-
-    json = json
-      .replace(new RegExp(`"ERROR/${index}": 0,`), `${message}\n${underline}`)
-      .replace(new RegExp(`"ERROR/${index}",`), `${message}\n${underline}`)
-      .replace(
-        new RegExp(`(.*)ERROR/${index}"`),
-        (_: unknown, s: string) => `${s}" >>> ${message}\n${underline}`,
-      );
-  });
-
-  if (opts?.markdown) {
-    return `Errors: ${errors.length}` + '\n```json\n' + json + '\n```';
-  }
-
-  return json;
+  return purged as Manifest;
 };
 
 export const assertValidManifest = (data: Manifest) => {
@@ -145,11 +61,20 @@ export const assertValidManifest = (data: Manifest) => {
     .addSchema(index).compile(builtin);
 
   if (!validate(data)) {
-    throw new AssertionError(prettify(data, validate));
+    throw new AssertionError(prettify(validate, {
+      bigNumbers: false,
+      data,
+    }));
   }
 };
 
 export default (data: Manifest): { error?: string } => {
+  data = purgeReservedProps(data);
+
+  // deno-lint-ignore ban-ts-comment
+  //@ts-ignore
+  index.additionalProperties = false;
+
   const validate = new Ajv({ strict: false, allErrors: true })
     .addSchema(alias)
     .addSchema(image)
@@ -160,7 +85,13 @@ export default (data: Manifest): { error?: string } => {
   if (reservedIds.includes(data.id)) {
     return { error: `${data.id} is a reserved id` };
   } else if (!validate(data)) {
-    return { error: prettify(data, validate, { markdown: true }) };
+    return {
+      error: prettify(validate, {
+        colors: false,
+        bigNumbers: false,
+        data,
+      }),
+    };
   } else {
     return {};
   }
@@ -170,7 +101,13 @@ export default (data: Manifest): { error?: string } => {
 if (import.meta.main) {
   const filename = Deno.args[0];
 
-  const data = (await utils.readJson(filename)) as Manifest;
+  let data = (await utils.readJson(filename)) as Manifest;
+
+  data = purgeReservedProps(data);
+
+  // deno-lint-ignore ban-ts-comment
+  //@ts-ignore
+  index.additionalProperties = false;
 
   const validate = new Ajv({ strict: false, allErrors: true })
     .addSchema(alias)
@@ -183,7 +120,10 @@ if (import.meta.main) {
     console.log(red(`${data.id} is a reserved id`));
     Deno.exit(1);
   } else if (!validate(data)) {
-    console.log(prettify(data, validate, { terminal: true }));
+    console.log(prettify(validate, {
+      bigNumbers: false,
+      data,
+    }));
     Deno.exit(1);
   } else {
     console.log(green('Valid'));

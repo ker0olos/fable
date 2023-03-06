@@ -1274,7 +1274,7 @@ Deno.test('packs components', async (test) => {
       send: () => true,
     }));
 
-    const packsStub = stub(packs, 'embed', () =>
+    const packsStub = stub(packs, 'pages', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -1354,7 +1354,7 @@ Deno.test('packs components', async (test) => {
       send: () => true,
     }));
 
-    const packsStub = stub(packs, 'embed', () =>
+    const packsStub = stub(packs, 'pages', () =>
       ({
         setType: setTypeSpy,
       }) as any);

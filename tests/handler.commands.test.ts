@@ -68,11 +68,14 @@ Deno.test('search command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -144,11 +147,14 @@ Deno.test('search command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -220,11 +226,14 @@ Deno.test('search command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -296,11 +305,14 @@ Deno.test('search command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -375,11 +387,14 @@ Deno.test('search command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -451,11 +466,14 @@ Deno.test('search command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -534,11 +552,14 @@ Deno.test('character command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -618,11 +639,14 @@ Deno.test('character command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -702,11 +726,14 @@ Deno.test('character command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -789,11 +816,14 @@ Deno.test('character command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -873,11 +903,14 @@ Deno.test('character command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -960,11 +993,14 @@ Deno.test('party command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -1045,11 +1081,14 @@ Deno.test('party command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -1136,11 +1175,14 @@ Deno.test('party command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -1224,11 +1266,14 @@ Deno.test('party command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -1312,11 +1357,14 @@ Deno.test('party command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -1400,11 +1448,14 @@ Deno.test('collection command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -1497,11 +1548,14 @@ Deno.test('collection command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -1597,11 +1651,14 @@ Deno.test('collection command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -1684,11 +1741,14 @@ Deno.test('collection command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -1782,11 +1842,14 @@ Deno.test('collection command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -1883,11 +1946,14 @@ Deno.test('collection command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -1971,11 +2037,14 @@ Deno.test('collection command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2053,11 +2122,14 @@ Deno.test('now command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2130,11 +2202,14 @@ Deno.test('now command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2207,11 +2282,14 @@ Deno.test('now command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2284,11 +2362,14 @@ Deno.test('now command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2363,11 +2444,14 @@ Deno.test('gacha command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2442,11 +2526,14 @@ Deno.test('gacha command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2521,11 +2608,14 @@ Deno.test('gacha command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2600,11 +2690,14 @@ Deno.test('gacha command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2680,11 +2773,14 @@ Deno.test('anilist command handlers', async () => {
     const response = await handler(request);
 
     assertSpyCall(validateStub, 0, {
-      args: [request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+      args: [
+        request,
+        {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
         },
-      }],
+      ],
     });
 
     assertSpyCall(signatureStub, 0, {
@@ -2752,11 +2848,14 @@ Deno.test('help command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2828,11 +2927,14 @@ Deno.test('help command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2904,11 +3006,14 @@ Deno.test('help command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -2980,11 +3085,14 @@ Deno.test('help command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -3039,7 +3147,7 @@ Deno.test('packs command handlers', async (test) => {
       body,
     } as any));
 
-    const packsStub = stub(packs, 'embed', () => ({
+    const packsStub = stub(packs, 'pages', () => ({
       send: () => true,
     } as any));
 
@@ -3058,11 +3166,14 @@ Deno.test('packs command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -3115,7 +3226,7 @@ Deno.test('packs command handlers', async (test) => {
       body,
     } as any));
 
-    const packsStub = stub(packs, 'embed', () => ({
+    const packsStub = stub(packs, 'pages', () => ({
       send: () => true,
     } as any));
 
@@ -3134,11 +3245,14 @@ Deno.test('packs command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -3221,11 +3335,14 @@ Deno.test('packs command handlers', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -3240,6 +3357,101 @@ Deno.test('packs command handlers', async (test) => {
       assertSpyCall(packsStub, 0, {
         args: [{
           shallow: true,
+          userId: 'user_id',
+          guildId: 'guild_id',
+          channelId: 'channel_id',
+          token: 'token',
+          url: 'github',
+          ref: 'ref',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      packsStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('packs install', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'packs',
+        options: [{
+          type: 1,
+          name: `install`,
+          options: [{
+            name: 'github',
+            value: 'github',
+          }, {
+            name: 'ref',
+            value: 'ref',
+          }],
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const packsStub = stub(packs, 'install', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(packsStub, 0, {
+        args: [{
+          shallow: false,
           userId: 'user_id',
           guildId: 'guild_id',
           channelId: 'channel_id',
@@ -3281,11 +3493,14 @@ Deno.test('invalid request', async (test) => {
       const response = await handler(request);
 
       assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
           },
-        }],
+        ],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -3350,11 +3565,14 @@ Deno.test('unimplemented interaction', async () => {
     const response = await handler(request);
 
     assertSpyCall(validateStub, 0, {
-      args: [request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+      args: [
+        request,
+        {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
         },
-      }],
+      ],
     });
 
     assertSpyCall(signatureStub, 0, {
@@ -3427,11 +3645,14 @@ Deno.test('ping interaction', async () => {
     const response = await handler(request);
 
     assertSpyCall(validateStub, 0, {
-      args: [request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+      args: [
+        request,
+        {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
         },
-      }],
+      ],
     });
 
     assertSpyCall(signatureStub, 0, {
@@ -3509,11 +3730,14 @@ Deno.test('not found error', async () => {
     const response = await handler(request);
 
     assertSpyCall(validateStub, 0, {
-      args: [request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+      args: [
+        request,
+        {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
         },
-      }],
+      ],
     });
 
     assertSpyCall(signatureStub, 0, {
@@ -3604,11 +3828,14 @@ Deno.test('not fetal error', async () => {
     const response = await handler(request);
 
     assertSpyCall(validateStub, 0, {
-      args: [request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+      args: [
+        request,
+        {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
         },
-      }],
+      ],
     });
 
     assertSpyCall(signatureStub, 0, {
@@ -3699,11 +3926,14 @@ Deno.test('no permission error', async () => {
     const response = await handler(request);
 
     assertSpyCall(validateStub, 0, {
-      args: [request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+      args: [
+        request,
+        {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
         },
-      }],
+      ],
     });
 
     assertSpyCall(signatureStub, 0, {
@@ -3797,11 +4027,14 @@ Deno.test('internal error', async () => {
     const response = await handler(request);
 
     assertSpyCall(validateStub, 0, {
-      args: [request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+      args: [
+        request,
+        {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
         },
-      }],
+      ],
     });
 
     assertSpyCall(signatureStub, 0, {

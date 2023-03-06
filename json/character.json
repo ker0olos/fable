@@ -27,7 +27,8 @@
       "title": "popularity",
       "type": "integer",
       "description": "Set the popularity of the character (the number of followers or people who likes them)",
-      "minimum": 0
+      "minimum": 0,
+      "maximum": 2147483647
     },
     "gender": {
       "title": "gender",

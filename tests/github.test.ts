@@ -104,8 +104,8 @@ Deno.test('get repo', async (test) => {
 
     await assertRejects(
       async () => await github.get(url),
-      Error,
-      'invalid git url: owner/name%83',
+      NonFetalError,
+      '`owner/name%83` is not a valid GitHub URL',
     );
   });
 
@@ -114,8 +114,8 @@ Deno.test('get repo', async (test) => {
 
     await assertRejects(
       async () => await github.get(url),
-      Error,
-      'invalid git url: url',
+      NonFetalError,
+      '`url` is not a valid GitHub URL',
     );
   });
 
@@ -124,8 +124,8 @@ Deno.test('get repo', async (test) => {
 
     await assertRejects(
       async () => await github.get(url),
-      Error,
-      'invalid git url: https://gitlab.com/owner/repo.git',
+      NonFetalError,
+      '`https://gitlab.com/owner/repo.git` is not a valid GitHub URL',
     );
   });
 
@@ -134,8 +134,8 @@ Deno.test('get repo', async (test) => {
 
     await assertRejects(
       async () => await github.get(url),
-      Error,
-      'invalid git url: git@github.com:owner/repo.git',
+      NonFetalError,
+      'git@github.com:owner/repo.git` is not a valid GitHub URL',
     );
   });
 

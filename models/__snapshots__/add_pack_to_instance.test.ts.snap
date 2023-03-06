@@ -207,6 +207,21 @@ snapshot[`model 3`] = `
                                       raw: {
                                         object: {
                                           error: "PACK_ID_CHANGED",
+                                          manifest: Expr {
+                                            raw: {
+                                              from: Expr {
+                                                raw: {
+                                                  var: "pack",
+                                                },
+                                              },
+                                              select: Expr {
+                                                raw: [
+                                                  "data",
+                                                  "manifest",
+                                                ],
+                                              },
+                                            },
+                                          },
                                           ok: false,
                                         },
                                       },
@@ -254,6 +269,11 @@ snapshot[`model 3`] = `
                                         in: Expr {
                                           raw: {
                                             object: {
+                                              manifest: Expr {
+                                                raw: {
+                                                  var: "manifest",
+                                                },
+                                              },
                                               ok: true,
                                             },
                                           },
@@ -438,6 +458,11 @@ snapshot[`model 3`] = `
                                                                     },
                                                                   },
                                                                 },
+                                                              },
+                                                            },
+                                                            lastInstall: Expr {
+                                                              raw: {
+                                                                now: null,
                                                               },
                                                             },
                                                             manifest: Expr {
@@ -935,6 +960,21 @@ snapshot[`model 3`] = `
                                       raw: {
                                         object: {
                                           error: "PACK_ID_CHANGED",
+                                          manifest: Expr {
+                                            raw: {
+                                              from: Expr {
+                                                raw: {
+                                                  var: "pack",
+                                                },
+                                              },
+                                              select: Expr {
+                                                raw: [
+                                                  "data",
+                                                  "manifest",
+                                                ],
+                                              },
+                                            },
+                                          },
                                           ok: false,
                                         },
                                       },
@@ -982,6 +1022,11 @@ snapshot[`model 3`] = `
                                         in: Expr {
                                           raw: {
                                             object: {
+                                              manifest: Expr {
+                                                raw: {
+                                                  var: "manifest",
+                                                },
+                                              },
                                               ok: true,
                                             },
                                           },
@@ -1166,6 +1211,11 @@ snapshot[`model 3`] = `
                                                                     },
                                                                   },
                                                                 },
+                                                              },
+                                                            },
+                                                            lastInstall: Expr {
+                                                              raw: {
+                                                                now: null,
                                                               },
                                                             },
                                                             manifest: Expr {

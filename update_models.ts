@@ -45,7 +45,7 @@ if (import.meta.main) {
     .filter(Boolean)
     .reduce((a, b) => a.concat(b));
 
-  console.log(`registering ${_indexers.length} indexes`);
+  console.log(`updating ${_indexers.length} indexes`);
 
   for (let i = 0; i < _indexers.length; i++) {
     const index = _indexers[i];
@@ -58,7 +58,7 @@ if (import.meta.main) {
     .filter(Boolean)
     .reduce((a, b) => a.concat(b));
 
-  console.log(`registering ${_resolvers.length} user-defined functions`);
+  console.log(`updating ${_resolvers.length} user-defined functions`);
 
   for (let i = 0; i < _resolvers.length; i++) {
     const resolver = _resolvers[i];

@@ -6004,7 +6004,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
     );
 
     try {
-      const message = packs.embed({
+      const message = packs.pages({
         index: 0,
         type: ManifestType.Builtin,
       });
@@ -6067,7 +6067,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
     );
 
     try {
-      const message = packs.embed({
+      const message = packs.pages({
         index: 1,
         type: ManifestType.Community,
       });
@@ -6131,7 +6131,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
     );
 
     try {
-      const message = packs.embed({
+      const message = packs.pages({
         index: 0,
         type: ManifestType.Builtin,
       });
@@ -6189,7 +6189,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
     );
 
     try {
-      const message = packs.embed({
+      const message = packs.pages({
         index: 0,
         type: ManifestType.Builtin,
       });
@@ -6293,7 +6293,88 @@ Deno.test('/packs [install-validate]', async (test) => {
     }
   });
 
-  await test.step('reserved id', async () => {
+  await test.step('reserved id (shallow)', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 'repo_id' },
+          manifest: { id: 'anilist' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        shallow: true,
+        channelId: 'channel_id',
+        guildId: 'guild_id',
+        userId: 'user_id',
+        token: 'token',
+        url: 'url',
+        ref: 'ref',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              color: 9907244,
+              description: '```json\nanilist is a reserved id\n```',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('reserved id (not shallow)', async () => {
     const manifestStub = stub(
       github,
       'manifest',
@@ -6355,8 +6436,7 @@ Deno.test('/packs [install-validate]', async (test) => {
           embeds: [
             {
               type: 'rich',
-              color: 9907244,
-              description: 'anilist is a reserved id',
+              description: 'Pack is invalid and cannot be installed.',
             },
           ],
           components: [],
@@ -6651,7 +6731,95 @@ Deno.test('/packs [install-validate]', async (test) => {
     }
   });
 
-  await test.step('invalid manifest', async () => {
+  await test.step('invalid manifest (shallow)', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 'repo_id' },
+          manifest: { id: '$&*#&$*#' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        shallow: true,
+        channelId: 'channel_id',
+        guildId: 'guild_id',
+        userId: 'user_id',
+        token: 'token',
+        url: 'url',
+        ref: 'ref',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              color: 9907244,
+              description: `\`\`\`json
+The .id string must match ^[-_a-z0-9]+$
+
+  1 | {
+> 2 |   "id": "$&*#&$*#"
+    |         ^^^^^^^^^^ Ensure this matches the regex pattern
+  3 | }
+\`\`\``,
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('invalid manifest (not shallow)', async () => {
     const manifestStub = stub(
       github,
       'manifest',
@@ -6713,9 +6881,219 @@ Deno.test('/packs [install-validate]', async (test) => {
           embeds: [
             {
               type: 'rich',
-              color: 9907244,
+              description: 'Pack is invalid and cannot be installed.',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('pack id changed', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 'repo_id' },
+          manifest: { id: 'new_manifest_id' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              addPackToInstance: {
+                ok: false,
+                error: 'PACK_ID_CHANGED',
+                manifest: {
+                  id: 'manifest_id',
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        channelId: 'channel_id',
+        guildId: 'guild_id',
+        userId: 'user_id',
+        token: 'token',
+        url: 'url',
+        ref: 'ref',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://graphql.us.fauna.com/graphql',
+      );
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
               description:
-                'Errors: 1\n```json\n{\n  "id": "$&*#&$*#" >>> must match pattern "^[-_a-z0-9]+$"\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n}\n```',
+                'Pack id changed. Found `new_manifest_id` but it should ne `manifest_id`',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('installed', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 'repo_id' },
+          manifest: { id: 'manifest_id' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              addPackToInstance: {
+                ok: true,
+                manifest: {
+                  author: 'author',
+                  id: 'manifest_id',
+                  description: 'description',
+                  url: 'url',
+                  image: 'image',
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        channelId: 'channel_id',
+        guildId: 'guild_id',
+        userId: 'user_id',
+        token: 'token',
+        url: 'url',
+        ref: 'ref',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://graphql.us.fauna.com/graphql',
+      );
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'INSTALLED',
+            },
+            {
+              type: 'rich',
+              title: 'manifest_id',
+              author: {
+                name: 'author',
+              },
+              url: 'url',
+              description: 'description',
+              thumbnail: {
+                url: 'image',
+              },
             },
           ],
           components: [],
@@ -6877,19 +7255,18 @@ Deno.test('/now', async (test) => {
     const fetchStub = stub(
       globalThis,
       'fetch',
-      () =>
-        ({
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                getUserInventory: {
-                  availablePulls: 0,
-                  rechargeTimestamp: time.toISOString(),
-                },
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                availablePulls: 0,
+                rechargeTimestamp: time.toISOString(),
               },
-            }))),
-        }) as any,
+            },
+          }))),
+      } as any),
     );
 
     try {

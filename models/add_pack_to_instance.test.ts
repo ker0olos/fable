@@ -68,6 +68,7 @@ Deno.test('add pack', async (test) => {
         [],
         [],
         [],
+        'manifest',
       ]) as any,
     );
 
@@ -76,7 +77,7 @@ Deno.test('add pack', async (test) => {
         user: 'user' as any,
         instance: 'instance' as any,
         manifest: 'manifest' as any,
-        githubId: 'github_id',
+        githubId: 123,
       }) as any;
 
       assertSpyCall(indexStub, 0, {
@@ -86,7 +87,7 @@ Deno.test('add pack', async (test) => {
       assertSpyCall(matchStub, 0, {
         args: [
           'pack_github_id' as any,
-          'github_id',
+          123,
         ],
       });
 
@@ -99,7 +100,7 @@ Deno.test('add pack', async (test) => {
         args: [
           'pack' as any,
           {
-            id: 'github_id',
+            id: 123,
             instances: [],
             installedBy: {
               ref: 'user',
@@ -142,12 +143,14 @@ Deno.test('add pack', async (test) => {
           {
             manifest: 'manifest',
             instances: [{ ref: 'instance' }],
+            lastInstall: date,
           },
         ],
       });
 
       assertEquals(match, {
         ok: true,
+        manifest: 'manifest',
       });
     } finally {
       ifStub.restore();
@@ -202,6 +205,7 @@ Deno.test('add pack', async (test) => {
         [{ ref: 'instance' }],
         [{ ref: 'instance' }],
         [{ ref: 'instance' }],
+        'manifest',
       ]) as any,
     );
 
@@ -210,7 +214,7 @@ Deno.test('add pack', async (test) => {
         user: 'user' as any,
         instance: 'instance' as any,
         manifest: 'manifest' as any,
-        githubId: 'github_id',
+        githubId: 123,
       }) as any;
 
       assertSpyCall(indexStub, 0, {
@@ -220,7 +224,7 @@ Deno.test('add pack', async (test) => {
       assertSpyCall(matchStub, 0, {
         args: [
           'pack_github_id' as any,
-          'github_id',
+          123,
         ],
       });
 
@@ -233,7 +237,7 @@ Deno.test('add pack', async (test) => {
         args: [
           'pack' as any,
           {
-            id: 'github_id',
+            id: 123,
             instances: [],
             installedBy: {
               ref: 'user',
@@ -251,12 +255,14 @@ Deno.test('add pack', async (test) => {
           {
             manifest: 'manifest',
             instances: [{ ref: 'instance' }],
+            lastInstall: date,
           },
         ],
       });
 
       assertEquals(match, {
         ok: true,
+        manifest: 'manifest',
       });
     } finally {
       ifStub.restore();
@@ -311,6 +317,7 @@ Deno.test('add pack', async (test) => {
         [],
         [],
         [],
+        'manifest',
       ]) as any,
     );
 
@@ -319,7 +326,7 @@ Deno.test('add pack', async (test) => {
         user: 'user' as any,
         instance: 'instance' as any,
         manifest: 'manifest' as any,
-        githubId: 'github_id',
+        githubId: 123,
       }) as any;
 
       assertSpyCall(indexStub, 0, {
@@ -329,7 +336,7 @@ Deno.test('add pack', async (test) => {
       assertSpyCall(matchStub, 0, {
         args: [
           'pack_github_id' as any,
-          'github_id',
+          123,
         ],
       });
 
@@ -339,6 +346,7 @@ Deno.test('add pack', async (test) => {
       assertEquals(match, {
         ok: false,
         error: 'PACK_ID_CHANGED',
+        manifest: 'manifest',
       });
     } finally {
       ifStub.restore();

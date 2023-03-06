@@ -193,6 +193,10 @@ export namespace Schema {
     error: 'CHARACTER_EXISTS';
   } | {
     ok: false;
+    error: 'PACK_ID_CHANGED';
+    manifest: Manifest;
+  } | {
+    ok: false;
     error: 'NO_PULLS_AVAILABLE';
     inventory: Inventory;
   } | {
@@ -206,6 +210,7 @@ export namespace Schema {
     ok: true;
     inventory: Inventory;
     character: Character;
+    manifest: Manifest;
   };
 }
 

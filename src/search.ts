@@ -337,7 +337,7 @@ function characterEmbed(
   if (options?.existing) {
     const rating = new Rating({ stars: options.existing.rating });
 
-    // FIXME #63
+    // FIXME #63 Media Conflict
 
     embed.setDescription(`<@${options.existing.userId}>\n\n${rating.emotes}`);
   } else if (options?.rating) {

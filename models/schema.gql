@@ -61,7 +61,7 @@ type Character @collection(name: "character") {
 
 type Pack @collection(name: "pack") {
   # github repo id
-  id: String!
+  id: Int!
   # all the instances where this pack is installed
   instances: [Instance!]!
   # the pack's manifest

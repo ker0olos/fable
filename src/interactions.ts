@@ -321,7 +321,7 @@ export const handler = async (r: Request) => {
             switch (subcommand!) {
               case 'builtin':
               case 'community': {
-                return packs.embed({
+                return packs.pages({
                   index: 0,
                   type: subcommand as ManifestType,
                 }).send();
@@ -492,7 +492,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return packs.embed({
+            return packs.pages({
               index,
               type: customType as ManifestType,
             })

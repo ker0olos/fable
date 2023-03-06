@@ -10,11 +10,14 @@ import * as _anilist from '../packs/anilist/index.ts';
 
 import * as discord from './discord.ts';
 
+import { gql, request } from './graphql.ts';
+
+import config, { faunaUrl } from './config.ts';
+
+import validate, { purgeReservedProps } from './validate.ts';
+
 import utils from './utils.ts';
 import github from './github.ts';
-import config from './config.ts';
-
-import validate from './validate.ts';
 
 import {
   Alias,
@@ -28,6 +31,7 @@ import {
   MediaFormat,
   MediaRelation,
   Pool,
+  Schema,
 } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
@@ -50,7 +54,7 @@ const packs = {
   aliasToArray,
   anilist,
   characters,
-  embed,
+  pages,
   formatToString,
   install,
   isDisabled,
@@ -118,7 +122,16 @@ function dict(): { [key: string]: Manifest } {
   );
 }
 
-function embed(
+function manifestEmbed(manifest: Manifest): discord.Embed {
+  return new discord.Embed()
+    .setUrl(manifest.url)
+    .setDescription(manifest.description)
+    .setAuthor({ name: manifest.author })
+    .setThumbnail({ url: manifest.image, default: false, proxy: false })
+    .setTitle(manifest.title ?? manifest.id);
+}
+
+function pages(
   { type, index }: {
     type: ManifestType;
     index: number;
@@ -145,12 +158,7 @@ function embed(
       'The following third-party packs were manually installed by your server members',
     );
 
-  const pack = new discord.Embed()
-    .setUrl(manifest.url)
-    .setDescription(manifest.description)
-    .setAuthor({ name: manifest.author })
-    .setThumbnail({ url: manifest.image, default: false, proxy: false })
-    .setTitle(manifest.title ?? manifest.id);
+  const embed = manifestEmbed(manifest);
 
   if (!manifest.type) {
     throw new Error(`Manifest "${manifest.id}" type is undefined`);
@@ -158,7 +166,7 @@ function embed(
 
   const message = new discord.Message()
     .addEmbed(disclaimer)
-    .addEmbed(pack);
+    .addEmbed(embed);
 
   return discord.Message.page({
     index,
@@ -172,8 +180,8 @@ function embed(
 function install({
   token,
   shallow,
-  // userId,
-  // guildId,
+  userId,
+  guildId,
   url,
   ref,
 }: {
@@ -192,8 +200,16 @@ function install({
       // validate against json schema
       const valid = validate(manifest);
 
-      if (valid.error) {
-        throw new NonFetalError(valid.error);
+      if (valid.error && shallow) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setColor(discord.colors.red)
+              .setDescription(`\`\`\`json\n${valid.error}\n\`\`\``),
+          )
+          .patch(token);
+      } else if (valid.error) {
+        throw new NonFetalError('Pack is invalid and cannot be installed.');
       }
 
       // shallow install is only meant as validation test
@@ -267,18 +283,73 @@ function install({
         return await message.patch(token);
       }
 
-      // TODO add pack to the guild database
+      // add pack to the guild database
 
-      message.setContent(`${repo.id}: ${manifest.id}`);
+      const mutation = gql`
+        mutation (
+          $userId: String!
+          $guildId: String!
+          $githubId: Int!
+          $manifest: ManifestInput!
+        ) {
+          addPackToInstance(
+            userId: $userId
+            guildId: $guildId
+            githubId: $githubId
+            manifest: $manifest
+          ) {
+            ok
+            error
+            manifest {
+              id
+              title
+              description
+              author
+              image
+              url
+            }
+          }
+        }
+      `;
 
-      return message.patch(token);
+      const response = (await request<{
+        addPackToInstance: Schema.Mutation;
+      }>({
+        url: faunaUrl,
+        query: mutation,
+        headers: {
+          'authorization': `Bearer ${config.faunaSecret}`,
+        },
+        variables: {
+          userId,
+          guildId,
+          githubId: repo.id,
+          manifest: purgeReservedProps(manifest),
+        },
+      })).addPackToInstance;
+
+      if (response.ok) {
+        message
+          .addEmbed(new discord.Embed().setDescription('INSTALLED'))
+          .addEmbed(manifestEmbed(response.manifest));
+
+        return message.patch(token);
+      } else {
+        switch (response.error) {
+          case 'PACK_ID_CHANGED':
+            throw new NonFetalError(
+              `Pack id changed. Found \`${manifest.id}\` but it should ne \`${response.manifest.id}\``,
+            );
+          default:
+            throw new Error(response.error);
+        }
+      }
     })
     .catch(async (err) => {
       if (err instanceof NonFetalError) {
         return await new discord.Message()
           .addEmbed(
             new discord.Embed()
-              .setColor(discord.colors.red)
               .setDescription(err.message),
           )
           .patch(token);

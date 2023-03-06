@@ -3,6 +3,7 @@ type Response @embedded {
   error: String
   character: Character
   inventory: Inventory
+  manifest: Manifest
 }
 
 type Query {
@@ -24,7 +25,7 @@ type Query {
 
 type Mutation {
   #
-  addPackToInstance(userId: String!, guildId: String!, githubId: String!, manifest: ManifestInput!): Response!  @resolver(name: "add_pack_to_instance")
+  addPackToInstance(userId: String!, guildId: String!, githubId: Int!, manifest: ManifestInput!): Response!  @resolver(name: "add_pack_to_instance")
 
   #
   addCharacterToInventory(

@@ -3,6 +3,7 @@ import {
   fql,
   InstanceExpr,
   ManifestExpr,
+  NumberExpr,
   RefExpr,
   ResponseExpr,
   StringExpr,
@@ -22,7 +23,7 @@ export interface Manifest {
 }
 
 export interface Pack {
-  id: StringExpr;
+  id: NumberExpr;
   instances: RefExpr[];
   manifest: ManifestExpr;
   installedBy: RefExpr;
@@ -39,7 +40,7 @@ export function addPack(
   }: {
     user: UserExpr;
     instance: InstanceExpr;
-    githubId: StringExpr;
+    githubId: NumberExpr;
     manifest: ManifestExpr;
   },
 ): ResponseExpr {
@@ -52,12 +53,12 @@ export function addPack(
       fql.IsNonEmpty(fql.Var('match')),
       fql.Get(fql.Var('match')),
       fql.Create<Pack>('pack', {
-        manifest,
         id: githubId,
         instances: [],
         installedBy: fql.Ref(user),
         firstInstall: fql.Now(),
         lastInstall: fql.Now(),
+        manifest,
       }),
     ),
   }, ({ pack }) =>
@@ -89,6 +90,7 @@ export function addPack(
           // update the pack
           updatePack: fql.Update<Pack>(fql.Ref(pack), {
             manifest,
+            lastInstall: fql.Now(),
             instances: fql.If(
               // if the instance already exists in the instance list
               // don't re-add it
@@ -106,9 +108,14 @@ export function addPack(
         },
         () => ({
           ok: true,
+          manifest,
         }),
       ),
-      { ok: false, error: 'PACK_ID_CHANGED' },
+      {
+        ok: false,
+        error: 'PACK_ID_CHANGED',
+        manifest: fql.Select(['data', 'manifest'], pack),
+      },
     ));
 }
 
@@ -140,7 +147,7 @@ export default function (client: Client): {
         lambda: (
           userId: StringExpr,
           guildId: StringExpr,
-          githubId: StringExpr,
+          githubId: NumberExpr,
           manifest: ManifestExpr,
         ) => {
           return fql.Let(

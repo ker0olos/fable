@@ -3,6 +3,7 @@
 import utils from './utils.ts';
 
 import { Manifest } from './types.ts';
+
 import { NonFetalError } from './errors.ts';
 
 interface Owner {
@@ -132,7 +133,7 @@ function resolve(url: string): { username: string; reponame: string } {
   }
 
   if (!array) {
-    throw new Error(`invalid git url: ${url}`);
+    throw new NonFetalError(`\`${url}\` is not a valid GitHub URL`);
   }
 
   const username = array[1];
