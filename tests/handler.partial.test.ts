@@ -82,7 +82,7 @@ Deno.test('media suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['media', 'title'],
+        args: [{ key: 'media', search: 'title', guildId: 'guild_id' }],
       });
 
       assertEquals(response?.ok, true);
@@ -180,7 +180,7 @@ Deno.test('media suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['media', 'title'],
+        args: [{ key: 'media', search: 'title', guildId: 'guild_id' }],
       });
 
       assertEquals(response?.ok, true);
@@ -278,7 +278,7 @@ Deno.test('media suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['media', 'title'],
+        args: [{ key: 'media', search: 'title', guildId: 'guild_id' }],
       });
 
       assertEquals(response?.ok, true);
@@ -380,7 +380,7 @@ Deno.test('media suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['media', 'title'],
+        args: [{ key: 'media', search: 'title', guildId: 'guild_id' }],
       });
 
       assertEquals(response?.ok, true);
@@ -482,7 +482,7 @@ Deno.test('media suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['media', 'title'],
+        args: [{ key: 'media', search: 'title', guildId: 'guild_id' }],
       });
 
       assertEquals(response?.ok, true);
@@ -584,7 +584,7 @@ Deno.test('media suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['media', 'title'],
+        args: [{ key: 'media', search: 'title', guildId: 'guild_id' }],
       });
 
       assertEquals(response?.ok, true);
@@ -684,7 +684,7 @@ Deno.test('character suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['characters', 'name'],
+        args: [{ key: 'characters', search: 'name', guildId: 'guild_id' }],
       });
 
       assertEquals(response?.ok, true);
@@ -782,7 +782,7 @@ Deno.test('character suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['characters', 'name'],
+        args: [{ key: 'characters', search: 'name', guildId: 'guild_id' }],
       });
 
       assertEquals(response?.ok, true);
@@ -880,7 +880,7 @@ Deno.test('character suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['characters', 'name'],
+        args: [{ key: 'characters', search: 'name', guildId: 'guild_id' }],
       });
 
       assertEquals(response?.ok, true);
@@ -995,7 +995,12 @@ Deno.test('party assign character suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['characters', 'name', 35],
+        args: [{
+          key: 'characters',
+          search: 'name',
+          guildId: 'guild_id',
+          threshold: 35,
+        }],
       });
 
       assertEquals(response?.ok, true);
@@ -1109,7 +1114,12 @@ Deno.test('party assign character suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['characters', 'name', 35],
+        args: [{
+          key: 'characters',
+          search: 'name',
+          guildId: 'guild_id',
+          threshold: 35,
+        }],
       });
 
       assertEquals(response?.ok, true);
@@ -1223,7 +1233,12 @@ Deno.test('party assign character suggestions', async (test) => {
       });
 
       assertSpyCall(searchStub, 0, {
-        args: ['characters', 'name', 35],
+        args: [{
+          key: 'characters',
+          search: 'name',
+          guildId: 'guild_id',
+          threshold: 35,
+        }],
       });
 
       assertEquals(response?.ok, true);

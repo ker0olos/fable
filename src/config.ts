@@ -14,6 +14,7 @@ const config: {
   faunaSecret?: string;
   sentry?: string;
   origin?: string;
+  communityPacks?: boolean;
 } = {
   deploy: false,
   appId: undefined,
@@ -21,6 +22,7 @@ const config: {
   faunaSecret: undefined,
   sentry: undefined,
   origin: undefined,
+  communityPacks: undefined,
 };
 
 export async function initConfig(): Promise<void> {
@@ -41,6 +43,9 @@ export async function initConfig(): Promise<void> {
     config.publicKey = Deno.env.get('PUBLIC_KEY');
 
     config.faunaSecret = Deno.env.get('FAUNA_SECRET');
+
+    // community packs feature flag
+    config.communityPacks = Boolean(Deno.env.get('COMMUNITY_PACKS') === '1');
 
     config.origin = undefined;
   }

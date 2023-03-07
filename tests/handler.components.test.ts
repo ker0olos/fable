@@ -22,7 +22,7 @@ import party from '../src/party.ts';
 import gacha from '../src/gacha.ts';
 import help from '../src/help.ts';
 
-import { ManifestType } from '../src/types.ts';
+import { PackType } from '../src/types.ts';
 
 Deno.test('media components', async () => {
   const body = JSON.stringify({
@@ -90,6 +90,7 @@ Deno.test('media components', async () => {
     assertSpyCall(searchStub, 0, {
       args: [{
         id: 'media_id',
+        guildId: 'guild_id',
       }],
     });
 
@@ -174,7 +175,6 @@ Deno.test('character components', async () => {
     assertSpyCall(searchStub, 0, {
       args: [{
         userId: 'user_id',
-        channelId: 'channel_id',
         guildId: 'guild_id',
         id: 'character_id',
       }],
@@ -261,7 +261,6 @@ Deno.test('media characters components', async () => {
     assertSpyCall(searchStub, 0, {
       args: [{
         userId: 'user_id',
-        channelId: 'channel_id',
         guildId: 'guild_id',
         mediaId: 'media_id',
         index: 1,
@@ -349,7 +348,6 @@ Deno.test('party assign components', async () => {
     assertSpyCall(partyStub, 0, {
       args: [{
         userId: 'user_id',
-        channelId: 'channel_id',
         guildId: 'guild_id',
         id: 'character_id',
       }],
@@ -438,7 +436,6 @@ Deno.test('collection stars components', async (test) => {
         args: [{
           stars: 5,
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           before: 'anchor',
           after: undefined,
@@ -527,7 +524,6 @@ Deno.test('collection stars components', async (test) => {
         args: [{
           stars: 5,
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           after: 'anchor',
           before: undefined,
@@ -618,7 +614,6 @@ Deno.test('collection media components', async (test) => {
         args: [{
           id: 'media_id',
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           before: 'anchor',
           after: undefined,
@@ -707,7 +702,6 @@ Deno.test('collection media components', async (test) => {
         args: [{
           id: 'media_id',
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           before: undefined,
           after: 'anchor',
@@ -800,7 +794,6 @@ Deno.test('gacha components', async (test) => {
           quiet: false,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -888,7 +881,6 @@ Deno.test('gacha components', async (test) => {
           quiet: true,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -976,7 +968,6 @@ Deno.test('gacha components', async (test) => {
           quiet: false,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -1064,7 +1055,6 @@ Deno.test('now components', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -1150,7 +1140,6 @@ Deno.test('now components', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -1316,7 +1305,8 @@ Deno.test('packs components', async (test) => {
 
       assertSpyCall(packsStub, 0, {
         args: [{
-          type: ManifestType.Builtin,
+          guildId: 'guild_id',
+          type: PackType.Builtin,
           index: 0,
         }],
       });
@@ -1396,7 +1386,8 @@ Deno.test('packs components', async (test) => {
 
       assertSpyCall(packsStub, 0, {
         args: [{
-          type: ManifestType.Community,
+          guildId: 'guild_id',
+          type: PackType.Community,
           index: 1,
         }],
       });

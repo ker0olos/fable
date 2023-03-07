@@ -138,7 +138,7 @@ export type PoolInfo = {
   role?: CharacterRole;
 };
 
-export enum ManifestType {
+export enum PackType {
   Builtin = 'builtin',
   Community = 'community',
 }
@@ -163,8 +163,15 @@ export interface Manifest {
   };
   // properties available for builtin packs only
   commands?: { [key: string]: Command };
-  // properties set internally on load
-  type?: ManifestType;
+}
+
+export interface Pack {
+  id?: string;
+  installedBy?: {
+    id: string;
+  };
+  manifest: Manifest;
+  type: PackType;
 }
 
 // deno-lint-ignore no-namespace
@@ -188,30 +195,44 @@ export namespace Schema {
       member5?: Character;
     };
   };
-  export type Mutation = {
-    ok: false;
-    error: 'CHARACTER_EXISTS';
-  } | {
-    ok: false;
-    error: 'PACK_ID_CHANGED';
-    manifest: Manifest;
-  } | {
-    ok: false;
-    error: 'NO_PULLS_AVAILABLE';
-    inventory: Inventory;
-  } | {
-    ok: false;
-    error: 'CHARACTER_NOT_FOUND';
-  } | {
-    ok: false;
-    error: 'CHARACTER_NOT_OWNED';
-    character: Character;
-  } | {
-    ok: true;
-    inventory: Inventory;
-    character: Character;
-    manifest: Manifest;
-  };
+  export type Mutation =
+    | {
+      ok: false;
+      error: 'CHARACTER_EXISTS';
+    }
+    | {
+      ok: false;
+      error: 'CHARACTER_NOT_FOUND';
+    }
+    | {
+      ok: false;
+      error: 'PACK_NOT_FOUND';
+    }
+    | {
+      ok: false;
+      error: 'PACK_NOT_INSTALLED';
+    }
+    | {
+      ok: false;
+      error: 'PACK_ID_CHANGED';
+      manifest: Manifest;
+    }
+    | {
+      ok: false;
+      error: 'NO_PULLS_AVAILABLE';
+      inventory: Inventory;
+    }
+    | {
+      ok: false;
+      error: 'CHARACTER_NOT_OWNED';
+      character: Character;
+    }
+    | {
+      ok: true;
+      inventory: Inventory;
+      character: Character;
+      manifest: Manifest;
+    };
 }
 
 type Command = {

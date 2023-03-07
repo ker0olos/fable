@@ -40,11 +40,11 @@ import {
   CharacterRole,
   DisaggregatedCharacter,
   Manifest,
-  ManifestType,
   Media,
   MediaFormat,
   MediaRelation,
   MediaType,
+  PackType,
 } from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
@@ -87,12 +87,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -117,6 +122,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -153,12 +159,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'native title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'native title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -183,6 +194,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -219,12 +231,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -249,6 +266,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -291,12 +309,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -345,6 +368,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -376,12 +400,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -406,6 +435,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -446,12 +476,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -488,6 +523,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -565,12 +601,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -625,6 +666,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -730,12 +772,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -790,6 +837,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -873,12 +921,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -933,6 +986,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -982,12 +1036,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -1024,6 +1083,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -1099,12 +1159,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -1147,6 +1212,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -1219,12 +1285,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -1273,6 +1344,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -1339,12 +1411,17 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.media({ search: 'english title' });
+      const message = await search.media({
+        guildId: 'guild_id',
+        search: 'english title',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -1395,6 +1472,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -1430,13 +1508,19 @@ Deno.test('/media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       await assertRejects(
-        async () => await search.media({ search: 'x'.repeat(100) }),
+        async () =>
+          await search.media({
+            guildId: 'guild_id',
+            search: 'x'.repeat(100),
+          }),
         Error,
         '404',
       );
@@ -1445,6 +1529,7 @@ Deno.test('/media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -1496,12 +1581,15 @@ Deno.test('/media debug', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await search.media({
+        guildId: 'guild_id',
         search: 'english title',
         debug: true,
       });
@@ -1547,6 +1635,7 @@ Deno.test('/media debug', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -1578,12 +1667,15 @@ Deno.test('/media debug', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await search.media({
+        guildId: 'guild_id',
         search: 'english title',
         debug: true,
       });
@@ -1629,6 +1721,7 @@ Deno.test('/media debug', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -1663,12 +1756,15 @@ Deno.test('/media debug', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await search.media({
+        guildId: 'guild_id',
         search: 'english title',
         debug: true,
       });
@@ -1714,6 +1810,7 @@ Deno.test('/media debug', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -1770,12 +1867,17 @@ Deno.test('/character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.character({ search: 'full name' });
+      const message = await search.character({
+        guildId: 'guild_id',
+        search: 'full name',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -1802,10 +1904,11 @@ Deno.test('/character', async (test) => {
         },
       });
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -1857,9 +1960,11 @@ Deno.test('/character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await search.character({
@@ -1906,6 +2011,7 @@ Deno.test('/character', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -1940,12 +2046,17 @@ Deno.test('/character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.character({ search: 'full name' });
+      const message = await search.character({
+        guildId: 'guild_id',
+        search: 'full name',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -1972,10 +2083,11 @@ Deno.test('/character', async (test) => {
         },
       });
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -2010,12 +2122,17 @@ Deno.test('/character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.character({ search: 'full name' });
+      const message = await search.character({
+        guildId: 'guild_id',
+        search: 'full name',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -2042,10 +2159,11 @@ Deno.test('/character', async (test) => {
         },
       });
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -2093,12 +2211,17 @@ Deno.test('/character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.character({ search: 'full name' });
+      const message = await search.character({
+        guildId: 'guild_id',
+        search: 'full name',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -2130,10 +2253,11 @@ Deno.test('/character', async (test) => {
         },
       });
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -2163,12 +2287,17 @@ Deno.test('/character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.character({ search: 'full name' });
+      const message = await search.character({
+        guildId: 'guild_id',
+        search: 'full name',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -2192,10 +2321,11 @@ Deno.test('/character', async (test) => {
         },
       });
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -2228,12 +2358,17 @@ Deno.test('/character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const message = await search.character({ search: 'full name' });
+      const message = await search.character({
+        guildId: 'guild_id',
+        search: 'full name',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -2257,10 +2392,11 @@ Deno.test('/character', async (test) => {
         },
       });
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -2291,13 +2427,19 @@ Deno.test('/character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       await assertRejects(
-        async () => await search.character({ search: 'x'.repeat(100) }),
+        async () =>
+          await search.character({
+            guildId: 'guild_id',
+            search: 'x'.repeat(100),
+          }),
         Error,
         '404',
       );
@@ -2306,6 +2448,7 @@ Deno.test('/character', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 });
@@ -2351,12 +2494,15 @@ Deno.test('/character debug', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await search.character({
+        guildId: 'guild_id',
         search: 'full name',
         debug: true,
       });
@@ -2419,10 +2565,11 @@ Deno.test('/character debug', async (test) => {
         },
       });
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -2458,12 +2605,15 @@ Deno.test('/character debug', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await search.character({
+        guildId: 'guild_id',
         search: 'full name',
         debug: true,
       });
@@ -2526,10 +2676,11 @@ Deno.test('/character debug', async (test) => {
         },
       });
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -2559,12 +2710,15 @@ Deno.test('/character debug', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await search.character({
+        guildId: 'guild_id',
         search: 'full name',
         debug: true,
       });
@@ -2627,10 +2781,11 @@ Deno.test('/character debug', async (test) => {
         },
       });
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -2680,12 +2835,15 @@ Deno.test('/character debug', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await search.character({
+        guildId: 'guild_id',
         search: 'full name',
         debug: true,
       });
@@ -2743,10 +2901,11 @@ Deno.test('/character debug', async (test) => {
         },
       });
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
+      isDisabledStub.restore();
     }
   });
 });
@@ -2777,8 +2936,29 @@ Deno.test('media characters', async (test) => {
         }),
     );
 
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {},
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
       const message = await search.mediaCharacters({
+        guildId: 'guild_id',
         mediaId: 'pack-id:1',
         index: 0,
       });
@@ -2831,7 +3011,9 @@ Deno.test('media characters', async (test) => {
       });
     } finally {
       characterStub.restore();
-      packs.clear();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -2880,6 +3062,14 @@ Deno.test('media characters', async (test) => {
           }))),
       } as any),
     );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await search.mediaCharacters({
@@ -2946,7 +3136,8 @@ Deno.test('media characters', async (test) => {
     } finally {
       characterStub.restore();
       fetchStub.restore();
-      packs.clear();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -2973,12 +3164,19 @@ Deno.test('media characters', async (test) => {
         }),
     );
 
-    const disabledStub = stub(packs, 'isDisabled', () => true);
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => true);
 
     try {
       await assertRejects(
         async () =>
           await search.mediaCharacters({
+            guildId: 'guild_id',
             mediaId: 'pack-id:1',
             index: 0,
           }),
@@ -2986,9 +3184,9 @@ Deno.test('media characters', async (test) => {
         'This character was removed or disabled',
       );
     } finally {
-      disabledStub.restore();
       characterStub.restore();
-      packs.clear();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -3009,10 +3207,17 @@ Deno.test('media characters', async (test) => {
         }),
     );
 
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
     try {
       await assertRejects(
         async () =>
           await search.mediaCharacters({
+            guildId: 'guild_id',
             mediaId: 'pack-id:1',
             index: 0,
           }),
@@ -3021,7 +3226,7 @@ Deno.test('media characters', async (test) => {
       );
     } finally {
       characterStub.restore();
-      packs.clear();
+      listStub.restore();
     }
   });
 
@@ -3042,10 +3247,17 @@ Deno.test('media characters', async (test) => {
         }),
     );
 
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
     try {
       await assertRejects(
         async () =>
           await search.mediaCharacters({
+            guildId: 'guild_id',
             mediaId: 'pack-id:1',
             index: 1,
           }),
@@ -3054,7 +3266,7 @@ Deno.test('media characters', async (test) => {
       );
     } finally {
       characterStub.restore();
-      packs.clear();
+      listStub.restore();
     }
   });
 
@@ -3072,6 +3284,7 @@ Deno.test('media characters', async (test) => {
       await assertRejects(
         async () =>
           await search.mediaCharacters({
+            guildId: 'guild_id',
             mediaId: 'pack-id:1',
             index: 0,
           }),
@@ -3080,7 +3293,6 @@ Deno.test('media characters', async (test) => {
       );
     } finally {
       characterStub.restore();
-      packs.clear();
     }
   });
 });
@@ -3159,9 +3371,11 @@ Deno.test('/collection stars', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await user.stars({
@@ -3224,7 +3438,7 @@ Deno.test('/collection stars', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -3301,9 +3515,11 @@ Deno.test('/collection stars', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await user.stars({
@@ -3361,7 +3577,7 @@ Deno.test('/collection stars', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -3436,16 +3652,16 @@ Deno.test('/collection stars', async (test) => {
       ]),
     );
 
-    const disabledStub = stub(
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(
       packs,
       'isDisabled',
       returnsNext([true, true]),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
     );
 
     try {
@@ -3486,9 +3702,8 @@ Deno.test('/collection stars', async (test) => {
       });
     } finally {
       fetchStub.restore();
-      disabledStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -3563,16 +3778,16 @@ Deno.test('/collection stars', async (test) => {
       ]),
     );
 
-    const disabledStub = stub(
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(
       packs,
       'isDisabled',
       returnsNext([false, true]),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
     );
 
     try {
@@ -3613,9 +3828,8 @@ Deno.test('/collection stars', async (test) => {
       });
     } finally {
       fetchStub.restore();
-      disabledStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -3636,9 +3850,11 @@ Deno.test('/collection stars', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await user.stars({
@@ -3664,7 +3880,7 @@ Deno.test('/collection stars', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -3685,9 +3901,11 @@ Deno.test('/collection stars', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await user.stars({
@@ -3722,7 +3940,7 @@ Deno.test('/collection stars', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 });
@@ -3800,9 +4018,11 @@ Deno.test('/collection media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await user.media({
@@ -3865,7 +4085,7 @@ Deno.test('/collection media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -3941,9 +4161,11 @@ Deno.test('/collection media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await user.media({
@@ -4001,7 +4223,7 @@ Deno.test('/collection media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -4048,16 +4270,16 @@ Deno.test('/collection media', async (test) => {
       ]),
     );
 
-    const disabledStub = stub(
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(
       packs,
       'isDisabled',
       returnsNext([true, true]),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
     );
 
     try {
@@ -4073,9 +4295,8 @@ Deno.test('/collection media', async (test) => {
       );
     } finally {
       fetchStub.restore();
-      disabledStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -4150,16 +4371,16 @@ Deno.test('/collection media', async (test) => {
       ]),
     );
 
-    const disabledStub = stub(
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(
       packs,
       'isDisabled',
       returnsNext([false, true]),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
     );
 
     try {
@@ -4200,9 +4421,8 @@ Deno.test('/collection media', async (test) => {
       });
     } finally {
       fetchStub.restore();
-      disabledStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -4244,9 +4464,11 @@ Deno.test('/collection media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await user.media({
@@ -4272,7 +4494,7 @@ Deno.test('/collection media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -4314,9 +4536,11 @@ Deno.test('/collection media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await user.media({
@@ -4351,7 +4575,7 @@ Deno.test('/collection media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 });
@@ -4417,7 +4641,11 @@ Deno.test('/gacha', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = gacha.start({ token: 'test_token', userId: 'user-id' });
+      const message = gacha.start({
+        userId: 'user-id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -4614,6 +4842,7 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         token: 'test_token',
         userId: 'user-id',
+        guildId: 'guild_id',
         quiet: true,
       });
 
@@ -4714,7 +4943,10 @@ Deno.test('/gacha', async (test) => {
     try {
       const formData = new FormData();
 
-      const message = gacha.start({ token: 'test_token' });
+      const message = gacha.start({
+        token: 'test_token',
+        guildId: 'guild_id',
+      });
 
       assertEquals(message.json(), {
         type: 4,
@@ -4884,15 +5116,16 @@ Deno.test('/party view', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await party.view({
         userId: 'user',
         guildId: 'guild',
-        channelId: 'channel',
       });
 
       assertEquals(message.json(), {
@@ -4977,7 +5210,7 @@ Deno.test('/party view', async (test) => {
     } finally {
       listStub.restore();
       fetchStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -5085,15 +5318,16 @@ Deno.test('/party view', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await party.view({
         userId: 'user',
         guildId: 'guild',
-        channelId: 'channel',
       });
 
       assertEquals(message.json(), {
@@ -5158,7 +5392,7 @@ Deno.test('/party view', async (test) => {
     } finally {
       listStub.restore();
       fetchStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -5274,7 +5508,13 @@ Deno.test('/party view', async (test) => {
       ]),
     );
 
-    const disabledStub = stub(
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(
       packs,
       'isDisabled',
       returnsNext([
@@ -5301,17 +5541,10 @@ Deno.test('/party view', async (test) => {
       ]),
     );
 
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
-
     try {
       const message = await party.view({
         userId: 'user',
         guildId: 'guild',
-        channelId: 'channel',
       });
 
       assertEquals(message.json(), {
@@ -5384,10 +5617,9 @@ Deno.test('/party view', async (test) => {
         },
       });
     } finally {
-      disabledStub.restore();
-      listStub.restore();
       fetchStub.restore();
-      packs.clear();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 });
@@ -5439,16 +5671,17 @@ Deno.test('/party assign', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await party.assign({
         spot: 1,
         userId: 'user',
         guildId: 'guild',
-        channelId: 'channel',
         id: 'anilist:1',
       });
 
@@ -5490,9 +5723,9 @@ Deno.test('/party assign', async (test) => {
         },
       });
     } finally {
-      listStub.restore();
       fetchStub.restore();
-      packs.clear();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -5538,16 +5771,17 @@ Deno.test('/party assign', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await party.assign({
         spot: 1,
         userId: 'user',
         guildId: 'guild',
-        channelId: 'channel',
         id: 'anilist:1',
       });
 
@@ -5576,9 +5810,9 @@ Deno.test('/party assign', async (test) => {
         },
       });
     } finally {
-      listStub.restore();
       fetchStub.restore();
-      packs.clear();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -5632,16 +5866,17 @@ Deno.test('/party assign', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await party.assign({
         spot: 1,
         userId: 'user',
         guildId: 'guild',
-        channelId: 'channel',
         id: 'anilist:1',
       });
 
@@ -5671,9 +5906,9 @@ Deno.test('/party assign', async (test) => {
         },
       });
     } finally {
-      listStub.restore();
       fetchStub.restore();
-      packs.clear();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 });
@@ -5725,16 +5960,17 @@ Deno.test('/party remove', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await party.remove({
         spot: 1,
         userId: 'user',
         guildId: 'guild',
-        channelId: 'channel',
       });
 
       assertEquals(message.json(), {
@@ -5775,9 +6011,9 @@ Deno.test('/party remove', async (test) => {
         },
       });
     } finally {
-      listStub.restore();
       fetchStub.restore();
-      packs.clear();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -5825,16 +6061,16 @@ Deno.test('/party remove', async (test) => {
       ]),
     );
 
-    const disabledStub = stub(
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(
       packs,
       'isDisabled',
       returnsNext([true]),
-    );
-
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
     );
 
     try {
@@ -5842,7 +6078,6 @@ Deno.test('/party remove', async (test) => {
         spot: 2,
         userId: 'user',
         guildId: 'guild',
-        channelId: 'channel',
       });
 
       assertEquals(message.json(), {
@@ -5863,10 +6098,9 @@ Deno.test('/party remove', async (test) => {
         },
       });
     } finally {
-      listStub.restore();
-      disabledStub.restore();
       fetchStub.restore();
-      packs.clear();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -5911,16 +6145,17 @@ Deno.test('/party remove', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await party.remove({
         spot: 1,
         userId: 'user',
         guildId: 'guild',
-        channelId: 'channel',
       });
 
       assertEquals(message.json(), {
@@ -5938,9 +6173,9 @@ Deno.test('/party remove', async (test) => {
         },
       });
     } finally {
-      listStub.restore();
       fetchStub.restore();
-      packs.clear();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
@@ -5966,9 +6201,11 @@ Deno.test('/party remove', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       await assertRejects(
@@ -5977,36 +6214,39 @@ Deno.test('/party remove', async (test) => {
             spot: 1,
             userId: 'user',
             guildId: 'guild',
-            channelId: 'channel',
           }),
         Error,
         'UNKNOWN_ERROR',
       );
     } finally {
-      listStub.restore();
       fetchStub.restore();
-      packs.clear();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 });
 
 Deno.test('/packs [builtin-community]', async (test) => {
-  await test.step('builtin packs', () => {
+  await test.step('builtin packs', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
-      type: ManifestType.Builtin,
     };
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest, manifest],
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Builtin },
+          { manifest, type: PackType.Builtin },
+        ]),
     );
 
     try {
-      const message = packs.pages({
+      const message = await packs.pages({
+        type: PackType.Builtin,
+        guildId: 'guild_id',
         index: 0,
-        type: ManifestType.Builtin,
       });
 
       assertEquals(message.json(), {
@@ -6054,22 +6294,26 @@ Deno.test('/packs [builtin-community]', async (test) => {
     }
   });
 
-  await test.step('community packs', () => {
+  await test.step('community packs', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
-      type: ManifestType.Community,
     };
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest, manifest],
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Community },
+          { manifest, type: PackType.Community },
+        ]),
     );
 
     try {
-      const message = packs.pages({
+      const message = await packs.pages({
+        type: PackType.Community,
+        guildId: 'guild_id',
         index: 1,
-        type: ManifestType.Community,
       });
 
       assertEquals(message.json(), {
@@ -6117,23 +6361,23 @@ Deno.test('/packs [builtin-community]', async (test) => {
     }
   });
 
-  await test.step('use title and id ', () => {
+  await test.step('use title and id ', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
-      type: ManifestType.Builtin,
       title: 'Title',
     };
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Builtin }]),
     );
 
     try {
-      const message = packs.pages({
+      const message = await packs.pages({
+        type: PackType.Builtin,
+        guildId: 'guild_id',
         index: 0,
-        type: ManifestType.Builtin,
       });
 
       assertEquals(message.json(), {
@@ -6181,17 +6425,18 @@ Deno.test('/packs [builtin-community]', async (test) => {
     }
   });
 
-  await test.step('no manifest', () => {
+  await test.step('no manifest', async () => {
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
     try {
-      const message = packs.pages({
+      const message = await packs.pages({
+        type: PackType.Builtin,
+        guildId: 'guild_id',
         index: 0,
-        type: ManifestType.Builtin,
       });
 
       assertEquals(message.json(), {
@@ -6231,13 +6476,18 @@ Deno.test('/packs [install-validate]', async (test) => {
       () => undefined as any,
     );
 
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
       const message = packs.install({
         shallow: true,
-        channelId: 'channel_id',
         guildId: 'guild_id',
         userId: 'user_id',
         token: 'token',
@@ -6290,6 +6540,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       timeStub.restore();
       manifestStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
@@ -6312,13 +6563,18 @@ Deno.test('/packs [install-validate]', async (test) => {
       () => undefined as any,
     );
 
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
       const message = packs.install({
         shallow: true,
-        channelId: 'channel_id',
         guildId: 'guild_id',
         userId: 'user_id',
         token: 'token',
@@ -6371,6 +6627,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       timeStub.restore();
       manifestStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
@@ -6393,12 +6650,17 @@ Deno.test('/packs [install-validate]', async (test) => {
       () => undefined as any,
     );
 
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
     try {
       const message = packs.install({
-        channelId: 'channel_id',
         guildId: 'guild_id',
         userId: 'user_id',
         token: 'token',
@@ -6450,6 +6712,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       timeStub.restore();
       manifestStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
@@ -6474,11 +6737,17 @@ Deno.test('/packs [install-validate]', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [{
-        id: 'fake-id',
-        conflicts: ['manifest_id'],
-      }],
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            type: PackType.Community,
+            manifest: {
+              id: 'fake-id',
+              conflicts: ['manifest_id'],
+            },
+          },
+        ]),
     );
 
     config.appId = 'app_id';
@@ -6486,7 +6755,6 @@ Deno.test('/packs [install-validate]', async (test) => {
 
     try {
       const message = packs.install({
-        channelId: 'channel_id',
         guildId: 'guild_id',
         userId: 'user_id',
         token: 'token',
@@ -6541,9 +6809,9 @@ Deno.test('/packs [install-validate]', async (test) => {
       delete config.origin;
 
       timeStub.restore();
-      listStub.restore();
       manifestStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
@@ -6568,10 +6836,16 @@ Deno.test('/packs [install-validate]', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [{
-        id: 'fake-id',
-      }],
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            type: PackType.Community,
+            manifest: {
+              id: 'fake-id',
+            },
+          },
+        ]),
     );
 
     config.appId = 'app_id';
@@ -6579,7 +6853,6 @@ Deno.test('/packs [install-validate]', async (test) => {
 
     try {
       const message = packs.install({
-        channelId: 'channel_id',
         guildId: 'guild_id',
         userId: 'user_id',
         token: 'token',
@@ -6634,9 +6907,9 @@ Deno.test('/packs [install-validate]', async (test) => {
       delete config.origin;
 
       timeStub.restore();
-      listStub.restore();
       manifestStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
@@ -6661,8 +6934,8 @@ Deno.test('/packs [install-validate]', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
     config.appId = 'app_id';
@@ -6670,7 +6943,6 @@ Deno.test('/packs [install-validate]', async (test) => {
 
     try {
       const message = packs.install({
-        channelId: 'channel_id',
         guildId: 'guild_id',
         userId: 'user_id',
         token: 'token',
@@ -6725,9 +6997,9 @@ Deno.test('/packs [install-validate]', async (test) => {
       delete config.origin;
 
       timeStub.restore();
-      listStub.restore();
       manifestStub.restore();
       fetchStub.restore();
+      listStub.restore();
     }
   });
 
@@ -6756,7 +7028,6 @@ Deno.test('/packs [install-validate]', async (test) => {
     try {
       const message = packs.install({
         shallow: true,
-        channelId: 'channel_id',
         guildId: 'guild_id',
         userId: 'user_id',
         token: 'token',
@@ -6843,7 +7114,6 @@ The .id string must match ^[-_a-z0-9]+$
 
     try {
       const message = packs.install({
-        channelId: 'channel_id',
         guildId: 'guild_id',
         userId: 'user_id',
         token: 'token',
@@ -6936,7 +7206,6 @@ The .id string must match ^[-_a-z0-9]+$
 
     try {
       const message = packs.install({
-        channelId: 'channel_id',
         guildId: 'guild_id',
         userId: 'user_id',
         token: 'token',
@@ -7038,7 +7307,6 @@ The .id string must match ^[-_a-z0-9]+$
 
     try {
       const message = packs.install({
-        channelId: 'channel_id',
         guildId: 'guild_id',
         userId: 'user_id',
         token: 'token',
@@ -7106,6 +7374,142 @@ The .id string must match ^[-_a-z0-9]+$
 
       timeStub.restore();
       manifestStub.restore();
+      fetchStub.restore();
+    }
+  });
+});
+
+Deno.test('/packs remove', async (test) => {
+  await test.step('normal', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              removePackFromInstance: {
+                ok: true,
+                manifest: {
+                  id: 'manifest_id',
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await packs.remove({
+        guildId: 'guild_id',
+        manifestId: 'manifest_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              description: 'REMOVED',
+              type: 'rich',
+            },
+            {
+              type: 'rich',
+              url: undefined,
+              description: undefined,
+              title: 'manifest_id',
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not found', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              removePackFromInstance: {
+                ok: false,
+                error: 'PACK_NOT_FOUND',
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      await assertRejects(
+        async () =>
+          await packs.remove({
+            guildId: 'guild_id',
+            manifestId: 'manifest_id',
+          }),
+        Error,
+        '404',
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not installed', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              removePackFromInstance: {
+                ok: false,
+                error: 'PACK_NOT_INSTALLED',
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      await assertRejects(
+        async () =>
+          await packs.remove({
+            guildId: 'guild_id',
+            manifestId: 'manifest_id',
+          }),
+        Error,
+        '404',
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
     }
   });
@@ -7192,7 +7596,6 @@ Deno.test('/now', async (test) => {
       const message = await user.now({
         userId: 'user',
         guildId: 'guild',
-        channelId: 'channel',
       });
 
       assertSpyCalls(fetchStub, 1);
@@ -7273,7 +7676,6 @@ Deno.test('/now', async (test) => {
       const message = await user.now({
         userId: 'guild',
         guildId: 'user',
-        channelId: 'channel',
       });
 
       assertSpyCalls(fetchStub, 1);

@@ -26,64 +26,66 @@ import {
   DisaggregatedCharacter,
   DisaggregatedMedia,
   Manifest,
-  ManifestType,
   Media,
   MediaFormat,
   MediaRelation,
   MediaType,
+  PackType,
 } from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 Deno.test('list', async (test) => {
   await test.step('anilist', async (test) => {
-    const builtin = packs.list(ManifestType.Builtin);
+    const list = await packs.all({ type: PackType.Builtin });
 
-    const manifest = builtin[0] as Manifest;
+    const pack = list[0];
 
-    assertEquals(builtin.length, 2);
+    assertEquals(list.length, 2);
 
-    assertValidManifest(manifest);
+    assertValidManifest(pack.manifest);
 
-    await assertSnapshot(test, manifest);
+    await assertSnapshot(test, pack);
   });
 
   await test.step('vtubers', async (test) => {
-    const builtin = packs.list(ManifestType.Builtin);
+    const list = await packs.all({ type: PackType.Builtin });
 
-    const manifest = builtin[1] as Manifest;
+    const pack = list[1];
 
-    assertEquals(builtin.length, 2);
+    assertEquals(list.length, 2);
 
-    assertValidManifest(manifest);
+    assertValidManifest(pack.manifest);
 
-    await assertSnapshot(test, manifest);
+    await assertSnapshot(test, pack);
   });
 
-  await test.step('community', () => {
-    const list = packs.list(ManifestType.Community);
+  await test.step('community', async () => {
+    const list = await packs.all({ type: PackType.Community });
 
     assertEquals(list.length, 0);
   });
 
-  await test.step('no type', () => {
-    const list = packs.list();
+  await test.step('no type', async () => {
+    const list = await packs.all({});
 
     assertEquals(list.length, 1);
 
-    assertEquals(list[0].id, 'vtubers');
+    assertEquals(list[0].manifest.id, 'vtubers');
   });
 });
 
-Deno.test('reserved ids', () => {
-  packs.list(ManifestType.Builtin).forEach((manifest) => {
+Deno.test('reserved ids', async () => {
+  const list = await packs.all({ type: PackType.Builtin });
+
+  list.forEach(({ manifest }) => {
     assertEquals(validate(manifest), {
       error: `${manifest.id} is a reserved id`,
     });
   });
 });
 
-Deno.test('disabled embeds', async (test) => {
+Deno.test('disabled', async (test) => {
   await test.step('disabled media', () => {
     const manifest: Manifest = {
       id: 'pack-id',
@@ -94,15 +96,19 @@ Deno.test('disabled embeds', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assert(packs.isDisabled('another-pack:1'));
+      assert(packs.isDisabled('another-pack:1', 'guild_id'));
     } finally {
+      packs.cachedGuilds = {};
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -116,15 +122,19 @@ Deno.test('disabled embeds', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assert(packs.isDisabled('another-pack:1'));
+      assert(packs.isDisabled('another-pack:1', 'guild_id'));
     } finally {
+      packs.cachedGuilds = {};
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -138,15 +148,19 @@ Deno.test('disabled embeds', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assert(!packs.isDisabled('another-pack:1'));
+      assert(!packs.isDisabled('another-pack:1', 'guild_id'));
     } finally {
+      packs.cachedGuilds = {};
       listStub.restore();
-      packs.clear();
     }
   });
 });
@@ -184,21 +198,26 @@ Deno.test('disabled relations', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
+
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
 
     try {
       assertEquals(
         (await packs.aggregate<Media>({
+          guildId: 'guild_id',
           media: anilist.transform<Media>({ item: media }),
         }))
           .relations?.edges.length,
         0,
       );
     } finally {
+      packs.cachedGuilds = {};
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -232,21 +251,26 @@ Deno.test('disabled relations', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
+
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
 
     try {
       assertEquals(
         (await packs.aggregate<Media>({
+          guildId: 'guild_id',
           media: anilist.transform<Media>({ item: media }),
         }))
           .characters?.edges.length,
         0,
       );
     } finally {
+      packs.cachedGuilds = {};
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -280,21 +304,26 @@ Deno.test('disabled relations', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
+
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
 
     try {
       assertEquals(
         (await packs.aggregate<Character>({
+          guildId: 'guild_id',
           character: anilist.transform<Character>({ item: character }),
         }))
           .media?.edges.length,
         0,
       );
     } finally {
+      packs.cachedGuilds = {};
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -339,20 +368,34 @@ Deno.test('disabled relations', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest, manifest2],
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Community },
+          { manifest: manifest2, type: PackType.Community },
+        ]),
     );
+
+    packs.cachedGuilds = {
+      'guild_id': [
+        { manifest, type: PackType.Community },
+        { manifest: manifest2, type: PackType.Community },
+      ],
+    };
 
     try {
       assertEquals(
-        // deno-lint-ignore no-non-null-assertion
-        (await packs.aggregate<Media>({ media: manifest.media!.new![0] }))
+        (await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          // deno-lint-ignore no-non-null-assertion
+          media: manifest.media!.new![0],
+        }))
           .relations?.edges.length,
         0,
       );
     } finally {
+      packs.cachedGuilds = {};
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -394,20 +437,34 @@ Deno.test('disabled relations', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest, manifest2],
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Community },
+          { manifest: manifest2, type: PackType.Community },
+        ]),
     );
+
+    packs.cachedGuilds = {
+      'guild_id': [
+        { manifest, type: PackType.Community },
+        { manifest: manifest2, type: PackType.Community },
+      ],
+    };
 
     try {
       assertEquals(
-        // deno-lint-ignore no-non-null-assertion
-        (await packs.aggregate<Media>({ media: manifest.media!.new![0] }))
+        (await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          // deno-lint-ignore no-non-null-assertion
+          media: manifest.media!.new![0],
+        }))
           .characters?.edges.length,
         0,
       );
     } finally {
+      packs.cachedGuilds = {};
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -449,13 +506,25 @@ Deno.test('disabled relations', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest, manifest2],
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Community },
+          { manifest: manifest2, type: PackType.Community },
+        ]),
     );
+
+    packs.cachedGuilds = {
+      'guild_id': [
+        { manifest, type: PackType.Community },
+        { manifest: manifest2, type: PackType.Community },
+      ],
+    };
 
     try {
       assertEquals(
         (await packs.aggregate<Character>({
+          guildId: 'guild_id',
           // deno-lint-ignore no-non-null-assertion
           character: manifest.characters!.new![0],
         }))
@@ -463,8 +532,8 @@ Deno.test('disabled relations', async (test) => {
         0,
       );
     } finally {
+      packs.cachedGuilds = {};
       listStub.restore();
-      packs.clear();
     }
   });
 });
@@ -501,12 +570,19 @@ Deno.test('search many', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const matches = await packs.searchMany<Media>('media', 'aa', 0);
+      const matches = await packs.searchMany<Media>({
+        key: 'media',
+        search: 'aa',
+        threshold: 0,
+        guildId: 'guild_id',
+      });
 
       assertEquals(matches?.length, 3);
 
@@ -527,7 +603,7 @@ Deno.test('search many', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -568,12 +644,19 @@ Deno.test('search many', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const matches = await packs.searchMany<Media>('media', 'aa', 0);
+      const matches = await packs.searchMany<Media>({
+        key: 'media',
+        search: 'aa',
+        threshold: 0,
+        guildId: 'guild_id',
+      });
 
       assertEquals(matches?.length, 3);
 
@@ -597,7 +680,7 @@ Deno.test('search many', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -617,6 +700,10 @@ Deno.test('search many', async (test) => {
                   },
                 }, {
                   title: {
+                    english: 'aa',
+                  },
+                }, {
+                  title: {
                     english: 'b',
                   },
                 }, {
@@ -632,24 +719,32 @@ Deno.test('search many', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      //
-      const matches = await packs.searchMany('media', 'a', 100);
+      const matches = await packs.searchMany<Media>({
+        key: 'media',
+        search: 'aa',
+        threshold: 100,
+        guildId: 'guild_id',
+      });
+
+      console.log(matches);
 
       assertEquals(matches?.length, 1);
 
       assertObjectMatch(matches?.[0], {
         packId: 'anilist',
-        title: { english: 'a' },
+        title: { english: 'aa' },
       });
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 });
@@ -697,12 +792,17 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.media({ ids: ['anilist:1'] });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        ids: ['anilist:1'],
+      });
 
       assertEquals(results.length, 1);
 
@@ -711,7 +811,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -757,12 +857,19 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      const results = await packs.media({ ids: ['pack-id:1'] });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        ids: ['pack-id:1'],
+      });
 
       assertEquals(results.length, 1);
 
@@ -770,9 +877,9 @@ Deno.test('search for media', async (test) => {
       assertEquals(results[0].packId, 'pack-id');
       assertEquals(results[0].title.english, 'pack-id media');
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -804,18 +911,23 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.media({ ids: ['1'] });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        ids: ['1'],
+      });
 
       assertEquals(results.length, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -854,18 +966,25 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      const results = await packs.media({ ids: ['anilist:1'] });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        ids: ['anilist:1'],
+      });
 
       assertEquals(results.length, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -899,18 +1018,32 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest, manifest2],
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Community },
+          { manifest: manifest2, type: PackType.Community },
+        ]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [
+        { manifest, type: PackType.Community },
+        { manifest: manifest2, type: PackType.Community },
+      ],
+    };
+
     try {
-      const results = await packs.media({ ids: ['pack2:1'] });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        ids: ['pack2:1'],
+      });
 
       assertEquals(results.length, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -942,19 +1075,24 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.media({ search: 'feble' });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        search: 'feble',
+      });
 
       assertEquals(results.length, 1);
       assertEquals(results[0].id, '1');
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -986,19 +1124,24 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.media({ search: 'feble' });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        search: 'feble',
+      });
 
       assertEquals(results.length, 1);
       assertEquals(results[0].id, '1');
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1030,12 +1173,17 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.media({ search: 'feble' });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        search: 'feble',
+      });
 
       assertEquals(results.length, 1);
 
@@ -1043,7 +1191,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1076,12 +1224,17 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.media({ search: 'feble' });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        search: 'feble',
+      });
 
       assertEquals(results.length, 1);
 
@@ -1089,7 +1242,7 @@ Deno.test('search for media', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1128,18 +1281,25 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      const results = await packs.media({ search: 'anilist media' });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        search: 'anilist media',
+      });
 
       assertEquals(results.length, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -1183,18 +1343,32 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest, manifest2],
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Community },
+          { manifest: manifest2, type: PackType.Community },
+        ]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [
+        { manifest, type: PackType.Community },
+        { manifest: manifest2, type: PackType.Community },
+      ],
+    };
+
     try {
-      const results = await packs.media({ search: 'pack media' });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        search: 'pack media',
+      });
 
       assertEquals(results.length, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -1226,18 +1400,23 @@ Deno.test('search for media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.media({ search: 'd' });
+      const results = await packs.media({
+        guildId: 'guild_id',
+        search: 'd',
+      });
 
       assertEquals(results.length, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 });
@@ -1281,12 +1460,17 @@ Deno.test('search for characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.characters({ ids: ['anilist:1'] });
+      const results = await packs.characters({
+        guildId: 'guild_id',
+        ids: ['anilist:1'],
+      });
 
       assertEquals(results.length, 1);
 
@@ -1300,7 +1484,7 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1342,12 +1526,19 @@ Deno.test('search for characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      const results = await packs.characters({ ids: ['pack-id:1'] });
+      const results = await packs.characters({
+        guildId: 'guild_id',
+        ids: ['pack-id:1'],
+      });
 
       assertEquals(results.length, 1);
 
@@ -1357,9 +1548,9 @@ Deno.test('search for characters', async (test) => {
       assertEquals(results[0].packId, 'pack-id');
       assertEquals(results[0].name.english, 'pack-id character');
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -1389,18 +1580,23 @@ Deno.test('search for characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.characters({ ids: ['1'] });
+      const results = await packs.characters({
+        guildId: 'guild_id',
+        ids: ['1'],
+      });
 
       assertEquals(results.length, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1430,12 +1626,17 @@ Deno.test('search for characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.characters({ search: 'feble' });
+      const results = await packs.characters({
+        guildId: 'guild_id',
+        search: 'feble',
+      });
 
       assertEquals(results.length, 1);
 
@@ -1443,7 +1644,7 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1474,12 +1675,17 @@ Deno.test('search for characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.characters({ search: 'feble' });
+      const results = await packs.characters({
+        guildId: 'guild_id',
+        search: 'feble',
+      });
 
       assertEquals(results.length, 1);
 
@@ -1487,7 +1693,7 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1518,12 +1724,17 @@ Deno.test('search for characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.characters({ search: 'feble' });
+      const results = await packs.characters({
+        guildId: 'guild_id',
+        search: 'feble',
+      });
 
       assertEquals(results.length, 1);
 
@@ -1531,7 +1742,7 @@ Deno.test('search for characters', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1561,18 +1772,23 @@ Deno.test('search for characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      const results = await packs.characters({ search: 'd' });
+      const results = await packs.characters({
+        guildId: 'guild_id',
+        search: 'd',
+      });
 
       assertEquals(results.length, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 });
@@ -1618,12 +1834,15 @@ Deno.test('media character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const result = await packs.mediaCharacters({
+        guildId: 'guild_id',
         mediaId: 'anilist:1',
         index: 0,
       });
@@ -1664,7 +1883,7 @@ Deno.test('media character', async (test) => {
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1703,12 +1922,17 @@ Deno.test('media character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
+
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
 
     try {
       const result = await packs.mediaCharacters({
+        guildId: 'guild_id',
         mediaId: 'pack-id:1',
         index: 0,
       });
@@ -1751,9 +1975,9 @@ Deno.test('media character', async (test) => {
         },
       });
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -1781,12 +2005,17 @@ Deno.test('media character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
+
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
 
     try {
       const result = await packs.mediaCharacters({
+        guildId: 'guild_id',
         mediaId: 'pack-id:1',
         index: 0,
       });
@@ -1812,9 +2041,9 @@ Deno.test('media character', async (test) => {
         },
       });
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -1834,14 +2063,19 @@ Deno.test('media character', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
+
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
 
     try {
       await assertRejects(
         async () =>
           await packs.mediaCharacters({
+            guildId: 'guild_id',
             mediaId: 'anilist:1',
             index: 0,
           }),
@@ -1849,9 +2083,9 @@ Deno.test('media character', async (test) => {
         '404',
       );
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 });
@@ -1911,52 +2145,60 @@ Deno.test('aggregate media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      assertEquals(await packs.aggregate<Media>({ media: child }), {
-        id: '1',
-        packId: 'test',
-        type: MediaType.Anime,
-        format: MediaFormat.TV,
-        title: {
-          english: 'media child',
-        },
-        relations: {
-          edges: [{
-            relation: MediaRelation.Parent,
-            node: {
-              id: '1',
-              packId: 'anilist',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media parent',
+      assertEquals(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media: child,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'media child',
+          },
+          relations: {
+            edges: [{
+              relation: MediaRelation.Parent,
+              node: {
+                id: '1',
+                packId: 'anilist',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media parent',
+                },
               },
-            },
-          }],
-        },
-        characters: {
-          edges: [{
-            role: CharacterRole.Main,
-            node: {
-              id: '2',
-              packId: 'anilist',
-              name: {
-                english: 'character name',
+            }],
+          },
+          characters: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: '2',
+                packId: 'anilist',
+                name: {
+                  english: 'character name',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
-      });
+      );
 
       assertSpyCalls(fetchStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -2013,52 +2255,62 @@ Deno.test('aggregate media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await packs.aggregate<Media>({ media: child }), {
-        id: '1',
-        packId: 'test',
-        type: MediaType.Anime,
-        format: MediaFormat.TV,
-        title: {
-          english: 'media child',
-        },
-        relations: {
-          edges: [{
-            relation: MediaRelation.Parent,
-            node: {
-              id: '1',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media parent',
+      assertEquals(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media: child,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'media child',
+          },
+          relations: {
+            edges: [{
+              relation: MediaRelation.Parent,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media parent',
+                },
               },
-            },
-          }],
-        },
-        characters: {
-          edges: [{
-            role: CharacterRole.Main,
-            node: {
-              id: '2',
-              packId: 'pack-id',
-              name: {
-                english: 'character name',
+            }],
+          },
+          characters: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: '2',
+                packId: 'pack-id',
+                name: {
+                  english: 'character name',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -2107,54 +2359,62 @@ Deno.test('aggregate media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      assertEquals(await packs.aggregate<Media>({ media: child }), {
-        id: '1',
-        packId: 'test',
-        type: MediaType.Anime,
-        format: MediaFormat.TV,
-        title: {
-          english: 'media child',
-        },
-        relations: {
-          edges: [{
-            relation: MediaRelation.Parent,
-            node: {
-              id: '1',
-              packId: 'anilist',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media parent',
+      assertEquals(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media: child,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'media child',
+          },
+          relations: {
+            edges: [{
+              relation: MediaRelation.Parent,
+              node: {
+                id: '1',
+                packId: 'anilist',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media parent',
+                },
               },
-            },
-          }, {
-            relation: MediaRelation.SpinOff,
-            node: {
-              id: '1',
-              packId: 'anilist',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media parent',
+            }, {
+              relation: MediaRelation.SpinOff,
+              node: {
+                id: '1',
+                packId: 'anilist',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media parent',
+                },
               },
-            },
-          }],
+            }],
+          },
+          characters: {
+            edges: [],
+          },
         },
-        characters: {
-          edges: [],
-        },
-      });
+      );
 
       assertSpyCalls(fetchStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -2197,57 +2457,66 @@ Deno.test('aggregate media', async (test) => {
       'fetch',
       () => undefined as any,
     );
-
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await packs.aggregate<Media>({ media: child }), {
-        id: '1',
-        packId: 'test',
-        type: MediaType.Anime,
-        format: MediaFormat.TV,
-        title: {
-          english: 'media child',
-        },
-        relations: {
-          edges: [{
-            relation: MediaRelation.Parent,
-            node: {
-              id: '1',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media parent',
+      assertEquals(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media: child,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'media child',
+          },
+          relations: {
+            edges: [{
+              relation: MediaRelation.Parent,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media parent',
+                },
               },
-            },
-          }, {
-            relation: MediaRelation.SpinOff,
-            node: {
-              id: '1',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media parent',
+            }, {
+              relation: MediaRelation.SpinOff,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media parent',
+                },
               },
-            },
-          }],
+            }],
+          },
+          characters: {
+            edges: [],
+          },
         },
-        characters: {
-          edges: [],
-        },
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -2286,32 +2555,42 @@ Deno.test('aggregate media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await packs.aggregate<Media>({ media }), {
-        id: '1',
-        packId: 'test',
-        type: MediaType.Anime,
-        format: MediaFormat.TV,
-        title: {
-          english: 'title',
+      assertEquals(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          relations: {
+            edges: [],
+          },
+          characters: {
+            edges: [],
+          },
         },
-        relations: {
-          edges: [],
-        },
-        characters: {
-          edges: [],
-        },
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -2363,32 +2642,42 @@ Deno.test('aggregate media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await packs.aggregate<Media>({ media }), {
-        id: '1',
-        packId: 'test',
-        type: MediaType.Anime,
-        format: MediaFormat.TV,
-        title: {
-          english: 'title',
+      assertEquals(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          relations: {
+            edges: [],
+          },
+          characters: {
+            edges: [],
+          },
         },
-        relations: {
-          edges: [],
-        },
-        characters: {
-          edges: [],
-        },
-      });
+      );
 
       assertSpyCalls(fetchStub, 1);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -2443,54 +2732,64 @@ Deno.test('aggregate media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await packs.aggregate<Media>({ media: child }), {
-        id: '3',
-        packId: 'pack-id',
-        type: MediaType.Anime,
-        format: MediaFormat.TV,
-        title: {
-          english: 'media child',
-        },
-        relations: {
-          edges: [{
-            relation: MediaRelation.Parent,
-            node: {
-              id: '1',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media parent',
+      assertEquals(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media: child,
+        }),
+        {
+          id: '3',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'media child',
+          },
+          relations: {
+            edges: [{
+              relation: MediaRelation.Parent,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media parent',
+                },
               },
-            },
-          }, {
-            relation: MediaRelation.SpinOff,
-            node: {
-              id: '2',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media spinoff',
+            }, {
+              relation: MediaRelation.SpinOff,
+              node: {
+                id: '2',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media spinoff',
+                },
               },
-            },
-          }],
+            }],
+          },
+          characters: {
+            edges: [],
+          },
         },
-        characters: {
-          edges: [],
-        },
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -2537,47 +2836,57 @@ Deno.test('aggregate media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await packs.aggregate<Media>({ media: adaptation }), {
-        id: '1',
-        packId: 'test',
-        type: MediaType.Anime,
-        format: MediaFormat.TV,
-        title: {
-          english: 'media adaptation',
-        },
-        relations: {
-          edges: [{
-            relation: MediaRelation.Adaptation,
-            node: {
-              id: '1',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media spinoff',
+      assertEquals(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media: adaptation,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'media adaptation',
+          },
+          relations: {
+            edges: [{
+              relation: MediaRelation.Adaptation,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media spinoff',
+                },
+                relations: [{
+                  mediaId: 'test:1',
+                  relation: MediaRelation.SpinOff,
+                }] as any,
               },
-              relations: [{
-                mediaId: 'test:1',
-                relation: MediaRelation.SpinOff,
-              }] as any,
-            },
-          }],
+            }],
+          },
+          characters: {
+            edges: [],
+          },
         },
-        characters: {
-          edges: [],
-        },
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -2623,19 +2932,27 @@ Deno.test('aggregate media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      assertEquals(await packs.aggregate<Media>({ media }), media);
+      assertEquals(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media,
+        }),
+        media,
+      );
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
+      assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -2657,27 +2974,35 @@ Deno.test('aggregate media', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      assertEquals(await packs.aggregate<Media>({ media }), {
-        ...media,
-        relations: {
-          edges: [],
+      assertEquals(
+        await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media,
+        }),
+        {
+          ...media,
+          relations: {
+            edges: [],
+          },
+          characters: {
+            edges: [],
+          },
         },
-        characters: {
-          edges: [],
-        },
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
       assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 });
@@ -2723,38 +3048,46 @@ Deno.test('aggregate characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      assertEquals(await packs.aggregate<Character>({ character }), {
-        id: '1',
-        packId: 'test',
-        name: {
-          english: 'full name',
-        },
-        media: {
-          edges: [{
-            role: CharacterRole.Main,
-            node: {
-              id: '1',
-              packId: 'anilist',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media',
+      assertEquals(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          name: {
+            english: 'full name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: '1',
+                packId: 'anilist',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
-      });
+      );
 
       assertSpyCalls(fetchStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -2795,38 +3128,51 @@ Deno.test('aggregate characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Community },
+        ]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await packs.aggregate<Character>({ character }), {
-        id: '1',
-        packId: 'test',
-        name: {
-          english: 'full name',
-        },
-        media: {
-          edges: [{
-            role: CharacterRole.Main,
-            node: {
-              id: '1',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media',
+      assertEquals(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          name: {
+            english: 'full name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      packs.cachedGuilds = {};
     }
   });
 
@@ -2873,49 +3219,57 @@ Deno.test('aggregate characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      assertEquals(await packs.aggregate<Character>({ character }), {
-        id: '1',
-        packId: 'test',
-        name: {
-          english: 'full name',
-        },
-        media: {
-          edges: [{
-            role: CharacterRole.Main,
-            node: {
-              id: '1',
-              packId: 'anilist',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media',
+      assertEquals(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          name: {
+            english: 'full name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: '1',
+                packId: 'anilist',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
               },
-            },
-          }, {
-            role: CharacterRole.Supporting,
-            node: {
-              id: '1',
-              packId: 'anilist',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media',
+            }, {
+              role: CharacterRole.Supporting,
+              node: {
+                id: '1',
+                packId: 'anilist',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
-      });
+      );
 
       assertSpyCalls(fetchStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -2959,49 +3313,62 @@ Deno.test('aggregate characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Community },
+        ]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await packs.aggregate<Character>({ character }), {
-        id: '1',
-        packId: 'test',
-        name: {
-          english: 'full name',
-        },
-        media: {
-          edges: [{
-            role: CharacterRole.Main,
-            node: {
-              id: '1',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media',
+      assertEquals(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          name: {
+            english: 'full name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
               },
-            },
-          }, {
-            role: CharacterRole.Supporting,
-            node: {
-              id: '1',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media',
+            }, {
+              role: CharacterRole.Supporting,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -3050,27 +3417,37 @@ Deno.test('aggregate characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await packs.aggregate<Character>({ character }), {
-        id: '1',
-        packId: 'test',
-        name: {
-          english: 'full name',
+      assertEquals(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          name: {
+            english: 'full name',
+          },
+          media: {
+            edges: [],
+          },
         },
-        media: {
-          edges: [],
-        },
-      });
+      );
 
       assertSpyCalls(fetchStub, 1);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -3119,49 +3496,62 @@ Deno.test('aggregate characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Community },
+        ]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await packs.aggregate<Character>({ character }), {
-        id: '3',
-        packId: 'pack-id',
-        name: {
-          english: 'full name',
-        },
-        media: {
-          edges: [{
-            role: CharacterRole.Main,
-            node: {
-              id: '1',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media 1',
+      assertEquals(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        }),
+        {
+          id: '3',
+          packId: 'pack-id',
+          name: {
+            english: 'full name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media 1',
+                },
               },
-            },
-          }, {
-            role: CharacterRole.Main,
-            node: {
-              id: '2',
-              packId: 'pack-id',
-              type: MediaType.Manga,
-              format: MediaFormat.Manga,
-              title: {
-                english: 'media 2',
+            }, {
+              role: CharacterRole.Main,
+              node: {
+                id: '2',
+                packId: 'pack-id',
+                type: MediaType.Manga,
+                format: MediaFormat.Manga,
+                title: {
+                  english: 'media 2',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -3193,7 +3583,6 @@ Deno.test('aggregate characters', async (test) => {
 
     const manifest: Manifest = {
       id: 'pack-id',
-      type: ManifestType.Builtin,
       media: {
         new: [media],
       },
@@ -3207,42 +3596,52 @@ Deno.test('aggregate characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await packs.aggregate<Character>({ character }), {
-        id: '1',
-        packId: 'test',
-        name: {
-          english: 'full name',
-        },
-        media: {
-          edges: [{
-            role: CharacterRole.Main,
-            node: {
-              id: '1',
-              packId: 'pack-id',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'media',
+      assertEquals(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        }),
+        {
+          id: '1',
+          packId: 'test',
+          name: {
+            english: 'full name',
+          },
+          media: {
+            edges: [{
+              role: CharacterRole.Main,
+              node: {
+                id: '1',
+                packId: 'pack-id',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'media',
+                },
+                relations: [{
+                  mediaId: 'test:1',
+                  relation: MediaRelation.SpinOff,
+                }] as any,
               },
-              relations: [{
-                mediaId: 'test:1',
-                relation: MediaRelation.SpinOff,
-              }] as any,
-            },
-          }],
+            }],
+          },
         },
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
     } finally {
+      packs.cachedGuilds = {};
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -3275,19 +3674,27 @@ Deno.test('aggregate characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      assertEquals(await packs.aggregate<Character>({ character }), character);
+      assertEquals(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        }),
+        character,
+      );
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
+      assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -3307,24 +3714,32 @@ Deno.test('aggregate characters', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
     );
 
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
     try {
-      assertEquals(await packs.aggregate<Character>({ character }), {
-        ...character,
-        media: {
-          edges: [],
+      assertEquals(
+        await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character,
+        }),
+        {
+          ...character,
+          media: {
+            edges: [],
+          },
         },
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
       assertSpyCalls(listStub, 0);
     } finally {
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 });

@@ -20,7 +20,6 @@ async function view({
 }: {
   userId: string;
   guildId: string;
-  channelId?: string;
 }): Promise<discord.Message> {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -97,8 +96,8 @@ async function view({
   ];
 
   const [media, characters] = await Promise.all([
-    packs.media({ ids: mediaIds.filter(Boolean) }),
-    packs.characters({ ids: ids.filter(Boolean) }),
+    packs.media({ ids: mediaIds.filter(Boolean), guildId }),
+    packs.characters({ ids: ids.filter(Boolean), guildId }),
   ]);
 
   ids.forEach((characterId, i) => {
@@ -119,9 +118,9 @@ async function view({
     if (
       !character ||
       mediaIndex === -1 ||
-      packs.isDisabled(characterId) ||
+      packs.isDisabled(characterId, guildId) ||
       // deno-lint-ignore no-non-null-assertion
-      packs.isDisabled(mediaIds[i]!)
+      packs.isDisabled(mediaIds[i]!, guildId)
     ) {
       return message.addEmbed(
         new discord.Embed().setDescription(
@@ -153,7 +152,6 @@ async function assign({
 }: {
   userId: string;
   guildId: string;
-  channelId?: string;
   spot?: number;
   search?: string;
   id?: string;
@@ -176,7 +174,7 @@ async function assign({
   `;
 
   const results: (Character | DisaggregatedCharacter)[] = await packs
-    .characters(id ? { ids: [id] } : { search });
+    .characters(id ? { ids: [id], guildId } : { search, guildId });
 
   if (!results.length) {
     throw new Error('404');
@@ -265,7 +263,6 @@ async function remove({
   spot: number;
   userId: string;
   guildId: string;
-  channelId?: string;
 }): Promise<discord.Message> {
   const query = gql`
     mutation ($userId: String!, $guildId: String!, $spot: Int!) {
@@ -311,7 +308,7 @@ async function remove({
 
   const [characters] = await Promise.all([
     // packs.media({ ids: [response.character.mediaId] }),
-    packs.characters({ ids: [response.character.id] }),
+    packs.characters({ ids: [response.character.id], guildId }),
   ]);
 
   if (!characters.length) {

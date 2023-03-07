@@ -23,6 +23,7 @@ import {
   Manifest,
   MediaFormat,
   MediaType,
+  PackType,
 } from '../src/types.ts';
 
 import { AniListCharacter } from '../packs/anilist/types.ts';
@@ -111,15 +112,17 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       await assertRejects(
-        async () => await gacha.rngPull(),
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+          }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
@@ -132,7 +135,7 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -176,15 +179,17 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       await assertRejects(
-        async () => await gacha.rngPull(),
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+          }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
@@ -197,7 +202,7 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -242,15 +247,17 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       await assertRejects(
-        async () => await gacha.rngPull(),
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+          }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
@@ -263,7 +270,7 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -309,15 +316,17 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       await assertRejects(
-        async () => await gacha.rngPull(),
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+          }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
@@ -330,7 +339,7 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -377,15 +386,17 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       await assertRejects(
-        async () => await gacha.rngPull(),
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+          }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
@@ -398,7 +409,7 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -444,15 +455,17 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       await assertRejects(
-        async () => await gacha.rngPull(),
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+          }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
@@ -465,7 +478,7 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -518,13 +531,23 @@ Deno.test('filter invalid pools', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
 
     try {
       await assertRejects(
-        async () => await gacha.rngPull(),
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+          }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
@@ -532,12 +555,14 @@ Deno.test('filter invalid pools', async (test) => {
       assertSpyCalls(fetchStub, 0);
       assertSpyCalls(rngStub, 2);
     } finally {
+      packs.cachedGuilds = {};
+
       rngStub.restore();
       randomStub.restore();
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 });
@@ -593,15 +618,19 @@ Deno.test('disabled', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(
-      packs,
-      'list',
-      () => [manifest],
-    );
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
 
     try {
       await assertRejects(
-        async () => await gacha.rngPull(),
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+          }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
@@ -609,12 +638,13 @@ Deno.test('disabled', async (test) => {
       assertSpyCalls(fetchStub, 25);
       assertSpyCalls(rngStub, 2);
     } finally {
+      packs.cachedGuilds = {};
+
       rngStub.restore();
       randomStub.restore();
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 
@@ -667,15 +697,19 @@ Deno.test('disabled', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(
-      packs,
-      'list',
-      () => [manifest],
-    );
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
 
     try {
       await assertRejects(
-        async () => await gacha.rngPull(),
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+          }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
@@ -683,12 +717,13 @@ Deno.test('disabled', async (test) => {
       assertSpyCalls(fetchStub, 0);
       assertSpyCalls(rngStub, 2);
     } finally {
+      packs.cachedGuilds = {};
+
       rngStub.restore();
       randomStub.restore();
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
     }
   });
 });
@@ -738,55 +773,66 @@ Deno.test('valid pool', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(
+      packs,
+      'isDisabled',
+      () => false,
     );
 
     try {
-      assertEquals(await gacha.rngPull(), {
-        character: {
-          id: 'anilist:1',
-          media: {
-            edges: [
-              {
-                node: {
-                  format: MediaFormat.TV,
-                  id: 'anime',
-                  packId: 'anilist',
-                  popularity: 2500,
-                  title: {
-                    english: 'title',
+      assertEquals(
+        await gacha.rngPull({
+          guildId: 'guild_id',
+        }),
+        {
+          character: {
+            id: 'anilist:1',
+            media: {
+              edges: [
+                {
+                  node: {
+                    format: MediaFormat.TV,
+                    id: 'anime',
+                    packId: 'anilist',
+                    popularity: 2500,
+                    title: {
+                      english: 'title',
+                    },
+                    type: MediaType.Anime,
                   },
-                  type: MediaType.Anime,
+                  role: CharacterRole.Main,
                 },
-                role: CharacterRole.Main,
-              },
-            ],
+              ],
+            },
+            name: {
+              english: 'name',
+            },
+            packId: 'anilist',
           },
-          name: {
-            english: 'name',
+          media: {
+            format: MediaFormat.TV,
+            id: 'anime',
+            packId: 'anilist',
+            popularity: 2500,
+            title: {
+              english: 'title',
+            },
+            type: MediaType.Anime,
           },
-          packId: 'anilist',
+          pool: 25,
+          popularityChance: 0,
+          popularityGreater: 2000,
+          popularityLesser: 3000,
+          remaining: undefined,
+          rating: new Rating({ role: CharacterRole.Main, popularity: 75 }),
+          roleChance: 0,
+          role: CharacterRole.Main,
         },
-        media: {
-          format: MediaFormat.TV,
-          id: 'anime',
-          packId: 'anilist',
-          popularity: 2500,
-          title: {
-            english: 'title',
-          },
-          type: MediaType.Anime,
-        },
-        pool: 25,
-        popularityChance: 0,
-        popularityGreater: 2000,
-        popularityLesser: 3000,
-        remaining: undefined,
-        rating: new Rating({ role: CharacterRole.Main, popularity: 75 }),
-        roleChance: 0,
-        role: CharacterRole.Main,
-      });
+      );
 
       assertSpyCalls(fetchStub, 1);
       assertSpyCalls(rngStub, 2);
@@ -796,7 +842,7 @@ Deno.test('valid pool', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -844,55 +890,66 @@ Deno.test('valid pool', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(
+      packs,
+      'isDisabled',
+      () => false,
     );
 
     try {
-      assertEquals(await gacha.rngPull(), {
-        character: {
-          id: 'anilist:1',
-          media: {
-            edges: [
-              {
-                node: {
-                  format: MediaFormat.TV,
-                  id: 'anime',
-                  packId: 'anilist',
-                  popularity: 2000,
-                  title: {
-                    english: 'title',
+      assertEquals(
+        await gacha.rngPull({
+          guildId: 'guild_id',
+        }),
+        {
+          character: {
+            id: 'anilist:1',
+            media: {
+              edges: [
+                {
+                  node: {
+                    format: MediaFormat.TV,
+                    id: 'anime',
+                    packId: 'anilist',
+                    popularity: 2000,
+                    title: {
+                      english: 'title',
+                    },
+                    type: MediaType.Anime,
                   },
-                  type: MediaType.Anime,
+                  role: CharacterRole.Main,
                 },
-                role: CharacterRole.Main,
-              },
-            ],
+              ],
+            },
+            name: {
+              english: 'name',
+            },
+            packId: 'anilist',
           },
-          name: {
-            english: 'name',
+          media: {
+            format: MediaFormat.TV,
+            id: 'anime',
+            packId: 'anilist',
+            popularity: 2000,
+            title: {
+              english: 'title',
+            },
+            type: MediaType.Anime,
           },
-          packId: 'anilist',
+          pool: 25,
+          popularityChance: 0,
+          popularityGreater: 2000,
+          popularityLesser: 3000,
+          remaining: undefined,
+          rating: new Rating({ role: CharacterRole.Main, popularity: 100 }),
+          roleChance: 0,
+          role: CharacterRole.Main,
         },
-        media: {
-          format: MediaFormat.TV,
-          id: 'anime',
-          packId: 'anilist',
-          popularity: 2000,
-          title: {
-            english: 'title',
-          },
-          type: MediaType.Anime,
-        },
-        pool: 25,
-        popularityChance: 0,
-        popularityGreater: 2000,
-        popularityLesser: 3000,
-        remaining: undefined,
-        rating: new Rating({ role: CharacterRole.Main, popularity: 100 }),
-        roleChance: 0,
-        role: CharacterRole.Main,
-      });
+      );
 
       assertSpyCalls(fetchStub, 1);
       assertSpyCalls(rngStub, 2);
@@ -902,7 +959,7 @@ Deno.test('valid pool', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -951,56 +1008,67 @@ Deno.test('valid pool', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(
+      packs,
+      'isDisabled',
+      () => false,
     );
 
     try {
-      assertEquals(await gacha.rngPull(), {
-        character: {
-          id: 'anilist:1',
-          media: {
-            edges: [
-              {
-                node: {
-                  format: MediaFormat.TV,
-                  id: 'anime',
-                  packId: 'anilist',
-                  popularity: 100,
-                  title: {
-                    english: 'title',
+      assertEquals(
+        await gacha.rngPull({
+          guildId: 'guild_id',
+        }),
+        {
+          character: {
+            id: 'anilist:1',
+            media: {
+              edges: [
+                {
+                  node: {
+                    format: MediaFormat.TV,
+                    id: 'anime',
+                    packId: 'anilist',
+                    popularity: 100,
+                    title: {
+                      english: 'title',
+                    },
+                    type: MediaType.Anime,
                   },
-                  type: MediaType.Anime,
+                  role: CharacterRole.Main,
                 },
-                role: CharacterRole.Main,
-              },
-            ],
+              ],
+            },
+            name: {
+              english: 'name',
+            },
+            packId: 'anilist',
+            popularity: 500_000,
           },
-          name: {
-            english: 'name',
+          media: {
+            format: MediaFormat.TV,
+            id: 'anime',
+            packId: 'anilist',
+            popularity: 100,
+            title: {
+              english: 'title',
+            },
+            type: MediaType.Anime,
           },
-          packId: 'anilist',
-          popularity: 500_000,
+          pool: 25,
+          popularityChance: 0,
+          popularityGreater: 100_000,
+          popularityLesser: 500_000,
+          remaining: undefined,
+          rating: new Rating({ role: CharacterRole.Main, popularity: 500_000 }),
+          roleChance: 0,
+          role: CharacterRole.Main,
         },
-        media: {
-          format: MediaFormat.TV,
-          id: 'anime',
-          packId: 'anilist',
-          popularity: 100,
-          title: {
-            english: 'title',
-          },
-          type: MediaType.Anime,
-        },
-        pool: 25,
-        popularityChance: 0,
-        popularityGreater: 100_000,
-        popularityLesser: 500_000,
-        remaining: undefined,
-        rating: new Rating({ role: CharacterRole.Main, popularity: 500_000 }),
-        roleChance: 0,
-        role: CharacterRole.Main,
-      });
+      );
 
       assertSpyCalls(fetchStub, 1);
       assertSpyCalls(rngStub, 2);
@@ -1010,7 +1078,7 @@ Deno.test('valid pool', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1063,65 +1131,82 @@ Deno.test('valid pool', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [manifest],
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
+    const isDisabledStub = stub(
+      packs,
+      'isDisabled',
+      () => false,
+    );
+
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
     try {
-      assertEquals(await gacha.rngPull(), {
-        character: {
-          id: '1',
-          media: {
-            edges: [
-              {
-                node: {
-                  format: MediaFormat.TV,
-                  id: '2',
-                  packId: 'pack-id',
-                  popularity: 2500,
-                  title: {
-                    english: 'title',
+      assertEquals(
+        await gacha.rngPull({
+          guildId: 'guild_id',
+        }),
+        {
+          character: {
+            id: '1',
+            media: {
+              edges: [
+                {
+                  node: {
+                    format: MediaFormat.TV,
+                    id: '2',
+                    packId: 'pack-id',
+                    popularity: 2500,
+                    title: {
+                      english: 'title',
+                    },
+                    type: MediaType.Anime,
                   },
-                  type: MediaType.Anime,
+                  role: CharacterRole.Main,
                 },
-                role: CharacterRole.Main,
-              },
-            ],
+              ],
+            },
+            name: {
+              english: 'name',
+            },
+            packId: 'pack-id',
           },
-          name: {
-            english: 'name',
+          media: {
+            format: MediaFormat.TV,
+            id: '2',
+            packId: 'pack-id',
+            popularity: 2500,
+            title: {
+              english: 'title',
+            },
+            type: MediaType.Anime,
           },
-          packId: 'pack-id',
+          pool: 1,
+          popularityChance: 0,
+          popularityGreater: 2000,
+          popularityLesser: 3000,
+          remaining: undefined,
+          rating: new Rating({ role: CharacterRole.Main, popularity: 2500 }),
+          roleChance: 0,
+          role: CharacterRole.Main,
         },
-        media: {
-          format: MediaFormat.TV,
-          id: '2',
-          packId: 'pack-id',
-          popularity: 2500,
-          title: {
-            english: 'title',
-          },
-          type: MediaType.Anime,
-        },
-        pool: 1,
-        popularityChance: 0,
-        popularityGreater: 2000,
-        popularityLesser: 3000,
-        remaining: undefined,
-        rating: new Rating({ role: CharacterRole.Main, popularity: 2500 }),
-        roleChance: 0,
-        role: CharacterRole.Main,
-      });
+      );
 
       assertSpyCalls(fetchStub, 0);
       assertSpyCalls(rngStub, 2);
     } finally {
+      packs.cachedGuilds = {};
+
       rngStub.restore();
       randomStub.restore();
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 });
@@ -1199,13 +1284,23 @@ Deno.test('adding character to inventory', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(
+      packs,
+      'isDisabled',
+      () => false,
     );
 
     try {
       await assertRejects(
-        async () => await gacha.rngPull('1', '2'),
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+          }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
@@ -1217,7 +1312,7 @@ Deno.test('adding character to inventory', async (test) => {
       rngStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1296,13 +1391,23 @@ Deno.test('adding character to inventory', async (test) => {
 
     const listStub = stub(
       packs,
-      'list',
-      () => [],
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(
+      packs,
+      'isDisabled',
+      () => false,
     );
 
     try {
       await assertRejects(
-        async () => await gacha.rngPull('1', '2'),
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+          }),
         NoPullsError,
         'NO_PULLS_AVAILABLE',
       );
@@ -1314,7 +1419,7 @@ Deno.test('adding character to inventory', async (test) => {
       rngStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 
@@ -1393,40 +1498,44 @@ Deno.test('adding character to inventory', async (test) => {
       }]),
     );
 
-    const listStub = stub(
-      packs,
-      'list',
-      () => [],
-    );
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
-      assertObjectMatch(await gacha.rngPull('1', '2'), {
-        remaining: 2,
-        character: {
-          id: 'anilist:1',
-          packId: 'anilist',
-          media: {
-            edges: [
-              {
-                node: {
-                  format: MediaFormat.TV,
-                  id: 'anime',
-                  packId: 'anilist',
-                  popularity: 2500,
-                  title: {
-                    english: 'title',
+      assertObjectMatch(
+        await gacha.rngPull({
+          userId: 'user_id',
+          guildId: 'guild_id',
+        }),
+        {
+          remaining: 2,
+          character: {
+            id: 'anilist:1',
+            packId: 'anilist',
+            media: {
+              edges: [
+                {
+                  node: {
+                    format: MediaFormat.TV,
+                    id: 'anime',
+                    packId: 'anilist',
+                    popularity: 2500,
+                    title: {
+                      english: 'title',
+                    },
+                    type: MediaType.Anime,
                   },
-                  type: MediaType.Anime,
+                  role: CharacterRole.Main,
                 },
-                role: CharacterRole.Main,
-              },
-            ],
-          },
-          name: {
-            english: 'name',
+              ],
+            },
+            name: {
+              english: 'name',
+            },
           },
         },
-      });
+      );
 
       assertSpyCalls(poolStub, 1);
       assertSpyCalls(fetchStub, 2);
@@ -1435,7 +1544,7 @@ Deno.test('adding character to inventory', async (test) => {
       rngStub.restore();
       fetchStub.restore();
       listStub.restore();
-      packs.clear();
+      isDisabledStub.restore();
     }
   });
 });

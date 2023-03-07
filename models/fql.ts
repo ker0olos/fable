@@ -71,6 +71,10 @@ function Append(ref: RefExpr, items: Expr): RefExpr[] {
   return _fql.Append(ref, items) as unknown as RefExpr[];
 }
 
+function Remove(ref: RefExpr, items: Expr): RefExpr[] {
+  return _fql.Difference(items, [ref]) as unknown as RefExpr[];
+}
+
 function Includes(value: ExprArg, documentOrArray: Expr): BooleanExpr {
   return _fql.ContainsValue(value, documentOrArray) as unknown as BooleanExpr;
 }
@@ -266,9 +270,10 @@ function Resolver(
 }
 
 export const fql = {
-  // Map,
-  Add,
   // And,
+  // Map,
+  // Or,
+  Add,
   Append,
   Concat,
   Create,
@@ -291,9 +296,9 @@ export const fql = {
   Multiply,
   Now,
   Null,
-  // Or,
   Paginate,
   Ref,
+  Remove,
   Resolver,
   Reverse,
   Select,

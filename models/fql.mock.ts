@@ -51,7 +51,7 @@ export const FakeEquals = () =>
 export const FakeGTE = () => stub(fql, 'GTE', (a: any, b: any) => a >= b);
 export const FakeLTE = () => stub(fql, 'LTE', (a: any, b: any) => a <= b);
 
-export const FakMultiply = () =>
+export const FakeMultiply = () =>
   stub(fql, 'Multiply', (a: any, b: any) => a * b);
 
 export const FakeDivide = () => stub(fql, 'Divide', (a: any, b: any) => a / b);
@@ -75,7 +75,13 @@ export const FakeIncludes = () =>
     fql,
     'Includes',
     ((value: any, array: Array<any>) => {
-      return array.some((item: any) => item.ref === value.ref);
+      return array.some((t: any) => {
+        if (typeof value.ref === 'string') {
+          return t.ref === value.ref;
+        } else {
+          return t.ref === value.ref['0'];
+        }
+      });
     }) as any,
   );
 
@@ -129,6 +135,30 @@ export const FakeIsNonEmpty = () =>
 
 export const FakeReverse = () =>
   stub(fql, 'Reverse', (array: any) => array.toReversed() as any);
+
+export const FakeRemove = () =>
+  stub(
+    fql,
+    'Remove',
+    ((value: any, array: Array<any>) => {
+      const newArray = [...array];
+      const i = newArray.findIndex((
+        t,
+      ) => {
+        if (typeof value.ref === 'string') {
+          return t.ref === value.ref;
+        } else {
+          return t.ref === value.ref['0'];
+        }
+      });
+
+      if (i > -1) {
+        newArray.splice(i, 1);
+      }
+
+      return newArray as any;
+    }) as any,
+  );
 
 export const FakeSelect = (obj?: any) =>
   stub(fql, 'Select', (_, __, _d) => obj === undefined ? _d : obj);

@@ -8,6 +8,10 @@ type Response @embedded {
 
 type Query {
   #
+  getGuildInstance(guildId: String!): Instance!
+    @resolver(name: "get_guild_instance")
+
+  #
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")
   
@@ -25,7 +29,12 @@ type Query {
 
 type Mutation {
   #
-  addPackToInstance(userId: String!, guildId: String!, githubId: Int!, manifest: ManifestInput!): Response!  @resolver(name: "add_pack_to_instance")
+  addPackToInstance(userId: String!, guildId: String!, githubId: Int!, manifest: ManifestInput!): Response!
+    @resolver(name: "add_pack_to_instance")
+  
+  #
+  removePackFromInstance(guildId: String!, manifestId: String!): Response!
+    @resolver(name: "remove_pack_from_instance")
 
   #
   addCharacterToInventory(
