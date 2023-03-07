@@ -26,7 +26,6 @@ async function now({
 }: {
   userId: string;
   guildId: string;
-  channelId?: string;
 }): Promise<discord.Message> {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -91,7 +90,6 @@ async function findCharacter({
   characterId,
 }: {
   guildId?: string;
-  channelId?: string;
   characterId?: string;
 }): Promise<
   {
@@ -150,7 +148,6 @@ async function allCharacters({
 }: {
   userId: string;
   guildId: string;
-  channelId?: string;
 }): Promise<Schema.Inventory['characters']> {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -191,7 +188,6 @@ async function stars({
 }: {
   userId: string;
   guildId: string;
-  channelId?: string;
   stars: number;
   nick?: string;
   before?: string;
@@ -257,8 +253,8 @@ async function stars({
     (Media | DisaggregatedMedia)[],
     (Character | DisaggregatedCharacter)[],
   ] = await Promise.all([
-    packs.media({ ids: [character.mediaId] }),
-    packs.characters({ ids: [character.id] }),
+    packs.media({ ids: [character.mediaId], guildId }),
+    packs.characters({ ids: [character.id], guildId }),
   ]);
 
   let message: discord.Message;
@@ -320,7 +316,6 @@ async function media({
 }: {
   userId: string;
   guildId: string;
-  channelId?: string;
   id?: string;
   search?: string;
   nick?: string;
@@ -328,7 +323,7 @@ async function media({
   after?: string;
 }): Promise<discord.Message> {
   const results: (Media | DisaggregatedMedia)[] = await packs
-    .media(id ? { ids: [id] } : { search });
+    .media(id ? { ids: [id], guildId } : { search, guildId });
 
   if (!results.length) {
     throw new Error('404');
@@ -395,7 +390,7 @@ async function media({
     return message;
   }
 
-  const characters = await packs.characters({ ids: [character.id] });
+  const characters = await packs.characters({ ids: [character.id], guildId });
 
   let message: discord.Message;
 

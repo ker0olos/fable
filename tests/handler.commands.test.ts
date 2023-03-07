@@ -22,8 +22,9 @@ import user from '../src/user.ts';
 import packs from '../src/packs.ts';
 import help from '../src/help.ts';
 
-import { ManifestType } from '../src/types.ts';
 import { NonFetalError, NoPermissionError } from '../src/errors.ts';
+
+import { PackType } from '../src/types.ts';
 
 Deno.test('search command handlers', async (test) => {
   await test.step('search', async () => {
@@ -89,6 +90,7 @@ Deno.test('search command handlers', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
+          guildId: 'guild_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -168,6 +170,7 @@ Deno.test('search command handlers', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
+          guildId: 'guild_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -247,6 +250,7 @@ Deno.test('search command handlers', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
+          guildId: 'guild_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -326,6 +330,7 @@ Deno.test('search command handlers', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
+          guildId: 'guild_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -408,6 +413,7 @@ Deno.test('search command handlers', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
+          guildId: 'guild_id',
           search: 'title',
           debug: true,
           id: undefined,
@@ -487,6 +493,7 @@ Deno.test('search command handlers', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
+          guildId: 'guild_id',
           search: 'id=uuid',
           debug: false,
           id: 'uuid',
@@ -574,7 +581,6 @@ Deno.test('character command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           search: 'name',
           debug: false,
@@ -661,7 +667,6 @@ Deno.test('character command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           search: 'name',
           debug: false,
@@ -748,7 +753,6 @@ Deno.test('character command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           search: 'name',
           debug: false,
@@ -838,7 +842,6 @@ Deno.test('character command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           search: 'name',
           debug: true,
@@ -925,7 +928,6 @@ Deno.test('character command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           search: 'id=uuid',
           debug: false,
@@ -1015,7 +1017,6 @@ Deno.test('party command handlers', async (test) => {
       assertSpyCall(partyStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
         }],
       });
@@ -1103,7 +1104,6 @@ Deno.test('party command handlers', async (test) => {
       assertSpyCall(partyStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           search: 'name',
           spot: undefined,
@@ -1197,7 +1197,6 @@ Deno.test('party command handlers', async (test) => {
       assertSpyCall(partyStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           search: 'name',
           spot: 5,
@@ -1288,7 +1287,6 @@ Deno.test('party command handlers', async (test) => {
       assertSpyCall(partyStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           search: 'id=uuid',
           spot: undefined,
@@ -1379,7 +1377,6 @@ Deno.test('party command handlers', async (test) => {
       assertSpyCall(partyStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           spot: 5,
         }],
@@ -1471,7 +1468,6 @@ Deno.test('collection command handlers', async (test) => {
         args: [{
           stars: 5,
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           nick: undefined,
         }],
@@ -1571,7 +1567,6 @@ Deno.test('collection command handlers', async (test) => {
         args: [{
           stars: 5,
           userId: 'another_user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           nick: 'nickname',
         }],
@@ -1674,7 +1669,6 @@ Deno.test('collection command handlers', async (test) => {
         args: [{
           stars: 5,
           userId: 'another_user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           nick: 'username',
         }],
@@ -1764,7 +1758,6 @@ Deno.test('collection command handlers', async (test) => {
         args: [{
           search: 'title',
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           nick: undefined,
           id: undefined,
@@ -1865,7 +1858,6 @@ Deno.test('collection command handlers', async (test) => {
         args: [{
           search: 'title',
           userId: 'another_user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           nick: 'nickname',
           id: undefined,
@@ -1969,7 +1961,6 @@ Deno.test('collection command handlers', async (test) => {
         args: [{
           search: 'title',
           userId: 'another_user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           nick: 'username',
           id: undefined,
@@ -2060,7 +2051,6 @@ Deno.test('collection command handlers', async (test) => {
         args: [{
           search: 'id=uuid',
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           id: 'uuid',
           nick: undefined,
@@ -2144,7 +2134,6 @@ Deno.test('now command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
         }],
       });
@@ -2224,7 +2213,6 @@ Deno.test('now command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
         }],
       });
@@ -2304,7 +2292,6 @@ Deno.test('now command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
         }],
       });
@@ -2384,7 +2371,6 @@ Deno.test('now command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
         }],
       });
@@ -2467,7 +2453,6 @@ Deno.test('gacha command handlers', async (test) => {
         args: [{
           quiet: false,
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           token: 'token',
         }],
@@ -2549,7 +2534,6 @@ Deno.test('gacha command handlers', async (test) => {
         args: [{
           quiet: false,
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           token: 'token',
         }],
@@ -2631,7 +2615,6 @@ Deno.test('gacha command handlers', async (test) => {
         args: [{
           quiet: true,
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           token: 'token',
         }],
@@ -2713,7 +2696,6 @@ Deno.test('gacha command handlers', async (test) => {
         args: [{
           quiet: true,
           userId: 'user_id',
-          channelId: 'channel_id',
           guildId: 'guild_id',
           token: 'token',
         }],
@@ -3187,7 +3169,8 @@ Deno.test('packs command handlers', async (test) => {
 
       assertSpyCall(packsStub, 0, {
         args: [{
-          type: ManifestType.Builtin,
+          guildId: 'guild_id',
+          type: PackType.Builtin,
           index: 0,
         }],
       });
@@ -3266,7 +3249,8 @@ Deno.test('packs command handlers', async (test) => {
 
       assertSpyCall(packsStub, 0, {
         args: [{
-          type: ManifestType.Community,
+          guildId: 'guild_id',
+          type: PackType.Community,
           index: 0,
         }],
       });
@@ -3359,7 +3343,6 @@ Deno.test('packs command handlers', async (test) => {
           shallow: true,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           token: 'token',
           url: 'github',
           ref: 'ref',
@@ -3454,7 +3437,6 @@ Deno.test('packs command handlers', async (test) => {
           shallow: false,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           token: 'token',
           url: 'github',
           ref: 'ref',

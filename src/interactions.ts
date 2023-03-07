@@ -12,7 +12,7 @@ import help from './help.ts';
 
 import config, { initConfig } from './config.ts';
 
-import { Character, ManifestType, Media } from './types.ts';
+import { Character, Media, PackType } from './types.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
 
@@ -58,7 +58,6 @@ export const handler = async (r: Request) => {
     type,
     token,
     guildId,
-    channelId,
     resolved,
     member,
     options,
@@ -92,10 +91,11 @@ export const handler = async (r: Request) => {
             discord.MessageType.Suggestions,
           );
 
-          const results = await packs.searchMany<Media>(
-            'media',
-            title,
-          );
+          const results = await packs.searchMany<Media>({
+            guildId,
+            key: 'media',
+            search: title,
+          });
 
           results?.forEach((media) => {
             message.addSuggestions({
@@ -113,10 +113,11 @@ export const handler = async (r: Request) => {
             discord.MessageType.Suggestions,
           );
 
-          const results = await packs.searchMany<Character>(
-            'characters',
-            name,
-          );
+          const results = await packs.searchMany<Character>({
+            guildId,
+            key: 'characters',
+            search: name,
+          });
 
           results?.forEach((character) => {
             message.addSuggestions({
@@ -136,15 +137,15 @@ export const handler = async (r: Request) => {
           );
 
           const results = await Promise.all([
-            packs.searchMany<Character>(
-              'characters',
-              name,
-              35,
-            ),
-            user.allCharacters({
-              userId: member.user.id,
-              channelId,
+            packs.searchMany<Character>({
               guildId,
+              threshold: 35,
+              key: 'characters',
+              search: name,
+            }),
+            user.allCharacters({
+              guildId,
+              userId: member.user.id,
             }),
           ]);
 
@@ -174,6 +175,7 @@ export const handler = async (r: Request) => {
             const title = options['title'] as string;
 
             return (await search.media({
+              guildId,
               search: title,
               debug: Boolean(options['debug']),
               id: title.startsWith(idPrefix)
@@ -189,7 +191,6 @@ export const handler = async (r: Request) => {
 
             return (await search.character({
               userId: member.user.id,
-              channelId,
               guildId,
               search: name,
               debug: Boolean(options['debug']),
@@ -210,14 +211,12 @@ export const handler = async (r: Request) => {
               case 'view':
                 return (await party.view({
                   userId: member.user.id,
-                  channelId,
                   guildId,
                 })).send();
               case 'assign':
                 return (await party.assign({
                   spot,
                   userId: member.user.id,
-                  channelId,
                   guildId,
                   search: character,
                   id: character.startsWith(idPrefix)
@@ -228,7 +227,6 @@ export const handler = async (r: Request) => {
                 return (await party.remove({
                   spot,
                   userId: member.user.id,
-                  channelId,
                   guildId,
                 })).send();
               default:
@@ -255,7 +253,6 @@ export const handler = async (r: Request) => {
                 return (await user.stars({
                   userId: userId ?? member.user.id,
                   stars,
-                  channelId,
                   guildId,
                   nick,
                 }))
@@ -270,7 +267,6 @@ export const handler = async (r: Request) => {
                   id: title.startsWith(idPrefix)
                     ? title.substring(idPrefix.length)
                     : undefined,
-                  channelId,
                   guildId,
                   nick,
                 }))
@@ -287,7 +283,6 @@ export const handler = async (r: Request) => {
           case 'tu': {
             return (await user.now({
               userId: member.user.id,
-              channelId,
               guildId,
             }))
               .send();
@@ -300,7 +295,6 @@ export const handler = async (r: Request) => {
               .start({
                 quiet: ['pull', 'q'].includes(name),
                 userId: member.user.id,
-                channelId,
                 guildId,
                 token,
               })
@@ -321,17 +315,17 @@ export const handler = async (r: Request) => {
             switch (subcommand!) {
               case 'builtin':
               case 'community': {
-                return packs.pages({
+                return (await packs.pages({
+                  type: subcommand as PackType,
                   index: 0,
-                  type: subcommand as ManifestType,
-                }).send();
+                  guildId,
+                })).send();
               }
               case 'install':
               case 'validate': {
                 return packs.install({
                   token,
                   guildId,
-                  channelId,
                   userId: member.user.id,
                   shallow: subcommand === 'validate',
                   url: options['github'] as string,
@@ -360,7 +354,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return (await search.media({ id }))
+            return (await search.media({ id, guildId }))
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -370,7 +364,6 @@ export const handler = async (r: Request) => {
 
             return (await search.character({
               userId: member.user.id,
-              channelId,
               guildId,
               id,
             }))
@@ -386,7 +379,6 @@ export const handler = async (r: Request) => {
 
             return (await search.mediaCharacters({
               userId: member.user.id,
-              channelId,
               guildId,
               mediaId,
               index,
@@ -401,7 +393,6 @@ export const handler = async (r: Request) => {
             return (await party.assign({
               id: characterId,
               userId: member.user.id,
-              channelId,
               guildId,
             }))
               .setType(discord.MessageType.New)
@@ -420,7 +411,6 @@ export const handler = async (r: Request) => {
             return (await user.stars({
               stars,
               guildId,
-              channelId,
               userId,
               after: action === 'next' ? anchor : undefined,
               before: action === 'prev' ? anchor : undefined,
@@ -441,7 +431,6 @@ export const handler = async (r: Request) => {
             return (await user.media({
               id,
               guildId,
-              channelId,
               userId,
               after: action === 'next' ? anchor : undefined,
               before: action === 'prev' ? anchor : undefined,
@@ -460,7 +449,6 @@ export const handler = async (r: Request) => {
                 quiet: customType === 'pull',
                 userId: member.user.id,
                 guildId,
-                channelId,
               })
               .setType(
                 userId === member.user.id
@@ -476,7 +464,6 @@ export const handler = async (r: Request) => {
             return (await user.now({
               userId: member.user.id,
               guildId,
-              channelId,
             }))
               .setType(
                 userId === member.user.id
@@ -498,10 +485,11 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return packs.pages({
+            return (await packs.pages({
               index,
-              type: customType as ManifestType,
-            })
+              guildId,
+              type: customType as PackType,
+            }))
               .setType(discord.MessageType.Update)
               .send();
           }

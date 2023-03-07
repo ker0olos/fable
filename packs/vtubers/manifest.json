@@ -3,7 +3,6 @@
   "id": "vtubers",
   "title": "Vtubers",
   "description": "A pack containing a set of the most famous vtubers.",
-  "type": "builtin",
   "media": {
     "conflicts": [
       "anilist:145478",

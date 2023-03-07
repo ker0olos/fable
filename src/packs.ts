@@ -26,10 +26,11 @@ import {
   DisaggregatedCharacter,
   DisaggregatedMedia,
   Manifest,
-  ManifestType,
   Media,
   MediaFormat,
   MediaRelation,
+  Pack,
+  PackType,
   Pool,
   Schema,
 } from './types.ts';
@@ -41,23 +42,17 @@ const vtubersManifest = _vtubersManifest as Manifest;
 
 type All = Media | DisaggregatedMedia | Character | DisaggregatedCharacter;
 
-// TODO FIX this should be cached on database for each server
-// updated each time a pack is installed
-let community: Manifest[] | undefined = undefined;
-
-// TODO FIX this should be cached on database for each server
-// updated each time a pack is installed
-let disabled: { [key: string]: boolean } | undefined = undefined;
+const cachedGuilds: Record<string, Pack[]> = {};
 
 const packs = {
   aggregate,
   aliasToArray,
+  all,
   anilist,
   characters,
   formatToString,
   install,
   isDisabled,
-  list,
   media,
   mediaCharacters,
   mediaToString,
@@ -65,11 +60,7 @@ const packs = {
   pool,
   remove,
   searchMany,
-  // used in tests to clear cache
-  clear: () => {
-    community = undefined;
-    disabled = undefined;
-  },
+  cachedGuilds,
 };
 
 async function anilist(
@@ -86,39 +77,194 @@ async function anilist(
     );
 }
 
-function list(type?: ManifestType): Manifest[] {
-  // TODO FIX this should be cached on database for each server
-  if (!community) {
-    // TODO load community packs
-    // (see https://github.com/ker0olos/fable/issues/10)
-    // then map each loaded pack to 'dict'
-    // 1^ block loading packs if name is used for builtins
-    // for example never accept packs named anilist even if the builtin anilist is disabled
-    community = [];
+async function all(
+  { guildId, type }: {
+    guildId?: string;
+    type?: PackType;
+  },
+): Promise<(Pack[])> {
+  const query = gql`
+    query ($guildId: String!) {
+      getGuildInstance(guildId: $guildId) {
+        packs {
+        id
+        installedBy {
+          id
+        }
+        manifest {
+          id
+          title
+          description
+          author
+          image
+          url
+          nsfw
+          media {
+            conflicts
+            new {
+              id
+              type
+              title {
+                english
+                romaji
+                native
+                alternative
+              }
+              format
+              description
+              popularity
+              images {
+                url
+                artist {
+                  username
+                  url
+                }
+              }
+              externalLinks {
+                url
+                site
+              }
+              trailer {
+                id
+                site
+              }
+              relations {
+                relation
+                mediaId
+              }
+              characters {
+                role
+                characterId
+              }
+            }
+          }
+          characters {
+            conflicts
+            new {
+              id
+              name {
+                english
+                romaji
+                native
+                alternative
+              }
+              description
+              popularity
+              gender
+              age
+              images {
+                url
+                artist {
+                  username
+                  url
+                }
+              }
+              externalLinks {
+                url
+                site
+              }
+              media {
+                role
+                mediaId
+              }
+            }
+          }
+        }
+      }
+    }
   }
+  `;
 
   switch (type) {
-    case ManifestType.Builtin:
+    case PackType.Builtin:
       return [
-        anilistManifest,
-        vtubersManifest,
+        { manifest: anilistManifest, type: PackType.Builtin },
+        { manifest: vtubersManifest, type: PackType.Builtin },
       ];
-    case ManifestType.Community:
-      return [...community];
-    default:
-      return [
-        vtubersManifest,
-        ...community,
+    case PackType.Community: {
+      if (!guildId || !config.communityPacks) {
+        return [];
+      }
+
+      // TODO TEST
+      if (packs.cachedGuilds[guildId]) {
+        return packs.cachedGuilds[guildId];
+      }
+
+      const response = (await request<{
+        getGuildInstance: { packs: Pack[] };
+      }>({
+        query,
+        url: faunaUrl,
+        headers: { 'authorization': `Bearer ${config.faunaSecret}` },
+        variables: { guildId },
+      })).getGuildInstance;
+
+      response.packs
+        .forEach((pack) => pack.type = PackType.Community);
+
+      packs.cachedGuilds[guildId] = response.packs;
+
+      return response.packs;
+    }
+    default: {
+      const builtins = [
+        { manifest: vtubersManifest, type: PackType.Builtin },
       ];
+
+      if (!guildId || !config.communityPacks) {
+        return builtins;
+      }
+
+      // TODO TEST
+      if (packs.cachedGuilds[guildId]) {
+        return [...builtins, ...packs.cachedGuilds[guildId]];
+      }
+
+      const response = (await request<{
+        getGuildInstance: { packs: Pack[] };
+      }>({
+        query,
+        url: faunaUrl,
+        headers: { 'authorization': `Bearer ${config.faunaSecret}` },
+        variables: { guildId },
+      })).getGuildInstance;
+
+      response.packs
+        .forEach((pack) => pack.type = PackType.Community);
+
+      packs.cachedGuilds[guildId] = response.packs;
+
+      return [...builtins, ...response.packs];
+    }
   }
 }
 
-function dict(): { [key: string]: Manifest } {
-  return packs.list().reduce(
+// TODO update tests
+function isDisabled(id: string, guildId: string): boolean {
+  const disabled: Record<string, boolean> = {};
+
+  const list = packs.cachedGuilds[guildId];
+
+  // TODO refactor to avoid recalculating
+  list.forEach(({ manifest }) => {
+    manifest.media?.conflicts?.forEach((id) => disabled[id] = true);
+    manifest.characters?.conflicts?.forEach((id) => disabled[id] = true);
+  });
+
+  return disabled[id];
+}
+
+// TODO update tests
+function dict(guildId: string): { [key: string]: Manifest } {
+  const list = packs.cachedGuilds[guildId];
+
+  // TODO refactor to avoid recalculating
+  return list.reduce(
     (
       obj: { [key: string]: Manifest },
-      manifest,
-    ) => (obj[manifest.id] = manifest, obj),
+      pack,
+    ) => (obj[pack.manifest.id] = pack.manifest, obj),
     {},
   );
 }
@@ -132,13 +278,15 @@ function manifestEmbed(manifest: Manifest): discord.Embed {
     .setTitle(manifest.title ?? manifest.id);
 }
 
-function pages(
-  { type, index }: {
-    type: ManifestType;
+// TODO UPDATE TEST
+async function pages(
+  { type, index, guildId }: {
     index: number;
+    type: PackType;
+    guildId: string;
   },
-): discord.Message {
-  const list = packs.list(type);
+): Promise<discord.Message> {
+  const list = await packs.all({ type, guildId });
 
   if (!list.length) {
     const embed = new discord.Embed().setDescription(
@@ -149,21 +297,15 @@ function pages(
       .addEmbed(embed);
   }
 
-  const manifest = list[index];
+  const pack = list[index];
 
-  const disclaimer = manifest.type === ManifestType.Builtin
-    ? new discord.Embed().setDescription(
-      'Builtin packs are developed and maintained directly by Fable',
-    )
-    : new discord.Embed().setDescription(
-      'The following third-party packs were manually installed by your server members',
-    );
+  const disclaimer = new discord.Embed().setDescription(
+    pack.type === PackType.Builtin
+      ? 'Builtin packs are developed and maintained directly by Fable'
+      : 'The following third-party packs were manually installed by your server members',
+  );
 
-  const embed = manifestEmbed(manifest);
-
-  if (!manifest.type) {
-    throw new Error(`Manifest "${manifest.id}" type is undefined`);
-  }
+  const embed = manifestEmbed(pack.manifest);
 
   const message = new discord.Message()
     .addEmbed(disclaimer)
@@ -189,7 +331,6 @@ function install({
   token: string;
   userId: string;
   guildId: string;
-  channelId?: string;
   url: string;
   ref?: string;
   shallow?: boolean;
@@ -226,15 +367,19 @@ function install({
 
       // check installed packs for dependencies and conflicts
 
-      const ids = packs.list().map(({ id }) => id);
+      const list = await packs.all({ guildId });
+
+      const ids = list.map(({ manifest }) => manifest.id);
 
       // if this pack conflicts existing
       const conflicts = (manifest.conflicts ?? []).filter((conflictId) =>
         ids.includes(conflictId)
       ).concat(
         // if existing conflicts this pack
-        packs.list().filter((pack) => pack.conflicts?.includes(manifest.id))
-          .map(({ id }) => id),
+        // TODO UPDATE TEST
+        list
+          .filter((pack) => pack.manifest.conflicts?.includes(manifest.id))
+          .map(({ manifest }) => manifest.id),
       );
 
       const missing = manifest.depends?.filter((dependId) =>
@@ -444,16 +589,19 @@ function parseId(
 }
 
 async function findById<T>(
-  key: 'media' | 'characters',
-  ids: string[],
-  defaultPackId?: string,
+  { key, ids, guildId, defaultPackId }: {
+    key: 'media' | 'characters';
+    ids: string[];
+    guildId: string;
+    defaultPackId?: string;
+  },
 ): Promise<{ [key: string]: T }> {
   const anilistIds: number[] = [];
 
   const results: { [key: string]: T } = {};
 
   // filter out disabled ids
-  ids = ids.filter((id) => !packs.isDisabled(id));
+  ids = ids.filter((id) => !packs.isDisabled(id, guildId));
 
   for (const literal of [...new Set(ids)]) {
     const [packId, id] = parseId(literal, defaultPackId);
@@ -471,9 +619,8 @@ async function findById<T>(
     } else {
       // search for the id in packs
       // deno-lint-ignore no-explicit-any
-      const match: All = (dict()[packId]?.[key]?.new as Array<any>)?.find((
-        m,
-      ) => m.id === id);
+      const match: All = (dict(guildId)[packId]?.[key]?.new as Array<any>)
+        ?.find((m) => m.id === id);
 
       if (match) {
         results[literal] = (match.packId = packId, match) as T;
@@ -496,10 +643,15 @@ async function findById<T>(
 async function searchMany<
   T extends (Media | DisaggregatedMedia | Character | DisaggregatedCharacter),
 >(
-  key: 'media' | 'characters',
-  search: string,
-  threshold = 65,
+  { key, search, guildId, threshold }: {
+    key: 'media' | 'characters';
+    search: string;
+    guildId: string;
+    threshold?: number;
+  },
 ): Promise<T[]> {
+  threshold = threshold ?? 65;
+
   const percentages: Set<number> = new Set();
 
   const possibilities: { [percentage: number]: T[] } = {};
@@ -513,10 +665,12 @@ async function searchMany<
     },
   };
 
-  for (const pack of [anilistPack, ...packs.list()]) {
+  const list = await packs.all({ guildId });
+
+  for (const pack of [anilistPack, ...list.map(({ manifest }) => manifest)]) {
     for (const item of pack[key]?.new ?? []) {
       // filter out disabled ids
-      if (packs.isDisabled(`${pack.id}:${item.id}`)) {
+      if (packs.isDisabled(`${pack.id}:${item.id}`, guildId)) {
         continue;
       }
 
@@ -562,28 +716,34 @@ async function searchMany<
 async function searchOne<
   T extends (Media | DisaggregatedMedia | Character | DisaggregatedCharacter),
 >(
-  key: 'media' | 'characters',
-  search: string,
+  { key, search, guildId }: {
+    key: 'media' | 'characters';
+    search: string;
+    guildId: string;
+  },
 ): Promise<T | undefined> {
-  const possibilities = await searchMany<T>(key, search);
+  const possibilities = await searchMany<T>({ key, search, guildId });
   return possibilities?.[0];
 }
 
-async function media({ ids, search }: {
+async function media({ ids, search, guildId }: {
   ids?: string[];
   search?: string;
+  guildId: string;
 }): Promise<(Media | DisaggregatedMedia)[]> {
   if (ids?.length) {
     const results = await findById<Media | DisaggregatedMedia>(
-      'media',
-      ids,
+      {
+        ids,
+        guildId,
+        key: 'media',
+      },
     );
 
     return Object.values(results);
   } else if (search) {
     const match: Media | DisaggregatedMedia | undefined = await searchOne(
-      'media',
-      search,
+      { key: 'media', search, guildId },
     );
 
     return match ? [match] : [];
@@ -592,22 +752,25 @@ async function media({ ids, search }: {
   }
 }
 
-async function characters({ ids, search }: {
+async function characters({ ids, search, guildId }: {
   ids?: string[];
   search?: string;
+  guildId: string;
 }): Promise<(Character | DisaggregatedCharacter)[]> {
   if (ids?.length) {
     const results = await findById<Character | DisaggregatedCharacter>(
-      'characters',
-      ids,
+      {
+        ids,
+        guildId,
+        key: 'characters',
+      },
     );
 
     return Object.values(results);
   } else if (search) {
     const match: Character | DisaggregatedCharacter | undefined =
       await searchOne(
-        'characters',
-        search,
+        { key: 'characters', search, guildId },
       );
 
     return match ? [match] : [];
@@ -616,8 +779,9 @@ async function characters({ ids, search }: {
   }
 }
 
-async function mediaCharacters({ mediaId, index }: {
+async function mediaCharacters({ mediaId, guildId, index }: {
   mediaId: string;
+  guildId: string;
   index: number;
 }): Promise<
   {
@@ -629,7 +793,7 @@ async function mediaCharacters({ mediaId, index }: {
 > {
   const [packId, id] = parseId(mediaId);
 
-  if (packs.isDisabled(mediaId) || !packId || !id) {
+  if (packs.isDisabled(mediaId, guildId) || !packId || !id) {
     throw new Error('404');
   }
 
@@ -640,7 +804,8 @@ async function mediaCharacters({ mediaId, index }: {
     });
   } else {
     // search for the id in packs
-    const match: Media | DisaggregatedMedia | undefined = dict()[packId]?.media
+    const match: Media | DisaggregatedMedia | undefined = dict(guildId)[packId]
+      ?.media
       ?.new?.find((m) => m.id === id);
 
     if (!match) {
@@ -655,6 +820,7 @@ async function mediaCharacters({ mediaId, index }: {
       media: match,
       start: index,
       end: 1,
+      guildId,
     });
 
     return {
@@ -666,11 +832,12 @@ async function mediaCharacters({ mediaId, index }: {
   }
 }
 
-async function aggregate<T>({ media, character, start, end }: {
+async function aggregate<T>({ media, character, start, end, guildId }: {
   media?: Media | DisaggregatedMedia;
   character?: Character | DisaggregatedCharacter;
   start?: number;
   end?: number;
+  guildId: string;
 }): Promise<T> {
   start = start || 0;
 
@@ -685,13 +852,13 @@ async function aggregate<T>({ media, character, start, end }: {
     ) {
       if (media.relations && 'edges' in media.relations) {
         media.relations.edges = media.relations.edges.filter((edge) =>
-          !packs.isDisabled(`anilist:${edge.node.id}`)
+          !packs.isDisabled(`anilist:${edge.node.id}`, guildId)
         );
       }
 
       if (media.characters && 'edges' in media.characters) {
         media.characters.edges = media.characters.edges.filter((edge) =>
-          !packs.isDisabled(`anilist:${edge.node.id}`)
+          !packs.isDisabled(`anilist:${edge.node.id}`, guildId)
         );
       }
 
@@ -717,8 +884,18 @@ async function aggregate<T>({ media, character, start, end }: {
       ) => characterId);
 
     const [mediaRefs, characterRefs] = await Promise.all([
-      findById<Media>('media', mediaIds, media.packId),
-      findById<Character>('characters', characterIds, media.packId),
+      findById<Media>({
+        guildId,
+        key: 'media',
+        ids: mediaIds,
+        defaultPackId: media.packId,
+      }),
+      findById<Character>({
+        guildId,
+        key: 'characters',
+        ids: characterIds,
+        defaultPackId: media.packId,
+      }),
     ]);
 
     const t: Media = {
@@ -728,7 +905,7 @@ async function aggregate<T>({ media, character, start, end }: {
           ?.filter(({ mediaId }) => {
             // deno-lint-ignore no-non-null-assertion
             const [packId, id] = parseId(mediaId, media!.packId);
-            return !packs.isDisabled(`${packId}:${id}`);
+            return !packs.isDisabled(`${packId}:${id}`, guildId);
           })
           ?.map(({ relation, mediaId }) => ({
             relation,
@@ -740,7 +917,7 @@ async function aggregate<T>({ media, character, start, end }: {
           ?.filter(({ characterId }) => {
             // deno-lint-ignore no-non-null-assertion
             const [packId, id] = parseId(characterId, media!.packId);
-            return !packs.isDisabled(`${packId}:${id}`);
+            return !packs.isDisabled(`${packId}:${id}`, guildId);
           })
           ?.map(({ role, characterId }) => ({
             role,
@@ -753,7 +930,7 @@ async function aggregate<T>({ media, character, start, end }: {
   } else if (character) {
     if (character.media && 'edges' in character.media) {
       character.media.edges = character.media.edges.filter((edge) =>
-        !packs.isDisabled(`anilist:${edge.node.id}`)
+        !packs.isDisabled(`anilist:${edge.node.id}`, guildId)
       );
       return character as T;
     }
@@ -770,7 +947,12 @@ async function aggregate<T>({ media, character, start, end }: {
       );
 
     const [mediaRefs] = [
-      await findById<Media>('media', mediaIds, character.packId),
+      await findById<Media>({
+        guildId,
+        key: 'media',
+        ids: mediaIds,
+        defaultPackId: character.packId,
+      }),
     ];
 
     const t: Character = {
@@ -780,7 +962,7 @@ async function aggregate<T>({ media, character, start, end }: {
           ?.filter(({ mediaId }) => {
             // deno-lint-ignore no-non-null-assertion
             const [packId, id] = parseId(mediaId, character!.packId);
-            return !packs.isDisabled(`${packId}:${id}`);
+            return !packs.isDisabled(`${packId}:${id}`, guildId);
           })
           ?.map(({ role, mediaId }) => ({
             role,
@@ -795,28 +977,30 @@ async function aggregate<T>({ media, character, start, end }: {
   throw new Error();
 }
 
-async function pool({ range, role }: {
+async function pool({ guildId, range, role }: {
+  guildId: string;
   range: number[];
   role?: CharacterRole;
 }): Promise<Pool['']['ALL']> {
-  const t = (await utils.readJson<Pool>('packs/anilist/pool.json'))[
-    JSON.stringify(range)
-  ][
-    role || 'ALL'
-  ];
+  // TODO UPDATE TEST
+  const [list, anilist] = await Promise.all([
+    packs.all({ guildId }),
+    utils.readJson<Pool>('packs/anilist/pool.json'),
+  ]);
 
-  // add characters from packs
-  packs
-    .list()
-    .forEach((pack) => {
-      t.push(
-        ...(pack.characters?.new?.map((character) => ({
-          id: `${pack.id}:${character.id}`,
-        })) ?? []),
-      );
-    });
+  const pool = anilist[JSON.stringify(range)][role || 'ALL'];
 
-  return t;
+  list.forEach(({ manifest }) => {
+    if (manifest.characters && Array.isArray(manifest.characters.new)) {
+      const characters = manifest.characters.new.map(({ id }) => ({
+        id: `${manifest.id}:${id}`,
+      }));
+
+      pool.push(...characters);
+    }
+  });
+
+  return pool;
 }
 
 function aliasToArray(
@@ -835,22 +1019,6 @@ function aliasToArray(
   );
 
   return Array.from(set) as string[];
-}
-
-function isDisabled(id: string): boolean {
-  // TODO FIX this should be cached on database for each server
-  if (!disabled) {
-    disabled = {};
-
-    packs.list().forEach((pack) => {
-      // deno-lint-ignore no-non-null-assertion
-      pack.media?.conflicts?.forEach((id) => disabled![id] = true);
-      // deno-lint-ignore no-non-null-assertion
-      pack.characters?.conflicts?.forEach((id) => disabled![id] = true);
-    });
-  }
-
-  return disabled[id];
 }
 
 function formatToString(format?: MediaFormat): string {

@@ -138,7 +138,7 @@ export type PoolInfo = {
   role?: CharacterRole;
 };
 
-export enum ManifestType {
+export enum PackType {
   Builtin = 'builtin',
   Community = 'community',
 }
@@ -163,8 +163,15 @@ export interface Manifest {
   };
   // properties available for builtin packs only
   commands?: { [key: string]: Command };
-  // properties set internally on load
-  type?: ManifestType;
+}
+
+export interface Pack {
+  id?: string;
+  installedBy?: {
+    id: string;
+  };
+  manifest: Manifest;
+  type: PackType;
 }
 
 // deno-lint-ignore no-namespace

@@ -44,7 +44,9 @@ const variables = {
   },
 };
 
-async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
+async function rngPull(
+  { userId, guildId }: { userId?: string; guildId: string },
+): Promise<Pull> {
   // rng for popularity range
   const { value: range, chance: rangeChance } = utils.rng(
     gacha.variables.ranges,
@@ -57,7 +59,11 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
     // one specific role for the whole pool
     : utils.rng(gacha.variables.roles);
 
-  const pool = await packs.pool({ range, role });
+  const pool = await packs.pool({
+    role,
+    range,
+    guildId,
+  });
 
   let inventory: Schema.Inventory | undefined = undefined;
 
@@ -82,9 +88,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
 
     const characterId = pool.splice(i, 1)[0].id;
 
-    const results = await packs.characters({
-      ids: [characterId],
-    });
+    const results = await packs.characters({ guildId, ids: [characterId] });
 
     // search will return empty if the character is disabled
     if (!results.length) {
@@ -111,6 +115,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
 
     // aggregate will filter out any disabled media
     const candidate = await packs.aggregate<Character>({
+      guildId,
       character: results[0],
       end: 1,
     });
@@ -136,7 +141,7 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
     }
 
     // add character to user's inventory
-    if (userId && guildId) {
+    if (userId) {
       const mutation = gql`
         mutation (
           $userId: String!
@@ -232,13 +237,12 @@ async function rngPull(userId?: string, guildId?: string): Promise<Pull> {
 function start(
   { token, userId, guildId, quiet }: {
     token: string;
+    guildId: string;
     userId?: string;
-    guildId?: string;
-    channelId?: string;
     quiet?: boolean;
   },
 ): discord.Message {
-  gacha.rngPull(userId, guildId)
+  gacha.rngPull({ userId, guildId })
     .then(async (pull) => {
       const media = pull.media;
 

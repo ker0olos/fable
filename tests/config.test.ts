@@ -32,6 +32,7 @@ Deno.test('init', async (test) => {
         'app_id',
         'public_key',
         'fauna_secret',
+        '1',
       ]),
     );
 
@@ -44,6 +45,7 @@ Deno.test('init', async (test) => {
         publicKey: 'public_key',
         faunaSecret: 'fauna_secret',
         sentry: 'sentry_dsn',
+        communityPacks: true,
         origin: undefined,
       });
     } finally {
@@ -76,6 +78,7 @@ Deno.test('init', async (test) => {
         'app_id',
         'public_key',
         'fauna_secret',
+        '0',
       ]),
     );
 
@@ -88,6 +91,7 @@ Deno.test('init', async (test) => {
         publicKey: 'public_key',
         faunaSecret: 'fauna_secret',
         sentry: 'sentry_dsn',
+        communityPacks: false,
         origin: undefined,
       });
     } finally {

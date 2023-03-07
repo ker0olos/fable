@@ -24,21 +24,26 @@ const externalUrlRegex =
   /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoon\.com|amazon\.com)[\S]*$/;
 
 async function media(
-  { id, search, debug }: {
+  { id, search, debug, guildId }: {
     id?: string;
     search?: string;
     debug?: boolean;
+    guildId: string;
   },
 ): Promise<discord.Message> {
   const results: (Media | DisaggregatedMedia)[] = await packs
-    .media(id ? { ids: [id] } : { search });
+    .media(id ? { ids: [id], guildId } : { search, guildId });
 
   if (!results.length) {
     throw new Error('404');
   }
 
   // aggregate the media by populating any references to other media/characters
-  const media = await packs.aggregate<Media>({ media: results[0], end: 4 });
+  const media = await packs.aggregate<Media>({
+    guildId,
+    media: results[0],
+    end: 4,
+  });
 
   if (debug) {
     return mediaDebugMessage(media);
@@ -185,15 +190,14 @@ function mediaDebugMessage(
 async function character(
   { id, userId, guildId, search, debug }: {
     id?: string;
+    guildId: string;
     userId?: string;
-    guildId?: string;
-    channelId?: string;
     search?: string;
     debug?: boolean;
   },
 ): Promise<discord.Message> {
   const results: (Character | DisaggregatedCharacter)[] = await packs
-    .characters(id ? { ids: [id] } : { search });
+    .characters(id ? { ids: [id], guildId } : { search, guildId });
 
   if (!results.length) {
     throw new Error('404');
@@ -202,6 +206,7 @@ async function character(
   const [character, existing] = await Promise.all([
     // aggregate the media by populating any references to other media/character objects
     packs.aggregate<Character>({
+      guildId,
       character: results[0],
       end: 4,
     }),
@@ -455,13 +460,13 @@ function characterDebugMessage(character: Character): discord.Message {
 async function mediaCharacters(
   { mediaId, userId, guildId, index }: {
     mediaId: string;
+    guildId: string;
     userId?: string;
-    guildId?: string;
-    channelId?: string;
     index: number;
   },
 ): Promise<discord.Message> {
   const { character: node, media, next, total } = await packs.mediaCharacters({
+    guildId,
     mediaId,
     index,
   });
@@ -480,13 +485,14 @@ async function mediaCharacters(
     );
   }
 
-  if (packs.isDisabled(`${node.packId}:${node.id}`)) {
+  if (packs.isDisabled(`${node.packId}:${node.id}`, guildId)) {
     throw new NonFetalError('This character was removed or disabled');
   }
 
   const [character, existing] = await Promise.all([
     // aggregate the media by populating any references to other media/character objects
     packs.aggregate<Character>({
+      guildId,
       character: node,
       end: 1,
     }),
