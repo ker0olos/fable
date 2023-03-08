@@ -90,10 +90,12 @@ function pages(
       .addEmbed(
         new discord.Embed().setAuthor({ name: 'Admin Commands' })
           .setDescription([
-            '- `/packs community`: _list all installed community packs_',
             '- `/packs builtin`: _list all the builtin packs_',
+            '- `/packs community`: _list all installed community packs_',
             '- `/packs install`: _install a community pack_',
             '- `/packs remove`: _remove an installed pack_',
+            '',
+            'Those commands require `MANAGE_SERVER` permission by default, but that can be changed in the `Integrations` section of the server settings, although we don\'t recommend that.',
           ].join('\n')),
       ),
   ];

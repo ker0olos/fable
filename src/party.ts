@@ -95,6 +95,8 @@ async function view({
     party?.member5?.rating,
   ];
 
+  const list = await packs.all({ guildId });
+
   const [media, characters] = await Promise.all([
     packs.media({ ids: mediaIds.filter(Boolean), guildId }),
     packs.characters({ ids: ids.filter(Boolean), guildId }),
@@ -118,9 +120,9 @@ async function view({
     if (
       !character ||
       mediaIndex === -1 ||
-      packs.isDisabled(characterId, guildId) ||
+      packs.isDisabled(characterId, list) ||
       // deno-lint-ignore no-non-null-assertion
-      packs.isDisabled(mediaIds[i]!, guildId)
+      packs.isDisabled(mediaIds[i]!, list)
     ) {
       return message.addEmbed(
         new discord.Embed().setDescription(
