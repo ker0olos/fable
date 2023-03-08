@@ -90,8 +90,8 @@ function pages(
       .addEmbed(
         new discord.Embed().setAuthor({ name: 'Admin Commands' })
           .setDescription([
-            '- `/packs community`: _list all installed community packs_',
             '- `/packs builtin`: _list all the builtin packs_',
+            '- `/packs community`: _list all installed community packs_',
             '- `/packs install`: _install a community pack_',
             '- `/packs remove`: _remove an installed pack_',
           ].join('\n')),

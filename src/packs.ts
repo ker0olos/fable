@@ -240,7 +240,6 @@ async function all(
   }
 }
 
-// TODO update tests
 function isDisabled(id: string, guildId: string): boolean {
   const disabled: Record<string, boolean> = {};
 
@@ -255,20 +254,6 @@ function isDisabled(id: string, guildId: string): boolean {
   return disabled[id];
 }
 
-// TODO update tests
-function dict(guildId: string): { [key: string]: Manifest } {
-  const list = packs.cachedGuilds[guildId];
-
-  // TODO refactor to avoid recalculating
-  return list.reduce(
-    (
-      obj: { [key: string]: Manifest },
-      pack,
-    ) => (obj[pack.manifest.id] = pack.manifest, obj),
-    {},
-  );
-}
-
 function manifestEmbed(manifest: Manifest): discord.Embed {
   return new discord.Embed()
     .setUrl(manifest.url)
@@ -278,7 +263,6 @@ function manifestEmbed(manifest: Manifest): discord.Embed {
     .setTitle(manifest.title ?? manifest.id);
 }
 
-// TODO UPDATE TEST
 async function pages(
   { type, index, guildId }: {
     index: number;
@@ -617,10 +601,14 @@ async function findById<T>(
         anilistIds.push(n);
       }
     } else {
+      const list = await packs.all({ guildId });
+
+      const pack = list.find(({ manifest }) => manifest.id === packId);
+
       // search for the id in packs
-      // deno-lint-ignore no-explicit-any
-      const match: All = (dict(guildId)[packId]?.[key]?.new as Array<any>)
-        ?.find((m) => m.id === id);
+      const match = (pack?.manifest[key]?.new as Array<
+        DisaggregatedCharacter | DisaggregatedMedia
+      >)?.find((m) => m.id === id);
 
       if (match) {
         results[literal] = (match.packId = packId, match) as T;
@@ -803,10 +791,12 @@ async function mediaCharacters({ mediaId, guildId, index }: {
       index,
     });
   } else {
+    const list = await packs.all({ guildId });
+
+    const pack = list.find(({ manifest }) => manifest.id === packId);
+
     // search for the id in packs
-    const match: Media | DisaggregatedMedia | undefined = dict(guildId)[packId]
-      ?.media
-      ?.new?.find((m) => m.id === id);
+    const match = pack?.manifest.media?.new?.find((m) => m.id === id);
 
     if (!match) {
       return { next: false };
