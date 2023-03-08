@@ -58,7 +58,7 @@ const packs = {
   mediaToString,
   pages,
   pool,
-  remove,
+  uninstall,
   searchMany,
   cachedGuilds,
 };
@@ -252,7 +252,6 @@ function isDisabled(id: string, list: Pack[]): boolean {
 
 function manifestEmbed(manifest: Manifest): discord.Embed {
   return new discord.Embed()
-    .setUrl(manifest.url)
     .setDescription(manifest.description)
     .setAuthor({ name: manifest.author })
     .setThumbnail({ url: manifest.image, default: false, proxy: false })
@@ -290,6 +289,14 @@ async function pages(
   const message = new discord.Message()
     .addEmbed(disclaimer)
     .addEmbed(embed);
+
+  if (pack.manifest.url) {
+    message.addComponents([
+      new discord.Component()
+        .setLabel('Homepage')
+        .setUrl(pack.manifest.url),
+    ]);
+  }
 
   return discord.Message.page({
     index,
@@ -454,8 +461,11 @@ function install({
       })).addPackToInstance;
 
       if (response.ok) {
+        // clear guild cache after install
+        delete cachedGuilds[guildId];
+
         message
-          .addEmbed(new discord.Embed().setDescription('INSTALLED'))
+          .addEmbed(new discord.Embed().setDescription('Installed'))
           .addEmbed(manifestEmbed(response.manifest));
 
         return message.patch(token);
@@ -493,7 +503,7 @@ function install({
     .setType(discord.MessageType.Loading);
 }
 
-async function remove({
+async function uninstall({
   guildId,
   manifestId,
 }: {
@@ -537,8 +547,11 @@ async function remove({
   })).removePackFromInstance;
 
   if (response.ok) {
+    // clear guild cache after uninstall
+    delete cachedGuilds[guildId];
+
     return message
-      .addEmbed(new discord.Embed().setDescription('REMOVED'))
+      .addEmbed(new discord.Embed().setDescription('Uninstalled'))
       .addEmbed(manifestEmbed(response.manifest));
   } else {
     switch (response.error) {

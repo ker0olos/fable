@@ -6230,6 +6230,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
   await test.step('builtin packs', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
+      url: 'https://example.org',
     };
 
     const listStub = stub(
@@ -6275,6 +6276,12 @@ Deno.test('/packs [builtin-community]', async (test) => {
                 style: 2,
                 type: 2,
               },
+              {
+                label: 'Homepage',
+                url: 'https://example.org',
+                style: 5,
+                type: 2,
+              },
             ],
           }],
           embeds: [{
@@ -6285,7 +6292,6 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 'rich',
             description: undefined,
             title: 'pack-id',
-            url: undefined,
           }],
         },
       });
@@ -6352,7 +6358,6 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 'rich',
             description: undefined,
             title: 'pack-id',
-            url: undefined,
           }],
         },
       });
@@ -6416,7 +6421,6 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 'rich',
             description: undefined,
             title: 'Title',
-            url: undefined,
           }],
         },
       });
@@ -7349,7 +7353,7 @@ The .id string must match ^[-_a-z0-9]+$
           embeds: [
             {
               type: 'rich',
-              description: 'INSTALLED',
+              description: 'Installed',
             },
             {
               type: 'rich',
@@ -7357,7 +7361,6 @@ The .id string must match ^[-_a-z0-9]+$
               author: {
                 name: 'author',
               },
-              url: 'url',
               description: 'description',
               thumbnail: {
                 url: 'image',
@@ -7379,7 +7382,7 @@ The .id string must match ^[-_a-z0-9]+$
   });
 });
 
-Deno.test('/packs remove', async (test) => {
+Deno.test('/packs uninstall', async (test) => {
   await test.step('normal', async () => {
     const fetchStub = stub(
       globalThis,
@@ -7404,7 +7407,7 @@ Deno.test('/packs remove', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await packs.remove({
+      const message = await packs.uninstall({
         guildId: 'guild_id',
         manifestId: 'manifest_id',
       });
@@ -7416,12 +7419,11 @@ Deno.test('/packs remove', async (test) => {
           components: [],
           embeds: [
             {
-              description: 'REMOVED',
+              description: 'Uninstalled',
               type: 'rich',
             },
             {
               type: 'rich',
-              url: undefined,
               description: undefined,
               title: 'manifest_id',
             },
@@ -7460,7 +7462,7 @@ Deno.test('/packs remove', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await packs.remove({
+          await packs.uninstall({
             guildId: 'guild_id',
             manifestId: 'manifest_id',
           }),
@@ -7499,7 +7501,7 @@ Deno.test('/packs remove', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await packs.remove({
+          await packs.uninstall({
             guildId: 'guild_id',
             manifestId: 'manifest_id',
           }),

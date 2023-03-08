@@ -29,6 +29,10 @@ if (import.meta.main) {
     throw new Error('FAUNA_SECRET is not defined');
   }
 
+  type Mode = 'replace' | 'override';
+
+  const mode: Mode = 'replace';
+
   const p = Deno.run({
     cmd: [
       'fauna',
@@ -39,7 +43,7 @@ if (import.meta.main) {
       '--scheme',
       'https',
       '--mode',
-      'replace',
+      mode,
       '--domain',
       'db.us.fauna.com',
       '--graphqlHost',
