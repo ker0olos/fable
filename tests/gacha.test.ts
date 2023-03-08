@@ -114,8 +114,6 @@ Deno.test('filter invalid pools', async (test) => {
 
     const listStub = stub(packs, 'all', () => Promise.resolve([]));
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     try {
       await assertRejects(
         async () =>
@@ -135,7 +133,6 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 
@@ -181,8 +178,6 @@ Deno.test('filter invalid pools', async (test) => {
 
     const listStub = stub(packs, 'all', () => Promise.resolve([]));
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     try {
       await assertRejects(
         async () =>
@@ -202,7 +197,6 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 
@@ -249,8 +243,6 @@ Deno.test('filter invalid pools', async (test) => {
 
     const listStub = stub(packs, 'all', () => Promise.resolve([]));
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     try {
       await assertRejects(
         async () =>
@@ -270,7 +262,6 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 
@@ -318,8 +309,6 @@ Deno.test('filter invalid pools', async (test) => {
 
     const listStub = stub(packs, 'all', () => Promise.resolve([]));
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     try {
       await assertRejects(
         async () =>
@@ -339,7 +328,6 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 
@@ -388,8 +376,6 @@ Deno.test('filter invalid pools', async (test) => {
 
     const listStub = stub(packs, 'all', () => Promise.resolve([]));
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     try {
       await assertRejects(
         async () =>
@@ -409,7 +395,6 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 
@@ -457,8 +442,6 @@ Deno.test('filter invalid pools', async (test) => {
 
     const listStub = stub(packs, 'all', () => Promise.resolve([]));
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     try {
       await assertRejects(
         async () =>
@@ -478,7 +461,6 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 
@@ -535,8 +517,6 @@ Deno.test('filter invalid pools', async (test) => {
       () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     packs.cachedGuilds = {
       'guild_id': [{ manifest, type: PackType.Community }],
     };
@@ -562,7 +542,6 @@ Deno.test('filter invalid pools', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 });
@@ -618,7 +597,11 @@ Deno.test('disabled', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+    );
 
     packs.cachedGuilds = {
       'guild_id': [{ manifest, type: PackType.Community }],
@@ -697,7 +680,11 @@ Deno.test('disabled', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+    );
 
     packs.cachedGuilds = {
       'guild_id': [{ manifest, type: PackType.Community }],
@@ -777,12 +764,6 @@ Deno.test('valid pool', async (test) => {
       () => Promise.resolve([]),
     );
 
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      () => false,
-    );
-
     try {
       assertEquals(
         await gacha.rngPull({
@@ -842,7 +823,6 @@ Deno.test('valid pool', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 
@@ -892,12 +872,6 @@ Deno.test('valid pool', async (test) => {
       packs,
       'all',
       () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      () => false,
     );
 
     try {
@@ -959,7 +933,6 @@ Deno.test('valid pool', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 
@@ -1010,12 +983,6 @@ Deno.test('valid pool', async (test) => {
       packs,
       'all',
       () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      () => false,
     );
 
     try {
@@ -1078,7 +1045,6 @@ Deno.test('valid pool', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 
@@ -1133,12 +1099,6 @@ Deno.test('valid pool', async (test) => {
       packs,
       'all',
       () => Promise.resolve([{ manifest, type: PackType.Community }]),
-    );
-
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      () => false,
     );
 
     packs.cachedGuilds = {
@@ -1206,7 +1166,6 @@ Deno.test('valid pool', async (test) => {
       readJsonStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 });
@@ -1288,12 +1247,6 @@ Deno.test('adding character to inventory', async (test) => {
       () => Promise.resolve([]),
     );
 
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      () => false,
-    );
-
     try {
       await assertRejects(
         async () =>
@@ -1312,7 +1265,6 @@ Deno.test('adding character to inventory', async (test) => {
       rngStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 
@@ -1395,12 +1347,6 @@ Deno.test('adding character to inventory', async (test) => {
       () => Promise.resolve([]),
     );
 
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      () => false,
-    );
-
     try {
       await assertRejects(
         async () =>
@@ -1419,7 +1365,6 @@ Deno.test('adding character to inventory', async (test) => {
       rngStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 
@@ -1500,8 +1445,6 @@ Deno.test('adding character to inventory', async (test) => {
 
     const listStub = stub(packs, 'all', () => Promise.resolve([]));
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     try {
       assertObjectMatch(
         await gacha.rngPull({
@@ -1544,7 +1487,6 @@ Deno.test('adding character to inventory', async (test) => {
       rngStub.restore();
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
     }
   });
 });

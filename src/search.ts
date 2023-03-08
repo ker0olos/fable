@@ -465,6 +465,8 @@ async function mediaCharacters(
     index: number;
   },
 ): Promise<discord.Message> {
+  const list = await packs.all({ guildId });
+
   const { character: node, media, next, total } = await packs.mediaCharacters({
     guildId,
     mediaId,
@@ -485,7 +487,7 @@ async function mediaCharacters(
     );
   }
 
-  if (packs.isDisabled(`${node.packId}:${node.id}`, guildId)) {
+  if (await packs.isDisabled(`${node.packId}:${node.id}`, list)) {
     throw new NonFetalError('This character was removed or disabled');
   }
 

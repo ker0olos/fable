@@ -86,7 +86,7 @@ Deno.test('reserved ids', async () => {
 });
 
 Deno.test('disabled', async (test) => {
-  await test.step('disabled media', () => {
+  await test.step('disabled media', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
       media: {
@@ -105,14 +105,16 @@ Deno.test('disabled', async (test) => {
     };
 
     try {
-      assert(packs.isDisabled('another-pack:1', 'guild_id'));
+      const list = await packs.all({ guildId: 'guild_id' });
+
+      assert(packs.isDisabled('another-pack:1', list));
     } finally {
       packs.cachedGuilds = {};
       listStub.restore();
     }
   });
 
-  await test.step('disabled character', () => {
+  await test.step('disabled character', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
       characters: {
@@ -131,14 +133,16 @@ Deno.test('disabled', async (test) => {
     };
 
     try {
-      assert(packs.isDisabled('another-pack:1', 'guild_id'));
+      const list = await packs.all({ guildId: 'guild_id' });
+
+      assert(packs.isDisabled('another-pack:1', list));
     } finally {
       packs.cachedGuilds = {};
       listStub.restore();
     }
   });
 
-  await test.step('none', () => {
+  await test.step('none', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
       characters: {
@@ -157,7 +161,9 @@ Deno.test('disabled', async (test) => {
     };
 
     try {
-      assert(!packs.isDisabled('another-pack:1', 'guild_id'));
+      const list = await packs.all({ guildId: 'guild_id' });
+
+      assert(!packs.isDisabled('another-pack:1', list));
     } finally {
       packs.cachedGuilds = {};
       listStub.restore();
@@ -2948,7 +2954,7 @@ Deno.test('aggregate media', async (test) => {
       );
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
+      assertSpyCalls(listStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -2998,7 +3004,7 @@ Deno.test('aggregate media', async (test) => {
       );
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
+      assertSpyCalls(listStub, 3);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -3690,7 +3696,7 @@ Deno.test('aggregate characters', async (test) => {
       );
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
+      assertSpyCalls(listStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -3735,7 +3741,7 @@ Deno.test('aggregate characters', async (test) => {
       );
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
+      assertSpyCalls(listStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();
