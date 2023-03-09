@@ -358,6 +358,12 @@ function install({
 
       const ids = list.map(({ manifest }) => manifest.id);
 
+      if (ids.includes(manifest.id)) {
+        throw new NonFetalError(
+          'A pack with the same id is already installed.',
+        );
+      }
+
       // if this pack conflicts existing
       const conflicts = (manifest.conflicts ?? []).filter((conflictId) =>
         ids.includes(conflictId)
