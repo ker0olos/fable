@@ -13,6 +13,8 @@ import { Client } from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.js';
 import getUserInventory from './models/get_user_inventory.ts';
 import getUserCollection from './models/get_user_collection.ts';
 
+import addVoteToUser from './models/add_vote_to_user.ts';
+
 import findCharacter from './models/find_character.ts';
 
 import addPackToInstance from './models/add_pack_to_instance.ts';
@@ -34,6 +36,7 @@ if (import.meta.main) {
   const all = [
     getUserInventory(client),
     getUserCollection(client),
+    addVoteToUser(client),
     findCharacter(client),
     addPackToInstance(client),
     addCharacterToInventory(client),

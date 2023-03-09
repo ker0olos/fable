@@ -14,6 +14,9 @@ import {
 
 export interface User {
   id: StringExpr;
+  lastVote?: TimeExpr;
+  totalVotes?: NumberExpr;
+  availableVotes?: NumberExpr;
   inventories: RefExpr[];
   badges: RefExpr[];
 }

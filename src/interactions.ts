@@ -10,6 +10,8 @@ import gacha from './gacha.ts';
 
 import help from './help.ts';
 
+import webhooks from './webhooks.ts';
+
 import config, { initConfig } from './config.ts';
 
 import { Character, Media, PackType } from './types.ts';
@@ -647,6 +649,7 @@ if (import.meta.main) {
   utils.serve({
     '/': handler,
     '/external/*': utils.proxy,
+    '/webhooks/topgg': webhooks.topgg,
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       intervene: override(604800),
       baseUrl: import.meta.url,

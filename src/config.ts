@@ -12,6 +12,7 @@ const config: {
   appId?: string;
   publicKey?: string;
   faunaSecret?: string;
+  topggSecret?: string;
   sentry?: string;
   origin?: string;
   communityPacks?: boolean;
@@ -20,6 +21,7 @@ const config: {
   appId: undefined,
   publicKey: undefined,
   faunaSecret: undefined,
+  topggSecret: undefined,
   sentry: undefined,
   origin: undefined,
   communityPacks: undefined,
@@ -43,6 +45,7 @@ export async function initConfig(): Promise<void> {
     config.publicKey = Deno.env.get('PUBLIC_KEY');
 
     config.faunaSecret = Deno.env.get('FAUNA_SECRET');
+    config.topggSecret = Deno.env.get('TOPGG_SECRET');
 
     // community packs feature flag
     config.communityPacks = Boolean(Deno.env.get('COMMUNITY_PACKS') === '1');
