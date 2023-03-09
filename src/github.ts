@@ -188,7 +188,7 @@ async function manifest(
   const results = await Promise.all(manifests);
 
   if (!results.length) {
-    throw new NonFetalError('No `manifest.json` found in repo root.');
+    throw new NonFetalError('No `manifest.json` found');
   }
 
   return {

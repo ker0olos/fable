@@ -251,7 +251,7 @@ Deno.test('get manifest', async (test) => {
     }
   });
 
-  await test.step('no manifest at root', async () => {
+  await test.step('no manifest.json', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -279,7 +279,7 @@ Deno.test('get manifest', async (test) => {
       await assertRejects(
         () => github.manifest({ url: 'username/reponame' }),
         NonFetalError,
-        'No `manifest.json` found in repo root.',
+        'No `manifest.json` found',
       );
 
       assertSpyCall(fetchStub, 0, {
