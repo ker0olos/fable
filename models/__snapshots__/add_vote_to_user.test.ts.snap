@@ -1,0 +1,472 @@
+export const snapshot = {};
+
+snapshot[`model 1`] = `
+[
+  Expr {
+    raw: {
+      else: Expr {
+        raw: {
+          create_function: Expr {
+            raw: {
+              object: {
+                body: Expr {
+                  raw: {
+                    query: Expr {
+                      raw: {
+                        expr: Expr {
+                          raw: {
+                            in: Expr {
+                              raw: {
+                                in: Expr {
+                                  raw: {
+                                    object: {
+                                      ok: true,
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    user: Expr {
+                                      raw: {
+                                        params: Expr {
+                                          raw: {
+                                            object: {
+                                              data: Expr {
+                                                raw: {
+                                                  object: {
+                                                    availableVotes: Expr {
+                                                      raw: {
+                                                        add: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                default: 0,
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: Expr {
+                                                                  raw: [
+                                                                    "data",
+                                                                    "availableVotes",
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                            1,
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    lastVote: Expr {
+                                                      raw: {
+                                                        now: null,
+                                                      },
+                                                    },
+                                                    totalVotes: Expr {
+                                                      raw: {
+                                                        add: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                default: 0,
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: Expr {
+                                                                  raw: [
+                                                                    "data",
+                                                                    "totalVotes",
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                            1,
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        update: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                var: "user",
+                                              },
+                                            },
+                                            select: "ref",
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                user: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            create: Expr {
+                                              raw: {
+                                                collection: "user",
+                                              },
+                                            },
+                                            params: Expr {
+                                              raw: {
+                                                object: {
+                                                  data: Expr {
+                                                    raw: {
+                                                      object: {
+                                                        badges: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                id: "357600097731608662",
+                                                                ref: Expr {
+                                                                  raw: {
+                                                                    collection: "badge",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
+                                                        id: Expr {
+                                                          raw: {
+                                                            var: "userId",
+                                                          },
+                                                        },
+                                                        inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            match: Expr {
+                                              raw: {
+                                                index: "users_discord_id",
+                                              },
+                                            },
+                                            terms: Expr {
+                                              raw: {
+                                                var: "userId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                              {
+                                weekend: Expr {
+                                  raw: {
+                                    var: "weekend",
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: Expr {
+                          raw: [
+                            "userId",
+                            "weekend",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "add_vote_to_user",
+              },
+            },
+          },
+        },
+      },
+      if: Expr {
+        raw: {
+          exists: Expr {
+            raw: {
+              function: "add_vote_to_user",
+            },
+          },
+        },
+      },
+      then: Expr {
+        raw: {
+          params: Expr {
+            raw: {
+              object: {
+                body: Expr {
+                  raw: {
+                    query: Expr {
+                      raw: {
+                        expr: Expr {
+                          raw: {
+                            in: Expr {
+                              raw: {
+                                in: Expr {
+                                  raw: {
+                                    object: {
+                                      ok: true,
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    user: Expr {
+                                      raw: {
+                                        params: Expr {
+                                          raw: {
+                                            object: {
+                                              data: Expr {
+                                                raw: {
+                                                  object: {
+                                                    availableVotes: Expr {
+                                                      raw: {
+                                                        add: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                default: 0,
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: Expr {
+                                                                  raw: [
+                                                                    "data",
+                                                                    "availableVotes",
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                            1,
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    lastVote: Expr {
+                                                      raw: {
+                                                        now: null,
+                                                      },
+                                                    },
+                                                    totalVotes: Expr {
+                                                      raw: {
+                                                        add: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                default: 0,
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: Expr {
+                                                                  raw: [
+                                                                    "data",
+                                                                    "totalVotes",
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                            1,
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        update: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                var: "user",
+                                              },
+                                            },
+                                            select: "ref",
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                user: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            create: Expr {
+                                              raw: {
+                                                collection: "user",
+                                              },
+                                            },
+                                            params: Expr {
+                                              raw: {
+                                                object: {
+                                                  data: Expr {
+                                                    raw: {
+                                                      object: {
+                                                        badges: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                id: "357600097731608662",
+                                                                ref: Expr {
+                                                                  raw: {
+                                                                    collection: "badge",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
+                                                        id: Expr {
+                                                          raw: {
+                                                            var: "userId",
+                                                          },
+                                                        },
+                                                        inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            match: Expr {
+                                              raw: {
+                                                index: "users_discord_id",
+                                              },
+                                            },
+                                            terms: Expr {
+                                              raw: {
+                                                var: "userId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                              {
+                                weekend: Expr {
+                                  raw: {
+                                    var: "weekend",
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: Expr {
+                          raw: [
+                            "userId",
+                            "weekend",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "add_vote_to_user",
+              },
+            },
+          },
+          update: Expr {
+            raw: {
+              function: "add_vote_to_user",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;

@@ -6,7 +6,7 @@
 
 <h1 align="center">
 
-[![top.gg page](https://top.gg/api/widget/upvotes/1041970851559522304.svg)](https://top.gg/bot/1041970851559522304)
+[![top.gg page](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
 
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
 

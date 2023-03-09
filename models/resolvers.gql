@@ -29,6 +29,10 @@ type Query {
 
 type Mutation {
   #
+  addVoteToUser(userId: String!, weekend: Boolean!): Response!
+    @resolver(name: "add_vote_to_user")
+
+  #
   addPackToInstance(userId: String!, guildId: String!, githubId: Int!, manifest: ManifestInput!): Response!
     @resolver(name: "add_pack_to_instance")
   
