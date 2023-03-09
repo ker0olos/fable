@@ -24,7 +24,7 @@ import help from '../src/help.ts';
 
 import { NonFetalError, NoPermissionError } from '../src/errors.ts';
 
-import { PackType } from '../src/types.ts';
+import { Manifest, PackType } from '../src/types.ts';
 
 Deno.test('search command handlers', async (test) => {
   await test.step('search', async () => {
@@ -3480,9 +3480,18 @@ Deno.test('packs command handlers', async (test) => {
       body,
     } as any));
 
-    const packsStub = stub(packs, 'uninstall', () => ({
-      send: () => true,
-    } as any));
+    const manifest: Manifest = {
+      id: 'manifest_id',
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Community },
+        ]),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -3518,18 +3527,154 @@ Deno.test('packs command handlers', async (test) => {
         }],
       });
 
-      assertSpyCall(packsStub, 0, {
-        args: [{
-          guildId: 'guild_id',
-          manifestId: 'manifest_id',
-        }],
-      });
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
 
-      assertEquals(response, true as any);
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals({
+        type: 4,
+        data: {
+          flags: 64,
+          embeds: [
+            {
+              type: 'rich',
+              title: 'manifest_id',
+            },
+            {
+              type: 'rich',
+              description:
+                `**Are you sure you want to uninstall this pack?**\n\nUninstalling a pack will disable any characters your server members have from the pack, which may be met with negative reactions.`,
+            },
+          ],
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'uninstall=manifest_id',
+              label: 'Confirm',
+              style: 2,
+              type: 2,
+            }, {
+              custom_id: 'cancel',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
+            }],
+          }],
+        },
+      }, json);
     } finally {
       delete config.publicKey;
 
-      packsStub.restore();
+      listStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('packs uninstall (not found)', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      data: {
+        name: 'packs',
+        options: [{
+          type: 1,
+          name: `uninstall`,
+          options: [{
+            name: 'id',
+            value: 'manifest_id',
+          }],
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals({
+        type: 4,
+        data: {
+          flags: 64,
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Found _nothing_ matching that query!',
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      }, json);
+    } finally {
+      delete config.publicKey;
+
+      listStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
@@ -3654,22 +3799,20 @@ Deno.test('unimplemented interaction', async () => {
     assertEquals(response?.status, 200);
     assertEquals(response?.statusText, 'OK');
 
-    const form = new FormData();
-
-    form.append(
-      'payload_json',
-      JSON.stringify({
-        type: 4,
-        data: {
-          embeds: [],
-          attachments: [],
-          components: [],
-          content: 'Unimplemented',
-        },
-      }),
+    const json = JSON.parse(
+      // deno-lint-ignore no-non-null-assertion
+      (await response?.formData()).get('payload_json')!.toString(),
     );
 
-    assertEquals(await response?.formData(), form);
+    assertEquals(json, {
+      type: 4,
+      data: {
+        embeds: [],
+        attachments: [],
+        components: [],
+        content: 'Unimplemented',
+      },
+    });
   } finally {
     delete config.publicKey;
 
@@ -3819,26 +3962,23 @@ Deno.test('not found error', async () => {
     assertEquals(response?.status, 200);
     assertEquals(response?.statusText, 'OK');
 
-    const form = new FormData();
-
-    form.append(
-      'payload_json',
-      JSON.stringify({
-        type: 4,
-        data: {
-          embeds: [{
-            type: 'rich',
-            description: 'Found _nothing_ matching that query!',
-          }],
-          attachments: [],
-          components: [],
-          content: undefined,
-          flags: 64,
-        },
-      }),
+    const json = JSON.parse(
+      // deno-lint-ignore no-non-null-assertion
+      (await response?.formData()).get('payload_json')!.toString(),
     );
 
-    assertEquals(await response?.formData(), form);
+    assertEquals(json, {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          description: 'Found _nothing_ matching that query!',
+        }],
+        attachments: [],
+        components: [],
+        flags: 64,
+      },
+    });
   } finally {
     delete config.publicKey;
 
@@ -3917,26 +4057,23 @@ Deno.test('not fetal error', async () => {
     assertEquals(response?.status, 200);
     assertEquals(response?.statusText, 'OK');
 
-    const form = new FormData();
-
-    form.append(
-      'payload_json',
-      JSON.stringify({
-        type: 4,
-        data: {
-          embeds: [{
-            type: 'rich',
-            description: 'not_fetal',
-          }],
-          attachments: [],
-          components: [],
-          content: undefined,
-          flags: 64,
-        },
-      }),
+    const json = JSON.parse(
+      // deno-lint-ignore no-non-null-assertion
+      (await response?.formData()).get('payload_json')!.toString(),
     );
 
-    assertEquals(await response?.formData(), form);
+    assertEquals(json, {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          description: 'not_fetal',
+        }],
+        attachments: [],
+        components: [],
+        flags: 64,
+      },
+    });
   } finally {
     delete config.publicKey;
 
@@ -4015,26 +4152,23 @@ Deno.test('no permission error', async () => {
     assertEquals(response?.status, 200);
     assertEquals(response?.statusText, 'OK');
 
-    const form = new FormData();
-
-    form.append(
-      'payload_json',
-      JSON.stringify({
-        type: 4,
-        data: {
-          embeds: [{
-            type: 'rich',
-            description: 'You don\'t permission to complete this interaction!',
-          }],
-          attachments: [],
-          components: [],
-          content: undefined,
-          flags: 64,
-        },
-      }),
+    const json = JSON.parse(
+      // deno-lint-ignore no-non-null-assertion
+      (await response?.formData()).get('payload_json')!.toString(),
     );
 
-    assertEquals(await response?.formData(), form);
+    assertEquals(json, {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          description: 'You don\'t permission to complete this interaction!',
+        }],
+        attachments: [],
+        components: [],
+        flags: 64,
+      },
+    });
   } finally {
     delete config.publicKey;
 
@@ -4116,26 +4250,23 @@ Deno.test('internal error', async () => {
     assertEquals(response?.status, 200);
     assertEquals(response?.statusText, 'OK');
 
-    const form = new FormData();
-
-    form.append(
-      'payload_json',
-      JSON.stringify({
-        type: 4,
-        data: {
-          embeds: [{
-            type: 'rich',
-            description:
-              'An Internal Error occurred and was reported.\n```ref_id: error_id```',
-          }],
-          attachments: [],
-          components: [],
-          content: undefined,
-        },
-      }),
+    const json = JSON.parse(
+      // deno-lint-ignore no-non-null-assertion
+      (await response?.formData()).get('payload_json')!.toString(),
     );
 
-    assertEquals(await response?.formData(), form);
+    assertEquals(json, {
+      type: 4,
+      data: {
+        embeds: [{
+          type: 'rich',
+          description:
+            'An Internal Error occurred and was reported.\n```ref_id: error_id```',
+        }],
+        attachments: [],
+        components: [],
+      },
+    });
   } finally {
     delete config.sentry;
     delete config.publicKey;

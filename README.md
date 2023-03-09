@@ -107,9 +107,7 @@ you can go tell discord to add custom prefixes to "slash" commands instead of
 > How to remove/uninstall a pack from my server?
 
 Like installing packs, run `/packs uninstall [pack-id]`. If you don't know the
-id of the pack you want to uninstall, then use `/packs community` instead.\
-Uninstall a pack will disable any characters your server members have from said
-pack.
+id of the pack you want to uninstall, then use `/packs community` instead.
 
 > How are you keeping Fable free?
 

@@ -199,8 +199,6 @@ export const handler = async (r: Request) => {
             distance[b.manifest.id] - distance[a.manifest.id]
           );
 
-          console.log(list);
-
           list?.forEach(({ manifest }) => {
             message.addSuggestions({
               name: `${manifest.title ?? manifest.id}`,
@@ -380,10 +378,32 @@ export const handler = async (r: Request) => {
                 }).send();
               }
               case 'uninstall': {
-                return (await packs.uninstall({
+                const list = await packs.all({
+                  type: PackType.Community,
                   guildId,
-                  manifestId: options['id'] as string,
-                })).send();
+                });
+
+                const target = list.find(({ manifest }) =>
+                  manifest.id === options['id']
+                );
+
+                if (!target) {
+                  throw new Error('404');
+                }
+
+                const message = new discord.Message()
+                  .addEmbed(packs.manifestEmbed({
+                    manifest: target.manifest,
+                    installedBy: target.installedBy?.id,
+                  }));
+
+                return discord.Message.dialog({
+                  message,
+                  type: 'uninstall',
+                  confirm: options['id'] as string,
+                  description:
+                    `**Are you sure you want to uninstall this pack?**\n\nUninstalling a pack will disable any characters your server members have from the pack, which may be met with negative reactions.`,
+                }).setFlags(discord.MessageFlags.Ephemeral).send();
               }
               default:
                 break;
@@ -539,6 +559,20 @@ export const handler = async (r: Request) => {
             }))
               .setType(discord.MessageType.Update)
               .send();
+          }
+          case 'uninstall': {
+            // deno-lint-ignore no-non-null-assertion
+            const manifestId = customValues![0];
+
+            return (await packs.uninstall({
+              guildId,
+              manifestId,
+            })).setType(discord.MessageType.New).send();
+          }
+          case 'cancel': {
+            return new discord.Message()
+              .addEmbed(new discord.Embed().setDescription('Cancelled'))
+              .setType(discord.MessageType.Update).send();
           }
           default:
             break;

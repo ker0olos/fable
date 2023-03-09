@@ -781,6 +781,27 @@ export class Message {
     return message.insertComponents(group);
   }
 
+  static dialog(
+    { type, description, message, confirm }: {
+      type: string;
+      description: string;
+      confirm: string;
+      message: Message;
+    },
+  ): Message {
+    return message
+      .addEmbed(new Embed().setDescription(description))
+      .insertComponents([
+        new Component()
+          .setId(type, confirm)
+          .setLabel('Confirm'),
+        new Component()
+          .setStyle(ButtonStyle.Red)
+          .setLabel('Cancel')
+          .setId('cancel'),
+      ]);
+  }
+
   static internal(id: string): Message {
     return new Message()
       .addEmbed(

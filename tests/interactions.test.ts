@@ -6229,8 +6229,10 @@ Deno.test('/party remove', async (test) => {
 Deno.test('/packs [builtin-community]', async (test) => {
   await test.step('builtin packs', async () => {
     const manifest: Manifest = {
-      id: 'pack-id',
-      url: 'https://example.org',
+      author: 'author',
+      id: 'manifest_id',
+      description: 'description',
+      image: 'image',
     };
 
     const listStub = stub(
@@ -6276,12 +6278,6 @@ Deno.test('/packs [builtin-community]', async (test) => {
                 style: 2,
                 type: 2,
               },
-              {
-                label: 'Homepage',
-                url: 'https://example.org',
-                style: 5,
-                type: 2,
-              },
             ],
           }],
           embeds: [{
@@ -6290,8 +6286,14 @@ Deno.test('/packs [builtin-community]', async (test) => {
               'Builtin packs are developed and maintained directly by Fable',
           }, {
             type: 'rich',
-            description: undefined,
-            title: 'pack-id',
+            title: 'manifest_id',
+            description: 'description',
+            footer: {
+              text: 'author',
+            },
+            thumbnail: {
+              url: 'image',
+            },
           }],
         },
       });
@@ -6302,7 +6304,10 @@ Deno.test('/packs [builtin-community]', async (test) => {
 
   await test.step('community packs', async () => {
     const manifest: Manifest = {
-      id: 'pack-id',
+      author: 'author',
+      id: 'manifest_id',
+      description: 'description',
+      image: 'image',
     };
 
     const listStub = stub(
@@ -6356,7 +6361,82 @@ Deno.test('/packs [builtin-community]', async (test) => {
               'The following third-party packs were manually installed by your server members',
           }, {
             type: 'rich',
-            description: undefined,
+            title: 'manifest_id',
+            description: 'description',
+            footer: {
+              text: 'author',
+            },
+            thumbnail: {
+              url: 'image',
+            },
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
+  });
+
+  await test.step('community packs with installer', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([{
+          manifest,
+          type: PackType.Community,
+          installedBy: {
+            id: 'user_id',
+          },
+        }]),
+    );
+
+    try {
+      const message = await packs.pages({
+        type: PackType.Community,
+        guildId: 'guild_id',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'community==0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'community==0=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'The following third-party packs were manually installed by your server members',
+          }, {
+            type: 'rich',
+            description: 'Installed by <@user_id>\n\n',
             title: 'pack-id',
           }],
         },
@@ -6421,6 +6501,78 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 'rich',
             description: undefined,
             title: 'Title',
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
+  });
+
+  await test.step('homepage url', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      url: 'https://example.org',
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Builtin },
+        ]),
+    );
+
+    try {
+      const message = await packs.pages({
+        type: PackType.Builtin,
+        guildId: 'guild_id',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'builtin==0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'builtin==0=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+              {
+                label: 'Homepage',
+                url: 'https://example.org',
+                style: 5,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'Builtin packs are developed and maintained directly by Fable',
+          }, {
+            type: 'rich',
+            description: undefined,
+            title: 'pack-id',
           }],
         },
       });
@@ -7451,10 +7603,10 @@ The .id string must match ^[-_a-z0-9]+$
             {
               type: 'rich',
               title: 'manifest_id',
-              author: {
-                name: 'author',
-              },
               description: 'description',
+              footer: {
+                text: 'author',
+              },
               thumbnail: {
                 url: 'image',
               },
@@ -7488,7 +7640,11 @@ Deno.test('/packs uninstall', async (test) => {
               removePackFromInstance: {
                 ok: true,
                 manifest: {
+                  author: 'author',
                   id: 'manifest_id',
+                  description: 'description',
+                  url: 'url',
+                  image: 'image',
                 },
               },
             },
@@ -7517,7 +7673,13 @@ Deno.test('/packs uninstall', async (test) => {
             },
             {
               type: 'rich',
-              description: undefined,
+              description: 'description',
+              footer: {
+                text: 'author',
+              },
+              thumbnail: {
+                url: 'image',
+              },
               title: 'manifest_id',
             },
           ],

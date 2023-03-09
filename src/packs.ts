@@ -56,6 +56,7 @@ const packs = {
   media,
   mediaCharacters,
   mediaToString,
+  manifestEmbed,
   pages,
   pool,
   uninstall,
@@ -250,12 +251,23 @@ function isDisabled(id: string, list: Pack[]): boolean {
   return disabled[id];
 }
 
-function manifestEmbed(manifest: Manifest): discord.Embed {
-  return new discord.Embed()
-    .setDescription(manifest.description)
-    .setAuthor({ name: manifest.author })
+function manifestEmbed(
+  { manifest, installedBy }: { manifest: Manifest; installedBy?: string },
+): discord.Embed {
+  const embed = new discord.Embed()
+    .setFooter({ text: manifest.author })
     .setThumbnail({ url: manifest.image, default: false, proxy: false })
     .setTitle(manifest.title ?? manifest.id);
+
+  if (installedBy) {
+    embed.setDescription(
+      `Installed by <@${installedBy}>\n\n${manifest.description ?? ''}`,
+    );
+  } else {
+    embed.setDescription(manifest.description);
+  }
+
+  return embed;
 }
 
 async function pages(
@@ -284,7 +296,10 @@ async function pages(
       : 'The following third-party packs were manually installed by your server members',
   );
 
-  const embed = manifestEmbed(pack.manifest);
+  const embed = manifestEmbed({
+    manifest: pack.manifest,
+    installedBy: pack.installedBy?.id,
+  });
 
   const message = new discord.Message()
     .addEmbed(disclaimer)
@@ -472,7 +487,7 @@ function install({
 
         message
           .addEmbed(new discord.Embed().setDescription('Installed'))
-          .addEmbed(manifestEmbed(response.manifest));
+          .addEmbed(manifestEmbed({ manifest: response.manifest }));
 
         return message.patch(token);
       } else {
@@ -558,7 +573,7 @@ async function uninstall({
 
     return message
       .addEmbed(new discord.Embed().setDescription('Uninstalled'))
-      .addEmbed(manifestEmbed(response.manifest));
+      .addEmbed(manifestEmbed({ manifest: response.manifest }));
   } else {
     switch (response.error) {
       case 'PACK_NOT_FOUND':
