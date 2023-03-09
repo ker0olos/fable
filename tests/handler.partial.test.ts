@@ -1387,4 +1387,271 @@ Deno.test('packs', async (test) => {
       signatureStub.restore();
     }
   });
+
+  await test.step('sort by title', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Partial,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      data: {
+        name: 'packs',
+        options: [{
+          type: 1,
+          name: 'uninstall',
+          options: [{
+            name: 'id',
+            value: 'titl',
+          }],
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            type: PackType.Community,
+            manifest: {
+              id: 'id535245',
+              title: 'title',
+            },
+          },
+          {
+            type: PackType.Community,
+            manifest: {
+              id: 'id998943894',
+              title: 'name',
+            },
+          },
+          {
+            type: PackType.Community,
+            manifest: {
+              id: 'id424535',
+              title: 'alias',
+            },
+          },
+        ]),
+    );
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(listStub, 0, {
+        args: [{
+          guildId: 'guild_id',
+          type: PackType.Community,
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const form = new FormData();
+
+      form.append(
+        'payload_json',
+        JSON.stringify({
+          type: 8,
+          data: {
+            choices: [
+              {
+                name: 'title',
+                value: 'id535245',
+              },
+              {
+                name: 'alias',
+                value: 'id424535',
+              },
+              {
+                name: 'name',
+                value: 'id998943894',
+              },
+            ],
+          },
+        }),
+      );
+
+      assertEquals(await response?.formData(), form);
+    } finally {
+      delete config.publicKey;
+
+      listStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('sort by id', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Partial,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      data: {
+        name: 'packs',
+        options: [{
+          type: 1,
+          name: 'uninstall',
+          options: [{
+            name: 'id',
+            value: 'titl',
+          }],
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            type: PackType.Community,
+            manifest: {
+              id: 'name',
+            },
+          },
+          {
+            type: PackType.Community,
+            manifest: {
+              id: 'title',
+            },
+          },
+          {
+            type: PackType.Community,
+            manifest: {
+              id: 'alias',
+            },
+          },
+        ]),
+    );
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(listStub, 0, {
+        args: [{
+          guildId: 'guild_id',
+          type: PackType.Community,
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const form = new FormData();
+
+      form.append(
+        'payload_json',
+        JSON.stringify({
+          type: 8,
+          data: {
+            choices: [
+              {
+                name: 'title',
+                value: 'title',
+              },
+              {
+                name: 'alias',
+                value: 'alias',
+              },
+              {
+                name: 'name',
+                value: 'name',
+              },
+            ],
+          },
+        }),
+      );
+
+      assertEquals(await response?.formData(), form);
+    } finally {
+      delete config.publicKey;
+
+      listStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
 });
