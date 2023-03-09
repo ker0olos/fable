@@ -199,8 +199,6 @@ export const handler = async (r: Request) => {
             distance[b.manifest.id] - distance[a.manifest.id]
           );
 
-          console.log(list);
-
           list?.forEach(({ manifest }) => {
             message.addSuggestions({
               name: `${manifest.title ?? manifest.id}`,

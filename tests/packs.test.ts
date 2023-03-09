@@ -739,8 +739,6 @@ Deno.test('search many', async (test) => {
         guildId: 'guild_id',
       });
 
-      console.log(matches);
-
       assertEquals(matches?.length, 1);
 
       assertObjectMatch(matches?.[0], {
