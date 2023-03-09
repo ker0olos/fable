@@ -3453,7 +3453,7 @@ Deno.test('packs command handlers', async (test) => {
     }
   });
 
-  await test.step('packs remove', async () => {
+  await test.step('packs uninstall', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -3464,7 +3464,7 @@ Deno.test('packs command handlers', async (test) => {
         name: 'packs',
         options: [{
           type: 1,
-          name: `remove`,
+          name: `uninstall`,
           options: [{
             name: 'id',
             value: 'manifest_id',
@@ -3480,7 +3480,7 @@ Deno.test('packs command handlers', async (test) => {
       body,
     } as any));
 
-    const packsStub = stub(packs, 'remove', () => ({
+    const packsStub = stub(packs, 'uninstall', () => ({
       send: () => true,
     } as any));
 

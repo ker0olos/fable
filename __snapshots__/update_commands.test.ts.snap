@@ -870,11 +870,11 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Remove an installed pack",
-        name: "remove",
+        description: "Uninstall a pack",
+        name: "uninstall",
         options: [
           {
-            autocomplete: undefined,
+            autocomplete: true,
             choices: undefined,
             description: "The id of the pack",
             name: "id",

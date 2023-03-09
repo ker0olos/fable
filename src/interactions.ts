@@ -105,8 +105,10 @@ export const handler = async (r: Request) => {
           });
 
           return message.send();
-        } // suggest characters
-        else if (['character', 'char', 'im'].includes(name)) {
+        }
+
+        // suggest characters
+        if (['character', 'char', 'im'].includes(name)) {
           const name = options['name'] as string;
 
           const message = new discord.Message(
@@ -127,9 +129,10 @@ export const handler = async (r: Request) => {
           });
 
           return message.send();
-        } else if (
-          ['party', 'team', 'p'].includes(name) && subcommand === 'assign'
-        ) {
+        }
+
+        // same as suggest characters but filters out results that the user doesn't have
+        if (['party', 'team', 'p'].includes(name) && subcommand === 'assign') {
           const name = options['name'] as string;
 
           const message = new discord.Message(
@@ -159,6 +162,50 @@ export const handler = async (r: Request) => {
                 value: `${idPrefix}${id}`,
               });
             }
+          });
+
+          return message.send();
+        }
+
+        // suggest installed packs
+        if (name === 'packs' && subcommand === 'uninstall') {
+          const id = options['id'] as string;
+
+          const message = new discord.Message(
+            discord.MessageType.Suggestions,
+          );
+
+          let list = await packs.all({ guildId, type: PackType.Community });
+
+          const distance: Record<string, number> = {};
+
+          // sort suggestion based on distance
+          list.forEach(({ manifest }) => {
+            const d = utils.distance(manifest.id, id);
+
+            if (manifest.title) {
+              const d2 = utils.distance(manifest.title, id);
+
+              if (d > d2) {
+                distance[manifest.id] = d2;
+                return;
+              }
+            }
+
+            distance[manifest.id] = d;
+          });
+
+          list = list.sort((a, b) =>
+            distance[b.manifest.id] - distance[a.manifest.id]
+          );
+
+          console.log(list);
+
+          list?.forEach(({ manifest }) => {
+            message.addSuggestions({
+              name: `${manifest.title ?? manifest.id}`,
+              value: manifest.id,
+            });
           });
 
           return message.send();
@@ -332,8 +379,8 @@ export const handler = async (r: Request) => {
                   ref: options['ref'] as string,
                 }).send();
               }
-              case 'remove': {
-                return (await packs.remove({
+              case 'uninstall': {
+                return (await packs.uninstall({
                   guildId,
                   manifestId: options['id'] as string,
                 })).send();

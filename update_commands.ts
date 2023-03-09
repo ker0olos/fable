@@ -419,14 +419,15 @@ export const commands = [
         ],
       }),
       Option({
-        name: 'remove',
-        description: 'Remove an installed pack',
+        name: 'uninstall',
+        description: 'Uninstall a pack',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
           Option({
             name: 'id',
             description: 'The id of the pack',
+            autocomplete: true,
             type: Type.STRING,
           }),
         ],

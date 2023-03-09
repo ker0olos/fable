@@ -185,7 +185,7 @@ export default function (client: Client): {
       }),
       fql.Indexer({
         client,
-        unique: true,
+        unique: false,
         collection: 'pack',
         name: 'pack_manifest_id',
         terms: [{ field: ['data', 'manifest', 'id'] }],

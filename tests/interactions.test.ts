@@ -6230,6 +6230,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
   await test.step('builtin packs', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
+      url: 'https://example.org',
     };
 
     const listStub = stub(
@@ -6275,6 +6276,12 @@ Deno.test('/packs [builtin-community]', async (test) => {
                 style: 2,
                 type: 2,
               },
+              {
+                label: 'Homepage',
+                url: 'https://example.org',
+                style: 5,
+                type: 2,
+              },
             ],
           }],
           embeds: [{
@@ -6285,7 +6292,6 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 'rich',
             description: undefined,
             title: 'pack-id',
-            url: undefined,
           }],
         },
       });
@@ -6352,7 +6358,6 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 'rich',
             description: undefined,
             title: 'pack-id',
-            url: undefined,
           }],
         },
       });
@@ -6416,7 +6421,6 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 'rich',
             description: undefined,
             title: 'Title',
-            url: undefined,
           }],
         },
       });
@@ -6699,6 +6703,99 @@ Deno.test('/packs [install-validate]', async (test) => {
             {
               type: 'rich',
               description: 'Pack is invalid and cannot be installed.',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('already installed', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 'repo_id' },
+          manifest: { id: 'manifest_id' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            type: PackType.Community,
+            manifest: {
+              id: 'manifest_id',
+            },
+          },
+        ]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        userId: 'user_id',
+        token: 'token',
+        url: 'url',
+        ref: 'ref',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'A pack with the same id is already installed.',
             },
           ],
           components: [],
@@ -7349,7 +7446,7 @@ The .id string must match ^[-_a-z0-9]+$
           embeds: [
             {
               type: 'rich',
-              description: 'INSTALLED',
+              description: 'Installed',
             },
             {
               type: 'rich',
@@ -7357,7 +7454,6 @@ The .id string must match ^[-_a-z0-9]+$
               author: {
                 name: 'author',
               },
-              url: 'url',
               description: 'description',
               thumbnail: {
                 url: 'image',
@@ -7379,7 +7475,7 @@ The .id string must match ^[-_a-z0-9]+$
   });
 });
 
-Deno.test('/packs remove', async (test) => {
+Deno.test('/packs uninstall', async (test) => {
   await test.step('normal', async () => {
     const fetchStub = stub(
       globalThis,
@@ -7404,7 +7500,7 @@ Deno.test('/packs remove', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await packs.remove({
+      const message = await packs.uninstall({
         guildId: 'guild_id',
         manifestId: 'manifest_id',
       });
@@ -7416,12 +7512,11 @@ Deno.test('/packs remove', async (test) => {
           components: [],
           embeds: [
             {
-              description: 'REMOVED',
+              description: 'Uninstalled',
               type: 'rich',
             },
             {
               type: 'rich',
-              url: undefined,
               description: undefined,
               title: 'manifest_id',
             },
@@ -7460,7 +7555,7 @@ Deno.test('/packs remove', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await packs.remove({
+          await packs.uninstall({
             guildId: 'guild_id',
             manifestId: 'manifest_id',
           }),
@@ -7499,7 +7594,7 @@ Deno.test('/packs remove', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await packs.remove({
+          await packs.uninstall({
             guildId: 'guild_id',
             manifestId: 'manifest_id',
           }),
