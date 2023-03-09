@@ -32,6 +32,7 @@ Deno.test('init', async (test) => {
         'app_id',
         'public_key',
         'fauna_secret',
+        'topgg_secret',
         '1',
       ]),
     );
@@ -45,6 +46,7 @@ Deno.test('init', async (test) => {
         publicKey: 'public_key',
         faunaSecret: 'fauna_secret',
         sentry: 'sentry_dsn',
+        topggSecret: 'topgg_secret',
         communityPacks: true,
         origin: undefined,
       });
@@ -78,6 +80,7 @@ Deno.test('init', async (test) => {
         'app_id',
         'public_key',
         'fauna_secret',
+        'topgg_secret',
         '0',
       ]),
     );
@@ -91,6 +94,7 @@ Deno.test('init', async (test) => {
         publicKey: 'public_key',
         faunaSecret: 'fauna_secret',
         sentry: 'sentry_dsn',
+        topggSecret: 'topgg_secret',
         communityPacks: false,
         origin: undefined,
       });
