@@ -1,0 +1,24 @@
+name: topgg
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
+    - cron: "0 0 * * 0"
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Set environment variables
+        run: >
+          echo "FAUNA_SECRET=${{ secrets.FAUNA_SECRET }}" >> "$GITHUB_ENV" |
+          echo "TOPGG_TOKEN=${{ secrets.TOPGG_TOKEN }}" >> "$GITHUB_ENV"
+
+      - name: Update top.gg server count
+        run: deno run -A update_topgg_stats.ts
