@@ -56,6 +56,7 @@ const packs = {
   media,
   mediaCharacters,
   mediaToString,
+  manifestEmbed,
   pages,
   pool,
   uninstall,
@@ -254,7 +255,7 @@ function manifestEmbed(
   { manifest, installedBy }: { manifest: Manifest; installedBy?: string },
 ): discord.Embed {
   const embed = new discord.Embed()
-    .setAuthor({ name: manifest.author })
+    .setFooter({ text: manifest.author })
     .setThumbnail({ url: manifest.image, default: false, proxy: false })
     .setTitle(manifest.title ?? manifest.id);
 

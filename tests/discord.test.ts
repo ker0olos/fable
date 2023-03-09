@@ -400,22 +400,19 @@ Deno.test('messages', async (test) => {
       'OK',
     );
 
-    const form = new FormData();
-
-    form.append(
-      'payload_json',
-      JSON.stringify({
-        type: 4,
-        data: {
-          embeds: [],
-          attachments: [],
-          components: [],
-          content: 'content',
-        },
-      }),
+    const json = JSON.parse(
+      (await response?.formData()).get('payload_json')!.toString(),
     );
 
-    assertEquals(await response.formData(), form);
+    assertEquals(json, {
+      type: 4,
+      data: {
+        embeds: [],
+        attachments: [],
+        components: [],
+        content: 'content',
+      },
+    });
   });
 });
 
@@ -427,6 +424,50 @@ Deno.test('static messages', async (test) => {
 
     assertEquals(json, {
       type: 1,
+    });
+  });
+
+  await test.step('dialog', () => {
+    const message = discord.Message.dialog({
+      type: 'type',
+      confirm: 'confirm_id',
+      description: 'description',
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [
+          {
+            type: 'rich',
+            title: 'title',
+          },
+          {
+            type: 'rich',
+            description: 'description',
+          },
+        ],
+        attachments: [],
+        components: [{
+          type: 1,
+          components: [
+            {
+              custom_id: 'type=confirm_id',
+              label: 'Confirm',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'cancel',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
+            },
+          ],
+        }],
+      },
     });
   });
 

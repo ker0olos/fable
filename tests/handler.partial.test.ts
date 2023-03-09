@@ -93,22 +93,20 @@ Deno.test('media suggestions', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english title',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english title',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -191,22 +189,20 @@ Deno.test('media suggestions', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english title',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english title',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -289,22 +285,20 @@ Deno.test('media suggestions', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english title',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english title',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -391,22 +385,20 @@ Deno.test('media suggestions', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english title',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english title',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -493,22 +485,20 @@ Deno.test('media suggestions', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english title',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english title',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -595,22 +585,20 @@ Deno.test('media suggestions', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english title',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english title',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -695,22 +683,20 @@ Deno.test('character suggestions', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english name',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english name',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -793,22 +779,20 @@ Deno.test('character suggestions', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english name',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english name',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -890,23 +874,20 @@ Deno.test('character suggestions', async (test) => {
 
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
-
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english name',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english name',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -1011,22 +992,20 @@ Deno.test('party assign character suggestions', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english name',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english name',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -1130,22 +1109,20 @@ Deno.test('party assign character suggestions', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english name',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english name',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -1249,22 +1226,20 @@ Deno.test('party assign character suggestions', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'english name',
-              value: 'id=packId:id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english name',
+            value: 'id=packId:id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -1363,22 +1338,20 @@ Deno.test('packs', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [{
-              name: 'title',
-              value: 'id',
-            }],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'title',
+            value: 'id',
+          }],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -1488,32 +1461,30 @@ Deno.test('packs', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [
-              {
-                name: 'title',
-                value: 'id535245',
-              },
-              {
-                name: 'alias',
-                value: 'id424535',
-              },
-              {
-                name: 'name',
-                value: 'id998943894',
-              },
-            ],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [
+            {
+              name: 'title',
+              value: 'id535245',
+            },
+            {
+              name: 'alias',
+              value: 'id424535',
+            },
+            {
+              name: 'name',
+              value: 'id998943894',
+            },
+          ],
+        },
+      });
     } finally {
       delete config.publicKey;
 
@@ -1620,32 +1591,30 @@ Deno.test('packs', async (test) => {
       assertEquals(response?.status, 200);
       assertEquals(response?.statusText, 'OK');
 
-      const form = new FormData();
-
-      form.append(
-        'payload_json',
-        JSON.stringify({
-          type: 8,
-          data: {
-            choices: [
-              {
-                name: 'title',
-                value: 'title',
-              },
-              {
-                name: 'alias',
-                value: 'alias',
-              },
-              {
-                name: 'name',
-                value: 'name',
-              },
-            ],
-          },
-        }),
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
       );
 
-      assertEquals(await response?.formData(), form);
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [
+            {
+              name: 'title',
+              value: 'title',
+            },
+            {
+              name: 'alias',
+              value: 'alias',
+            },
+            {
+              name: 'name',
+              value: 'name',
+            },
+          ],
+        },
+      });
     } finally {
       delete config.publicKey;
 
