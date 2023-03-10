@@ -7,6 +7,7 @@ import {
   assertSpyCalls,
   stub,
 } from 'https://deno.land/std@0.179.0/testing/mock.ts';
+
 import config from '../src/config.ts';
 
 import webhooks from '../src/webhooks.ts';
@@ -190,7 +191,7 @@ Deno.test('topgg', async (test) => {
       await assertRejects(
         async () => await webhooks.topgg(request),
         Error,
-        `failed to reward user with ${body}`,
+        `failed to reward user`,
       );
 
       assertSpyCalls(fetchStub, 1);

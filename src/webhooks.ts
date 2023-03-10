@@ -59,13 +59,15 @@ async function topgg(r: Request): Promise<Response> {
   })).addVoteToUser;
 
   if (!response.ok) {
-    const err = new Error(`failed to reward user with ${JSON.stringify(data)}`);
+    const err = new Error('failed to reward user');
 
     if (!config.sentry) {
       throw err;
     }
 
-    utils.captureException(err);
+    utils.captureException(err, {
+      extra: { ...data },
+    });
 
     return utils.json(
       { error: 'Internal Server Error' },
