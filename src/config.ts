@@ -1,4 +1,4 @@
-import { load as Dotenv } from 'https://deno.land/std@0.178.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.179.0/dotenv/mod.ts';
 
 export const emotes = {
   star: '<:star:1061016362832642098>',

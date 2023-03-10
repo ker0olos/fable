@@ -4,9 +4,9 @@ import Ajv from 'https://esm.sh/ajv@8.12.0';
 
 import { prettify } from 'https://esm.sh/awesome-ajv-errors@5.1.0';
 
-import { green, red } from 'https://deno.land/std@0.178.0/fmt/colors.ts';
+import { green, red } from 'https://deno.land/std@0.179.0/fmt/colors.ts';
 
-import { AssertionError } from 'https://deno.land/std@0.178.0/testing/asserts.ts';
+import { AssertionError } from 'https://deno.land/std@0.179.0/testing/asserts.ts';
 
 import utils from './utils.ts';
 

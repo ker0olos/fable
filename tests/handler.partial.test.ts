@@ -1,11 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from 'https://deno.land/std@0.178.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.179.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   stub,
-} from 'https://deno.land/std@0.178.0/testing/mock.ts';
+} from 'https://deno.land/std@0.179.0/testing/mock.ts';
 
 import * as discord from '../src/discord.ts';
 
