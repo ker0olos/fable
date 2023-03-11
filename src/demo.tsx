@@ -26,15 +26,14 @@ const emotes = {
     'https://cdn.discordapp.com/emojis/1061016360190222466.webp?size=44&quality=lossless',
 };
 
-export const sleep = (n: number) =>
-  new Promise((resolve) => setTimeout(resolve, n));
-
 const rngPullSuspense = () => {
   let result: Pull | Error;
 
   let status: 'pending' | 'error' | 'success' = 'pending';
 
-  const suspender = gacha.rngPull({ guildId })
+  // sleep before each request to act as a primitive rate-limiter
+  const suspender = utils.sleep(utils.randint(1.25, 3))
+    .then(() => gacha.rngPull({ guildId }))
     .then(
       (pull) => {
         status = 'success';
@@ -42,9 +41,8 @@ const rngPullSuspense = () => {
       },
     )
     .catch((error) => {
-      console.error(error);
       status = 'error';
-      result = error;
+      result = (console.error(error), error);
     });
 
   return {

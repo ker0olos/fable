@@ -39,17 +39,6 @@ function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-// const asyncFilter = async <T>(
-//   arr?: T[],
-//   predicate?: (item: T) => Promise<boolean>,
-// ) => {
-//   if (!arr || !predicate) {
-//     return [];
-//   }
-//   const results = await Promise.all(arr.map(predicate));
-//   return arr.filter((_v, index) => results[index]);
-// };
-
 function hexToInt(hex?: string): number | undefined {
   if (!hex) {
     return;
@@ -368,7 +357,6 @@ const utils = {
   capitalize,
   chunks,
   comma,
-  // asyncFilter,
   decodeDescription,
   distance,
   hexToInt,

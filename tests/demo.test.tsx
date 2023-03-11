@@ -6,9 +6,10 @@ import { renderToString } from 'https://esm.sh/react-dom@18.2.0/server';
 
 import { assertSnapshot } from 'https://deno.land/std@0.179.0/testing/snapshot.ts';
 
-import { App, Embed, Gacha, Image, sleep } from '../src/demo.tsx';
+import { App, Embed, Gacha, Image } from '../src/demo.tsx';
 
 import type { Pull } from '../src/gacha.ts';
+
 import Rating from '../src/rating.ts';
 
 Deno.test('<Embed/>', async (test) => {
