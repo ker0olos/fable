@@ -10,6 +10,8 @@ import gacha from './gacha.ts';
 
 import help from './help.ts';
 
+import demo from './demo.tsx';
+
 import webhooks from './webhooks.ts';
 
 import config, { initConfig } from './config.ts';
@@ -346,17 +348,6 @@ export const handler = async (r: Request) => {
                 token,
               })
               .send();
-          case 'anilist': {
-            // deno-lint-ignore no-non-null-assertion
-            return (await packs.anilist(subcommand!, interaction))!
-              .send();
-          }
-          case 'help':
-          case 'start':
-          case 'guide':
-          case 'tuto': {
-            return help.pages({ userId: member.user.id, index: 0 }).send();
-          }
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
@@ -411,6 +402,17 @@ export const handler = async (r: Request) => {
                 break;
             }
             break;
+          }
+          case 'help':
+          case 'start':
+          case 'guide':
+          case 'tuto': {
+            return help.pages({ userId: member.user.id, index: 0 }).send();
+          }
+          case 'anilist': {
+            // deno-lint-ignore no-non-null-assertion
+            return (await packs.anilist(subcommand!, interaction))!
+              .send();
           }
           default: {
             break;
@@ -648,6 +650,7 @@ if (import.meta.main) {
 
   utils.serve({
     '/': handler,
+    '/demo': demo,
     '/external/*': utils.proxy,
     '/webhooks/topgg': webhooks.topgg,
     '/assets/:filename+': utils.serveStatic('../assets/public', {

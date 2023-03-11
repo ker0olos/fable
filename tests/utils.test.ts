@@ -4,14 +4,14 @@ import {
   assert,
   assertEquals,
   assertThrows,
-} from 'https://deno.land/std@0.178.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.179.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.178.0/testing/mock.ts';
+} from 'https://deno.land/std@0.179.0/testing/mock.ts';
 
 import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 

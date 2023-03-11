@@ -4,18 +4,18 @@ import {
   assertEquals,
   assertRejects,
   assertThrows,
-} from 'https://deno.land/std@0.178.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.179.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.178.0/testing/mock.ts';
+} from 'https://deno.land/std@0.179.0/testing/mock.ts';
 
-import { assertSnapshot } from 'https://deno.land/std@0.178.0/testing/snapshot.ts';
+import { assertSnapshot } from 'https://deno.land/std@0.179.0/testing/snapshot.ts';
 
-import { FakeTime } from 'https://deno.land/std@0.178.0/testing/time.ts';
+import { FakeTime } from 'https://deno.land/std@0.179.0/testing/time.ts';
 
 import packs from '../src/packs.ts';
 

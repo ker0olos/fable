@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { spy, stub } from 'https://deno.land/std@0.178.0/testing/mock.ts';
+import { spy, stub } from 'https://deno.land/std@0.179.0/testing/mock.ts';
 
 import { fql } from './fql.ts';
 

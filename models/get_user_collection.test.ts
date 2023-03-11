@@ -1,14 +1,14 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from 'https://deno.land/std@0.178.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.179.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCallArg,
   assertSpyCalls,
-} from 'https://deno.land/std@0.178.0/testing/mock.ts';
+} from 'https://deno.land/std@0.179.0/testing/mock.ts';
 
-import { assertSnapshot } from 'https://deno.land/std@0.178.0/testing/snapshot.ts';
+import { assertSnapshot } from 'https://deno.land/std@0.179.0/testing/snapshot.ts';
 
 import {
   FakeClient,

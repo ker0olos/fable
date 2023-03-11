@@ -6,11 +6,12 @@
 
 <h1 align="center">
 
-[![top.gg page](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
+[![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
+[![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
 
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
 
-[![Affiliated Discord Server](https://img.shields.io/discord/992416714497212518?label=Affiliated%20Discord%20Server&style=for-the-badge)][discord]
+[![Discord Support Server](https://img.shields.io/discord/992416714497212518?label=Affiliated%20Discord%20Server&style=for-the-badge)][discord]
 
 <!-- Development badges -->
 
@@ -44,6 +45,9 @@ we try our best to include term natural commands along with anime analogies).
 > Fable is in early access. Some core features might be missing. Missing
 > features include "Trading", "PVE", "PVP" (see
 > [#20](https://github.com/ker0olos/fable/issues/20) for a full roadmap)
+
+You can try an online demo of Fable without adding the app to your server by
+going to <https://fable.deno.dev/demo>
 
 Fable is actively developed with new game modes and features frequently.
 
