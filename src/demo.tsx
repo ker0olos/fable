@@ -26,14 +26,12 @@ const emotes = {
     'https://cdn.discordapp.com/emojis/1061016360190222466.webp?size=44&quality=lossless',
 };
 
-const rngPullSuspense = () => {
-  let result: Pull | Error;
+function suspense<T = unknown>(promise: () => Promise<T>): { read(): T } {
+  let result: T | Error;
 
   let status: 'pending' | 'error' | 'success' = 'pending';
 
-  // sleep before each request to act as a primitive rate-limiter
-  const suspender = utils.sleep(utils.randint(1.25, 3))
-    .then(() => gacha.rngPull({ guildId }))
+  const suspender = promise()
     .then(
       (pull) => {
         status = 'success';
@@ -46,31 +44,28 @@ const rngPullSuspense = () => {
     });
 
   return {
-    read(): Pull {
+    read(): T {
       switch (status) {
         case 'pending':
           throw suspender;
         case 'error':
           throw result;
         case 'success':
-          return result as Pull;
+          return result as T;
       }
     },
   };
-};
+}
 
 export const Embed = ({ children }: React.PropsWithChildren) => {
   return (
     <div
       style={{
         overflow: 'hidden',
-
         backgroundColor: colors.embed,
-
         padding: '.5rem 1rem 1rem .75rem',
         borderLeft: `4px solid ${colors.border}`,
         borderRadius: '4px',
-
         lineHeight: '22px',
       }}
     >
@@ -78,6 +73,37 @@ export const Embed = ({ children }: React.PropsWithChildren) => {
     </div>
   );
 };
+
+export const Title = ({ text }: { text: string }) => (
+  <div
+    style={{
+      marginTop: '8px',
+      marginBottom: '2px',
+      lineHeight: '1.125rem',
+      color: colors.foreground,
+      fontSize: '0.875rem',
+      fontFamily: `'Noto Sans', sans-serif`,
+      fontWeight: '600',
+    }}
+  >
+    {`${utils.wrap(text)}`}
+  </div>
+);
+
+export const Desc = ({ text }: { text: string }) => (
+  <div
+    style={{
+      whiteSpace: 'pre-line',
+      lineHeight: '1.125rem',
+      color: colors.foreground,
+      fontSize: '0.875rem',
+      fontFamily: `'Noto Sans', sans-serif`,
+      fontWeight: 700,
+    }}
+  >
+    {`${utils.wrap(text)}`}
+  </div>
+);
 
 export const Image = ({ src }: { src: string }) => {
   return (
@@ -92,6 +118,51 @@ export const Image = ({ src }: { src: string }) => {
       }}
       src={src}
     />
+  );
+};
+
+export const Media = ({ pull }: { pull: Pull }) => {
+  const suspendified = suspense(() => utils.sleep(4).then(() => pull));
+
+  const RatingSuspend = () => <Rating pull={suspendified.read()} />;
+
+  return (
+    <Suspense
+      fallback={
+        <>
+          <Title text={packs.aliasToArray(pull.media.title)[0]} />
+          <Image
+            src={`${origin}/external/${
+              encodeURIComponent(
+                pull.media.images?.[0].url ?? '',
+              )
+            }`}
+          />
+        </>
+      }
+    >
+      <RatingSuspend />
+    </Suspense>
+  );
+};
+
+export const Rating = ({ pull }: { pull: Pull }) => {
+  const suspendified = suspense(() =>
+    utils.sleep(pull.rating.stars + 2).then(() => pull)
+  );
+
+  const GachaSuspend = () => <Gacha pull={suspendified.read()} />;
+
+  return (
+    <Suspense
+      fallback={
+        <Image
+          src={`${origin}/assets/stars/${pull.rating.stars}.gif`}
+        />
+      }
+    >
+      <GachaSuspend />
+    </Suspense>
   );
 };
 
@@ -113,32 +184,8 @@ export const Gacha = ({ pull }: { pull: Pull }) => {
         ))}
       </div>
 
-      <div
-        style={{
-          marginTop: '8px',
-          marginBottom: '2px',
-          lineHeight: '1.125rem',
-          color: colors.foreground,
-          fontSize: '0.875rem',
-          fontFamily: `'Noto Sans', sans-serif`,
-          fontWeight: '600',
-        }}
-      >
-        {`${utils.wrap(packs.aliasToArray(pull.media.title)[0])}`}
-      </div>
-
-      <div
-        style={{
-          whiteSpace: 'pre-line',
-          lineHeight: '1.125rem',
-          color: colors.foreground,
-          fontSize: '0.875rem',
-          fontFamily: `'Noto Sans', sans-serif`,
-          fontWeight: 700,
-        }}
-      >
-        {`${utils.wrap(packs.aliasToArray(pull.character.name)[0])}`}
-      </div>
+      <Title text={packs.aliasToArray(pull.media.title)[0]} />
+      <Desc text={packs.aliasToArray(pull.character.name)[0]} />
 
       <Image
         src={`${origin}/external/${
@@ -192,16 +239,20 @@ export const App = ({ children }: React.PropsWithChildren) => {
 };
 
 export default async (r: Request): Promise<Response> => {
-  const pull = rngPullSuspense();
+  const suspendified = suspense(() =>
+    // sleep before each request to act as a primitive rate-limiter
+    utils.sleep(utils.randint(1.25, 2.5))
+      .then(() => gacha.rngPull({ guildId }))
+  );
 
-  const GachaSuspend = () => <Gacha pull={pull.read()} />;
+  const MediaSuspend = () => <Media pull={suspendified.read()} />;
 
   origin = new URL(r.url).origin;
 
   return new Response(
     await renderToReadableStream(
       <App>
-        <GachaSuspend />
+        <MediaSuspend />
       </App>,
     ),
     { headers: { 'Content-Type': 'text/html' } },

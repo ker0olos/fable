@@ -4,9 +4,20 @@ import React from 'https://esm.sh/react@18.2.0';
 
 import { renderToString } from 'https://esm.sh/react-dom@18.2.0/server';
 
+import { FakeTime } from 'https://deno.land/std@0.179.0/testing/time.ts';
+
 import { assertSnapshot } from 'https://deno.land/std@0.179.0/testing/snapshot.ts';
 
-import { App, Embed, Gacha, Image } from '../src/demo.tsx';
+import {
+  App,
+  Desc,
+  Embed,
+  Gacha,
+  Image,
+  Media,
+  Rating as RatingElement,
+  Title,
+} from '../src/demo.tsx';
 
 import type { Pull } from '../src/gacha.ts';
 
@@ -23,6 +34,24 @@ Deno.test('<Embed/>', async (test) => {
   );
 });
 
+Deno.test('<Title/>', async (test) => {
+  await assertSnapshot(
+    test,
+    renderToString(
+      <Title text={'title'} />,
+    ),
+  );
+});
+
+Deno.test('<Desc/>', async (test) => {
+  await assertSnapshot(
+    test,
+    renderToString(
+      <Desc text={'description'} />,
+    ),
+  );
+});
+
 Deno.test('<Image/>', async (test) => {
   await assertSnapshot(
     test,
@@ -30,6 +59,55 @@ Deno.test('<Image/>', async (test) => {
       <Image src={'src'} />,
     ),
   );
+});
+
+Deno.test('<Media/>', async (test) => {
+  const pull = {
+    media: {
+      title: {
+        english: 'title',
+      },
+      images: [{
+        url: 'url',
+      }],
+    },
+  };
+
+  const timeStub = new FakeTime();
+
+  try {
+    await assertSnapshot(
+      test,
+      renderToString(
+        <Media pull={pull as any} />,
+      ),
+    );
+
+    await timeStub.tickAsync(4000);
+  } finally {
+    timeStub.restore();
+  }
+});
+
+Deno.test('<Rating/>', async (test) => {
+  const pull = {
+    rating: new Rating({ stars: 3 }),
+  };
+
+  const timeStub = new FakeTime();
+
+  try {
+    await assertSnapshot(
+      test,
+      renderToString(
+        <RatingElement pull={pull as any} />,
+      ),
+    );
+
+    await timeStub.tickAsync(5000);
+  } finally {
+    timeStub.restore();
+  }
 });
 
 Deno.test('<Gacha/>', async (test) => {
