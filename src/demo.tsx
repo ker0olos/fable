@@ -1,3 +1,5 @@
+/** @jsxImportSource https://esm.sh/react@18.2.0 */
+
 import React, { Suspense } from 'https://esm.sh/react@18.2.0';
 
 import { renderToReadableStream } from 'https://esm.sh/react-dom@18.2.0/server';
@@ -7,6 +9,7 @@ import gacha, { Pull } from './gacha.ts';
 import packs from './packs.ts';
 
 import utils from './utils.ts';
+import config from './config.ts';
 
 let origin = '';
 
@@ -17,6 +20,8 @@ const colors = {
   foreground: '#e0e1e5',
   background: '#313338',
   embed: '#2b2d31',
+  blue: '#5865f2',
+  grey: '#4e5058',
 };
 
 const emotes = {
@@ -77,6 +82,7 @@ export const Embed = ({ children }: React.PropsWithChildren) => {
 export const Title = ({ text }: { text: string }) => (
   <div
     style={{
+      whiteSpace: 'break-spaces',
       marginTop: '8px',
       marginBottom: '2px',
       lineHeight: '1.125rem',
@@ -93,7 +99,7 @@ export const Title = ({ text }: { text: string }) => (
 export const Desc = ({ text }: { text: string }) => (
   <div
     style={{
-      whiteSpace: 'pre-line',
+      whiteSpace: 'break-spaces',
       lineHeight: '1.125rem',
       color: colors.foreground,
       fontSize: '0.875rem',
@@ -196,6 +202,34 @@ export const Gacha = ({ pull }: { pull: Pull }) => {
   );
 };
 
+const Button = (
+  { label, color, url }: { label: string; color: string; url: string },
+) => {
+  return (
+    <a
+      style={{
+        display: 'flex',
+        cursor: 'pointer',
+        color: 'white',
+        backgroundColor: color,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '2px 16px',
+        minHeight: '38px',
+        border: 0,
+        borderRadius: '3px',
+        fontSize: '0.875rem',
+        fontFamily: `'Noto Sans', sans-serif`,
+        textDecoration: 'none',
+        fontWeight: 400,
+      }}
+      href={url}
+    >
+      {label}
+    </a>
+  );
+};
+
 export const App = ({ children }: React.PropsWithChildren) => {
   return (
     <html>
@@ -213,7 +247,7 @@ export const App = ({ children }: React.PropsWithChildren) => {
           href='https://fonts.gstatic.com'
         />
         <link
-          href='https://fonts.googleapis.com/css2?family=Noto+Sans:wght@600;700&display=swap'
+          href='https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap'
           rel='stylesheet'
         />
       </head>
@@ -228,11 +262,25 @@ export const App = ({ children }: React.PropsWithChildren) => {
           margin: 0,
         }}
       >
-        <Embed>
-          <Suspense fallback={<Image src={`${origin}/assets/spinner.gif`} />}>
-            {children}
-          </Suspense>
-        </Embed>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <Embed>
+            <Suspense fallback={<Image src={`${origin}/assets/spinner.gif`} />}>
+              {children}
+            </Suspense>
+          </Embed>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <Button
+              color={colors.blue}
+              url={`https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`}
+              label='Add Fable to Your Server'
+            />
+            <Button
+              color={colors.grey}
+              url={`${origin}/demo`}
+              label='Again'
+            />
+          </div>
+        </div>
       </body>
     </html>
   );
