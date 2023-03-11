@@ -3922,7 +3922,7 @@ Deno.test('/collection stars', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha=user_id',
+                custom_id: 'gacha',
                 label: '/gacha',
                 style: 2,
                 type: 2,
@@ -4557,7 +4557,7 @@ Deno.test('/collection media', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha=user_id',
+                custom_id: 'gacha',
                 label: '/gacha',
                 style: 2,
                 type: 2,
@@ -4754,7 +4754,7 @@ Deno.test('/gacha', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha=user-id',
+                custom_id: 'gacha',
                 label: '/gacha',
                 style: 2,
                 type: 2,
@@ -4779,7 +4779,7 @@ Deno.test('/gacha', async (test) => {
     }
   });
 
-  await test.step('reduced motion', async () => {
+  await test.step('quiet', async () => {
     const media: Media = {
       id: '1',
       packId: 'pack-id',
@@ -4894,7 +4894,7 @@ Deno.test('/gacha', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'pull=user-id',
+                custom_id: 'pull',
                 label: '/pull',
                 style: 2,
                 type: 2,
@@ -7886,7 +7886,7 @@ Deno.test('/now', async (test) => {
             {
               components: [
                 {
-                  custom_id: 'gacha=user',
+                  custom_id: 'gacha',
                   label: '/gacha',
                   style: 2,
                   type: 2,

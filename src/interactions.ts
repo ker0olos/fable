@@ -511,9 +511,6 @@ export const handler = async (r: Request) => {
           }
           case 'pull':
           case 'gacha': {
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
-
             return gacha
               .start({
                 token,
@@ -521,26 +518,15 @@ export const handler = async (r: Request) => {
                 userId: member.user.id,
                 guildId,
               })
-              .setType(
-                userId === member.user.id
-                  ? discord.MessageType.Update
-                  : discord.MessageType.New,
-              )
+              .setType(discord.MessageType.New)
               .send();
           }
           case 'now': {
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
-
             return (await user.now({
               userId: member.user.id,
               guildId,
             }))
-              .setType(
-                userId === member.user.id
-                  ? discord.MessageType.Update
-                  : discord.MessageType.New,
-              )
+              .setType(discord.MessageType.New)
               .send();
           }
           case 'help': {
