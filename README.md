@@ -46,6 +46,9 @@ we try our best to include term natural commands along with anime analogies).
 > features include "Trading", "PVE", "PVP" (see
 > [#20](https://github.com/ker0olos/fable/issues/20) for a full roadmap)
 
+You can try an online demo of Fable without adding the app to your server by
+going to <https://fable.deno.dev/demo>
+
 Fable is actively developed with new game modes and features frequently.
 
 <br clear="right"/>
