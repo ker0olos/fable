@@ -26,7 +26,7 @@
     "popularity": {
       "title": "popularity",
       "type": "integer",
-      "description": "Set the popularity of the character (the number of followers or people who likes them)",
+      "description": "The popularity of the character (the number of followers or people who likes them) (responsible for the rating/stars of characters)",
       "minimum": 0,
       "maximum": 2147483647
     },
