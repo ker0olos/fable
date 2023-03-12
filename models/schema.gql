@@ -103,11 +103,6 @@ type Trade @embedded {
   to: User!
 }
 
-type CharacterNode @embedded {
-  character: Character
-  anchor: String
-}
-
 type Party @embedded {
   member1: Character
   member2: Character
