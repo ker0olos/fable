@@ -1326,7 +1326,7 @@ Deno.test('party assign character suggestions', async (test) => {
 
     const usersStub = stub(
       user,
-      'allCharacters',
+      'userCharacters',
       () => Promise.resolve([{ id: 'packId:id' }] as any),
     );
 
@@ -1443,7 +1443,7 @@ Deno.test('party assign character suggestions', async (test) => {
 
     const usersStub = stub(
       user,
-      'allCharacters',
+      'userCharacters',
       () => Promise.resolve([{ id: 'packId:id' }] as any),
     );
 
@@ -1560,7 +1560,7 @@ Deno.test('party assign character suggestions', async (test) => {
 
     const usersStub = stub(
       user,
-      'allCharacters',
+      'userCharacters',
       () => Promise.resolve([{ id: 'packId:id' }] as any),
     );
 

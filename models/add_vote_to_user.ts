@@ -3,7 +3,7 @@ import { BooleanExpr, Client, fql, ResponseExpr, UserExpr } from './fql.ts';
 import { getUser, User } from './get_user_inventory.ts';
 
 export function addVote(
-  { user }: { user: UserExpr; weekend: BooleanExpr },
+  { user, weekend }: { user: UserExpr; weekend: BooleanExpr },
 ): ResponseExpr {
   return fql.Let({
     user: fql.Update<User>(fql.Ref(user), {
@@ -14,7 +14,8 @@ export function addVote(
       ),
       availableVotes: fql.Add(
         fql.Select(['data', 'availableVotes'], user, 0),
-        1,
+        // double votes on weekends
+        fql.If(fql.Equals(weekend, true), 2, 1),
       ),
     }),
   }, () => ({ ok: true }) as unknown as ResponseExpr);

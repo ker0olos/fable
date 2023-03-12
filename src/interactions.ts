@@ -151,7 +151,7 @@ export const handler = async (r: Request) => {
               key: 'characters',
               search: name,
             }),
-            user.allCharacters({
+            user.userCharacters({
               guildId,
               userId: member.user.id,
             }),
