@@ -541,6 +541,9 @@ Deno.test('/media', async (test) => {
         extraLarge: 'image_url',
       },
       characters: {
+        pageInfo: {
+          hasNextPage: false,
+        },
         edges: [{
           role: CharacterRole.Main,
           node: {
@@ -1362,6 +1365,9 @@ Deno.test('/media', async (test) => {
         extraLarge: 'image_url',
       },
       characters: {
+        pageInfo: {
+          hasNextPage: false,
+        },
         edges: [{
           role: CharacterRole.Main,
           node: {
@@ -2958,8 +2964,8 @@ Deno.test('media characters', async (test) => {
 
     try {
       const message = await search.mediaCharacters({
+        id: 'pack-id:1',
         guildId: 'guild_id',
-        mediaId: 'pack-id:1',
         index: 0,
       });
 
@@ -3073,9 +3079,9 @@ Deno.test('media characters', async (test) => {
 
     try {
       const message = await search.mediaCharacters({
+        id: 'pack-id:1',
         userId: 'user_id',
         guildId: 'guild_id',
-        mediaId: 'pack-id:1',
         index: 0,
       });
 
@@ -3176,8 +3182,8 @@ Deno.test('media characters', async (test) => {
       await assertRejects(
         async () =>
           await search.mediaCharacters({
+            id: 'pack-id:1',
             guildId: 'guild_id',
-            mediaId: 'pack-id:1',
             index: 0,
           }),
         NonFetalError,
@@ -3217,8 +3223,8 @@ Deno.test('media characters', async (test) => {
       await assertRejects(
         async () =>
           await search.mediaCharacters({
+            id: 'pack-id:1',
             guildId: 'guild_id',
-            mediaId: 'pack-id:1',
             index: 0,
           }),
         NonFetalError,
@@ -3257,8 +3263,8 @@ Deno.test('media characters', async (test) => {
       await assertRejects(
         async () =>
           await search.mediaCharacters({
+            id: 'pack-id:1',
             guildId: 'guild_id',
-            mediaId: 'pack-id:1',
             index: 1,
           }),
         NonFetalError,
@@ -3284,8 +3290,8 @@ Deno.test('media characters', async (test) => {
       await assertRejects(
         async () =>
           await search.mediaCharacters({
+            id: 'pack-id:1',
             guildId: 'guild_id',
-            mediaId: 'pack-id:1',
             index: 0,
           }),
         Error,

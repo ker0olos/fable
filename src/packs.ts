@@ -37,10 +37,15 @@ import {
 
 import { NonFetalError } from './errors.ts';
 
+import { AniListMedia } from '../packs/anilist/types.ts';
+
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
 
-type All = Media | DisaggregatedMedia | Character | DisaggregatedCharacter;
+type AnilistSearchOptions = {
+  page: number;
+  perPage: number;
+};
 
 const cachedGuilds: Record<string, Pack[]> = {};
 
@@ -602,10 +607,11 @@ function parseId(
 }
 
 async function findById<T>(
-  { key, ids, guildId, defaultPackId }: {
+  { key, ids, guildId, anilistOptions, defaultPackId }: {
     key: 'media' | 'characters';
     ids: string[];
     guildId: string;
+    anilistOptions?: AnilistSearchOptions;
     defaultPackId?: string;
   },
 ): Promise<{ [key: string]: T }> {
@@ -646,7 +652,7 @@ async function findById<T>(
 
   // request the ids from anilist
   const anilistResults = await _anilist[key](
-    { ids: anilistIds },
+    { ids: anilistIds, ...anilistOptions },
   );
 
   anilistResults.forEach((item) =>
@@ -659,10 +665,11 @@ async function findById<T>(
 async function searchMany<
   T extends (Media | DisaggregatedMedia | Character | DisaggregatedCharacter),
 >(
-  { key, search, guildId, threshold }: {
+  { key, search, guildId, anilistOptions, threshold }: {
     key: 'media' | 'characters';
     search: string;
     guildId: string;
+    anilistOptions?: AnilistSearchOptions;
     threshold?: number;
   },
 ): Promise<T[]> {
@@ -675,7 +682,7 @@ async function searchMany<
   const anilistPack: Manifest = {
     id: 'anilist',
     [key]: {
-      new: (await _anilist[key]({ search })).map((item) =>
+      new: (await _anilist[key]({ search, ...anilistOptions })).map((item) =>
         _anilist.transform({ item })
       ),
     },
@@ -732,20 +739,27 @@ async function searchMany<
 async function searchOne<
   T extends (Media | DisaggregatedMedia | Character | DisaggregatedCharacter),
 >(
-  { key, search, guildId }: {
+  { key, search, guildId, anilistOptions }: {
     key: 'media' | 'characters';
     search: string;
     guildId: string;
+    anilistOptions?: AnilistSearchOptions;
   },
 ): Promise<T | undefined> {
-  const possibilities = await searchMany<T>({ key, search, guildId });
+  const possibilities = await searchMany<T>({
+    key,
+    search,
+    guildId,
+    anilistOptions,
+  });
   return possibilities?.[0];
 }
 
-async function media({ ids, search, guildId }: {
+async function media({ ids, search, guildId, anilistOptions }: {
   ids?: string[];
   search?: string;
   guildId: string;
+  anilistOptions?: AnilistSearchOptions;
 }): Promise<(Media | DisaggregatedMedia)[]> {
   if (ids?.length) {
     const results = await findById<Media | DisaggregatedMedia>(
@@ -753,13 +767,14 @@ async function media({ ids, search, guildId }: {
         ids,
         guildId,
         key: 'media',
+        anilistOptions,
       },
     );
 
     return Object.values(results);
   } else if (search) {
     const match: Media | DisaggregatedMedia | undefined = await searchOne(
-      { key: 'media', search, guildId },
+      { key: 'media', search, guildId, anilistOptions },
     );
 
     return match ? [match] : [];
@@ -795,8 +810,9 @@ async function characters({ ids, search, guildId }: {
   }
 }
 
-async function mediaCharacters({ mediaId, guildId, index }: {
-  mediaId: string;
+async function mediaCharacters({ id, search, guildId, index }: {
+  id?: string;
+  search?: string;
   guildId: string;
   index: number;
 }): Promise<
@@ -807,35 +823,44 @@ async function mediaCharacters({ mediaId, guildId, index }: {
     next: boolean;
   }
 > {
-  const [packId, id] = parseId(mediaId);
+  const results: (Media | DisaggregatedMedia)[] = await packs
+    .media(
+      id
+        ? {
+          guildId,
+          ids: [id],
+          anilistOptions: {
+            perPage: 1,
+            page: index + 1,
+          },
+        }
+        : {
+          search,
+          guildId,
+          anilistOptions: {
+            perPage: 1,
+            page: index + 1,
+          },
+        },
+    );
 
-  const list = await packs.all({ guildId });
-
-  if (packs.isDisabled(mediaId, list) || !packId || !id) {
+  if (!results.length) {
     throw new Error('404');
   }
 
-  if (packId === 'anilist') {
-    return _anilist.mediaCharacters({
-      id,
-      index,
-    });
+  if (results[0].packId === 'anilist') {
+    return {
+      next: Boolean(
+        (results[0] as AniListMedia).characters?.pageInfo.hasNextPage,
+      ),
+      media: results[0] as AniListMedia,
+      character: (results[0] as AniListMedia).characters?.edges?.[0]?.node,
+    };
   } else {
-    const pack = list.find(({ manifest }) => manifest.id === packId);
-
-    // search for the id in packs
-    const match = pack?.manifest.media?.new?.find((m) => m.id === id);
-
-    if (!match) {
-      return { next: false };
-    }
-
-    match.packId = packId;
-
-    const total = match?.characters?.length ?? 0;
+    const total = (results[0] as DisaggregatedMedia).characters?.length ?? 0;
 
     const media = await aggregate<Media>({
-      media: match,
+      media: results[0],
       start: index,
       end: 1,
       guildId,
@@ -844,7 +869,7 @@ async function mediaCharacters({ mediaId, guildId, index }: {
     return {
       total,
       media,
-      character: media?.characters?.edges?.[0]?.node,
+      character: media.characters?.edges?.[0]?.node,
       next: index + 1 < total,
     };
   }

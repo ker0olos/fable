@@ -39,6 +39,7 @@ export type AniListMedia = Modify<Media, {
   };
   characters?: {
     nodes?: AniListCharacter[];
+    pageInfo: { hasNextPage: boolean };
     edges: { role: CharacterRole; node: AniListCharacter }[];
   };
 }>;

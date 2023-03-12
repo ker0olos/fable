@@ -223,6 +223,18 @@ export const handler = async (r: Request) => {
           case 'media': {
             const title = options['title'] as string;
 
+            if (options['characters']) {
+              return (await search.mediaCharacters({
+                guildId,
+                index: 0,
+                search: title,
+                userId: member.user.id,
+                id: title.startsWith(idPrefix)
+                  ? title.substring(idPrefix.length)
+                  : undefined,
+              })).send();
+            }
+
             return (await search.media({
               guildId,
               search: title,
@@ -450,8 +462,8 @@ export const handler = async (r: Request) => {
 
             return (await search.mediaCharacters({
               userId: member.user.id,
+              id: mediaId,
               guildId,
-              mediaId,
               index,
             }))
               .setType(discord.MessageType.Update)

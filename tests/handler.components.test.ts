@@ -260,9 +260,9 @@ Deno.test('media characters components', async () => {
 
     assertSpyCall(searchStub, 0, {
       args: [{
+        id: 'media_id',
         userId: 'user_id',
         guildId: 'guild_id',
-        mediaId: 'media_id',
         index: 1,
       }],
     });

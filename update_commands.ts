@@ -196,6 +196,12 @@ export const commands = [
         type: Type.BOOLEAN,
         optional: true,
       }),
+      Option({
+        name: 'characters',
+        description: 'List the characters from the media',
+        type: Type.BOOLEAN,
+        optional: true,
+      }),
     ],
   }),
   ...Command({

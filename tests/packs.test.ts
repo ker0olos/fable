@@ -236,6 +236,9 @@ Deno.test('disabled relations', async (test) => {
         english: 'title',
       },
       characters: {
+        pageInfo: {
+          hasNextPage: false,
+        },
         edges: [{
           role: CharacterRole.Main,
           node: {
@@ -1830,7 +1833,9 @@ Deno.test('media character', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              Media: media,
+              Page: {
+                media: [media],
+              },
             },
           }))),
       } as any),
@@ -1846,8 +1851,8 @@ Deno.test('media character', async (test) => {
 
     try {
       const result = await packs.mediaCharacters({
+        id: 'anilist:1',
         guildId: 'guild_id',
-        mediaId: 'anilist:1',
         index: 0,
       });
 
@@ -1862,6 +1867,9 @@ Deno.test('media character', async (test) => {
             english: 'title',
           },
           characters: {
+            pageInfo: {
+              hasNextPage: true,
+            },
             edges: [
               {
                 role: 'MAIN',
@@ -1936,8 +1944,8 @@ Deno.test('media character', async (test) => {
 
     try {
       const result = await packs.mediaCharacters({
+        id: 'pack-id:1',
         guildId: 'guild_id',
-        mediaId: 'pack-id:1',
         index: 0,
       });
 
@@ -2019,8 +2027,8 @@ Deno.test('media character', async (test) => {
 
     try {
       const result = await packs.mediaCharacters({
+        id: 'pack-id:1',
         guildId: 'guild_id',
-        mediaId: 'pack-id:1',
         index: 0,
       });
 
@@ -2079,8 +2087,8 @@ Deno.test('media character', async (test) => {
       await assertRejects(
         async () =>
           await packs.mediaCharacters({
+            id: 'anilist:1',
             guildId: 'guild_id',
-            mediaId: 'anilist:1',
             index: 0,
           }),
         Error,

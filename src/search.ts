@@ -458,8 +458,9 @@ function characterDebugMessage(character: Character): discord.Message {
 }
 
 async function mediaCharacters(
-  { mediaId, userId, guildId, index }: {
-    mediaId: string;
+  { search, id, userId, guildId, index }: {
+    search?: string;
+    id?: string;
     guildId: string;
     userId?: string;
     index: number;
@@ -468,8 +469,9 @@ async function mediaCharacters(
   const list = await packs.all({ guildId });
 
   const { character: node, media, next, total } = await packs.mediaCharacters({
+    id,
+    search,
     guildId,
-    mediaId,
     index,
   });
 
@@ -487,7 +489,7 @@ async function mediaCharacters(
     );
   }
 
-  if (await packs.isDisabled(`${node.packId}:${node.id}`, list)) {
+  if (packs.isDisabled(`${node.packId}:${node.id}`, list)) {
     throw new NonFetalError('This character was removed or disabled');
   }
 
@@ -525,7 +527,7 @@ async function mediaCharacters(
   return discord.Message.page({
     total,
     type: 'mcharacters',
-    target: mediaId,
+    target: `${media.packId}:${media.id}`,
     message,
     index,
     next,

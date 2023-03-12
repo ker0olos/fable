@@ -69,6 +69,9 @@ _Gura is currently the most subscribed Vtuber worldwide, taking the #1 spot from
           id: "gura",
           images: [
             {
+              url: "https://i.imgur.com/3cxxJV7.jpeg",
+            },
+            {
               artist: {
                 url: "https://www.pixiv.net/en/users/9212166",
                 username: "ふわり",
