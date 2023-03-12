@@ -4,7 +4,7 @@ snapshot[`commands 1`] = `
 [
   {
     default_member_permissions: undefined,
-    description: "Search for a specific series",
+    description: "Search for a specific media",
     name: "search",
     options: [
       {
@@ -38,7 +38,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Search for a specific series",
+    description: "Search for a specific media",
     name: "anime",
     options: [
       {
@@ -72,7 +72,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Search for a specific series",
+    description: "Search for a specific media",
     name: "manga",
     options: [
       {
@@ -106,7 +106,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Search for a specific series",
+    description: "Search for a specific media",
     name: "media",
     options: [
       {
@@ -210,6 +210,54 @@ snapshot[`commands 1`] = `
         options: undefined,
         required: false,
         type: 5,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "List all characters obtained form specific media",
+    name: "obtained",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The title of the media",
+        name: "title",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "List all characters obtained form specific media",
+    name: "owned",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The title of the media",
+        name: "title",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "List all characters obtained form specific media",
+    name: "found",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The title of the media",
+        name: "title",
+        options: undefined,
+        required: true,
+        type: 3,
       },
     ],
   },

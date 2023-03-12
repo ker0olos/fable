@@ -85,7 +85,8 @@ export const handler = async (r: Request) => {
 
         // suggest media
         if (
-          ['search', 'anime', 'manga', 'media'].includes(name) ||
+          ['search', 'anime', 'manga', 'media', 'obtained', 'owned', 'found']
+            .includes(name) ||
           (['collection', 'coll', 'mm'].includes(name) &&
             subcommand === 'media')
         ) {
@@ -338,6 +339,20 @@ export const handler = async (r: Request) => {
             }
             break;
           }
+          case 'obtained':
+          case 'owned':
+          case 'found': {
+            const title = options['title'] as string;
+
+            return (await search.mediaObtained({
+              search: title,
+              id: title.startsWith(idPrefix)
+                ? title.substring(idPrefix.length)
+                : undefined,
+              guildId,
+            }))
+              .send();
+          }
           case 'now':
           case 'checklist':
           case 'cl':
@@ -515,6 +530,23 @@ export const handler = async (r: Request) => {
               id,
               guildId,
               userId,
+              after: action === 'next' ? anchor : undefined,
+              before: action === 'prev' ? anchor : undefined,
+            }))
+              .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'obtained': {
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+            // deno-lint-ignore no-non-null-assertion
+            const anchor = customValues![2];
+            // deno-lint-ignore no-non-null-assertion
+            const action = customValues![3];
+
+            return (await search.mediaObtained({
+              id,
+              guildId,
               after: action === 'next' ? anchor : undefined,
               before: action === 'prev' ? anchor : undefined,
             }))

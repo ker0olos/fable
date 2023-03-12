@@ -182,7 +182,7 @@ export const commands = [
   ...Command({
     name: 'search',
     aliases: ['anime', 'manga', 'media'],
-    description: 'Search for a specific series',
+    description: 'Search for a specific media',
     options: [
       Option({
         name: 'title',
@@ -220,6 +220,19 @@ export const commands = [
         description: 'Display the nerdy stuff',
         type: Type.BOOLEAN,
         optional: true,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'obtained',
+    aliases: ['owned', 'found'],
+    description: 'List all characters obtained form specific media',
+    options: [
+      Option({
+        name: 'title',
+        description: 'The title of the media',
+        autocomplete: true,
+        type: Type.STRING,
       }),
     ],
   }),
