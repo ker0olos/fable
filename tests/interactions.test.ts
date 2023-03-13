@@ -8565,7 +8565,7 @@ Deno.test('/now', async (test) => {
             { type: 'rich', description: '_+1 pull <t:1675568206:R>_' },
             {
               type: 'rich',
-              description: '_Can vote again in <t:1675610506:R>_',
+              description: '_Can vote again <t:1675610506:R>_',
             },
           ],
           components: [],

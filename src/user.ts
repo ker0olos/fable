@@ -89,7 +89,7 @@ async function now({
     message.addEmbed(
       new discord.Embed()
         .setDescription(
-          `_Can vote again in <t:${
+          `_Can vote again <t:${
             utils.votingTimestamp(user.lastVote).timeLeft
           }:R>_`,
         ),
