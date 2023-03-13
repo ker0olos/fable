@@ -43,7 +43,7 @@
     "popularity": {
       "title": "popularity",
       "type": "integer",
-      "description": "Set the popularity of the media (the number of followers or people who read/watch it)",
+      "description": "The popularity of the media (the number of followers or people who read/watch it) (responsible for the rating/stars of characters)",
       "minimum": 0,
       "maximum": 2147483647
     },

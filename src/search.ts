@@ -8,6 +8,10 @@ import users from './user.ts';
 
 import * as discord from './discord.ts';
 
+import { gql, request } from './graphql.ts';
+
+import config, { faunaUrl } from './config.ts';
+
 import {
   Character,
   DisaggregatedCharacter,
@@ -15,6 +19,7 @@ import {
   Media,
   MediaFormat,
   MediaRelation,
+  Schema,
 } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
@@ -458,8 +463,9 @@ function characterDebugMessage(character: Character): discord.Message {
 }
 
 async function mediaCharacters(
-  { mediaId, userId, guildId, index }: {
-    mediaId: string;
+  { search, id, userId, guildId, index }: {
+    search?: string;
+    id?: string;
     guildId: string;
     userId?: string;
     index: number;
@@ -468,8 +474,9 @@ async function mediaCharacters(
   const list = await packs.all({ guildId });
 
   const { character: node, media, next, total } = await packs.mediaCharacters({
+    id,
+    search,
     guildId,
-    mediaId,
     index,
   });
 
@@ -487,7 +494,7 @@ async function mediaCharacters(
     );
   }
 
-  if (await packs.isDisabled(`${node.packId}:${node.id}`, list)) {
+  if (packs.isDisabled(`${node.packId}:${node.id}`, list)) {
     throw new NonFetalError('This character was removed or disabled');
   }
 
@@ -525,10 +532,114 @@ async function mediaCharacters(
   return discord.Message.page({
     total,
     type: 'mcharacters',
-    target: mediaId,
+    target: `${media.packId}:${media.id}`,
     message,
     index,
     next,
+  });
+}
+
+async function mediaObtained(
+  { search, id, guildId, before, after }: {
+    guildId: string;
+    search?: string;
+    id?: string;
+    before?: string;
+    after?: string;
+  },
+): Promise<discord.Message> {
+  const results: (Media | DisaggregatedMedia)[] = await packs
+    .media(id ? { ids: [id], guildId } : { search, guildId });
+
+  if (!results.length) {
+    throw new Error('404');
+  }
+
+  const media = results[0];
+  const mediaId = `${media.packId}:${media.id}`;
+
+  const titles = packs.aliasToArray(media.title);
+
+  const query = gql`
+    query ($guildId: String!, $mediaId: String!, $before: String, $after: String) {
+      findMedia(guildId: $guildId, mediaId: $mediaId, before: $before, after: $after) {
+        anchor
+        character {
+          id
+          mediaId
+          rating
+          user {
+            id
+          }
+        }
+      }
+    }
+  `;
+
+  const { character, anchor } = (await request<{
+    findMedia: {
+      character?: Schema.Inventory['characters'][0];
+      anchor?: string;
+    };
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      guildId,
+      mediaId,
+      before,
+      after,
+    },
+  })).findMedia;
+
+  if (!character || !anchor) {
+    const message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription(`No one has found any ${titles[0]} characters`),
+      );
+
+    return message;
+  }
+
+  const characters = await packs.characters({ ids: [character.id], guildId });
+
+  let message: discord.Message;
+
+  if (!characters.length) {
+    message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setDescription('This character was removed or disabled'),
+      );
+  } else {
+    message = characterMessage(
+      characters[0],
+      {
+        existing: {
+          mediaId: character.mediaId,
+          rating: character.rating,
+          userId: character.user.id,
+        },
+        rating: new Rating({ stars: character.rating }),
+        relations: false,
+      },
+    ).addComponents([
+      new discord.Component()
+        .setId('media', `${media.packId}:${media.id}`)
+        .setLabel(`/${media.type.toLowerCase()}`),
+    ]);
+  }
+
+  return discord.Message.anchor({
+    id: '',
+    type: 'obtained',
+    target: mediaId,
+    anchor,
+    message,
   });
 }
 
@@ -542,6 +653,7 @@ const search = {
   characterEmbed,
   characterDebugMessage,
   mediaCharacters,
+  mediaObtained,
 };
 
 export default search;

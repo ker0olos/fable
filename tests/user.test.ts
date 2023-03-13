@@ -76,7 +76,7 @@ Deno.test('all characters', async () => {
   );
 
   try {
-    const characters = await user.allCharacters({
+    const characters = await user.userCharacters({
       guildId: 'guild_id',
       userId: 'user_id',
     });

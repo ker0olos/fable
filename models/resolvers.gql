@@ -6,6 +6,11 @@ type Response @embedded {
   manifest: Manifest
 }
 
+type CharacterNode @embedded {
+  character: Character
+  anchor: String
+}
+
 type Query {
   #
   getGuildInstance(guildId: String!): Instance!
@@ -22,6 +27,10 @@ type Query {
   getUserMedia(userId: String!, guildId: String!, mediaId: String!, before: String, after: String): CharacterNode!
     @resolver(name: "get_user_media")
   
+  #
+  findMedia(mediaId: String!, guildId: String!, before: String, after: String): CharacterNode
+    @resolver(name: "find_media")
+
   #
   findCharacter(characterId: String!, guildId: String!): Character
     @resolver(name: "find_character")

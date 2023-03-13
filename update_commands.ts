@@ -14,7 +14,7 @@ enum Type {
   'SUB_COMMAND' = 1,
   'SUB_COMMAND_GROUP' = 2,
   'STRING' = 3,
-  'INTEGER' = 4, //  Includes all channel types + categories
+  'INTEGER' = 4,
   'BOOLEAN' = 5,
   'USER' = 6,
   'CHANNEL' = 7, // Includes all channel types + categories
@@ -144,14 +144,16 @@ async function put(commands: Command[], {
   BOT_TOKEN: string;
   GUILD_ID?: string;
 }): Promise<void> {
-  if (!GUILD_ID) {
-    console.log('Updating global commands for production bot\n\n');
-  } else {
-    console.log('Updating guild commands for dev bot\n\n');
-  }
-
   if (commands.length > 100) {
     throw new Error('the maximum number of commands allowed is 100');
+  }
+
+  if (!GUILD_ID) {
+    console.log(
+      `Updating ${commands.length} global commands for production bot\n\n`,
+    );
+  } else {
+    console.log(`Updating ${commands.length} guild commands for dev bot\n\n`);
   }
 
   const url = GUILD_ID
@@ -180,7 +182,7 @@ export const commands = [
   ...Command({
     name: 'search',
     aliases: ['anime', 'manga', 'media'],
-    description: 'Search for a specific series',
+    description: 'Search for a specific media',
     options: [
       Option({
         name: 'title',
@@ -191,6 +193,12 @@ export const commands = [
       Option({
         name: 'debug',
         description: 'Display the nerdy stuff',
+        type: Type.BOOLEAN,
+        optional: true,
+      }),
+      Option({
+        name: 'characters',
+        description: 'List the characters from the media',
         type: Type.BOOLEAN,
         optional: true,
       }),
@@ -212,6 +220,19 @@ export const commands = [
         description: 'Display the nerdy stuff',
         type: Type.BOOLEAN,
         optional: true,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'obtained',
+    aliases: ['owned', 'found'],
+    description: 'List all characters obtained form specific media',
+    options: [
+      Option({
+        name: 'title',
+        description: 'The title of the media',
+        autocomplete: true,
+        type: Type.STRING,
       }),
     ],
   }),

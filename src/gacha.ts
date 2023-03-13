@@ -290,7 +290,7 @@ function start(
       if (userId) {
         message.addComponents([
           new discord.Component()
-            .setId(quiet ? 'pull' : 'gacha', userId)
+            .setId(quiet ? 'pull' : 'gacha')
             .setLabel(`/${quiet ? 'pull' : 'gacha'}`),
         ]);
       }
@@ -311,12 +311,12 @@ function start(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              '**You don\'t have any more pulls!**',
+              'You don\'t have any more pulls!',
             ),
           )
           .addEmbed(
             new discord.Embed()
-              .setDescription(`+1 <t:${err.rechargeTimestamp}:R>`),
+              .setDescription(`_+1 pull <t:${err.rechargeTimestamp}:R>_`),
           )
           .patch(token);
       }

@@ -85,7 +85,8 @@ export const handler = async (r: Request) => {
 
         // suggest media
         if (
-          ['search', 'anime', 'manga', 'media'].includes(name) ||
+          ['search', 'anime', 'manga', 'media', 'obtained', 'owned', 'found']
+            .includes(name) ||
           (['collection', 'coll', 'mm'].includes(name) &&
             subcommand === 'media')
         ) {
@@ -150,7 +151,7 @@ export const handler = async (r: Request) => {
               key: 'characters',
               search: name,
             }),
-            user.allCharacters({
+            user.userCharacters({
               guildId,
               userId: member.user.id,
             }),
@@ -222,6 +223,18 @@ export const handler = async (r: Request) => {
           case 'manga':
           case 'media': {
             const title = options['title'] as string;
+
+            if (options['characters']) {
+              return (await search.mediaCharacters({
+                guildId,
+                index: 0,
+                search: title,
+                userId: member.user.id,
+                id: title.startsWith(idPrefix)
+                  ? title.substring(idPrefix.length)
+                  : undefined,
+              })).send();
+            }
 
             return (await search.media({
               guildId,
@@ -325,6 +338,20 @@ export const handler = async (r: Request) => {
                 break;
             }
             break;
+          }
+          case 'obtained':
+          case 'owned':
+          case 'found': {
+            const title = options['title'] as string;
+
+            return (await search.mediaObtained({
+              search: title,
+              id: title.startsWith(idPrefix)
+                ? title.substring(idPrefix.length)
+                : undefined,
+              guildId,
+            }))
+              .send();
           }
           case 'now':
           case 'checklist':
@@ -450,8 +477,8 @@ export const handler = async (r: Request) => {
 
             return (await search.mediaCharacters({
               userId: member.user.id,
+              id: mediaId,
               guildId,
-              mediaId,
               index,
             }))
               .setType(discord.MessageType.Update)
@@ -509,10 +536,27 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
+          case 'obtained': {
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+            // deno-lint-ignore no-non-null-assertion
+            const anchor = customValues![2];
+            // deno-lint-ignore no-non-null-assertion
+            const action = customValues![3];
+
+            return (await search.mediaObtained({
+              id,
+              guildId,
+              after: action === 'next' ? anchor : undefined,
+              before: action === 'prev' ? anchor : undefined,
+            }))
+              .setType(discord.MessageType.Update)
+              .send();
+          }
           case 'pull':
           case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
+            const type = customValues![0];
 
             return gacha
               .start({
@@ -522,25 +566,18 @@ export const handler = async (r: Request) => {
                 guildId,
               })
               .setType(
-                userId === member.user.id
+                type === '1'
                   ? discord.MessageType.Update
                   : discord.MessageType.New,
               )
               .send();
           }
           case 'now': {
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
-
             return (await user.now({
               userId: member.user.id,
               guildId,
             }))
-              .setType(
-                userId === member.user.id
-                  ? discord.MessageType.Update
-                  : discord.MessageType.New,
-              )
+              .setType(discord.MessageType.Update)
               .send();
           }
           case 'help': {

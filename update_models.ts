@@ -15,7 +15,7 @@ import getUserCollection from './models/get_user_collection.ts';
 
 import addVoteToUser from './models/add_vote_to_user.ts';
 
-import findCharacter from './models/find_character.ts';
+import findMedia from './models/find_media.ts';
 
 import addPackToInstance from './models/add_pack_to_instance.ts';
 
@@ -37,7 +37,7 @@ if (import.meta.main) {
     getUserInventory(client),
     getUserCollection(client),
     addVoteToUser(client),
-    findCharacter(client),
+    findMedia(client),
     addPackToInstance(client),
     addCharacterToInventory(client),
     setCharacterToParty(client),

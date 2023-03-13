@@ -17,6 +17,8 @@ import {
   validateRequest,
 } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
+// import * as hex from 'https://deno.land/std@0.179.0/encoding/hex.ts';
+
 const notoSans = await (await fetch(
   'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
 )).arrayBuffer();
@@ -337,48 +339,120 @@ async function readJson<T>(filePath: string): Promise<T> {
   }
 }
 
-function rechargeTimestamp(
-  { rechargeTimestamp }: {
-    rechargeTimestamp?: string;
-  },
-): string {
-  const ts = new Date(rechargeTimestamp ?? new Date());
+function rechargeTimestamp(v?: string): string {
+  const parsed = new Date(v ?? new Date());
 
-  ts.setMinutes(ts.getMinutes() + 15);
+  parsed.setMinutes(parsed.getMinutes() + 15);
 
-  const tsISO = ts.getTime().toString();
+  const ts = parsed.getTime().toString();
 
   // discord apparently uses black magic and requires us to cut 3 digits
   // or go 30,000 years into the future
-  return tsISO.substring(0, tsISO.length - 3);
+  return ts.substring(0, ts.length - 3);
 }
 
+function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
+  const parsed = new Date(v ?? new Date());
+
+  parsed.setHours(parsed.getHours() + 12);
+
+  const ts = parsed.getTime().toString();
+
+  return {
+    canVote: Date.now() >= parsed.getTime(),
+    // discord apparently uses black magic and requires us to cut 3 digits
+    // or go 30,000 years into the future
+    timeLeft: ts.substring(0, ts.length - 3),
+  };
+}
+
+// async function encrypt(plainText: string, secret: string): Promise<string> {
+//   if (secret.length !== 32) {
+//     throw new Error('Secret must be 32 characters');
+//   }
+
+//   const encode = (s: string) => new TextEncoder().encode(s);
+//   const decode = (d: Uint8Array) => new TextDecoder().decode(d);
+
+//   const secretArray = encode(secret);
+
+//   const key = await crypto.subtle.importKey(
+//     'raw',
+//     secretArray,
+//     'aes-cbc',
+//     false,
+//     ['encrypt'],
+//   );
+
+//   const encrypted = await crypto.subtle.encrypt(
+//     { name: 'AES-CBC', iv: secretArray.slice(0, 16) },
+//     key,
+//     encode(plainText),
+//   );
+
+//   const encryptedText = new Uint8Array(encrypted);
+
+//   return decode(hex.encode(encryptedText));
+// }
+
+// async function decrypt(hexBytes: string, secret: string): Promise<string> {
+//   if (secret.length !== 32) {
+//     throw new Error('Secret must be 32 characters');
+//   }
+
+//   const encode = (s: string) => new TextEncoder().encode(s);
+//   const decode = (d: Uint8Array) => new TextDecoder().decode(d);
+
+//   const secretArray = encode(secret);
+
+//   const key = await crypto.subtle.importKey(
+//     'raw',
+//     secretArray,
+//     'aes-cbc',
+//     false,
+//     ['decrypt'],
+//   );
+
+//   const decrypted = await crypto.subtle.decrypt(
+//     { name: 'AES-CBC', iv: secretArray.slice(0, 16) },
+//     key,
+//     hex.decode(encode(hexBytes)),
+//   );
+
+//   const decryptedText = new Uint8Array(decrypted);
+
+//   return decode(decryptedText);
+// }
+
 const utils = {
+  // encrypt,
+  // decrypt,
   capitalize,
+  captureException,
   chunks,
   comma,
   decodeDescription,
   distance,
   hexToInt,
+  initSentry,
+  json,
   parseInt: _parseInt,
   proxy,
   randint,
   readJson,
   rechargeTimestamp,
   rng,
+  serve,
+  serveStatic,
   shuffle,
   sleep,
   text,
   truncate,
   unzip,
-  verifySignature,
-  wrap,
-  json,
-  serve,
-  serveStatic,
   validateRequest,
-  initSentry,
-  captureException,
+  verifySignature,
+  votingTimestamp,
+  wrap,
 };
 
 export default utils;

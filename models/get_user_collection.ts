@@ -1,10 +1,6 @@
-import {
-  CharacterExpr,
-  Client,
-  fql,
-  InventoryExpr,
-  StringExpr,
-} from './fql.ts';
+import { CharacterNode, paginateCharacters } from './find_media.ts';
+
+import { Client, fql, InventoryExpr } from './fql.ts';
 
 import {
   getGuild,
@@ -12,71 +8,6 @@ import {
   getInventory,
   getUser,
 } from './get_user_inventory.ts';
-
-export interface CharacterNode {
-  character: CharacterExpr;
-  anchor: StringExpr;
-}
-
-const paginate = ({
-  after,
-  before,
-  afterCursor,
-  beforeCursor,
-  afterSelector,
-  beforeSelector,
-}: {
-  after?: string;
-  before?: string;
-  // deno-lint-ignore no-explicit-any
-  afterCursor: any;
-  // deno-lint-ignore no-explicit-any
-  beforeCursor: any;
-  // deno-lint-ignore no-explicit-any
-  afterSelector: any[];
-  // deno-lint-ignore no-explicit-any
-  beforeSelector: any[];
-}) => {
-  return fql.If(
-    fql.IsNonEmpty(fql.Var('characters')),
-    fql.If(
-      fql.IsNull(before),
-      fql.If(
-        fql.IsNull(after),
-        fql.Ref(fql.Get(fql.Var('characters'))),
-        fql.Let({
-          // after returns itself then a new item
-          match: fql.Paginate(fql.Var('characters'), {
-            after: afterCursor,
-            size: 2,
-          }),
-        }, ({ match }) => {
-          return fql.Select(
-            afterSelector,
-            match,
-            // or first item
-            fql.Ref(fql.Get(fql.Var('characters'))),
-          );
-        }),
-      ),
-      fql.Let({
-        // before doesn't return itself
-        match: fql.Paginate(fql.Var('characters'), {
-          before: beforeCursor,
-          size: 1,
-        }),
-      }, ({ match }) => {
-        return fql.Select(
-          beforeSelector,
-          match,
-          // or last item
-          fql.Ref(fql.Get(fql.Reverse(fql.Var('characters')))),
-        );
-      }),
-    ),
-    fql.Null(),
-  );
-};
 
 export function getCharacterStars(
   { inventory, stars, before, after }: {
@@ -92,7 +23,7 @@ export function getCharacterStars(
       stars,
       fql.Ref(inventory),
     ),
-    character: paginate({
+    character: paginateCharacters({
       after,
       before,
       // deno-lint-ignore no-non-null-assertion
@@ -124,7 +55,7 @@ export function getCharacterMedia(
       mediaId,
       fql.Ref(inventory),
     ),
-    character: paginate({
+    character: paginateCharacters({
       after,
       before,
       afterCursor: [
@@ -171,18 +102,20 @@ export default function (client: Client): {
         unique: false,
         collection: 'character',
         name: 'characters_rating_inventory',
-        terms: [{ field: ['data', 'rating'] }, {
-          field: ['data', 'inventory'],
-        }],
+        terms: [
+          { field: ['data', 'rating'] },
+          { field: ['data', 'inventory'] },
+        ],
       }),
       fql.Indexer({
         client,
         unique: false,
         collection: 'character',
         name: 'characters_media_inventory',
-        terms: [{ field: ['data', 'mediaId'] }, {
-          field: ['data', 'inventory'],
-        }],
+        terms: [
+          { field: ['data', 'mediaId'] },
+          { field: ['data', 'inventory'] },
+        ],
         values: [{ field: ['data', 'rating'], reverse: true }, {
           field: ['ref'],
         }],

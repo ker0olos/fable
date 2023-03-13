@@ -43,7 +43,6 @@ import { fql } from './fql.ts';
 
 import {
   default as Model,
-  // getCharacterNode,
   getGuild,
   getInstance,
   getInventory,

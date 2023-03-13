@@ -648,6 +648,50 @@ Deno.test('external images', async (test) => {
   });
 });
 
+Deno.test('recharge timestamps', () => {
+  const now = new Date();
+
+  const expected = new Date().setMinutes(now.getMinutes() + 15).toString();
+
+  assertEquals(
+    utils.rechargeTimestamp(now.toISOString()),
+    expected.substring(0, expected.length - 3),
+  );
+});
+
+Deno.test('voting timestamps', async (test) => {
+  await test.step('cannot vote', () => {
+    const now = new Date();
+
+    const expected = new Date().setHours(now.getHours() + 12).toString();
+
+    const _ = utils.votingTimestamp(now.toISOString());
+
+    assertEquals(
+      _.timeLeft,
+      expected.substring(0, expected.length - 3),
+    );
+
+    assertEquals(
+      _.canVote,
+      false,
+    );
+  });
+
+  await test.step('can vote', () => {
+    const past = new Date();
+
+    past.setHours(new Date().getHours() - 12).toString();
+
+    const _ = utils.votingTimestamp(past.toISOString());
+
+    assertEquals(
+      _.canVote,
+      true,
+    );
+  });
+});
+
 Deno.test('text images', async (test) => {
   await test.step('5', async () => {
     const arrayBuffer = await utils.text(5);
@@ -669,3 +713,15 @@ Deno.test('text images', async (test) => {
     assertEquals(`${image}`, 'Image<32x39>');
   });
 });
+
+// Deno.test('encryption', async () => {
+//   const secret = 'gUkXp2s5v8x/A?D(G+KbPeShVmYq3t6w';
+
+//   const encrypted = await utils.encrypt('plain_text', secret);
+
+//   assertEquals(encrypted, 'a33dcaf247b16a80214a80d43d8485a9');
+
+//   const decrypted = await utils.decrypt(encrypted, secret);
+
+//   assertEquals(decrypted, 'plain_text');
+// });

@@ -7,10 +7,10 @@ function pages(
     new discord.Message()
       .addComponents([
         new discord.Component()
-          .setId('gacha', userId)
+          .setId('gacha')
           .setLabel('/gacha'),
         new discord.Component()
-          .setId('now', userId)
+          .setId('now')
           .setLabel('/now'),
       ])
       .addEmbed(
@@ -82,6 +82,7 @@ function pages(
             '',
             '- `/collection stars` `/coll stars` `/mm stars`: _list all your stars_',
             '- `/collection media` `/coll media` `/mm media`: _list all your characters from a specific media_',
+            '- `/obtained` `/owned` `/found`: _list all characters obtained form specific media_',
             '',
             '- `/anilist next_episode`: _find when the next episode of an anime is airing_',
           ].join('\n')),

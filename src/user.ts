@@ -32,13 +32,17 @@ async function now({
       getUserInventory(userId: $userId, guildId: $guildId) {
         availablePulls
         rechargeTimestamp
+        user {
+          lastVote
+          availableVotes
+        }
       }
     }
   `;
 
   const message = new discord.Message();
 
-  const { availablePulls, rechargeTimestamp } = (await request<{
+  const { user, availablePulls, rechargeTimestamp } = (await request<{
     getUserInventory: Schema.Inventory;
   }>({
     url: faunaUrl,
@@ -52,6 +56,9 @@ async function now({
     },
   })).getUserInventory;
 
+  const recharge = utils.rechargeTimestamp(rechargeTimestamp);
+  const voting = utils.votingTimestamp(user.lastVote);
+
   message.addAttachment({
     arrayBuffer: await utils.text(availablePulls),
     filename: 'pulls.png',
@@ -64,22 +71,48 @@ async function now({
       .setFooter({ text: 'Available Pulls' }),
   );
 
-  if (availablePulls > 0) {
-    message.addComponents([
-      // `/gacha` shortcut
-      new discord.Component()
-        .setId('gacha', userId)
-        .setLabel('/gacha'),
-    ]);
+  if (user.availableVotes) {
+    message.addEmbed(
+      new discord.Embed()
+        .setFooter({ text: `${user.availableVotes} Available Votes` }),
+    );
   }
 
   if (availablePulls < 5) {
     message.addEmbed(
       new discord.Embed()
+        .setDescription(`_+1 pull <t:${recharge}:R>_`),
+    );
+  }
+
+  if (user.lastVote && !voting.canVote) {
+    message.addEmbed(
+      new discord.Embed()
         .setDescription(
-          `+1 <t:${utils.rechargeTimestamp({ rechargeTimestamp })}:R>`,
+          `_Can vote again in <t:${
+            utils.votingTimestamp(user.lastVote).timeLeft
+          }:R>_`,
         ),
     );
+  }
+
+  // components
+
+  if (availablePulls > 0) {
+    message.addComponents([
+      // `/gacha` shortcut
+      new discord.Component()
+        .setId('gacha=1')
+        .setLabel('/gacha'),
+    ]);
+  }
+
+  if (!user.lastVote || voting.canVote) {
+    message.addComponents([
+      new discord.Component()
+        .setLabel(!user.lastVote ? 'Vote for Rewards' : 'Vote')
+        .setUrl('https://top.gg/bot/1041970851559522304/vote'),
+    ]);
   }
 
   return message;
@@ -142,7 +175,7 @@ async function findCharacter({
   };
 }
 
-async function allCharacters({
+async function userCharacters({
   userId,
   guildId,
 }: {
@@ -241,7 +274,7 @@ async function stars({
       message.addComponents([
         // `/gacha` shortcut
         new discord.Component()
-          .setId('gacha', userId)
+          .setId('gacha', '1')
           .setLabel('/gacha'),
       ]);
     }
@@ -382,7 +415,7 @@ async function media({
       message.insertComponents([
         // `/gacha` shortcut
         new discord.Component()
-          .setId('gacha', userId)
+          .setId('gacha', '1')
           .setLabel('/gacha'),
       ]);
     }
@@ -434,7 +467,7 @@ async function media({
 const user = {
   now,
   findCharacter,
-  allCharacters,
+  userCharacters,
   stars,
   media,
 };

@@ -27,7 +27,7 @@
     "nsfw": {
       "title": "nsfw",
       "type": "boolean",
-      "description": "If the pack contains any nsfw (adult) content"
+      "description": "If the pack contains any nsfw explicit content (If true you pack won't work outside of nsfw channels)"
     },
     "author": {
       "title": "author",
@@ -90,6 +90,7 @@
             "title": "conflict",
             "type": "string",
             "description": "Reference an existing media (pack:id)",
+            "examples": ["anilist:118123", "vtubers:hololive"],
             "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
           }
         }
@@ -119,6 +120,7 @@
             "title": "conflict",
             "type": "string",
             "description": "Reference an existing character (pack:id)",
+            "examples": ["anilist:206017", "vtubers:gura"],
             "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
           }
         }

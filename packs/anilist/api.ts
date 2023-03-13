@@ -2,12 +2,7 @@ import { gql, request } from '../../src/graphql.ts';
 
 import { AniListCharacter, AniListMedia } from './types.ts';
 
-import {
-  Character,
-  CharacterEdge,
-  CharacterRole,
-  Media,
-} from '../../src/types.ts';
+import { Character, CharacterRole, Media } from '../../src/types.ts';
 
 const url = 'https://graphql.anilist.co';
 
@@ -96,6 +91,10 @@ export function transform<T>(
 
     if (item.characters?.edges?.length) {
       t.characters = {
+        // used for query media character
+        // deno-lint-ignore ban-ts-comment
+        // @ts-ignore
+        pageInfo: item.characters.pageInfo,
         edges: item.characters.edges
           .map((edge) => ({
             role: edge.role,
@@ -172,7 +171,12 @@ export function transform<T>(
 }
 
 export async function media(
-  variables: { ids?: number[]; search?: string },
+  variables: {
+    ids?: number[];
+    search?: string;
+    perPage?: number;
+    page?: number;
+  },
 ): Promise<AniListMedia[]> {
   if (!variables.search && !variables.ids?.length) {
     return [];
@@ -189,7 +193,14 @@ export async function media(
               relationType
             }
           }
-          characters(sort: ${characterDefaultSort}, perPage: 25) {
+          characters(
+            sort: ${characterDefaultSort}, 
+            page: ${variables.page ?? 1},
+            perPage: ${variables.perPage ?? 25}
+          ) {
+            pageInfo {
+              hasNextPage
+            }
             edges {
               node { ${characterDefaultQuery} }
               role
@@ -240,66 +251,6 @@ export async function characters(
   } = await request({ url, query, variables });
 
   return data.Page.characters;
-}
-
-export async function mediaCharacters(
-  { id, index }: {
-    id: string;
-    index: number;
-  },
-): Promise<{
-  media?: Media;
-  character?: Character;
-  next: boolean;
-}> {
-  const query = gql`
-    query ($id: Int, $page: Int) {
-      Media(id: $id) {
-        ${mediaDefaultQuery}
-        characters(sort: ${characterDefaultSort}, page: $page, perPage: 1) {
-          pageInfo {
-            hasNextPage
-          }
-          edges {
-            node { ${characterDefaultQuery} }
-            role
-          }
-        }
-      }
-    }
-  `;
-
-  const data: {
-    Media?: AniListMedia & {
-      characters?: {
-        pageInfo: {
-          hasNextPage: boolean;
-        };
-        edges: CharacterEdge[];
-      };
-    };
-  } = await request({
-    url,
-    query,
-    variables: {
-      id,
-      // anilist pages starts from 1 not 0
-      // so 'page' is always one greater than 'index'
-      page: index + 1,
-    },
-  });
-
-  return {
-    next: Boolean(data.Media?.characters?.pageInfo.hasNextPage),
-    media: data.Media
-      ? transform({ item: data.Media as AniListMedia })
-      : undefined,
-    character: data.Media?.characters?.edges[0]?.node
-      ? transform({
-        item: data.Media?.characters?.edges[0]?.node as AniListCharacter,
-      })
-      : undefined,
-  };
 }
 
 export async function nextEpisode(

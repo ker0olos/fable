@@ -236,6 +236,9 @@ Deno.test('disabled relations', async (test) => {
         english: 'title',
       },
       characters: {
+        pageInfo: {
+          hasNextPage: false,
+        },
         edges: [{
           role: CharacterRole.Main,
           node: {
@@ -1798,7 +1801,7 @@ Deno.test('search for characters', async (test) => {
 });
 
 Deno.test('media character', async (test) => {
-  await test.step('anilist', async () => {
+  await test.step('anilist (id)', async () => {
     const media: AniListMedia = {
       id: '1',
       type: MediaType.Anime,
@@ -1830,7 +1833,9 @@ Deno.test('media character', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              Media: media,
+              Page: {
+                media: [media],
+              },
             },
           }))),
       } as any),
@@ -1846,8 +1851,8 @@ Deno.test('media character', async (test) => {
 
     try {
       const result = await packs.mediaCharacters({
+        id: 'anilist:1',
         guildId: 'guild_id',
-        mediaId: 'anilist:1',
         index: 0,
       });
 
@@ -1862,6 +1867,107 @@ Deno.test('media character', async (test) => {
             english: 'title',
           },
           characters: {
+            pageInfo: {
+              hasNextPage: true,
+            },
+            edges: [
+              {
+                role: 'MAIN',
+                node: {
+                  id: '2',
+                  packId: 'anilist',
+                  name: {
+                    english: 'name',
+                  },
+                },
+              },
+            ],
+          } as any,
+        },
+        character: {
+          id: '2',
+          packId: 'anilist',
+          name: {
+            english: 'name',
+          },
+        },
+      });
+    } finally {
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+    }
+  });
+
+  await test.step('anilist (title)', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      characters: {
+        pageInfo: {
+          hasNextPage: true,
+        },
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: '2',
+            name: {
+              full: 'name',
+            },
+          },
+        }],
+      } as any,
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    try {
+      const result = await packs.mediaCharacters({
+        search: 'title',
+        guildId: 'guild_id',
+        index: 0,
+      });
+
+      assertEquals(result, {
+        next: true,
+        media: {
+          id: '1',
+          packId: 'anilist',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          characters: {
+            pageInfo: {
+              hasNextPage: true,
+            },
             edges: [
               {
                 role: 'MAIN',
@@ -1936,8 +2042,8 @@ Deno.test('media character', async (test) => {
 
     try {
       const result = await packs.mediaCharacters({
+        id: 'pack-id:1',
         guildId: 'guild_id',
-        mediaId: 'pack-id:1',
         index: 0,
       });
 
@@ -2019,8 +2125,8 @@ Deno.test('media character', async (test) => {
 
     try {
       const result = await packs.mediaCharacters({
+        id: 'pack-id:1',
         guildId: 'guild_id',
-        mediaId: 'pack-id:1',
         index: 0,
       });
 
@@ -2079,8 +2185,8 @@ Deno.test('media character', async (test) => {
       await assertRejects(
         async () =>
           await packs.mediaCharacters({
+            id: 'anilist:1',
             guildId: 'guild_id',
-            mediaId: 'anilist:1',
             index: 0,
           }),
         Error,

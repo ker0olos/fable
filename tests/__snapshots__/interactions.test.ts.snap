@@ -28,13 +28,13 @@ snapshot[`/help 1`] = `
             type: 2,
           },
           {
-            custom_id: "gacha=user_id",
+            custom_id: "gacha",
             label: "/gacha",
             style: 2,
             type: 2,
           },
           {
-            custom_id: "now=user_id",
+            custom_id: "now",
             label: "/now",
             style: 2,
             type: 2,
@@ -195,6 +195,7 @@ snapshot[`/help 3`] = `
 
 - \`/collection stars\` \`/coll stars\` \`/mm stars\`: _list all your stars_
 - \`/collection media\` \`/coll media\` \`/mm media\`: _list all your characters from a specific media_
+- \`/obtained\` \`/owned\` \`/found\`: _list all characters obtained form specific media_
 
 - \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
         type: "rich",

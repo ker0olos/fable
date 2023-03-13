@@ -5,6 +5,12 @@ type User @collection(name: "user") {
   inventories: [Inventory!]!
   # all the badges this user owns
   badges: [Badge!]!
+  # 
+  lastVote: Time,
+  # the amount of votes the user has voted
+  totalVotes: Int
+  # the amount of votes available to be exchanged for rewards
+  availableVotes: Int
 }
 
 type Guild @collection(name: "guild") {
@@ -101,11 +107,6 @@ type Gacha @embedded {
 type Trade @embedded {
   from: User!
   to: User!
-}
-
-type CharacterNode @embedded {
-  character: Character
-  anchor: String
 }
 
 type Party @embedded {

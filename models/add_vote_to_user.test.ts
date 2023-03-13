@@ -14,6 +14,8 @@ import { assertSnapshot } from 'https://deno.land/std@0.179.0/testing/snapshot.t
 import {
   FakeAdd,
   FakeClient,
+  FakeEquals,
+  FakeIf,
   FakeLet,
   FakeNow,
   FakeRef,
@@ -30,6 +32,8 @@ Deno.test('voting', async (test) => {
 
     const letStub = FakeLet();
     const refStub = FakeRef();
+    const ifStub = FakeIf();
+    const equalsStub = FakeEquals();
     const addStub = FakeAdd();
 
     const nowStub = FakeNow(date);
@@ -48,6 +52,11 @@ Deno.test('voting', async (test) => {
     try {
       const result = addVote({ user: 'user' as any, weekend: false }) as any;
 
+      assertSpyCall(ifStub, 0, {
+        args: [false, 2, 1],
+        returned: 1,
+      });
+
       assertSpyCall(selectStub, 0, {
         args: [
           [
@@ -92,6 +101,8 @@ Deno.test('voting', async (test) => {
     } finally {
       letStub.restore();
       refStub.restore();
+      ifStub.restore();
+      equalsStub.restore();
       addStub.restore();
       nowStub.restore();
       selectStub.restore();
@@ -104,6 +115,8 @@ Deno.test('voting', async (test) => {
 
     const letStub = FakeLet();
     const refStub = FakeRef();
+    const ifStub = FakeIf();
+    const equalsStub = FakeEquals();
     const addStub = FakeAdd();
 
     const nowStub = FakeNow(date);
@@ -122,6 +135,11 @@ Deno.test('voting', async (test) => {
     try {
       const result = addVote({ user: 'user' as any, weekend: true }) as any;
 
+      assertSpyCall(ifStub, 0, {
+        args: [true, 2, 1],
+        returned: 2,
+      });
+
       assertSpyCall(selectStub, 0, {
         args: [
           [
@@ -149,14 +167,14 @@ Deno.test('voting', async (test) => {
       });
 
       assertSpyCall(addStub, 1, {
-        args: [1, 1],
+        args: [1, 2],
       });
 
       assertSpyCall(updateStub, 0, {
         args: [{ ref: 'user' } as any, {
           lastVote: date,
           totalVotes: 6,
-          availableVotes: 2,
+          availableVotes: 3,
         }],
       });
 
@@ -166,6 +184,8 @@ Deno.test('voting', async (test) => {
     } finally {
       letStub.restore();
       refStub.restore();
+      ifStub.restore();
+      equalsStub.restore();
       addStub.restore();
       nowStub.restore();
       selectStub.restore();
