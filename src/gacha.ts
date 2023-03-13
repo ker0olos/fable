@@ -311,12 +311,12 @@ function start(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              '**You don\'t have any more pulls!**',
+              'You don\'t have any more pulls!',
             ),
           )
           .addEmbed(
             new discord.Embed()
-              .setDescription(`+1 <t:${err.rechargeTimestamp}:R>`),
+              .setDescription(`_+1 pull <t:${err.rechargeTimestamp}:R>_`),
           )
           .patch(token);
       }

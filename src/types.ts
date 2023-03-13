@@ -194,6 +194,15 @@ export namespace Schema {
       member4?: Character;
       member5?: Character;
     };
+    user: {
+      lastVote?: string;
+      totalVotes?: number;
+      availableVotes?: number;
+      badges: {
+        name: string;
+        description: string;
+      }[];
+    };
   };
   export type Mutation =
     | {

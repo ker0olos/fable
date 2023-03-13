@@ -48,7 +48,7 @@ export class NoPullsError extends Error {
 
     this.name = 'NoPullsError';
     this.rechargeTimestamp = utils.rechargeTimestamp(
-      { rechargeTimestamp },
+      rechargeTimestamp,
     );
   }
 }

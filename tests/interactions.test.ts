@@ -3928,7 +3928,7 @@ Deno.test('/collection stars', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha',
+                custom_id: 'gacha=1',
                 label: '/gacha',
                 style: 2,
                 type: 2,
@@ -4563,7 +4563,7 @@ Deno.test('/collection media', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha',
+                custom_id: 'gacha=1',
                 label: '/gacha',
                 style: 2,
                 type: 2,
@@ -5385,9 +5385,9 @@ Deno.test('/gacha', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**You don\'t have any more pulls!**',
+              description: 'You don\'t have any more pulls!',
             },
-            { type: 'rich', description: '+1 <t:1675732089:R>' },
+            { type: 'rich', description: '_+1 pull <t:1675732089:R>_' },
           ],
           attachments: [],
           components: [],
@@ -8242,7 +8242,7 @@ Deno.test('/help', async (test) => {
 });
 
 Deno.test('/now', async (test) => {
-  await test.step('now with pulls', async () => {
+  await test.step('with pulls', async () => {
     const textStub = stub(
       utils,
       'text',
@@ -8260,6 +8260,7 @@ Deno.test('/now', async (test) => {
               getUserInventory: {
                 availablePulls: 5,
                 lastPull: undefined,
+                user: {},
               },
             },
           }))),
@@ -8303,10 +8304,16 @@ Deno.test('/now', async (test) => {
             {
               components: [
                 {
-                  custom_id: 'gacha',
+                  custom_id: 'gacha=1',
                   label: '/gacha',
                   style: 2,
                   type: 2,
+                },
+                {
+                  label: 'Vote for Rewards',
+                  style: 5,
+                  type: 2,
+                  url: 'https://top.gg/bot/1041970851559522304/vote',
                 },
               ],
               type: 1,
@@ -8320,7 +8327,7 @@ Deno.test('/now', async (test) => {
     }
   });
 
-  await test.step('now with no pulls', async () => {
+  await test.step('no pulls', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const textStub = stub(
@@ -8340,6 +8347,7 @@ Deno.test('/now', async (test) => {
               getUserInventory: {
                 availablePulls: 0,
                 rechargeTimestamp: time.toISOString(),
+                user: {},
               },
             },
           }))),
@@ -8378,12 +8386,193 @@ Deno.test('/now', async (test) => {
               },
               type: 'rich',
             },
-            { type: 'rich', description: '+1 <t:1675568206:R>' },
+            { type: 'rich', description: '_+1 pull <t:1675568206:R>_' },
+          ],
+          components: [{
+            type: 1,
+            components: [{
+              label: 'Vote for Rewards',
+              style: 5,
+              type: 2,
+              url: 'https://top.gg/bot/1041970851559522304/vote',
+            }],
+          }],
+        },
+      });
+    } finally {
+      textStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('with votes', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const textStub = stub(
+      utils,
+      'text',
+      () => Promise.resolve(new Uint8Array()),
+    );
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                availablePulls: 0,
+                rechargeTimestamp: time.toISOString(),
+                user: {
+                  availableVotes: 5,
+                  lastVote: time.toISOString(),
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await user.now({
+        userId: 'guild',
+        guildId: 'user',
+      });
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(textStub, 1);
+
+      assertSpyCall(textStub, 0, {
+        args: [0],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [
+            {
+              filename: 'pulls.png',
+              id: '0',
+            },
+          ],
+          embeds: [
+            {
+              footer: {
+                text: 'Available Pulls',
+              },
+              image: {
+                url: 'attachment://pulls.png',
+              },
+              type: 'rich',
+            },
+            {
+              type: 'rich',
+              footer: {
+                text: '5 Available Votes',
+              },
+            },
+            { type: 'rich', description: '_+1 pull <t:1675568206:R>_' },
+          ],
+          components: [{
+            type: 1,
+            components: [{
+              label: 'Vote',
+              style: 5,
+              type: 2,
+              url: 'https://top.gg/bot/1041970851559522304/vote',
+            }],
+          }],
+        },
+      });
+    } finally {
+      textStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('can\'t vote', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const timeStub = new FakeTime(time);
+
+    const textStub = stub(
+      utils,
+      'text',
+      () => Promise.resolve(new Uint8Array()),
+    );
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                availablePulls: 0,
+                rechargeTimestamp: time.toISOString(),
+                user: {
+                  availableVotes: 5,
+                  lastVote: new Date().toISOString(),
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await user.now({
+        userId: 'guild',
+        guildId: 'user',
+      });
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(textStub, 1);
+
+      assertSpyCall(textStub, 0, {
+        args: [0],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [
+            {
+              filename: 'pulls.png',
+              id: '0',
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              footer: {
+                text: 'Available Pulls',
+              },
+              image: {
+                url: 'attachment://pulls.png',
+              },
+            },
+            {
+              type: 'rich',
+              footer: {
+                text: '5 Available Votes',
+              },
+            },
+            { type: 'rich', description: '_+1 pull <t:1675568206:R>_' },
+            {
+              type: 'rich',
+              description: '_Can vote again in <t:1675610506:R>_',
+            },
           ],
           components: [],
         },
       });
     } finally {
+      timeStub.restore();
       textStub.restore();
       fetchStub.restore();
     }
