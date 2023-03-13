@@ -195,7 +195,7 @@ snapshot[`/help 3`] = `
 
 - \`/collection stars\` \`/coll stars\` \`/mm stars\`: _list all your stars_
 - \`/collection media\` \`/coll media\` \`/mm media\`: _list all your characters from a specific media_
-- \`/obtained\` \`/owned\` \`/found\`: _list all characters obtained form specific media_
+- \`/found\` \`/obtained\` \`/owned\`: _list all characters found from a specific media_
 
 - \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
         type: "rich",

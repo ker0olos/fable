@@ -224,9 +224,9 @@ export const commands = [
     ],
   }),
   ...Command({
-    name: 'obtained',
-    aliases: ['owned', 'found'],
-    description: 'List all characters obtained form specific media',
+    name: 'found',
+    aliases: ['obtained', 'owned'],
+    description: 'List all characters found from a specific media',
     options: [
       Option({
         name: 'title',

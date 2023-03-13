@@ -85,7 +85,7 @@ export const handler = async (r: Request) => {
 
         // suggest media
         if (
-          ['search', 'anime', 'manga', 'media', 'obtained', 'owned', 'found']
+          ['search', 'anime', 'manga', 'media', 'found', 'obtained', 'owned']
             .includes(name) ||
           (['collection', 'coll', 'mm'].includes(name) &&
             subcommand === 'media')
@@ -339,12 +339,12 @@ export const handler = async (r: Request) => {
             }
             break;
           }
+          case 'found':
           case 'obtained':
-          case 'owned':
-          case 'found': {
+          case 'owned': {
             const title = options['title'] as string;
 
-            return (await search.mediaObtained({
+            return (await search.mediaFound({
               search: title,
               id: title.startsWith(idPrefix)
                 ? title.substring(idPrefix.length)
@@ -536,7 +536,7 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'obtained': {
+          case 'found': {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
             // deno-lint-ignore no-non-null-assertion
@@ -544,7 +544,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const action = customValues![3];
 
-            return (await search.mediaObtained({
+            return (await search.mediaFound({
               id,
               guildId,
               after: action === 'next' ? anchor : undefined,

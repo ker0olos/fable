@@ -4586,7 +4586,7 @@ Deno.test('/collection media', async (test) => {
   });
 });
 
-Deno.test('/obtained', async (test) => {
+Deno.test('/found', async (test) => {
   await test.step('normal', async () => {
     const media: AniListMedia = {
       id: '2',
@@ -4669,7 +4669,7 @@ Deno.test('/obtained', async (test) => {
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
-      const message = await search.mediaObtained({
+      const message = await search.mediaFound({
         guildId: 'guild_id',
         id: 'anilist:2',
       });
@@ -4682,13 +4682,13 @@ Deno.test('/obtained', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'obtained=anilist:2==anchor=prev',
+                custom_id: 'found=anilist:2==anchor=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
               },
               {
-                custom_id: 'obtained=anilist:2==anchor=next',
+                custom_id: 'found=anilist:2==anchor=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -4784,7 +4784,7 @@ Deno.test('/obtained', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await search.mediaObtained({
+          await search.mediaFound({
             guildId: 'guild_id',
             id: 'anilist:2',
           }),
@@ -4885,7 +4885,7 @@ Deno.test('/obtained', async (test) => {
     );
 
     try {
-      const message = await search.mediaObtained({
+      const message = await search.mediaFound({
         guildId: 'guild_id',
         id: 'anilist:2',
       });
@@ -4898,13 +4898,13 @@ Deno.test('/obtained', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'obtained=anilist:2==anchor=prev',
+                custom_id: 'found=anilist:2==anchor=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
               },
               {
-                custom_id: 'obtained=anilist:2==anchor=next',
+                custom_id: 'found=anilist:2==anchor=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -4971,7 +4971,7 @@ Deno.test('/obtained', async (test) => {
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
-      const message = await search.mediaObtained({
+      const message = await search.mediaFound({
         guildId: 'guild_id',
         id: 'anilist:2',
       });

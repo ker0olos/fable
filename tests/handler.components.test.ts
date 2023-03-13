@@ -719,7 +719,7 @@ Deno.test('collection media components', async (test) => {
   });
 });
 
-Deno.test('obtained components', async (test) => {
+Deno.test('found components', async (test) => {
   await test.step('prev', async () => {
     const body = JSON.stringify({
       id: 'id',
@@ -729,7 +729,7 @@ Deno.test('obtained components', async (test) => {
       channel_id: 'channel_id',
 
       data: {
-        custom_id: 'obtained=media_id==anchor=prev',
+        custom_id: 'found=media_id==anchor=prev',
       },
     });
 
@@ -744,7 +744,7 @@ Deno.test('obtained components', async (test) => {
       send: () => true,
     }));
 
-    const searchStub = stub(search, 'mediaObtained', () =>
+    const searchStub = stub(search, 'mediaFound', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -812,7 +812,7 @@ Deno.test('obtained components', async (test) => {
       channel_id: 'channel_id',
 
       data: {
-        custom_id: 'obtained=media_id==anchor=next',
+        custom_id: 'found=media_id==anchor=next',
       },
     });
 
@@ -827,7 +827,7 @@ Deno.test('obtained components', async (test) => {
       send: () => true,
     }));
 
-    const searchStub = stub(search, 'mediaObtained', () =>
+    const searchStub = stub(search, 'mediaFound', () =>
       ({
         setType: setTypeSpy,
       }) as any);
