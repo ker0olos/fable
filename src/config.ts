@@ -1,10 +1,5 @@
 import { load as Dotenv } from 'https://deno.land/std@0.179.0/dotenv/mod.ts';
 
-export const emotes = {
-  star: '<:star:1061016362832642098>',
-  noStar: '<:no_star:1061016360190222466>',
-};
-
 export const faunaUrl = 'https://graphql.us.fauna.com/graphql';
 
 const config: {

@@ -38,12 +38,13 @@ You can also create a party with the characters you find, challenge the tower,
 your friends or other discord servers.
 
 [^1]: Currently the default packs include anime/manga/vtubers, but you can
-install other packs, e.g. video game characters or real-life celebrities. And
-you can disable all anime packs entirely (In case it's a sports server or else,
-we try our best to include term natural commands along with anime analogies).
+install other packs, e.g. video game characters or real-life celebrities. ~~And
+you can disable all anime packs entirely (In case it's a sports server or
+else~~, we try our best to include term natural commands along with anime
+analogies).
 
 > Fable is in early access. Some core features might be missing. Missing
-> features include "Trading", "PVE", "PVP" (see
+> features include "PVE", "PVP" (see
 > [#20](https://github.com/ker0olos/fable/issues/20) for a full roadmap)
 
 You can try an online demo of Fable before adding it to your server by going to

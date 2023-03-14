@@ -24,7 +24,10 @@ import {
 
 import { NonFetalError } from './errors.ts';
 
+export const idPrefix = 'id=';
+
 const musicUrlRegex = /youtube|spotify/;
+
 const externalUrlRegex =
   /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoon\.com|amazon\.com)[\S]*$/;
 

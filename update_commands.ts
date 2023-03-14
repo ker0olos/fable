@@ -10,6 +10,11 @@ try {
   //
 }
 
+// enum CommandType {
+//   'CHAT' = 1,
+//   'USER' = 2,
+// }
+
 enum Type {
   'SUB_COMMAND' = 1,
   'SUB_COMMAND_GROUP' = 2,
@@ -43,7 +48,8 @@ type Option = {
 
 type Command = {
   name: string;
-  description: string;
+  // type?: CommandType;
+  description?: string;
   options?: ReturnType<typeof Option>[];
   aliases?: string[];
   defaultPermission?: Permission;
@@ -59,6 +65,7 @@ const Option = (option: Option): Option => option;
 const Command = ({
   name,
   description,
+  // type,
   options,
   aliases,
   defaultPermission,
@@ -76,6 +83,7 @@ const Command = ({
 
   const commands = [{
     name,
+    // type,
     description,
     'default_member_permissions': defaultPermission,
     options: options?.map((option) => transformOption(option)),
@@ -233,6 +241,31 @@ export const commands = [
         description: 'The title of the media',
         autocomplete: true,
         type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'trade',
+    description: 'Trade with another user',
+    aliases: ['offer', 'give'],
+    options: [
+      Option({
+        name: 'user',
+        description: 'The user you want to trade with',
+        type: Type.USER,
+      }),
+      Option({
+        name: 'give',
+        description: 'The character you\'re giving away',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+      Option({
+        name: 'take',
+        description: 'The character you want to take',
+        autocomplete: true,
+        type: Type.STRING,
+        optional: true,
       }),
     ],
   }),

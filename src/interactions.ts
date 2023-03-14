@@ -1,14 +1,14 @@
 import * as discord from './discord.ts';
 
-import search from './search.ts';
+import search, { idPrefix } from './search.ts';
+
 import user from './user.ts';
 import party from './party.ts';
-
 import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
-
 import help from './help.ts';
+import trade from './trade.ts';
 
 import demo from './demo.tsx';
 
@@ -19,8 +19,6 @@ import config, { initConfig } from './config.ts';
 import { Character, Media, PackType } from './types.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
-
-const idPrefix = 'id=';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -62,6 +60,7 @@ export const handler = async (r: Request) => {
     type,
     token,
     guildId,
+    focused,
     resolved,
     member,
     options,
@@ -85,12 +84,17 @@ export const handler = async (r: Request) => {
 
         // suggest media
         if (
-          ['search', 'anime', 'manga', 'media', 'found', 'obtained', 'owned']
-            .includes(name) ||
-          (['collection', 'coll', 'mm'].includes(name) &&
-            subcommand === 'media')
+          (
+            ['search', 'anime', 'manga', 'media', 'found', 'obtained', 'owned']
+              .includes(name)
+          ) ||
+          (
+            ['collection', 'coll', 'mm'].includes(name) &&
+            subcommand === 'media'
+          )
         ) {
-          const title = options['title'] as string;
+          // deno-lint-ignore no-non-null-assertion
+          const title = options[focused!] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
@@ -113,8 +117,11 @@ export const handler = async (r: Request) => {
         }
 
         // suggest characters
-        if (['character', 'char', 'im'].includes(name)) {
-          const name = options['name'] as string;
+        if (
+          ['character', 'char', 'im', 'trade', 'offer', 'give'].includes(name)
+        ) {
+          // deno-lint-ignore no-non-null-assertion
+          const name = options[focused!] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
@@ -138,7 +145,8 @@ export const handler = async (r: Request) => {
 
         // same as suggest characters but filters out results that the user doesn't have
         if (['party', 'team', 'p'].includes(name) && subcommand === 'assign') {
-          const name = options['name'] as string;
+          // deno-lint-ignore no-non-null-assertion
+          const name = options[focused!] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
@@ -174,7 +182,8 @@ export const handler = async (r: Request) => {
 
         // suggest installed packs
         if (name === 'packs' && subcommand === 'uninstall') {
-          const id = options['id'] as string;
+          // deno-lint-ignore no-non-null-assertion
+          const id = options[focused!] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
@@ -352,6 +361,21 @@ export const handler = async (r: Request) => {
               guildId,
             }))
               .send();
+          }
+          case 'trade':
+          case 'offer':
+          case 'give': {
+            const giveCharacter = options['give'] as string;
+            const takeCharacter = options['take'] as string;
+
+            return trade.pre({
+              token,
+              guildId,
+              userId: member.user.id,
+              targetId: options['user'] as string,
+              give: [giveCharacter],
+              take: takeCharacter ? [takeCharacter] : [],
+            }).send();
           }
           case 'now':
           case 'checklist':

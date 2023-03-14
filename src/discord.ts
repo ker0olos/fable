@@ -7,11 +7,23 @@ const API = `https://discord.com/api/v10`;
 
 const splitter = '=';
 
+enum CommandType {
+  CHAT = 1,
+  USER = 2,
+}
+
 export const empty = '\u200B';
 
 export const colors = {
-  red: '#972c2c',
-  green: '#2c9f6b',
+  red: '#a51727',
+  green: '#00a86b',
+};
+
+export const emotes = {
+  star: '<:star:1061016362832642098>',
+  noStar: '<:no_star:1061016360190222466>',
+  remove: '<:remove:1085033678180208641>',
+  add: '<:add:1085034731810332743>',
 };
 
 export const join = (...args: string[]): string => {
@@ -136,8 +148,8 @@ export class Interaction<Options> {
     const obj = JSON.parse(body);
 
     const data: {
+      type: number;
       name: string;
-      type: string;
       guild_id: string;
       channel_id: string;
       resolved?: Resolved;
@@ -178,6 +190,20 @@ export class Interaction<Options> {
     // this.guildLocale = obj.guild_locale;
 
     this.options = {};
+
+    // transform context-menu commands into chat commands
+    if (data?.type === CommandType.USER) {
+      this.type = InteractionType.Command;
+
+      this.name = data.name.toLowerCase();
+
+      this.resolved = data.resolved;
+      this.targetId = data.target_id;
+
+      this.options['user'] = data.target_id as Options;
+
+      return;
+    }
 
     switch (this.type) {
       case InteractionType.Partial:
@@ -241,6 +267,15 @@ export class Component {
     placeholder?: string;
     disabled?: boolean;
     url?: string;
+    // min_values?: number;
+    // max_values?: number;
+    // options?: {
+    //   label: string;
+    //   value: string;
+    //   description?: string;
+    //   default?: boolean;
+    //   emoji?: Emote;
+    // }[];
   };
 
   constructor(type: ComponentType = ComponentType.Button) {
@@ -285,6 +320,42 @@ export class Component {
     this.#data.placeholder = placeholder;
     return this;
   }
+
+  // // TODO TEST
+  // setMinMaxValues(min = 0, max = 25): Component {
+  //   this.#data.min_values = min;
+  //   this.#data.max_values = max;
+  //   return this;
+  // }
+
+  // // TODO TEST
+  // addOption(
+  //   option: {
+  //     label: string;
+  //     value: string;
+  //     description?: string;
+  //     default?: boolean;
+  //     emote?: Emote;
+  //   },
+  // ): Component {
+  //   if (!this.#data.options) {
+  //     this.#data.options = [];
+  //   }
+
+  //   if (this.#data.options.length < 25) {
+  //     this.#data.options.push({
+  //       // deno-lint-ignore no-non-null-assertion
+  //       label: utils.truncate(option.label, 100)!,
+  //       // deno-lint-ignore no-non-null-assertion
+  //       value: utils.truncate(option.value, 100)!,
+  //       description: utils.truncate(option.description, 100),
+  //       default: option.default,
+  //       emoji: option.emote,
+  //     });
+  //   }
+
+  //   return this;
+  // }
 
   setUrl(url: string): Component {
     this.#data.url = url;

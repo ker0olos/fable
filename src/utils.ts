@@ -366,64 +366,6 @@ function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
   };
 }
 
-// async function encrypt(plainText: string, secret: string): Promise<string> {
-//   if (secret.length !== 32) {
-//     throw new Error('Secret must be 32 characters');
-//   }
-
-//   const encode = (s: string) => new TextEncoder().encode(s);
-//   const decode = (d: Uint8Array) => new TextDecoder().decode(d);
-
-//   const secretArray = encode(secret);
-
-//   const key = await crypto.subtle.importKey(
-//     'raw',
-//     secretArray,
-//     'aes-cbc',
-//     false,
-//     ['encrypt'],
-//   );
-
-//   const encrypted = await crypto.subtle.encrypt(
-//     { name: 'AES-CBC', iv: secretArray.slice(0, 16) },
-//     key,
-//     encode(plainText),
-//   );
-
-//   const encryptedText = new Uint8Array(encrypted);
-
-//   return decode(hex.encode(encryptedText));
-// }
-
-// async function decrypt(hexBytes: string, secret: string): Promise<string> {
-//   if (secret.length !== 32) {
-//     throw new Error('Secret must be 32 characters');
-//   }
-
-//   const encode = (s: string) => new TextEncoder().encode(s);
-//   const decode = (d: Uint8Array) => new TextDecoder().decode(d);
-
-//   const secretArray = encode(secret);
-
-//   const key = await crypto.subtle.importKey(
-//     'raw',
-//     secretArray,
-//     'aes-cbc',
-//     false,
-//     ['decrypt'],
-//   );
-
-//   const decrypted = await crypto.subtle.decrypt(
-//     { name: 'AES-CBC', iv: secretArray.slice(0, 16) },
-//     key,
-//     hex.decode(encode(hexBytes)),
-//   );
-
-//   const decryptedText = new Uint8Array(decrypted);
-
-//   return decode(decryptedText);
-// }
-
 const utils = {
   // encrypt,
   // decrypt,

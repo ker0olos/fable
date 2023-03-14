@@ -2,7 +2,7 @@ import { Character, CharacterRole, DisaggregatedCharacter } from './types.ts';
 
 import utils from './utils.ts';
 
-import { emotes } from './config.ts';
+import { emotes } from './discord.ts';
 
 export default class Rating {
   #stars = 0;
