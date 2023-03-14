@@ -222,7 +222,7 @@ Deno.test('get manifest', async (test) => {
         entries: {
           '0': {
             name: 'manifest.json',
-            json: (() => Promise.resolve({ id: 'manifest' })),
+            text: (() => Promise.resolve(JSON.stringify({ id: 'manifest' }))),
           },
         },
         // deno-lint-ignore no-explicit-any
@@ -244,6 +244,106 @@ Deno.test('get manifest', async (test) => {
         // deno-lint-ignore no-explicit-any
         repo: { id: 'repo_id' } as any,
         manifest: { id: 'manifest' },
+      });
+    } finally {
+      fetchStub.restore();
+      unzipStub.restore();
+    }
+  });
+
+  await test.step('bad character repaired', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () =>
+        ({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: 'repo_id',
+            }),
+          // deno-lint-ignore no-explicit-any
+        }) as any,
+    );
+
+    const unzipStub = stub(
+      utils,
+      'unzip',
+      () => ({
+        entries: {
+          '0': {
+            name: 'manifest.json',
+            text: (() => Promise.resolve('{ "id": "manifest }')),
+          },
+        },
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const manifest = await github.manifest({ url: 'username/reponame' });
+
+      assertSpyCall(fetchStub, 0, {
+        args: [`https://api.github.com/repos/username/reponame`],
+      });
+
+      assertSpyCall(unzipStub, 0, {
+        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+      });
+
+      assertEquals(manifest, {
+        // deno-lint-ignore no-explicit-any
+        repo: { id: 'repo_id' } as any,
+        manifest: { id: 'manifest }' },
+      });
+    } finally {
+      fetchStub.restore();
+      unzipStub.restore();
+    }
+  });
+
+  await test.step('not a JSON file', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () =>
+        ({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: 'repo_id',
+            }),
+          // deno-lint-ignore no-explicit-any
+        }) as any,
+    );
+
+    const unzipStub = stub(
+      utils,
+      'unzip',
+      () => ({
+        entries: {
+          '0': {
+            name: 'manifest.json',
+            text: (() => Promise.resolve('\/\/\\//\/')),
+          },
+        },
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      await assertRejects(
+        () => github.manifest({ url: 'username/reponame' }),
+        NonFetalError,
+        '`manifest.json` is not a JSON file',
+      );
+
+      assertSpyCall(fetchStub, 0, {
+        args: [`https://api.github.com/repos/username/reponame`],
+      });
+
+      assertSpyCall(unzipStub, 0, {
+        args: [`https://api.github.com/repositories/repo_id/zipball/`],
       });
     } finally {
       fetchStub.restore();
