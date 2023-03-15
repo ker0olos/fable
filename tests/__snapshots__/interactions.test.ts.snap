@@ -185,7 +185,7 @@ snapshot[`/help 3`] = `
         },
         description: "- \`/gacha\` \`/w\`: _start a new gacha pull_
 - \`/pull\` \`/q\`: _start a quiet gacha pull with no animation_
-- \`/now\` \`/checklist\` \`/cl\` \`/tu\`: _check what you can do right now_
+- \`/now\` \`/vote\` \`/daily\` \`/tu\`: _check what you can do right now_
 - \`/search\` \`/anime\` \`/manga\`: _search for specific media_
 - \`/character\` \`/char\` \`/im\`: _search for a specific character_
 
