@@ -459,7 +459,9 @@ export const handler = async (r: Request) => {
           case 'start':
           case 'guide':
           case 'tuto': {
-            return help.pages({ userId: member.user.id, index: 0 }).send();
+            const index = options['page'] as number ?? 0;
+
+            return help.pages({ userId: member.user.id, index }).send();
           }
           case 'anilist': {
             // deno-lint-ignore no-non-null-assertion

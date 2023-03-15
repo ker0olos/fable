@@ -273,6 +273,32 @@ export const commands = [
     name: 'help',
     description: 'New to Fable? We got you',
     aliases: ['start', 'guide', 'tuto'],
+    options: [
+      Option({
+        name: 'page',
+        description: 'Specify a page to start at',
+        optional: true,
+        type: Type.INTEGER,
+        choices: [
+          {
+            name: 'Gacha',
+            value: 0,
+          },
+          {
+            name: 'Party',
+            value: 1,
+          },
+          {
+            name: 'All Commands',
+            value: 2,
+          },
+          {
+            name: 'Admin Commands',
+            value: 3,
+          },
+        ],
+      }),
+    ],
   }),
   ...Command({
     name: 'now',
