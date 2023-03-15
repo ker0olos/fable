@@ -7,10 +7,10 @@ function pages(
     new discord.Message()
       .addComponents([
         new discord.Component()
-          .setId('gacha')
+          .setId('gacha', userId)
           .setLabel('/gacha'),
         new discord.Component()
-          .setId('now')
+          .setId('now', userId)
           .setLabel('/now'),
       ])
       .addEmbed(

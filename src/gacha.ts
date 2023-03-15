@@ -290,7 +290,7 @@ function start(
       if (userId) {
         message.addComponents([
           new discord.Component()
-            .setId(quiet ? 'pull' : 'gacha')
+            .setId(quiet ? 'pull' : 'gacha', userId)
             .setLabel(`/${quiet ? 'pull' : 'gacha'}`),
         ]);
       }
@@ -301,6 +301,7 @@ function start(
           .setId(
             `character`,
             `${pull.character.packId}:${pull.character.id}`,
+            '1',
           ),
       ]);
 

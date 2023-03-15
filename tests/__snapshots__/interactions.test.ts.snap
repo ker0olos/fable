@@ -28,13 +28,13 @@ snapshot[`/help 1`] = `
             type: 2,
           },
           {
-            custom_id: "gacha",
+            custom_id: "gacha=user_id",
             label: "/gacha",
             style: 2,
             type: 2,
           },
           {
-            custom_id: "now",
+            custom_id: "now=user_id",
             label: "/now",
             style: 2,
             type: 2,

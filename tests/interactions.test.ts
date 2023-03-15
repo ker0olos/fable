@@ -3929,7 +3929,7 @@ Deno.test('/collection stars', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha=1',
+                custom_id: 'gacha=user_id',
                 label: '/gacha',
                 style: 2,
                 type: 2,
@@ -4564,7 +4564,7 @@ Deno.test('/collection media', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha=1',
+                custom_id: 'gacha=user_id',
                 label: '/gacha',
                 style: 2,
                 type: 2,
@@ -5060,7 +5060,7 @@ Deno.test('/gacha', async (test) => {
 
     try {
       const message = gacha.start({
-        userId: 'user-id',
+        userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
       });
@@ -5172,13 +5172,13 @@ Deno.test('/gacha', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha',
+                custom_id: 'gacha=user_id',
                 label: '/gacha',
                 style: 2,
                 type: 2,
               },
               {
-                custom_id: 'character=pack-id-2:2',
+                custom_id: 'character=pack-id-2:2=1',
                 label: '/character',
                 style: 2,
                 type: 2,
@@ -5259,7 +5259,7 @@ Deno.test('/gacha', async (test) => {
     try {
       const message = gacha.start({
         token: 'test_token',
-        userId: 'user-id',
+        userId: 'user_id',
         guildId: 'guild_id',
         quiet: true,
       });
@@ -5312,13 +5312,13 @@ Deno.test('/gacha', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'pull',
+                custom_id: 'pull=user_id',
                 label: '/pull',
                 style: 2,
                 type: 2,
               },
               {
-                custom_id: 'character=pack-id-2:2',
+                custom_id: 'character=pack-id-2:2=1',
                 label: '/character',
                 style: 2,
                 type: 2,
@@ -8308,7 +8308,7 @@ Deno.test('/now', async (test) => {
             {
               components: [
                 {
-                  custom_id: 'gacha=1',
+                  custom_id: 'gacha=user_id',
                   label: '/gacha',
                   style: 2,
                   type: 2,

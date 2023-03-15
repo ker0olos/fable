@@ -104,7 +104,7 @@ async function now({
     message.addComponents([
       // `/gacha` shortcut
       new discord.Component()
-        .setId('gacha=1')
+        .setId('gacha', userId)
         .setLabel('/gacha'),
     ]);
   }
@@ -280,7 +280,7 @@ async function stars({
       message.addComponents([
         // `/gacha` shortcut
         new discord.Component()
-          .setId('gacha', '1')
+          .setId('gacha', userId)
           .setLabel('/gacha'),
       ]);
     }
@@ -421,7 +421,7 @@ async function media({
       message.insertComponents([
         // `/gacha` shortcut
         new discord.Component()
-          .setId('gacha', '1')
+          .setId('gacha', userId)
           .setLabel('/gacha'),
       ]);
     }

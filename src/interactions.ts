@@ -487,12 +487,19 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
+            // deno-lint-ignore no-non-null-assertion
+            const type = customValues![1];
+
             return (await search.character({
               userId: member.user.id,
               guildId,
               id,
             }))
-              .setType(discord.MessageType.Update)
+              .setType(
+                type === '1'
+                  ? discord.MessageType.New
+                  : discord.MessageType.Update,
+              )
               .send();
           }
           case 'mcharacters': {
@@ -583,30 +590,39 @@ export const handler = async (r: Request) => {
           case 'pull':
           case 'gacha': {
             // deno-lint-ignore no-non-null-assertion
-            const type = customValues![0];
+            const targetId = customValues![0];
 
-            return gacha
-              .start({
-                token,
-                quiet: customType === 'pull',
-                userId: member.user.id,
-                guildId,
-              })
-              .setType(
-                type === '1'
-                  ? discord.MessageType.Update
-                  : discord.MessageType.New,
-              )
-              .send();
+            console.log(targetId, member.user.id);
+
+            if (member.user.id === targetId) {
+              return gacha
+                .start({
+                  token,
+                  quiet: customType === 'pull',
+                  userId: member.user.id,
+                  guildId,
+                })
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
           }
           case 'now': {
-            return (await user.now({
-              userId: member.user.id,
-              guildId,
-              token,
-            }))
-              .setType(discord.MessageType.Update)
-              .send();
+            // deno-lint-ignore no-non-null-assertion
+            const targetId = customValues![0];
+
+            if (member.user.id === targetId) {
+              return (await user.now({
+                userId: member.user.id,
+                guildId,
+                token,
+              }))
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
           }
           case 'help': {
             // deno-lint-ignore no-non-null-assertion
