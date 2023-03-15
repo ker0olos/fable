@@ -104,12 +104,14 @@ Deno.test('topgg', async (test) => {
     config.topggSecret = 'x'.repeat(32);
 
     try {
-      const token = utils.cipher('query_ref', config.topggCipher);
+      const token = 'bj7!Qrw@BXL9QCQtt!4h2PZNvnke5ZPe';
+
+      const cipher = utils.cipher(token, config.topggCipher);
 
       const request = new Request('http://localhost:8000', {
         method: 'POST',
         body: JSON.stringify({
-          query: `?ref=${token}&gid=query_guild_id`,
+          query: `?ref=${cipher}&gid=query_guild_id`,
           isWeekend: false,
           user: 'user_id',
           type: 'upvote',
@@ -130,7 +132,7 @@ Deno.test('topgg', async (test) => {
 
       assertSpyCall(userStub, 0, {
         args: [{
-          token: 'query_ref',
+          token,
           guildId: 'query_guild_id',
           userId: 'user_id',
         }],
@@ -141,7 +143,7 @@ Deno.test('topgg', async (test) => {
       });
 
       assertSpyCall(patchStub, 0, {
-        args: ['query_ref'],
+        args: [token],
       });
 
       assertEquals(response.status, 200);

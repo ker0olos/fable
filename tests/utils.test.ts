@@ -722,7 +722,7 @@ Deno.test('cipher', () => {
 
   assertEquals(
     encrypted,
-    '3NKwq9XTxePUrs3r3a2vscjPvK/Jz8SuyL/Q9cjPvKzKz96tyc/EsMq/6vLVwuLz4OfryNHRvcrV6PPB3sLBv8rAtPPertGwzb/f3Mzo38/Q9efVz67MrN/15qverbCr3tHr6sm/5+Pg08XQzsPB3N7lwPXJ5dGt3K2z88jRwfHdwrTsysLNyM3R0cHS0u/wzM/JwtzS0fXd0dSu1cLNq9zPxcTMruvn1NDMsODoq/PcreuuzuiwvtCr8q/e0sno0uXn6d/n3q/N0t/u3OjFq9/B563PzA==',
+    '3NKwq9XTxePUrs3r3a2vscjPvK_Jz8SuyL_Q9cjPvKzKz96tyc_EsMq_6vLVwuLz4OfryNHRvcrV6PPB3sLBv8rAtPPertGwzb_f3Mzo38_Q9efVz67MrN_15qverbCr3tHr6sm_5-Pg08XQzsPB3N7lwPXJ5dGt3K2z88jRwfHdwrTsysLNyM3R0cHS0u_wzM_JwtzS0fXd0dSu1cLNq9zPxcTMruvn1NDMsODoq_PcreuuzuiwvtCr8q_e0sno0uXn6d_n3q_N0t_u3OjFq9_B563PzA==',
   );
 
   const decrypted = utils.decipher(encrypted, 123);

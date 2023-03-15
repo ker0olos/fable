@@ -6,6 +6,11 @@ import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
 import {
+  decode as base64Decode,
+  encode as base64Encode,
+} from 'https://raw.githubusercontent.com/commenthol/url-safe-base64/v1.3.0/src/index.js';
+
+import {
   captureException,
   init as initSentry,
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
@@ -375,13 +380,13 @@ function cipher(str: string, secret: number): string {
     b += String.fromCharCode(code);
   }
 
-  return btoa(b);
+  return base64Encode(btoa(b));
 }
 
 function decipher(a: string, secret: number): string {
   let str = '';
 
-  const b = atob(a);
+  const b = atob(base64Decode(a));
 
   for (let i = 0; i < b.length; i++) {
     let code = b.charCodeAt(i);
