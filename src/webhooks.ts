@@ -2,6 +2,8 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import user from './user.ts';
+
 import utils from './utils.ts';
 
 import { Schema } from './types.ts';
@@ -22,7 +24,11 @@ async function topgg(r: Request): Promise<Response> {
 
   const authorization = r.headers.get('Authorization');
 
-  if (authorization !== config.topggSecret) {
+  if (
+    typeof config.topggSecret !== 'string' ||
+    config.topggSecret.length < 32 ||
+    authorization !== config.topggSecret
+  ) {
     return utils.json(
       { error: 'Forbidden' },
       { status: 403 },
@@ -73,6 +79,36 @@ async function topgg(r: Request): Promise<Response> {
       { error: 'Internal Server Error' },
       { status: 500 },
     );
+  }
+
+  const searchParams = new URLSearchParams(data.query);
+
+  // patch /now to confirm vote
+  if (searchParams.has('ref') && searchParams.has('gid')) {
+    (async () => {
+      // deno-lint-ignore no-non-null-assertion
+      const guildId = searchParams.get('gid')!;
+
+      // decipher the interaction token
+      const token = utils.decipher(
+        // deno-lint-ignore no-non-null-assertion
+        searchParams.get('ref')!,
+        // deno-lint-ignore no-non-null-assertion
+        config.topggCipher!,
+      );
+
+      // update the /now used to vote
+      const message = await user.now({
+        guildId,
+        userId: data.user,
+        token,
+      });
+
+      // ping user
+      message.setContent(`<@${data.user}>`);
+
+      await message.patch(token);
+    })().catch(console.error);
   }
 
   return utils.json(

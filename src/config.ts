@@ -7,6 +7,7 @@ const config: {
   appId?: string;
   publicKey?: string;
   faunaSecret?: string;
+  topggCipher?: number;
   topggSecret?: string;
   sentry?: string;
   origin?: string;
@@ -16,6 +17,7 @@ const config: {
   appId: undefined,
   publicKey: undefined,
   faunaSecret: undefined,
+  topggCipher: undefined,
   topggSecret: undefined,
   sentry: undefined,
   origin: undefined,
@@ -41,6 +43,7 @@ export async function initConfig(): Promise<void> {
 
     config.faunaSecret = Deno.env.get('FAUNA_SECRET');
 
+    config.topggCipher = Number(Deno.env.get('TOPGG_WEBHOOK_CIPHER'));
     config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');
 
     // community packs feature flag

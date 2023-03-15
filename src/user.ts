@@ -21,9 +21,11 @@ import {
 } from './types.ts';
 
 async function now({
+  token,
   userId,
   guildId,
 }: {
+  token: string;
   userId: string;
   guildId: string;
 }): Promise<discord.Message> {
@@ -111,7 +113,11 @@ async function now({
     message.addComponents([
       new discord.Component()
         .setLabel(!user.lastVote ? 'Vote for Rewards' : 'Vote')
-        .setUrl('https://top.gg/bot/1041970851559522304/vote'),
+        .setUrl(
+          `https://top.gg/bot/1041970851559522304/vote?ref=${
+            // deno-lint-ignore no-non-null-assertion
+            utils.cipher(token, config.topggCipher!)}&gid=${guildId}`,
+        ),
     ]);
   }
 

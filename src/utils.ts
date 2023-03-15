@@ -17,8 +17,6 @@ import {
   validateRequest,
 } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
-// import * as hex from 'https://deno.land/std@0.179.0/encoding/hex.ts';
-
 const notoSans = await (await fetch(
   'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
 )).arrayBuffer();
@@ -366,13 +364,45 @@ function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
   };
 }
 
+function cipher(str: string, secret: number): string {
+  let b = '';
+
+  console.log(secret);
+
+  for (let i = 0; i < str.length; i++) {
+    let code = str.charCodeAt(i);
+
+    code = code + secret;
+
+    b += String.fromCharCode(code);
+  }
+
+  return btoa(b);
+}
+
+function decipher(a: string, secret: number): string {
+  let str = '';
+
+  const b = atob(a);
+
+  for (let i = 0; i < b.length; i++) {
+    let code = b.charCodeAt(i);
+
+    code = code - secret;
+
+    str += String.fromCharCode(code);
+  }
+
+  return str;
+}
+
 const utils = {
-  // encrypt,
-  // decrypt,
   capitalize,
   captureException,
   chunks,
+  cipher,
   comma,
+  decipher,
   decodeDescription,
   distance,
   hexToInt,

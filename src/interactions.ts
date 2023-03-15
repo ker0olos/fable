@@ -384,6 +384,7 @@ export const handler = async (r: Request) => {
             return (await user.now({
               userId: member.user.id,
               guildId,
+              token,
             }))
               .send();
           }
@@ -600,6 +601,7 @@ export const handler = async (r: Request) => {
             return (await user.now({
               userId: member.user.id,
               guildId,
+              token,
             }))
               .setType(discord.MessageType.Update)
               .send();
