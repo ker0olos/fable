@@ -2,6 +2,8 @@
 
 import { jsonrepair } from 'https://esm.sh/jsonrepair@3.0.2';
 
+import packs from './packs.ts';
+
 import utils from './utils.ts';
 
 import { Manifest } from './types.ts';
@@ -208,7 +210,7 @@ async function manifest(
 
   return {
     repo,
-    manifest,
+    manifest: packs.populateRelations(manifest),
   };
 }
 

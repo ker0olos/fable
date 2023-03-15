@@ -54,19 +54,20 @@ const packs = {
   aliasToArray,
   all,
   anilist,
+  cachedGuilds,
   characters,
   formatToString,
   install,
   isDisabled,
+  manifestEmbed,
   media,
   mediaCharacters,
   mediaToString,
-  manifestEmbed,
   pages,
   pool,
-  uninstall,
+  populateRelations,
   searchMany,
-  cachedGuilds,
+  uninstall,
 };
 
 async function anilist(
@@ -1102,6 +1103,99 @@ function mediaToString(
       return [title, `(${format})`].join(' ');
     }
   }
+}
+
+function populateRelations(data: Manifest): Manifest {
+  data.characters?.new?.forEach((character) => {
+    character.media?.forEach(({ role, mediaId }) => {
+      const i = data.media?.new?.findIndex((media) => media.id === mediaId);
+
+      if (typeof i === 'number' && i > -1) {
+        // deno-lint-ignore no-non-null-assertion
+        if (!data.media!.new![i].characters) {
+          // deno-lint-ignore no-non-null-assertion
+          data.media!.new![i].characters = [];
+        }
+
+        if (
+          // deno-lint-ignore no-non-null-assertion
+          data.media!.new![i].characters?.find(({ characterId }) =>
+            characterId === character.id
+          )
+        ) {
+          return;
+        }
+
+        // deno-lint-ignore no-non-null-assertion
+        data.media!.new![i].characters?.push({
+          characterId: character.id,
+          role,
+        });
+      }
+    });
+  });
+
+  data.media?.new?.forEach((media) => {
+    media.characters?.forEach(({ role, characterId }) => {
+      const i = data.characters?.new?.findIndex((character) =>
+        character.id === characterId
+      );
+
+      if (typeof i === 'number' && i > -1) {
+        // deno-lint-ignore no-non-null-assertion
+        if (!data.characters!.new![i].media) {
+          // deno-lint-ignore no-non-null-assertion
+          data.characters!.new![i].media = [];
+        }
+
+        if (
+          // deno-lint-ignore no-non-null-assertion
+          data.characters!.new![i].media?.find(({ mediaId }) =>
+            mediaId === media.id
+          )
+        ) {
+          return;
+        }
+
+        // deno-lint-ignore no-non-null-assertion
+        data.characters!.new![i].media?.push({
+          mediaId: media.id,
+          role,
+        });
+      }
+    });
+  });
+
+  data.media?.new?.forEach((media) => {
+    media.relations?.forEach(({ relation, mediaId }) => {
+      const i = data.media?.new?.findIndex((media) => media.id === mediaId);
+
+      if (typeof i === 'number' && i > -1) {
+        // deno-lint-ignore no-non-null-assertion
+        if (!data.media!.new![i].relations) {
+          // deno-lint-ignore no-non-null-assertion
+          data.media!.new![i].relations = [];
+        }
+
+        if (
+          // deno-lint-ignore no-non-null-assertion
+          data.media!.new![i].relations?.find(({ mediaId }) =>
+            mediaId === media.id
+          )
+        ) {
+          return;
+        }
+
+        // deno-lint-ignore no-non-null-assertion
+        data.media!.new![i].relations?.push({
+          mediaId: media.id,
+          relation,
+        });
+      }
+    });
+  });
+
+  return data;
 }
 
 export default packs;

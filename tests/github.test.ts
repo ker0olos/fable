@@ -14,6 +14,8 @@ import github from '../src/github.ts';
 
 import { NonFetalError } from '../src/errors.ts';
 
+import { CharacterRole, MediaType } from '../src/types.ts';
+
 Deno.test('get repo', async (test) => {
   await test.step('with name', async () => {
     const url = 'username/reponame';
@@ -295,6 +297,116 @@ Deno.test('get manifest', async (test) => {
         // deno-lint-ignore no-explicit-any
         repo: { id: 'repo_id' } as any,
         manifest: { id: 'manifest }' },
+      });
+    } finally {
+      fetchStub.restore();
+      unzipStub.restore();
+    }
+  });
+
+  await test.step('populate relations', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () =>
+        ({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: 'repo_id',
+            }),
+          // deno-lint-ignore no-explicit-any
+        }) as any,
+    );
+
+    const unzipStub = stub(
+      utils,
+      'unzip',
+      () => ({
+        entries: {
+          '0': {
+            name: 'manifest.json',
+            text: (() =>
+              Promise.resolve(JSON.stringify({
+                id: 'manifest',
+                media: {
+                  new: [{
+                    id: 'media_id',
+                    type: MediaType.Anime,
+                    title: {
+                      english: 'english title',
+                    },
+                  }],
+                },
+                characters: {
+                  new: [{
+                    id: 'character_id',
+                    name: {
+                      english: 'english name',
+                    },
+                    media: [{
+                      role: CharacterRole.Main,
+                      mediaId: 'media_id',
+                    }],
+                  }],
+                },
+              }))),
+          },
+        },
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const manifest = await github.manifest({ url: 'username/reponame' });
+
+      assertSpyCall(fetchStub, 0, {
+        args: [`https://api.github.com/repos/username/reponame`],
+      });
+
+      assertSpyCall(unzipStub, 0, {
+        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+      });
+
+      assertEquals(manifest, {
+        // deno-lint-ignore no-explicit-any
+        repo: { id: 'repo_id' } as any,
+        manifest: {
+          id: 'manifest',
+          characters: {
+            new: [
+              {
+                id: 'character_id',
+                name: {
+                  english: 'english name',
+                },
+                media: [
+                  {
+                    mediaId: 'media_id',
+                    role: CharacterRole.Main,
+                  },
+                ],
+              },
+            ],
+          },
+          media: {
+            new: [
+              {
+                id: 'media_id',
+                type: MediaType.Anime,
+                title: {
+                  english: 'english title',
+                },
+                characters: [
+                  {
+                    characterId: 'character_id',
+                    role: CharacterRole.Main,
+                  },
+                ],
+              },
+            ],
+          },
+        },
       });
     } finally {
       fetchStub.restore();
