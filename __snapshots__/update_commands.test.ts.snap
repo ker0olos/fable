@@ -504,13 +504,13 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Check what you can do right now",
-    name: "checklist",
+    name: "vote",
     options: undefined,
   },
   {
     default_member_permissions: undefined,
     description: "Check what you can do right now",
-    name: "cl",
+    name: "daily",
     options: undefined,
   },
   {

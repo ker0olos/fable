@@ -378,8 +378,8 @@ export const handler = async (r: Request) => {
             }).send();
           }
           case 'now':
-          case 'checklist':
-          case 'cl':
+          case 'vote':
+          case 'daily':
           case 'tu': {
             return (await user.now({
               userId: member.user.id,

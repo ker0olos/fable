@@ -2652,7 +2652,7 @@ Deno.test('now command handlers', async (test) => {
     }
   });
 
-  await test.step('checklist', async () => {
+  await test.step('vote', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2665,7 +2665,7 @@ Deno.test('now command handlers', async (test) => {
         },
       },
       data: {
-        name: 'checklist',
+        name: 'vote',
       },
     });
 
@@ -2732,7 +2732,7 @@ Deno.test('now command handlers', async (test) => {
     }
   });
 
-  await test.step('cl', async () => {
+  await test.step('daily', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2745,7 +2745,7 @@ Deno.test('now command handlers', async (test) => {
         },
       },
       data: {
-        name: 'cl',
+        name: 'daily',
       },
     });
 

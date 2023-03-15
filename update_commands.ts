@@ -303,7 +303,7 @@ export const commands = [
   ...Command({
     name: 'now',
     description: 'Check what you can do right now',
-    aliases: ['checklist', 'cl', 'tu'],
+    aliases: ['vote', 'daily', 'tu'],
   }),
   ...Command({
     name: 'gacha',
