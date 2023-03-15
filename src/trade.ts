@@ -46,8 +46,6 @@ function pre({
   ])
     .then((results) => results.filter(Boolean))
     .then(async (results) => {
-      // TODO TEST
-
       const message = new discord.Message();
 
       if (results.length !== (give.length + take.length)) {
@@ -127,7 +125,6 @@ function pre({
       await message.patch(token);
     })
     .catch(async (err) => {
-      // TODO TEST
       if (err.message === '404') {
         return await new discord.Message()
           .addEmbed(
@@ -146,7 +143,6 @@ function pre({
       await discord.Message.internal(refId).patch(token);
     });
 
-  // TODO TEST
   const loading = new discord.Message()
     .addEmbed(
       new discord.Embed().setImage(

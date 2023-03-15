@@ -103,6 +103,60 @@ Deno.test('interactions', async (test) => {
     assertEquals(interaction.options['boolean'], true);
     assertEquals(interaction.options['number'], 420);
   });
+
+  await test.step('user', () => {
+    const body = JSON.stringify({
+      id: 'body_id',
+      token: 'body_token',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        type: 2,
+        name: 'TEST_COMMAND',
+        target_id: 'another_user_id',
+        resolved: {
+          members: {
+            'another_user_id': {
+              nick: 'Nickname',
+            },
+          },
+          users: {
+            'another_user_id': {
+              username: 'Another User',
+            },
+          },
+        },
+      },
+    });
+
+    const interaction = new discord.Interaction<string>(
+      body,
+    );
+
+    assertEquals(interaction.id, 'body_id');
+    assertEquals(interaction.token, 'body_token');
+
+    assertEquals(interaction.type, 2);
+
+    assertEquals(interaction.name, 'test_command');
+
+    assertEquals(interaction.member!.user.id, 'user_id');
+
+    assertEquals(interaction.options['user'], 'another_user_id');
+
+    assertEquals(
+      interaction.resolved?.members?.['another_user_id'].nick,
+      'Nickname',
+    );
+
+    assertEquals(
+      interaction.resolved?.users?.['another_user_id'].username,
+      'Another User',
+    );
+  });
 });
 
 // why are embeds test and  components test set up differently?

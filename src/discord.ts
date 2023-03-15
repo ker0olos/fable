@@ -321,42 +321,6 @@ export class Component {
     return this;
   }
 
-  // // TODO TEST
-  // setMinMaxValues(min = 0, max = 25): Component {
-  //   this.#data.min_values = min;
-  //   this.#data.max_values = max;
-  //   return this;
-  // }
-
-  // // TODO TEST
-  // addOption(
-  //   option: {
-  //     label: string;
-  //     value: string;
-  //     description?: string;
-  //     default?: boolean;
-  //     emote?: Emote;
-  //   },
-  // ): Component {
-  //   if (!this.#data.options) {
-  //     this.#data.options = [];
-  //   }
-
-  //   if (this.#data.options.length < 25) {
-  //     this.#data.options.push({
-  //       // deno-lint-ignore no-non-null-assertion
-  //       label: utils.truncate(option.label, 100)!,
-  //       // deno-lint-ignore no-non-null-assertion
-  //       value: utils.truncate(option.value, 100)!,
-  //       description: utils.truncate(option.description, 100),
-  //       default: option.default,
-  //       emoji: option.emote,
-  //     });
-  //   }
-
-  //   return this;
-  // }
-
   setUrl(url: string): Component {
     this.#data.url = url;
     return this;

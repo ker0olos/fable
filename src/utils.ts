@@ -367,8 +367,6 @@ function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
 function cipher(str: string, secret: number): string {
   let b = '';
 
-  console.log(secret);
-
   for (let i = 0; i < str.length; i++) {
     let code = str.charCodeAt(i);
 

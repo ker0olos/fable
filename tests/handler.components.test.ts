@@ -1221,6 +1221,7 @@ Deno.test('now components', async (test) => {
 
       assertSpyCall(userStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
         }],

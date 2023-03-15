@@ -50,6 +50,7 @@ import {
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 import { NonFetalError, NoPullsError } from '../src/errors.ts';
+import trade from '../src/trade.ts';
 
 Deno.test('/media', async (test) => {
   await test.step('normal search', async () => {
@@ -7098,7 +7099,7 @@ Deno.test('/packs [install-validate]', async (test) => {
           embeds: [
             {
               type: 'rich',
-              color: 2924395,
+              color: 43115,
               description: 'Valid',
             },
           ],
@@ -7185,7 +7186,7 @@ Deno.test('/packs [install-validate]', async (test) => {
           embeds: [
             {
               type: 'rich',
-              color: 9907244,
+              color: 10819367,
               description: '```json\nanilist is a reserved id\n```',
             },
           ],
@@ -7731,7 +7732,7 @@ Deno.test('/packs [install-validate]', async (test) => {
           embeds: [
             {
               type: 'rich',
-              color: 9907244,
+              color: 10819367,
               description: `\`\`\`json
 The .id string must match ^[-_a-z0-9]+$
 
@@ -8267,10 +8268,13 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.topggCipher = 12;
+
     try {
       const message = await user.now({
-        userId: 'user',
-        guildId: 'guild',
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
       });
 
       assertSpyCalls(fetchStub, 1);
@@ -8313,7 +8317,8 @@ Deno.test('/now', async (test) => {
                   label: 'Vote for Rewards',
                   style: 5,
                   type: 2,
-                  url: 'https://top.gg/bot/1041970851559522304/vote',
+                  url:
+                    'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
                 },
               ],
               type: 1,
@@ -8322,6 +8327,8 @@ Deno.test('/now', async (test) => {
         },
       });
     } finally {
+      delete config.topggCipher;
+
       textStub.restore();
       fetchStub.restore();
     }
@@ -8354,10 +8361,13 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.topggCipher = 12;
+
     try {
       const message = await user.now({
-        userId: 'guild',
-        guildId: 'user',
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
       });
 
       assertSpyCalls(fetchStub, 1);
@@ -8394,12 +8404,15 @@ Deno.test('/now', async (test) => {
               label: 'Vote for Rewards',
               style: 5,
               type: 2,
-              url: 'https://top.gg/bot/1041970851559522304/vote',
+              url:
+                'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
             }],
           }],
         },
       });
     } finally {
+      delete config.topggCipher;
+
       textStub.restore();
       fetchStub.restore();
     }
@@ -8435,10 +8448,13 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.topggCipher = 12;
+
     try {
       const message = await user.now({
-        userId: 'guild',
-        guildId: 'user',
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
       });
 
       assertSpyCalls(fetchStub, 1);
@@ -8481,12 +8497,15 @@ Deno.test('/now', async (test) => {
               label: 'Vote',
               style: 5,
               type: 2,
-              url: 'https://top.gg/bot/1041970851559522304/vote',
+              url:
+                'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
             }],
           }],
         },
       });
     } finally {
+      delete config.topggCipher;
+
       textStub.restore();
       fetchStub.restore();
     }
@@ -8524,10 +8543,13 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.topggCipher = 12;
+
     try {
       const message = await user.now({
-        userId: 'guild',
-        guildId: 'user',
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
       });
 
       assertSpyCalls(fetchStub, 1);
@@ -8572,8 +8594,362 @@ Deno.test('/now', async (test) => {
         },
       });
     } finally {
+      delete config.topggCipher;
+
       timeStub.restore();
       textStub.restore();
+      fetchStub.restore();
+    }
+  });
+});
+
+Deno.test('/trade', async (test) => {
+  await test.step('normal', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: ['take_character_id'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          content: '<@another_user_id>',
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+                {
+                  name: '\u200B',
+                  value: '<:remove:1085033678180208641>',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+                {
+                  name: '\u200B',
+                  value: '<:add:1085034731810332743>',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description:
+                '<@user_id> is offering that you lose **full name** <:remove:1085033678180208641> and get **full name** <:add:1085034731810332743>',
+            },
+          ],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'TODO1',
+                  label: 'Accept',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'TODO2',
+                  label: 'Decline',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not found', async () => {
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: ['take_character_id'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'Some of those character do not exist or are disabled',
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      fetchStub.restore();
+    }
+  });
+});
+
+Deno.test('/give', async (test) => {
+  await test.step('normal', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: [],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          content: '<@user_id>',
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+                {
+                  name: '\u200B',
+                  value: '<:remove:1085033678180208641>',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description:
+                'Are you sure you want to give **full name** <:remove:1085033678180208641> to <@another_user_id> for free?',
+            },
+          ],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'TODO1',
+                  label: 'Confirm',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'TODO2',
+                  label: 'Cancel',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
       fetchStub.restore();
     }
   });
