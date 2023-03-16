@@ -24,10 +24,12 @@ async function now({
   token,
   userId,
   guildId,
+  mention,
 }: {
   token: string;
   userId: string;
   guildId: string;
+  mention?: boolean;
 }): Promise<discord.Message> {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -119,6 +121,12 @@ async function now({
             utils.cipher(token, config.topggCipher!)}&gid=${guildId}`,
         ),
     ]);
+  }
+
+  if (mention) {
+    message
+      .setContent(`<@${userId}>`)
+      .setPing();
   }
 
   return message;

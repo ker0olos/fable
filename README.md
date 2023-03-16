@@ -100,8 +100,9 @@ packs, but as of right now you'll need to know the pack's github url and run
 > How can I create a new pack?
 
 Currently, it's only possible through editing JSON files, we recommend that you
-check [fable-community/example](https://github.com/fable-community/example), it
-includes most of the info you need.
+check
+[fable-community/example-pack](https://github.com/fable-community/example-pack),
+it includes most of the info you need.
 
 > Can I use prefixes like `$`?
 

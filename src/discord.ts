@@ -99,6 +99,12 @@ type Resolved = {
   members?: Record<string, Omit<Member, 'user'>>;
 };
 
+type AllowedPings = {
+  parse?: string[];
+  users?: string[];
+  roles?: string[];
+};
+
 export type Emote = {
   id: string;
   name?: string;
@@ -535,6 +541,7 @@ export class Message {
     components: unknown[];
     // title?: string;
     // custom_id?: string;
+    allowed_mentions?: AllowedPings;
   };
 
   constructor(type: MessageType = MessageType.New) {
@@ -560,6 +567,11 @@ export class Message {
 
   setFlags(flags: MessageFlags): Message {
     this.#data.flags = flags;
+    return this;
+  }
+
+  setPing(allowedPings?: AllowedPings): Message {
+    this.#data.allowed_mentions = allowedPings ?? { parse: [] };
     return this;
   }
 

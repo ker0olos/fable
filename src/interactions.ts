@@ -589,40 +589,26 @@ export const handler = async (r: Request) => {
           }
           case 'pull':
           case 'gacha': {
-            // deno-lint-ignore no-non-null-assertion
-            const targetId = customValues![0];
-
-            console.log(targetId, member.user.id);
-
-            if (member.user.id === targetId) {
-              return gacha
-                .start({
-                  token,
-                  quiet: customType === 'pull',
-                  userId: member.user.id,
-                  guildId,
-                })
-                .setType(discord.MessageType.Update)
-                .send();
-            }
-
-            throw new NoPermissionError();
-          }
-          case 'now': {
-            // deno-lint-ignore no-non-null-assertion
-            const targetId = customValues![0];
-
-            if (member.user.id === targetId) {
-              return (await user.now({
+            return gacha
+              .start({
+                token,
+                mention: true,
+                quiet: customType === 'pull',
                 userId: member.user.id,
                 guildId,
-                token,
-              }))
-                .setType(discord.MessageType.Update)
-                .send();
-            }
-
-            throw new NoPermissionError();
+              })
+              .setType(discord.MessageType.New)
+              .send();
+          }
+          case 'now': {
+            return (await user.now({
+              mention: true,
+              userId: member.user.id,
+              guildId,
+              token,
+            }))
+              .setType(discord.MessageType.New)
+              .send();
           }
           case 'help': {
             // deno-lint-ignore no-non-null-assertion

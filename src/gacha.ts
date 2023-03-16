@@ -235,10 +235,11 @@ async function rngPull(
  * start the pull's animation
  */
 function start(
-  { token, userId, guildId, quiet }: {
+  { token, userId, guildId, mention, quiet }: {
     token: string;
     guildId: string;
     userId?: string;
+    mention?: boolean;
     quiet?: boolean;
   },
 ): discord.Message {
@@ -258,6 +259,12 @@ function start(
             }),
         );
 
+      if (mention) {
+        message
+          .setContent(`<@${userId}>`)
+          .setPing();
+      }
+
       if (!quiet) {
         await message.patch(token);
 
@@ -270,6 +277,12 @@ function start(
                 url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
               }),
           );
+
+        if (mention) {
+          message
+            .setContent(`<@${userId}>`)
+            .setPing();
+        }
 
         await message.patch(token);
 
@@ -305,6 +318,12 @@ function start(
           ),
       ]);
 
+      if (mention) {
+        message
+          .setContent(`<@${userId}>`)
+          .setPing();
+      }
+
       await message.patch(token);
     })
     .catch(async (err) => {
@@ -337,6 +356,12 @@ function start(
         { url: `${config.origin}/assets/spinner.gif` },
       ),
     );
+
+  if (mention) {
+    spinner
+      .setContent(`<@${userId}>`)
+      .setPing();
+  }
 
   return spinner;
 }
