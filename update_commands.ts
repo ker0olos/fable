@@ -254,6 +254,7 @@ export const commands = [
         description: 'The user you want to trade with',
         type: Type.USER,
       }),
+      // TODO support trading more than 1-for-1
       Option({
         name: 'give',
         description: 'The character you\'re giving away',

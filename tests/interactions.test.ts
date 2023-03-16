@@ -8630,6 +8630,31 @@ Deno.test('/trade', async (test) => {
       () => undefined as any,
     );
 
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      returnsNext([
+        Promise.resolve({
+          id: '1',
+          userId: 'user_id',
+          mediaId: '3',
+          rating: 3,
+        }),
+        Promise.resolve({
+          id: '2',
+          userId: 'another_user_id',
+          mediaId: '3',
+          rating: 3,
+        }),
+      ]),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -8744,8 +8769,283 @@ Deno.test('/trade', async (test) => {
     } finally {
       timeStub.restore();
       characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
       fetchStub.restore();
     }
+  });
+
+  await test.step('does not exist', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: ['take_character_id'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You don\'t have **full name**',
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description: '> _full name hasn\'t been found by anyone yet_',
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not owned by user', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      returnsNext([
+        Promise.resolve({
+          id: '1',
+          userId: 'user_id',
+          mediaId: '3',
+          rating: 3,
+        }),
+        Promise.resolve({
+          id: '2',
+          userId: 'another_user_id_2',
+          mediaId: '3',
+          rating: 3,
+        }),
+      ]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: ['take_character_id'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: '<@another_user_id> doesn\'t have **full name**',
+            },
+            {
+              type: 'rich',
+              description:
+                '<@another_user_id_2>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('trading with yourself', () => {
+    const message = trade.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      targetId: 'user_id',
+      give: ['give_character_id'],
+      take: ['take_character_id'],
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        flags: 64,
+        attachments: [],
+        components: [],
+        embeds: [{
+          type: 'rich',
+          description: 'You can\'t trade with yourself.',
+        }],
+      },
+    });
   });
 
   await test.step('not found', async () => {
@@ -8854,6 +9154,25 @@ Deno.test('/give', async (test) => {
       () => undefined as any,
     );
 
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      returnsNext([
+        Promise.resolve({
+          id: '1',
+          userId: 'user_id',
+          mediaId: '3',
+          rating: 3,
+        }),
+      ]),
+    );
+
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -8950,6 +9269,250 @@ Deno.test('/give', async (test) => {
     } finally {
       timeStub.restore();
       characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('does not exist', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: [],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You don\'t have **full name**',
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description: '> _full name hasn\'t been found by anyone yet_',
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not owned by user', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () =>
+        Promise.resolve({
+          id: '1',
+          mediaId: '3',
+          userId: 'another_user_id',
+          rating: 3,
+        }),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: [],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You don\'t have **full name**',
+            },
+            {
+              type: 'rich',
+              description:
+                '<@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
       fetchStub.restore();
     }
   });
