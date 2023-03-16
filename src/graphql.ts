@@ -42,18 +42,22 @@ export async function request<T = any, V = Variables>(
   const text = await response.text();
 
   try {
+    const json = JSON.parse(text);
+
+    if (json.errors?.length) {
+      throw new Error(json.errors[0].message);
+    }
+
     if (!response.ok) {
       throw new Error(text);
     }
 
-    const json = JSON.parse(text);
-
-    if (json.errors) {
-      throw new Error(JSON.stringify(json.errors));
+    return json.data;
+  } catch (err) {
+    if (err.message.includes('Not Found')) {
+      throw new Error('404');
     }
 
-    return json.data;
-  } catch {
     throw new GraphQLError(
       url,
       query,
