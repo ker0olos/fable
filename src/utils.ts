@@ -347,11 +347,10 @@ function rechargeTimestamp(v?: string): string {
 
   parsed.setMinutes(parsed.getMinutes() + 15);
 
-  const ts = parsed.getTime().toString();
+  const ts = parsed.getTime();
 
-  // discord apparently uses black magic and requires us to cut 3 digits
-  // or go 30,000 years into the future
-  return ts.substring(0, ts.length - 3);
+  // discord uses seconds not milliseconds
+  return Math.floor(ts / 1000).toString();
 }
 
 function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
@@ -359,13 +358,12 @@ function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
 
   parsed.setHours(parsed.getHours() + 12);
 
-  const ts = parsed.getTime().toString();
+  const ts = parsed.getTime();
 
   return {
     canVote: Date.now() >= parsed.getTime(),
-    // discord apparently uses black magic and requires us to cut 3 digits
-    // or go 30,000 years into the future
-    timeLeft: ts.substring(0, ts.length - 3),
+    // discord uses seconds not milliseconds
+    timeLeft: Math.floor(ts / 1000).toString(),
   };
 }
 

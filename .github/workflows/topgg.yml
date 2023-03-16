@@ -3,8 +3,8 @@ name: topgg
 on:
   workflow_dispatch:
   schedule:
-    # Once a week "At 00:00 on Sunday" (see https://crontab.guru/once-a-week)
-    - cron: "0 0 * * 0"
+    # Every two days a week "At 00:00 on Sunday" (see https://crontab.guru/#0_0_*/2_*_*)
+    - cron: "0 0 */2 * *"
 
 jobs:
   update-stats:
