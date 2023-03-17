@@ -78,12 +78,16 @@ Fable is actively developed with new game modes and features frequently.
 
 <h6 align="center">(Check when is the next episode is airing)</h6>
 <h6 align="center">
-  <img width="500" src="https://user-images.githubusercontent.com/52022280/219866921-5209e2c1-08c8-4183-9dce-f961099dc89a.png" alt="Searching">
+  <img width="500" src="https://user-images.githubusercontent.com/52022280/219866921-5209e2c1-08c8-4183-9dce-f961099dc89a.png" alt="Next Episode">
 </h6>
 <h6 align="center">(Search for any anime or manga you want to know more about)</h6>
 <h6 align="center">
   <img  width="500" src="https://user-images.githubusercontent.com/52022280/219867337-4f99626a-802e-412c-b26c-d3e75ed9fbae.png" alt="Searching">
 </h6>
+<!-- <h6 align="center">(Trading Characters)</h6>
+<h6 align="center">
+  <img  width="500" src="https://user-images.githubusercontent.com/52022280/226027425-a89b277e-ce53-4f66-84f0-b0e8ad735186.jpg" alt="Trading">
+</h6> -->
 
 ---
 

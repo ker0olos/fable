@@ -5,6 +5,7 @@ import { assertEquals } from 'https://deno.land/std@0.179.0/testing/asserts.ts';
 import {
   assertSpyCall,
   assertSpyCallArg,
+  spy,
   stub,
 } from 'https://deno.land/std@0.179.0/testing/mock.ts';
 
@@ -4105,9 +4106,14 @@ Deno.test('packs command handlers', async (test) => {
       body,
     } as any));
 
-    const packsStub = stub(packs, 'pages', () => ({
+    const setFlagsSpy = spy(() => ({
       send: () => true,
-    } as any));
+    }));
+
+    const packsStub = stub(packs, 'pages', () =>
+      ({
+        setFlags: setFlagsSpy,
+      }) as any);
 
     config.publicKey = 'publicKey';
 
@@ -4132,6 +4138,10 @@ Deno.test('packs command handlers', async (test) => {
             },
           },
         ],
+      });
+
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -4185,9 +4195,14 @@ Deno.test('packs command handlers', async (test) => {
       body,
     } as any));
 
-    const packsStub = stub(packs, 'pages', () => ({
+    const setFlagsSpy = spy(() => ({
       send: () => true,
-    } as any));
+    }));
+
+    const packsStub = stub(packs, 'pages', () =>
+      ({
+        setFlags: setFlagsSpy,
+      }) as any);
 
     config.publicKey = 'publicKey';
 
@@ -4212,6 +4227,10 @@ Deno.test('packs command handlers', async (test) => {
             },
           },
         ],
+      });
+
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -4276,9 +4295,14 @@ Deno.test('packs command handlers', async (test) => {
       body,
     } as any));
 
-    const packsStub = stub(packs, 'install', () => ({
+    const setFlagsSpy = spy(() => ({
       send: () => true,
-    } as any));
+    }));
+
+    const packsStub = stub(packs, 'install', () =>
+      ({
+        setFlags: setFlagsSpy,
+      }) as any);
 
     config.publicKey = 'publicKey';
 
@@ -4303,6 +4327,10 @@ Deno.test('packs command handlers', async (test) => {
             },
           },
         ],
+      });
+
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -4370,9 +4398,14 @@ Deno.test('packs command handlers', async (test) => {
       body,
     } as any));
 
-    const packsStub = stub(packs, 'install', () => ({
+    const setFlagsSpy = spy(() => ({
       send: () => true,
-    } as any));
+    }));
+
+    const packsStub = stub(packs, 'install', () =>
+      ({
+        setFlags: setFlagsSpy,
+      }) as any);
 
     config.publicKey = 'publicKey';
 
@@ -4397,6 +4430,10 @@ Deno.test('packs command handlers', async (test) => {
             },
           },
         ],
+      });
+
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
       });
 
       assertSpyCall(signatureStub, 0, {

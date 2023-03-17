@@ -59,15 +59,16 @@ const packs = {
   formatToString,
   install,
   isDisabled,
-  manifestEmbed,
   media,
   mediaCharacters,
   mediaToString,
+  packEmbed,
   pages,
   pool,
   populateRelations,
   searchMany,
   uninstall,
+  uninstallDialog,
 };
 
 async function anilist(
@@ -257,7 +258,7 @@ function isDisabled(id: string, list: Pack[]): boolean {
   return disabled[id];
 }
 
-function manifestEmbed(
+function packEmbed(
   { manifest, installedBy }: { manifest: Manifest; installedBy?: string },
 ): discord.Embed {
   const embed = new discord.Embed()
@@ -274,6 +275,35 @@ function manifestEmbed(
   }
 
   return embed;
+}
+
+async function uninstallDialog(
+  { manifestId, guildId }: { manifestId: string; guildId: string },
+): Promise<discord.Message> {
+  const list = await packs.all({
+    type: PackType.Community,
+    guildId,
+  });
+
+  const target = list.find(({ manifest }) => manifest.id === manifestId);
+
+  if (!target) {
+    throw new Error('404');
+  }
+
+  const message = new discord.Message()
+    .addEmbed(packEmbed({
+      manifest: target.manifest,
+      installedBy: target.installedBy?.id,
+    }));
+
+  return discord.Message.dialog({
+    message,
+    type: 'uninstall',
+    confirm: target.manifest.id,
+    description:
+      `**Are you sure you want to uninstall this pack?**\n\nUninstalling a pack will disable any characters your server members have from the pack, which may be met with negative reactions.`,
+  });
 }
 
 async function pages(
@@ -302,7 +332,7 @@ async function pages(
       : 'The following third-party packs were manually installed by your server members',
   );
 
-  const embed = manifestEmbed({
+  const embed = packEmbed({
     manifest: pack.manifest,
     installedBy: pack.installedBy?.id,
   });
@@ -316,6 +346,16 @@ async function pages(
       new discord.Component()
         .setLabel('Homepage')
         .setUrl(pack.manifest.url),
+    ]);
+  }
+
+  // TODO test
+  if (pack.type === PackType.Community) {
+    message.addComponents([
+      new discord.Component().setLabel('Uninstall').setId(
+        'puninstall',
+        pack.manifest.id,
+      ),
     ]);
   }
 
@@ -493,7 +533,7 @@ function install({
 
         message
           .addEmbed(new discord.Embed().setDescription('Installed'))
-          .addEmbed(manifestEmbed({ manifest: response.manifest }));
+          .addEmbed(packEmbed({ manifest: response.manifest }));
 
         return message.patch(token);
       } else {
@@ -579,7 +619,7 @@ async function uninstall({
 
     return message
       .addEmbed(new discord.Embed().setDescription('Uninstalled'))
-      .addEmbed(manifestEmbed({ manifest: response.manifest }));
+      .addEmbed(packEmbed({ manifest: response.manifest }));
   } else {
     switch (response.error) {
       case 'PACK_NOT_FOUND':

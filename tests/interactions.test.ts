@@ -6978,6 +6978,12 @@ Deno.test('/packs [builtin-community]', async (test) => {
                 style: 2,
                 type: 2,
               },
+              {
+                custom_id: 'puninstall=manifest_id',
+                label: 'Uninstall',
+                style: 2,
+                type: 2,
+              },
             ],
           }],
           embeds: [{
@@ -7050,6 +7056,12 @@ Deno.test('/packs [builtin-community]', async (test) => {
               {
                 custom_id: 'community==0=next',
                 label: 'Next',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'puninstall=pack-id',
+                label: 'Uninstall',
                 style: 2,
                 type: 2,
               },

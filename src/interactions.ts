@@ -409,7 +409,7 @@ export const handler = async (r: Request) => {
                   type: subcommand as PackType,
                   index: 0,
                   guildId,
-                })).send();
+                })).setFlags(discord.MessageFlags.Ephemeral).send();
               }
               case 'install':
               case 'validate': {
@@ -420,35 +420,16 @@ export const handler = async (r: Request) => {
                   shallow: subcommand === 'validate',
                   url: options['github'] as string,
                   ref: options['ref'] as string,
-                }).send();
+                }).setFlags(discord.MessageFlags.Ephemeral).send();
               }
               case 'uninstall': {
-                const list = await packs.all({
-                  type: PackType.Community,
+                return (await packs.uninstallDialog({
+                  // deno-lint-ignore no-non-null-assertion
+                  manifestId: options['id']! as string,
                   guildId,
-                });
-
-                const target = list.find(({ manifest }) =>
-                  manifest.id === options['id']
-                );
-
-                if (!target) {
-                  throw new Error('404');
-                }
-
-                const message = new discord.Message()
-                  .addEmbed(packs.manifestEmbed({
-                    manifest: target.manifest,
-                    installedBy: target.installedBy?.id,
-                  }));
-
-                return discord.Message.dialog({
-                  message,
-                  type: 'uninstall',
-                  confirm: options['id'] as string,
-                  description:
-                    `**Are you sure you want to uninstall this pack?**\n\nUninstalling a pack will disable any characters your server members have from the pack, which may be met with negative reactions.`,
-                }).setFlags(discord.MessageFlags.Ephemeral).send();
+                }))
+                  .setFlags(discord.MessageFlags.Ephemeral)
+                  .send();
               }
               default:
                 break;
@@ -526,9 +507,7 @@ export const handler = async (r: Request) => {
               id: characterId,
               userId: member.user.id,
               guildId,
-            }))
-              .setType(discord.MessageType.New)
-              .send();
+            })).send();
           }
           case 'cstars': {
             // deno-lint-ignore no-non-null-assertion
@@ -596,9 +575,7 @@ export const handler = async (r: Request) => {
                 quiet: customType === 'pull',
                 userId: member.user.id,
                 guildId,
-              })
-              .setType(discord.MessageType.New)
-              .send();
+              }).send();
           }
           case 'now': {
             return (await user.now({
@@ -606,9 +583,7 @@ export const handler = async (r: Request) => {
               userId: member.user.id,
               guildId,
               token,
-            }))
-              .setType(discord.MessageType.New)
-              .send();
+            })).send();
           }
           case 'help': {
             // deno-lint-ignore no-non-null-assertion
@@ -681,6 +656,14 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
+          case 'puninstall': {
+            // deno-lint-ignore no-non-null-assertion
+            const manifestId = customValues![0];
+
+            return (await packs.uninstallDialog({ manifestId, guildId }))
+              .setFlags(discord.MessageFlags.Ephemeral)
+              .send();
+          }
           case 'uninstall': {
             // deno-lint-ignore no-non-null-assertion
             const manifestId = customValues![0];
@@ -688,7 +671,10 @@ export const handler = async (r: Request) => {
             return (await packs.uninstall({
               guildId,
               manifestId,
-            })).setType(discord.MessageType.New).send();
+            }))
+              .setFlags(discord.MessageFlags.Ephemeral)
+              .setType(discord.MessageType.Update)
+              .send();
           }
           case 'cancel': {
             // deno-lint-ignore no-non-null-assertion
