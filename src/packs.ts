@@ -798,7 +798,7 @@ async function characters({ ids, search, guildId }: {
       },
     );
 
-    return ids.map((id) => results[id]);
+    return Object.values(results);
   } else if (search) {
     const match: Character | DisaggregatedCharacter | undefined =
       await searchOne(

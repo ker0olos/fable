@@ -255,7 +255,6 @@ function pre({
   return loading;
 }
 
-// TODO TEST
 async function gift({
   userId,
   targetId,
@@ -337,7 +336,6 @@ async function gift({
   return message.addEmbed(embed);
 }
 
-// TODO TEST
 async function accepted({
   userId,
   targetId,
@@ -411,25 +409,33 @@ async function accepted({
     new discord.Embed().setDescription(`<@${targetId}> accepted your offer`),
   );
 
-  const take = search.characterEmbed(results[1], {
-    rating: true,
-    mode: 'thumbnail',
-    footer: false,
-    description: false,
-    media: {
-      title: false,
+  const take = search.characterEmbed(
+    // deno-lint-ignore no-non-null-assertion
+    results.find(({ packId, id }) => `${packId}:${id}` === takeCharacterId)!,
+    {
+      rating: true,
+      mode: 'thumbnail',
+      footer: false,
+      description: false,
+      media: {
+        title: false,
+      },
     },
-  }).addField({ value: `${discord.emotes.add}` });
+  ).addField({ value: `${discord.emotes.add}` });
 
-  const give = search.characterEmbed(results[0], {
-    rating: true,
-    mode: 'thumbnail',
-    footer: false,
-    description: false,
-    media: {
-      title: false,
+  const give = search.characterEmbed(
+    // deno-lint-ignore no-non-null-assertion
+    results.find(({ packId, id }) => `${packId}:${id}` === giveCharacterId)!,
+    {
+      rating: true,
+      mode: 'thumbnail',
+      footer: false,
+      description: false,
+      media: {
+        title: false,
+      },
     },
-  }).addField({ value: `${discord.emotes.remove}` });
+  ).addField({ value: `${discord.emotes.remove}` });
 
   return message.addEmbed(take).addEmbed(give);
 }

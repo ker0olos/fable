@@ -30,6 +30,7 @@ import gacha, { Pull } from '../src/gacha.ts';
 import party from '../src/party.ts';
 import search from '../src/search.ts';
 import user from '../src/user.ts';
+import trade from '../src/trade.ts';
 
 import github from '../src/github.ts';
 
@@ -50,7 +51,6 @@ import {
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 import { NonFetalError, NoPullsError } from '../src/errors.ts';
-import trade from '../src/trade.ts';
 
 Deno.test('/media', async (test) => {
   await test.step('normal search', async () => {
@@ -9044,13 +9044,14 @@ Deno.test('/trade', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'TODO1',
+                  custom_id:
+                    'trade=user_id=another_user_id=undefined:1=undefined:1',
                   label: 'Accept',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'TODO2',
+                  custom_id: 'cancel=user_id=another_user_id',
                   label: 'Decline',
                   style: 4,
                   type: 2,
@@ -9544,13 +9545,13 @@ Deno.test('/give', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'TODO1',
+                  custom_id: 'gift=user_id=another_user_id=undefined:1',
                   label: 'Confirm',
                   style: 2,
                   type: 2,
                 },
                 {
-                  custom_id: 'TODO2',
+                  custom_id: 'cancel=user_id',
                   label: 'Cancel',
                   style: 4,
                   type: 2,

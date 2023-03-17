@@ -618,7 +618,6 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          // TODO TEST
           case 'gift': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
@@ -642,7 +641,6 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
-          // TODO TEST
           case 'trade': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
@@ -699,14 +697,12 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const targetId = customValues![1];
 
-            // TODO TEST
             if (
               userId && !targetId && userId !== member.user.id
             ) {
               throw new NoPermissionError();
             }
 
-            // TODO TEST
             if (
               userId && targetId &&
               ![userId, targetId].includes(member.user.id)
@@ -717,7 +713,6 @@ export const handler = async (r: Request) => {
             return new discord.Message()
               .setContent('')
               .addEmbed(new discord.Embed().setDescription(
-                // TODO TEST
                 targetId === member.user.id ? 'Declined' : 'Cancelled',
               ))
               .setType(discord.MessageType.Update)
