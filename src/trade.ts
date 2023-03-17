@@ -333,6 +333,12 @@ async function gift({
     },
   }).addField({ value: `${discord.emotes.add}` });
 
+  message.addComponents([
+    new discord.Component()
+      .setLabel('/character')
+      .setId(`character`, giveCharacterId, '1'),
+  ]);
+
   return message.addEmbed(embed);
 }
 

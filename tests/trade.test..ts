@@ -72,7 +72,19 @@ Deno.test('gift', async (test) => {
         data: {
           content: '<@target_id>',
           attachments: [],
-          components: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  type: 2,
+                  style: 2,
+                  custom_id: 'character=anilist:1=1',
+                  label: '/character',
+                },
+              ],
+            },
+          ],
           embeds: [
             {
               type: 'rich',
