@@ -61,7 +61,7 @@ export const FakeSubtract = () =>
 
 export const FakeAdd = () => stub(fql, 'Add', (a: any, b: any) => a + b);
 
-// export const FakeAnd = () => stub(fql, 'And', (a: any, b: any) => a && b);
+export const FakeAnd = () => stub(fql, 'And', (a: any, b: any) => a && b);
 
 // export const FakeOr = () => stub(fql, 'Or', (a: any, b: any) => a || b);
 
@@ -132,6 +132,11 @@ export const FakeIsNonEmpty = () =>
   stub(fql, 'IsNonEmpty', (match: any) => {
     return (Array.isArray(match) ? match.length > 0 : Boolean(match)) as any;
   });
+
+// export const FakeIsEmpty = () =>
+//   stub(fql, 'IsEmpty', (match: any) => {
+//     return !(Array.isArray(match) ? match.length > 0 : Boolean(match)) as any;
+//   });
 
 export const FakeReverse = () =>
   stub(fql, 'Reverse', (array: any) => array.toReversed() as any);

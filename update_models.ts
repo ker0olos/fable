@@ -21,6 +21,7 @@ import addPackToInstance from './models/add_pack_to_instance.ts';
 
 import addCharacterToInventory from './models/add_character_to_inventory.ts';
 import setCharacterToParty from './models/set_character_to_party.ts';
+import tradeCharacters from './models/trade_characters.ts';
 
 if (import.meta.main) {
   const FAUNA_SECRET = Deno.env.get('FAUNA_SECRET');
@@ -41,6 +42,7 @@ if (import.meta.main) {
     addPackToInstance(client),
     addCharacterToInventory(client),
     setCharacterToParty(client),
+    tradeCharacters(client),
   ];
 
   const _indexers = all
