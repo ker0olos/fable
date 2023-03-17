@@ -30,6 +30,7 @@ import gacha, { Pull } from '../src/gacha.ts';
 import party from '../src/party.ts';
 import search from '../src/search.ts';
 import user from '../src/user.ts';
+import trade from '../src/trade.ts';
 
 import github from '../src/github.ts';
 
@@ -3928,7 +3929,7 @@ Deno.test('/collection stars', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha=1',
+                custom_id: 'gacha=user_id',
                 label: '/gacha',
                 style: 2,
                 type: 2,
@@ -4563,7 +4564,7 @@ Deno.test('/collection media', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha=1',
+                custom_id: 'gacha=user_id',
                 label: '/gacha',
                 style: 2,
                 type: 2,
@@ -4586,7 +4587,7 @@ Deno.test('/collection media', async (test) => {
   });
 });
 
-Deno.test('/obtained', async (test) => {
+Deno.test('/found', async (test) => {
   await test.step('normal', async () => {
     const media: AniListMedia = {
       id: '2',
@@ -4669,7 +4670,7 @@ Deno.test('/obtained', async (test) => {
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
-      const message = await search.mediaObtained({
+      const message = await search.mediaFound({
         guildId: 'guild_id',
         id: 'anilist:2',
       });
@@ -4682,13 +4683,13 @@ Deno.test('/obtained', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'obtained=anilist:2==anchor=prev',
+                custom_id: 'found=anilist:2==anchor=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
               },
               {
-                custom_id: 'obtained=anilist:2==anchor=next',
+                custom_id: 'found=anilist:2==anchor=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -4784,7 +4785,7 @@ Deno.test('/obtained', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await search.mediaObtained({
+          await search.mediaFound({
             guildId: 'guild_id',
             id: 'anilist:2',
           }),
@@ -4885,7 +4886,7 @@ Deno.test('/obtained', async (test) => {
     );
 
     try {
-      const message = await search.mediaObtained({
+      const message = await search.mediaFound({
         guildId: 'guild_id',
         id: 'anilist:2',
       });
@@ -4898,13 +4899,13 @@ Deno.test('/obtained', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'obtained=anilist:2==anchor=prev',
+                custom_id: 'found=anilist:2==anchor=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
               },
               {
-                custom_id: 'obtained=anilist:2==anchor=next',
+                custom_id: 'found=anilist:2==anchor=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -4971,7 +4972,7 @@ Deno.test('/obtained', async (test) => {
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
-      const message = await search.mediaObtained({
+      const message = await search.mediaFound({
         guildId: 'guild_id',
         id: 'anilist:2',
       });
@@ -5059,7 +5060,7 @@ Deno.test('/gacha', async (test) => {
 
     try {
       const message = gacha.start({
-        userId: 'user-id',
+        userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
       });
@@ -5171,13 +5172,220 @@ Deno.test('/gacha', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'gacha',
+                custom_id: 'gacha=user_id',
                 label: '/gacha',
                 style: 2,
                 type: 2,
               },
               {
-                custom_id: 'character=pack-id-2:2',
+                custom_id: 'character=pack-id-2:2=1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      pullStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('mention', async () => {
+    const media: Media = {
+      id: '1',
+      packId: 'pack-id',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      popularity: 100,
+      title: {
+        english: 'title',
+      },
+      images: [{
+        url: 'media_image_url',
+      }],
+    };
+
+    const character: Character = {
+      id: '2',
+      packId: 'pack-id-2',
+      name: {
+        english: 'name',
+      },
+      images: [{
+        url: 'character_image_url',
+      }],
+      media: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: media,
+        }],
+      },
+    };
+
+    const pull: Pull = {
+      media,
+      character,
+      popularityChance: 0,
+      popularityGreater: 0,
+      popularityLesser: 100,
+      rating: new Rating({ popularity: 100 }),
+      pool: 1,
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const pullStub = stub(
+      gacha,
+      'rngPull',
+      returnsNext([Promise.resolve(pull)]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = gacha.start({
+        mention: true,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          content: '<@user_id>',
+          allowed_mentions: { parse: [] },
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          content: '<@user_id>',
+          allowed_mentions: { parse: [] },
+          components: [],
+          attachments: [],
+          embeds: [{
+            type: 'rich',
+            title: 'title',
+            image: {
+              url: 'http://localhost:8000/external/media_image_url?size=medium',
+            },
+          }],
+        },
+      );
+
+      await timeStub.tickAsync(4000);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          content: '<@user_id>',
+          allowed_mentions: { parse: [] },
+          components: [],
+          attachments: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/stars/1.gif',
+            },
+          }],
+        },
+      );
+
+      await timeStub.tickAsync(6000);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          content: '<@user_id>',
+          allowed_mentions: { parse: [] },
+          attachments: [],
+          embeds: [{
+            type: 'rich',
+            description: new Rating({ popularity: 100 }).emotes,
+            fields: [{
+              name: 'title',
+              value: '**name**',
+            }],
+            image: {
+              url: 'http://localhost:8000/external/character_image_url',
+            },
+          }],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'gacha=user_id',
+                label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'character=pack-id-2:2=1',
                 label: '/character',
                 style: 2,
                 type: 2,
@@ -5258,7 +5466,7 @@ Deno.test('/gacha', async (test) => {
     try {
       const message = gacha.start({
         token: 'test_token',
-        userId: 'user-id',
+        userId: 'user_id',
         guildId: 'guild_id',
         quiet: true,
       });
@@ -5311,13 +5519,13 @@ Deno.test('/gacha', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'pull',
+                custom_id: 'pull=user_id',
                 label: '/pull',
                 style: 2,
                 type: 2,
               },
               {
-                custom_id: 'character=pack-id-2:2',
+                custom_id: 'character=pack-id-2:2=1',
                 label: '/character',
                 style: 2,
                 type: 2,
@@ -7098,7 +7306,7 @@ Deno.test('/packs [install-validate]', async (test) => {
           embeds: [
             {
               type: 'rich',
-              color: 2924395,
+              color: 43115,
               description: 'Valid',
             },
           ],
@@ -7185,7 +7393,7 @@ Deno.test('/packs [install-validate]', async (test) => {
           embeds: [
             {
               type: 'rich',
-              color: 9907244,
+              color: 10819367,
               description: '```json\nanilist is a reserved id\n```',
             },
           ],
@@ -7731,7 +7939,7 @@ Deno.test('/packs [install-validate]', async (test) => {
           embeds: [
             {
               type: 'rich',
-              color: 9907244,
+              color: 10819367,
               description: `\`\`\`json
 The .id string must match ^[-_a-z0-9]+$
 
@@ -8267,10 +8475,13 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.topggCipher = 12;
+
     try {
       const message = await user.now({
-        userId: 'user',
-        guildId: 'guild',
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
       });
 
       assertSpyCalls(fetchStub, 1);
@@ -8304,7 +8515,7 @@ Deno.test('/now', async (test) => {
             {
               components: [
                 {
-                  custom_id: 'gacha=1',
+                  custom_id: 'gacha=user_id',
                   label: '/gacha',
                   style: 2,
                   type: 2,
@@ -8313,7 +8524,8 @@ Deno.test('/now', async (test) => {
                   label: 'Vote for Rewards',
                   style: 5,
                   type: 2,
-                  url: 'https://top.gg/bot/1041970851559522304/vote',
+                  url:
+                    'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
                 },
               ],
               type: 1,
@@ -8322,6 +8534,8 @@ Deno.test('/now', async (test) => {
         },
       });
     } finally {
+      delete config.topggCipher;
+
       textStub.restore();
       fetchStub.restore();
     }
@@ -8354,10 +8568,13 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.topggCipher = 12;
+
     try {
       const message = await user.now({
-        userId: 'guild',
-        guildId: 'user',
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
       });
 
       assertSpyCalls(fetchStub, 1);
@@ -8394,12 +8611,102 @@ Deno.test('/now', async (test) => {
               label: 'Vote for Rewards',
               style: 5,
               type: 2,
-              url: 'https://top.gg/bot/1041970851559522304/vote',
+              url:
+                'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
             }],
           }],
         },
       });
     } finally {
+      delete config.topggCipher;
+
+      textStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('no pulls with mention', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const textStub = stub(
+      utils,
+      'text',
+      () => Promise.resolve(new Uint8Array()),
+    );
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                availablePulls: 0,
+                rechargeTimestamp: time.toISOString(),
+                user: {},
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.topggCipher = 12;
+
+    try {
+      const message = await user.now({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        mention: true,
+      });
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(textStub, 1);
+
+      assertSpyCall(textStub, 0, {
+        args: [0],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          content: '<@user_id>',
+          allowed_mentions: { parse: [] },
+          attachments: [
+            {
+              filename: 'pulls.png',
+              id: '0',
+            },
+          ],
+          embeds: [
+            {
+              footer: {
+                text: 'Available Pulls',
+              },
+              image: {
+                url: 'attachment://pulls.png',
+              },
+              type: 'rich',
+            },
+            { type: 'rich', description: '_+1 pull <t:1675568206:R>_' },
+          ],
+          components: [{
+            type: 1,
+            components: [{
+              label: 'Vote for Rewards',
+              style: 5,
+              type: 2,
+              url:
+                'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
+            }],
+          }],
+        },
+      });
+    } finally {
+      delete config.topggCipher;
+
       textStub.restore();
       fetchStub.restore();
     }
@@ -8435,10 +8742,13 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.topggCipher = 12;
+
     try {
       const message = await user.now({
-        userId: 'guild',
-        guildId: 'user',
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
       });
 
       assertSpyCalls(fetchStub, 1);
@@ -8481,12 +8791,15 @@ Deno.test('/now', async (test) => {
               label: 'Vote',
               style: 5,
               type: 2,
-              url: 'https://top.gg/bot/1041970851559522304/vote',
+              url:
+                'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
             }],
           }],
         },
       });
     } finally {
+      delete config.topggCipher;
+
       textStub.restore();
       fetchStub.restore();
     }
@@ -8524,10 +8837,13 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.topggCipher = 12;
+
     try {
       const message = await user.now({
-        userId: 'guild',
-        guildId: 'user',
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
       });
 
       assertSpyCalls(fetchStub, 1);
@@ -8565,15 +8881,933 @@ Deno.test('/now', async (test) => {
             { type: 'rich', description: '_+1 pull <t:1675568206:R>_' },
             {
               type: 'rich',
-              description: '_Can vote again in <t:1675610506:R>_',
+              description: '_Can vote again <t:1675610506:R>_',
             },
           ],
           components: [],
         },
       });
     } finally {
+      delete config.topggCipher;
+
       timeStub.restore();
       textStub.restore();
+      fetchStub.restore();
+    }
+  });
+});
+
+Deno.test('/trade', async (test) => {
+  await test.step('normal', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      returnsNext([
+        Promise.resolve({
+          id: '1',
+          userId: 'user_id',
+          mediaId: '3',
+          rating: 3,
+        }),
+        Promise.resolve({
+          id: '2',
+          userId: 'another_user_id',
+          mediaId: '3',
+          rating: 3,
+        }),
+      ]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: ['take_character_id'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          content: '<@another_user_id>',
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+                {
+                  name: '\u200B',
+                  value: '<:remove:1085033678180208641>',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+                {
+                  name: '\u200B',
+                  value: '<:add:1085034731810332743>',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description:
+                '<@user_id> is offering that you lose **full name** <:remove:1085033678180208641> and get **full name** <:add:1085034731810332743>',
+            },
+          ],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id:
+                    'trade=user_id=another_user_id=undefined:1=undefined:1',
+                  label: 'Accept',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'cancel=user_id=another_user_id',
+                  label: 'Decline',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('does not exist', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: ['take_character_id'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You don\'t have **full name**',
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description: '> _full name hasn\'t been found by anyone yet_',
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not owned by user', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      returnsNext([
+        Promise.resolve({
+          id: '1',
+          userId: 'user_id',
+          mediaId: '3',
+          rating: 3,
+        }),
+        Promise.resolve({
+          id: '2',
+          userId: 'another_user_id_2',
+          mediaId: '3',
+          rating: 3,
+        }),
+      ]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: ['take_character_id'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: '<@another_user_id> doesn\'t have **full name**',
+            },
+            {
+              type: 'rich',
+              description:
+                '<@another_user_id_2>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('trading with yourself', () => {
+    const message = trade.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      token: 'test_token',
+      targetId: 'user_id',
+      give: ['give_character_id'],
+      take: ['take_character_id'],
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        flags: 64,
+        attachments: [],
+        components: [],
+        embeds: [{
+          type: 'rich',
+          description: 'You can\'t trade with yourself.',
+        }],
+      },
+    });
+  });
+
+  await test.step('not found', async () => {
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: ['take_character_id'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'Some of those character do not exist or are disabled',
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      fetchStub.restore();
+    }
+  });
+});
+
+Deno.test('/give', async (test) => {
+  await test.step('normal', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      returnsNext([
+        Promise.resolve({
+          id: '1',
+          userId: 'user_id',
+          mediaId: '3',
+          rating: 3,
+        }),
+      ]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: [],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          content: '<@user_id>',
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+                {
+                  name: '\u200B',
+                  value: '<:remove:1085033678180208641>',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description:
+                'Are you sure you want to give **full name** <:remove:1085033678180208641> to <@another_user_id> for free?',
+            },
+          ],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'gift=user_id=another_user_id=undefined:1',
+                  label: 'Confirm',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'cancel=user_id',
+                  label: 'Cancel',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('does not exist', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: [],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You don\'t have **full name**',
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description: '> _full name hasn\'t been found by anyone yet_',
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not owned by user', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () =>
+        Promise.resolve({
+          id: '1',
+          mediaId: '3',
+          userId: 'another_user_id',
+          rating: 3,
+        }),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: [],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You don\'t have **full name**',
+            },
+            {
+              type: 'rich',
+              description:
+                '<@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      userStub.restore();
       fetchStub.restore();
     }
   });

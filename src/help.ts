@@ -7,10 +7,10 @@ function pages(
     new discord.Message()
       .addComponents([
         new discord.Component()
-          .setId('gacha')
+          .setId('gacha', userId)
           .setLabel('/gacha'),
         new discord.Component()
-          .setId('now')
+          .setId('now', userId)
           .setLabel('/now'),
       ])
       .addEmbed(
@@ -72,7 +72,7 @@ function pages(
           .setDescription([
             '- `/gacha` `/w`: _start a new gacha pull_',
             '- `/pull` `/q`: _start a quiet gacha pull with no animation_',
-            '- `/now` `/checklist` `/cl` `/tu`: _check what you can do right now_',
+            '- `/now` `/vote` `/daily` `/tu`: _check what you can do right now_',
             '- `/search` `/anime` `/manga`: _search for specific media_',
             '- `/character` `/char` `/im`: _search for a specific character_',
             '',
@@ -82,7 +82,9 @@ function pages(
             '',
             '- `/collection stars` `/coll stars` `/mm stars`: _list all your stars_',
             '- `/collection media` `/coll media` `/mm media`: _list all your characters from a specific media_',
-            '- `/obtained` `/owned` `/found`: _list all characters obtained form specific media_',
+            '- `/found` `/obtained` `/owned`: _list all characters found from a specific media_',
+            '',
+            '- `/trade` `/offer` `/give`: _trade characters with another user_',
             '',
             '- `/anilist next_episode`: _find when the next episode of an anime is airing_',
           ].join('\n')),

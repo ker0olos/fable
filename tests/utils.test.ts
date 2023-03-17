@@ -714,14 +714,18 @@ Deno.test('text images', async (test) => {
   });
 });
 
-// Deno.test('encryption', async () => {
-//   const secret = 'gUkXp2s5v8x/A?D(G+KbPeShVmYq3t6w';
+Deno.test('cipher', () => {
+  const token =
+    'aW50ZXJhY3Rpb246MTA4NTI3MDUzMTA1OTc2NTI5ODowZGgxelpMVVBOZmxFcGFDOE9xc3V5RDdaQmdTUzlZT3Q1dzk0c250cVpoNDlheXJUSHFacjEzNjV2a28xMVFvbG9qOGRMRVVFWWtuQTNGaWVzbVY3ZGR0aTJIQ3plYUQ5em0xa2p3Sm5CU0w4cWNmWjlndlc4RWdsamJ0dFl2TQ';
 
-//   const encrypted = await utils.encrypt('plain_text', secret);
+  const encrypted = utils.cipher(token, 123);
 
-//   assertEquals(encrypted, 'a33dcaf247b16a80214a80d43d8485a9');
+  assertEquals(
+    encrypted,
+    '3NKwq9XTxePUrs3r3a2vscjPvK_Jz8SuyL_Q9cjPvKzKz96tyc_EsMq_6vLVwuLz4OfryNHRvcrV6PPB3sLBv8rAtPPertGwzb_f3Mzo38_Q9efVz67MrN_15qverbCr3tHr6sm_5-Pg08XQzsPB3N7lwPXJ5dGt3K2z88jRwfHdwrTsysLNyM3R0cHS0u_wzM_JwtzS0fXd0dSu1cLNq9zPxcTMruvn1NDMsODoq_PcreuuzuiwvtCr8q_e0sno0uXn6d_n3q_N0t_u3OjFq9_B563PzA==',
+  );
 
-//   const decrypted = await utils.decrypt(encrypted, secret);
+  const decrypted = utils.decipher(encrypted, 123);
 
-//   assertEquals(decrypted, 'plain_text');
-// });
+  assertEquals(decrypted, token);
+});

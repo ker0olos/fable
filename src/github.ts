@@ -1,5 +1,9 @@
 // deno-lint-ignore-file camelcase
 
+import { jsonrepair } from 'https://esm.sh/jsonrepair@3.0.2';
+
+import packs from './packs.ts';
+
 import utils from './utils.ts';
 
 import { Manifest } from './types.ts';
@@ -183,7 +187,7 @@ async function manifest(
 
   const manifests = Object.values(entries)
     .filter(({ name }) => name.endsWith('manifest.json'))
-    .map((entry) => entry.json() as Promise<Manifest>);
+    .map((entry) => entry.text());
 
   const results = await Promise.all(manifests);
 
@@ -191,9 +195,22 @@ async function manifest(
     throw new NonFetalError('No `manifest.json` found');
   }
 
+  let manifest: Manifest;
+
+  try {
+    manifest = JSON.parse(results[0]);
+  } catch {
+    try {
+      manifest = JSON.parse(jsonrepair(results[0]));
+    } catch {
+      // JSON can't be parsed
+      throw new NonFetalError('`manifest.json` is not a JSON file');
+    }
+  }
+
   return {
     repo,
-    manifest: results[0],
+    manifest: packs.populateRelations(manifest),
   };
 }
 

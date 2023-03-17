@@ -6,6 +6,11 @@ import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
 import {
+  decode as base64Decode,
+  encode as base64Encode,
+} from 'https://raw.githubusercontent.com/commenthol/url-safe-base64/v1.3.0/src/index.js';
+
+import {
   captureException,
   init as initSentry,
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
@@ -16,8 +21,6 @@ import {
   serveStatic,
   validateRequest,
 } from 'https://deno.land/x/sift@0.6.0/mod.ts';
-
-// import * as hex from 'https://deno.land/std@0.179.0/encoding/hex.ts';
 
 const notoSans = await (await fetch(
   'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
@@ -344,11 +347,10 @@ function rechargeTimestamp(v?: string): string {
 
   parsed.setMinutes(parsed.getMinutes() + 15);
 
-  const ts = parsed.getTime().toString();
+  const ts = parsed.getTime();
 
-  // discord apparently uses black magic and requires us to cut 3 digits
-  // or go 30,000 years into the future
-  return ts.substring(0, ts.length - 3);
+  // discord uses seconds not milliseconds
+  return Math.floor(ts / 1000).toString();
 }
 
 function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
@@ -356,81 +358,52 @@ function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
 
   parsed.setHours(parsed.getHours() + 12);
 
-  const ts = parsed.getTime().toString();
+  const ts = parsed.getTime();
 
   return {
     canVote: Date.now() >= parsed.getTime(),
-    // discord apparently uses black magic and requires us to cut 3 digits
-    // or go 30,000 years into the future
-    timeLeft: ts.substring(0, ts.length - 3),
+    // discord uses seconds not milliseconds
+    timeLeft: Math.floor(ts / 1000).toString(),
   };
 }
 
-// async function encrypt(plainText: string, secret: string): Promise<string> {
-//   if (secret.length !== 32) {
-//     throw new Error('Secret must be 32 characters');
-//   }
+function cipher(str: string, secret: number): string {
+  let b = '';
 
-//   const encode = (s: string) => new TextEncoder().encode(s);
-//   const decode = (d: Uint8Array) => new TextDecoder().decode(d);
+  for (let i = 0; i < str.length; i++) {
+    let code = str.charCodeAt(i);
 
-//   const secretArray = encode(secret);
+    code = code + secret;
 
-//   const key = await crypto.subtle.importKey(
-//     'raw',
-//     secretArray,
-//     'aes-cbc',
-//     false,
-//     ['encrypt'],
-//   );
+    b += String.fromCharCode(code);
+  }
 
-//   const encrypted = await crypto.subtle.encrypt(
-//     { name: 'AES-CBC', iv: secretArray.slice(0, 16) },
-//     key,
-//     encode(plainText),
-//   );
+  return base64Encode(btoa(b));
+}
 
-//   const encryptedText = new Uint8Array(encrypted);
+function decipher(a: string, secret: number): string {
+  let str = '';
 
-//   return decode(hex.encode(encryptedText));
-// }
+  const b = atob(base64Decode(a));
 
-// async function decrypt(hexBytes: string, secret: string): Promise<string> {
-//   if (secret.length !== 32) {
-//     throw new Error('Secret must be 32 characters');
-//   }
+  for (let i = 0; i < b.length; i++) {
+    let code = b.charCodeAt(i);
 
-//   const encode = (s: string) => new TextEncoder().encode(s);
-//   const decode = (d: Uint8Array) => new TextDecoder().decode(d);
+    code = code - secret;
 
-//   const secretArray = encode(secret);
+    str += String.fromCharCode(code);
+  }
 
-//   const key = await crypto.subtle.importKey(
-//     'raw',
-//     secretArray,
-//     'aes-cbc',
-//     false,
-//     ['decrypt'],
-//   );
-
-//   const decrypted = await crypto.subtle.decrypt(
-//     { name: 'AES-CBC', iv: secretArray.slice(0, 16) },
-//     key,
-//     hex.decode(encode(hexBytes)),
-//   );
-
-//   const decryptedText = new Uint8Array(decrypted);
-
-//   return decode(decryptedText);
-// }
+  return str;
+}
 
 const utils = {
-  // encrypt,
-  // decrypt,
   capitalize,
   captureException,
   chunks,
+  cipher,
   comma,
+  decipher,
   decodeDescription,
   distance,
   hexToInt,

@@ -24,7 +24,10 @@ import {
 
 import { NonFetalError } from './errors.ts';
 
+export const idPrefix = 'id=';
+
 const musicUrlRegex = /youtube|spotify/;
+
 const externalUrlRegex =
   /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoon\.com|amazon\.com)[\S]*$/;
 
@@ -539,7 +542,7 @@ async function mediaCharacters(
   });
 }
 
-async function mediaObtained(
+async function mediaFound(
   { search, id, guildId, before, after }: {
     guildId: string;
     search?: string;
@@ -636,7 +639,7 @@ async function mediaObtained(
 
   return discord.Message.anchor({
     id: '',
-    type: 'obtained',
+    type: 'found',
     target: mediaId,
     anchor,
     message,
@@ -653,7 +656,7 @@ const search = {
   characterEmbed,
   characterDebugMessage,
   mediaCharacters,
-  mediaObtained,
+  mediaFound,
 };
 
 export default search;

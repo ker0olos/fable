@@ -92,6 +92,10 @@ export default (data: Manifest): { error?: string } => {
         data,
       }),
     };
+  } else if (data.media?.new?.length && data.media.new.length > 16) {
+    return { error: `A single pack can't contain more than 16 media` };
+  } else if (data.characters?.new?.length && data.characters.new.length > 128) {
+    return { error: `A single pack can't contain more than 128 characters` };
   } else {
     return {};
   }
@@ -124,6 +128,12 @@ if (import.meta.main) {
       bigNumbers: false,
       data,
     }));
+    Deno.exit(1);
+  } else if (data.media?.new?.length && data.media.new.length > 16) {
+    console.log(red(`A single pack can't contain more than 16 media`));
+    Deno.exit(1);
+  } else if (data.characters?.new?.length && data.characters.new.length > 128) {
+    console.log(red(`A single pack can't contain more than 128 characters`));
     Deno.exit(1);
   } else {
     console.log(green('Valid'));

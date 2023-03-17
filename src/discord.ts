@@ -7,11 +7,23 @@ const API = `https://discord.com/api/v10`;
 
 const splitter = '=';
 
+enum CommandType {
+  CHAT = 1,
+  USER = 2,
+}
+
 export const empty = '\u200B';
 
 export const colors = {
-  red: '#972c2c',
-  green: '#2c9f6b',
+  red: '#a51727',
+  green: '#00a86b',
+};
+
+export const emotes = {
+  star: '<:star:1061016362832642098>',
+  noStar: '<:no_star:1061016360190222466>',
+  remove: '<:remove:1085033678180208641>',
+  add: '<:add:1085034731810332743>',
 };
 
 export const join = (...args: string[]): string => {
@@ -87,6 +99,12 @@ type Resolved = {
   members?: Record<string, Omit<Member, 'user'>>;
 };
 
+type AllowedPings = {
+  parse?: string[];
+  users?: string[];
+  roles?: string[];
+};
+
 export type Emote = {
   id: string;
   name?: string;
@@ -136,8 +154,8 @@ export class Interaction<Options> {
     const obj = JSON.parse(body);
 
     const data: {
+      type: number;
       name: string;
-      type: string;
       guild_id: string;
       channel_id: string;
       resolved?: Resolved;
@@ -178,6 +196,20 @@ export class Interaction<Options> {
     // this.guildLocale = obj.guild_locale;
 
     this.options = {};
+
+    // transform context-menu commands into chat commands
+    if (data?.type === CommandType.USER) {
+      this.type = InteractionType.Command;
+
+      this.name = data.name.toLowerCase();
+
+      this.resolved = data.resolved;
+      this.targetId = data.target_id;
+
+      this.options['user'] = data.target_id as Options;
+
+      return;
+    }
 
     switch (this.type) {
       case InteractionType.Partial:
@@ -241,6 +273,15 @@ export class Component {
     placeholder?: string;
     disabled?: boolean;
     url?: string;
+    // min_values?: number;
+    // max_values?: number;
+    // options?: {
+    //   label: string;
+    //   value: string;
+    //   description?: string;
+    //   default?: boolean;
+    //   emoji?: Emote;
+    // }[];
   };
 
   constructor(type: ComponentType = ComponentType.Button) {
@@ -500,6 +541,7 @@ export class Message {
     components: unknown[];
     // title?: string;
     // custom_id?: string;
+    allowed_mentions?: AllowedPings;
   };
 
   constructor(type: MessageType = MessageType.New) {
@@ -525,6 +567,11 @@ export class Message {
 
   setFlags(flags: MessageFlags): Message {
     this.#data.flags = flags;
+    return this;
+  }
+
+  setPing(allowedPings?: AllowedPings): Message {
+    this.#data.allowed_mentions = allowedPings ?? { parse: [] };
     return this;
   }
 

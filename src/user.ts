@@ -21,11 +21,15 @@ import {
 } from './types.ts';
 
 async function now({
+  token,
   userId,
   guildId,
+  mention,
 }: {
+  token: string;
   userId: string;
   guildId: string;
+  mention?: boolean;
 }): Promise<discord.Message> {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -89,7 +93,7 @@ async function now({
     message.addEmbed(
       new discord.Embed()
         .setDescription(
-          `_Can vote again in <t:${
+          `_Can vote again <t:${
             utils.votingTimestamp(user.lastVote).timeLeft
           }:R>_`,
         ),
@@ -102,7 +106,7 @@ async function now({
     message.addComponents([
       // `/gacha` shortcut
       new discord.Component()
-        .setId('gacha=1')
+        .setId('gacha', userId)
         .setLabel('/gacha'),
     ]);
   }
@@ -111,8 +115,18 @@ async function now({
     message.addComponents([
       new discord.Component()
         .setLabel(!user.lastVote ? 'Vote for Rewards' : 'Vote')
-        .setUrl('https://top.gg/bot/1041970851559522304/vote'),
+        .setUrl(
+          `https://top.gg/bot/1041970851559522304/vote?ref=${
+            // deno-lint-ignore no-non-null-assertion
+            utils.cipher(token, config.topggCipher!)}&gid=${guildId}`,
+        ),
     ]);
+  }
+
+  if (mention) {
+    message
+      .setContent(`<@${userId}>`)
+      .setPing();
   }
 
   return message;
@@ -274,7 +288,7 @@ async function stars({
       message.addComponents([
         // `/gacha` shortcut
         new discord.Component()
-          .setId('gacha', '1')
+          .setId('gacha', userId)
           .setLabel('/gacha'),
       ]);
     }
@@ -415,7 +429,7 @@ async function media({
       message.insertComponents([
         // `/gacha` shortcut
         new discord.Component()
-          .setId('gacha', '1')
+          .setId('gacha', userId)
           .setLabel('/gacha'),
       ]);
     }

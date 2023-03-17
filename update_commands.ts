@@ -10,6 +10,11 @@ try {
   //
 }
 
+// enum CommandType {
+//   'CHAT' = 1,
+//   'USER' = 2,
+// }
+
 enum Type {
   'SUB_COMMAND' = 1,
   'SUB_COMMAND_GROUP' = 2,
@@ -43,7 +48,8 @@ type Option = {
 
 type Command = {
   name: string;
-  description: string;
+  // type?: CommandType;
+  description?: string;
   options?: ReturnType<typeof Option>[];
   aliases?: string[];
   defaultPermission?: Permission;
@@ -59,6 +65,7 @@ const Option = (option: Option): Option => option;
 const Command = ({
   name,
   description,
+  // type,
   options,
   aliases,
   defaultPermission,
@@ -76,6 +83,7 @@ const Command = ({
 
   const commands = [{
     name,
+    // type,
     description,
     'default_member_permissions': defaultPermission,
     options: options?.map((option) => transformOption(option)),
@@ -224,9 +232,9 @@ export const commands = [
     ],
   }),
   ...Command({
-    name: 'obtained',
-    aliases: ['owned', 'found'],
-    description: 'List all characters obtained form specific media',
+    name: 'found',
+    aliases: ['obtained', 'owned'],
+    description: 'List all characters found from a specific media',
     options: [
       Option({
         name: 'title',
@@ -237,14 +245,66 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'trade',
+    description: 'Trade characters with another user',
+    aliases: ['offer', 'give'],
+    options: [
+      Option({
+        name: 'user',
+        description: 'The user you want to trade with',
+        type: Type.USER,
+      }),
+      // TODO support trading more than 1-for-1
+      Option({
+        name: 'give',
+        description: 'The character you\'re giving away',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+      Option({
+        name: 'take',
+        description: 'The character you want to take',
+        autocomplete: true,
+        type: Type.STRING,
+        optional: true,
+      }),
+    ],
+  }),
+  ...Command({
     name: 'help',
     description: 'New to Fable? We got you',
     aliases: ['start', 'guide', 'tuto'],
+    options: [
+      Option({
+        name: 'page',
+        description: 'Specify a page to start at',
+        optional: true,
+        type: Type.INTEGER,
+        choices: [
+          {
+            name: 'Gacha',
+            value: 0,
+          },
+          {
+            name: 'Party',
+            value: 1,
+          },
+          {
+            name: 'All Commands',
+            value: 2,
+          },
+          {
+            name: 'Admin Commands',
+            value: 3,
+          },
+        ],
+      }),
+    ],
   }),
   ...Command({
     name: 'now',
     description: 'Check what you can do right now',
-    aliases: ['checklist', 'cl', 'tu'],
+    aliases: ['vote', 'daily', 'tu'],
   }),
   ...Command({
     name: 'gacha',

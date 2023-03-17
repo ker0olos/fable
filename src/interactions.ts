@@ -1,14 +1,14 @@
 import * as discord from './discord.ts';
 
-import search from './search.ts';
+import search, { idPrefix } from './search.ts';
+
 import user from './user.ts';
 import party from './party.ts';
-
 import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
-
 import help from './help.ts';
+import trade from './trade.ts';
 
 import demo from './demo.tsx';
 
@@ -19,8 +19,6 @@ import config, { initConfig } from './config.ts';
 import { Character, Media, PackType } from './types.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
-
-const idPrefix = 'id=';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -62,6 +60,7 @@ export const handler = async (r: Request) => {
     type,
     token,
     guildId,
+    focused,
     resolved,
     member,
     options,
@@ -85,12 +84,17 @@ export const handler = async (r: Request) => {
 
         // suggest media
         if (
-          ['search', 'anime', 'manga', 'media', 'obtained', 'owned', 'found']
-            .includes(name) ||
-          (['collection', 'coll', 'mm'].includes(name) &&
-            subcommand === 'media')
+          (
+            ['search', 'anime', 'manga', 'media', 'found', 'obtained', 'owned']
+              .includes(name)
+          ) ||
+          (
+            ['collection', 'coll', 'mm'].includes(name) &&
+            subcommand === 'media'
+          )
         ) {
-          const title = options['title'] as string;
+          // deno-lint-ignore no-non-null-assertion
+          const title = options[focused!] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
@@ -113,8 +117,11 @@ export const handler = async (r: Request) => {
         }
 
         // suggest characters
-        if (['character', 'char', 'im'].includes(name)) {
-          const name = options['name'] as string;
+        if (
+          ['character', 'char', 'im', 'trade', 'offer', 'give'].includes(name)
+        ) {
+          // deno-lint-ignore no-non-null-assertion
+          const name = options[focused!] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
@@ -138,7 +145,8 @@ export const handler = async (r: Request) => {
 
         // same as suggest characters but filters out results that the user doesn't have
         if (['party', 'team', 'p'].includes(name) && subcommand === 'assign') {
-          const name = options['name'] as string;
+          // deno-lint-ignore no-non-null-assertion
+          const name = options[focused!] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
@@ -174,7 +182,8 @@ export const handler = async (r: Request) => {
 
         // suggest installed packs
         if (name === 'packs' && subcommand === 'uninstall') {
-          const id = options['id'] as string;
+          // deno-lint-ignore no-non-null-assertion
+          const id = options[focused!] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
@@ -339,12 +348,12 @@ export const handler = async (r: Request) => {
             }
             break;
           }
+          case 'found':
           case 'obtained':
-          case 'owned':
-          case 'found': {
+          case 'owned': {
             const title = options['title'] as string;
 
-            return (await search.mediaObtained({
+            return (await search.mediaFound({
               search: title,
               id: title.startsWith(idPrefix)
                 ? title.substring(idPrefix.length)
@@ -353,13 +362,29 @@ export const handler = async (r: Request) => {
             }))
               .send();
           }
+          case 'trade':
+          case 'offer':
+          case 'give': {
+            const giveCharacter = options['give'] as string;
+            const takeCharacter = options['take'] as string;
+
+            return trade.pre({
+              token,
+              guildId,
+              userId: member.user.id,
+              targetId: options['user'] as string,
+              give: [giveCharacter],
+              take: takeCharacter ? [takeCharacter] : [],
+            }).send();
+          }
           case 'now':
-          case 'checklist':
-          case 'cl':
+          case 'vote':
+          case 'daily':
           case 'tu': {
             return (await user.now({
               userId: member.user.id,
               guildId,
+              token,
             }))
               .send();
           }
@@ -434,7 +459,9 @@ export const handler = async (r: Request) => {
           case 'start':
           case 'guide':
           case 'tuto': {
-            return help.pages({ userId: member.user.id, index: 0 }).send();
+            const index = options['page'] as number ?? 0;
+
+            return help.pages({ userId: member.user.id, index }).send();
           }
           case 'anilist': {
             // deno-lint-ignore no-non-null-assertion
@@ -460,12 +487,19 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
+            // deno-lint-ignore no-non-null-assertion
+            const type = customValues![1];
+
             return (await search.character({
               userId: member.user.id,
               guildId,
               id,
             }))
-              .setType(discord.MessageType.Update)
+              .setType(
+                type === '1'
+                  ? discord.MessageType.New
+                  : discord.MessageType.Update,
+              )
               .send();
           }
           case 'mcharacters': {
@@ -536,7 +570,7 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'obtained': {
+          case 'found': {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
             // deno-lint-ignore no-non-null-assertion
@@ -544,7 +578,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const action = customValues![3];
 
-            return (await search.mediaObtained({
+            return (await search.mediaFound({
               id,
               guildId,
               after: action === 'next' ? anchor : undefined,
@@ -555,29 +589,25 @@ export const handler = async (r: Request) => {
           }
           case 'pull':
           case 'gacha': {
-            // deno-lint-ignore no-non-null-assertion
-            const type = customValues![0];
-
             return gacha
               .start({
                 token,
+                mention: true,
                 quiet: customType === 'pull',
                 userId: member.user.id,
                 guildId,
               })
-              .setType(
-                type === '1'
-                  ? discord.MessageType.Update
-                  : discord.MessageType.New,
-              )
+              .setType(discord.MessageType.New)
               .send();
           }
           case 'now': {
             return (await user.now({
+              mention: true,
               userId: member.user.id,
               guildId,
+              token,
             }))
-              .setType(discord.MessageType.Update)
+              .setType(discord.MessageType.New)
               .send();
           }
           case 'help': {
@@ -587,6 +617,56 @@ export const handler = async (r: Request) => {
             return help.pages({ userId: member.user.id, index })
               .setType(discord.MessageType.Update)
               .send();
+          }
+          case 'gift': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const targetId = customValues![1];
+
+            // deno-lint-ignore no-non-null-assertion
+            const giveCharacterId = customValues![2];
+
+            if (userId === member.user.id) {
+              return (await trade.gift({
+                userId,
+                targetId: targetId,
+                giveCharacterId,
+                guildId,
+              }))
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'trade': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const targetId = customValues![1];
+
+            // deno-lint-ignore no-non-null-assertion
+            const giveCharacterId = customValues![2];
+
+            // deno-lint-ignore no-non-null-assertion
+            const takeCharacterId = customValues![3];
+
+            if (targetId === member.user.id) {
+              return (await trade.accepted({
+                userId,
+                targetId,
+                giveCharacterId,
+                takeCharacterId,
+                guildId,
+              }))
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
           }
           case 'builtin':
           case 'community': {
@@ -611,9 +691,32 @@ export const handler = async (r: Request) => {
             })).setType(discord.MessageType.New).send();
           }
           case 'cancel': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const targetId = customValues![1];
+
+            if (
+              userId && !targetId && userId !== member.user.id
+            ) {
+              throw new NoPermissionError();
+            }
+
+            if (
+              userId && targetId &&
+              ![userId, targetId].includes(member.user.id)
+            ) {
+              throw new NoPermissionError();
+            }
+
             return new discord.Message()
-              .addEmbed(new discord.Embed().setDescription('Cancelled'))
-              .setType(discord.MessageType.Update).send();
+              .setContent('')
+              .addEmbed(new discord.Embed().setDescription(
+                targetId === member.user.id ? 'Declined' : 'Cancelled',
+              ))
+              .setType(discord.MessageType.Update)
+              .send();
           }
           default:
             break;

@@ -34,22 +34,21 @@ servers, like adding extensions to chrome and installing apps on your phone, you
 can install community-made packs that are full of new characters with a single
 command.
 
-You can also create a party with the characters you find, challenge the tower,
-your friends or other discord servers.
+<!-- You can also create a party with the characters you find, challenge the tower,
+your friends or other discord servers. -->
 
 [^1]: Currently the default packs include anime/manga/vtubers, but you can
-install other packs, e.g. video game characters or real-life celebrities. And
-you can disable all anime packs entirely (In case it's a sports server or else,
-we try our best to include term natural commands along with anime analogies).
-
-> Fable is in early access. Some core features might be missing. Missing
-> features include "Trading", "PVE", "PVP" (see
-> [#20](https://github.com/ker0olos/fable/issues/20) for a full roadmap)
+install other packs, e.g. video game characters or real-life celebrities. ~~And
+you can disable all anime packs entirely (In case it's a sports server or
+else~~, we try our best to include term natural commands along with anime
+analogies).
 
 You can try an online demo of Fable before adding it to your server by going to
 <https://fable.deno.dev/demo>
 
 Fable is actively developed with new game modes and features frequently.
+
+> Fable is in early access.
 
 <br clear="right"/>
 
@@ -99,8 +98,9 @@ packs, but as of right now you'll need to know the pack's github url and run
 > How can I create a new pack?
 
 Currently, it's only possible through editing JSON files, we recommend that you
-check [fable-community/example](https://github.com/fable-community/example), it
-includes most of the info you need.
+check
+[fable-community/example-pack](https://github.com/fable-community/example-pack),
+it includes most of the info you need.
 
 > Can I use prefixes like `$`?
 

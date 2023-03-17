@@ -21,6 +21,7 @@ import search from '../src/search.ts';
 import party from '../src/party.ts';
 import gacha from '../src/gacha.ts';
 import help from '../src/help.ts';
+import trade from '../src/trade.ts';
 
 import { PackType } from '../src/types.ts';
 
@@ -104,90 +105,178 @@ Deno.test('media components', async () => {
   }
 });
 
-Deno.test('character components', async () => {
-  const body = JSON.stringify({
-    id: 'id',
-    token: 'token',
-    type: discord.InteractionType.Component,
-    guild_id: 'guild_id',
-    channel_id: 'channel_id',
-    member: {
-      user: {
-        id: 'user_id',
+Deno.test('character components', async (test) => {
+  await test.step('normal', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
       },
-    },
-    data: {
-      custom_id: 'character=character_id',
-    },
+      data: {
+        custom_id: 'character=character_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const setTypeSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const searchStub = stub(search, 'character', () =>
+      ({
+        setType: setTypeSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(setTypeSpy, 0, {
+        args: [discord.MessageType.Update],
+      });
+
+      assertSpyCall(searchStub, 0, {
+        args: [{
+          userId: 'user_id',
+          guildId: 'guild_id',
+          id: 'character_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      searchStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
   });
 
-  const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-  const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-    valid: true,
-    body,
-  } as any));
-
-  const setTypeSpy = spy(() => ({
-    send: () => true,
-  }));
-
-  const searchStub = stub(search, 'character', () =>
-    ({
-      setType: setTypeSpy,
-    }) as any);
-
-  config.publicKey = 'publicKey';
-
-  try {
-    const request = new Request('http://localhost:8000', {
-      body,
-      method: 'POST',
-      headers: {
-        'X-Signature-Ed25519': 'ed25519',
-        'X-Signature-Timestamp': 'timestamp',
+  await test.step('new message', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'character=character_id=1',
       },
     });
 
-    const response = await handler(request);
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
 
-    assertSpyCall(validateStub, 0, {
-      args: [request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-        },
-      }],
-    });
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
 
-    assertSpyCall(signatureStub, 0, {
-      args: [{
+    const setTypeSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const searchStub = stub(search, 'character', () =>
+      ({
+        setType: setTypeSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
         body,
-        signature: 'ed25519',
-        timestamp: 'timestamp',
-        publicKey: 'publicKey',
-      }],
-    });
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
 
-    assertSpyCall(setTypeSpy, 0, {
-      args: [discord.MessageType.Update],
-    });
+      const response = await handler(request);
 
-    assertSpyCall(searchStub, 0, {
-      args: [{
-        userId: 'user_id',
-        guildId: 'guild_id',
-        id: 'character_id',
-      }],
-    });
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
 
-    assertEquals(response, true as any);
-  } finally {
-    delete config.publicKey;
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
 
-    searchStub.restore();
-    validateStub.restore();
-    signatureStub.restore();
-  }
+      assertSpyCall(setTypeSpy, 0, {
+        args: [discord.MessageType.New],
+      });
+
+      assertSpyCall(searchStub, 0, {
+        args: [{
+          userId: 'user_id',
+          guildId: 'guild_id',
+          id: 'character_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      searchStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
 });
 
 Deno.test('media characters components', async () => {
@@ -719,7 +808,7 @@ Deno.test('collection media components', async (test) => {
   });
 });
 
-Deno.test('obtained components', async (test) => {
+Deno.test('found components', async (test) => {
   await test.step('prev', async () => {
     const body = JSON.stringify({
       id: 'id',
@@ -729,7 +818,7 @@ Deno.test('obtained components', async (test) => {
       channel_id: 'channel_id',
 
       data: {
-        custom_id: 'obtained=media_id==anchor=prev',
+        custom_id: 'found=media_id==anchor=prev',
       },
     });
 
@@ -744,7 +833,7 @@ Deno.test('obtained components', async (test) => {
       send: () => true,
     }));
 
-    const searchStub = stub(search, 'mediaObtained', () =>
+    const searchStub = stub(search, 'mediaFound', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -812,7 +901,7 @@ Deno.test('obtained components', async (test) => {
       channel_id: 'channel_id',
 
       data: {
-        custom_id: 'obtained=media_id==anchor=next',
+        custom_id: 'found=media_id==anchor=next',
       },
     });
 
@@ -827,7 +916,7 @@ Deno.test('obtained components', async (test) => {
       send: () => true,
     }));
 
-    const searchStub = stub(search, 'mediaObtained', () =>
+    const searchStub = stub(search, 'mediaFound', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -901,7 +990,7 @@ Deno.test('gacha components', async (test) => {
         },
       },
       data: {
-        custom_id: 'gacha',
+        custom_id: 'gacha=user_id',
       },
     });
 
@@ -960,93 +1049,7 @@ Deno.test('gacha components', async (test) => {
         args: [{
           token: 'token',
           quiet: false,
-          userId: 'user_id',
-          guildId: 'guild_id',
-        }],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      gachaStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-
-  await test.step('normal update', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Component,
-      guild_id: 'guild_id',
-      channel_id: 'channel_id',
-      member: {
-        user: {
-          id: 'user_id',
-        },
-      },
-      data: {
-        custom_id: 'gacha=1',
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const setTypeSpy = spy(() => ({
-      send: () => true,
-    }));
-
-    const gachaStub = stub(gacha, 'start', () =>
-      ({
-        setType: setTypeSpy,
-      }) as any);
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.Update],
-      });
-
-      assertSpyCall(gachaStub, 0, {
-        args: [{
-          token: 'token',
-          quiet: false,
+          mention: true,
           userId: 'user_id',
           guildId: 'guild_id',
         }],
@@ -1075,7 +1078,7 @@ Deno.test('gacha components', async (test) => {
         },
       },
       data: {
-        custom_id: 'pull',
+        custom_id: 'pull=user_id',
       },
     });
 
@@ -1134,6 +1137,7 @@ Deno.test('gacha components', async (test) => {
         args: [{
           token: 'token',
           quiet: true,
+          mention: true,
           userId: 'user_id',
           guildId: 'guild_id',
         }],
@@ -1164,7 +1168,7 @@ Deno.test('now components', async (test) => {
         },
       },
       data: {
-        custom_id: 'now',
+        custom_id: 'now=user_id',
       },
     });
 
@@ -1216,13 +1220,15 @@ Deno.test('now components', async (test) => {
       });
 
       assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.Update],
+        args: [discord.MessageType.New],
       });
 
       assertSpyCall(userStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          mention: true,
         }],
       });
 
@@ -1320,6 +1326,365 @@ Deno.test('help components', async () => {
     validateStub.restore();
     signatureStub.restore();
   }
+});
+
+Deno.test('gift components', async (test) => {
+  await test.step('normal', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'gift=user_id=target_id=character_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const setTypeSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const tradeStub = stub(trade, 'gift', () =>
+      ({
+        setType: setTypeSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(setTypeSpy, 0, {
+        args: [discord.MessageType.Update],
+      });
+
+      assertSpyCall(tradeStub, 0, {
+        args: [{
+          userId: 'user_id',
+          targetId: 'target_id',
+          giveCharacterId: 'character_id',
+          guildId: 'guild_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      tradeStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('no permission', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'gift=another_user_id=target_id=character_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals({
+        type: 4,
+        data: {
+          flags: 64,
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You don\'t permission to complete this interaction!',
+            },
+          ],
+        },
+      }, json);
+    } finally {
+      delete config.publicKey;
+
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('trade components', async (test) => {
+  await test.step('normal', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'target_id',
+        },
+      },
+      data: {
+        custom_id:
+          'trade=user_id=target_id=given_character_id=taken_character_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const setTypeSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const tradeStub = stub(trade, 'accepted', () =>
+      ({
+        setType: setTypeSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(setTypeSpy, 0, {
+        args: [discord.MessageType.Update],
+      });
+
+      assertSpyCall(tradeStub, 0, {
+        args: [{
+          userId: 'user_id',
+          targetId: 'target_id',
+          giveCharacterId: 'given_character_id',
+          takeCharacterId: 'taken_character_id',
+          guildId: 'guild_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      tradeStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('no permission', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id:
+          'trade=user_id=target_id=given_character_id=taken_character_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals({
+        type: 4,
+        data: {
+          flags: 64,
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You don\'t permission to complete this interaction!',
+            },
+          ],
+        },
+      }, json);
+    } finally {
+      delete config.publicKey;
+
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
 });
 
 Deno.test('packs pages', async (test) => {
@@ -1568,84 +1933,358 @@ Deno.test('packs uninstall', async (test) => {
   });
 });
 
-Deno.test('cancel dialog', async () => {
-  const body = JSON.stringify({
-    id: 'id',
-    token: 'token',
-    type: discord.InteractionType.Component,
-    guild_id: 'guild_id',
-    channel_id: 'channel_id',
-    data: {
-      custom_id: 'cancel',
-    },
+Deno.test('cancel dialog', async (test) => {
+  await test.step('canceled', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'cancel',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals({
+        type: 7,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Cancelled',
+            },
+          ],
+          content: '',
+          attachments: [],
+          components: [],
+        },
+      }, json);
+    } finally {
+      delete config.publicKey;
+
+      validateStub.restore();
+      signatureStub.restore();
+    }
   });
 
-  const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-  const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-    valid: true,
-    body,
-  } as any));
-
-  config.publicKey = 'publicKey';
-
-  try {
-    const request = new Request('http://localhost:8000', {
-      body,
-      method: 'POST',
-      headers: {
-        'X-Signature-Ed25519': 'ed25519',
-        'X-Signature-Timestamp': 'timestamp',
-      },
-    });
-
-    const response = await handler(request);
-
-    assertSpyCall(validateStub, 0, {
-      args: [request, {
-        POST: {
-          headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+  await test.step('declined', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'target_id',
         },
-      }],
-    });
-
-    assertSpyCall(signatureStub, 0, {
-      args: [{
-        body,
-        signature: 'ed25519',
-        timestamp: 'timestamp',
-        publicKey: 'publicKey',
-      }],
-    });
-
-    assertEquals(response?.ok, true);
-    assertEquals(response?.redirected, false);
-
-    assertEquals(response?.status, 200);
-    assertEquals(response?.statusText, 'OK');
-
-    const json = JSON.parse(
-      // deno-lint-ignore no-non-null-assertion
-      (await response?.formData()).get('payload_json')!.toString(),
-    );
-
-    assertEquals({
-      type: 7,
-      data: {
-        embeds: [
-          {
-            type: 'rich',
-            description: 'Cancelled',
-          },
-        ],
-        attachments: [],
-        components: [],
       },
-    }, json);
-  } finally {
-    delete config.publicKey;
+      data: {
+        custom_id: 'cancel=user_id=target_id',
+      },
+    });
 
-    validateStub.restore();
-    signatureStub.restore();
-  }
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals({
+        type: 7,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Declined',
+            },
+          ],
+          content: '',
+          attachments: [],
+          components: [],
+        },
+      }, json);
+    } finally {
+      delete config.publicKey;
+
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('no permission 1', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'cancel=another_user_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals({
+        type: 4,
+        data: {
+          flags: 64,
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You don\'t permission to complete this interaction!',
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      }, json);
+    } finally {
+      delete config.publicKey;
+
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('no permission 2', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'cancel=another_user_id=target_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals({
+        type: 4,
+        data: {
+          flags: 64,
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You don\'t permission to complete this interaction!',
+            },
+          ],
+          attachments: [],
+          components: [],
+        },
+      }, json);
+    } finally {
+      delete config.publicKey;
+
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
 });

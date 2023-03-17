@@ -215,39 +215,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "List all characters obtained form specific media",
-    name: "obtained",
-    options: [
-      {
-        autocomplete: true,
-        choices: undefined,
-        description: "The title of the media",
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-  },
-  {
-    default_member_permissions: undefined,
-    description: "List all characters obtained form specific media",
-    name: "owned",
-    options: [
-      {
-        autocomplete: true,
-        choices: undefined,
-        description: "The title of the media",
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-  },
-  {
-    default_member_permissions: undefined,
-    description: "List all characters obtained form specific media",
+    description: "List all characters found from a specific media",
     name: "found",
     options: [
       {
@@ -263,27 +231,269 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "List all characters found from a specific media",
+    name: "obtained",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The title of the media",
+        name: "title",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "List all characters found from a specific media",
+    name: "owned",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The title of the media",
+        name: "title",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Trade characters with another user",
+    name: "trade",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The user you want to trade with",
+        name: "user",
+        options: undefined,
+        required: true,
+        type: 6,
+      },
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The character you're giving away",
+        name: "give",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The character you want to take",
+        name: "take",
+        options: undefined,
+        required: false,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Trade characters with another user",
+    name: "offer",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The user you want to trade with",
+        name: "user",
+        options: undefined,
+        required: true,
+        type: 6,
+      },
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The character you're giving away",
+        name: "give",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The character you want to take",
+        name: "take",
+        options: undefined,
+        required: false,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Trade characters with another user",
+    name: "give",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The user you want to trade with",
+        name: "user",
+        options: undefined,
+        required: true,
+        type: 6,
+      },
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The character you're giving away",
+        name: "give",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The character you want to take",
+        name: "take",
+        options: undefined,
+        required: false,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
     description: "New to Fable? We got you",
     name: "help",
-    options: undefined,
+    options: [
+      {
+        autocomplete: undefined,
+        choices: [
+          {
+            name: "Gacha",
+            value: 0,
+          },
+          {
+            name: "Party",
+            value: 1,
+          },
+          {
+            name: "All Commands",
+            value: 2,
+          },
+          {
+            name: "Admin Commands",
+            value: 3,
+          },
+        ],
+        description: "Specify a page to start at",
+        name: "page",
+        options: undefined,
+        required: false,
+        type: 4,
+      },
+    ],
   },
   {
     default_member_permissions: undefined,
     description: "New to Fable? We got you",
     name: "start",
-    options: undefined,
+    options: [
+      {
+        autocomplete: undefined,
+        choices: [
+          {
+            name: "Gacha",
+            value: 0,
+          },
+          {
+            name: "Party",
+            value: 1,
+          },
+          {
+            name: "All Commands",
+            value: 2,
+          },
+          {
+            name: "Admin Commands",
+            value: 3,
+          },
+        ],
+        description: "Specify a page to start at",
+        name: "page",
+        options: undefined,
+        required: false,
+        type: 4,
+      },
+    ],
   },
   {
     default_member_permissions: undefined,
     description: "New to Fable? We got you",
     name: "guide",
-    options: undefined,
+    options: [
+      {
+        autocomplete: undefined,
+        choices: [
+          {
+            name: "Gacha",
+            value: 0,
+          },
+          {
+            name: "Party",
+            value: 1,
+          },
+          {
+            name: "All Commands",
+            value: 2,
+          },
+          {
+            name: "Admin Commands",
+            value: 3,
+          },
+        ],
+        description: "Specify a page to start at",
+        name: "page",
+        options: undefined,
+        required: false,
+        type: 4,
+      },
+    ],
   },
   {
     default_member_permissions: undefined,
     description: "New to Fable? We got you",
     name: "tuto",
-    options: undefined,
+    options: [
+      {
+        autocomplete: undefined,
+        choices: [
+          {
+            name: "Gacha",
+            value: 0,
+          },
+          {
+            name: "Party",
+            value: 1,
+          },
+          {
+            name: "All Commands",
+            value: 2,
+          },
+          {
+            name: "Admin Commands",
+            value: 3,
+          },
+        ],
+        description: "Specify a page to start at",
+        name: "page",
+        options: undefined,
+        required: false,
+        type: 4,
+      },
+    ],
   },
   {
     default_member_permissions: undefined,
@@ -294,13 +504,13 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Check what you can do right now",
-    name: "checklist",
+    name: "vote",
     options: undefined,
   },
   {
     default_member_permissions: undefined,
     description: "Check what you can do right now",
-    name: "cl",
+    name: "daily",
     options: undefined,
   },
   {

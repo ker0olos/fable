@@ -235,10 +235,11 @@ async function rngPull(
  * start the pull's animation
  */
 function start(
-  { token, userId, guildId, quiet }: {
+  { token, userId, guildId, mention, quiet }: {
     token: string;
     guildId: string;
     userId?: string;
+    mention?: boolean;
     quiet?: boolean;
   },
 ): discord.Message {
@@ -258,6 +259,12 @@ function start(
             }),
         );
 
+      if (mention) {
+        message
+          .setContent(`<@${userId}>`)
+          .setPing();
+      }
+
       if (!quiet) {
         await message.patch(token);
 
@@ -270,6 +277,12 @@ function start(
                 url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
               }),
           );
+
+        if (mention) {
+          message
+            .setContent(`<@${userId}>`)
+            .setPing();
+        }
 
         await message.patch(token);
 
@@ -290,7 +303,7 @@ function start(
       if (userId) {
         message.addComponents([
           new discord.Component()
-            .setId(quiet ? 'pull' : 'gacha')
+            .setId(quiet ? 'pull' : 'gacha', userId)
             .setLabel(`/${quiet ? 'pull' : 'gacha'}`),
         ]);
       }
@@ -301,8 +314,15 @@ function start(
           .setId(
             `character`,
             `${pull.character.packId}:${pull.character.id}`,
+            '1',
           ),
       ]);
+
+      if (mention) {
+        message
+          .setContent(`<@${userId}>`)
+          .setPing();
+      }
 
       await message.patch(token);
     })
@@ -336,6 +356,12 @@ function start(
         { url: `${config.origin}/assets/spinner.gif` },
       ),
     );
+
+  if (mention) {
+    spinner
+      .setContent(`<@${userId}>`)
+      .setPing();
+  }
 
   return spinner;
 }

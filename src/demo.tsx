@@ -280,6 +280,11 @@ export const App = ({ children }: React.PropsWithChildren) => {
               label='Again'
             />
           </div>
+          <Button
+            color={colors.grey}
+            url={'https://github.com/ker0olos/fable'}
+            label='GitHub'
+          />
         </div>
       </body>
     </html>
@@ -289,7 +294,7 @@ export const App = ({ children }: React.PropsWithChildren) => {
 export default async (r: Request): Promise<Response> => {
   const suspendified = suspense(() =>
     // sleep before each request to act as a primitive rate-limiter
-    utils.sleep(utils.randint(1.25, 2.5))
+    utils.sleep(utils.randint(1, 2.5))
       .then(() => gacha.rngPull({ guildId }))
   );
 
