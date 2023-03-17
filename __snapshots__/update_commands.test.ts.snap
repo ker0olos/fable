@@ -263,7 +263,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Trade with another user",
+    description: "Trade characters with another user",
     name: "trade",
     options: [
       {
@@ -297,7 +297,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Trade with another user",
+    description: "Trade characters with another user",
     name: "offer",
     options: [
       {
@@ -331,7 +331,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Trade with another user",
+    description: "Trade characters with another user",
     name: "give",
     options: [
       {

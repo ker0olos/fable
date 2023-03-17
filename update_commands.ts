@@ -246,7 +246,7 @@ export const commands = [
   }),
   ...Command({
     name: 'trade',
-    description: 'Trade with another user',
+    description: 'Trade characters with another user',
     aliases: ['offer', 'give'],
     options: [
       Option({

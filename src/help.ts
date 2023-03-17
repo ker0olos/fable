@@ -84,6 +84,8 @@ function pages(
             '- `/collection media` `/coll media` `/mm media`: _list all your characters from a specific media_',
             '- `/found` `/obtained` `/owned`: _list all characters found from a specific media_',
             '',
+            '- `/trade` `/offer` `/give`: _trade characters with another user_',
+            '',
             '- `/anilist next_episode`: _find when the next episode of an anime is airing_',
           ].join('\n')),
       ),
