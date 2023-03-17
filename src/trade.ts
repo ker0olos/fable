@@ -1,4 +1,4 @@
-// import { gql, request } from './graphql.ts';
+import { gql, request } from './graphql.ts';
 
 import search, { idPrefix } from './search.ts';
 
@@ -6,13 +6,15 @@ import packs from './packs.ts';
 
 import user from './user.ts';
 
-import config from './config.ts';
+import config, { faunaUrl } from './config.ts';
 
 import utils from './utils.ts';
 
 import * as discord from './discord.ts';
 
-import { Character } from './types.ts';
+import { Character, Schema } from './types.ts';
+
+import { NonFetalError } from './errors.ts';
 
 function pre({
   token,
@@ -189,9 +191,15 @@ function pre({
         );
 
         message.addComponents([
-          new discord.Component().setId('TODO1')
+          new discord.Component().setId(
+            'trade',
+            userId,
+            targetId,
+            `${giveCharacter.packId}:${giveCharacter.id}`,
+            `${takeCharacter.packId}:${takeCharacter.id}`,
+          )
             .setLabel('Accept'),
-          new discord.Component().setId('TODO2')
+          new discord.Component().setId('cancel', userId, targetId)
             .setStyle(discord.ButtonStyle.Red)
             .setLabel('Decline'),
         ]);
@@ -203,9 +211,14 @@ function pre({
         );
 
         message.addComponents([
-          new discord.Component().setId('TODO1')
+          new discord.Component().setId(
+            'gift',
+            userId,
+            targetId,
+            `${giveCharacter.packId}:${giveCharacter.id}`,
+          )
             .setLabel('Confirm'),
-          new discord.Component().setId('TODO2')
+          new discord.Component().setId('cancel', userId)
             .setStyle(discord.ButtonStyle.Red)
             .setLabel('Cancel'),
         ]);
@@ -242,8 +255,189 @@ function pre({
   return loading;
 }
 
+// TODO TEST
+async function gift({
+  userId,
+  targetId,
+  giveCharacterId,
+  guildId,
+}: {
+  userId: string;
+  targetId: string;
+  giveCharacterId: string;
+  guildId: string;
+}): Promise<discord.Message> {
+  const mutation = gql`
+    mutation (
+      $userId: String!
+      $targetId: String!
+      $giveCharacterId: String!
+      $guildId: String!
+    ) {
+      giveCharacters(
+        userId: $userId
+        targetId: $targetId
+        giveCharacterId: $giveCharacterId
+        guildId: $guildId
+      ) {
+        ok
+        error
+      }
+    }
+  `;
+
+  const [results, response] = await Promise.all([
+    packs.characters({ ids: [giveCharacterId], guildId }),
+    request<{
+      giveCharacters: Schema.Mutation;
+    }>({
+      url: faunaUrl,
+      query: mutation,
+      headers: {
+        'authorization': `Bearer ${config.faunaSecret}`,
+      },
+      variables: {
+        userId,
+        targetId,
+        giveCharacterId,
+        guildId,
+      },
+    }),
+  ]);
+
+  if (!response.giveCharacters.ok) {
+    switch (response.giveCharacters.error) {
+      case 'CHARACTER_NOT_FOUND':
+        throw new NonFetalError('This character was deleted!');
+      case 'CHARACTER_NOT_OWNED':
+        throw new NonFetalError('This character already changed hands!');
+      default:
+        throw new Error(response.giveCharacters.error);
+    }
+  }
+
+  const message = new discord.Message();
+
+  message.setContent(`<@${targetId}>`);
+
+  message.addEmbed(
+    new discord.Embed().setDescription(`<@${userId}> sent you a gift`),
+  );
+
+  const embed = search.characterEmbed(results[0], {
+    rating: true,
+    mode: 'thumbnail',
+    footer: false,
+    description: false,
+    media: {
+      title: false,
+    },
+  }).addField({ value: `${discord.emotes.add}` });
+
+  return message.addEmbed(embed);
+}
+
+// TODO TEST
+async function accepted({
+  userId,
+  targetId,
+  giveCharacterId,
+  takeCharacterId,
+  guildId,
+}: {
+  userId: string;
+  targetId: string;
+  giveCharacterId: string;
+  takeCharacterId: string;
+  guildId: string;
+}): Promise<discord.Message> {
+  const mutation = gql`
+    mutation (
+      $userId: String!
+      $targetId: String!
+      $giveCharacterId: String!
+      $takeCharacterId: String!
+      $guildId: String!
+    ) {
+      tradeCharacters(
+        userId: $userId
+        targetId: $targetId
+        giveCharacterId: $giveCharacterId
+        takeCharacterId: $takeCharacterId
+        guildId: $guildId
+      ) {
+        ok
+        error
+      }
+    }
+  `;
+
+  const [results, response] = await Promise.all([
+    packs.characters({ ids: [giveCharacterId, takeCharacterId], guildId }),
+    request<{
+      tradeCharacters: Schema.Mutation;
+    }>({
+      url: faunaUrl,
+      query: mutation,
+      headers: {
+        'authorization': `Bearer ${config.faunaSecret}`,
+      },
+      variables: {
+        userId,
+        targetId,
+        giveCharacterId,
+        takeCharacterId,
+        guildId,
+      },
+    }),
+  ]);
+
+  if (!response.tradeCharacters.ok) {
+    switch (response.tradeCharacters.error) {
+      case 'CHARACTER_NOT_FOUND':
+        throw new NonFetalError('This character was deleted!');
+      case 'CHARACTER_NOT_OWNED':
+        throw new NonFetalError('This character already changed hands!');
+      default:
+        throw new Error(response.tradeCharacters.error);
+    }
+  }
+
+  const message = new discord.Message();
+
+  message.setContent(`<@${userId}>`);
+
+  message.addEmbed(
+    new discord.Embed().setDescription(`<@${targetId}> accepted your offer`),
+  );
+
+  const take = search.characterEmbed(results[1], {
+    rating: true,
+    mode: 'thumbnail',
+    footer: false,
+    description: false,
+    media: {
+      title: false,
+    },
+  }).addField({ value: `${discord.emotes.add}` });
+
+  const give = search.characterEmbed(results[0], {
+    rating: true,
+    mode: 'thumbnail',
+    footer: false,
+    description: false,
+    media: {
+      title: false,
+    },
+  }).addField({ value: `${discord.emotes.remove}` });
+
+  return message.addEmbed(take).addEmbed(give);
+}
+
 const trade = {
   pre,
+  gift,
+  accepted,
 };
 
 export default trade;

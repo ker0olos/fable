@@ -83,6 +83,4 @@ type Mutation {
     giveCharacterId: String!
     takeCharacterId: String!
   ): Response! @resolver(name: "trade_characters")
-
-
 }

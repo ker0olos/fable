@@ -618,6 +618,58 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
+          // TODO TEST
+          case 'gift': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const targetId = customValues![1];
+
+            // deno-lint-ignore no-non-null-assertion
+            const giveCharacterId = customValues![2];
+
+            if (userId === member.user.id) {
+              return (await trade.gift({
+                userId,
+                targetId: targetId,
+                giveCharacterId,
+                guildId,
+              }))
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
+          // TODO TEST
+          case 'trade': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const targetId = customValues![1];
+
+            // deno-lint-ignore no-non-null-assertion
+            const giveCharacterId = customValues![2];
+
+            // deno-lint-ignore no-non-null-assertion
+            const takeCharacterId = customValues![3];
+
+            if (targetId === member.user.id) {
+              return (await trade.accepted({
+                userId,
+                targetId,
+                giveCharacterId,
+                takeCharacterId,
+                guildId,
+              }))
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
           case 'builtin':
           case 'community': {
             // deno-lint-ignore no-non-null-assertion
@@ -641,9 +693,35 @@ export const handler = async (r: Request) => {
             })).setType(discord.MessageType.New).send();
           }
           case 'cancel': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const targetId = customValues![1];
+
+            // TODO TEST
+            if (
+              userId && !targetId && userId !== member.user.id
+            ) {
+              throw new NoPermissionError();
+            }
+
+            // TODO TEST
+            if (
+              userId && targetId &&
+              ![userId, targetId].includes(member.user.id)
+            ) {
+              throw new NoPermissionError();
+            }
+
             return new discord.Message()
-              .addEmbed(new discord.Embed().setDescription('Cancelled'))
-              .setType(discord.MessageType.Update).send();
+              .setContent('')
+              .addEmbed(new discord.Embed().setDescription(
+                // TODO TEST
+                targetId === member.user.id ? 'Declined' : 'Cancelled',
+              ))
+              .setType(discord.MessageType.Update)
+              .send();
           }
           default:
             break;
