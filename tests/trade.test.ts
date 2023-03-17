@@ -12,13 +12,27 @@ import packs from '../src/packs.ts';
 import trade from '../src/trade.ts';
 
 import { AniListCharacter } from '../packs/anilist/types.ts';
+import { CharacterRole, MediaType } from '../src/types.ts';
 
 Deno.test('gift', async (test) => {
   await test.step('normal', async () => {
     const character: AniListCharacter = {
       id: '1',
+      description: 'description',
       name: {
         full: 'title',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: '2',
+            type: MediaType.Anime,
+            title: {
+              english: 'media',
+            },
+          },
+        }],
       },
     };
 
@@ -96,8 +110,12 @@ Deno.test('gift', async (test) => {
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               fields: [
                 {
-                  name: 'title',
-                  value: '\u200B',
+                  name: 'media',
+                  value: '**title**',
+                },
+                {
+                  name: '\u200B',
+                  value: 'description',
                 },
                 {
                   name: '\u200B',
@@ -126,12 +144,38 @@ Deno.test('trade', async (test) => {
       name: {
         full: 'title',
       },
+      description: 'description',
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: '2',
+            type: MediaType.Anime,
+            title: {
+              english: 'media',
+            },
+          },
+        }],
+      },
     };
 
     const character2: AniListCharacter = {
       id: '2',
       name: {
         full: 'title 2',
+      },
+      description: 'description 2',
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: '3',
+            type: MediaType.Anime,
+            title: {
+              english: 'media 2',
+            },
+          },
+        }],
       },
     };
 
@@ -198,8 +242,12 @@ Deno.test('trade', async (test) => {
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               fields: [
                 {
-                  name: 'title 2',
-                  value: '\u200B',
+                  name: 'media 2',
+                  value: '**title 2**',
+                },
+                {
+                  name: '\u200B',
+                  value: 'description 2',
                 },
                 {
                   name: '\u200B',
@@ -216,8 +264,12 @@ Deno.test('trade', async (test) => {
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               fields: [
                 {
-                  name: 'title',
-                  value: '\u200B',
+                  name: 'media',
+                  value: '**title**',
+                },
+                {
+                  name: '\u200B',
+                  value: 'description',
                 },
                 {
                   name: '\u200B',

@@ -323,14 +323,19 @@ async function gift({
     new discord.Embed().setDescription(`<@${userId}> sent you a gift`),
   );
 
-  const embed = search.characterEmbed(results[0], {
+  const character = await packs.aggregate<Character>({
+    guildId,
+    character: results[0],
+    start: 0,
+    end: 1,
+  });
+
+  const embed = search.characterEmbed(character, {
     rating: true,
     mode: 'thumbnail',
     footer: false,
-    description: false,
-    media: {
-      title: false,
-    },
+    description: true,
+    media: { title: true },
   }).addField({ value: `${discord.emotes.add}` });
 
   message.addComponents([
@@ -415,31 +420,43 @@ async function accepted({
     new discord.Embed().setDescription(`<@${targetId}> accepted your offer`),
   );
 
+  const takeCharacter = await packs.aggregate<Character>({
+    guildId,
+    character: results.find(({ packId, id }) =>
+      `${packId}:${id}` === takeCharacterId
+    ),
+    start: 0,
+    end: 1,
+  });
+
   const take = search.characterEmbed(
-    // deno-lint-ignore no-non-null-assertion
-    results.find(({ packId, id }) => `${packId}:${id}` === takeCharacterId)!,
+    takeCharacter,
     {
       rating: true,
       mode: 'thumbnail',
       footer: false,
-      description: false,
-      media: {
-        title: false,
-      },
+      description: true,
+      media: { title: true },
     },
   ).addField({ value: `${discord.emotes.add}` });
 
+  const giveCharacter = await packs.aggregate<Character>({
+    guildId,
+    character: results.find(({ packId, id }) =>
+      `${packId}:${id}` === giveCharacterId
+    ),
+    start: 0,
+    end: 1,
+  });
+
   const give = search.characterEmbed(
-    // deno-lint-ignore no-non-null-assertion
-    results.find(({ packId, id }) => `${packId}:${id}` === giveCharacterId)!,
+    giveCharacter,
     {
       rating: true,
       mode: 'thumbnail',
       footer: false,
-      description: false,
-      media: {
-        title: false,
-      },
+      description: true,
+      media: { title: true },
     },
   ).addField({ value: `${discord.emotes.remove}` });
 
