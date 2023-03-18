@@ -6981,7 +6981,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
               {
                 custom_id: 'puninstall=manifest_id',
                 label: 'Uninstall',
-                style: 2,
+                style: 4,
                 type: 2,
               },
             ],
@@ -7062,7 +7062,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
               {
                 custom_id: 'puninstall=pack-id',
                 label: 'Uninstall',
-                style: 2,
+                style: 4,
                 type: 2,
               },
             ],

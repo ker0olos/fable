@@ -97,13 +97,13 @@ Fable is actively developed with new game modes and features frequently.
 
 We plan to have a Marketplace command where you can browse and install popular
 packs, but as of right now you'll need to know the pack's github url and run
-`/packs install https://github.com/username/packname`
+`/packs install github: https://github.com/username/packname`
 
 > How can I create a new pack?
 
 Currently, it's only possible through editing JSON files, we recommend that you
 check
-[fable-community/example-pack](https://github.com/fable-community/example-pack),
+[fable-community/example](https://github.com/fable-community/fable-pack-example),
 it includes most of the info you need.
 
 > Can I use prefixes like `$`?
@@ -116,7 +116,7 @@ you can go tell discord to add custom prefixes to "slash" commands instead of
 
 > How to remove/uninstall a pack from my server?
 
-Like installing packs, run `/packs uninstall [pack-id]`. If you don't know the
+Like installing packs, run `/packs uninstall id: pack-id`. If you don't know the
 id of the pack you want to uninstall, then use `/packs community` instead.
 
 > How are you keeping Fable free?

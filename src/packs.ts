@@ -349,13 +349,12 @@ async function pages(
     ]);
   }
 
-  // TODO test
   if (pack.type === PackType.Community) {
     message.addComponents([
-      new discord.Component().setLabel('Uninstall').setId(
-        'puninstall',
-        pack.manifest.id,
-      ),
+      new discord.Component()
+        .setId('puninstall', pack.manifest.id)
+        .setStyle(discord.ButtonStyle.Red)
+        .setLabel('Uninstall'),
     ]);
   }
 

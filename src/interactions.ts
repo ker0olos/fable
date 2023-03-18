@@ -420,7 +420,9 @@ export const handler = async (r: Request) => {
                   shallow: subcommand === 'validate',
                   url: options['github'] as string,
                   ref: options['ref'] as string,
-                }).setFlags(discord.MessageFlags.Ephemeral).send();
+                })
+                  .setFlags(discord.MessageFlags.Ephemeral)
+                  .send();
               }
               case 'uninstall': {
                 return (await packs.uninstallDialog({
