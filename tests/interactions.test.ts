@@ -6540,6 +6540,49 @@ Deno.test('/party assign', async (test) => {
 
 Deno.test('/party swap', async (test) => {
   await test.step('normal', async () => {
+    const media: AniListMedia[] = [
+      {
+        id: '0',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
+      },
+    ];
+
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'name 2',
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'name 3',
+        },
+      },
+      {
+        id: '4',
+        name: {
+          full: 'name 4',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'name 5',
+        },
+      },
+    ];
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -6551,12 +6594,73 @@ Deno.test('/party swap', async (test) => {
               data: {
                 swapCharactersInParty: {
                   ok: true,
+                  inventory: {
+                    party: {
+                      member1: {
+                        id: 'anilist:1',
+                        mediaId: 'anilist:0',
+                        rating: 1,
+                      },
+                      member2: {
+                        id: 'anilist:2',
+                        mediaId: 'anilist:0',
+                        rating: 2,
+                      },
+                      member3: {
+                        id: 'anilist:3',
+                        mediaId: 'anilist:0',
+                        rating: 3,
+                      },
+                      member4: {
+                        id: 'anilist:4',
+                        mediaId: 'anilist:0',
+                        rating: 4,
+                      },
+                      member5: {
+                        id: 'anilist:5',
+                        mediaId: 'anilist:0',
+                        rating: 5,
+                      },
+                    },
+                  },
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
                 },
               },
             }))),
         } as any,
       ]),
     );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
       const message = await party.swap({
@@ -6572,7 +6676,73 @@ Deno.test('/party swap', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'SWAPPED',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**name 1**',
+                },
+              ],
+              thumbnail: {
+                url: 'undefined/external/?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**name 2**',
+                },
+              ],
+              thumbnail: {
+                url: 'undefined/external/?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**name 3**',
+                },
+              ],
+              thumbnail: {
+                url: 'undefined/external/?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**name 4**',
+                },
+              ],
+              thumbnail: {
+                url: 'undefined/external/?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**name 5**',
+                },
+              ],
+              thumbnail: {
+                url: 'undefined/external/?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
           ],
           components: [],
@@ -6581,6 +6751,8 @@ Deno.test('/party swap', async (test) => {
       });
     } finally {
       fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
     }
   });
 
