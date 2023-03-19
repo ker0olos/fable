@@ -2,7 +2,10 @@
 
 import {
   assertSpyCall,
+  assertSpyCallArg,
   assertSpyCalls,
+  returnsNext,
+  stub,
 } from 'https://deno.land/std@0.179.0/testing/mock.ts';
 
 import { assertEquals } from 'https://deno.land/std@0.179.0/testing/asserts.ts';
@@ -34,6 +37,8 @@ import {
   setCharacterToParty,
   swapCharactersInParty,
 } from './set_character_to_party.ts';
+
+import { fql } from './fql.ts';
 
 Deno.test('set character to party', async (test) => {
   // TODO improve the test case for this
@@ -321,6 +326,21 @@ Deno.test('swap characters in party', async (test) => {
         b: 2,
       } as any) as any;
 
+      assertSpyCallArg(ifStub, 0, 0, false);
+      assertSpyCallArg(ifStub, 1, 0, true);
+
+      assertSpyCallArg(ifStub, 2, 0, true);
+      assertSpyCallArg(ifStub, 3, 0, false);
+
+      assertSpyCallArg(ifStub, 4, 0, false);
+      assertSpyCallArg(ifStub, 5, 0, false);
+
+      assertSpyCallArg(ifStub, 6, 0, false);
+      assertSpyCallArg(ifStub, 7, 0, false);
+
+      assertSpyCallArg(ifStub, 8, 0, false);
+      assertSpyCallArg(ifStub, 9, 0, false);
+
       assertSpyCall(updateStub, 0, {
         args: [
           { ref: 'inventory' } as any,
@@ -362,9 +382,18 @@ Deno.test('remove character from party', async (test) => {
     const equalsStub = FakeEquals();
     const updateStub = FakeUpdate();
 
-    const selectStub = FakeSelect({
-      ref: 'character',
-    });
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        'member1',
+        'member2',
+        'member3',
+        'member4',
+        'member5',
+        'member1',
+      ] as any),
+    );
 
     const varStub = FakeVar({
       'character': {
@@ -378,6 +407,12 @@ Deno.test('remove character from party', async (test) => {
         inventory: 'inventory',
         spot: 1,
       } as any) as any;
+
+      assertSpyCallArg(ifStub, 0, 0, true);
+      assertSpyCallArg(ifStub, 1, 0, false);
+      assertSpyCallArg(ifStub, 2, 0, false);
+      assertSpyCallArg(ifStub, 3, 0, false);
+      assertSpyCallArg(ifStub, 4, 0, false);
 
       assertSpyCall(concatStub, 0, {
         args: [
@@ -397,9 +432,7 @@ Deno.test('remove character from party', async (test) => {
 
       assertEquals(response, {
         ok: true,
-        character: {
-          ref: 'character',
-        },
+        character: 'member1',
         inventory: {
           ref: {
             ref: 'inventory',
