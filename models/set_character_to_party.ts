@@ -3,6 +3,7 @@ import {
   fql,
   InstanceExpr,
   InventoryExpr,
+  NumberExpr,
   ResponseExpr,
   StringExpr,
   UserExpr,
@@ -28,7 +29,7 @@ export function setCharacterToParty(
     inventory: InventoryExpr;
     instance: InstanceExpr;
     characterId: StringExpr;
-    spot?: number;
+    spot?: NumberExpr;
   },
 ): unknown {
   return fql.Let({
@@ -160,22 +161,22 @@ export function swapCharactersInParty(
     b,
   }: {
     inventory: InventoryExpr;
-    a: number;
-    b: number;
+    a: NumberExpr;
+    b: NumberExpr;
   },
 ): unknown {
   const getMember = (n: 1 | 2 | 3 | 4 | 5) => {
     return fql.If(
-      fql.Equals(a, n),
+      fql.Equals(n, a),
       fql.Select(
-        ['data', 'party', `member${b}`],
+        ['data', 'party', fql.Concat(['member', fql.ToString(b)])],
         inventory,
         fql.Null(),
       ),
       fql.If(
-        fql.Equals(b, n),
+        fql.Equals(n, b),
         fql.Select(
-          ['data', 'party', `member${a}`],
+          ['data', 'party', fql.Concat(['member', fql.ToString(a)])],
           inventory,
           fql.Null(),
         ),
@@ -187,6 +188,14 @@ export function swapCharactersInParty(
       ),
     );
   };
+
+  // const getMember = (n: 1 | 2 | 3 | 4 | 5) => {
+  //   return fql.Select(
+  //     ['data', 'party', `member${n}`],
+  //     inventory,
+  //     fql.Null(),
+  //   );
+  // };
 
   return fql.Let({
     party: {
@@ -212,7 +221,7 @@ export function removeCharacterFromParty(
     spot,
   }: {
     inventory: InventoryExpr;
-    spot: number;
+    spot: NumberExpr;
   },
 ): unknown {
   const getMember = (n: 1 | 2 | 3 | 4 | 5) => {

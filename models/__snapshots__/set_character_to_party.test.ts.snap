@@ -3051,12 +3051,12 @@ snapshot[`model 2`] = `
                                                     raw: {
                                                       equals: Expr {
                                                         raw: [
+                                                          1,
                                                           Expr {
                                                             raw: {
                                                               var: "b",
                                                             },
                                                           },
-                                                          1,
                                                         ],
                                                       },
                                                     },
@@ -3073,7 +3073,25 @@ snapshot[`model 2`] = `
                                                         raw: [
                                                           "data",
                                                           "party",
-                                                          "member[object Object]",
+                                                          Expr {
+                                                            raw: {
+                                                              concat: Expr {
+                                                                raw: [
+                                                                  "member",
+                                                                  Expr {
+                                                                    raw: {
+                                                                      to_string: Expr {
+                                                                        raw: {
+                                                                          var: "a",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                              separator: "",
+                                                            },
+                                                          },
                                                         ],
                                                       },
                                                     },
@@ -3084,12 +3102,12 @@ snapshot[`model 2`] = `
                                                 raw: {
                                                   equals: Expr {
                                                     raw: [
+                                                      1,
                                                       Expr {
                                                         raw: {
                                                           var: "a",
                                                         },
                                                       },
-                                                      1,
                                                     ],
                                                   },
                                                 },
@@ -3106,7 +3124,25 @@ snapshot[`model 2`] = `
                                                     raw: [
                                                       "data",
                                                       "party",
-                                                      "member[object Object]",
+                                                      Expr {
+                                                        raw: {
+                                                          concat: Expr {
+                                                            raw: [
+                                                              "member",
+                                                              Expr {
+                                                                raw: {
+                                                                  to_string: Expr {
+                                                                    raw: {
+                                                                      var: "b",
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            ],
+                                                          },
+                                                          separator: "",
+                                                        },
+                                                      },
                                                     ],
                                                   },
                                                 },
@@ -3138,12 +3174,12 @@ snapshot[`model 2`] = `
                                                     raw: {
                                                       equals: Expr {
                                                         raw: [
+                                                          2,
                                                           Expr {
                                                             raw: {
                                                               var: "b",
                                                             },
                                                           },
-                                                          2,
                                                         ],
                                                       },
                                                     },
@@ -3160,7 +3196,25 @@ snapshot[`model 2`] = `
                                                         raw: [
                                                           "data",
                                                           "party",
-                                                          "member[object Object]",
+                                                          Expr {
+                                                            raw: {
+                                                              concat: Expr {
+                                                                raw: [
+                                                                  "member",
+                                                                  Expr {
+                                                                    raw: {
+                                                                      to_string: Expr {
+                                                                        raw: {
+                                                                          var: "a",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                              separator: "",
+                                                            },
+                                                          },
                                                         ],
                                                       },
                                                     },
@@ -3171,12 +3225,12 @@ snapshot[`model 2`] = `
                                                 raw: {
                                                   equals: Expr {
                                                     raw: [
+                                                      2,
                                                       Expr {
                                                         raw: {
                                                           var: "a",
                                                         },
                                                       },
-                                                      2,
                                                     ],
                                                   },
                                                 },
@@ -3193,7 +3247,25 @@ snapshot[`model 2`] = `
                                                     raw: [
                                                       "data",
                                                       "party",
-                                                      "member[object Object]",
+                                                      Expr {
+                                                        raw: {
+                                                          concat: Expr {
+                                                            raw: [
+                                                              "member",
+                                                              Expr {
+                                                                raw: {
+                                                                  to_string: Expr {
+                                                                    raw: {
+                                                                      var: "b",
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            ],
+                                                          },
+                                                          separator: "",
+                                                        },
+                                                      },
                                                     ],
                                                   },
                                                 },
@@ -3225,12 +3297,12 @@ snapshot[`model 2`] = `
                                                     raw: {
                                                       equals: Expr {
                                                         raw: [
+                                                          3,
                                                           Expr {
                                                             raw: {
                                                               var: "b",
                                                             },
                                                           },
-                                                          3,
                                                         ],
                                                       },
                                                     },
@@ -3247,7 +3319,25 @@ snapshot[`model 2`] = `
                                                         raw: [
                                                           "data",
                                                           "party",
-                                                          "member[object Object]",
+                                                          Expr {
+                                                            raw: {
+                                                              concat: Expr {
+                                                                raw: [
+                                                                  "member",
+                                                                  Expr {
+                                                                    raw: {
+                                                                      to_string: Expr {
+                                                                        raw: {
+                                                                          var: "a",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                              separator: "",
+                                                            },
+                                                          },
                                                         ],
                                                       },
                                                     },
@@ -3258,12 +3348,12 @@ snapshot[`model 2`] = `
                                                 raw: {
                                                   equals: Expr {
                                                     raw: [
+                                                      3,
                                                       Expr {
                                                         raw: {
                                                           var: "a",
                                                         },
                                                       },
-                                                      3,
                                                     ],
                                                   },
                                                 },
@@ -3280,7 +3370,25 @@ snapshot[`model 2`] = `
                                                     raw: [
                                                       "data",
                                                       "party",
-                                                      "member[object Object]",
+                                                      Expr {
+                                                        raw: {
+                                                          concat: Expr {
+                                                            raw: [
+                                                              "member",
+                                                              Expr {
+                                                                raw: {
+                                                                  to_string: Expr {
+                                                                    raw: {
+                                                                      var: "b",
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            ],
+                                                          },
+                                                          separator: "",
+                                                        },
+                                                      },
                                                     ],
                                                   },
                                                 },
@@ -3312,12 +3420,12 @@ snapshot[`model 2`] = `
                                                     raw: {
                                                       equals: Expr {
                                                         raw: [
+                                                          4,
                                                           Expr {
                                                             raw: {
                                                               var: "b",
                                                             },
                                                           },
-                                                          4,
                                                         ],
                                                       },
                                                     },
@@ -3334,7 +3442,25 @@ snapshot[`model 2`] = `
                                                         raw: [
                                                           "data",
                                                           "party",
-                                                          "member[object Object]",
+                                                          Expr {
+                                                            raw: {
+                                                              concat: Expr {
+                                                                raw: [
+                                                                  "member",
+                                                                  Expr {
+                                                                    raw: {
+                                                                      to_string: Expr {
+                                                                        raw: {
+                                                                          var: "a",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                              separator: "",
+                                                            },
+                                                          },
                                                         ],
                                                       },
                                                     },
@@ -3345,12 +3471,12 @@ snapshot[`model 2`] = `
                                                 raw: {
                                                   equals: Expr {
                                                     raw: [
+                                                      4,
                                                       Expr {
                                                         raw: {
                                                           var: "a",
                                                         },
                                                       },
-                                                      4,
                                                     ],
                                                   },
                                                 },
@@ -3367,7 +3493,25 @@ snapshot[`model 2`] = `
                                                     raw: [
                                                       "data",
                                                       "party",
-                                                      "member[object Object]",
+                                                      Expr {
+                                                        raw: {
+                                                          concat: Expr {
+                                                            raw: [
+                                                              "member",
+                                                              Expr {
+                                                                raw: {
+                                                                  to_string: Expr {
+                                                                    raw: {
+                                                                      var: "b",
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            ],
+                                                          },
+                                                          separator: "",
+                                                        },
+                                                      },
                                                     ],
                                                   },
                                                 },
@@ -3399,12 +3543,12 @@ snapshot[`model 2`] = `
                                                     raw: {
                                                       equals: Expr {
                                                         raw: [
+                                                          5,
                                                           Expr {
                                                             raw: {
                                                               var: "b",
                                                             },
                                                           },
-                                                          5,
                                                         ],
                                                       },
                                                     },
@@ -3421,7 +3565,25 @@ snapshot[`model 2`] = `
                                                         raw: [
                                                           "data",
                                                           "party",
-                                                          "member[object Object]",
+                                                          Expr {
+                                                            raw: {
+                                                              concat: Expr {
+                                                                raw: [
+                                                                  "member",
+                                                                  Expr {
+                                                                    raw: {
+                                                                      to_string: Expr {
+                                                                        raw: {
+                                                                          var: "a",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                              separator: "",
+                                                            },
+                                                          },
                                                         ],
                                                       },
                                                     },
@@ -3432,12 +3594,12 @@ snapshot[`model 2`] = `
                                                 raw: {
                                                   equals: Expr {
                                                     raw: [
+                                                      5,
                                                       Expr {
                                                         raw: {
                                                           var: "a",
                                                         },
                                                       },
-                                                      5,
                                                     ],
                                                   },
                                                 },
@@ -3454,7 +3616,25 @@ snapshot[`model 2`] = `
                                                     raw: [
                                                       "data",
                                                       "party",
-                                                      "member[object Object]",
+                                                      Expr {
+                                                        raw: {
+                                                          concat: Expr {
+                                                            raw: [
+                                                              "member",
+                                                              Expr {
+                                                                raw: {
+                                                                  to_string: Expr {
+                                                                    raw: {
+                                                                      var: "b",
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            ],
+                                                          },
+                                                          separator: "",
+                                                        },
+                                                      },
                                                     ],
                                                   },
                                                 },
@@ -4147,12 +4327,12 @@ snapshot[`model 2`] = `
                                                     raw: {
                                                       equals: Expr {
                                                         raw: [
+                                                          1,
                                                           Expr {
                                                             raw: {
                                                               var: "b",
                                                             },
                                                           },
-                                                          1,
                                                         ],
                                                       },
                                                     },
@@ -4169,7 +4349,25 @@ snapshot[`model 2`] = `
                                                         raw: [
                                                           "data",
                                                           "party",
-                                                          "member[object Object]",
+                                                          Expr {
+                                                            raw: {
+                                                              concat: Expr {
+                                                                raw: [
+                                                                  "member",
+                                                                  Expr {
+                                                                    raw: {
+                                                                      to_string: Expr {
+                                                                        raw: {
+                                                                          var: "a",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                              separator: "",
+                                                            },
+                                                          },
                                                         ],
                                                       },
                                                     },
@@ -4180,12 +4378,12 @@ snapshot[`model 2`] = `
                                                 raw: {
                                                   equals: Expr {
                                                     raw: [
+                                                      1,
                                                       Expr {
                                                         raw: {
                                                           var: "a",
                                                         },
                                                       },
-                                                      1,
                                                     ],
                                                   },
                                                 },
@@ -4202,7 +4400,25 @@ snapshot[`model 2`] = `
                                                     raw: [
                                                       "data",
                                                       "party",
-                                                      "member[object Object]",
+                                                      Expr {
+                                                        raw: {
+                                                          concat: Expr {
+                                                            raw: [
+                                                              "member",
+                                                              Expr {
+                                                                raw: {
+                                                                  to_string: Expr {
+                                                                    raw: {
+                                                                      var: "b",
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            ],
+                                                          },
+                                                          separator: "",
+                                                        },
+                                                      },
                                                     ],
                                                   },
                                                 },
@@ -4234,12 +4450,12 @@ snapshot[`model 2`] = `
                                                     raw: {
                                                       equals: Expr {
                                                         raw: [
+                                                          2,
                                                           Expr {
                                                             raw: {
                                                               var: "b",
                                                             },
                                                           },
-                                                          2,
                                                         ],
                                                       },
                                                     },
@@ -4256,7 +4472,25 @@ snapshot[`model 2`] = `
                                                         raw: [
                                                           "data",
                                                           "party",
-                                                          "member[object Object]",
+                                                          Expr {
+                                                            raw: {
+                                                              concat: Expr {
+                                                                raw: [
+                                                                  "member",
+                                                                  Expr {
+                                                                    raw: {
+                                                                      to_string: Expr {
+                                                                        raw: {
+                                                                          var: "a",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                              separator: "",
+                                                            },
+                                                          },
                                                         ],
                                                       },
                                                     },
@@ -4267,12 +4501,12 @@ snapshot[`model 2`] = `
                                                 raw: {
                                                   equals: Expr {
                                                     raw: [
+                                                      2,
                                                       Expr {
                                                         raw: {
                                                           var: "a",
                                                         },
                                                       },
-                                                      2,
                                                     ],
                                                   },
                                                 },
@@ -4289,7 +4523,25 @@ snapshot[`model 2`] = `
                                                     raw: [
                                                       "data",
                                                       "party",
-                                                      "member[object Object]",
+                                                      Expr {
+                                                        raw: {
+                                                          concat: Expr {
+                                                            raw: [
+                                                              "member",
+                                                              Expr {
+                                                                raw: {
+                                                                  to_string: Expr {
+                                                                    raw: {
+                                                                      var: "b",
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            ],
+                                                          },
+                                                          separator: "",
+                                                        },
+                                                      },
                                                     ],
                                                   },
                                                 },
@@ -4321,12 +4573,12 @@ snapshot[`model 2`] = `
                                                     raw: {
                                                       equals: Expr {
                                                         raw: [
+                                                          3,
                                                           Expr {
                                                             raw: {
                                                               var: "b",
                                                             },
                                                           },
-                                                          3,
                                                         ],
                                                       },
                                                     },
@@ -4343,7 +4595,25 @@ snapshot[`model 2`] = `
                                                         raw: [
                                                           "data",
                                                           "party",
-                                                          "member[object Object]",
+                                                          Expr {
+                                                            raw: {
+                                                              concat: Expr {
+                                                                raw: [
+                                                                  "member",
+                                                                  Expr {
+                                                                    raw: {
+                                                                      to_string: Expr {
+                                                                        raw: {
+                                                                          var: "a",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                              separator: "",
+                                                            },
+                                                          },
                                                         ],
                                                       },
                                                     },
@@ -4354,12 +4624,12 @@ snapshot[`model 2`] = `
                                                 raw: {
                                                   equals: Expr {
                                                     raw: [
+                                                      3,
                                                       Expr {
                                                         raw: {
                                                           var: "a",
                                                         },
                                                       },
-                                                      3,
                                                     ],
                                                   },
                                                 },
@@ -4376,7 +4646,25 @@ snapshot[`model 2`] = `
                                                     raw: [
                                                       "data",
                                                       "party",
-                                                      "member[object Object]",
+                                                      Expr {
+                                                        raw: {
+                                                          concat: Expr {
+                                                            raw: [
+                                                              "member",
+                                                              Expr {
+                                                                raw: {
+                                                                  to_string: Expr {
+                                                                    raw: {
+                                                                      var: "b",
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            ],
+                                                          },
+                                                          separator: "",
+                                                        },
+                                                      },
                                                     ],
                                                   },
                                                 },
@@ -4408,12 +4696,12 @@ snapshot[`model 2`] = `
                                                     raw: {
                                                       equals: Expr {
                                                         raw: [
+                                                          4,
                                                           Expr {
                                                             raw: {
                                                               var: "b",
                                                             },
                                                           },
-                                                          4,
                                                         ],
                                                       },
                                                     },
@@ -4430,7 +4718,25 @@ snapshot[`model 2`] = `
                                                         raw: [
                                                           "data",
                                                           "party",
-                                                          "member[object Object]",
+                                                          Expr {
+                                                            raw: {
+                                                              concat: Expr {
+                                                                raw: [
+                                                                  "member",
+                                                                  Expr {
+                                                                    raw: {
+                                                                      to_string: Expr {
+                                                                        raw: {
+                                                                          var: "a",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                              separator: "",
+                                                            },
+                                                          },
                                                         ],
                                                       },
                                                     },
@@ -4441,12 +4747,12 @@ snapshot[`model 2`] = `
                                                 raw: {
                                                   equals: Expr {
                                                     raw: [
+                                                      4,
                                                       Expr {
                                                         raw: {
                                                           var: "a",
                                                         },
                                                       },
-                                                      4,
                                                     ],
                                                   },
                                                 },
@@ -4463,7 +4769,25 @@ snapshot[`model 2`] = `
                                                     raw: [
                                                       "data",
                                                       "party",
-                                                      "member[object Object]",
+                                                      Expr {
+                                                        raw: {
+                                                          concat: Expr {
+                                                            raw: [
+                                                              "member",
+                                                              Expr {
+                                                                raw: {
+                                                                  to_string: Expr {
+                                                                    raw: {
+                                                                      var: "b",
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            ],
+                                                          },
+                                                          separator: "",
+                                                        },
+                                                      },
                                                     ],
                                                   },
                                                 },
@@ -4495,12 +4819,12 @@ snapshot[`model 2`] = `
                                                     raw: {
                                                       equals: Expr {
                                                         raw: [
+                                                          5,
                                                           Expr {
                                                             raw: {
                                                               var: "b",
                                                             },
                                                           },
-                                                          5,
                                                         ],
                                                       },
                                                     },
@@ -4517,7 +4841,25 @@ snapshot[`model 2`] = `
                                                         raw: [
                                                           "data",
                                                           "party",
-                                                          "member[object Object]",
+                                                          Expr {
+                                                            raw: {
+                                                              concat: Expr {
+                                                                raw: [
+                                                                  "member",
+                                                                  Expr {
+                                                                    raw: {
+                                                                      to_string: Expr {
+                                                                        raw: {
+                                                                          var: "a",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                              separator: "",
+                                                            },
+                                                          },
                                                         ],
                                                       },
                                                     },
@@ -4528,12 +4870,12 @@ snapshot[`model 2`] = `
                                                 raw: {
                                                   equals: Expr {
                                                     raw: [
+                                                      5,
                                                       Expr {
                                                         raw: {
                                                           var: "a",
                                                         },
                                                       },
-                                                      5,
                                                     ],
                                                   },
                                                 },
@@ -4550,7 +4892,25 @@ snapshot[`model 2`] = `
                                                     raw: [
                                                       "data",
                                                       "party",
-                                                      "member[object Object]",
+                                                      Expr {
+                                                        raw: {
+                                                          concat: Expr {
+                                                            raw: [
+                                                              "member",
+                                                              Expr {
+                                                                raw: {
+                                                                  to_string: Expr {
+                                                                    raw: {
+                                                                      var: "b",
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            ],
+                                                          },
+                                                          separator: "",
+                                                        },
+                                                      },
                                                     ],
                                                   },
                                                 },

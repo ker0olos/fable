@@ -309,6 +309,7 @@ Deno.test('swap characters in party', async (test) => {
     const ifStub = FakeIf();
     const letStub = FakeLet();
     const refStub = FakeRef();
+    const concatStub = FakeConcat();
     const toStringStub = FakeToString();
 
     const equalsStub = FakeEquals();
@@ -341,6 +342,20 @@ Deno.test('swap characters in party', async (test) => {
       assertSpyCallArg(ifStub, 8, 0, false);
       assertSpyCallArg(ifStub, 9, 0, false);
 
+      assertSpyCall(concatStub, 0, {
+        args: [
+          ['member', '2'],
+        ],
+        returned: 'member2',
+      });
+
+      assertSpyCall(concatStub, 1, {
+        args: [
+          ['member', '1'],
+        ],
+        returned: 'member1',
+      });
+
       assertSpyCall(updateStub, 0, {
         args: [
           { ref: 'inventory' } as any,
@@ -363,6 +378,7 @@ Deno.test('swap characters in party', async (test) => {
       letStub.restore();
       varStub.restore();
       refStub.restore();
+      concatStub.restore();
       toStringStub.restore();
       selectStub.restore();
       equalsStub.restore();

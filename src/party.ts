@@ -158,7 +158,7 @@ async function assign({
   search?: string;
   id?: string;
 }): Promise<discord.Message> {
-  const query = gql`
+  const mutation = gql`
     mutation ($userId: String!, $guildId: String!, $characterId: String!, $spot: Int) {
       setCharacterToParty(userId: $userId, guildId: $guildId, characterId: $characterId, spot: $spot) {
         ok
@@ -190,7 +190,7 @@ async function assign({
     setCharacterToParty: Schema.Mutation;
   }>({
     url: faunaUrl,
-    query,
+    query: mutation,
     headers: {
       'authorization': `Bearer ${config.faunaSecret}`,
     },
@@ -268,8 +268,8 @@ async function swap({
   userId: string;
   guildId: string;
 }): Promise<discord.Message> {
-  const query = gql`
-    mutation ($userId: String!, $guildId: String!, $a: Int!, b: Int!) {
+  const mutation = gql`
+    mutation ($userId: String!, $guildId: String!, $a: Int!, $b: Int!) {
       swapCharactersInParty(userId: $userId, guildId: $guildId, a: $a, b: $b) {
         ok
       }
@@ -282,7 +282,7 @@ async function swap({
     swapCharactersInParty: Schema.Mutation;
   }>({
     url: faunaUrl,
-    query,
+    query: mutation,
     headers: {
       'authorization': `Bearer ${config.faunaSecret}`,
     },
@@ -311,7 +311,7 @@ async function remove({
   userId: string;
   guildId: string;
 }): Promise<discord.Message> {
-  const query = gql`
+  const mutation = gql`
     mutation ($userId: String!, $guildId: String!, $spot: Int!) {
       removeCharacterFromParty(userId: $userId, guildId: $guildId, spot: $spot) {
         ok
@@ -330,7 +330,7 @@ async function remove({
     removeCharacterFromParty: Schema.Mutation;
   }>({
     url: faunaUrl,
-    query,
+    query: mutation,
     headers: {
       'authorization': `Bearer ${config.faunaSecret}`,
     },
