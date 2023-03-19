@@ -6538,6 +6538,90 @@ Deno.test('/party assign', async (test) => {
   });
 });
 
+Deno.test('/party swap', async (test) => {
+  await test.step('normal', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                swapCharactersInParty: {
+                  ok: true,
+                },
+              },
+            }))),
+        } as any,
+      ]),
+    );
+
+    try {
+      const message = await party.swap({
+        a: 1,
+        b: 2,
+        userId: 'user',
+        guildId: 'guild',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'SWAPPED',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('unknown error', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                swapCharactersInParty: {
+                  ok: false,
+                  error: 'UNKNOWN_ERROR',
+                },
+              },
+            }))),
+        } as any,
+      ]),
+    );
+
+    try {
+      await assertRejects(
+        async () =>
+          await party.swap({
+            a: 1,
+            b: 2,
+            userId: 'user',
+            guildId: 'guild',
+          }),
+        Error,
+        'UNKNOWN_ERROR',
+      );
+    } finally {
+      fetchStub.restore();
+    }
+  });
+});
+
 Deno.test('/party remove', async (test) => {
   await test.step('normal', async () => {
     const characters: AniListCharacter[] = [

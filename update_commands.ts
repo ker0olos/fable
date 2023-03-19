@@ -383,6 +383,26 @@ export const commands = [
         ],
       }),
       Option({
+        name: 'swap',
+        description: 'Swap two characters spots',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'a',
+            description: 'The first target of the swap',
+            type: Type.INTEGER,
+            choices: spots,
+          }),
+          Option({
+            name: 'b',
+            description: 'The second target of the swap',
+            type: Type.INTEGER,
+            choices: spots,
+          }),
+        ],
+      }),
+      Option({
         name: 'remove',
         description: 'Remove a character from your party',
         type: Type.SUB_COMMAND,

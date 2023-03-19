@@ -257,6 +257,51 @@ async function assign({
     ]);
 }
 
+async function swap({
+  a,
+  b,
+  userId,
+  guildId,
+}: {
+  a: number;
+  b: number;
+  userId: string;
+  guildId: string;
+}): Promise<discord.Message> {
+  const query = gql`
+    mutation ($userId: String!, $guildId: String!, $a: Int!, b: Int!) {
+      swapCharactersInParty(userId: $userId, guildId: $guildId, a: $a, b: $b) {
+        ok
+      }
+    }
+  `;
+
+  const message = new discord.Message();
+
+  const response = (await request<{
+    swapCharactersInParty: Schema.Mutation;
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+      a,
+      b,
+    },
+  })).swapCharactersInParty;
+
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+
+  return message
+    .addEmbed(new discord.Embed().setDescription('SWAPPED'));
+}
+
 async function remove({
   spot,
   userId,
@@ -344,6 +389,7 @@ async function remove({
 const user = {
   view,
   assign,
+  swap,
   remove,
 };
 

@@ -131,6 +131,7 @@ __The more your party members are familiar with each other the better they prefo
 \`/party assign [name] [spot?]\` to assign a character you found to your party;
 leaving the \`[spot]\` parameter empty will assign the character to the first empty spot, or override spot #5 if no empty spots exist.
 
+\`/party swap [a] [b]\` to swap characters' spots.
 \`/party remove [spot]\` to remove a character from your party.
 
 \`/collection stars\` and \`/collection media\` to browse your characters and select your potential party members.
@@ -191,13 +192,15 @@ snapshot[`/help 3`] = `
 
 - \`/party view\` \`/team view\` \`/p view\`: _view your current party_
 - \`/party assign\` \`/team assign\` \`/p assign\`: _assign a character to your party_
+- \`/party swap\` \`/team swap\` \`/p swap\`: _swap two characters spots_
 - \`/party remove\` \`/team remove\` \`/p remove\`: _remove a character from your party_
 
 - \`/collection stars\` \`/coll stars\` \`/mm stars\`: _list all your stars_
 - \`/collection media\` \`/coll media\` \`/mm media\`: _list all your characters from a specific media_
 - \`/found\` \`/obtained\` \`/owned\`: _list all characters found from a specific media_
 
-- \`/trade\` \`/offer\` \`/give\`: _trade characters with another user_
+- \`/trade\` \`/offer\`: _trade characters with another user_
+- \`/gift\` \`/give\`: _gift characters to another user_
 
 - \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
         type: "rich",

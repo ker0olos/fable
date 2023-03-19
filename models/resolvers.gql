@@ -68,6 +68,9 @@ type Mutation {
   setCharacterToParty(userId: String!, guildId: String!, characterId: String!, spot: Int): Response!
     @resolver(name: "set_character_to_party")
   #
+  swapCharactersInParty(userId: String!, guildId: String!, a: Int!, b: Int!): Response!
+    @resolver(name: "swap_characters_in_party")
+  #
   removeCharacterFromParty(userId: String!, guildId: String!, spot: Int!): Response!
     @resolver(name: "remove_character_from_party")
 

@@ -153,6 +153,59 @@ export function setCharacterToParty(
   });
 }
 
+export function swapCharactersInParty(
+  {
+    inventory,
+    a,
+    b,
+  }: {
+    inventory: InventoryExpr;
+    a: number;
+    b: number;
+  },
+): unknown {
+  const getMember = (n: 1 | 2 | 3 | 4 | 5) => {
+    return fql.If(
+      fql.Equals(a, n),
+      fql.Select(
+        ['data', 'party', `member${b}`],
+        inventory,
+        fql.Null(),
+      ),
+      fql.If(
+        fql.Equals(b, n),
+        fql.Select(
+          ['data', 'party', `member${a}`],
+          inventory,
+          fql.Null(),
+        ),
+        fql.Select(
+          ['data', 'party', `member${n}`],
+          inventory,
+          fql.Null(),
+        ),
+      ),
+    );
+  };
+
+  return fql.Let({
+    party: {
+      member1: getMember(1),
+      member2: getMember(2),
+      member3: getMember(3),
+      member4: getMember(4),
+      member5: getMember(5),
+    },
+    updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
+      // deno-lint-ignore no-explicit-any
+      party: fql.Var('party') as any,
+    }),
+  }, ({ updatedInventory }) => ({
+    ok: true,
+    inventory: fql.Ref(updatedInventory),
+  }));
+}
+
 export function removeCharacterFromParty(
   {
     inventory,
@@ -230,6 +283,34 @@ export default function (client: Client): {
                 instance,
                 characterId,
                 spot,
+              }) as ResponseExpr,
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
+        name: 'swap_characters_in_party',
+        lambda: (
+          userId: string,
+          guildId: string,
+          a: number,
+          b: number,
+        ) => {
+          return fql.Let(
+            {
+              user: getUser(userId),
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+              inventory: getInventory({
+                user: fql.Var('user'),
+                instance: fql.Var('instance'),
+              }),
+            },
+            ({ inventory }) =>
+              swapCharactersInParty({
+                inventory,
+                a,
+                b,
               }) as ResponseExpr,
           );
         },

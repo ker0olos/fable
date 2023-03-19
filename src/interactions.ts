@@ -294,6 +294,13 @@ export const handler = async (r: Request) => {
                     ? character.substring(idPrefix.length)
                     : undefined,
                 })).send();
+              case 'swap':
+                return (await party.swap({
+                  a: options['a'] as number,
+                  b: options['b'] as number,
+                  userId: member.user.id,
+                  guildId,
+                })).send();
               case 'remove':
                 return (await party.remove({
                   spot,

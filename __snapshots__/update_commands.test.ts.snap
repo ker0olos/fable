@@ -263,6 +263,56 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "Gift characters to another user",
+    name: "gift",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The user you want to trade with",
+        name: "user",
+        options: undefined,
+        required: true,
+        type: 6,
+      },
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The character you're giving away",
+        name: "give",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Gift characters to another user",
+    name: "give",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The user you want to trade with",
+        name: "user",
+        options: undefined,
+        required: true,
+        type: 6,
+      },
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The character you're giving away",
+        name: "give",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
     description: "Trade characters with another user",
     name: "trade",
     options: [
@@ -290,7 +340,7 @@ snapshot[`commands 1`] = `
         description: "The character you want to take",
         name: "take",
         options: undefined,
-        required: false,
+        required: true,
         type: 3,
       },
     ],
@@ -324,41 +374,7 @@ snapshot[`commands 1`] = `
         description: "The character you want to take",
         name: "take",
         options: undefined,
-        required: false,
-        type: 3,
-      },
-    ],
-  },
-  {
-    default_member_permissions: undefined,
-    description: "Trade characters with another user",
-    name: "give",
-    options: [
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "The user you want to trade with",
-        name: "user",
-        options: undefined,
         required: true,
-        type: 6,
-      },
-      {
-        autocomplete: true,
-        choices: undefined,
-        description: "The character you're giving away",
-        name: "give",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-      {
-        autocomplete: true,
-        choices: undefined,
-        description: "The character you want to take",
-        name: "take",
-        options: undefined,
-        required: false,
         type: 3,
       },
     ],
@@ -609,6 +625,76 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
+        description: "Swap two characters spots",
+        name: "swap",
+        options: [
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "1",
+                value: 1,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "5",
+                value: 5,
+              },
+            ],
+            description: "The first target of the swap",
+            name: "a",
+            options: undefined,
+            required: true,
+            type: 4,
+          },
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "1",
+                value: 1,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "5",
+                value: 5,
+              },
+            ],
+            description: "The second target of the swap",
+            name: "b",
+            options: undefined,
+            required: true,
+            type: 4,
+          },
+        ],
+        required: false,
+        type: 1,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
         description: "Remove a character from your party",
         name: "remove",
         options: [
@@ -714,6 +800,76 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
+        description: "Swap two characters spots",
+        name: "swap",
+        options: [
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "1",
+                value: 1,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "5",
+                value: 5,
+              },
+            ],
+            description: "The first target of the swap",
+            name: "a",
+            options: undefined,
+            required: true,
+            type: 4,
+          },
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "1",
+                value: 1,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "5",
+                value: 5,
+              },
+            ],
+            description: "The second target of the swap",
+            name: "b",
+            options: undefined,
+            required: true,
+            type: 4,
+          },
+        ],
+        required: false,
+        type: 1,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
         description: "Remove a character from your party",
         name: "remove",
         options: [
@@ -810,6 +966,76 @@ snapshot[`commands 1`] = `
             name: "spot",
             options: undefined,
             required: false,
+            type: 4,
+          },
+        ],
+        required: false,
+        type: 1,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "Swap two characters spots",
+        name: "swap",
+        options: [
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "1",
+                value: 1,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "5",
+                value: 5,
+              },
+            ],
+            description: "The first target of the swap",
+            name: "a",
+            options: undefined,
+            required: true,
+            type: 4,
+          },
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "1",
+                value: 1,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "5",
+                value: 5,
+              },
+            ],
+            description: "The second target of the swap",
+            name: "b",
+            options: undefined,
+            required: true,
             type: 4,
           },
         ],
