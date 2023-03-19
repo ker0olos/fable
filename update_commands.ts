@@ -15,6 +15,23 @@ try {
 //   'USER' = 2,
 // }
 
+const spots = [{
+  name: '1',
+  value: 1,
+}, {
+  name: '2',
+  value: 2,
+}, {
+  name: '3',
+  value: 3,
+}, {
+  name: '4',
+  value: 4,
+}, {
+  name: '5',
+  value: 5,
+}];
+
 enum Type {
   'SUB_COMMAND' = 1,
   'SUB_COMMAND_GROUP' = 2,
@@ -245,16 +262,33 @@ export const commands = [
     ],
   }),
   ...Command({
-    name: 'trade',
-    description: 'Trade characters with another user',
-    aliases: ['offer', 'give'],
+    name: 'gift',
+    description: 'Gift characters to another user',
+    aliases: ['give'],
     options: [
       Option({
         name: 'user',
         description: 'The user you want to trade with',
         type: Type.USER,
       }),
-      // TODO support trading more than 1-for-1
+      Option({
+        name: 'give',
+        description: 'The character you\'re giving away',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'trade',
+    description: 'Trade characters with another user',
+    aliases: ['offer'],
+    options: [
+      Option({
+        name: 'user',
+        description: 'The user you want to trade with',
+        type: Type.USER,
+      }),
       Option({
         name: 'give',
         description: 'The character you\'re giving away',
@@ -266,7 +300,6 @@ export const commands = [
         description: 'The character you want to take',
         autocomplete: true,
         type: Type.STRING,
-        optional: true,
       }),
     ],
   }),
@@ -345,22 +378,7 @@ export const commands = [
             description: 'The spot where you want this character',
             type: Type.INTEGER,
             optional: true,
-            choices: [{
-              name: '1',
-              value: 1,
-            }, {
-              name: '2',
-              value: 2,
-            }, {
-              name: '3',
-              value: 3,
-            }, {
-              name: '4',
-              value: 4,
-            }, {
-              name: '5',
-              value: 5,
-            }],
+            choices: spots,
           }),
         ],
       }),
@@ -374,22 +392,7 @@ export const commands = [
             name: 'spot',
             description: 'The spot the character occupies',
             type: Type.INTEGER,
-            choices: [{
-              name: '1',
-              value: 1,
-            }, {
-              name: '2',
-              value: 2,
-            }, {
-              name: '3',
-              value: 3,
-            }, {
-              name: '4',
-              value: 4,
-            }, {
-              name: '5',
-              value: 5,
-            }],
+            choices: spots,
           }),
         ],
       }),
@@ -411,22 +414,7 @@ export const commands = [
             name: 'rating',
             description: 'The star rating',
             type: Type.INTEGER,
-            choices: [{
-              name: '5',
-              value: 5,
-            }, {
-              name: '4',
-              value: 4,
-            }, {
-              name: '3',
-              value: 3,
-            }, {
-              name: '2',
-              value: 2,
-            }, {
-              name: '1',
-              value: 1,
-            }],
+            choices: spots.toReversed(),
           }),
           Option({
             name: 'user',

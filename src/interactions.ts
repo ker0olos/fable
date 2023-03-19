@@ -364,6 +364,7 @@ export const handler = async (r: Request) => {
           }
           case 'trade':
           case 'offer':
+          case 'gift':
           case 'give': {
             const giveCharacter = options['give'] as string;
             const takeCharacter = options['take'] as string;
