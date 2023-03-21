@@ -40,6 +40,9 @@ export class NonFetalError extends Error {
   }
 }
 
+export class NonFetalCancelableError extends NonFetalError {
+}
+
 export class NoPullsError extends Error {
   rechargeTimestamp: string;
 

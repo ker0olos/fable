@@ -71,8 +71,16 @@ function Append(ref: RefExpr, items: Expr): RefExpr[] {
   return _fql.Append(ref, items) as unknown as RefExpr[];
 }
 
+function AppendAll(refs: RefExpr[], items: Expr): RefExpr[] {
+  return _fql.Union(items, refs) as unknown as RefExpr[];
+}
+
 function Remove(ref: RefExpr, items: Expr): RefExpr[] {
   return _fql.Difference(items, [ref]) as unknown as RefExpr[];
+}
+
+function RemoveAll(refs: RefExpr[], items: Expr): RefExpr[] {
+  return _fql.Difference(items, refs) as unknown as RefExpr[];
 }
 
 function Includes(value: ExprArg, documentOrArray: Expr): BooleanExpr {
@@ -89,12 +97,23 @@ function Paginate(
   });
 }
 
-// function Map<T = Expr>(
-//   refOrMatch: RefExpr | MatchExpr,
-//   map: (...args: ExprArg[]) => Expr,
-// ): T[] {
-//   return _fql.Map(refOrMatch, map) as unknown as T[];
-// }
+function Foreach<T = ExprArg>(
+  setOrArray: T[],
+  func: (...args: T[]) => any,
+): void {
+  return _fql.Foreach(setOrArray, func) as unknown as void;
+}
+
+function Map<T = ExprArg, V = Expr>(
+  setOrArray: T[],
+  func: (...args: T[]) => V,
+): V[] {
+  return _fql.Map(setOrArray, func) as unknown as V[];
+}
+
+function All<T = Expr>(setOrArray: T[]): boolean {
+  return _fql.All(setOrArray) as unknown as boolean;
+}
 
 function IsNonEmpty(expr: Expr): BooleanExpr {
   return _fql.IsNonEmpty(expr);
@@ -270,15 +289,16 @@ function Resolver(
 }
 
 export const fql = {
-  // Map,
-  // Or,
   Add,
+  All,
   And,
   Append,
+  AppendAll,
   Concat,
   Create,
   Divide,
   Equals,
+  Foreach,
   Get,
   GTE,
   Id,
@@ -290,6 +310,7 @@ export const fql = {
   IsNull,
   Let,
   LTE,
+  Map,
   Match,
   Merge,
   Min,
@@ -299,6 +320,7 @@ export const fql = {
   Paginate,
   Ref,
   Remove,
+  RemoveAll,
   Resolver,
   Reverse,
   Select,

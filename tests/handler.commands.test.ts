@@ -3011,8 +3011,24 @@ Deno.test('trade command handlers', async (test) => {
             value: 'give_character_id',
           },
           {
+            name: 'give2',
+            value: 'give_character_id_2',
+          },
+          {
+            name: 'give3',
+            value: 'give_character_id_3',
+          },
+          {
             name: 'take',
             value: 'take_character_id',
+          },
+          {
+            name: 'take2',
+            value: 'take_character_id_2',
+          },
+          {
+            name: 'take3',
+            value: 'take_character_id_3',
           },
         ],
       },
@@ -3029,6 +3045,7 @@ Deno.test('trade command handlers', async (test) => {
       send: () => true,
     } as any));
 
+    config.trading = true;
     config.publicKey = 'publicKey';
 
     try {
@@ -3069,13 +3086,22 @@ Deno.test('trade command handlers', async (test) => {
           userId: 'user_id',
           guildId: 'guild_id',
           targetId: 'another_user_id',
-          give: ['give_character_id'],
-          take: ['take_character_id'],
+          give: [
+            'give_character_id',
+            'give_character_id_2',
+            'give_character_id_3',
+          ],
+          take: [
+            'take_character_id',
+            'take_character_id_2',
+            'take_character_id_3',
+          ],
         }],
       });
 
       assertEquals(response, true as any);
     } finally {
+      delete config.trading;
       delete config.publicKey;
 
       tradeStub.restore();
@@ -3104,12 +3130,12 @@ Deno.test('trade command handlers', async (test) => {
             value: 'another_user_id',
           },
           {
-            name: 'give',
-            value: 'give_character_id',
+            name: 'give3',
+            value: 'give_character_id_3',
           },
           {
-            name: 'take',
-            value: 'take_character_id',
+            name: 'take3',
+            value: 'take_character_id_3',
           },
         ],
       },
@@ -3126,6 +3152,7 @@ Deno.test('trade command handlers', async (test) => {
       send: () => true,
     } as any));
 
+    config.trading = true;
     config.publicKey = 'publicKey';
 
     try {
@@ -3166,13 +3193,125 @@ Deno.test('trade command handlers', async (test) => {
           userId: 'user_id',
           guildId: 'guild_id',
           targetId: 'another_user_id',
-          give: ['give_character_id'],
-          take: ['take_character_id'],
+          give: ['give_character_id_3'],
+          take: ['take_character_id_3'],
         }],
       });
 
       assertEquals(response, true as any);
     } finally {
+      delete config.trading;
+      delete config.publicKey;
+
+      tradeStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('disabled', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'trade',
+        options: [
+          {
+            name: 'user',
+            value: 'another_user_id',
+          },
+          {
+            name: 'give',
+            value: 'give_character_id',
+          },
+          {
+            name: 'take',
+            value: 'take_character_id',
+          },
+        ],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const tradeStub = stub(trade, 'pre', () => ({
+      send: () => true,
+    } as any));
+
+    config.trading = false;
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals(json, {
+        type: 4,
+        data: {
+          content: '',
+          embeds: [{
+            type: 'rich',
+            description: 'Trading is under maintenance, try again later!',
+          }],
+          attachments: [],
+          components: [],
+          flags: 64,
+        },
+      });
+    } finally {
+      delete config.trading;
       delete config.publicKey;
 
       tradeStub.restore();
@@ -3182,8 +3321,210 @@ Deno.test('trade command handlers', async (test) => {
   });
 });
 
-Deno.test('gift command handlers', async (test) => {
+Deno.test('give command handlers', async (test) => {
   await test.step('give', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'give',
+        options: [
+          {
+            name: 'user',
+            value: 'another_user_id',
+          },
+          {
+            name: 'give',
+            value: 'give_character_id',
+          },
+          {
+            name: 'give2',
+            value: 'give_character_id_2',
+          },
+          {
+            name: 'give3',
+            value: 'give_character_id_3',
+          },
+        ],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const tradeStub = stub(trade, 'pre', () => ({
+      send: () => true,
+    } as any));
+
+    config.trading = true;
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(tradeStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'user_id',
+          guildId: 'guild_id',
+          targetId: 'another_user_id',
+          give: [
+            'give_character_id',
+            'give_character_id_2',
+            'give_character_id_3',
+          ],
+          take: [],
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.trading;
+      delete config.publicKey;
+
+      tradeStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('gift', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'gift',
+        options: [
+          {
+            name: 'user',
+            value: 'another_user_id',
+          },
+          {
+            name: 'give3',
+            value: 'give_character_id_3',
+          },
+        ],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const tradeStub = stub(trade, 'pre', () => ({
+      send: () => true,
+    } as any));
+
+    config.trading = true;
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(tradeStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'user_id',
+          guildId: 'guild_id',
+          targetId: 'another_user_id',
+          give: ['give_character_id_3'],
+          take: [],
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.trading;
+      delete config.publicKey;
+
+      tradeStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('disabled', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -3221,6 +3562,7 @@ Deno.test('gift command handlers', async (test) => {
       send: () => true,
     } as any));
 
+    config.trading = false;
     config.publicKey = 'publicKey';
 
     try {
@@ -3255,112 +3597,32 @@ Deno.test('gift command handlers', async (test) => {
         }],
       });
 
-      assertSpyCall(tradeStub, 0, {
-        args: [{
-          token: 'token',
-          userId: 'user_id',
-          guildId: 'guild_id',
-          targetId: 'another_user_id',
-          give: ['give_character_id'],
-          take: [],
-        }],
-      });
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
 
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
 
-      tradeStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
 
-  await test.step('gift', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      channel_id: 'channel_id',
-      member: {
-        user: {
-          id: 'user_id',
-        },
-      },
-      data: {
-        name: 'gift',
-        options: [
-          {
-            name: 'user',
-            value: 'another_user_id',
-          },
-          {
-            name: 'give',
-            value: 'give_character_id',
-          },
-        ],
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const tradeStub = stub(trade, 'pre', () => ({
-      send: () => true,
-    } as any));
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
+      assertEquals(json, {
+        type: 4,
+        data: {
+          content: '',
+          embeds: [{
+            type: 'rich',
+            description: 'Trading is under maintenance, try again later!',
+          }],
+          attachments: [],
+          components: [],
+          flags: 64,
         },
       });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [
-          request,
-          {
-            POST: {
-              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-            },
-          },
-        ],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(tradeStub, 0, {
-        args: [{
-          token: 'token',
-          userId: 'user_id',
-          guildId: 'guild_id',
-          targetId: 'another_user_id',
-          give: ['give_character_id'],
-          take: [],
-        }],
-      });
-
-      assertEquals(response, true as any);
     } finally {
+      delete config.trading;
       delete config.publicKey;
 
       tradeStub.restore();
@@ -4764,6 +5026,7 @@ Deno.test('packs command handlers', async (test) => {
         type: 4,
         data: {
           flags: 64,
+          content: '',
           embeds: [
             {
               type: 'rich',
@@ -5073,6 +5336,7 @@ Deno.test('not found error', async () => {
     assertEquals(json, {
       type: 4,
       data: {
+        content: '',
         embeds: [{
           type: 'rich',
           description: 'Found _nothing_ matching that query!',
@@ -5168,6 +5432,7 @@ Deno.test('not fetal error', async () => {
     assertEquals(json, {
       type: 4,
       data: {
+        content: '',
         embeds: [{
           type: 'rich',
           description: 'not_fetal',
@@ -5263,6 +5528,7 @@ Deno.test('no permission error', async () => {
     assertEquals(json, {
       type: 4,
       data: {
+        content: '',
         embeds: [{
           type: 'rich',
           description: 'You don\'t permission to complete this interaction!',

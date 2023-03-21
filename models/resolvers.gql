@@ -75,15 +75,14 @@ type Mutation {
     @resolver(name: "remove_character_from_party")
 
   #
-  giveCharacters(userId: String!, targetId: String!, guildId: String!, giveCharacterId: String!): Response!
+  giveCharacters(userId: String!, targetId: String!, guildId: String!, charactersIds: [String!]!): Response!
     @resolver(name: "give_characters")
-  
   #
   tradeCharacters(
     userId: String!
     targetId: String!
     guildId: String!
-    giveCharacterId: String!
-    takeCharacterId: String!
+    giveCharactersIds: [String!]!
+    takeCharactersIds: [String!]!
   ): Response! @resolver(name: "trade_characters")
 }

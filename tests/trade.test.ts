@@ -14,7 +14,7 @@ import trade from '../src/trade.ts';
 import { AniListCharacter } from '../packs/anilist/types.ts';
 import { CharacterRole, MediaType } from '../src/types.ts';
 
-Deno.test('gift', async (test) => {
+Deno.test('give', async (test) => {
   await test.step('normal', async () => {
     const character: AniListCharacter = {
       id: '1',
@@ -74,31 +74,69 @@ Deno.test('gift', async (test) => {
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
-      const message = await trade.gift({
+      const [newMessage, updateMessage] = await trade.give({
         userId: 'user_id',
         targetId: 'target_id',
         guildId: 'guild_id',
-        giveCharacterId: 'anilist:1',
+        giveCharactersIds: ['anilist:1', 'anilist:1'],
       });
 
-      assertEquals(message.json(), {
+      assertEquals(newMessage.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Gift sent to <@target_id>!',
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              fields: [
+                {
+                  name: 'media',
+                  value: '**title**',
+                },
+                {
+                  name: '\u200B',
+                  value: '<:add:1085034731810332743>',
+                },
+              ],
+              thumbnail: {
+                url: 'undefined/external/?size=thumbnail',
+              },
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              fields: [
+                {
+                  name: 'media',
+                  value: '**title**',
+                },
+                {
+                  name: '\u200B',
+                  value: '<:add:1085034731810332743>',
+                },
+              ],
+              thumbnail: {
+                url: 'undefined/external/?size=thumbnail',
+              },
+            },
+          ],
+        },
+      });
+
+      assertEquals(updateMessage.json(), {
         type: 4,
         data: {
           content: '<@target_id>',
           attachments: [],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  type: 2,
-                  style: 2,
-                  custom_id: 'character=anilist:1=1',
-                  label: '/character',
-                },
-              ],
-            },
-          ],
+          components: [],
           embeds: [
             {
               type: 'rich',
@@ -115,7 +153,21 @@ Deno.test('gift', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: 'description',
+                  value: '<:add:1085034731810332743>',
+                },
+              ],
+              thumbnail: {
+                url: 'undefined/external/?size=thumbnail',
+              },
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              fields: [
+                {
+                  name: 'media',
+                  value: '**title**',
                 },
                 {
                   name: '\u200B',
@@ -217,15 +269,15 @@ Deno.test('trade', async (test) => {
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
-      const message = await trade.accepted({
+      const [newMessage, updateMessage] = await trade.accepted({
         userId: 'user_id',
         targetId: 'target_id',
         guildId: 'guild_id',
-        giveCharacterId: 'anilist:1',
-        takeCharacterId: 'anilist:2',
+        giveCharactersIds: ['anilist:1', 'anilist:1'],
+        takeCharactersIds: ['anilist:2', 'anilist:2'],
       });
 
-      assertEquals(message.json(), {
+      assertEquals(newMessage.json(), {
         type: 4,
         data: {
           content: '<@user_id>',
@@ -247,7 +299,21 @@ Deno.test('trade', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: 'description 2',
+                  value: '<:add:1085034731810332743>',
+                },
+              ],
+              thumbnail: {
+                url: 'undefined/external/?size=thumbnail',
+              },
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              fields: [
+                {
+                  name: 'media 2',
+                  value: '**title 2**',
                 },
                 {
                   name: '\u200B',
@@ -269,7 +335,21 @@ Deno.test('trade', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: 'description',
+                  value: '<:remove:1085033678180208641>',
+                },
+              ],
+              thumbnail: {
+                url: 'undefined/external/?size=thumbnail',
+              },
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              fields: [
+                {
+                  name: 'media',
+                  value: '**title**',
                 },
                 {
                   name: '\u200B',
@@ -281,6 +361,16 @@ Deno.test('trade', async (test) => {
               },
             },
           ],
+        },
+      });
+
+      assertEquals(updateMessage.json(), {
+        type: 4,
+        data: {
+          content: '<@user_id> your offer was accepted!',
+          attachments: [],
+          components: [],
+          embeds: [],
         },
       });
     } finally {

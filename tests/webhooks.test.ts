@@ -86,7 +86,6 @@ Deno.test('topgg', async (test) => {
       } as any),
     );
 
-    const contentStub = spy(() => true);
     const patchStub = spy(() => true);
 
     const userStub = stub(
@@ -94,12 +93,12 @@ Deno.test('topgg', async (test) => {
       'now',
       () =>
         Promise.resolve({
-          setContent: contentStub,
           patch: patchStub,
           // deno-lint-ignore no-explicit-any
         } as any),
     );
 
+    config.appId = 'app_id';
     config.topggCipher = 12;
     config.topggSecret = 'x'.repeat(32);
 
@@ -121,9 +120,9 @@ Deno.test('topgg', async (test) => {
         },
       });
 
-      const response = await webhooks.topgg(request);
+      await webhooks.topgg(request);
 
-      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(fetchStub, 2);
 
       assertEquals(
         fetchStub.calls[0].args[0],
@@ -138,17 +137,33 @@ Deno.test('topgg', async (test) => {
         }],
       });
 
-      assertSpyCall(contentStub, 0, {
-        args: ['<@user_id>'],
-      });
-
       assertSpyCall(patchStub, 0, {
         args: [token],
       });
 
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        `https://discord.com/api/v10/webhooks/app_id/${token}`,
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'POST');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+            // deno-lint-ignore no-explicit-any
+          ) as any,
+        ),
+        {
+          content: 'Thanks for voting, <@user_id>.',
+          embeds: [],
+          components: [],
+          attachments: [],
+        },
+      );
     } finally {
+      delete config.appId;
       delete config.topggCipher;
       delete config.topggSecret;
 

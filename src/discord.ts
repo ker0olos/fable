@@ -733,11 +733,11 @@ export class Message {
     });
   }
 
-  async patch(token: string): Promise<Response> {
+  async #http(
+    url: string,
+    method: 'PATCH' | 'POST',
+  ): Promise<Response> {
     const formData = new FormData();
-
-    const url =
-      `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`;
 
     formData.append('payload_json', JSON.stringify(this.json().data));
 
@@ -745,12 +745,9 @@ export class Message {
       formData.append(`files[${index}]`, blob, name);
     });
 
-    const response = await fetch(url, {
-      method: 'PATCH',
-      body: formData,
-    });
+    const response = await fetch(url, { method, body: formData });
 
-    console.log('PATCH', response?.status, response?.statusText);
+    console.log(method, response?.status, response?.statusText);
 
     if (response?.status === 429) {
       const extra = {
@@ -777,6 +774,20 @@ export class Message {
     }
 
     return response;
+  }
+
+  patch(token: string): Promise<Response> {
+    return this.#http(
+      `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
+      'PATCH',
+    );
+  }
+
+  followup(token: string): Promise<Response> {
+    return this.#http(
+      `https://discord.com/api/v10/webhooks/${config.appId}/${token}`,
+      'POST',
+    );
   }
 
   static pong(): Response {

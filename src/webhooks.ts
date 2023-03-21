@@ -6,6 +6,8 @@ import user from './user.ts';
 
 import utils from './utils.ts';
 
+import * as discord from './discord.ts';
+
 import { Schema } from './types.ts';
 
 async function topgg(r: Request): Promise<Response> {
@@ -104,8 +106,9 @@ async function topgg(r: Request): Promise<Response> {
         token,
       });
 
-      // ping user
-      message.setContent(`<@${data.user}>`);
+      new discord.Message()
+        .setContent(`Thanks for voting, <@${data.user}>.`)
+        .followup(token);
 
       await message.patch(token);
     })().catch(console.error);

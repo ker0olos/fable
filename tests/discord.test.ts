@@ -587,6 +587,48 @@ Deno.test('patch messages', async () => {
   }
 });
 
+Deno.test('followup messages', async () => {
+  const fetchStub = stub(
+    globalThis,
+    'fetch',
+    // deno-lint-ignore no-explicit-any
+    () => true as any,
+  );
+
+  try {
+    const message = new discord.Message();
+
+    await message.followup('token');
+
+    const form = new FormData();
+
+    form.append(
+      'payload_json',
+      JSON.stringify({
+        embeds: [],
+        attachments: [],
+        components: [],
+      }),
+    );
+
+    assertSpyCalls(fetchStub, 1);
+
+    assertSpyCall(fetchStub, 0, {
+      args: [
+        'https://discord.com/api/v10/webhooks/undefined/token',
+        {
+          method: 'POST',
+          body: form,
+        },
+      ],
+      // deno-lint-ignore no-explicit-any
+      returned: true as any,
+    });
+  } finally {
+    fetchStub.restore();
+  }
+});
+
 Deno.test('page messages', async (test) => {
   await test.step('1/2', () => {
     const message = discord.Message.page({

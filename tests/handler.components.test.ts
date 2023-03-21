@@ -1296,7 +1296,7 @@ Deno.test('help components', async () => {
   }
 });
 
-Deno.test('gift components', async (test) => {
+Deno.test('give components', async (test) => {
   await test.step('normal', async () => {
     const body = JSON.stringify({
       id: 'id',
@@ -1310,7 +1310,8 @@ Deno.test('gift components', async (test) => {
         },
       },
       data: {
-        custom_id: 'gift=user_id=target_id=character_id',
+        custom_id:
+          'give=user_id=target_id=character_id&character_id2&character_id3',
       },
     });
 
@@ -1325,10 +1326,14 @@ Deno.test('gift components', async (test) => {
       send: () => true,
     }));
 
-    const tradeStub = stub(trade, 'gift', () =>
-      ({
+    const followupStub = spy(() => undefined);
+
+    const tradeStub = stub(trade, 'give', () =>
+      [{
         setType: setTypeSpy,
-      }) as any);
+      }, {
+        followup: followupStub,
+      }] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1365,11 +1370,15 @@ Deno.test('gift components', async (test) => {
         args: [discord.MessageType.Update],
       });
 
+      assertSpyCall(followupStub, 0, {
+        args: ['token'],
+      });
+
       assertSpyCall(tradeStub, 0, {
         args: [{
           userId: 'user_id',
           targetId: 'target_id',
-          giveCharacterId: 'character_id',
+          giveCharactersIds: ['character_id', 'character_id2', 'character_id3'],
           guildId: 'guild_id',
         }],
       });
@@ -1397,7 +1406,7 @@ Deno.test('gift components', async (test) => {
         },
       },
       data: {
-        custom_id: 'gift=another_user_id=target_id=character_id',
+        custom_id: 'give=another_user_id=target_id=character_id',
       },
     });
 
@@ -1454,6 +1463,7 @@ Deno.test('gift components', async (test) => {
         type: 4,
         data: {
           flags: 64,
+          content: '',
           attachments: [],
           components: [],
           embeds: [
@@ -1489,7 +1499,7 @@ Deno.test('trade components', async (test) => {
       },
       data: {
         custom_id:
-          'trade=user_id=target_id=given_character_id=taken_character_id',
+          'trade=user_id=target_id=given_character_id&given_character_id2&given_character_id3=taken_character_id&taken_character_id2&taken_character_id3',
       },
     });
 
@@ -1504,10 +1514,14 @@ Deno.test('trade components', async (test) => {
       send: () => true,
     }));
 
+    const followupStub = spy(() => undefined);
+
     const tradeStub = stub(trade, 'accepted', () =>
-      ({
+      [{
         setType: setTypeSpy,
-      }) as any);
+      }, {
+        followup: followupStub,
+      }] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1544,12 +1558,24 @@ Deno.test('trade components', async (test) => {
         args: [discord.MessageType.Update],
       });
 
+      assertSpyCall(followupStub, 0, {
+        args: ['token'],
+      });
+
       assertSpyCall(tradeStub, 0, {
         args: [{
           userId: 'user_id',
           targetId: 'target_id',
-          giveCharacterId: 'given_character_id',
-          takeCharacterId: 'taken_character_id',
+          giveCharactersIds: [
+            'given_character_id',
+            'given_character_id2',
+            'given_character_id3',
+          ],
+          takeCharactersIds: [
+            'taken_character_id',
+            'taken_character_id2',
+            'taken_character_id3',
+          ],
           guildId: 'guild_id',
         }],
       });
@@ -1635,6 +1661,7 @@ Deno.test('trade components', async (test) => {
         type: 4,
         data: {
           flags: 64,
+          content: '',
           attachments: [],
           components: [],
           embeds: [
@@ -2236,6 +2263,7 @@ Deno.test('cancel dialog', async (test) => {
         type: 4,
         data: {
           flags: 64,
+          content: '',
           embeds: [
             {
               type: 'rich',
@@ -2325,6 +2353,7 @@ Deno.test('cancel dialog', async (test) => {
         type: 4,
         data: {
           flags: 64,
+          content: '',
           embeds: [
             {
               type: 'rich',
