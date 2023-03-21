@@ -4,7 +4,7 @@ import search, { idPrefix } from './search.ts';
 
 import packs from './packs.ts';
 
-// import user from './user.ts';
+import user from './user.ts';
 
 import config, { faunaUrl } from './config.ts';
 
@@ -110,88 +110,106 @@ function pre({
         ),
       );
 
-      // TODO re-enable better ownership errors
-      // if we can group all the checks
+      const [giveOwnership, takeOwnership] = await Promise.all([
+        user.verifyCharacters({
+          charactersIds: giveIds,
+          guildId,
+          userId,
+        }),
+        take.length
+          ? user.verifyCharacters({
+            guildId,
+            userId: targetId,
+            charactersIds: takeIds,
+          })
+          : undefined,
+      ]);
 
-      // if (!giveExisting || giveExisting.userId !== userId) {
-      //   const message = new discord.Message().addEmbed(
-      //     new discord.Embed().setDescription(`You don't have **${giveName}**`),
-      //   );
+      const giveEmbeds = giveCharacters.map((character) => {
+        return search.characterEmbed(character, {
+          footer: false,
+          description: false,
+          media: { title: true },
+          mode: 'thumbnail',
+        });
+      });
 
-      //   message.addEmbed(search.characterEmbed(giveCharacter, {
-      //     footer: false,
-      //     description: false,
-      //     media: { title: true },
-      //     existing: giveExisting,
-      //     mode: 'thumbnail',
-      //   }));
+      const takeEmbeds = takeCharacters.map((character) => {
+        return search.characterEmbed(character, {
+          footer: false,
+          description: false,
+          media: { title: true },
+          mode: 'thumbnail',
+        });
+      });
 
-      //   if (!giveExisting) {
-      //     message.addEmbed(
-      //       new discord.Embed().setDescription(
-      //         `> _${giveName} hasn't been found by anyone yet_`,
-      //       ),
-      //     );
-      //   }
+      switch (giveOwnership) {
+        case 'NOT_OWNED': {
+          const message = new discord.Message().addEmbed(
+            new discord.Embed().setDescription(
+              `You don't have **${giveNames}**`,
+            ),
+          );
 
-      //   return await message.patch(token);
-      // }
+          giveEmbeds.forEach((embed) => message.addEmbed(embed));
+
+          return await message.patch(token);
+        }
+        case 'NOT_FOUND': {
+          message.addEmbed(
+            new discord.Embed().setDescription(
+              `_${giveNames} hasn't been found by anyone yet_`,
+            ),
+          );
+
+          giveEmbeds.forEach((embed) => message.addEmbed(embed));
+
+          return await message.patch(token);
+        }
+        default:
+          break;
+      }
 
       if (take.length) {
-        // TODO re-enable better ownership errors
-        // if we can group all the checks
+        // deno-lint-ignore no-non-null-assertion
+        switch (takeOwnership!) {
+          case 'NOT_OWNED': {
+            const message = new discord.Message().addEmbed(
+              new discord.Embed().setDescription(
+                `<@${targetId}> doesn't have **${takeNames}**`,
+              ),
+            );
 
-        // if (!takeExisting || takeExisting.userId !== targetId) {
-        //   const message = new discord.Message().addEmbed(
-        //     new discord.Embed().setDescription(
-        //       `<@${targetId}> doesn't have **${takeName}**`,
-        //     ),
-        //   );
+            takeEmbeds.forEach((embed) => message.addEmbed(embed));
 
-        //   message.addEmbed(search.characterEmbed(takeCharacter, {
-        //     footer: false,
-        //     description: false,
-        //     media: { title: true },
-        //     existing: takeExisting,
-        //     mode: 'thumbnail',
-        //   }));
+            return await message.patch(token);
+          }
+          case 'NOT_FOUND': {
+            message.addEmbed(
+              new discord.Embed().setDescription(
+                `_${takeNames} hasn't been found by anyone yet_`,
+              ),
+            );
 
-        //   if (!takeExisting) {
-        //     message.addEmbed(
-        //       new discord.Embed().setDescription(
-        //         `> _${takeName} hasn't been found by anyone yet_`,
-        //       ),
-        //     );
-        //   }
+            takeEmbeds.forEach((embed) => message.addEmbed(embed));
 
-        //   return await message.patch(token);
-        // }
+            return await message.patch(token);
+          }
+          default:
+            break;
+        }
 
-        takeCharacters.forEach((character) => {
+        takeEmbeds.forEach((embed) => {
           message.addEmbed(
-            search.characterEmbed(character, {
-              footer: false,
-              description: false,
-              media: { title: true },
-              mode: 'thumbnail',
-            }).addField({ value: `${discord.emotes.remove}` }),
+            embed.addField({ value: `${discord.emotes.remove}` }),
           );
         });
       }
 
-      giveCharacters.forEach((character) => {
-        message.addEmbed(
-          search.characterEmbed(character, {
-            footer: false,
-            description: false,
-            media: { title: true },
-            mode: 'thumbnail',
-          }).addField({
-            value: `${
-              take.length ? discord.emotes.add : discord.emotes.remove
-            }`,
-          }),
-        );
+      giveEmbeds.forEach((embed) => {
+        message.addEmbed(embed.addField({
+          value: `${take.length ? discord.emotes.add : discord.emotes.remove}`,
+        }));
       });
 
       if (take.length) {
@@ -326,9 +344,12 @@ async function give({
   if (!response.giveCharacters.ok) {
     switch (response.giveCharacters.error) {
       case 'CHARACTER_NOT_OWNED':
+        throw new NonFetalCancelableError(
+          'Some of those characters changed hands',
+        );
       case 'CHARACTER_NOT_FOUND':
         throw new NonFetalCancelableError(
-          'You don\'t have one of those characters!',
+          'Some of those characters were disabled or removed',
         );
       default:
         throw new Error(response.giveCharacters.error);

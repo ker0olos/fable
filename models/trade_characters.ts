@@ -134,7 +134,6 @@ export function tradeCharacters(
         id,
         fql.Ref(instance),
       )),
-
     takeCharacters: fql.Map(takeCharactersIds, (id) =>
       fql.Match(
         fql.Index('characters_instance_id'),

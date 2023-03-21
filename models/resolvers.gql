@@ -34,6 +34,10 @@ type Query {
   #
   findCharacter(characterId: String!, guildId: String!): Character
     @resolver(name: "find_character")
+  
+  #
+  verifyCharacters(charactersIds: [String!]!, guildId: String!, userId: String!): String!
+    @resolver(name: "verify_characters")
 }
 
 type Mutation {

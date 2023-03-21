@@ -189,6 +189,43 @@ async function findCharacter({
   };
 }
 
+async function verifyCharacters({
+  userId,
+  guildId,
+  charactersIds,
+}: {
+  userId: string;
+  guildId: string;
+  charactersIds: string[];
+}): Promise<'OK' | 'NOT_FOUND' | 'NOT_OWNED'> {
+  const query = gql`
+    query ($userId: String!, $guildId: String!, $charactersIds: [String!]!) {
+      verifyCharacters(
+        userId: $userId
+        guildId: $guildId
+        charactersIds: $charactersIds
+      )
+    }
+  `;
+
+  const result = (await request<{
+    verifyCharacters: 'OK' | 'NOT_FOUND' | 'NOT_OWNED';
+  }>({
+    query,
+    url: faunaUrl,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+      charactersIds,
+    },
+  })).verifyCharacters;
+
+  return result;
+}
+
 async function userCharacters({
   userId,
   guildId,
@@ -481,6 +518,7 @@ async function media({
 const user = {
   now,
   findCharacter,
+  verifyCharacters,
   userCharacters,
   stars,
   media,
