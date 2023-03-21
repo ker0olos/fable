@@ -39,6 +39,11 @@ export const FakeAppend = () =>
     }
   });
 
+export const FakeAppendAll = () =>
+  stub(fql, 'AppendAll', (a: any, b: any) => {
+    return a.concat(b);
+  });
+
 export const FakeEquals = () =>
   stub(fql, 'Equals', (a: any, b: any) => {
     if (typeof a === 'object' && typeof b === 'object') {
@@ -133,11 +138,6 @@ export const FakeIsNonEmpty = () =>
     return (Array.isArray(match) ? match.length > 0 : Boolean(match)) as any;
   });
 
-// export const FakeIsEmpty = () =>
-//   stub(fql, 'IsEmpty', (match: any) => {
-//     return !(Array.isArray(match) ? match.length > 0 : Boolean(match)) as any;
-//   });
-
 export const FakeReverse = () =>
   stub(fql, 'Reverse', (array: any) => array.toReversed() as any);
 
@@ -147,9 +147,8 @@ export const FakeRemove = () =>
     'Remove',
     ((value: any, array: Array<any>) => {
       const newArray = [...array];
-      const i = newArray.findIndex((
-        t,
-      ) => {
+
+      const i = newArray.findIndex((t) => {
         if (typeof value.ref === 'string') {
           return t.ref === value.ref;
         } else {
@@ -164,6 +163,36 @@ export const FakeRemove = () =>
       return newArray as any;
     }) as any,
   );
+
+export const FakeRemoveAll = () =>
+  stub(fql, 'RemoveAll', (a: any, b: any) => {
+    const newArray = [...b];
+
+    a.forEach((elem: any) => {
+      const i = newArray.findIndex((t) => {
+        if (typeof elem.ref === 'string') {
+          return t.ref === elem.ref;
+        } else {
+          return t.ref === elem.ref['0'];
+        }
+      });
+
+      if (i > -1) {
+        newArray.splice(i, 1);
+      }
+    });
+
+    return newArray as any;
+  });
+
+export const FakeMap = () =>
+  stub(fql, 'Map', (array: any, func: any) => array.map(func));
+
+export const FakeForeach = () =>
+  stub(fql, 'Foreach', (array: any, func: any) => array.forEach(func));
+
+export const FakeAll = () =>
+  stub(fql, 'All', (array: any) => array.every((elem: any) => elem === true));
 
 export const FakeSelect = (obj?: any) =>
   stub(fql, 'Select', (_, __, _d) => obj === undefined ? _d : obj);

@@ -390,13 +390,9 @@ Deno.test('party assign components', async () => {
     body,
   } as any));
 
-  const setTypeSpy = spy(() => ({
-    send: () => true,
-  }));
-
   const partyStub = stub(party, 'assign', () =>
     ({
-      setType: setTypeSpy,
+      send: () => true,
     }) as any);
 
   config.publicKey = 'publicKey';
@@ -428,10 +424,6 @@ Deno.test('party assign components', async () => {
         timestamp: 'timestamp',
         publicKey: 'publicKey',
       }],
-    });
-
-    assertSpyCall(setTypeSpy, 0, {
-      args: [discord.MessageType.New],
     });
 
     assertSpyCall(partyStub, 0, {
@@ -1001,13 +993,9 @@ Deno.test('gacha components', async (test) => {
       body,
     } as any));
 
-    const setTypeSpy = spy(() => ({
-      send: () => true,
-    }));
-
     const gachaStub = stub(gacha, 'start', () =>
       ({
-        setType: setTypeSpy,
+        send: () => true,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -1039,10 +1027,6 @@ Deno.test('gacha components', async (test) => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         }],
-      });
-
-      assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.New],
       });
 
       assertSpyCall(gachaStub, 0, {
@@ -1089,13 +1073,9 @@ Deno.test('gacha components', async (test) => {
       body,
     } as any));
 
-    const setTypeSpy = spy(() => ({
-      send: () => true,
-    }));
-
     const gachaStub = stub(gacha, 'start', () =>
       ({
-        setType: setTypeSpy,
+        send: () => true,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -1127,10 +1107,6 @@ Deno.test('gacha components', async (test) => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         }],
-      });
-
-      assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.New],
       });
 
       assertSpyCall(gachaStub, 0, {
@@ -1179,13 +1155,9 @@ Deno.test('now components', async (test) => {
       body,
     } as any));
 
-    const setTypeSpy = spy(() => ({
-      send: () => true,
-    }));
-
     const userStub = stub(user, 'now', () =>
       ({
-        setType: setTypeSpy,
+        send: () => true,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -1217,10 +1189,6 @@ Deno.test('now components', async (test) => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         }],
-      });
-
-      assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.New],
       });
 
       assertSpyCall(userStub, 0, {
@@ -1328,7 +1296,7 @@ Deno.test('help components', async () => {
   }
 });
 
-Deno.test('gift components', async (test) => {
+Deno.test('give components', async (test) => {
   await test.step('normal', async () => {
     const body = JSON.stringify({
       id: 'id',
@@ -1342,7 +1310,8 @@ Deno.test('gift components', async (test) => {
         },
       },
       data: {
-        custom_id: 'gift=user_id=target_id=character_id',
+        custom_id:
+          'give=user_id=target_id=character_id&character_id2&character_id3',
       },
     });
 
@@ -1357,10 +1326,14 @@ Deno.test('gift components', async (test) => {
       send: () => true,
     }));
 
-    const tradeStub = stub(trade, 'gift', () =>
-      ({
+    const followupStub = spy(() => undefined);
+
+    const tradeStub = stub(trade, 'give', () =>
+      [{
         setType: setTypeSpy,
-      }) as any);
+      }, {
+        followup: followupStub,
+      }] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1397,11 +1370,15 @@ Deno.test('gift components', async (test) => {
         args: [discord.MessageType.Update],
       });
 
+      assertSpyCall(followupStub, 0, {
+        args: ['token'],
+      });
+
       assertSpyCall(tradeStub, 0, {
         args: [{
           userId: 'user_id',
           targetId: 'target_id',
-          giveCharacterId: 'character_id',
+          giveCharactersIds: ['character_id', 'character_id2', 'character_id3'],
           guildId: 'guild_id',
         }],
       });
@@ -1429,7 +1406,7 @@ Deno.test('gift components', async (test) => {
         },
       },
       data: {
-        custom_id: 'gift=another_user_id=target_id=character_id',
+        custom_id: 'give=another_user_id=target_id=character_id',
       },
     });
 
@@ -1486,6 +1463,7 @@ Deno.test('gift components', async (test) => {
         type: 4,
         data: {
           flags: 64,
+          content: '',
           attachments: [],
           components: [],
           embeds: [
@@ -1521,7 +1499,7 @@ Deno.test('trade components', async (test) => {
       },
       data: {
         custom_id:
-          'trade=user_id=target_id=given_character_id=taken_character_id',
+          'trade=user_id=target_id=given_character_id&given_character_id2&given_character_id3=taken_character_id&taken_character_id2&taken_character_id3',
       },
     });
 
@@ -1536,10 +1514,14 @@ Deno.test('trade components', async (test) => {
       send: () => true,
     }));
 
+    const followupStub = spy(() => undefined);
+
     const tradeStub = stub(trade, 'accepted', () =>
-      ({
+      [{
         setType: setTypeSpy,
-      }) as any);
+      }, {
+        followup: followupStub,
+      }] as any);
 
     config.publicKey = 'publicKey';
 
@@ -1576,12 +1558,24 @@ Deno.test('trade components', async (test) => {
         args: [discord.MessageType.Update],
       });
 
+      assertSpyCall(followupStub, 0, {
+        args: ['token'],
+      });
+
       assertSpyCall(tradeStub, 0, {
         args: [{
           userId: 'user_id',
           targetId: 'target_id',
-          giveCharacterId: 'given_character_id',
-          takeCharacterId: 'taken_character_id',
+          giveCharactersIds: [
+            'given_character_id',
+            'given_character_id2',
+            'given_character_id3',
+          ],
+          takeCharactersIds: [
+            'taken_character_id',
+            'taken_character_id2',
+            'taken_character_id3',
+          ],
           guildId: 'guild_id',
         }],
       });
@@ -1667,6 +1661,7 @@ Deno.test('trade components', async (test) => {
         type: 4,
         data: {
           flags: 64,
+          content: '',
           attachments: [],
           components: [],
           embeds: [
@@ -1875,9 +1870,13 @@ Deno.test('packs uninstall', async (test) => {
       send: () => true,
     }));
 
+    const setFlagsSpy = spy(() => ({
+      setType: setTypeSpy,
+    }));
+
     const packsStub = stub(packs, 'uninstall', () =>
       ({
-        setType: setTypeSpy,
+        setFlags: setFlagsSpy,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -1911,8 +1910,92 @@ Deno.test('packs uninstall', async (test) => {
         }],
       });
 
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
+      });
+
       assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.New],
+        args: [7],
+      });
+
+      assertSpyCall(packsStub, 0, {
+        args: [{
+          guildId: 'guild_id',
+          manifestId: 'manifest_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      packsStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('dialog', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      data: {
+        custom_id: 'puninstall=manifest_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const setFlagsSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const packsStub = stub(packs, 'uninstallDialog', () =>
+      ({
+        setFlags: setFlagsSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
       });
 
       assertSpyCall(packsStub, 0, {
@@ -2180,6 +2263,7 @@ Deno.test('cancel dialog', async (test) => {
         type: 4,
         data: {
           flags: 64,
+          content: '',
           embeds: [
             {
               type: 'rich',
@@ -2269,6 +2353,7 @@ Deno.test('cancel dialog', async (test) => {
         type: 4,
         data: {
           flags: 64,
+          content: '',
           embeds: [
             {
               type: 'rich',

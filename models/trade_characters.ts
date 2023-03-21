@@ -25,62 +25,72 @@ export function giveCharacters(
     target,
     inventory,
     targetInventory,
-    giveCharacterId,
+    charactersIds,
     instance,
   }: {
     user: UserExpr;
     target: UserExpr;
     inventory: InventoryExpr;
     targetInventory: InventoryExpr;
-    giveCharacterId: StringExpr;
+    charactersIds: StringExpr[];
     instance: InstanceExpr;
   },
 ): unknown {
   return fql.Let({
-    giveCharacter: fql.Match(
-      fql.Index('characters_instance_id'),
-      giveCharacterId,
-      fql.Ref(instance),
-    ),
-  }, ({ giveCharacter }) => {
+    giveCharacters: fql.Map(charactersIds, (id) =>
+      fql.Match(
+        fql.Index('characters_instance_id'),
+        id,
+        fql.Ref(instance),
+      )),
+  }, ({ giveCharacters }) => {
     return fql.If(
-      fql.IsNonEmpty(giveCharacter),
+      // check exists
+      fql.All(fql.Map(giveCharacters, (char) => fql.IsNonEmpty(char))),
+      // check ownership
       fql.If(
-        fql.Equals(
-          fql.Select(['data', 'user'], fql.Get(giveCharacter)),
-          fql.Ref(user),
-        ),
+        fql.All(fql.Map(giveCharacters, (char) =>
+          fql.Equals(
+            fql.Select(['data', 'user'], fql.Get(char)),
+            fql.Ref(user),
+          ))),
         fql.Let({
-          giveCharacterRef: fql.Ref(fql.Get(giveCharacter)),
+          giveCharactersRefs: fql.Map(
+            giveCharacters,
+            (char) => fql.Ref(fql.Get(char)),
+          ),
           updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
-            characters: fql.Remove(
-              fql.Var('giveCharacterRef'),
+            characters: fql.RemoveAll(
+              fql.Var('giveCharactersRefs') as unknown as RefExpr[],
               fql.Select(['data', 'characters'], inventory),
             ),
           }),
-          //
           updatedTargetInventory: fql.Update<Inventory>(
             fql.Ref(targetInventory),
             {
-              characters: fql.Append(
-                fql.Var('giveCharacterRef'),
+              characters: fql.AppendAll(
+                fql.Var('giveCharactersRefs') as unknown as RefExpr[],
                 fql.Select(['data', 'characters'], targetInventory),
               ),
             },
           ),
-          updatedCharacter: fql.Update<Character>(
-            fql.Var('giveCharacterRef'),
-            {
-              user: fql.Ref(target),
-              inventory: fql.Ref(targetInventory),
-              history: fql.Append(
+          updatedCharacters: fql.Foreach(
+            fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+            (characterRef) =>
+              fql.Update<Character>(
+                characterRef,
                 {
-                  from: fql.Ref(user),
-                  to: fql.Ref(target),
-                } as unknown as RefExpr,
-                fql.Select(['data', 'history'], fql.Get(giveCharacter)),
-              ) as unknown as History[],
-            },
+                  user: fql.Ref(target),
+                  inventory: fql.Ref(targetInventory),
+                  history: fql.Append(
+                    {
+                      from: fql.Ref(user),
+                      to: fql.Ref(target),
+                    } as unknown as RefExpr,
+                    fql.Select(['data', 'history'], fql.Get(characterRef)),
+                  ) as unknown as History[],
+                },
+              ),
           ),
         }, () => ({
           ok: true,
@@ -104,98 +114,118 @@ export function tradeCharacters(
     target,
     inventory,
     targetInventory,
-    giveCharacterId,
-    takeCharacterId,
+    giveCharactersIds,
+    takeCharactersIds,
     instance,
   }: {
     user: UserExpr;
     target: UserExpr;
     inventory: InventoryExpr;
     targetInventory: InventoryExpr;
-    giveCharacterId: StringExpr;
-    takeCharacterId: StringExpr;
+    giveCharactersIds: StringExpr[];
+    takeCharactersIds: StringExpr[];
     instance: InstanceExpr;
   },
 ): unknown {
   return fql.Let({
-    giveCharacter: fql.Match(
-      fql.Index('characters_instance_id'),
-      giveCharacterId,
-      fql.Ref(instance),
-    ),
-    takeCharacter: fql.Match(
-      fql.Index('characters_instance_id'),
-      takeCharacterId,
-      fql.Ref(instance),
-    ),
-  }, ({ giveCharacter, takeCharacter }) => {
+    giveCharacters: fql.Map(giveCharactersIds, (id) =>
+      fql.Match(
+        fql.Index('characters_instance_id'),
+        id,
+        fql.Ref(instance),
+      )),
+    takeCharacters: fql.Map(takeCharactersIds, (id) =>
+      fql.Match(
+        fql.Index('characters_instance_id'),
+        id,
+        fql.Ref(instance),
+      )),
+  }, ({ giveCharacters, takeCharacters }) => {
     return fql.If(
-      fql.And(fql.IsNonEmpty(giveCharacter), fql.IsNonEmpty(takeCharacter)),
+      fql.And(
+        fql.All(fql.Map(giveCharacters, (char) => fql.IsNonEmpty(char))),
+        fql.All(fql.Map(takeCharacters, (char) => fql.IsNonEmpty(char))),
+      ),
       fql.If(
         fql.And(
-          fql.Equals(
-            fql.Select(['data', 'user'], fql.Get(giveCharacter)),
-            fql.Ref(user),
-          ),
-          fql.Equals(
-            fql.Select(['data', 'user'], fql.Get(takeCharacter)),
-            fql.Ref(target),
-          ),
+          fql.All(fql.Map(giveCharacters, (char) =>
+            fql.Equals(
+              fql.Select(['data', 'user'], fql.Get(char)),
+              fql.Ref(user),
+            ))),
+          fql.All(fql.Map(takeCharacters, (char) =>
+            fql.Equals(
+              fql.Select(['data', 'user'], fql.Get(char)),
+              fql.Ref(target),
+            ))),
         ),
         fql.Let({
-          giveCharacterRef: fql.Ref(fql.Get(giveCharacter)),
-          takeCharacterRef: fql.Ref(fql.Get(takeCharacter)),
+          giveCharactersRefs: fql.Map(
+            giveCharacters,
+            (char) => fql.Ref(fql.Get(char)),
+          ),
+          takeCharactersRefs: fql.Map(
+            takeCharacters,
+            (char) => fql.Ref(fql.Get(char)),
+          ),
           updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
-            characters: fql.Append(
-              fql.Var('takeCharacterRef'),
-              fql.Remove(
-                fql.Var('giveCharacterRef'),
+            characters: fql.AppendAll(
+              fql.RemoveAll(
+                fql.Var('giveCharactersRefs') as unknown as RefExpr[],
                 fql.Select(['data', 'characters'], inventory),
-                // deno-lint-ignore no-explicit-any
-              ) as any,
+              ),
+              // deno-lint-ignore no-explicit-any
+              fql.Var('takeCharactersRefs') as any,
             ),
           }),
-          //
           updatedTargetInventory: fql.Update<Inventory>(
             fql.Ref(targetInventory),
             {
-              characters: fql.Append(
-                fql.Var('giveCharacterRef'),
-                fql.Remove(
-                  fql.Var('takeCharacterRef'),
-                  fql.Select(['data', 'characters'], targetInventory),
-                  // deno-lint-ignore no-explicit-any
-                ) as any,
+              characters: fql.AppendAll(
+                fql.RemoveAll(
+                  fql.Var('takeCharactersRefs') as unknown as RefExpr[],
+                  fql.Select(['data', 'characters'], inventory),
+                ),
+                // deno-lint-ignore no-explicit-any
+                fql.Var('giveCharactersRefs') as any,
               ),
             },
           ),
-          updatedGiveCharacter: fql.Update<Character>(
-            fql.Var('giveCharacterRef'),
-            {
-              user: fql.Ref(target),
-              inventory: fql.Ref(targetInventory),
-              history: fql.Append(
+          updatedCharacters: fql.Foreach(
+            fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+            (characterRef) =>
+              fql.Update<Character>(
+                characterRef,
                 {
-                  from: fql.Ref(user),
-                  to: fql.Ref(target),
-                } as unknown as RefExpr,
-                fql.Select(['data', 'history'], fql.Get(giveCharacter)),
-              ) as unknown as History[],
-            },
+                  user: fql.Ref(target),
+                  inventory: fql.Ref(targetInventory),
+                  history: fql.Append(
+                    {
+                      from: fql.Ref(user),
+                      to: fql.Ref(target),
+                    } as unknown as RefExpr,
+                    fql.Select(['data', 'history'], fql.Get(characterRef)),
+                  ) as unknown as History[],
+                },
+              ),
           ),
-          updatedTakeCharacter: fql.Update<Character>(
-            fql.Var('takeCharacterRef'),
-            {
-              user: fql.Ref(user),
-              inventory: fql.Ref(inventory),
-              history: fql.Append(
+          updatedTakeCharacters: fql.Foreach(
+            fql.Var('takeCharactersRefs') as unknown as RefExpr[],
+            (characterRef) =>
+              fql.Update<Character>(
+                characterRef,
                 {
-                  from: fql.Ref(target),
-                  to: fql.Ref(user),
-                } as unknown as RefExpr,
-                fql.Select(['data', 'history'], fql.Get(takeCharacter)),
-              ) as unknown as History[],
-            },
+                  user: fql.Ref(user),
+                  inventory: fql.Ref(inventory),
+                  history: fql.Append(
+                    {
+                      from: fql.Ref(target),
+                      to: fql.Ref(user),
+                    } as unknown as RefExpr,
+                    fql.Select(['data', 'history'], fql.Get(characterRef)),
+                  ) as unknown as History[],
+                },
+              ),
           ),
         }, () => ({
           ok: true,
@@ -221,50 +251,12 @@ export default function (client: Client): {
     resolvers: [
       fql.Resolver({
         client,
-        name: 'trade_characters',
-        lambda: (
-          userId: string,
-          targetId: string,
-          guildId: string,
-          giveCharacterId: string,
-          takeCharacterId: string,
-        ) => {
-          return fql.Let(
-            {
-              user: getUser(userId),
-              target: getUser(targetId),
-              guild: getGuild(guildId),
-              instance: getInstance(fql.Var('guild')),
-              inventory: getInventory({
-                user: fql.Var('user'),
-                instance: fql.Var('instance'),
-              }),
-              targetInventory: getInventory({
-                user: fql.Var('target'),
-                instance: fql.Var('instance'),
-              }),
-            },
-            ({ user, target, inventory, targetInventory, instance }) =>
-              tradeCharacters({
-                user,
-                target,
-                inventory,
-                targetInventory,
-                giveCharacterId,
-                takeCharacterId,
-                instance,
-              }) as ResponseExpr,
-          );
-        },
-      }),
-      fql.Resolver({
-        client,
         name: 'give_characters',
         lambda: (
           userId: string,
           targetId: string,
           guildId: string,
-          giveCharacterId: string,
+          charactersIds: string[],
         ) => {
           return fql.Let(
             {
@@ -287,7 +279,45 @@ export default function (client: Client): {
                 target,
                 inventory,
                 targetInventory,
-                giveCharacterId,
+                charactersIds,
+                instance,
+              }) as ResponseExpr,
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
+        name: 'trade_characters',
+        lambda: (
+          userId: string,
+          targetId: string,
+          guildId: string,
+          giveCharactersIds: string[],
+          takeCharactersIds: string[],
+        ) => {
+          return fql.Let(
+            {
+              user: getUser(userId),
+              target: getUser(targetId),
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+              inventory: getInventory({
+                user: fql.Var('user'),
+                instance: fql.Var('instance'),
+              }),
+              targetInventory: getInventory({
+                user: fql.Var('target'),
+                instance: fql.Var('instance'),
+              }),
+            },
+            ({ user, target, inventory, targetInventory, instance }) =>
+              tradeCharacters({
+                user,
+                target,
+                inventory,
+                targetInventory,
+                giveCharactersIds,
+                takeCharactersIds,
                 instance,
               }) as ResponseExpr,
           );

@@ -12,18 +12,22 @@ import { assertEquals } from 'https://deno.land/std@0.179.0/testing/asserts.ts';
 import { assertSnapshot } from 'https://deno.land/std@0.179.0/testing/snapshot.ts';
 
 import {
+  FakeAll,
   FakeAnd,
   FakeAppend,
+  FakeAppendAll,
   FakeClient,
   FakeEquals,
+  FakeForeach,
   FakeGet,
   FakeIf,
   FakeIndex,
   FakeIsNonEmpty,
   FakeLet,
+  FakeMap,
   FakeMatch,
   FakeRef,
-  FakeRemove,
+  FakeRemoveAll,
   FakeUpdate,
   FakeVar,
 } from './fql.mock.ts';
@@ -42,8 +46,12 @@ Deno.test('give characters', async (test) => {
     const letStub = FakeLet();
     const getStub = FakeGet();
     const refStub = FakeRef();
+    const mapStub = FakeMap();
+    const allStub = FakeAll();
+    const foreachStub = FakeForeach();
     const appendStub = FakeAppend();
-    const removeStub = FakeRemove();
+    const appendAllStub = FakeAppendAll();
+    const removeAllStub = FakeRemoveAll();
     const equalsStub = FakeEquals();
     const updateStub = FakeUpdate();
     const isNotEmptyStub = FakeIsNonEmpty();
@@ -59,31 +67,51 @@ Deno.test('give characters', async (test) => {
       'Select',
       returnsNext([
         { ref: 'user' },
+        { ref: 'user' },
+        { ref: 'user' },
         ['user_characters', { ref: 'character' }],
         ['target_characters'],
+        ['character_history'],
+        ['character_history'],
         ['character_history'],
       ]) as any,
     );
 
     const varStub = FakeVar({
-      'giveCharacterRef': {
-        ref: 'character',
-      },
+      'giveCharactersRefs': [
+        {
+          ref: 'character',
+        },
+        {
+          ref: 'character2',
+        },
+        {
+          ref: 'character3',
+        },
+      ],
     });
 
     try {
       const response = giveCharacters({
         user: 'user',
         target: 'target',
+        instance: 'instance',
         inventory: 'inventory',
         targetInventory: 'target_inventory',
-        giveCharacterId: 'given_character_id',
-        instance: 'instance',
+        charactersIds: [
+          'given_character_id',
+          'given_character_id_2',
+          'given_character_id_3',
+        ],
       } as any) as any;
+
+      assertSpyCalls(indexStub, 3);
 
       assertSpyCall(indexStub, 0, {
         args: ['characters_instance_id'],
       });
+
+      assertSpyCalls(matchStub, 3);
 
       assertSpyCall(matchStub, 0, {
         args: [
@@ -94,6 +122,7 @@ Deno.test('give characters', async (test) => {
           },
         ],
       });
+      assertSpyCalls(equalsStub, 3);
 
       assertSpyCall(equalsStub, 0, {
         args: [{
@@ -104,20 +133,41 @@ Deno.test('give characters', async (test) => {
         returned: true,
       });
 
-      assertSpyCall(removeStub, 0, {
+      assertSpyCalls(removeAllStub, 1);
+
+      assertSpyCall(removeAllStub, 0, {
         args: [
-          { ref: 'character' } as any,
+          [{
+            ref: 'character',
+          }, {
+            ref: 'character2',
+          }, {
+            ref: 'character3',
+          }] as any,
           ['user_characters', { ref: 'character' }] as any,
         ] as any,
         returned: ['user_characters'] as any,
       });
 
-      assertSpyCall(appendStub, 0, {
+      assertSpyCalls(appendAllStub, 1);
+
+      assertSpyCall(appendAllStub, 0, {
         args: [
-          { ref: 'character' } as any,
+          [{
+            ref: 'character',
+          }, {
+            ref: 'character2',
+          }, {
+            ref: 'character3',
+          }] as any,
           ['target_characters'] as any,
         ],
-        returned: ['target_characters', { ref: 'character' }] as any,
+        returned: [
+          { ref: 'character' },
+          { ref: 'character2' },
+          { ref: 'character3' },
+          'target_characters',
+        ] as any,
       });
 
       assertSpyCall(updateStub, 0, {
@@ -130,13 +180,62 @@ Deno.test('give characters', async (test) => {
       assertSpyCall(updateStub, 1, {
         args: [
           { ref: 'target_inventory' } as any,
-          { characters: ['target_characters', { ref: 'character' }] },
+          {
+            characters: [
+              { ref: 'character' },
+              { ref: 'character2' },
+              { ref: 'character3' },
+              'target_characters',
+            ],
+          },
         ],
       });
 
       assertSpyCall(updateStub, 2, {
         args: [
           { ref: 'character' } as any,
+          {
+            inventory: { ref: 'target_inventory' },
+            user: { ref: 'target' },
+            history: [
+              'character_history',
+              {
+                from: {
+                  ref: 'user',
+                },
+                to: {
+                  ref: 'target',
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      assertSpyCall(updateStub, 3, {
+        args: [
+          { ref: 'character2' } as any,
+          {
+            inventory: { ref: 'target_inventory' },
+            user: { ref: 'target' },
+            history: [
+              'character_history',
+              {
+                from: {
+                  ref: 'user',
+                },
+                to: {
+                  ref: 'target',
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      assertSpyCall(updateStub, 4, {
+        args: [
+          { ref: 'character3' } as any,
           {
             inventory: { ref: 'target_inventory' },
             user: { ref: 'target' },
@@ -164,11 +263,15 @@ Deno.test('give characters', async (test) => {
       getStub.restore();
       varStub.restore();
       refStub.restore();
+      allStub.restore();
+      mapStub.restore();
+      foreachStub.restore();
       matchStub.restore();
       indexStub.restore();
       selectStub.restore();
       appendStub.restore();
-      removeStub.restore();
+      appendAllStub.restore();
+      removeAllStub.restore();
       equalsStub.restore();
       updateStub.restore();
       isNotEmptyStub.restore();
@@ -180,6 +283,8 @@ Deno.test('give characters', async (test) => {
     const letStub = FakeLet();
     const getStub = FakeGet();
     const refStub = FakeRef();
+    const mapStub = FakeMap();
+    const allStub = FakeAll();
     const equalsStub = FakeEquals();
     const isNotEmptyStub = FakeIsNonEmpty();
 
@@ -210,10 +315,10 @@ Deno.test('give characters', async (test) => {
       const response = giveCharacters({
         user: 'user',
         target: 'target',
+        instance: 'instance',
         inventory: 'inventory',
         targetInventory: 'target_inventory',
-        giveCharacterId: 'given_character_id',
-        instance: 'instance',
+        charactersIds: ['given_character_id'],
       } as any) as any;
 
       assertSpyCall(indexStub, 0, {
@@ -240,6 +345,8 @@ Deno.test('give characters', async (test) => {
       getStub.restore();
       varStub.restore();
       refStub.restore();
+      mapStub.restore();
+      allStub.restore();
       matchStub.restore();
       indexStub.restore();
       selectStub.restore();
@@ -253,6 +360,9 @@ Deno.test('give characters', async (test) => {
     const letStub = FakeLet();
     const getStub = FakeGet();
     const refStub = FakeRef();
+    const mapStub = FakeMap();
+    const allStub = FakeAll();
+    const equalsStub = FakeEquals();
     const isNotEmptyStub = FakeIsNonEmpty();
 
     const indexStub = FakeIndex();
@@ -266,9 +376,9 @@ Deno.test('give characters', async (test) => {
         user: 'user',
         target: 'target',
         inventory: 'inventory',
-        targetInventory: 'target_inventory',
-        giveCharacterId: 'given_character_id',
         instance: 'instance',
+        targetInventory: 'target_inventory',
+        charactersIds: ['given_character_id'],
       } as any) as any;
 
       assertSpyCall(indexStub, 0, {
@@ -295,8 +405,11 @@ Deno.test('give characters', async (test) => {
       getStub.restore();
       varStub.restore();
       refStub.restore();
+      mapStub.restore();
+      allStub.restore();
       matchStub.restore();
       indexStub.restore();
+      equalsStub.restore();
       isNotEmptyStub.restore();
     }
   });
@@ -309,8 +422,12 @@ Deno.test('trade characters', async (test) => {
     const getStub = FakeGet();
     const refStub = FakeRef();
     const andStub = FakeAnd();
+    const mapStub = FakeMap();
+    const allStub = FakeAll();
+    const foreachStub = FakeForeach();
     const appendStub = FakeAppend();
-    const removeStub = FakeRemove();
+    const appendAllStub = FakeAppendAll();
+    const removeAllStub = FakeRemoveAll();
     const equalsStub = FakeEquals();
     const updateStub = FakeUpdate();
     const isNotEmptyStub = FakeIsNonEmpty();
@@ -322,6 +439,10 @@ Deno.test('trade characters', async (test) => {
       'Match',
       returnsNext([
         { id: 'given_character' },
+        { id: 'given_character' },
+        { id: 'given_character' },
+        { id: 'taken_character' },
+        { id: 'taken_character' },
         { id: 'taken_character' },
       ]) as any,
     );
@@ -331,41 +452,77 @@ Deno.test('trade characters', async (test) => {
       'Select',
       returnsNext([
         { ref: 'user' },
+        { ref: 'user' },
+        { ref: 'user' },
+        { ref: 'target' },
+        { ref: 'target' },
         { ref: 'target' },
         ['user_characters', { ref: 'given_character' }],
         ['target_characters', { ref: 'taken_character' }],
         ['given_character_history'],
+        ['given_character_history'],
+        ['given_character_history'],
+        ['taken_character_history'],
+        ['taken_character_history'],
         ['taken_character_history'],
       ]) as any,
     );
 
     const varStub = FakeVar({
-      'giveCharacterRef': {
-        ref: 'given_character',
-      },
-      'takeCharacterRef': {
-        ref: 'taken_character',
-      },
+      'giveCharactersRefs': [
+        {
+          ref: 'given_character',
+        },
+        {
+          ref: 'given_character2',
+        },
+        {
+          ref: 'given_character3',
+        },
+      ],
+      'takeCharactersRefs': [
+        {
+          ref: 'taken_character',
+        },
+        {
+          ref: 'taken_character2',
+        },
+        {
+          ref: 'taken_character3',
+        },
+      ],
     });
 
     try {
       const response = tradeCharacters({
         user: 'user',
         target: 'target',
+        instance: 'instance',
         inventory: 'inventory',
         targetInventory: 'target_inventory',
-        giveCharacterId: 'given_character_id',
-        takeCharacterId: 'taken_character_id',
-        instance: 'instance',
+        giveCharactersIds: [
+          'given_character_id',
+          'given_character_id_1',
+          'given_character_id_2',
+        ],
+        takeCharactersIds: [
+          'taken_character_id',
+          'taken_character_id_2',
+          'taken_character_id_3',
+        ],
       } as any) as any;
+
+      assertSpyCalls(indexStub, 6);
 
       assertSpyCall(indexStub, 0, {
         args: ['characters_instance_id'],
       });
 
-      assertSpyCall(indexStub, 1, {
+      assertSpyCall(indexStub, 5, {
         args: ['characters_instance_id'],
       });
+
+      assertSpyCalls(matchStub, 6);
 
       assertSpyCall(matchStub, 0, {
         args: [
@@ -377,15 +534,17 @@ Deno.test('trade characters', async (test) => {
         ],
       });
 
-      assertSpyCall(matchStub, 1, {
+      assertSpyCall(matchStub, 5, {
         args: [
           'characters_instance_id' as any,
-          'taken_character_id',
+          'taken_character_id_3',
           {
             ref: 'instance',
           },
         ],
       });
+
+      assertSpyCalls(equalsStub, 6);
 
       assertSpyCall(equalsStub, 0, {
         args: [{
@@ -396,7 +555,7 @@ Deno.test('trade characters', async (test) => {
         returned: true,
       });
 
-      assertSpyCall(equalsStub, 1, {
+      assertSpyCall(equalsStub, 5, {
         args: [{
           ref: 'target',
         }, {
@@ -405,49 +564,117 @@ Deno.test('trade characters', async (test) => {
         returned: true,
       });
 
-      assertSpyCall(removeStub, 0, {
+      assertSpyCalls(removeAllStub, 2);
+
+      assertSpyCall(removeAllStub, 0, {
         args: [
-          { ref: 'given_character' } as any,
+          [
+            { ref: 'given_character' },
+            { ref: 'given_character2' },
+            { ref: 'given_character3' },
+          ] as any,
           ['user_characters', { ref: 'given_character' }] as any,
         ] as any,
         returned: ['user_characters'] as any,
       });
 
-      assertSpyCall(removeStub, 1, {
+      assertSpyCall(removeAllStub, 1, {
         args: [
-          { ref: 'taken_character' } as any,
+          [
+            { ref: 'taken_character' },
+            { ref: 'taken_character2' },
+            { ref: 'taken_character3' },
+          ] as any,
           ['target_characters', { ref: 'taken_character' }] as any,
         ] as any,
         returned: ['target_characters'] as any,
       });
 
-      assertSpyCall(appendStub, 0, {
+      assertSpyCalls(appendAllStub, 2);
+
+      assertSpyCall(appendAllStub, 0, {
         args: [
-          { ref: 'taken_character' } as any,
           ['user_characters'] as any,
+          [
+            { ref: 'taken_character' },
+            { ref: 'taken_character2' },
+            { ref: 'taken_character3' },
+          ] as any,
         ],
-        returned: ['user_characters', { ref: 'taken_character' }] as any,
+        returned: [
+          'user_characters',
+          {
+            ref: 'taken_character',
+          },
+          {
+            ref: 'taken_character2',
+          },
+          {
+            ref: 'taken_character3',
+          },
+        ] as any,
       });
 
-      assertSpyCall(appendStub, 1, {
+      assertSpyCall(appendAllStub, 1, {
         args: [
-          { ref: 'given_character' } as any,
           ['target_characters'] as any,
+          [
+            { ref: 'given_character' },
+            { ref: 'given_character2' },
+            { ref: 'given_character3' },
+          ] as any,
         ],
-        returned: ['target_characters', { ref: 'given_character' }] as any,
+        returned: [
+          'target_characters',
+          {
+            ref: 'given_character',
+          },
+          {
+            ref: 'given_character2',
+          },
+          {
+            ref: 'given_character3',
+          },
+        ] as any,
       });
 
       assertSpyCall(updateStub, 0, {
         args: [
           { ref: 'inventory' } as any,
-          { characters: ['user_characters', { ref: 'taken_character' }] },
+          {
+            characters: [
+              'user_characters',
+              {
+                ref: 'taken_character',
+              },
+              {
+                ref: 'taken_character2',
+              },
+              {
+                ref: 'taken_character3',
+              },
+            ],
+          },
         ],
       });
 
       assertSpyCall(updateStub, 1, {
         args: [
           { ref: 'target_inventory' } as any,
-          { characters: ['target_characters', { ref: 'given_character' }] },
+          {
+            characters: [
+              'target_characters',
+              {
+                ref: 'given_character',
+              },
+              {
+                ref: 'given_character2',
+              },
+              {
+                ref: 'given_character3',
+              },
+            ],
+          },
         ],
       });
 
@@ -474,7 +701,91 @@ Deno.test('trade characters', async (test) => {
 
       assertSpyCall(updateStub, 3, {
         args: [
+          { ref: 'given_character2' } as any,
+          {
+            inventory: { ref: 'target_inventory' },
+            user: { ref: 'target' },
+            history: [
+              'given_character_history',
+              {
+                from: {
+                  ref: 'user',
+                },
+                to: {
+                  ref: 'target',
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      assertSpyCall(updateStub, 4, {
+        args: [
+          { ref: 'given_character3' } as any,
+          {
+            inventory: { ref: 'target_inventory' },
+            user: { ref: 'target' },
+            history: [
+              'given_character_history',
+              {
+                from: {
+                  ref: 'user',
+                },
+                to: {
+                  ref: 'target',
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      assertSpyCall(updateStub, 5, {
+        args: [
           { ref: 'taken_character' } as any,
+          {
+            inventory: { ref: 'inventory' },
+            user: { ref: 'user' },
+            history: [
+              'taken_character_history',
+              {
+                from: {
+                  ref: 'target',
+                },
+                to: {
+                  ref: 'user',
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      assertSpyCall(updateStub, 6, {
+        args: [
+          { ref: 'taken_character2' } as any,
+          {
+            inventory: { ref: 'inventory' },
+            user: { ref: 'user' },
+            history: [
+              'taken_character_history',
+              {
+                from: {
+                  ref: 'target',
+                },
+                to: {
+                  ref: 'user',
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      assertSpyCall(updateStub, 7, {
+        args: [
+          { ref: 'taken_character3' } as any,
           {
             inventory: { ref: 'inventory' },
             user: { ref: 'user' },
@@ -503,8 +814,12 @@ Deno.test('trade characters', async (test) => {
       varStub.restore();
       refStub.restore();
       andStub.restore();
+      mapStub.restore();
+      allStub.restore();
+      foreachStub.restore();
       appendStub.restore();
-      removeStub.restore();
+      appendAllStub.restore();
+      removeAllStub.restore();
       matchStub.restore();
       indexStub.restore();
       selectStub.restore();
@@ -520,6 +835,8 @@ Deno.test('trade characters', async (test) => {
     const getStub = FakeGet();
     const refStub = FakeRef();
     const andStub = FakeAnd();
+    const mapStub = FakeMap();
+    const allStub = FakeAll();
     const equalsStub = FakeEquals();
     const isNotEmptyStub = FakeIsNonEmpty();
 
@@ -562,8 +879,8 @@ Deno.test('trade characters', async (test) => {
         target: 'target',
         inventory: 'inventory',
         targetInventory: 'target_inventory',
-        giveCharacterId: 'given_character_id',
-        takeCharacterId: 'taken_character_id',
+        giveCharactersIds: ['given_character_id'],
+        takeCharactersIds: ['taken_character_id'],
         instance: 'instance',
       } as any) as any;
 
@@ -606,6 +923,8 @@ Deno.test('trade characters', async (test) => {
       varStub.restore();
       refStub.restore();
       andStub.restore();
+      mapStub.restore();
+      allStub.restore();
       matchStub.restore();
       indexStub.restore();
       selectStub.restore();
@@ -620,6 +939,8 @@ Deno.test('trade characters', async (test) => {
     const getStub = FakeGet();
     const refStub = FakeRef();
     const andStub = FakeAnd();
+    const mapStub = FakeMap();
+    const allStub = FakeAll();
     const equalsStub = FakeEquals();
     const isNotEmptyStub = FakeIsNonEmpty();
 
@@ -662,8 +983,8 @@ Deno.test('trade characters', async (test) => {
         target: 'target',
         inventory: 'inventory',
         targetInventory: 'target_inventory',
-        giveCharacterId: 'given_character_id',
-        takeCharacterId: 'taken_character_id',
+        giveCharactersIds: ['given_character_id'],
+        takeCharactersIds: ['taken_character_id'],
         instance: 'instance',
       } as any) as any;
 
@@ -706,6 +1027,8 @@ Deno.test('trade characters', async (test) => {
       varStub.restore();
       refStub.restore();
       andStub.restore();
+      mapStub.restore();
+      allStub.restore();
       matchStub.restore();
       indexStub.restore();
       selectStub.restore();
@@ -720,6 +1043,9 @@ Deno.test('trade characters', async (test) => {
     const getStub = FakeGet();
     const refStub = FakeRef();
     const andStub = FakeAnd();
+    const mapStub = FakeMap();
+    const allStub = FakeAll();
+    const equalsStub = FakeEquals();
     const isNotEmptyStub = FakeIsNonEmpty();
 
     const indexStub = FakeIndex();
@@ -761,8 +1087,8 @@ Deno.test('trade characters', async (test) => {
         target: 'target',
         inventory: 'inventory',
         targetInventory: 'target_inventory',
-        giveCharacterId: 'given_character_id',
-        takeCharacterId: 'taken_character_id',
+        giveCharactersIds: ['given_character_id'],
+        takeCharactersIds: ['taken_character_id'],
         instance: 'instance',
       } as any) as any;
 
@@ -805,9 +1131,12 @@ Deno.test('trade characters', async (test) => {
       varStub.restore();
       refStub.restore();
       andStub.restore();
+      mapStub.restore();
+      allStub.restore();
       matchStub.restore();
       indexStub.restore();
       selectStub.restore();
+      equalsStub.restore();
       isNotEmptyStub.restore();
     }
   });
@@ -818,6 +1147,9 @@ Deno.test('trade characters', async (test) => {
     const getStub = FakeGet();
     const refStub = FakeRef();
     const andStub = FakeAnd();
+    const mapStub = FakeMap();
+    const allStub = FakeAll();
+    const equalsStub = FakeEquals();
     const isNotEmptyStub = FakeIsNonEmpty();
 
     const indexStub = FakeIndex();
@@ -859,8 +1191,8 @@ Deno.test('trade characters', async (test) => {
         target: 'target',
         inventory: 'inventory',
         targetInventory: 'target_inventory',
-        giveCharacterId: 'given_character_id',
-        takeCharacterId: 'taken_character_id',
+        giveCharactersIds: ['given_character_id'],
+        takeCharactersIds: ['taken_character_id'],
         instance: 'instance',
       } as any) as any;
 
@@ -903,9 +1235,12 @@ Deno.test('trade characters', async (test) => {
       varStub.restore();
       refStub.restore();
       andStub.restore();
+      mapStub.restore();
+      allStub.restore();
       matchStub.restore();
       indexStub.restore();
       selectStub.restore();
+      equalsStub.restore();
       isNotEmptyStub.restore();
     }
   });

@@ -14,85 +14,37 @@ import { default as srch } from './search.ts';
 
 import { Character, DisaggregatedCharacter, Schema } from './types.ts';
 
-async function view({
-  userId,
+async function embed({
   guildId,
+  inventory,
 }: {
-  userId: string;
   guildId: string;
+  inventory: Schema.Inventory;
 }): Promise<discord.Message> {
-  const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        party {
-          member1 {
-            id
-            mediaId
-            rating
-          }
-          member2 {
-            id
-            mediaId
-            rating
-          }
-          member3 {
-            id
-            mediaId
-            rating
-          }
-          member4 {
-            id
-            mediaId
-            rating
-          }
-          member5 {
-            id
-            mediaId
-            rating
-          }
-        }
-      }
-    }
-  `;
-
   const message = new discord.Message();
 
-  const { party } = (await request<{
-    getUserInventory: Schema.Inventory;
-  }>({
-    url: faunaUrl,
-    query,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-    },
-  })).getUserInventory;
-
   const ids = [
-    party?.member1?.id,
-    party?.member2?.id,
-    party?.member3?.id,
-    party?.member4?.id,
-    party?.member5?.id,
+    inventory.party?.member1?.id,
+    inventory.party?.member2?.id,
+    inventory.party?.member3?.id,
+    inventory.party?.member4?.id,
+    inventory.party?.member5?.id,
   ];
 
   const mediaIds = [
-    party?.member1?.mediaId,
-    party?.member2?.mediaId,
-    party?.member3?.mediaId,
-    party?.member4?.mediaId,
-    party?.member5?.mediaId,
+    inventory.party?.member1?.mediaId,
+    inventory.party?.member2?.mediaId,
+    inventory.party?.member3?.mediaId,
+    inventory.party?.member4?.mediaId,
+    inventory.party?.member5?.mediaId,
   ];
 
   const ratings = [
-    party?.member1?.rating,
-    party?.member2?.rating,
-    party?.member3?.rating,
-    party?.member4?.rating,
-    party?.member5?.rating,
+    inventory.party?.member1?.rating,
+    inventory.party?.member2?.rating,
+    inventory.party?.member3?.rating,
+    inventory.party?.member4?.rating,
+    inventory.party?.member5?.rating,
   ];
 
   const list = await packs.all({ guildId });
@@ -145,6 +97,67 @@ async function view({
   return message;
 }
 
+async function view({
+  userId,
+  guildId,
+}: {
+  userId: string;
+  guildId: string;
+}): Promise<discord.Message> {
+  const query = gql`
+    query ($userId: String!, $guildId: String!) {
+      getUserInventory(userId: $userId, guildId: $guildId) {
+        party {
+          member1 {
+            id
+            mediaId
+            rating
+          }
+          member2 {
+            id
+            mediaId
+            rating
+          }
+          member3 {
+            id
+            mediaId
+            rating
+          }
+          member4 {
+            id
+            mediaId
+            rating
+          }
+          member5 {
+            id
+            mediaId
+            rating
+          }
+        }
+      }
+    }
+  `;
+
+  const inventory = (await request<{
+    getUserInventory: Schema.Inventory;
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+    },
+  })).getUserInventory;
+
+  return embed({
+    guildId,
+    inventory,
+  });
+}
+
 async function assign({
   spot,
   userId,
@@ -158,7 +171,7 @@ async function assign({
   search?: string;
   id?: string;
 }): Promise<discord.Message> {
-  const query = gql`
+  const mutation = gql`
     mutation ($userId: String!, $guildId: String!, $characterId: String!, $spot: Int) {
       setCharacterToParty(userId: $userId, guildId: $guildId, characterId: $characterId, spot: $spot) {
         ok
@@ -190,7 +203,7 @@ async function assign({
     setCharacterToParty: Schema.Mutation;
   }>({
     url: faunaUrl,
-    query,
+    query: mutation,
     headers: {
       'authorization': `Bearer ${config.faunaSecret}`,
     },
@@ -257,6 +270,80 @@ async function assign({
     ]);
 }
 
+async function swap({
+  a,
+  b,
+  userId,
+  guildId,
+}: {
+  a: number;
+  b: number;
+  userId: string;
+  guildId: string;
+}): Promise<discord.Message> {
+  const mutation = gql`
+    mutation ($userId: String!, $guildId: String!, $a: Int!, $b: Int!) {
+      swapCharactersInParty(userId: $userId, guildId: $guildId, a: $a, b: $b) {
+        ok
+        inventory {
+          party {
+            member1 {
+              id
+              mediaId
+              rating
+            }
+            member2 {
+              id
+              mediaId
+              rating
+            }
+            member3 {
+              id
+              mediaId
+              rating
+            }
+            member4 {
+              id
+              mediaId
+              rating
+            }
+            member5 {
+              id
+              mediaId
+              rating
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const response = (await request<{
+    swapCharactersInParty: Schema.Mutation;
+  }>({
+    url: faunaUrl,
+    query: mutation,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+      a,
+      b,
+    },
+  })).swapCharactersInParty;
+
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+
+  return embed({
+    guildId,
+    inventory: response.inventory,
+  });
+}
+
 async function remove({
   spot,
   userId,
@@ -266,7 +353,7 @@ async function remove({
   userId: string;
   guildId: string;
 }): Promise<discord.Message> {
-  const query = gql`
+  const mutation = gql`
     mutation ($userId: String!, $guildId: String!, $spot: Int!) {
       removeCharacterFromParty(userId: $userId, guildId: $guildId, spot: $spot) {
         ok
@@ -285,7 +372,7 @@ async function remove({
     removeCharacterFromParty: Schema.Mutation;
   }>({
     url: faunaUrl,
-    query,
+    query: mutation,
     headers: {
       'authorization': `Bearer ${config.faunaSecret}`,
     },
@@ -344,6 +431,7 @@ async function remove({
 const user = {
   view,
   assign,
+  swap,
   remove,
 };
 

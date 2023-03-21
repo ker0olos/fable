@@ -14,7 +14,7 @@ import * as discord from './discord.ts';
 
 import { Character, Schema } from './types.ts';
 
-import { NonFetalError } from './errors.ts';
+import { NonFetalCancelableError } from './errors.ts';
 
 function pre({
   token,
@@ -68,125 +68,154 @@ function pre({
         throw new Error('404');
       }
 
-      // TODO support trading more than 1-for-1
+      let giveCharacters = results.slice(0, give.length);
+      let takeCharacters = results.slice(give.length);
 
-      const [
-        giveCharacter,
-        giveExisting,
-        takeCharacter,
-        takeExisting,
-        // aggregate and find owner
-      ] = await Promise.all([
-        packs.aggregate<Character>({
-          guildId,
-          character: results[0],
-          end: 1,
-        }),
-        user.findCharacter({
-          guildId,
-          characterId: `${results[0].packId}:${results[0].id}`,
-        }),
-        results[1]
-          ? packs.aggregate<Character>({
+      let t: Record<string, (typeof giveCharacters[0])> = {};
+
+      // filter repeated characters
+      giveCharacters = (
+        giveCharacters.forEach((char) => {
+          t[`${char.packId}:${char.id}`] = char;
+        }), Object.values(t)
+      );
+
+      t = {};
+
+      // filter repeated character
+      takeCharacters = (
+        takeCharacters.forEach((char) => {
+          t[`${char.packId}:${char.id}`] = char;
+        }), Object.values(t)
+      );
+
+      const giveNames = giveCharacters.map((char) =>
+        packs.aliasToArray(char.name)[0]
+      ).join(', ');
+
+      const takeNames = takeCharacters.map((char) =>
+        packs.aliasToArray(char.name)[0]
+      ).join(', ');
+
+      const giveIds = giveCharacters.map((char) => `${char.packId}:${char.id}`);
+      const takeIds = takeCharacters.map((char) => `${char.packId}:${char.id}`);
+
+      results = await Promise.all(
+        results.map((character) =>
+          packs.aggregate<Character>({
             guildId,
-            character: results[1],
+            character,
             end: 1,
           })
-          : Promise.resolve(undefined),
-        results[1]
-          ? user.findCharacter({
+        ),
+      );
+
+      const [giveOwnership, takeOwnership] = await Promise.all([
+        user.verifyCharacters({
+          charactersIds: giveIds,
+          guildId,
+          userId,
+        }),
+        take.length
+          ? user.verifyCharacters({
             guildId,
-            characterId: `${results[1].packId}:${results[1].id}`,
+            userId: targetId,
+            charactersIds: takeIds,
           })
-          : Promise.resolve(undefined),
+          : undefined,
       ]);
 
-      const giveName = packs.aliasToArray(giveCharacter.name)[0];
-
-      const takeName = takeCharacter
-        ? packs.aliasToArray(takeCharacter.name)[0]
-        : undefined;
-
-      message.setContent(`<@${takeCharacter ? targetId : userId}>`);
-
-      if (!giveExisting || giveExisting.userId !== userId) {
-        const message = new discord.Message().addEmbed(
-          new discord.Embed().setDescription(`You don't have **${giveName}**`),
-        );
-
-        message.addEmbed(search.characterEmbed(giveCharacter, {
+      const giveEmbeds = giveCharacters.map((character) => {
+        return search.characterEmbed(character, {
           footer: false,
           description: false,
           media: { title: true },
-          existing: giveExisting,
           mode: 'thumbnail',
-        }));
+        });
+      });
 
-        if (!giveExisting) {
-          message.addEmbed(
-            new discord.Embed().setDescription(
-              `> _${giveName} hasn't been found by anyone yet_`,
-            ),
-          );
-        }
+      const takeEmbeds = takeCharacters.map((character) => {
+        return search.characterEmbed(character, {
+          footer: false,
+          description: false,
+          media: { title: true },
+          mode: 'thumbnail',
+        });
+      });
 
-        return await message.patch(token);
-      }
-
-      if (takeCharacter) {
-        if (!takeExisting || takeExisting.userId !== targetId) {
+      switch (giveOwnership) {
+        case 'NOT_OWNED': {
           const message = new discord.Message().addEmbed(
             new discord.Embed().setDescription(
-              `<@${targetId}> doesn't have **${takeName}**`,
+              `You don't have **${giveNames}**`,
             ),
           );
 
-          message.addEmbed(search.characterEmbed(takeCharacter, {
-            footer: false,
-            description: false,
-            media: { title: true },
-            existing: takeExisting,
-            mode: 'thumbnail',
-          }));
-
-          if (!takeExisting) {
-            message.addEmbed(
-              new discord.Embed().setDescription(
-                `> _${takeName} hasn't been found by anyone yet_`,
-              ),
-            );
-          }
+          giveEmbeds.forEach((embed) => message.addEmbed(embed));
 
           return await message.patch(token);
         }
+        case 'NOT_FOUND': {
+          message.addEmbed(
+            new discord.Embed().setDescription(
+              `_${giveNames} hasn't been found by anyone yet_`,
+            ),
+          );
 
-        message.addEmbed(
-          search.characterEmbed(takeCharacter, {
-            footer: false,
-            description: false,
-            media: { title: true },
-            mode: 'thumbnail',
-          }).addField({ value: `${discord.emotes.remove}` }),
-        );
+          giveEmbeds.forEach((embed) => message.addEmbed(embed));
+
+          return await message.patch(token);
+        }
+        default:
+          break;
       }
 
-      message.addEmbed(
-        search.characterEmbed(giveCharacter, {
-          footer: false,
-          description: false,
-          media: { title: true },
-          mode: 'thumbnail',
-        }).addField({
-          value: `${
-            takeCharacter ? discord.emotes.add : discord.emotes.remove
-          }`,
-        }),
-      );
+      if (take.length) {
+        // deno-lint-ignore no-non-null-assertion
+        switch (takeOwnership!) {
+          case 'NOT_OWNED': {
+            const message = new discord.Message().addEmbed(
+              new discord.Embed().setDescription(
+                `<@${targetId}> doesn't have **${takeNames}**`,
+              ),
+            );
 
-      if (takeCharacter) {
+            takeEmbeds.forEach((embed) => message.addEmbed(embed));
+
+            return await message.patch(token);
+          }
+          case 'NOT_FOUND': {
+            message.addEmbed(
+              new discord.Embed().setDescription(
+                `_${takeNames} hasn't been found by anyone yet_`,
+              ),
+            );
+
+            takeEmbeds.forEach((embed) => message.addEmbed(embed));
+
+            return await message.patch(token);
+          }
+          default:
+            break;
+        }
+
+        takeEmbeds.forEach((embed) => {
+          message.addEmbed(
+            embed.addField({ value: `${discord.emotes.remove}` }),
+          );
+        });
+      }
+
+      giveEmbeds.forEach((embed) => {
+        message.addEmbed(embed.addField({
+          value: `${take.length ? discord.emotes.add : discord.emotes.remove}`,
+        }));
+      });
+
+      if (take.length) {
         message.addEmbed(
           new discord.Embed().setDescription(
-            `<@${userId}> is offering that you lose **${takeName}** ${discord.emotes.remove} and get **${giveName}** ${discord.emotes.add}`,
+            `<@${userId}> is offering that you lose **${takeNames}** ${discord.emotes.remove} and get **${giveNames}** ${discord.emotes.add}`,
           ),
         );
 
@@ -195,36 +224,44 @@ function pre({
             'trade',
             userId,
             targetId,
-            `${giveCharacter.packId}:${giveCharacter.id}`,
-            `${takeCharacter.packId}:${takeCharacter.id}`,
+            giveIds.join('&'),
+            takeIds.join('&'),
           )
             .setLabel('Accept'),
           new discord.Component().setId('cancel', userId, targetId)
             .setStyle(discord.ButtonStyle.Red)
             .setLabel('Decline'),
         ]);
+
+        await message
+          .setContent(`<@${targetId}>`)
+          .patch(token);
+
+        await new discord.Message()
+          .setContent(`<@${targetId}> you received an offer!`)
+          .followup(token);
       } else {
         message.addEmbed(
           new discord.Embed().setDescription(
-            `Are you sure you want to give **${giveName}** ${discord.emotes.remove} to <@${targetId}> for free?`,
+            `Are you sure you want to give **${giveNames}** ${discord.emotes.remove} to <@${targetId}> for free?`,
           ),
         );
 
         message.addComponents([
           new discord.Component().setId(
-            'gift',
+            'give',
             userId,
             targetId,
-            `${giveCharacter.packId}:${giveCharacter.id}`,
+            giveIds.join('&'),
           )
             .setLabel('Confirm'),
           new discord.Component().setId('cancel', userId)
             .setStyle(discord.ButtonStyle.Red)
             .setLabel('Cancel'),
         ]);
-      }
 
-      await message.patch(token);
+        await message.patch(token);
+      }
     })
     .catch(async (err) => {
       if (err.message === '404') {
@@ -255,28 +292,28 @@ function pre({
   return loading;
 }
 
-async function gift({
+async function give({
   userId,
   targetId,
-  giveCharacterId,
+  giveCharactersIds,
   guildId,
 }: {
   userId: string;
   targetId: string;
-  giveCharacterId: string;
+  giveCharactersIds: string[];
   guildId: string;
-}): Promise<discord.Message> {
+}): Promise<[discord.Message, discord.Message]> {
   const mutation = gql`
     mutation (
       $userId: String!
       $targetId: String!
-      $giveCharacterId: String!
+      $giveCharactersIds:[ String!]!
       $guildId: String!
     ) {
       giveCharacters(
         userId: $userId
         targetId: $targetId
-        giveCharacterId: $giveCharacterId
+        charactersIds: $giveCharactersIds
         guildId: $guildId
       ) {
         ok
@@ -286,7 +323,7 @@ async function gift({
   `;
 
   const [results, response] = await Promise.all([
-    packs.characters({ ids: [giveCharacterId], guildId }),
+    packs.characters({ ids: giveCharactersIds, guildId }),
     request<{
       giveCharacters: Schema.Mutation;
     }>({
@@ -298,7 +335,7 @@ async function gift({
       variables: {
         userId,
         targetId,
-        giveCharacterId,
+        giveCharactersIds,
         guildId,
       },
     }),
@@ -306,62 +343,85 @@ async function gift({
 
   if (!response.giveCharacters.ok) {
     switch (response.giveCharacters.error) {
-      case 'CHARACTER_NOT_FOUND':
-        throw new NonFetalError('This character was deleted!');
       case 'CHARACTER_NOT_OWNED':
-        throw new NonFetalError('This character already changed hands!');
+        throw new NonFetalCancelableError(
+          'Some of those characters changed hands',
+        );
+      case 'CHARACTER_NOT_FOUND':
+        throw new NonFetalCancelableError(
+          'Some of those characters were disabled or removed',
+        );
       default:
         throw new Error(response.giveCharacters.error);
     }
   }
 
-  const message = new discord.Message();
+  const updateMessage = new discord.Message();
 
-  message.setContent(`<@${targetId}>`);
+  const newMessage = new discord.Message().setContent(`<@${targetId}>`);
 
-  message.addEmbed(
+  updateMessage.addEmbed(
+    new discord.Embed().setDescription(`Gift sent to <@${targetId}>!`),
+  );
+
+  newMessage.addEmbed(
     new discord.Embed().setDescription(`<@${userId}> sent you a gift`),
   );
 
-  const embed = search.characterEmbed(results[0], {
-    rating: true,
-    mode: 'thumbnail',
-    footer: false,
-    description: false,
-    media: {
-      title: false,
-    },
-  }).addField({ value: `${discord.emotes.add}` });
+  const giveCharacters = await Promise.all(
+    giveCharactersIds.map((characterId) =>
+      packs.aggregate<Character>({
+        guildId,
+        character: results.find(({ packId, id }) =>
+          `${packId}:${id}` === characterId
+        ),
+        end: 1,
+      })
+    ),
+  );
 
-  return message.addEmbed(embed);
+  giveCharacters.forEach((character) => {
+    const embed = search.characterEmbed(character, {
+      rating: true,
+      mode: 'thumbnail',
+      footer: false,
+      description: false,
+      media: { title: true },
+    }).addField({ value: `${discord.emotes.add}` });
+
+    updateMessage.addEmbed(embed);
+    newMessage.addEmbed(embed);
+  });
+
+  return [updateMessage, newMessage];
 }
 
 async function accepted({
   userId,
   targetId,
-  giveCharacterId,
-  takeCharacterId,
+  giveCharactersIds,
+  takeCharactersIds,
   guildId,
 }: {
   userId: string;
   targetId: string;
-  giveCharacterId: string;
-  takeCharacterId: string;
+  giveCharactersIds: string[];
+  takeCharactersIds: string[];
   guildId: string;
-}): Promise<discord.Message> {
+}): Promise<[discord.Message, discord.Message]> {
   const mutation = gql`
     mutation (
       $userId: String!
       $targetId: String!
-      $giveCharacterId: String!
-      $takeCharacterId: String!
+      $giveCharactersIds: [String!]!
+      $takeCharactersIds: [String!]!
       $guildId: String!
     ) {
       tradeCharacters(
         userId: $userId
         targetId: $targetId
-        giveCharacterId: $giveCharacterId
-        takeCharacterId: $takeCharacterId
+        giveCharactersIds: $giveCharactersIds
+        takeCharactersIds: $takeCharactersIds
         guildId: $guildId
       ) {
         ok
@@ -371,7 +431,10 @@ async function accepted({
   `;
 
   const [results, response] = await Promise.all([
-    packs.characters({ ids: [giveCharacterId, takeCharacterId], guildId }),
+    packs.characters({
+      ids: [...giveCharactersIds, ...takeCharactersIds],
+      guildId,
+    }),
     request<{
       tradeCharacters: Schema.Mutation;
     }>({
@@ -383,8 +446,8 @@ async function accepted({
       variables: {
         userId,
         targetId,
-        giveCharacterId,
-        takeCharacterId,
+        giveCharactersIds,
+        takeCharactersIds,
         guildId,
       },
     }),
@@ -393,56 +456,87 @@ async function accepted({
   if (!response.tradeCharacters.ok) {
     switch (response.tradeCharacters.error) {
       case 'CHARACTER_NOT_FOUND':
-        throw new NonFetalError('This character was deleted!');
       case 'CHARACTER_NOT_OWNED':
-        throw new NonFetalError('This character already changed hands!');
+        throw new NonFetalCancelableError(
+          'You don\'t have one of those characters!',
+        );
       default:
         throw new Error(response.tradeCharacters.error);
     }
   }
 
-  const message = new discord.Message();
+  const updateMessage = new discord.Message();
 
-  message.setContent(`<@${userId}>`);
+  const newMessage = new discord.Message().setContent(
+    `<@${userId}> your offer was accepted!`,
+  );
 
-  message.addEmbed(
+  updateMessage.setContent(`<@${userId}>`);
+
+  updateMessage.addEmbed(
     new discord.Embed().setDescription(`<@${targetId}> accepted your offer`),
   );
 
-  const take = search.characterEmbed(
-    // deno-lint-ignore no-non-null-assertion
-    results.find(({ packId, id }) => `${packId}:${id}` === takeCharacterId)!,
-    {
-      rating: true,
-      mode: 'thumbnail',
-      footer: false,
-      description: false,
-      media: {
-        title: false,
-      },
-    },
-  ).addField({ value: `${discord.emotes.add}` });
+  const giveCharacters = await Promise.all(
+    giveCharactersIds.map((characterId) =>
+      packs.aggregate<Character>({
+        guildId,
+        character: results.find(({ packId, id }) =>
+          `${packId}:${id}` === characterId
+        ),
+        end: 1,
+      })
+    ),
+  );
 
-  const give = search.characterEmbed(
-    // deno-lint-ignore no-non-null-assertion
-    results.find(({ packId, id }) => `${packId}:${id}` === giveCharacterId)!,
-    {
-      rating: true,
-      mode: 'thumbnail',
-      footer: false,
-      description: false,
-      media: {
-        title: false,
-      },
-    },
-  ).addField({ value: `${discord.emotes.remove}` });
+  const takeCharacters = await Promise.all(
+    takeCharactersIds.map((characterId) =>
+      packs.aggregate<Character>({
+        guildId,
+        character: results.find(({ packId, id }) =>
+          `${packId}:${id}` === characterId
+        ),
+        end: 1,
+      })
+    ),
+  );
 
-  return message.addEmbed(take).addEmbed(give);
+  takeCharacters.forEach((character) => {
+    const embed = search.characterEmbed(
+      character,
+      {
+        rating: true,
+        mode: 'thumbnail',
+        footer: false,
+        description: false,
+        media: { title: true },
+      },
+    ).addField({ value: `${discord.emotes.add}` });
+
+    updateMessage.addEmbed(embed);
+  });
+
+  giveCharacters.forEach((character) => {
+    const embed = search.characterEmbed(
+      character,
+      {
+        rating: true,
+        mode: 'thumbnail',
+        footer: false,
+        description: false,
+        media: { title: true },
+      },
+    ).addField({ value: `${discord.emotes.remove}` });
+
+    updateMessage.addEmbed(embed);
+  });
+
+  return [updateMessage, newMessage];
 }
 
 const trade = {
   pre,
-  gift,
+  give,
   accepted,
 };
 

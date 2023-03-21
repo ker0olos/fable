@@ -3,8 +3,6 @@ import { json } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 import utils, { ImageSize } from './utils.ts';
 import config from './config.ts';
 
-const API = `https://discord.com/api/v10`;
-
 const splitter = '=';
 
 enum CommandType {
@@ -735,10 +733,11 @@ export class Message {
     });
   }
 
-  async patch(token: string): Promise<Response> {
+  async #http(
+    url: string,
+    method: 'PATCH' | 'POST',
+  ): Promise<Response> {
     const formData = new FormData();
-
-    const url = `${API}/webhooks/${config.appId}/${token}/messages/@original`;
 
     formData.append('payload_json', JSON.stringify(this.json().data));
 
@@ -746,10 +745,49 @@ export class Message {
       formData.append(`files[${index}]`, blob, name);
     });
 
-    return await fetch(url, {
-      method: 'PATCH',
-      body: formData,
-    });
+    const response = await fetch(url, { method, body: formData });
+
+    console.log(method, response?.status, response?.statusText);
+
+    if (response?.status === 429) {
+      const extra = {
+        ...(await response.json()),
+        headers: {
+          'X-RateLimit-Limit': response.headers.get('X-RateLimit-Limit'),
+          'X-RateLimit-Remaining': response.headers.get(
+            'X-RateLimit-Remaining',
+          ),
+          'X-RateLimit-Reset': response.headers.get('X-RateLimit-Reset'),
+          'X-RateLimit-Reset-After': response.headers.get(
+            'X-RateLimit-Reset-After',
+          ),
+          'X-RateLimit-Bucket': response.headers.get('X-RateLimit-Bucket'),
+          'X-RateLimit-Scope': response.headers.get('X-RateLimit-Scope'),
+        },
+      };
+
+      console.error(extra);
+
+      utils.captureException(new Error('429: Too Many Requests'), {
+        extra,
+      });
+    }
+
+    return response;
+  }
+
+  patch(token: string): Promise<Response> {
+    return this.#http(
+      `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
+      'PATCH',
+    );
+  }
+
+  followup(token: string): Promise<Response> {
+    return this.#http(
+      `https://discord.com/api/v10/webhooks/${config.appId}/${token}`,
+      'POST',
+    );
   }
 
   static pong(): Response {

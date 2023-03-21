@@ -2,7 +2,10 @@
 
 import {
   assertSpyCall,
+  assertSpyCallArg,
   assertSpyCalls,
+  returnsNext,
+  stub,
 } from 'https://deno.land/std@0.179.0/testing/mock.ts';
 
 import { assertEquals } from 'https://deno.land/std@0.179.0/testing/asserts.ts';
@@ -32,7 +35,10 @@ import {
   default as Model,
   removeCharacterFromParty,
   setCharacterToParty,
+  swapCharactersInParty,
 } from './set_character_to_party.ts';
+
+import { fql } from './fql.ts';
 
 Deno.test('set character to party', async (test) => {
   // TODO improve the test case for this
@@ -298,6 +304,89 @@ Deno.test('set character to party', async (test) => {
   });
 });
 
+Deno.test('swap characters in party', async (test) => {
+  await test.step('ok', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const refStub = FakeRef();
+    const concatStub = FakeConcat();
+    const toStringStub = FakeToString();
+
+    const equalsStub = FakeEquals();
+    const updateStub = FakeUpdate();
+
+    const selectStub = FakeSelect();
+
+    const varStub = FakeVar();
+
+    try {
+      const response = swapCharactersInParty({
+        mediaId: 'media_id',
+        inventory: 'inventory',
+        a: 1,
+        b: 2,
+      } as any) as any;
+
+      assertSpyCallArg(ifStub, 0, 0, false);
+      assertSpyCallArg(ifStub, 1, 0, true);
+
+      assertSpyCallArg(ifStub, 2, 0, true);
+      assertSpyCallArg(ifStub, 3, 0, false);
+
+      assertSpyCallArg(ifStub, 4, 0, false);
+      assertSpyCallArg(ifStub, 5, 0, false);
+
+      assertSpyCallArg(ifStub, 6, 0, false);
+      assertSpyCallArg(ifStub, 7, 0, false);
+
+      assertSpyCallArg(ifStub, 8, 0, false);
+      assertSpyCallArg(ifStub, 9, 0, false);
+
+      assertSpyCall(concatStub, 0, {
+        args: [
+          ['member', '2'],
+        ],
+        returned: 'member2',
+      });
+
+      assertSpyCall(concatStub, 1, {
+        args: [
+          ['member', '1'],
+        ],
+        returned: 'member1',
+      });
+
+      assertSpyCall(updateStub, 0, {
+        args: [
+          { ref: 'inventory' } as any,
+          {
+            party: 'party',
+          },
+        ],
+      });
+
+      assertEquals(response, {
+        ok: true,
+        inventory: {
+          ref: {
+            ref: 'inventory',
+          },
+        },
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      varStub.restore();
+      refStub.restore();
+      concatStub.restore();
+      toStringStub.restore();
+      selectStub.restore();
+      equalsStub.restore();
+      updateStub.restore();
+    }
+  });
+});
+
 Deno.test('remove character from party', async (test) => {
   await test.step('ok', () => {
     const ifStub = FakeIf();
@@ -309,9 +398,18 @@ Deno.test('remove character from party', async (test) => {
     const equalsStub = FakeEquals();
     const updateStub = FakeUpdate();
 
-    const selectStub = FakeSelect({
-      ref: 'character',
-    });
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        'member1',
+        'member2',
+        'member3',
+        'member4',
+        'member5',
+        'member1',
+      ] as any),
+    );
 
     const varStub = FakeVar({
       'character': {
@@ -325,6 +423,12 @@ Deno.test('remove character from party', async (test) => {
         inventory: 'inventory',
         spot: 1,
       } as any) as any;
+
+      assertSpyCallArg(ifStub, 0, 0, true);
+      assertSpyCallArg(ifStub, 1, 0, false);
+      assertSpyCallArg(ifStub, 2, 0, false);
+      assertSpyCallArg(ifStub, 3, 0, false);
+      assertSpyCallArg(ifStub, 4, 0, false);
 
       assertSpyCall(concatStub, 0, {
         args: [
@@ -344,9 +448,7 @@ Deno.test('remove character from party', async (test) => {
 
       assertEquals(response, {
         ok: true,
-        character: {
-          ref: 'character',
-        },
+        character: 'member1',
         inventory: {
           ref: {
             ref: 'inventory',
@@ -370,11 +472,11 @@ Deno.test('remove character from party', async (test) => {
 Deno.test('model', async (test) => {
   const client = FakeClient();
 
-  Model(client as any).indexers?.forEach((q) => q());
   Model(client as any).resolvers?.forEach((q) => q());
 
-  assertSpyCalls(client.query, 2);
+  assertSpyCalls(client.query, 3);
 
   await assertSnapshot(test, client.query.calls[0].args);
   await assertSnapshot(test, client.query.calls[1].args);
+  await assertSnapshot(test, client.query.calls[2].args);
 });

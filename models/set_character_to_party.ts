@@ -3,6 +3,7 @@ import {
   fql,
   InstanceExpr,
   InventoryExpr,
+  NumberExpr,
   ResponseExpr,
   StringExpr,
   UserExpr,
@@ -28,7 +29,7 @@ export function setCharacterToParty(
     inventory: InventoryExpr;
     instance: InstanceExpr;
     characterId: StringExpr;
-    spot?: number;
+    spot?: NumberExpr;
   },
 ): unknown {
   return fql.Let({
@@ -153,13 +154,74 @@ export function setCharacterToParty(
   });
 }
 
+export function swapCharactersInParty(
+  {
+    inventory,
+    a,
+    b,
+  }: {
+    inventory: InventoryExpr;
+    a: NumberExpr;
+    b: NumberExpr;
+  },
+): unknown {
+  const getMember = (n: 1 | 2 | 3 | 4 | 5) => {
+    return fql.If(
+      fql.Equals(n, a),
+      fql.Select(
+        ['data', 'party', fql.Concat(['member', fql.ToString(b)])],
+        inventory,
+        fql.Null(),
+      ),
+      fql.If(
+        fql.Equals(n, b),
+        fql.Select(
+          ['data', 'party', fql.Concat(['member', fql.ToString(a)])],
+          inventory,
+          fql.Null(),
+        ),
+        fql.Select(
+          ['data', 'party', `member${n}`],
+          inventory,
+          fql.Null(),
+        ),
+      ),
+    );
+  };
+
+  // const getMember = (n: 1 | 2 | 3 | 4 | 5) => {
+  //   return fql.Select(
+  //     ['data', 'party', `member${n}`],
+  //     inventory,
+  //     fql.Null(),
+  //   );
+  // };
+
+  return fql.Let({
+    party: {
+      member1: getMember(1),
+      member2: getMember(2),
+      member3: getMember(3),
+      member4: getMember(4),
+      member5: getMember(5),
+    },
+    updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
+      // deno-lint-ignore no-explicit-any
+      party: fql.Var('party') as any,
+    }),
+  }, ({ updatedInventory }) => ({
+    ok: true,
+    inventory: fql.Ref(updatedInventory),
+  }));
+}
+
 export function removeCharacterFromParty(
   {
     inventory,
     spot,
   }: {
     inventory: InventoryExpr;
-    spot: number;
+    spot: NumberExpr;
   },
 ): unknown {
   const getMember = (n: 1 | 2 | 3 | 4 | 5) => {
@@ -230,6 +292,34 @@ export default function (client: Client): {
                 instance,
                 characterId,
                 spot,
+              }) as ResponseExpr,
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
+        name: 'swap_characters_in_party',
+        lambda: (
+          userId: string,
+          guildId: string,
+          a: number,
+          b: number,
+        ) => {
+          return fql.Let(
+            {
+              user: getUser(userId),
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+              inventory: getInventory({
+                user: fql.Var('user'),
+                instance: fql.Var('instance'),
+              }),
+            },
+            ({ inventory }) =>
+              swapCharactersInParty({
+                inventory,
+                a,
+                b,
               }) as ResponseExpr,
           );
         },
