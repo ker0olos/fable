@@ -377,12 +377,6 @@ export const handler = async (r: Request) => {
           case 'offer':
           case 'give':
           case 'gift': {
-            if (!config.trading) {
-              throw new NonFetalError(
-                'Trading is under maintenance, try again later!',
-              );
-            }
-
             const giveCharacters = [
               options['give'] as string,
               options['give2'] as string,

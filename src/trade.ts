@@ -14,7 +14,7 @@ import * as discord from './discord.ts';
 
 import { Character, Schema } from './types.ts';
 
-import { NonFetalCancelableError } from './errors.ts';
+import { NonFetalCancelableError, NonFetalError } from './errors.ts';
 
 function pre({
   token,
@@ -31,6 +31,12 @@ function pre({
   give: string[];
   take: string[];
 }): discord.Message {
+  if (!config.trading) {
+    throw new NonFetalError(
+      'Trading is under maintenance, try again later!',
+    );
+  }
+
   // trading with yourself
   if (userId === targetId) {
     return new discord.Message()

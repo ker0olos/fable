@@ -11,6 +11,7 @@ const config: {
   topggSecret?: string;
   sentry?: string;
   origin?: string;
+  gacha?: boolean;
   trading?: boolean;
   communityPacks?: boolean;
 } = {
@@ -22,6 +23,7 @@ const config: {
   topggSecret: undefined,
   sentry: undefined,
   origin: undefined,
+  gacha: undefined,
   trading: undefined,
   communityPacks: undefined,
 };
@@ -48,7 +50,8 @@ export async function initConfig(): Promise<void> {
     config.topggCipher = Number(Deno.env.get('TOPGG_WEBHOOK_CIPHER'));
     config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');
 
-    // community packs feature flag
+    // feature flags
+    config.gacha = Boolean(Deno.env.get('GACHA') === '1');
     config.trading = Boolean(Deno.env.get('TRADING') === '1');
     config.communityPacks = Boolean(Deno.env.get('COMMUNITY_PACKS') === '1');
 
