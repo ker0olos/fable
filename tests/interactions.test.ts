@@ -5055,6 +5055,7 @@ Deno.test('/gacha', async (test) => {
       returnsNext([Promise.resolve(pull)]),
     );
 
+    config.gacha = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -5190,6 +5191,7 @@ Deno.test('/gacha', async (test) => {
     } finally {
       delete config.appId;
       delete config.origin;
+      delete config.gacha;
 
       timeStub.restore();
       pullStub.restore();
@@ -5253,6 +5255,7 @@ Deno.test('/gacha', async (test) => {
       returnsNext([Promise.resolve(pull)]),
     );
 
+    config.gacha = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -5397,6 +5400,7 @@ Deno.test('/gacha', async (test) => {
     } finally {
       delete config.appId;
       delete config.origin;
+      delete config.gacha;
 
       timeStub.restore();
       pullStub.restore();
@@ -5460,6 +5464,7 @@ Deno.test('/gacha', async (test) => {
       returnsNext([Promise.resolve(pull)]),
     );
 
+    config.gacha = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -5537,6 +5542,7 @@ Deno.test('/gacha', async (test) => {
     } finally {
       delete config.appId;
       delete config.origin;
+      delete config.gacha;
 
       timeStub.restore();
       pullStub.restore();
@@ -5562,6 +5568,7 @@ Deno.test('/gacha', async (test) => {
       },
     );
 
+    config.gacha = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -5615,6 +5622,7 @@ Deno.test('/gacha', async (test) => {
     } finally {
       delete config.appId;
       delete config.origin;
+      delete config.gacha;
 
       timeStub.restore();
       pullStub.restore();
@@ -8667,7 +8675,7 @@ Deno.test('/help', async (test) => {
     const message = help.pages({ userId: 'user_id', index: 0 });
 
     assertEquals(message.json().data.components[0].components[0], {
-      custom_id: 'help==3=prev',
+      custom_id: 'help==4=prev',
       label: 'Prev',
       style: 2,
       type: 2,
@@ -8676,7 +8684,7 @@ Deno.test('/help', async (test) => {
     assertEquals(message.json().data.components[0].components[1], {
       custom_id: '_',
       disabled: true,
-      label: '1/4',
+      label: '1/5',
       style: 2,
       type: 2,
     });
@@ -9207,6 +9215,7 @@ Deno.test('/trade', async (test) => {
       ]),
     );
 
+    config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -9340,6 +9349,10 @@ Deno.test('/trade', async (test) => {
         },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
@@ -9392,6 +9405,7 @@ Deno.test('/trade', async (test) => {
       ]),
     );
 
+    config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -9525,6 +9539,10 @@ Deno.test('/trade', async (test) => {
         },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
@@ -9577,6 +9595,7 @@ Deno.test('/trade', async (test) => {
       ]),
     );
 
+    config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -9647,6 +9666,10 @@ Deno.test('/trade', async (test) => {
         },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
@@ -9699,6 +9722,7 @@ Deno.test('/trade', async (test) => {
       ]),
     );
 
+    config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -9769,6 +9793,10 @@ Deno.test('/trade', async (test) => {
         },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
@@ -9816,6 +9844,7 @@ Deno.test('/trade', async (test) => {
       () => undefined as any,
     );
 
+    config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -9873,6 +9902,10 @@ Deno.test('/trade', async (test) => {
         },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
       timeStub.restore();
       characterStub.restore();
       fetchStub.restore();
@@ -9922,6 +9955,7 @@ Deno.test('/give', async (test) => {
       ]),
     );
 
+    config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -10015,6 +10049,10 @@ Deno.test('/give', async (test) => {
         },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
@@ -10064,6 +10102,7 @@ Deno.test('/give', async (test) => {
       ]),
     );
 
+    config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -10134,6 +10173,10 @@ Deno.test('/give', async (test) => {
         },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
@@ -10183,6 +10226,7 @@ Deno.test('/give', async (test) => {
       ]),
     );
 
+    config.trading = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
 
@@ -10253,6 +10297,10 @@ Deno.test('/give', async (test) => {
         },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();

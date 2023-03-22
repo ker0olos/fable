@@ -66,6 +66,36 @@ function pages(
           .setFooter({ text: 'aliases: /team, /p' }),
       ),
     new discord.Message()
+      .addComponents([
+        new discord.Component()
+          .setLabel('GitHub')
+          .setUrl('https://github.com/ker0olos/fable'),
+        new discord.Component()
+          .setLabel('Full Roadmap')
+          .setUrl('https://github.com/ker0olos/fable/issues/1'),
+        new discord.Component()
+          .setLabel('Discord Support Server')
+          .setUrl('https://discord.gg/H69RVBxeYY'),
+      ])
+      .addEmbed(
+        new discord.Embed()
+          .setAuthor({ name: 'Roadmap' })
+          .setDescription([
+            '> Fable is in early access',
+            '',
+            '_Landing the near future (5 days ~ 2 months)_',
+            '',
+            '- [Customization](https://github.com/ker0olos/fable/issues/57)',
+            'Allow players to customize their characters including images and names',
+            '',
+            '- [Synthesis](https://github.com/ker0olos/fable/issues/76)',
+            'Merging 1-4* characters to get specific grade pulls (e.g. Merging five 1* characters gives a pull where you are guaranteed a 2* character)',
+            '',
+            '- [Stealing](https://github.com/ker0olos/fable/issues/49)',
+            'You will be able to steal characters from other users',
+          ].join('\n')),
+      ),
+    new discord.Message()
       .addEmbed(
         new discord.Embed()
           .setAuthor({ name: 'All Commands' })

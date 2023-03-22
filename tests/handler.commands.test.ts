@@ -3553,10 +3553,6 @@ Deno.test('give command handlers', async (test) => {
       body,
     } as any));
 
-    const tradeStub = stub(trade, 'pre', () => ({
-      send: () => true,
-    } as any));
-
     config.trading = false;
     config.publicKey = 'publicKey';
 
@@ -3620,7 +3616,6 @@ Deno.test('give command handlers', async (test) => {
       delete config.trading;
       delete config.publicKey;
 
-      tradeStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }

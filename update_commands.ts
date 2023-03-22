@@ -347,12 +347,12 @@ export const commands = [
   }),
   ...Command({
     name: 'help',
-    description: 'New to Fable? We got you',
+    description: 'Need more information? We got you',
     aliases: ['start', 'guide', 'tuto'],
     options: [
       Option({
         name: 'page',
-        description: 'Specify a page to start at',
+        description: 'Specify a page to display',
         optional: true,
         type: Type.INTEGER,
         choices: [
@@ -365,12 +365,16 @@ export const commands = [
             value: 1,
           },
           {
-            name: 'All Commands',
+            name: 'Roadmap',
             value: 2,
           },
           {
-            name: 'Admin Commands',
+            name: 'All Commands',
             value: 3,
+          },
+          {
+            name: 'Admin Commands',
+            value: 4,
           },
         ],
       }),
@@ -466,6 +470,12 @@ export const commands = [
     description: 'collection browsing commands',
     aliases: ['coll', 'mm'],
     options: [
+      Option({
+        name: 'all',
+        description: 'View all your characters at bulk',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
       Option({
         name: 'stars',
         description: 'View all your stars',

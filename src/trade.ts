@@ -31,12 +31,6 @@ function pre({
   give: string[];
   take: string[];
 }): discord.Message {
-  if (!config.trading) {
-    throw new NonFetalError(
-      'Trading is under maintenance, try again later!',
-    );
-  }
-
   // trading with yourself
   if (userId === targetId) {
     return new discord.Message()
@@ -46,6 +40,12 @@ function pre({
           'You can\'t trade with yourself.',
         ),
       );
+  }
+
+  if (!config.trading) {
+    throw new NonFetalError(
+      'Trading is under maintenance, try again later!',
+    );
   }
 
   Promise.all([
