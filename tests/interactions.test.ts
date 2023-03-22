@@ -5566,8 +5566,6 @@ Deno.test('/gacha', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const formData = new FormData();
-
       const message = gacha.start({
         token: 'test_token',
         guildId: 'guild_id',
@@ -5587,34 +5585,33 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      formData.append(
-        'payload_json',
-        JSON.stringify({
+      await timeStub.tickAsync(0);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
               description: 'You don\'t have any more pulls!',
             },
-            { type: 'rich', description: '_+1 pull <t:1675732089:R>_' },
+            { type: 'rich', description: '_+1 pull <t:1675732989:R>_' },
           ],
-          attachments: [],
           components: [],
-        }),
+          attachments: [],
+        },
       );
-
-      await timeStub.tickAsync(0);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [
-          'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-          {
-            method: 'PATCH',
-            body: formData,
-          },
-        ],
-      });
     } finally {
       delete config.appId;
       delete config.origin;
@@ -8871,7 +8868,7 @@ Deno.test('/now', async (test) => {
               },
               type: 'rich',
             },
-            { type: 'rich', description: '_+1 pull <t:1675568206:R>_' },
+            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
           components: [{
             type: 1,
@@ -8958,7 +8955,7 @@ Deno.test('/now', async (test) => {
               },
               type: 'rich',
             },
-            { type: 'rich', description: '_+1 pull <t:1675568206:R>_' },
+            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
           components: [{
             type: 1,
@@ -9051,7 +9048,7 @@ Deno.test('/now', async (test) => {
                 text: '5 Available Votes',
               },
             },
-            { type: 'rich', description: '_+1 pull <t:1675568206:R>_' },
+            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
           components: [{
             type: 1,
@@ -9146,7 +9143,7 @@ Deno.test('/now', async (test) => {
                 text: '5 Available Votes',
               },
             },
-            { type: 'rich', description: '_+1 pull <t:1675568206:R>_' },
+            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
             {
               type: 'rich',
               description: '_Can vote again <t:1675610506:R>_',

@@ -30,6 +30,8 @@ import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weih
 
 import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
 
+import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
+
 export enum ImageSize {
   Large = 'large', // 450x635,
   Medium = 'medium', // 230x325
@@ -345,7 +347,7 @@ async function readJson<T>(filePath: string): Promise<T> {
 function rechargeTimestamp(v?: string): string {
   const parsed = new Date(v ?? new Date());
 
-  parsed.setMinutes(parsed.getMinutes() + 15);
+  parsed.setMinutes(parsed.getMinutes() + RECHARGE_MINS);
 
   const ts = parsed.getTime();
 

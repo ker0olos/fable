@@ -50,7 +50,7 @@ snapshot[`/help 1`] = `
         },
         description: "Before anything: You will need characters.
 
-__You get a free pull every 15 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your pulls recharge.
+__You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your pulls recharge.
 
 __Characters are exclusive__, once a player on the server finds a character, no one else can find that character in gacha again. You will need trade to get them.
 
