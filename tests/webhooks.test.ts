@@ -88,12 +88,16 @@ Deno.test('topgg', async (test) => {
 
     const patchStub = spy(() => true);
 
+    const setContentStub = spy(() => ({
+      patch: patchStub,
+    }));
+
     const userStub = stub(
       user,
       'now',
       () =>
         Promise.resolve({
-          patch: patchStub,
+          setContent: setContentStub,
           // deno-lint-ignore no-explicit-any
         } as any),
     );
@@ -137,6 +141,10 @@ Deno.test('topgg', async (test) => {
         }],
       });
 
+      assertSpyCall(setContentStub, 0, {
+        args: ['<@user_id>'],
+      });
+
       assertSpyCall(patchStub, 0, {
         args: [token],
       });
@@ -156,7 +164,8 @@ Deno.test('topgg', async (test) => {
           ) as any,
         ),
         {
-          content: 'Thanks for voting, <@user_id>.',
+          content:
+            'Thanks for voting, <@user_id>.\n\n__You can\'t use your votes right now__, but we highly recommend collecting them, they will be extremely useful and overpowered.\n\n- You will be able to use votes to buy guaranteed 3, 4 or even 5 star pulls.',
           embeds: [],
           components: [],
           attachments: [],
