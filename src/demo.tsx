@@ -162,9 +162,7 @@ export const Rating = ({ pull }: { pull: Pull }) => {
   return (
     <Suspense
       fallback={
-        <Image
-          src={`${origin}/assets/stars/${pull.rating.stars}.gif`}
-        />
+        <Image src={`${origin}/assets/stars/${pull.rating.stars}.gif`} />
       }
     >
       <GachaSuspend />

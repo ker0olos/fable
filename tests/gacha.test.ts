@@ -40,13 +40,11 @@ function fakePool(
 } {
   const nodes: (AniListCharacter | DisaggregatedCharacter)[] = [];
 
-  const prefix = fill.id || '';
-
   for (let index = 0; index < length; index++) {
     nodes.push(
       Object.assign(
         {},
-        (fill.id = `${prefix}${index + 1}`, fill),
+        (fill.id = `${index + 1}`, fill),
       ),
     );
   }
@@ -54,7 +52,9 @@ function fakePool(
   const readJsonStub = stub(utils, 'readJson', () => {
     return Promise.resolve({
       [JSON.stringify(variables.range)]: {
-        [variables.role || 'ALL']: nodes.map((node) => ({ id: node.id })),
+        [variables.role || 'ALL']: nodes.map((node) => ({
+          id: `${node.packId}:${node.id}`,
+        })),
       },
     });
   });
@@ -88,7 +88,8 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: 'anilist:',
+        id: '',
+        packId: 'anilist',
         name: {
           full: 'name',
         },
@@ -143,7 +144,8 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: 'anilist:',
+        id: '',
+        packId: 'anilist',
         name: {
           full: 'name',
         },
@@ -207,7 +209,8 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: 'anilist:',
+        id: '',
+        packId: 'anilist',
         name: {
           full: 'name',
         },
@@ -273,7 +276,8 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: 'anilist:',
+        id: '',
+        packId: 'anilist',
         name: {
           full: 'name',
         },
@@ -339,7 +343,8 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: 'anilist:',
+        id: '',
+        packId: 'anilist',
         name: {
           full: 'name',
         },
@@ -406,7 +411,8 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: 'anilist:',
+        id: '',
+        packId: 'anilist',
         name: {
           full: 'name',
         },
@@ -562,7 +568,8 @@ Deno.test('disabled', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: 'anilist:',
+        id: '',
+        packId: 'anilist',
         name: {
           full: 'name',
         },
@@ -646,7 +653,8 @@ Deno.test('disabled', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: 'anilist:',
+        id: '',
+        packId: 'anilist',
         name: {
           full: 'name',
         },
@@ -724,7 +732,8 @@ Deno.test('valid pool', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: 'anilist:',
+        id: '',
+        packId: 'anilist',
         name: {
           full: 'name',
         },
@@ -771,7 +780,11 @@ Deno.test('valid pool', async (test) => {
         }),
         {
           character: {
-            id: 'anilist:1',
+            id: '1',
+            packId: 'anilist',
+            name: {
+              english: 'name',
+            },
             media: {
               edges: [
                 {
@@ -789,10 +802,6 @@ Deno.test('valid pool', async (test) => {
                 },
               ],
             },
-            name: {
-              english: 'name',
-            },
-            packId: 'anilist',
           },
           media: {
             format: MediaFormat.TV,
@@ -834,7 +843,8 @@ Deno.test('valid pool', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: 'anilist:',
+        id: '',
+        packId: 'anilist',
         name: {
           full: 'name',
         },
@@ -881,7 +891,11 @@ Deno.test('valid pool', async (test) => {
         }),
         {
           character: {
-            id: 'anilist:1',
+            id: '1',
+            packId: 'anilist',
+            name: {
+              english: 'name',
+            },
             media: {
               edges: [
                 {
@@ -899,10 +913,6 @@ Deno.test('valid pool', async (test) => {
                 },
               ],
             },
-            name: {
-              english: 'name',
-            },
-            packId: 'anilist',
           },
           media: {
             format: MediaFormat.TV,
@@ -944,7 +954,8 @@ Deno.test('valid pool', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: 'anilist:',
+        id: '',
+        packId: 'anilist',
         name: {
           full: 'name',
         },
@@ -992,7 +1003,12 @@ Deno.test('valid pool', async (test) => {
         }),
         {
           character: {
-            id: 'anilist:1',
+            id: '1',
+            packId: 'anilist',
+            name: {
+              english: 'name',
+            },
+            popularity: 500_000,
             media: {
               edges: [
                 {
@@ -1010,11 +1026,6 @@ Deno.test('valid pool', async (test) => {
                 },
               ],
             },
-            name: {
-              english: 'name',
-            },
-            packId: 'anilist',
-            popularity: 500_000,
           },
           media: {
             format: MediaFormat.TV,
@@ -1203,7 +1214,7 @@ Deno.test('adding character to inventory', async (test) => {
             data: {
               Page: {
                 characters: [{
-                  id: 'anilist:1',
+                  id: '1',
                   packId: 'anilist',
                   name: {
                     full: 'name',
@@ -1300,7 +1311,7 @@ Deno.test('adding character to inventory', async (test) => {
             data: {
               Page: {
                 characters: [{
-                  id: 'anilist:1',
+                  id: '1',
                   packId: 'anilist',
                   name: {
                     full: 'name',
@@ -1400,7 +1411,7 @@ Deno.test('adding character to inventory', async (test) => {
             data: {
               Page: {
                 characters: [{
-                  id: 'anilist:1',
+                  id: '1',
                   packId: 'anilist',
                   name: {
                     full: 'name',
@@ -1454,7 +1465,7 @@ Deno.test('adding character to inventory', async (test) => {
         {
           remaining: 2,
           character: {
-            id: 'anilist:1',
+            id: '1',
             packId: 'anilist',
             media: {
               edges: [

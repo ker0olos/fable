@@ -317,7 +317,7 @@ async function stars({
           .setDescription(
             `${
               nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
-            } have any ${stars}* characters`,
+            } have any ${stars}${discord.emotes.smolStar}characters`,
           ),
       );
 
@@ -515,6 +515,183 @@ async function media({
   });
 }
 
+function all({
+  token,
+  userId,
+  guildId,
+  index,
+  nick,
+}: {
+  token: string;
+  index: number;
+  userId: string;
+  guildId: string;
+  nick?: string;
+}): discord.Message {
+  const query = gql`
+    query ($userId: String!, $guildId: String!) {
+      getUserInventory(userId: $userId, guildId: $guildId) {
+        characters {
+          id
+          mediaId
+          rating
+        }
+      }
+    }
+  `;
+
+  request<{
+    getUserInventory: Schema.Inventory;
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+    },
+  })
+    .then(async ({ getUserInventory }) => {
+      const embed = new discord.Embed();
+
+      const message = new discord.Message();
+
+      const characters = getUserInventory.characters;
+
+      if (!characters?.length) {
+        const message = new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(
+                `${
+                  nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
+                } have any characters`,
+              ),
+          );
+
+        if (!nick) {
+          message.addComponents([
+            // `/gacha` shortcut
+            new discord.Component()
+              .setId('gacha', userId)
+              .setLabel('/gacha'),
+          ]);
+        }
+
+        return message.patch(token);
+      }
+
+      const mediaIds = new Set(characters.map(({ mediaId }) => mediaId));
+
+      // split media into chunks of 5
+      const chunks = utils.chunks(Array.from(mediaIds), 5);
+
+      // group characters under their media
+
+      const charactersByMediaId: Record<string, Schema.Character[]> = {};
+
+      chunks[index].forEach((mediaId) => charactersByMediaId[mediaId] = []);
+
+      characters.forEach((char) =>
+        charactersByMediaId[char.mediaId]?.push(char)
+      );
+
+      const charactersIds = Object.values(charactersByMediaId)
+        .map((char) => char.map(({ id }) => id))
+        .reduce((a, b) => a.concat(b));
+
+      // find characters by their ids
+
+      const results: [
+        (Media | DisaggregatedMedia)[],
+        (Character | DisaggregatedCharacter)[],
+      ] = await Promise.all([
+        packs.media({ ids: chunks[index], guildId }),
+        packs.characters({ ids: charactersIds, guildId }),
+      ]);
+
+      chunks[index].forEach((mediaId) => {
+        const media = results[0].find(({ packId, id }) =>
+          mediaId === `${packId}:${id}`
+        );
+
+        if (!media) {
+          return embed.addField({
+            inline: false,
+            name: 'Media disabled or removed',
+          });
+        }
+
+        // deno-lint-ignore no-non-null-assertion
+        const mediaTitle = packs.aliasToArray(media!.title)[0];
+
+        const characters = charactersByMediaId[mediaId].map((char) => char.id);
+
+        const charactersResult = results[1].filter(({ packId, id }) =>
+          characters.includes(`${packId}:${id}`)
+        );
+
+        const charactersNames = charactersResult.map((t) =>
+          packs.aliasToArray(t.name)[0]
+        );
+
+        if (charactersResult.length !== characters.length) {
+          charactersNames.push(
+            `_${
+              characters.length - charactersResult.length
+            } disabled characters_`,
+          );
+        }
+
+        embed.addField({
+          inline: false,
+          name: mediaTitle,
+          value: charactersNames.join('\n'),
+        });
+      });
+
+      embed.setDescription(`**<@${userId}>\n${discord.empty}**`);
+
+      return discord.Message.page({
+        index,
+        type: 'call',
+        target: userId,
+        total: chunks.length,
+        message: message.addEmbed(embed),
+        next: index + 1 < chunks.length,
+      }).patch(token);
+    })
+    .catch(async (err) => {
+      // if (err.message === '404') {
+      //   return await new discord.Message()
+      //     .addEmbed(
+      //       new discord.Embed().setDescription(
+      //         'Some of those character do not exist or are disabled',
+      //       ),
+      //     ).patch(token);
+      // }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner3.gif` },
+      ),
+    );
+
+  return loading;
+}
+
 const user = {
   now,
   findCharacter,
@@ -522,6 +699,7 @@ const user = {
   userCharacters,
   stars,
   media,
+  all,
 };
 
 export default user;

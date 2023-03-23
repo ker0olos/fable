@@ -321,11 +321,24 @@ export const handler = async (r: Request) => {
           case 'mm': {
             const userId = options['user'] as string;
 
-            const nick = userId && resolved?.members?.[userId]
-              ? resolved.members[userId].nick ??
+            const nick = userId
+              ? discord.getUsername(
                 // deno-lint-ignore no-non-null-assertion
-                resolved.users![userId].username
+                resolved!.members![userId],
+                // deno-lint-ignore no-non-null-assertion
+                resolved!.users![userId],
+              )
               : undefined;
+
+            // const avatar = userId
+            //   ? discord.getAvatar(
+            //     // deno-lint-ignore no-non-null-assertion
+            //     resolved!.members![userId],
+            //     // deno-lint-ignore no-non-null-assertion
+            //     resolved!.users![userId],
+            //     guildId,
+            //   )
+            //   : discord.getAvatar(member, member.user, guildId);
 
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
@@ -353,6 +366,15 @@ export const handler = async (r: Request) => {
                   nick,
                 }))
                   .send();
+              }
+              case 'all': {
+                return user.all({
+                  token,
+                  userId: userId ?? member.user.id,
+                  index: 0,
+                  guildId,
+                  nick,
+                }).send();
               }
               default:
                 break;
@@ -569,6 +591,21 @@ export const handler = async (r: Request) => {
               after: action === 'next' ? anchor : undefined,
               before: action === 'prev' ? anchor : undefined,
             }))
+              .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'call': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            return user.all({
+              token,
+              index,
+              guildId,
+              userId,
+            })
               .setType(discord.MessageType.Update)
               .send();
           }

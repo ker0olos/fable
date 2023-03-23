@@ -1,8 +1,8 @@
 {
   "files.exclude": {
     ".git": true,
-    "bundle.gql": true,
-    "**/__snapshots__": true
+    "**/__snapshots__": true,
+    "bundle.gql": true
   },
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
