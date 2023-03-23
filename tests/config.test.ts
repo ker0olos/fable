@@ -36,6 +36,7 @@ Deno.test('init', async (test) => {
         'topgg_secret',
         '1',
         '1',
+        '1',
       ]),
     );
 
@@ -50,6 +51,7 @@ Deno.test('init', async (test) => {
         sentry: 'sentry_dsn',
         topggCipher: 123,
         topggSecret: 'topgg_secret',
+        gacha: true,
         trading: true,
         communityPacks: true,
         origin: undefined,
@@ -88,6 +90,7 @@ Deno.test('init', async (test) => {
         'topgg_secret',
         '0',
         '0',
+        '0',
       ]),
     );
 
@@ -102,6 +105,7 @@ Deno.test('init', async (test) => {
         sentry: 'sentry_dsn',
         topggCipher: 123,
         topggSecret: 'topgg_secret',
+        gacha: false,
         trading: false,
         communityPacks: false,
         origin: undefined,

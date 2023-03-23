@@ -651,7 +651,7 @@ Deno.test('external images', async (test) => {
 Deno.test('recharge timestamps', () => {
   const now = new Date();
 
-  const expected = new Date().setMinutes(now.getMinutes() + 15).toString();
+  const expected = new Date().setMinutes(now.getMinutes() + 30).toString();
 
   assertEquals(
     utils.rechargeTimestamp(now.toISOString()),

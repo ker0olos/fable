@@ -525,7 +525,7 @@ Deno.test('recharge pulls', async (test) => {
       });
 
       assertSpyCall(divideStub, 0, {
-        args: [0, 15],
+        args: [0, 30],
       });
 
       assertSpyCall(minStub, 0, {
@@ -588,7 +588,7 @@ Deno.test('recharge pulls', async (test) => {
 
     const timestamp = new Date();
 
-    timestamp.setMinutes(timestamp.getMinutes() - 15);
+    timestamp.setMinutes(timestamp.getMinutes() - 30);
 
     const nowStub = FakeNow(now);
 
@@ -639,7 +639,7 @@ Deno.test('recharge pulls', async (test) => {
       });
 
       assertSpyCall(divideStub, 0, {
-        args: [15, 15],
+        args: [30, 30],
       });
 
       assertSpyCall(minStub, 0, {
@@ -651,7 +651,7 @@ Deno.test('recharge pulls', async (test) => {
       });
 
       assertSpyCall(timeAddStub, 0, {
-        args: [timestamp as any, 15],
+        args: [timestamp as any, 30],
       });
 
       assertSpyCall(updateStub, 0, {
@@ -753,7 +753,7 @@ Deno.test('recharge pulls', async (test) => {
       });
 
       assertSpyCall(divideStub, 0, {
-        args: [60, 15],
+        args: [60, 30],
       });
 
       assertSpyCall(minStub, 0, {
@@ -765,7 +765,7 @@ Deno.test('recharge pulls', async (test) => {
       });
 
       assertSpyCall(timeAddStub, 0, {
-        args: [timestamp as any, 15],
+        args: [timestamp as any, 30],
       });
 
       assertSpyCall(updateStub, 0, {
@@ -816,7 +816,7 @@ Deno.test('recharge pulls', async (test) => {
 
     const timestamp = new Date();
 
-    timestamp.setMinutes(timestamp.getMinutes() - 15);
+    timestamp.setMinutes(timestamp.getMinutes() - 30);
 
     const nowStub = FakeNow(now);
 
@@ -867,7 +867,7 @@ Deno.test('recharge pulls', async (test) => {
       });
 
       assertSpyCall(divideStub, 0, {
-        args: [15, 15],
+        args: [30, 30],
       });
 
       assertSpyCall(minStub, 0, {
@@ -879,7 +879,7 @@ Deno.test('recharge pulls', async (test) => {
       });
 
       assertSpyCall(timeAddStub, 0, {
-        args: [timestamp as any, 15],
+        args: [timestamp as any, 30],
       });
 
       assertSpyCall(updateStub, 0, {
@@ -981,7 +981,7 @@ Deno.test('recharge pulls', async (test) => {
       });
 
       assertSpyCall(divideStub, 0, {
-        args: [120, 15],
+        args: [120, 30],
       });
 
       assertSpyCall(minStub, 0, {
@@ -993,7 +993,7 @@ Deno.test('recharge pulls', async (test) => {
       });
 
       assertSpyCall(timeAddStub, 0, {
-        args: [timestamp as any, 75],
+        args: [timestamp as any, 150],
       });
 
       assertSpyCall(updateStub, 0, {
@@ -1044,5 +1044,5 @@ Deno.test('model', async (test) => {
 
 Deno.test('variables', () => {
   assertEquals(MAX_PULLS, 5);
-  assertEquals(RECHARGE_MINS, 15);
+  assertEquals(RECHARGE_MINS, 30);
 });

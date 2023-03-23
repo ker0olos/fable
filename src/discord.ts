@@ -20,6 +20,7 @@ export const colors = {
 export const emotes = {
   star: '<:star:1061016362832642098>',
   noStar: '<:no_star:1061016360190222466>',
+  smolStar: '<:smol_star:1088427421096751224>',
   remove: '<:remove:1085033678180208641>',
   add: '<:add:1085034731810332743>',
 };
@@ -37,6 +38,7 @@ export enum MessageType {
   Pong = 1,
   New = 4,
   Loading = 5,
+  Defer = 6,
   Update = 7,
   Suggestions = 8,
   Modal = 9,
@@ -80,7 +82,7 @@ export type Suggestion = {
 
 export type Member = {
   nick?: string;
-  avatar: string;
+  avatar?: string;
   user: User;
 };
 
@@ -88,8 +90,7 @@ export type User = {
   id: string;
   username: string;
   discriminator: string;
-  avatar: string;
-  banner?: string;
+  avatar?: string;
 };
 
 type Resolved = {
@@ -107,6 +108,28 @@ export type Emote = {
   id: string;
   name?: string;
   animated?: boolean;
+};
+
+export const getUsername = (
+  member: Member | Omit<Member, 'user'>,
+  user: User,
+) => member.nick ?? user.username;
+
+export const getAvatar = (
+  member: Member | Omit<Member, 'user'>,
+  user: User,
+  guildId: string,
+) => {
+  const base = 'https://cdn.discordapp.com';
+
+  if (member.avatar) {
+    return `${base}/guilds/${guildId}/users/${user.id}/avatars/${member.avatar}.png`;
+  } else if (user.avatar) {
+    return `${base}/avatars/${user.id}/${user.avatar}.png`;
+  } else {
+    // @see https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints
+    return `${base}/embed/avatars/${Number(user.discriminator) % 5}.png`;
+  }
 };
 
 export class Interaction<Options> {

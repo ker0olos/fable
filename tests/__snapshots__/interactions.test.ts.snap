@@ -9,7 +9,7 @@ snapshot[`/help 1`] = `
       {
         components: [
           {
-            custom_id: "help==3=prev",
+            custom_id: "help==4=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -17,7 +17,7 @@ snapshot[`/help 1`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "1/4",
+            label: "1/5",
             style: 2,
             type: 2,
           },
@@ -50,13 +50,13 @@ snapshot[`/help 1`] = `
         },
         description: "Before anything: You will need characters.
 
-__You get a free pull every 15 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your pulls recharge.
+__You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your pulls recharge.
 
 __Characters are exclusive__, once a player on the server finds a character, no one else can find that character in gacha again. You will need trade to get them.
 
-__Characters vary in ranks from 1* to 5*__, A character rating is based on their popularity (as of right now, a character rating cannot be raised).
+__Characters vary in ranks from 1<:smol_star:1088427421096751224>to 5<:smol_star:1088427421096751224>__ A character rating is based on their popularity (as of right now, a character rating cannot be raised).
 
-__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5* appearing is equal or less than 1%.
+__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5<:smol_star:1088427421096751224>appearing is equal or less than 1%.
 
 \`/pull\` allows you to do gacha pulls with no animations.
 ​",
@@ -89,7 +89,7 @@ snapshot[`/help 2`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "2/4",
+            label: "2/5",
             style: 2,
             type: 2,
           },
@@ -162,12 +162,89 @@ snapshot[`/help 3`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "3/4",
+            label: "3/5",
             style: 2,
             type: 2,
           },
           {
             custom_id: "help==3=next",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+          {
+            label: "Full Roadmap",
+            style: 5,
+            type: 2,
+            url: "https://github.com/ker0olos/fable/issues/1",
+          },
+          {
+            label: "GitHub",
+            style: 5,
+            type: 2,
+            url: "https://github.com/ker0olos/fable",
+          },
+        ],
+        type: 1,
+      },
+      {
+        components: [
+          {
+            label: "Discord Support Server",
+            style: 5,
+            type: 2,
+            url: "https://discord.gg/H69RVBxeYY",
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "Roadmap",
+        },
+        description: "__**Releasing the near future (5 days ~ 2 months)**__
+
+**[Customization](https://github.com/ker0olos/fable/issues/57)**
+Allow players to customize their characters including images and names.
+
+**[Synthesis](https://github.com/ker0olos/fable/issues/76)**
+Merging 1-4<:smol_star:1088427421096751224>characters to get specific grade pulls (e.g. Synthesizing five 1<:smol_star:1088427421096751224>characters gives a pull where you are guaranteed a 2<:smol_star:1088427421096751224>character).
+
+**[Stealing](https://github.com/ker0olos/fable/issues/49)**
+You will be able to steal characters from other users.",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;
+
+snapshot[`/help 4`] = `
+{
+  data: {
+    attachments: [
+    ],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==2=prev",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "4/5",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==4=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -200,55 +277,6 @@ snapshot[`/help 3`] = `
 - \`/give\` \`/gift\`: _give characters to another user_
 
 - \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
-        type: "rich",
-      },
-    ],
-  },
-  type: 4,
-}
-`;
-
-snapshot[`/help 4`] = `
-{
-  data: {
-    attachments: [
-    ],
-    components: [
-      {
-        components: [
-          {
-            custom_id: "help==2=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "_",
-            disabled: true,
-            label: "4/4",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "help==0=next",
-            label: "Next",
-            style: 2,
-            type: 2,
-          },
-        ],
-        type: 1,
-      },
-    ],
-    embeds: [
-      {
-        author: {
-          name: "Admin Commands",
-        },
-        description: "_> \`/packs\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we don't recommend that._
-- \`/packs builtin\`: _list all the builtin packs_
-- \`/packs community\`: _list all installed community packs_
-- \`/packs install\`: _install a community pack_
-- \`/packs uninstall\`: _uninstall a pack_",
         type: "rich",
       },
     ],

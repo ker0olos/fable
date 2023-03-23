@@ -14,7 +14,7 @@ import * as discord from './discord.ts';
 
 import { Character, CharacterRole, Media, PoolInfo, Schema } from './types.ts';
 
-import { NoPullsError, PoolError } from './errors.ts';
+import { NonFetalError, NoPullsError, PoolError } from './errors.ts';
 
 export type Pull = {
   index?: number;
@@ -243,6 +243,12 @@ function start(
     quiet?: boolean;
   },
 ): discord.Message {
+  if (!config.gacha) {
+    throw new NonFetalError(
+      'Gacha is under maintenance, try again later!',
+    );
+  }
+
   gacha.rngPull({ userId, guildId })
     .then(async (pull) => {
       const media = pull.media;

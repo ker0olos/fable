@@ -1,3 +1,5 @@
+import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
+
 import * as discord from './discord.ts';
 
 function pages(
@@ -20,13 +22,13 @@ function pages(
           .setDescription([
             'Before anything: You will need characters.',
             '',
-            '__You get a free pull every 15 minutes (maxed at 5 pulls)__. Use `/now` to check how many pulls you have and how much time is left until your pulls recharge.',
+            `__You get a free pull every ${RECHARGE_MINS} minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your pulls recharge.`,
             '',
             '__Characters are exclusive__, once a player on the server finds a character, no one else can find that character in gacha again. You will need trade to get them.',
             '',
-            '__Characters vary in ranks from 1* to 5*__, A character rating is based on their popularity (as of right now, a character rating cannot be raised).',
+            `__Characters vary in ranks from 1${discord.emotes.smolStar}to 5${discord.emotes.smolStar}__ A character rating is based on their popularity (as of right now, a character rating cannot be raised).`,
             '',
-            '__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5* appearing is equal or less than 1%.',
+            `__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5${discord.emotes.smolStar}appearing is equal or less than 1%.`,
             '',
             '`/pull` allows you to do gacha pulls with no animations.',
             '\u200B',
@@ -62,6 +64,34 @@ function pages(
             '\u200B',
           ].join('\n'))
           .setFooter({ text: 'aliases: /team, /p' }),
+      ),
+    new discord.Message()
+      .addComponents([
+        new discord.Component()
+          .setLabel('Full Roadmap')
+          .setUrl('https://github.com/ker0olos/fable/issues/1'),
+        new discord.Component()
+          .setLabel('GitHub')
+          .setUrl('https://github.com/ker0olos/fable'),
+        new discord.Component()
+          .setLabel('Discord Support Server')
+          .setUrl('https://discord.gg/H69RVBxeYY'),
+      ])
+      .addEmbed(
+        new discord.Embed()
+          .setAuthor({ name: 'Roadmap' })
+          .setDescription([
+            '__**Releasing the near future (5 days ~ 2 months)**__',
+            '',
+            '**[Customization](https://github.com/ker0olos/fable/issues/57)**',
+            'Allow players to customize their characters including images and names.',
+            '',
+            '**[Synthesis](https://github.com/ker0olos/fable/issues/76)**',
+            `Merging 1-4${discord.emotes.smolStar}characters to get specific grade pulls (e.g. Synthesizing five 1${discord.emotes.smolStar}characters gives a pull where you are guaranteed a 2${discord.emotes.smolStar}character).`,
+            '',
+            '**[Stealing](https://github.com/ker0olos/fable/issues/49)**',
+            'You will be able to steal characters from other users.',
+          ].join('\n')),
       ),
     new discord.Message()
       .addEmbed(

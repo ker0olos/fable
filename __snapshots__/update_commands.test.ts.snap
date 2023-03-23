@@ -489,7 +489,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "New to Fable? We got you",
+    description: "Need more information? We got you",
     name: "help",
     options: [
       {
@@ -504,15 +504,19 @@ snapshot[`commands 1`] = `
             value: 1,
           },
           {
-            name: "All Commands",
+            name: "Roadmap",
             value: 2,
           },
           {
-            name: "Admin Commands",
+            name: "All Commands",
             value: 3,
           },
+          {
+            name: "Admin Commands",
+            value: 4,
+          },
         ],
-        description: "Specify a page to start at",
+        description: "Specify a page to display",
         name: "page",
         options: undefined,
         required: false,
@@ -522,7 +526,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "New to Fable? We got you",
+    description: "Need more information? We got you",
     name: "start",
     options: [
       {
@@ -537,15 +541,19 @@ snapshot[`commands 1`] = `
             value: 1,
           },
           {
-            name: "All Commands",
+            name: "Roadmap",
             value: 2,
           },
           {
-            name: "Admin Commands",
+            name: "All Commands",
             value: 3,
           },
+          {
+            name: "Admin Commands",
+            value: 4,
+          },
         ],
-        description: "Specify a page to start at",
+        description: "Specify a page to display",
         name: "page",
         options: undefined,
         required: false,
@@ -555,7 +563,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "New to Fable? We got you",
+    description: "Need more information? We got you",
     name: "guide",
     options: [
       {
@@ -570,15 +578,19 @@ snapshot[`commands 1`] = `
             value: 1,
           },
           {
-            name: "All Commands",
+            name: "Roadmap",
             value: 2,
           },
           {
-            name: "Admin Commands",
+            name: "All Commands",
             value: 3,
           },
+          {
+            name: "Admin Commands",
+            value: 4,
+          },
         ],
-        description: "Specify a page to start at",
+        description: "Specify a page to display",
         name: "page",
         options: undefined,
         required: false,
@@ -588,7 +600,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "New to Fable? We got you",
+    description: "Need more information? We got you",
     name: "tuto",
     options: [
       {
@@ -603,15 +615,19 @@ snapshot[`commands 1`] = `
             value: 1,
           },
           {
-            name: "All Commands",
+            name: "Roadmap",
             value: 2,
           },
           {
-            name: "Admin Commands",
+            name: "All Commands",
             value: 3,
           },
+          {
+            name: "Admin Commands",
+            value: 4,
+          },
         ],
-        description: "Specify a page to start at",
+        description: "Specify a page to display",
         name: "page",
         options: undefined,
         required: false,
@@ -1200,6 +1216,15 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
+        description: "View all your characters in bulks",
+        name: "all",
+        options: undefined,
+        required: false,
+        type: 1,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
         description: "View all your stars",
         name: "stars",
         options: [
@@ -1284,6 +1309,15 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
+        description: "View all your characters in bulks",
+        name: "all",
+        options: undefined,
+        required: false,
+        type: 1,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
         description: "View all your stars",
         name: "stars",
         options: [
@@ -1365,6 +1399,15 @@ snapshot[`commands 1`] = `
     description: "collection browsing commands",
     name: "mm",
     options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "View all your characters in bulks",
+        name: "all",
+        options: undefined,
+        required: false,
+        type: 1,
+      },
       {
         autocomplete: undefined,
         choices: undefined,

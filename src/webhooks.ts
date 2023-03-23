@@ -100,15 +100,16 @@ async function topgg(r: Request): Promise<Response> {
       );
 
       // update the /now used to vote
-      const message = await user.now({
+      const message = (await user.now({
         guildId,
         userId: data.user,
         token,
-      });
+      })).setContent(`<@${data.user}>`);
 
       new discord.Message()
-        .setContent(`Thanks for voting, <@${data.user}>.`)
-        .followup(token);
+        .setContent(
+          `Thanks for voting, <@${data.user}>.\n\n__You can't use your votes right now__, but we highly recommend collecting them, they will be extremely useful and overpowered.\n\n- You will be able to use votes to buy guaranteed 3, 4 or even 5 star pulls.`,
+        ).followup(token);
 
       await message.patch(token);
     })().catch(console.error);
