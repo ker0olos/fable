@@ -475,6 +475,14 @@ export const commands = [
         description: 'View all your characters in bulks',
         type: Type.SUB_COMMAND,
         optional: true,
+        options: [
+          Option({
+            name: 'user',
+            description: 'List someone else\'s characters',
+            type: Type.USER,
+            optional: true,
+          }),
+        ],
       }),
       Option({
         name: 'stars',
