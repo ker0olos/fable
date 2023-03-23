@@ -34,9 +34,6 @@ servers, like adding extensions to chrome and installing apps on your phone, you
 can install community-made packs that are full of new characters with a single
 command.
 
-<!-- You can also create a party with the characters you find, challenge the tower,
-your friends or other discord servers. -->
-
 [^1]: Currently the default packs include anime/manga/vtubers, but you can
 install other packs, e.g. video game characters or real-life celebrities. ~~And
 you can disable all anime packs entirely (In case it's a sports server or
@@ -47,8 +44,6 @@ You can try an online demo of Fable before adding it to your server by going to
 <https://fable.deno.dev/demo>
 
 Fable is actively developed with new game modes and features frequently.
-
-> Fable is in early access.
 
 <br clear="right"/>
 
