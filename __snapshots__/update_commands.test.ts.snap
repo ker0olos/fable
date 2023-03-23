@@ -1216,7 +1216,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your characters at bulk",
+        description: "View all your characters in bulks",
         name: "all",
         options: undefined,
         required: false,
@@ -1309,7 +1309,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your characters at bulk",
+        description: "View all your characters in bulks",
         name: "all",
         options: undefined,
         required: false,
@@ -1402,7 +1402,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your characters at bulk",
+        description: "View all your characters in bulks",
         name: "all",
         options: undefined,
         required: false,

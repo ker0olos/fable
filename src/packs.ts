@@ -696,7 +696,7 @@ async function findById<T>(
   );
 
   anilistIds.forEach((n) => {
-    const i = anilistResults.findIndex((a) => a.id === `${n}`);
+    const i = anilistResults.findIndex((r) => `${r.id}` === `${n}`);
 
     if (i > -1) {
       results[`anilist:${n}`] = _anilist.transform<T>({

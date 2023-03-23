@@ -472,7 +472,7 @@ export const commands = [
     options: [
       Option({
         name: 'all',
-        description: 'View all your characters at bulk',
+        description: 'View all your characters in bulks',
         type: Type.SUB_COMMAND,
         optional: true,
       }),

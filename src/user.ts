@@ -633,9 +633,13 @@ function all({
           characters.includes(`${packId}:${id}`)
         );
 
-        const charactersNames = charactersResult.map((t) =>
-          packs.aliasToArray(t.name)[0]
-        );
+        const charactersNames = charactersResult.map((char) => {
+          // const { rating } = charactersByMediaId[mediaId].find(({ id }) =>
+          //   `${char.packId}:${char.id}` === id
+          // )!;
+
+          return `${packs.aliasToArray(char.name)[0]}`;
+        });
 
         if (charactersResult.length !== characters.length) {
           charactersNames.push(
