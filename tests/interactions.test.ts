@@ -3880,7 +3880,7 @@ Deno.test('/collection stars', async (test) => {
             {
               type: 'rich',
               description:
-                'Dave doesn\'t have any 5<:smol_star:1088427421096751224>characters',
+                'Dave doesn\'t have any 5<:smol_star:1088587855753904248>characters',
             },
           ],
         },
@@ -3941,7 +3941,7 @@ Deno.test('/collection stars', async (test) => {
             {
               type: 'rich',
               description:
-                'You don\'t have any 5<:smol_star:1088427421096751224>characters',
+                'You don\'t have any 5<:smol_star:1088587855753904248>characters',
             },
           ],
         },
@@ -4778,7 +4778,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -5062,7 +5062,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -5283,7 +5283,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -5489,7 +5489,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -5620,7 +5620,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -5710,7 +5710,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },

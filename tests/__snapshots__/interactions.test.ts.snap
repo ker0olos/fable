@@ -54,9 +54,9 @@ __You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to che
 
 __Characters are exclusive__, once a player on the server finds a character, no one else can find that character in gacha again. You will need trade to get them.
 
-__Characters vary in ranks from 1<:smol_star:1088427421096751224>to 5<:smol_star:1088427421096751224>__ A character rating is based on their popularity (as of right now, a character rating cannot be raised).
+__Characters vary in ranks from 1<:smol_star:1088587855753904248>to 5<:smol_star:1088587855753904248>__ A character rating is based on their popularity (as of right now, a character rating cannot be raised).
 
-__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5<:smol_star:1088427421096751224>appearing is equal or less than 1%.
+__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5<:smol_star:1088587855753904248>appearing is equal or less than 1%.
 
 \`/pull\` allows you to do gacha pulls with no animations.
 ​",
@@ -210,7 +210,7 @@ snapshot[`/help 3`] = `
 Allow players to customize their characters including images and names.
 
 **[Synthesis](https://github.com/ker0olos/fable/issues/76)**
-Merging 1-4<:smol_star:1088427421096751224>characters to get specific grade pulls (e.g. Synthesizing five 1<:smol_star:1088427421096751224>characters gives a pull where you are guaranteed a 2<:smol_star:1088427421096751224>character).
+Merging 1-4<:smol_star:1088587855753904248>characters to get specific grade pulls (e.g. Synthesizing five 1<:smol_star:1088587855753904248>characters gives a pull where you are guaranteed a 2<:smol_star:1088587855753904248>character).
 
 **[Stealing](https://github.com/ker0olos/fable/issues/49)**
 You will be able to steal characters from other users.",

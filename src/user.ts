@@ -625,7 +625,7 @@ function all({
         }
 
         // deno-lint-ignore no-non-null-assertion
-        const mediaTitle = packs.aliasToArray(media!.title)[0];
+        const mediaTitle = utils.wrap(packs.aliasToArray(media!.title)[0]);
 
         const characters = charactersByMediaId[mediaId].map((char) => char.id);
 
@@ -638,7 +638,7 @@ function all({
           //   `${char.packId}:${char.id}` === id
           // )!;
 
-          return `${packs.aliasToArray(char.name)[0]}`;
+          return `${utils.wrap(packs.aliasToArray(char.name)[0])}`;
         });
 
         if (charactersResult.length !== characters.length) {
@@ -689,7 +689,7 @@ function all({
   const loading = new discord.Message()
     .addEmbed(
       new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
+        { url: `${config.origin}/assets/spinner.gif` },
       ),
     );
 
