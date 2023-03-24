@@ -634,11 +634,14 @@ function all({
         );
 
         const charactersNames = charactersResult.map((char) => {
-          // const { rating } = charactersByMediaId[mediaId].find(({ id }) =>
-          //   `${char.packId}:${char.id}` === id
-          // )!;
+          // deno-lint-ignore no-non-null-assertion
+          const { rating } = charactersByMediaId[mediaId].find(({ id }) =>
+            `${char.packId}:${char.id}` === id
+          )!;
 
-          return `${utils.wrap(packs.aliasToArray(char.name)[0])}`;
+          return `${rating}${discord.emotes.smolStar} ${
+            utils.wrap(packs.aliasToArray(char.name)[0])
+          }`;
         });
 
         if (charactersResult.length !== characters.length) {
@@ -656,8 +659,6 @@ function all({
         });
       });
 
-      embed.setDescription(`**<@${userId}>\n${discord.empty}**`);
-
       return discord.Message.page({
         index,
         type: 'call',
@@ -672,7 +673,7 @@ function all({
       //   return await new discord.Message()
       //     .addEmbed(
       //       new discord.Embed().setDescription(
-      //         'Some of those character do not exist or are disabled',
+      //         'Found _nothing_ matching that query!',
       //       ),
       //     ).patch(token);
       // }

@@ -4830,33 +4830,31 @@ Deno.test('/collection all', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**<@user_id>\n\u200B**',
-
               fields: [
                 {
                   inline: false,
                   name: 'title 1',
-                  value: 'character 1',
+                  value: '1<:smol_star:1088587855753904248> character 1',
                 },
                 {
                   inline: false,
                   name: 'title 2',
-                  value: 'character 2',
+                  value: '2<:smol_star:1088587855753904248> character 2',
                 },
                 {
                   inline: false,
                   name: 'title 3',
-                  value: 'character 3',
+                  value: '3<:smol_star:1088587855753904248> character 3',
                 },
                 {
                   inline: false,
                   name: 'title 4',
-                  value: 'character 4',
+                  value: '4<:smol_star:1088587855753904248> character 4',
                 },
                 {
                   inline: false,
                   name: 'title 5',
-                  value: 'character 5',
+                  value: '5<:smol_star:1088587855753904248> character 5',
                 },
               ],
             },
@@ -5114,33 +5112,31 @@ Deno.test('/collection all', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**<@another_user_id>\n\u200B**',
-
               fields: [
                 {
                   inline: false,
                   name: 'title 1',
-                  value: 'character 1',
+                  value: '1<:smol_star:1088587855753904248> character 1',
                 },
                 {
                   inline: false,
                   name: 'title 2',
-                  value: 'character 2',
+                  value: '2<:smol_star:1088587855753904248> character 2',
                 },
                 {
                   inline: false,
                   name: 'title 3',
-                  value: 'character 3',
+                  value: '3<:smol_star:1088587855753904248> character 3',
                 },
                 {
                   inline: false,
                   name: 'title 4',
-                  value: 'character 4',
+                  value: '4<:smol_star:1088587855753904248> character 4',
                 },
                 {
                   inline: false,
                   name: 'title 5',
-                  value: 'character 5',
+                  value: '5<:smol_star:1088587855753904248> character 5',
                 },
               ],
             },
@@ -5335,13 +5331,11 @@ Deno.test('/collection all', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**<@user_id>\n\u200B**',
-
               fields: [
                 {
                   inline: false,
                   name: 'title 1',
-                  value: 'character 1',
+                  value: '1<:smol_star:1088587855753904248> character 1',
                 },
                 {
                   inline: false,
@@ -5541,13 +5535,11 @@ Deno.test('/collection all', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**<@user_id>\n\u200B**',
-
               fields: [
                 {
                   inline: false,
                   name: 'title 1',
-                  value: 'character 1',
+                  value: '1<:smol_star:1088587855753904248> character 1',
                 },
                 {
                   inline: false,
