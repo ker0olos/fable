@@ -55,6 +55,10 @@ type Character @collection(name: "character") {
   mediaId: String!
   # the rating of the character
   rating: Int!
+  # a custom image 
+  nickname: String
+  # a custom image url
+  image: String
   # all the ownership transitions of the character
   history: [History!]!
   # the instance that contains this character
@@ -85,6 +89,8 @@ type Badge @collection(name: "badge") {
   name: String!
   # short description of the badge
   description: String!
+  # the emote representing the badge
+  emote: String! 
   # all users who own this badge
   users: [User!]!
 }

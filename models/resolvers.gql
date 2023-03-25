@@ -81,6 +81,7 @@ type Mutation {
   #
   giveCharacters(userId: String!, targetId: String!, guildId: String!, charactersIds: [String!]!): Response!
     @resolver(name: "give_characters")
+  
   #
   tradeCharacters(
     userId: String!
@@ -89,4 +90,13 @@ type Mutation {
     giveCharactersIds: [String!]!
     takeCharactersIds: [String!]!
   ): Response! @resolver(name: "trade_characters")
+
+  #
+  customizeCharacter(
+    userId: String!
+    guildId: String!
+    characterId: String!
+    nickname: String
+    image: String
+  ): Response! @resolver(name: "customize_character")
 }

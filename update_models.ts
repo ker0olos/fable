@@ -21,6 +21,7 @@ import addPackToInstance from './models/add_pack_to_instance.ts';
 
 import addCharacterToInventory from './models/add_character_to_inventory.ts';
 import setCharacterToParty from './models/set_character_to_party.ts';
+import customizeCharacters from './models/customize_character.ts';
 import tradeCharacters from './models/trade_characters.ts';
 
 if (import.meta.main) {
@@ -42,6 +43,7 @@ if (import.meta.main) {
     addPackToInstance(client),
     addCharacterToInventory(client),
     setCharacterToParty(client),
+    customizeCharacters(client),
     tradeCharacters(client),
   ];
 

@@ -23,6 +23,8 @@ export interface Character {
   id: StringExpr;
   mediaId: StringExpr;
   rating: NumberExpr;
+  nickname?: string;
+  image?: string;
   history: History[];
   inventory: RefExpr;
   instance: RefExpr;
