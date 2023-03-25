@@ -269,12 +269,15 @@ snapshot[`/help 4`] = `
 - \`/party swap\` \`/team swap\` \`/p swap\`: _swap characters spots with each others_
 - \`/party remove\` \`/team remove\` \`/p remove\`: _remove a character from your party_
 
+- \`/collection all\` \`/coll all\` \`/mm all\`: _list user characters in bulks_
 - \`/collection stars\` \`/coll stars\` \`/mm stars\`: _list user your stars_
 - \`/collection media\` \`/coll media\` \`/mm media\`: _list user characters from a specific media_
 - \`/found\` \`/obtained\` \`/owned\`: _list all characters found from a specific media_
 
 - \`/trade\` \`/offer\`: _trade characters with another user_
 - \`/give\` \`/gift\`: _give characters to another user_
+
+- \`/profile\` \`/user\`: _see user profile and party_
 
 - \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
         type: "rich",

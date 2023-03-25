@@ -249,7 +249,8 @@ export const handler = async (r: Request) => {
             }))
               .send();
           }
-          case 'profile': {
+          case 'profile':
+          case 'user': {
             const userId = options['user'] as string;
 
             const nick = discord.getUsername(

@@ -397,6 +397,7 @@ export const commands = [
   }),
   ...Command({
     name: 'profile',
+    aliases: ['user'],
     description: 'View someone\'s profile, stats and party',
     options: [
       Option({
