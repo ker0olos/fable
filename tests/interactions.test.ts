@@ -6841,6 +6841,8 @@ Deno.test('/party view', async (test) => {
       },
     ];
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -6906,6 +6908,7 @@ Deno.test('/party view', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -6917,15 +6920,48 @@ Deno.test('/party view', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await party.view({
+      const message = party.view({
         userId: 'user',
         guildId: 'guild',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -6936,7 +6972,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -6950,7 +6986,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -6964,7 +7000,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -6978,7 +7014,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
@@ -6992,7 +7028,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
@@ -7001,11 +7037,15 @@ Deno.test('/party view', async (test) => {
           components: [],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       listStub.restore();
       fetchStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -7053,6 +7093,8 @@ Deno.test('/party view', async (test) => {
       },
     ];
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -7108,6 +7150,7 @@ Deno.test('/party view', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -7119,15 +7162,48 @@ Deno.test('/party view', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await party.view({
+      const message = party.view({
         userId: 'user',
         guildId: 'guild',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -7138,7 +7214,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -7152,7 +7228,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -7174,7 +7250,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
@@ -7183,11 +7259,15 @@ Deno.test('/party view', async (test) => {
           components: [],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       listStub.restore();
       fetchStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -7234,6 +7314,8 @@ Deno.test('/party view', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -7300,6 +7382,7 @@ Deno.test('/party view', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -7336,15 +7419,47 @@ Deno.test('/party view', async (test) => {
       ]),
     );
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
     try {
-      const message = await party.view({
+      const message = party.view({
         userId: 'user',
         guildId: 'guild',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -7355,7 +7470,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -7369,7 +7484,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -7383,7 +7498,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -7401,7 +7516,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
@@ -7410,11 +7525,15 @@ Deno.test('/party view', async (test) => {
           components: [],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 });

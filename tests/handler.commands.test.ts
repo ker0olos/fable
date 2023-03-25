@@ -1202,6 +1202,7 @@ Deno.test('party command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
         }],

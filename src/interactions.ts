@@ -284,10 +284,11 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'view':
-                return (await party.view({
+                return party.view({
+                  token,
                   userId: member.user.id,
                   guildId,
-                })).send();
+                }).send();
               case 'assign':
                 return (await party.assign({
                   spot,
@@ -329,16 +330,6 @@ export const handler = async (r: Request) => {
                 resolved!.users![userId],
               )
               : undefined;
-
-            // const avatar = userId
-            //   ? discord.getAvatar(
-            //     // deno-lint-ignore no-non-null-assertion
-            //     resolved!.members![userId],
-            //     // deno-lint-ignore no-non-null-assertion
-            //     resolved!.users![userId],
-            //     guildId,
-            //   )
-            //   : discord.getAvatar(member, member.user, guildId);
 
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
