@@ -395,6 +395,17 @@ export const commands = [
     description: 'Start a quiet gacha pull with no animation',
     aliases: ['q'],
   }),
+  ...Command({
+    name: 'profile',
+    description: 'View someone\'s profile, stats and party',
+    options: [
+      Option({
+        name: 'user',
+        description: 'The user you want to check',
+        type: Type.USER,
+      }),
+    ],
+  }),
   // party management
   ...Command({
     name: 'party',

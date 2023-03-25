@@ -987,3 +987,25 @@ Deno.test('get avatar', async (test) => {
     );
   });
 });
+
+Deno.test('encode emotes', () => {
+  assertEquals(
+    discord.encode('<a:zThisIsFine:1014025464769171456>'),
+    '\\<a:zThisIsFine:1014025464769171456>',
+  );
+
+  assertEquals(
+    discord.encode('<:smol_star_2:1088587854382379118>'),
+    '\\<:smol_star_2:1088587854382379118>',
+  );
+
+  assertEquals(
+    discord.encode('\\<:smol_star_2:1088587854382379118>'),
+    '\\<:smol_star_2:1088587854382379118>',
+  );
+
+  assertEquals(
+    discord.encode('<:star:1061016362832642098><:no_star:1061016360190222466>'),
+    '\\<:star:1061016362832642098>\<:no_star:1061016360190222466>',
+  );
+});

@@ -132,6 +132,112 @@ async function now({
   return message;
 }
 
+async function profile({
+  nick,
+  avatar,
+  userId,
+  guildId,
+}: {
+  nick: string;
+  avatar: string;
+  userId: string;
+  guildId: string;
+}): Promise<discord.Message> {
+  const query = gql`
+    query ($userId: String!, $guildId: String!) {
+      getUserInventory(userId: $userId, guildId: $guildId) {
+        user {
+          totalVotes
+          badges {
+            name
+            description
+            emote
+          }
+        }
+        characters {
+          mediaId
+          rating
+          id
+        }
+        party {
+          member1 {
+            id
+            mediaId
+            rating
+          }
+          member2 {
+            id
+            mediaId
+            rating
+          }
+          member3 {
+            id
+            mediaId
+            rating
+          }
+          member4 {
+            id
+            mediaId
+            rating
+          }
+          member5 {
+            id
+            mediaId
+            rating
+          }
+        }
+      }
+    }
+  `;
+
+  const embed = new discord.Embed();
+
+  const message = new discord.Message();
+
+  const { user, characters } = (await request<{
+    getUserInventory: Schema.Inventory;
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+    },
+  })).getUserInventory;
+
+  const media = Array.from(
+    new Set(characters.map(({ mediaId }) => mediaId)),
+  );
+
+  const ratingCount = characters.map(({ rating }) => rating)
+    .reduce((a, b) => a + b);
+
+  embed.setThumbnail({ url: avatar, proxy: false, default: false });
+
+  if (user.badges?.length) {
+    embed.addField({
+      name: user.badges.map(({ emote }) => emote).join(''),
+      value: `**${nick}**`,
+    });
+  } else {
+    embed.addField({
+      name: nick,
+    });
+  }
+
+  embed.addField({
+    value:
+      `Has ${characters.length} characters across ${media.length} titles.\n\n${ratingCount}${discord.emotes.smolStar2}`,
+  });
+
+  message.addEmbed(embed);
+
+  return message;
+}
+
 async function findCharacter({
   guildId,
   characterId,
@@ -669,15 +775,6 @@ function all({
       }).patch(token);
     })
     .catch(async (err) => {
-      // if (err.message === '404') {
-      //   return await new discord.Message()
-      //     .addEmbed(
-      //       new discord.Embed().setDescription(
-      //         'Found _nothing_ matching that query!',
-      //       ),
-      //     ).patch(token);
-      // }
-
       if (!config.sentry) {
         throw err;
       }
@@ -699,6 +796,7 @@ function all({
 
 const user = {
   now,
+  profile,
   findCharacter,
   verifyCharacters,
   userCharacters,

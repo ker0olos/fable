@@ -68,6 +68,7 @@ export const handler = async (r: Request) => {
     resolved,
     member,
     options,
+    // reference,
     subcommand,
     customType,
     customValues,
@@ -122,7 +123,17 @@ export const handler = async (r: Request) => {
 
         // suggest characters
         if (
-          ['character', 'char', 'im', 'trade', 'offer', 'give'].includes(name)
+          [
+            'character',
+            'char',
+            'im',
+            'trade',
+            'offer',
+            'give',
+            'party',
+            'team',
+            'p',
+          ].includes(name)
         ) {
           // deno-lint-ignore no-non-null-assertion
           const name = options[focused!] as string;
@@ -142,43 +153,6 @@ export const handler = async (r: Request) => {
               name: `${packs.aliasToArray(character.name)[0]}`,
               value: `${idPrefix}${character.packId}:${character.id}`,
             });
-          });
-
-          return message.send();
-        }
-
-        // same as suggest characters but filters out results that the user doesn't have
-        if (['party', 'team', 'p'].includes(name) && subcommand === 'assign') {
-          // deno-lint-ignore no-non-null-assertion
-          const name = options[focused!] as string;
-
-          const message = new discord.Message(
-            discord.MessageType.Suggestions,
-          );
-
-          const results = await Promise.all([
-            packs.searchMany<Character>({
-              guildId,
-              threshold: 35,
-              key: 'characters',
-              search: name,
-            }),
-            user.userCharacters({
-              guildId,
-              userId: member.user.id,
-            }),
-          ]);
-
-          results?.[0].forEach((character) => {
-            const id = `${character.packId}:${character.id}`;
-
-            // filter out results that are not in the user's inventory
-            if (results?.[1].some((character) => character.id === id)) {
-              message.addSuggestions({
-                name: `${packs.aliasToArray(character.name)[0]}`,
-                value: `${idPrefix}${id}`,
-              });
-            }
           });
 
           return message.send();
@@ -274,6 +248,31 @@ export const handler = async (r: Request) => {
                 : undefined,
             }))
               .send();
+          }
+          case 'profile': {
+            const userId = options['user'] as string;
+
+            const nick = discord.getUsername(
+              // deno-lint-ignore no-non-null-assertion
+              resolved!.members![userId],
+              // deno-lint-ignore no-non-null-assertion
+              resolved!.users![userId],
+            );
+
+            const avatar = discord.getAvatar(
+              // deno-lint-ignore no-non-null-assertion
+              resolved!.members![userId],
+              // deno-lint-ignore no-non-null-assertion
+              resolved!.users![userId],
+              guildId,
+            );
+
+            return (await user.profile({
+              nick,
+              avatar,
+              userId,
+              guildId,
+            })).send();
           }
           case 'party':
           case 'team':

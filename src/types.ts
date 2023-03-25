@@ -201,6 +201,7 @@ export namespace Schema {
       badges: {
         name: string;
         description: string;
+        emote: string;
       }[];
     };
   };

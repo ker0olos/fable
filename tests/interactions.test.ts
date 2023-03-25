@@ -11593,3 +11593,77 @@ Deno.test('/give', async (test) => {
     }
   });
 });
+
+Deno.test('/profile', async (test) => {
+  await test.step('normal', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                characters: [
+                  {
+                    mediaId: '1',
+                    characterId: '3',
+                    rating: 1,
+                  },
+                  {
+                    mediaId: '2',
+                    characterId: '4',
+                    rating: 3,
+                  },
+                ],
+                user: {
+                  badges: [{
+                    emote: '<:emote:id>',
+                  }],
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await user.profile({
+        nick: 'nickname',
+        avatar: 'avatar_url',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              thumbnail: { url: 'avatar_url' },
+              fields: [
+                {
+                  name: '<:emote:id>',
+                  value: '**nickname**',
+                },
+                {
+                  name: '\u200B',
+                  value:
+                    'Has 2 characters across 2 titles.\n\n4<:smol_star_2:1088587854382379118>',
+                },
+              ],
+            },
+          ],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+});
