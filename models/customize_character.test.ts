@@ -28,7 +28,7 @@ import {
 import { customizeCharacter, default as Model } from './customize_character.ts';
 
 Deno.test('customize character', async (test) => {
-  await test.step('ok', () => {
+  await test.step('nickname', () => {
     const ifStub = FakeIf();
     const letStub = FakeLet();
     const getStub = FakeGet();
@@ -47,7 +47,6 @@ Deno.test('customize character', async (test) => {
 
     try {
       const response = customizeCharacter({
-        image: 'image_url',
         nickname: 'nickname',
         characterId: 'character_id',
         inventory: 'inventory',
@@ -82,8 +81,95 @@ Deno.test('customize character', async (test) => {
         args: [
           { ref: '_match' } as any,
           {
-            image: 'image_url',
             nickname: 'nickname',
+            image: {
+              ref: 'user',
+            },
+          },
+        ],
+      });
+
+      assertEquals(response, {
+        ok: true,
+        character: {
+          ref: {
+            ref: '_match',
+          },
+        },
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      getStub.restore();
+      varStub.restore();
+      refStub.restore();
+      matchStub.restore();
+      indexStub.restore();
+      selectStub.restore();
+      equalsStub.restore();
+      updateStub.restore();
+      isNotEmptyStub.restore();
+      isNullStub.restore();
+    }
+  });
+
+  await test.step('image', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const getStub = FakeGet();
+    const varStub = FakeVar();
+    const refStub = FakeRef();
+    const matchStub = FakeMatch();
+    const indexStub = FakeIndex();
+    const equalsStub = FakeEquals();
+    const updateStub = FakeUpdate();
+    const isNotEmptyStub = FakeIsNonEmpty();
+    const isNullStub = FakeIsNull();
+
+    const selectStub = FakeSelect({
+      ref: 'user',
+    });
+
+    try {
+      const response = customizeCharacter({
+        image: 'image',
+        characterId: 'character_id',
+        inventory: 'inventory',
+        instance: 'instance',
+        user: 'user',
+      } as any) as any;
+
+      assertSpyCall(indexStub, 0, {
+        args: ['characters_instance_id'],
+      });
+
+      assertSpyCall(matchStub, 0, {
+        args: [
+          'characters_instance_id' as any,
+          'character_id',
+          {
+            ref: 'instance',
+          },
+        ],
+      });
+
+      assertSpyCall(equalsStub, 0, {
+        args: [{
+          ref: 'user',
+        }, {
+          ref: 'user',
+        }],
+        returned: true,
+      });
+
+      assertSpyCall(updateStub, 0, {
+        args: [
+          { ref: '_match' } as any,
+          {
+            image: 'image',
+            nickname: {
+              ref: 'user',
+            },
           },
         ],
       });

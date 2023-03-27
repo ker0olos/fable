@@ -327,10 +327,21 @@ async function proxy(r: Request): Promise<Response> {
 
     return proxy;
   } catch {
+    let fileUrl = new URL('../assets/medium.png', import.meta.url);
+
     if (r.url?.includes('?size=thumbnail')) {
-      return Response.redirect(`${origin}/assets/thumbnail.png`);
+      fileUrl = new URL('../assets/thumbnail.png', import.meta.url);
     }
-    return Response.redirect(`${origin}/assets/medium.png`);
+
+    const body = await Deno.readFile(fileUrl);
+
+    const response = new Response(body);
+
+    response.headers.set('content-type', 'image/png');
+    response.headers.set('cache-control', 'public, max-age=604800');
+    response.headers.set('content-length', `${body.byteLength}`);
+
+    return response;
   }
 }
 

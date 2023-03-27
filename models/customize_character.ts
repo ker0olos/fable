@@ -56,8 +56,18 @@ export function customizeCharacter(
         ),
         fql.Let({
           updatedCharacter: fql.Update<Character>(fql.Ref(character), {
-            nickname,
-            image,
+            nickname: fql.If(
+              fql.IsNull(nickname),
+              fql.Select(['data', 'nickname'], character, fql.Null()),
+              // deno-lint-ignore no-non-null-assertion
+              nickname!,
+            ),
+            image: fql.If(
+              fql.IsNull(image),
+              fql.Select(['data', 'image'], character, fql.Null()),
+              // deno-lint-ignore no-non-null-assertion
+              image!,
+            ),
           }),
         }, ({ updatedCharacter }) => ({
           ok: true,

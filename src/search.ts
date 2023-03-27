@@ -267,7 +267,7 @@ function character(
         existing,
       });
 
-      if (userId && existing?.userId === userId) {
+      if (userId && existing?.user.id === userId) {
         message.insertComponents([
           new discord.Component()
             .setId('passign', existing.id)
@@ -374,11 +374,7 @@ function characterMessage(
 function characterEmbed(
   character: Character | DisaggregatedCharacter,
   options?: {
-    existing?: {
-      userId: string;
-      mediaId: string;
-      rating: number;
-    };
+    existing?: Partial<Schema.Character>;
     rating?: Rating | boolean;
     media?: {
       title?: boolean | string;
@@ -398,23 +394,28 @@ function characterEmbed(
     ...options,
   };
 
-  const alias = packs.aliasToArray(character.name);
-
   const embed = new discord.Embed();
 
+  const imageUrl = options.existing?.image ?? character.images?.[0].url;
+  const alias = options.existing?.nickname ??
+    packs.aliasToArray(character.name)[0];
+
   if (options.mode === 'full') {
-    embed.setImage({ url: character.images?.[0].url });
+    embed.setImage({ url: imageUrl });
   } else {
-    embed
-      .setThumbnail({ url: character.images?.[0].url });
+    embed.setThumbnail({ url: imageUrl });
   }
 
-  if (options?.existing) {
-    const rating = new Rating({ stars: options.existing.rating });
-
+  if (options?.existing?.rating) {
     // FIXME #63 Media Conflict
 
-    embed.setDescription(`<@${options.existing.userId}>\n\n${rating.emotes}`);
+    const rating = new Rating({ stars: options.existing.rating });
+
+    if (options.existing.user?.id) {
+      embed.setDescription(
+        `<@${options.existing.user.id}>\n\n${rating.emotes}`,
+      );
+    }
   } else if (options?.rating) {
     if (typeof options.rating === 'boolean' && options.rating) {
       options.rating = Rating.fromCharacter(character);
@@ -443,7 +444,7 @@ function characterEmbed(
   if (mediaTitle) {
     embed.addField({
       name: utils.wrap(mediaTitle),
-      value: `**${utils.wrap(alias[0])}**`,
+      value: `**${utils.wrap(alias)}**`,
     });
 
     if (options.description && description) {
@@ -452,8 +453,8 @@ function characterEmbed(
   } else {
     embed.addField({
       name: options.description && options.mode === 'thumbnail' || !description
-        ? `${utils.wrap(alias[0])}`
-        : `${utils.wrap(alias[0])}\n${discord.empty}`,
+        ? `${utils.wrap(alias)}`
+        : `${utils.wrap(alias)}\n${discord.empty}`,
       value: options.description ? description : undefined,
     });
   }
@@ -586,7 +587,7 @@ async function mediaCharacters(
       .setLabel(`/${media.type.toLowerCase()}`),
   ]);
 
-  if (userId && existing?.userId === userId) {
+  if (userId && existing?.user.id === userId) {
     message.insertComponents([
       new discord.Component()
         .setId('passign', existing.id)
@@ -684,11 +685,7 @@ async function mediaFound(
     message = characterMessage(
       characters[0],
       {
-        existing: {
-          mediaId: character.mediaId,
-          rating: character.rating,
-          userId: character.user.id,
-        },
+        existing: character,
         rating: new Rating({ stars: character.rating }),
         relations: false,
       },

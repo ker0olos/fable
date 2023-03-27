@@ -181,6 +181,8 @@ export namespace Schema {
     rating: number;
     mediaId: string;
     user: { id: string };
+    nickname?: string;
+    image?: string;
   };
   export type Inventory = {
     availablePulls: number;

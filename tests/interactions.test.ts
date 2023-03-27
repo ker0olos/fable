@@ -30,8 +30,6 @@ import search from '../src/search.ts';
 import user from '../src/user.ts';
 import trade from '../src/trade.ts';
 
-import customize from '../src/customize.ts';
-
 import github from '../src/github.ts';
 
 import utils from '../src/utils.ts';
@@ -12750,7 +12748,7 @@ Deno.test('/profile', async (test) => {
   });
 });
 
-Deno.test('/image', async (test) => {
+Deno.test('/nick', async (test) => {
   await test.step('normal', async () => {
     const media: AniListMedia = {
       id: '2',
@@ -12774,6 +12772,8 @@ Deno.test('/image', async (test) => {
         }],
       },
     };
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -12801,12 +12801,14 @@ Deno.test('/image', async (test) => {
                   character: {
                     id: 'anilist:1',
                     mediaId: 'anilist:0',
+                    nickname: 'returned_name',
                     rating: 2,
                   },
                 },
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -12818,28 +12820,61 @@ Deno.test('/image', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await customize.image({
+      const message = user.customize({
+        token: 'test_token',
         userId: 'user',
         guildId: 'guild',
         id: 'anilist:1',
-        image: 'image_url',
+        nick: 'new_nick',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
               fields: [
                 {
                   name: 'title',
-                  value: '**name 1**',
+                  value: '**returned_name**',
                 },
               ],
               image: {
-                url: 'undefined/external/',
+                url: 'http://localhost:8000/external/',
               },
             },
           ],
@@ -12856,11 +12891,15 @@ Deno.test('/image', async (test) => {
           }],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -12873,6 +12912,8 @@ Deno.test('/image', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -12901,6 +12942,7 @@ Deno.test('/image', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -12912,18 +12954,50 @@ Deno.test('/image', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await customize.image({
+      const message = user.customize({
+        token: 'test_token',
         userId: 'user',
         guildId: 'guild',
         id: 'anilist:1',
-        image: 'image_url',
+        nick: 'new_nick',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          flags: 64,
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -12943,11 +13017,15 @@ Deno.test('/image', async (test) => {
           }],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -12960,6 +13038,8 @@ Deno.test('/image', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -12996,6 +13076,7 @@ Deno.test('/image', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -13007,18 +13088,50 @@ Deno.test('/image', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await customize.image({
+      const message = user.customize({
+        token: 'test_token',
         userId: 'user',
         guildId: 'guild',
         id: 'anilist:1',
-        image: 'image_url',
+        nick: 'new_nick',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          flags: 64,
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -13039,11 +13152,432 @@ Deno.test('/image', async (test) => {
           }],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+});
+
+Deno.test('/image', async (test) => {
+  await test.step('normal', async () => {
+    const media: AniListMedia = {
+      id: '2',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      popularity: 0,
+    };
+
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'name 1',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: media,
+        }],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters: [character],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                customizeCharacter: {
+                  ok: true,
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:0',
+                    rating: 2,
+                    image: 'returned_image',
+                  },
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.customize({
+        token: 'test_token',
+        userId: 'user',
+        guildId: 'guild',
+        id: 'anilist:1',
+        image: 'image_url',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**name 1**',
+                },
+              ],
+              image: {
+                url: 'http://localhost:8000/external/returned_image',
+              },
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('character not found', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                customizeCharacter: {
+                  ok: false,
+                  error: 'CHARACTER_NOT_FOUND',
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.customize({
+        token: 'test_token',
+        userId: 'user',
+        guildId: 'guild',
+        id: 'anilist:1',
+        image: 'image_url',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'name 1 hasn\'t been found by anyone yet.',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('character not owned', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                customizeCharacter: {
+                  ok: false,
+                  error: 'CHARACTER_NOT_OWNED',
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:0',
+                    rating: 2,
+                    user: {
+                      id: 'user_2',
+                    },
+                  },
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.customize({
+        token: 'test_token',
+        userId: 'user',
+        guildId: 'guild',
+        id: 'anilist:1',
+        image: 'image_url',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'name 1 is owned by <@user_2> and cannot be customized by you.',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 });

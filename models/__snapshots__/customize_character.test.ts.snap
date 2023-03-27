@@ -103,12 +103,80 @@ snapshot[`model 1`] = `
                                                               object: {
                                                                 image: Expr {
                                                                   raw: {
-                                                                    var: "image",
+                                                                    else: Expr {
+                                                                      raw: {
+                                                                        var: "image",
+                                                                      },
+                                                                    },
+                                                                    if: Expr {
+                                                                      raw: {
+                                                                        equals: Expr {
+                                                                          raw: [
+                                                                            Expr {
+                                                                              raw: {
+                                                                                var: "image",
+                                                                              },
+                                                                            },
+                                                                            null,
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    then: Expr {
+                                                                      raw: {
+                                                                        default: null,
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "character",
+                                                                          },
+                                                                        },
+                                                                        select: Expr {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "image",
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
                                                                   },
                                                                 },
                                                                 nickname: Expr {
                                                                   raw: {
-                                                                    var: "nickname",
+                                                                    else: Expr {
+                                                                      raw: {
+                                                                        var: "nickname",
+                                                                      },
+                                                                    },
+                                                                    if: Expr {
+                                                                      raw: {
+                                                                        equals: Expr {
+                                                                          raw: [
+                                                                            Expr {
+                                                                              raw: {
+                                                                                var: "nickname",
+                                                                              },
+                                                                            },
+                                                                            null,
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    then: Expr {
+                                                                      raw: {
+                                                                        default: null,
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "character",
+                                                                          },
+                                                                        },
+                                                                        select: Expr {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "nickname",
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
                                                                   },
                                                                 },
                                                               },
@@ -904,12 +972,80 @@ snapshot[`model 1`] = `
                                                               object: {
                                                                 image: Expr {
                                                                   raw: {
-                                                                    var: "image",
+                                                                    else: Expr {
+                                                                      raw: {
+                                                                        var: "image",
+                                                                      },
+                                                                    },
+                                                                    if: Expr {
+                                                                      raw: {
+                                                                        equals: Expr {
+                                                                          raw: [
+                                                                            Expr {
+                                                                              raw: {
+                                                                                var: "image",
+                                                                              },
+                                                                            },
+                                                                            null,
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    then: Expr {
+                                                                      raw: {
+                                                                        default: null,
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "character",
+                                                                          },
+                                                                        },
+                                                                        select: Expr {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "image",
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
                                                                   },
                                                                 },
                                                                 nickname: Expr {
                                                                   raw: {
-                                                                    var: "nickname",
+                                                                    else: Expr {
+                                                                      raw: {
+                                                                        var: "nickname",
+                                                                      },
+                                                                    },
+                                                                    if: Expr {
+                                                                      raw: {
+                                                                        equals: Expr {
+                                                                          raw: [
+                                                                            Expr {
+                                                                              raw: {
+                                                                                var: "nickname",
+                                                                              },
+                                                                            },
+                                                                            null,
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    then: Expr {
+                                                                      raw: {
+                                                                        default: null,
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "character",
+                                                                          },
+                                                                        },
+                                                                        select: Expr {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "nickname",
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
                                                                   },
                                                                 },
                                                               },

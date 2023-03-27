@@ -50,8 +50,11 @@ Deno.test('find character', async () => {
       id: 'id',
       rating: 1,
       mediaId: 'media_id',
-      userId: 'user_id',
-    });
+      user: {
+        id: 'user_id',
+      },
+      // deno-lint-ignore no-explicit-any
+    } as any);
   } finally {
     fetchStub.restore();
   }

@@ -397,7 +397,8 @@ export const commands = [
   }),
   ...Command({
     name: 'image',
-    description: 'Set the image of character',
+    description: 'Change the image of a character',
+    aliases: ['custom'],
     options: [
       Option({
         name: 'name',
@@ -405,15 +406,31 @@ export const commands = [
         type: Type.STRING,
       }),
       Option({
-        name: 'image_url',
-        description: 'An image url',
+        name: 'new_image',
+        description: 'New image url',
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'nick',
+    description: 'Change the nickname of a character',
+    options: [
+      Option({
+        name: 'name',
+        description: 'The name of the character',
+        type: Type.STRING,
+      }),
+      Option({
+        name: 'new_nick',
+        description: 'New nickname',
         type: Type.STRING,
       }),
     ],
   }),
   ...Command({
     name: 'profile',
-    aliases: ['user'],
+    aliases: ['user', 'pr'],
     description: 'View someone\'s profile and party',
     options: [
       Option({

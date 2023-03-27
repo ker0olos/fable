@@ -685,7 +685,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Set the image of character",
+    description: "Change the image of a character",
     name: "image",
     options: [
       {
@@ -700,8 +700,58 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "An image url",
-        name: "image_url",
+        description: "New image url",
+        name: "new_image",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Change the image of a character",
+    name: "custom",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The name of the character",
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "New image url",
+        name: "new_image",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Change the nickname of a character",
+    name: "nick",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The name of the character",
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "New nickname",
+        name: "new_nick",
         options: undefined,
         required: true,
         type: 3,
@@ -728,6 +778,22 @@ snapshot[`commands 1`] = `
     default_member_permissions: undefined,
     description: "View someone's profile and party",
     name: "user",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The user you want to check",
+        name: "user",
+        options: undefined,
+        required: true,
+        type: 6,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "View someone's profile and party",
+    name: "pr",
     options: [
       {
         autocomplete: undefined,

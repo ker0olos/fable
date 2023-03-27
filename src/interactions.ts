@@ -10,8 +10,6 @@ import gacha from './gacha.ts';
 import trade from './trade.ts';
 import help from './help.ts';
 
-import customize from './customize.ts';
-
 import demo from './demo.tsx';
 
 import webhooks from './webhooks.ts';
@@ -132,8 +130,9 @@ export const handler = async (r: Request) => {
             'trade',
             'offer',
             'give',
-            'customize',
+            'nick',
             'image',
+            'custom',
             'party',
             'team',
             'p',
@@ -255,7 +254,8 @@ export const handler = async (r: Request) => {
             }).send();
           }
           case 'profile':
-          case 'user': {
+          case 'user':
+          case 'pr': {
             const userId = options['user'] as string;
 
             const nick = discord.getUsername(
@@ -439,19 +439,25 @@ export const handler = async (r: Request) => {
                 token,
               })
               .send();
-          case 'image': {
+          case 'nick':
+          case 'image':
+          case 'custom': {
             const name = options['name'] as string;
-            const image = options['image_url'] as string;
 
-            return (await customize.image({
+            const nick = options['new_nick'] as string | undefined;
+            const image = options['new_image'] as string | undefined;
+
+            return user.customize({
+              nick,
               image,
+              token,
               guildId,
               userId: member.user.id,
               search: name,
               id: name.startsWith(idPrefix)
                 ? name.substring(idPrefix.length)
                 : undefined,
-            })).send();
+            }).send();
           }
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion

@@ -90,6 +90,7 @@ Deno.test('media components', async () => {
 
     assertSpyCall(searchStub, 0, {
       args: [{
+        token: 'token',
         id: 'media_id',
         guildId: 'guild_id',
       }],
@@ -176,6 +177,7 @@ Deno.test('character components', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
           id: 'character_id',
@@ -262,6 +264,7 @@ Deno.test('character components', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
           id: 'character_id',
