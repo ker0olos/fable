@@ -685,7 +685,32 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "View someone's profile, stats and party",
+    description: "Set the image of character",
+    name: "image",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The name of the character",
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "An image url",
+        name: "image_url",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "View someone's profile and party",
     name: "profile",
     options: [
       {
@@ -701,7 +726,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "View someone's profile, stats and party",
+    description: "View someone's profile and party",
     name: "user",
     options: [
       {

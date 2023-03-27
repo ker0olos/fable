@@ -31,33 +31,64 @@ const musicUrlRegex = /youtube|spotify/;
 const externalUrlRegex =
   /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoon\.com|amazon\.com)[\S]*$/;
 
-async function media(
-  { id, search, debug, guildId }: {
+function media(
+  { token, id, search, debug, guildId }: {
+    token: string;
     id?: string;
     search?: string;
     debug?: boolean;
     guildId: string;
   },
-): Promise<discord.Message> {
-  const results: (Media | DisaggregatedMedia)[] = await packs
-    .media(id ? { ids: [id], guildId } : { search, guildId });
+): discord.Message {
+  packs
+    .media(id ? { ids: [id], guildId } : { search, guildId })
+    .then((results: (Media | DisaggregatedMedia)[]) => {
+      if (!results.length) {
+        throw new Error('404');
+      }
 
-  if (!results.length) {
-    throw new Error('404');
-  }
+      return packs.aggregate<Media>({
+        guildId,
+        media: results[0],
+        end: 4,
+      });
+    })
+    .then(async (media) => {
+      if (debug) {
+        return await mediaDebugMessage(media)
+          .patch(token);
+      }
 
-  // aggregate the media by populating any references to other media/characters
-  const media = await packs.aggregate<Media>({
-    guildId,
-    media: results[0],
-    end: 4,
-  });
+      return await mediaMessage(media)
+        .patch(token);
+    })
+    .catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'Found _nothing_ matching that query!',
+            ),
+          ).patch(token);
+      }
 
-  if (debug) {
-    return mediaDebugMessage(media);
-  }
+      if (!config.sentry) {
+        throw err;
+      }
 
-  return mediaMessage(media);
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
 }
 
 function mediaMessage(media: Media): discord.Message {
@@ -195,53 +226,84 @@ function mediaDebugMessage(
   return new discord.Message().addEmbed(embed);
 }
 
-async function character(
-  { id, userId, guildId, search, debug }: {
-    id?: string;
+function character(
+  { token, userId, guildId, search, id, debug }: {
+    token: string;
     guildId: string;
     userId?: string;
+    id?: string;
     search?: string;
     debug?: boolean;
   },
-): Promise<discord.Message> {
-  const results: (Character | DisaggregatedCharacter)[] = await packs
-    .characters(id ? { ids: [id], guildId } : { search, guildId });
+): discord.Message {
+  packs
+    .characters(id ? { ids: [id], guildId } : { search, guildId })
+    .then((results: (Character | DisaggregatedCharacter)[]) => {
+      if (!results.length) {
+        throw new Error('404');
+      }
 
-  if (!results.length) {
-    throw new Error('404');
-  }
+      return Promise.all([
+        // aggregate the media by populating any references to other media/character objects
+        packs.aggregate<Character>({
+          guildId,
+          character: results[0],
+          end: 4,
+        }),
+        // find if the character is owned
+        users.findCharacter({
+          guildId,
+          characterId: `${results[0].packId}:${results[0].id}`,
+        }),
+      ]);
+    })
+    .then(async ([character, existing]) => {
+      if (debug) {
+        return await characterDebugMessage(character)
+          .patch(token);
+      }
 
-  const [character, existing] = await Promise.all([
-    // aggregate the media by populating any references to other media/character objects
-    packs.aggregate<Character>({
-      guildId,
-      character: results[0],
-      end: 4,
-    }),
-    // find if the character is owned
-    users.findCharacter({
-      guildId,
-      characterId: `${results[0].packId}:${results[0].id}`,
-    }),
-  ]);
+      const message = characterMessage(character, {
+        existing,
+      });
 
-  if (debug) {
-    return characterDebugMessage(character);
-  }
+      if (userId && existing?.userId === userId) {
+        message.insertComponents([
+          new discord.Component()
+            .setId('passign', existing.id)
+            .setLabel(`/p assign`),
+        ]);
+      }
 
-  const message = characterMessage(character, {
-    existing,
-  });
+      return await message.patch(token);
+    })
+    .catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'Found _nothing_ matching that query!',
+            ),
+          ).patch(token);
+      }
 
-  if (userId && existing?.userId === userId) {
-    message.insertComponents([
-      new discord.Component()
-        .setId('passign', existing.id)
-        .setLabel(`/p assign`),
-    ]);
-  }
+      if (!config.sentry) {
+        throw err;
+      }
 
-  return message;
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
 }
 
 function characterMessage(

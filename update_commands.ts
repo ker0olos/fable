@@ -396,9 +396,25 @@ export const commands = [
     aliases: ['q'],
   }),
   ...Command({
+    name: 'image',
+    description: 'Set the image of character',
+    options: [
+      Option({
+        name: 'name',
+        description: 'The name of the character',
+        type: Type.STRING,
+      }),
+      Option({
+        name: 'image_url',
+        description: 'An image url',
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
     name: 'profile',
     aliases: ['user'],
-    description: 'View someone\'s profile, stats and party',
+    description: 'View someone\'s profile and party',
     options: [
       Option({
         name: 'user',

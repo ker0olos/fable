@@ -73,6 +73,7 @@ export enum ButtonStyle {
   Grey = 2,
   Green = 3,
   Red = 4,
+  Url = 5,
 }
 
 export enum TextInputStyle {
@@ -101,6 +102,11 @@ export type User = {
 type Resolved = {
   users?: Record<string, User>;
   members?: Record<string, Omit<Member, 'user'>>;
+  attachments?: Record<string, {
+    ephemeral: boolean;
+    content_type: string;
+    url: string;
+  }>;
 };
 
 type AllowedPings = {
@@ -407,7 +413,7 @@ export class Component {
           break;
         case ComponentType.Button:
           if (this.#data.url) {
-            this.#data.style = 5;
+            this.#data.style = ButtonStyle.Url;
           } else {
             this.#data.style = ButtonStyle.Grey;
           }

@@ -7,8 +7,10 @@ import party from './party.ts';
 import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
-import help from './help.ts';
 import trade from './trade.ts';
+import help from './help.ts';
+
+import customize from './customize.ts';
 
 import demo from './demo.tsx';
 
@@ -130,6 +132,8 @@ export const handler = async (r: Request) => {
             'trade',
             'offer',
             'give',
+            'customize',
+            'image',
             'party',
             'team',
             'p',
@@ -223,14 +227,15 @@ export const handler = async (r: Request) => {
               })).send();
             }
 
-            return (await search.media({
+            return search.media({
+              token,
               guildId,
               search: title,
               debug: Boolean(options['debug']),
               id: title.startsWith(idPrefix)
                 ? title.substring(idPrefix.length)
                 : undefined,
-            }))
+            })
               .send();
           }
           case 'character':
@@ -238,7 +243,8 @@ export const handler = async (r: Request) => {
           case 'im': {
             const name = options['name'] as string;
 
-            return (await search.character({
+            return search.character({
+              token,
               userId: member.user.id,
               guildId,
               search: name,
@@ -246,8 +252,7 @@ export const handler = async (r: Request) => {
               id: name.startsWith(idPrefix)
                 ? name.substring(idPrefix.length)
                 : undefined,
-            }))
-              .send();
+            }).send();
           }
           case 'profile':
           case 'user': {
@@ -434,6 +439,20 @@ export const handler = async (r: Request) => {
                 token,
               })
               .send();
+          case 'image': {
+            const name = options['name'] as string;
+            const image = options['image_url'] as string;
+
+            return (await customize.image({
+              image,
+              guildId,
+              userId: member.user.id,
+              search: name,
+              id: name.startsWith(idPrefix)
+                ? name.substring(idPrefix.length)
+                : undefined,
+            })).send();
+          }
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
@@ -496,7 +515,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return (await search.media({ id, guildId }))
+            return search.media({ id, guildId, token })
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -507,11 +526,12 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const type = customValues![1];
 
-            return (await search.character({
+            return search.character({
+              token,
               userId: member.user.id,
               guildId,
               id,
-            }))
+            })
               .setType(
                 type === '1'
                   ? discord.MessageType.New
