@@ -250,7 +250,7 @@ function text(s: string | number): Promise<Uint8Array> {
 }
 
 async function proxy(r: Request): Promise<Response> {
-  const { pathname, searchParams, origin } = new URL(r.url);
+  const { pathname, searchParams } = new URL(r.url);
 
   try {
     let cached = true;
