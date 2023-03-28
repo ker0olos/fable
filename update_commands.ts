@@ -223,7 +223,7 @@ export const commands = [
       }),
       Option({
         name: 'characters',
-        description: 'List the characters from the media',
+        description: 'View the characters from the media',
         type: Type.BOOLEAN,
         optional: true,
       }),
@@ -251,7 +251,7 @@ export const commands = [
   ...Command({
     name: 'found',
     aliases: ['obtained', 'owned'],
-    description: 'List all characters found from a specific media',
+    description: 'View all characters found from a specific media',
     options: [
       Option({
         name: 'title',
@@ -516,8 +516,8 @@ export const commands = [
     aliases: ['coll', 'mm'],
     options: [
       Option({
-        name: 'all',
-        description: 'View all your characters in bulks',
+        name: 'list',
+        description: 'List all your characters in bulks',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -550,7 +550,7 @@ export const commands = [
           }),
           Option({
             name: 'user',
-            description: 'List someone else\'s stars',
+            description: 'View someone else\'s stars',
             type: Type.USER,
             optional: true,
           }),
@@ -586,13 +586,13 @@ export const commands = [
     options: [
       Option({
         name: 'builtin',
-        description: 'List all the builtin packs',
+        description: 'View all the builtin packs',
         type: Type.SUB_COMMAND,
         optional: true,
       }),
       Option({
         name: 'community',
-        description: 'List all instated community packs',
+        description: 'View all instated community packs',
         type: Type.SUB_COMMAND,
         optional: true,
       }),

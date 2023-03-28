@@ -363,10 +363,10 @@ export const handler = async (r: Request) => {
                 }))
                   .send();
               }
-              case 'all': {
+              case 'list': {
                 const filter = options['filter'] as number | undefined;
 
-                return user.all({
+                return user.list({
                   token,
                   filter,
                   userId: userId ?? member.user.id,
@@ -614,7 +614,7 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'call': {
+          case 'clist': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
@@ -624,7 +624,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![2]);
 
-            return user.all({
+            return user.list({
               token,
               index,
               filter,

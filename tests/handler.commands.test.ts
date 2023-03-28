@@ -2363,7 +2363,7 @@ Deno.test('collection command handlers', async (test) => {
     }
   });
 
-  await test.step('collection all', async () => {
+  await test.step('collection list', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2379,7 +2379,7 @@ Deno.test('collection command handlers', async (test) => {
         name: 'collection',
         options: [{
           type: 1,
-          name: 'all',
+          name: 'list',
         }],
       },
     });
@@ -2391,7 +2391,7 @@ Deno.test('collection command handlers', async (test) => {
       body,
     } as any));
 
-    const userStub = stub(user, 'all', () => ({
+    const userStub = stub(user, 'list', () => ({
       send: () => true,
     } as any));
 
@@ -2450,7 +2450,7 @@ Deno.test('collection command handlers', async (test) => {
     }
   });
 
-  await test.step('collection all (rating filter)', async () => {
+  await test.step('collection list (rating filter)', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2466,7 +2466,7 @@ Deno.test('collection command handlers', async (test) => {
         name: 'collection',
         options: [{
           type: 1,
-          name: 'all',
+          name: 'list',
           options: [{
             name: 'filter',
             value: 2,
@@ -2482,7 +2482,7 @@ Deno.test('collection command handlers', async (test) => {
       body,
     } as any));
 
-    const userStub = stub(user, 'all', () => ({
+    const userStub = stub(user, 'list', () => ({
       send: () => true,
     } as any));
 
@@ -2541,7 +2541,7 @@ Deno.test('collection command handlers', async (test) => {
     }
   });
 
-  await test.step('collection all (user)', async () => {
+  await test.step('collection list (user)', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2569,7 +2569,7 @@ Deno.test('collection command handlers', async (test) => {
         options: [
           {
             type: 1,
-            name: 'all',
+            name: 'list',
             options: [{
               name: 'user',
               value: 'another_user_id',
@@ -2586,7 +2586,7 @@ Deno.test('collection command handlers', async (test) => {
       body,
     } as any));
 
-    const userStub = stub(user, 'all', () => ({
+    const userStub = stub(user, 'list', () => ({
       send: () => true,
     } as any));
 

@@ -803,7 +803,7 @@ Deno.test('collection media components', async (test) => {
   });
 });
 
-Deno.test('collection all components', async (test) => {
+Deno.test('collection list components', async (test) => {
   await test.step('normal', async () => {
     const body = JSON.stringify({
       id: 'id',
@@ -817,7 +817,7 @@ Deno.test('collection all components', async (test) => {
         },
       },
       data: {
-        custom_id: 'call=user_id==1',
+        custom_id: 'clist=user_id==1',
       },
     });
 
@@ -832,7 +832,7 @@ Deno.test('collection all components', async (test) => {
       send: () => true,
     }));
 
-    const userStub = stub(user, 'all', () =>
+    const userStub = stub(user, 'list', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -905,7 +905,7 @@ Deno.test('collection all components', async (test) => {
         },
       },
       data: {
-        custom_id: 'call=user_id=5=1',
+        custom_id: 'clist=user_id=5=1',
       },
     });
 
@@ -920,7 +920,7 @@ Deno.test('collection all components', async (test) => {
       send: () => true,
     }));
 
-    const userStub = stub(user, 'all', () =>
+    const userStub = stub(user, 'list', () =>
       ({
         setType: setTypeSpy,
       }) as any);

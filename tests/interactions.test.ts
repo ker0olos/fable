@@ -5669,7 +5669,7 @@ Deno.test('/collection media', async (test) => {
   });
 });
 
-Deno.test('/collection all', async (test) => {
+Deno.test('/collection list', async (test) => {
   await test.step('normal', async () => {
     const media: AniListMedia[] = [
       {
@@ -5843,7 +5843,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
@@ -5886,7 +5886,7 @@ Deno.test('/collection all', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'call=user_id==1=prev',
+                  custom_id: 'clist=user_id==1=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -5899,7 +5899,7 @@ Deno.test('/collection all', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'call=user_id==1=next',
+                  custom_id: 'clist=user_id==1=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -6127,7 +6127,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
@@ -6170,7 +6170,7 @@ Deno.test('/collection all', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'call=user_id==1=prev',
+                  custom_id: 'clist=user_id==1=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -6183,7 +6183,7 @@ Deno.test('/collection all', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'call=user_id==1=next',
+                  custom_id: 'clist=user_id==1=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -6357,7 +6357,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         filter: 2,
         userId: 'user_id',
@@ -6401,7 +6401,7 @@ Deno.test('/collection all', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'call=user_id=2=0=prev',
+                  custom_id: 'clist=user_id=2=0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -6414,7 +6414,7 @@ Deno.test('/collection all', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'call=user_id=2=0=next',
+                  custom_id: 'clist=user_id=2=0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -6625,7 +6625,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         userId: 'another_user_id',
         guildId: 'guild_id',
@@ -6668,7 +6668,7 @@ Deno.test('/collection all', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'call=another_user_id==1=prev',
+                  custom_id: 'clist=another_user_id==1=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -6681,7 +6681,7 @@ Deno.test('/collection all', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'call=another_user_id==1=next',
+                  custom_id: 'clist=another_user_id==1=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -6844,7 +6844,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
@@ -6887,7 +6887,7 @@ Deno.test('/collection all', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'call=user_id==0=prev',
+                  custom_id: 'clist=user_id==0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -6900,7 +6900,7 @@ Deno.test('/collection all', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'call=user_id==0=next',
+                  custom_id: 'clist=user_id==0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -7048,7 +7048,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
@@ -7091,7 +7091,7 @@ Deno.test('/collection all', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'call=user_id==0=prev',
+                  custom_id: 'clist=user_id==0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -7104,7 +7104,7 @@ Deno.test('/collection all', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'call=user_id==0=next',
+                  custom_id: 'clist=user_id==0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -7176,7 +7176,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         nick: 'Dave',
         userId: 'another_user_id',
@@ -7267,7 +7267,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
@@ -7365,7 +7365,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         filter: 3,
         userId: 'user_id',

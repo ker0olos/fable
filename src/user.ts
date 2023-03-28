@@ -762,7 +762,7 @@ async function media({
   });
 }
 
-function all({
+function list({
   token,
   userId,
   guildId,
@@ -917,7 +917,7 @@ function all({
 
       return discord.Message.page({
         index,
-        type: 'call',
+        type: 'clist',
         target: discord.join(userId, filter?.toString() ?? ''),
         total: chunks.length,
         message: message.addEmbed(embed),
@@ -953,7 +953,7 @@ const user = {
   customize,
   stars,
   media,
-  all,
+  list,
 };
 
 export default user;

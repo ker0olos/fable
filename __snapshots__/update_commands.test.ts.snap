@@ -28,7 +28,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List the characters from the media",
+        description: "View the characters from the media",
         name: "characters",
         options: undefined,
         required: false,
@@ -62,7 +62,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List the characters from the media",
+        description: "View the characters from the media",
         name: "characters",
         options: undefined,
         required: false,
@@ -96,7 +96,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List the characters from the media",
+        description: "View the characters from the media",
         name: "characters",
         options: undefined,
         required: false,
@@ -130,7 +130,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List the characters from the media",
+        description: "View the characters from the media",
         name: "characters",
         options: undefined,
         required: false,
@@ -215,7 +215,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "List all characters found from a specific media",
+    description: "View all characters found from a specific media",
     name: "found",
     options: [
       {
@@ -231,7 +231,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "List all characters found from a specific media",
+    description: "View all characters found from a specific media",
     name: "obtained",
     options: [
       {
@@ -247,7 +247,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "List all characters found from a specific media",
+    description: "View all characters found from a specific media",
     name: "owned",
     options: [
       {
@@ -1339,8 +1339,8 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your characters in bulks",
-        name: "all",
+        description: "List all your characters in bulks",
+        name: "list",
         options: [
           {
             autocomplete: undefined,
@@ -1424,7 +1424,7 @@ snapshot[`commands 1`] = `
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "List someone else's stars",
+            description: "View someone else's stars",
             name: "user",
             options: undefined,
             required: false,
@@ -1472,8 +1472,8 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your characters in bulks",
-        name: "all",
+        description: "List all your characters in bulks",
+        name: "list",
         options: [
           {
             autocomplete: undefined,
@@ -1557,7 +1557,7 @@ snapshot[`commands 1`] = `
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "List someone else's stars",
+            description: "View someone else's stars",
             name: "user",
             options: undefined,
             required: false,
@@ -1605,8 +1605,8 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your characters in bulks",
-        name: "all",
+        description: "List all your characters in bulks",
+        name: "list",
         options: [
           {
             autocomplete: undefined,
@@ -1690,7 +1690,7 @@ snapshot[`commands 1`] = `
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "List someone else's stars",
+            description: "View someone else's stars",
             name: "user",
             options: undefined,
             required: false,
@@ -1738,7 +1738,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List all the builtin packs",
+        description: "View all the builtin packs",
         name: "builtin",
         options: undefined,
         required: false,
@@ -1747,7 +1747,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List all instated community packs",
+        description: "View all instated community packs",
         name: "community",
         options: undefined,
         required: false,
