@@ -766,6 +766,7 @@ function all({
   token,
   userId,
   guildId,
+  filter,
   index,
   nick,
 }: {
@@ -773,6 +774,7 @@ function all({
   index: number;
   userId: string;
   guildId: string;
+  filter?: number;
   nick?: string;
 }): discord.Message {
   const query = gql`
@@ -780,6 +782,7 @@ function all({
       getUserInventory(userId: $userId, guildId: $guildId) {
         characters {
           id
+          nickname
           mediaId
           rating
         }
@@ -805,7 +808,11 @@ function all({
 
       const message = new discord.Message();
 
-      const characters = getUserInventory.characters;
+      let characters = getUserInventory.characters;
+
+      if (filter) {
+        characters = characters.filter(({ rating }) => rating === filter);
+      }
 
       if (!characters?.length) {
         const message = new discord.Message()
@@ -814,7 +821,9 @@ function all({
               .setDescription(
                 `${
                   nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
-                } have any characters`,
+                } have any${
+                  filter ? ` ${filter}${discord.emotes.smolStar}` : ''
+                } characters`,
               ),
           );
 
@@ -882,12 +891,12 @@ function all({
 
         const charactersNames = charactersResult.map((char) => {
           // deno-lint-ignore no-non-null-assertion
-          const { rating } = charactersByMediaId[mediaId].find(({ id }) =>
-            `${char.packId}:${char.id}` === id
-          )!;
+          const { rating, nickname } = charactersByMediaId[mediaId].find((
+            { id },
+          ) => `${char.packId}:${char.id}` === id)!;
 
           return `${rating}${discord.emotes.smolStar} ${
-            utils.wrap(packs.aliasToArray(char.name)[0])
+            utils.wrap(nickname ?? packs.aliasToArray(char.name)[0])
           }`;
         });
 
@@ -909,7 +918,7 @@ function all({
       return discord.Message.page({
         index,
         type: 'call',
-        target: userId,
+        target: discord.join(userId, filter?.toString() ?? ''),
         total: chunks.length,
         message: message.addEmbed(embed),
         next: index + 1 < chunks.length,

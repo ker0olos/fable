@@ -527,6 +527,13 @@ export const commands = [
             type: Type.USER,
             optional: true,
           }),
+          Option({
+            name: 'filter',
+            description: 'Filter by rating',
+            type: Type.INTEGER,
+            choices: spots.toReversed(),
+            optional: true,
+          }),
         ],
       }),
       Option({

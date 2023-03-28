@@ -364,8 +364,11 @@ export const handler = async (r: Request) => {
                   .send();
               }
               case 'all': {
+                const filter = options['filter'] as number | undefined;
+
                 return user.all({
                   token,
+                  filter,
                   userId: userId ?? member.user.id,
                   index: 0,
                   guildId,
@@ -614,12 +617,17 @@ export const handler = async (r: Request) => {
           case 'call': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
+
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
+            const filter = parseInt(customValues![1]);
+
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![2]);
 
             return user.all({
               token,
               index,
+              filter,
               guildId,
               userId,
             })

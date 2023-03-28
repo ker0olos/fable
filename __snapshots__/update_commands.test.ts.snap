@@ -1351,6 +1351,36 @@ snapshot[`commands 1`] = `
             required: false,
             type: 6,
           },
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "5",
+                value: 5,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "1",
+                value: 1,
+              },
+            ],
+            description: "Filter by rating",
+            name: "filter",
+            options: undefined,
+            required: false,
+            type: 4,
+          },
         ],
         required: false,
         type: 1,
@@ -1454,6 +1484,36 @@ snapshot[`commands 1`] = `
             required: false,
             type: 6,
           },
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "5",
+                value: 5,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "1",
+                value: 1,
+              },
+            ],
+            description: "Filter by rating",
+            name: "filter",
+            options: undefined,
+            required: false,
+            type: 4,
+          },
         ],
         required: false,
         type: 1,
@@ -1556,6 +1616,36 @@ snapshot[`commands 1`] = `
             options: undefined,
             required: false,
             type: 6,
+          },
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "5",
+                value: 5,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "1",
+                value: 1,
+              },
+            ],
+            description: "Filter by rating",
+            name: "filter",
+            options: undefined,
+            required: false,
+            type: 4,
           },
         ],
         required: false,
