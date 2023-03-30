@@ -1,4 +1,5 @@
 import {
+  BooleanExpr,
   Client,
   fql,
   InstanceExpr,
@@ -18,6 +19,62 @@ import {
 } from './get_user_inventory.ts';
 
 import { Character, History } from './add_character_to_inventory.ts';
+
+export function verifyCharacters(
+  {
+    user,
+    instance,
+    // inventory,
+    charactersIds,
+  }: {
+    user: UserExpr;
+    instance: InstanceExpr;
+    inventory: InventoryExpr;
+    charactersIds: StringExpr[];
+  },
+): BooleanExpr {
+  return fql.Let({
+    characters: fql.Map(charactersIds, (id) =>
+      fql.Match(
+        fql.Index('characters_instance_id'),
+        id,
+        fql.Ref(instance),
+      )),
+  }, ({ characters }) =>
+    fql.If(
+      fql.All(fql.Map(characters, (char) => fql.IsNonEmpty(char))),
+      fql.If(
+        fql.All(fql.Map(characters, (char) =>
+          fql.Equals(
+            fql.Select(['data', 'user'], fql.Get(char)),
+            fql.Ref(user),
+          ))),
+        {
+          ok: true,
+        },
+        {
+          ok: false,
+          message: 'NOT_OWNED',
+          errors: fql.Map(
+            fql.Filter(characters, (char) =>
+              fql.Not(fql.Equals(
+                fql.Select(['data', 'user'], fql.Get(char)),
+                fql.Ref(user),
+              ))),
+            (char) => fql.Select(['data', 'id'], fql.Get(char)),
+          ),
+        },
+      ),
+      {
+        ok: false,
+        message: 'NOT_FOUND',
+        errors: fql.Map(
+          fql.Filter(characters, (char) => fql.Not(fql.IsNonEmpty(char))),
+          (char) => fql.Select(['@set', 'terms', 0], char),
+        ),
+      },
+    ));
+}
 
 export function giveCharacters(
   {
@@ -249,6 +306,34 @@ export default function (client: Client): {
 } {
   return {
     resolvers: [
+      fql.Resolver({
+        client,
+        name: 'verify_characters',
+        lambda: (
+          charactersIds: string[],
+          guildId: string,
+          userId: string,
+        ) => {
+          return fql.Let(
+            {
+              user: getUser(userId),
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+              inventory: getInventory({
+                user: fql.Var('user'),
+                instance: fql.Var('instance'),
+              }),
+            },
+            ({ user, inventory, instance }) =>
+              verifyCharacters({
+                user,
+                instance,
+                inventory,
+                charactersIds,
+              }),
+          );
+        },
+      }),
       fql.Resolver({
         client,
         name: 'give_characters',

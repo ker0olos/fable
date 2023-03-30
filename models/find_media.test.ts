@@ -30,7 +30,7 @@ import {
 import { default as Model, findCharacter, findMedia } from './find_media.ts';
 import { fql } from './fql.ts';
 
-Deno.test('get character media', async (test) => {
+Deno.test('find media', async (test) => {
   await test.step('no before, no after', () => {
     const ifStub = FakeIf();
     const letStub = FakeLet();
@@ -443,11 +443,10 @@ Deno.test('model', async (test) => {
   Model(client as any).indexers?.forEach((q) => q());
   Model(client as any).resolvers?.forEach((q) => q());
 
-  assertSpyCalls(client.query, 5);
+  assertSpyCalls(client.query, 4);
 
   await assertSnapshot(test, client.query.calls[0].args);
   await assertSnapshot(test, client.query.calls[1].args);
   await assertSnapshot(test, client.query.calls[2].args);
   await assertSnapshot(test, client.query.calls[3].args);
-  await assertSnapshot(test, client.query.calls[4].args);
 });

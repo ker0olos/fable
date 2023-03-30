@@ -6,6 +6,12 @@ type Response @embedded {
   manifest: Manifest
 }
 
+type Verify @embedded {
+  ok: Boolean!
+  message: String
+  errors: [String!]
+}
+
 type CharacterNode @embedded {
   character: Character
   anchor: String
@@ -36,7 +42,7 @@ type Query {
     @resolver(name: "find_character")
   
   #
-  verifyCharacters(charactersIds: [String!]!, guildId: String!, userId: String!): String!
+  verifyCharacters(charactersIds: [String!]!, guildId: String!, userId: String!): Verify!
     @resolver(name: "verify_characters")
 }
 

@@ -18,6 +18,7 @@ import {
   FakeAppendAll,
   FakeClient,
   FakeEquals,
+  FakeFilter,
   FakeForeach,
   FakeGet,
   FakeIf,
@@ -26,6 +27,7 @@ import {
   FakeLet,
   FakeMap,
   FakeMatch,
+  FakeNot,
   FakeRef,
   FakeRemoveAll,
   FakeUpdate,
@@ -38,7 +40,245 @@ import {
   default as Model,
   giveCharacters,
   tradeCharacters,
+  verifyCharacters,
 } from './trade_characters.ts';
+
+Deno.test('verify characters', async (test) => {
+  await test.step('ok', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const getStub = FakeGet();
+    const refStub = FakeRef();
+    const notStub = FakeNot();
+    const mapStub = FakeMap();
+    const filterStub = FakeFilter();
+    const allStub = FakeAll();
+    const equalsStub = FakeEquals();
+    const isNotEmptyStub = FakeIsNonEmpty();
+
+    const indexStub = FakeIndex();
+
+    const matchStub = stub(
+      fql,
+      'Match',
+      returnsNext([
+        { id: 'character_id' },
+      ]) as any,
+    );
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        { ref: 'user' },
+        { ref: 'user' },
+        'character_id',
+        'character_id',
+      ]) as any,
+    );
+
+    try {
+      const response = verifyCharacters({
+        user: 'user',
+        inventory: 'inventory',
+        charactersIds: ['character_id'],
+        instance: 'instance',
+      } as any) as any;
+
+      assertSpyCall(indexStub, 0, {
+        args: ['characters_instance_id'],
+      });
+
+      assertSpyCall(matchStub, 0, {
+        args: [
+          'characters_instance_id' as any,
+          'character_id',
+          {
+            ref: 'instance',
+          },
+        ],
+      });
+
+      assertEquals(response, {
+        ok: true,
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      getStub.restore();
+      refStub.restore();
+      notStub.restore();
+      mapStub.restore();
+      filterStub.restore();
+      allStub.restore();
+      matchStub.restore();
+      indexStub.restore();
+      selectStub.restore();
+      equalsStub.restore();
+      isNotEmptyStub.restore();
+    }
+  });
+
+  await test.step('not found', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const getStub = FakeGet();
+    const refStub = FakeRef();
+    const notStub = FakeNot();
+    const mapStub = FakeMap();
+    const filterStub = FakeFilter();
+    const allStub = FakeAll();
+    const equalsStub = FakeEquals();
+    const isNotEmptyStub = FakeIsNonEmpty();
+
+    const indexStub = FakeIndex();
+
+    const matchStub = stub(
+      fql,
+      'Match',
+      returnsNext([
+        'character_id',
+        undefined,
+      ]) as any,
+    );
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        { ref: 'user' },
+        { ref: 'user' },
+        { ref: 'user' },
+        'character_id',
+        'character_id',
+        'character_id_2',
+      ]) as any,
+    );
+
+    try {
+      const response = verifyCharacters({
+        user: 'user',
+        inventory: 'inventory',
+        charactersIds: ['character_id', 'character_id_2'],
+        instance: 'instance',
+      } as any) as any;
+
+      assertSpyCall(indexStub, 0, {
+        args: ['characters_instance_id'],
+      });
+
+      assertSpyCall(matchStub, 0, {
+        args: [
+          'characters_instance_id' as any,
+          'character_id',
+          {
+            ref: 'instance',
+          },
+        ],
+      });
+
+      assertEquals(response, {
+        ok: false,
+        message: 'NOT_FOUND',
+        errors: ['character_id_2'],
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      getStub.restore();
+      refStub.restore();
+      notStub.restore();
+      mapStub.restore();
+      filterStub.restore();
+      allStub.restore();
+      matchStub.restore();
+      indexStub.restore();
+      selectStub.restore();
+      equalsStub.restore();
+      isNotEmptyStub.restore();
+    }
+  });
+
+  await test.step('not owned', () => {
+    const ifStub = FakeIf();
+    const letStub = FakeLet();
+    const getStub = FakeGet();
+    const refStub = FakeRef();
+    const notStub = FakeNot();
+    const mapStub = FakeMap();
+    const filterStub = FakeFilter();
+    const allStub = FakeAll();
+    const equalsStub = FakeEquals();
+    const isNotEmptyStub = FakeIsNonEmpty();
+
+    const indexStub = FakeIndex();
+
+    const matchStub = stub(
+      fql,
+      'Match',
+      returnsNext([
+        { id: 'character_id' },
+        { id: 'character_id_2' },
+      ]) as any,
+    );
+
+    const selectStub = stub(
+      fql,
+      'Select',
+      returnsNext([
+        { ref: 'user' },
+        { ref: 'another_user' },
+        { ref: 'user' },
+        'character_id',
+        'character_id_2',
+        'character_id',
+      ]) as any,
+    );
+
+    try {
+      const response = verifyCharacters({
+        user: 'user',
+        inventory: 'inventory',
+        charactersIds: ['character_id', 'character_id_2'],
+        instance: 'instance',
+      } as any) as any;
+
+      assertSpyCall(indexStub, 0, {
+        args: ['characters_instance_id'],
+      });
+
+      assertSpyCall(matchStub, 0, {
+        args: [
+          'characters_instance_id' as any,
+          'character_id',
+          {
+            ref: 'instance',
+          },
+        ],
+      });
+
+      assertEquals(response, {
+        ok: false,
+        message: 'NOT_OWNED',
+        errors: ['character_id_2'],
+      });
+    } finally {
+      ifStub.restore();
+      letStub.restore();
+      getStub.restore();
+      refStub.restore();
+      notStub.restore();
+      mapStub.restore();
+      filterStub.restore();
+      allStub.restore();
+      matchStub.restore();
+      indexStub.restore();
+      selectStub.restore();
+      equalsStub.restore();
+      isNotEmptyStub.restore();
+    }
+  });
+});
 
 Deno.test('give characters', async (test) => {
   await test.step('ok', () => {
@@ -1251,8 +1491,9 @@ Deno.test('model', async (test) => {
 
   Model(client as any).resolvers?.forEach((q) => q());
 
-  assertSpyCalls(client.query, 2);
+  assertSpyCalls(client.query, 3);
 
   await assertSnapshot(test, client.query.calls[0].args);
   await assertSnapshot(test, client.query.calls[1].args);
+  await assertSnapshot(test, client.query.calls[2].args);
 });

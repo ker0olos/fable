@@ -111,6 +111,13 @@ function Map<T = ExprArg, V = Expr>(
   return _fql.Map(setOrArray, func) as unknown as V[];
 }
 
+function Filter<T = ExprArg>(
+  setOrArray: T[],
+  func: (...args: T[]) => BooleanExpr,
+): T[] {
+  return _fql.Filter(setOrArray, func) as unknown as T[];
+}
+
 function All<T = Expr>(setOrArray: T[]): boolean {
   return _fql.All(setOrArray) as unknown as boolean;
 }
@@ -158,6 +165,10 @@ function If<A = Expr, B = Expr>(
 function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
   // deno-lint-ignore no-non-null-assertion
   return _fql.Equals(a!, b!);
+}
+
+function Not(b: BooleanExpr): BooleanExpr {
+  return _fql.Not(b);
 }
 
 function Concat(s: StringExpr[], sep?: StringExpr): StringExpr {
@@ -298,6 +309,7 @@ export const fql = {
   Create,
   Divide,
   Equals,
+  Filter,
   Foreach,
   Get,
   GTE,
@@ -315,6 +327,7 @@ export const fql = {
   Merge,
   Min,
   Multiply,
+  Not,
   Now,
   Null,
   Paginate,

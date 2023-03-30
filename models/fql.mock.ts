@@ -68,6 +68,8 @@ export const FakeAdd = () => stub(fql, 'Add', (a: any, b: any) => a + b);
 
 export const FakeAnd = () => stub(fql, 'And', (a: any, b: any) => a && b);
 
+export const FakeNot = () => stub(fql, 'Not', (a: any) => !a);
+
 // export const FakeOr = () => stub(fql, 'Or', (a: any, b: any) => a || b);
 
 export const FakeToString = () => stub(fql, 'ToString', (n: any) => `${n}`);
@@ -187,6 +189,9 @@ export const FakeRemoveAll = () =>
 
 export const FakeMap = () =>
   stub(fql, 'Map', (array: any, func: any) => array.map(func));
+
+export const FakeFilter = () =>
+  stub(fql, 'Filter', (array: any, func: any) => array.filter(func));
 
 export const FakeForeach = () =>
   stub(fql, 'Foreach', (array: any, func: any) => array.forEach(func));
