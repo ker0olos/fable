@@ -172,6 +172,7 @@ Deno.test('decode description', async (test) => {
     assertEquals(utils.decodeDescription('&#039;'), '\'');
     assertEquals(utils.decodeDescription('&lt;'), '<');
     assertEquals(utils.decodeDescription('&gt;'), '>');
+    assertEquals(utils.decodeDescription('&mdash;'), '-');
   });
 
   await test.step('strip urls', () => {
