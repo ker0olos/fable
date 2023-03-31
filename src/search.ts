@@ -190,7 +190,7 @@ function mediaEmbed(media: Media, titles: string[]): discord.Embed {
     .setTitle(utils.wrap(titles[0]))
     .setAuthor({ name: packs.formatToString(media.format) })
     .setDescription(utils.decodeDescription(media.description))
-    .setImage({ url: media.images?.[0].url });
+    .setImage({ url: media.images?.[0]?.url });
 }
 
 function mediaDebugMessage(
@@ -205,7 +205,7 @@ function mediaDebugMessage(
   const embed = new discord.Embed()
     .setTitle(titles.shift())
     .setDescription(titles.join('\n'))
-    .setThumbnail({ url: media.images?.[0].url })
+    .setThumbnail({ url: media.images?.[0]?.url })
     .addField({ name: 'Id', value: `${media.packId}:${media.id}` })
     .addField({
       name: 'Type',
@@ -396,7 +396,7 @@ function characterEmbed(
 
   const embed = new discord.Embed();
 
-  const imageUrl = options.existing?.image ?? character.images?.[0].url;
+  const imageUrl = options.existing?.image ?? character.images?.[0]?.url;
   const alias = options.existing?.nickname ??
     packs.aliasToArray(character.name)[0];
 
@@ -489,7 +489,7 @@ function characterDebugMessage(character: Character): discord.Message {
   const embed = new discord.Embed()
     .setTitle(titles.splice(0, 1)[0])
     .setDescription(titles.join('\n'))
-    .setThumbnail({ url: character.images?.[0].url })
+    .setThumbnail({ url: character.images?.[0]?.url })
     .addField({ name: 'Id', value: `${character.packId}:${character.id}` })
     .addField({
       name: 'Rating',

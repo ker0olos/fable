@@ -261,7 +261,7 @@ function start(
             .setTitle(utils.wrap(mediaTitles[0]))
             .setImage({
               size: ImageSize.Medium,
-              url: media.images?.[0].url,
+              url: media.images?.[0]?.url,
             }),
         );
 
