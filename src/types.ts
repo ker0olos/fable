@@ -240,6 +240,10 @@ export namespace Schema {
       character: Character;
     }
     | {
+      ok: false;
+      error: 'CHARACTER_IN_PARTY';
+    }
+    | {
       ok: true;
       inventory: Inventory;
       character: Character;

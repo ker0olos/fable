@@ -4960,7 +4960,7 @@ Deno.test('/collection stars', async (test) => {
             {
               type: 'rich',
               description:
-                'Dave doesn\'t have any 5<:smol_star:1088587855753904248>characters',
+                'Dave doesn\'t have any 5<:smol_star:1088427421096751224>characters',
             },
           ],
         },
@@ -5021,7 +5021,7 @@ Deno.test('/collection stars', async (test) => {
             {
               type: 'rich',
               description:
-                'You don\'t have any 5<:smol_star:1088587855753904248>characters',
+                'You don\'t have any 5<:smol_star:1088427421096751224>characters',
             },
           ],
         },
@@ -5914,27 +5914,27 @@ Deno.test('/collection list', async (test) => {
                 {
                   inline: false,
                   name: 'title 1',
-                  value: '1<:smol_star:1088587855753904248> character 1',
+                  value: '1<:smol_star:1088427421096751224> character 1',
                 },
                 {
                   inline: false,
                   name: 'title 2',
-                  value: '2<:smol_star:1088587855753904248> character 2',
+                  value: '2<:smol_star:1088427421096751224> character 2',
                 },
                 {
                   inline: false,
                   name: 'title 3',
-                  value: '3<:smol_star:1088587855753904248> character 3',
+                  value: '3<:smol_star:1088427421096751224> character 3',
                 },
                 {
                   inline: false,
                   name: 'title 4',
-                  value: '4<:smol_star:1088587855753904248> character 4',
+                  value: '4<:smol_star:1088427421096751224> character 4',
                 },
                 {
                   inline: false,
                   name: 'title 5',
-                  value: '5<:smol_star:1088587855753904248> character 5',
+                  value: '5<:smol_star:1088427421096751224> character 5',
                 },
               ],
             },
@@ -6198,27 +6198,27 @@ Deno.test('/collection list', async (test) => {
                 {
                   inline: false,
                   name: 'title 1',
-                  value: '1<:smol_star:1088587855753904248> Nickname 2',
+                  value: '1<:smol_star:1088427421096751224> Nickname 2',
                 },
                 {
                   inline: false,
                   name: 'title 2',
-                  value: '2<:smol_star:1088587855753904248> character 2',
+                  value: '2<:smol_star:1088427421096751224> character 2',
                 },
                 {
                   inline: false,
                   name: 'title 3',
-                  value: '3<:smol_star:1088587855753904248> Nickname 1',
+                  value: '3<:smol_star:1088427421096751224> Nickname 1',
                 },
                 {
                   inline: false,
                   name: 'title 4',
-                  value: '4<:smol_star:1088587855753904248> character 4',
+                  value: '4<:smol_star:1088427421096751224> character 4',
                 },
                 {
                   inline: false,
                   name: 'title 5',
-                  value: '5<:smol_star:1088587855753904248> character 5',
+                  value: '5<:smol_star:1088427421096751224> character 5',
                 },
               ],
             },
@@ -6429,12 +6429,12 @@ Deno.test('/collection list', async (test) => {
                 {
                   inline: false,
                   name: 'title 2',
-                  value: '2<:smol_star:1088587855753904248> character 2',
+                  value: '2<:smol_star:1088427421096751224> character 2',
                 },
                 {
                   inline: false,
                   name: 'title 3',
-                  value: '2<:smol_star:1088587855753904248> character 3',
+                  value: '2<:smol_star:1088427421096751224> character 3',
                 },
               ],
             },
@@ -6696,27 +6696,27 @@ Deno.test('/collection list', async (test) => {
                 {
                   inline: false,
                   name: 'title 1',
-                  value: '1<:smol_star:1088587855753904248> character 1',
+                  value: '1<:smol_star:1088427421096751224> character 1',
                 },
                 {
                   inline: false,
                   name: 'title 2',
-                  value: '2<:smol_star:1088587855753904248> character 2',
+                  value: '2<:smol_star:1088427421096751224> character 2',
                 },
                 {
                   inline: false,
                   name: 'title 3',
-                  value: '3<:smol_star:1088587855753904248> character 3',
+                  value: '3<:smol_star:1088427421096751224> character 3',
                 },
                 {
                   inline: false,
                   name: 'title 4',
-                  value: '4<:smol_star:1088587855753904248> character 4',
+                  value: '4<:smol_star:1088427421096751224> character 4',
                 },
                 {
                   inline: false,
                   name: 'title 5',
-                  value: '5<:smol_star:1088587855753904248> character 5',
+                  value: '5<:smol_star:1088427421096751224> character 5',
                 },
               ],
             },
@@ -6915,7 +6915,7 @@ Deno.test('/collection list', async (test) => {
                 {
                   inline: false,
                   name: 'title 1',
-                  value: '1<:smol_star:1088587855753904248> character 1',
+                  value: '1<:smol_star:1088427421096751224> character 1',
                 },
                 {
                   inline: false,
@@ -7119,7 +7119,7 @@ Deno.test('/collection list', async (test) => {
                 {
                   inline: false,
                   name: 'title 1',
-                  value: '1<:smol_star:1088587855753904248> character 1',
+                  value: '1<:smol_star:1088427421096751224> character 1',
                 },
                 {
                   inline: false,
@@ -7416,7 +7416,7 @@ Deno.test('/collection list', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You don\'t have any 3<:smol_star:1088587855753904248> characters',
+              'You don\'t have any 3<:smol_star:1088427421096751224> characters',
           }],
         },
       );
@@ -12168,14 +12168,12 @@ Deno.test('/trade', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
+    const tradeStub = stub(
+      trade,
       'verifyCharacters',
       returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
+        Promise.resolve({ ok: true }),
+        Promise.resolve({ ok: true }),
       ]),
     );
 
@@ -12320,7 +12318,7 @@ Deno.test('/trade', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
+      tradeStub.restore();
       fetchStub.restore();
     }
   });
@@ -12358,14 +12356,12 @@ Deno.test('/trade', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
+    const tradeStub = stub(
+      trade,
       'verifyCharacters',
       returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
+        Promise.resolve({ ok: true }),
+        Promise.resolve({ ok: true }),
       ]),
     );
 
@@ -12510,134 +12506,7 @@ Deno.test('/trade', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('not owned', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-    };
-
-    const characterStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => undefined as any,
-    );
-
-    const aggregateStub = stub(
-      packs,
-      'aggregate',
-      ({ character }) => Promise.resolve(character),
-    );
-
-    const userStub = stub(
-      user,
-      'verifyCharacters',
-      returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('NOT_OWNED' as 'NOT_OWNED'),
-      ]),
-    );
-
-    config.trading = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = trade.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        targetId: 'another_user_id',
-        give: ['give_character_id'],
-        take: ['take_character_id'],
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.tickAsync(0);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              description: '<@another_user_id> doesn\'t have **full name**',
-            },
-            {
-              type: 'rich',
-              description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
-              thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
-              },
-              fields: [
-                {
-                  name: 'full name\n\u200B',
-                  value: '\u200B',
-                },
-              ],
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-      delete config.trading;
-
-      timeStub.restore();
-      characterStub.restore();
-      aggregateStub.restore();
-      userStub.restore();
+      tradeStub.restore();
       fetchStub.restore();
     }
   });
@@ -12675,14 +12544,19 @@ Deno.test('/trade', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
+    const tradeStub = stub(
+      trade,
       'verifyCharacters',
       returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('NOT_FOUND' as 'NOT_FOUND'),
+        Promise.resolve({
+          ok: true,
+        }),
+        Promise.resolve({
+          ok: false,
+          // deno-lint-ignore prefer-as-const
+          message: 'NOT_FOUND' as 'NOT_FOUND',
+          errors: ['id:1'],
+        }),
       ]),
     );
 
@@ -12737,8 +12611,137 @@ Deno.test('/trade', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '_full name hasn\'t been found by anyone yet_',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
             },
+            {
+              type: 'rich',
+              description:
+                '_Those characters haven\'t been found by anyone yet_',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      tradeStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not owned', async () => {
+    const character: Character = {
+      id: '1',
+      packId: 'id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const tradeStub = stub(
+      trade,
+      'verifyCharacters',
+      returnsNext([
+        Promise.resolve({
+          ok: true,
+        }),
+        Promise.resolve({
+          ok: false,
+          // deno-lint-ignore prefer-as-const
+          message: 'NOT_OWNED' as 'NOT_OWNED',
+          errors: ['id:1'],
+        }),
+      ]),
+    );
+
+    config.trading = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: ['take_character_id'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
             {
               type: 'rich',
               description:
@@ -12753,6 +12756,10 @@ Deno.test('/trade', async (test) => {
                 },
               ],
             },
+            {
+              type: 'rich',
+              description: '<@another_user_id> doesn\'t those characters**',
+            },
           ],
         },
       );
@@ -12764,7 +12771,7 @@ Deno.test('/trade', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
+      tradeStub.restore();
       fetchStub.restore();
     }
   });
@@ -12910,12 +12917,11 @@ Deno.test('/give', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
+    const tradeStub = stub(
+      trade,
       'verifyCharacters',
       returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
+        Promise.resolve({ ok: true }),
       ]),
     );
 
@@ -13020,131 +13026,7 @@ Deno.test('/give', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('not owned', async () => {
-    const character: Character = {
-      id: '1',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-    };
-
-    const characterStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => undefined as any,
-    );
-
-    const aggregateStub = stub(
-      packs,
-      'aggregate',
-      ({ character }) => Promise.resolve(character),
-    );
-
-    const userStub = stub(
-      user,
-      'verifyCharacters',
-      returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('NOT_OWNED' as 'NOT_OWNED'),
-      ]),
-    );
-
-    config.trading = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = trade.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        targetId: 'another_user_id',
-        give: ['give_character_id'],
-        take: [],
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.tickAsync(0);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              description: 'You don\'t have **full name**',
-            },
-            {
-              type: 'rich',
-              description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
-              thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
-              },
-              fields: [
-                {
-                  name: 'full name\n\u200B',
-                  value: '\u200B',
-                },
-              ],
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-      delete config.trading;
-
-      timeStub.restore();
-      characterStub.restore();
-      aggregateStub.restore();
-      userStub.restore();
+      tradeStub.restore();
       fetchStub.restore();
     }
   });
@@ -13181,12 +13063,16 @@ Deno.test('/give', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
+    const tradeStub = stub(
+      trade,
       'verifyCharacters',
       returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('NOT_FOUND' as 'NOT_FOUND'),
+        Promise.resolve({
+          ok: false,
+          // deno-lint-ignore prefer-as-const
+          message: 'NOT_FOUND' as 'NOT_FOUND',
+          errors: ['undefined:1'],
+        }),
       ]),
     );
 
@@ -13241,8 +13127,133 @@ Deno.test('/give', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '_full name hasn\'t been found by anyone yet_',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
             },
+            {
+              type: 'rich',
+              description:
+                '_Those characters haven\'t been found by anyone yet_',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      tradeStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not owned', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const tradeStub = stub(
+      trade,
+      'verifyCharacters',
+      returnsNext([
+        Promise.resolve({
+          ok: false,
+          // deno-lint-ignore prefer-as-const
+          message: 'NOT_OWNED' as 'NOT_OWNED',
+          errors: ['undefined:1'],
+        }),
+      ]),
+    );
+
+    config.trading = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: [],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
             {
               type: 'rich',
               description:
@@ -13257,6 +13268,10 @@ Deno.test('/give', async (test) => {
                 },
               ],
             },
+            {
+              type: 'rich',
+              description: 'You don\'t have the those characters',
+            },
           ],
         },
       );
@@ -13268,7 +13283,7 @@ Deno.test('/give', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
+      tradeStub.restore();
       fetchStub.restore();
     }
   });
@@ -13276,6 +13291,8 @@ Deno.test('/give', async (test) => {
 
 Deno.test('/profile', async (test) => {
   await test.step('normal', async () => {
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -13308,21 +13325,76 @@ Deno.test('/profile', async (test) => {
       } as any),
     );
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await user.profile({
+      const message = user.profile({
+        index: 0,
         nick: 'nickname',
         avatar: 'avatar_url',
         userId: 'user_id',
         guildId: 'guild_id',
+        token: 'test_token',
       });
-
-      assertSpyCalls(fetchStub, 1);
 
       assertEquals(message.json(), {
         type: 4,
         data: {
           attachments: [],
           components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'profile=user_id=0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'profile=user_id=0=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           embeds: [
             {
               type: 'rich',
@@ -13335,14 +13407,18 @@ Deno.test('/profile', async (test) => {
                 {
                   name: '\u200B',
                   value:
-                    'Has 2 characters across 2 titles.\n\n4<:smol_star_2:1088587854382379118>',
+                    'Has 2 characters across 2 titles.\n\n4<:smol_star:1088427421096751224>',
                 },
               ],
             },
           ],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
       fetchStub.restore();
     }
   });

@@ -20,8 +20,7 @@ export const colors = {
 export const emotes = {
   star: '<:star:1061016362832642098>',
   noStar: '<:no_star:1061016360190222466>',
-  smolStar: '<:smol_star:1088587855753904248>',
-  smolStar2: '<:smol_star_2:1088587854382379118>',
+  smolStar: '<:smol_star:1088427421096751224>',
   remove: '<:remove:1085033678180208641>',
   add: '<:add:1085034731810332743>',
 };

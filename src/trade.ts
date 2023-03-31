@@ -407,6 +407,10 @@ async function give({
 
   if (!response.giveCharacters.ok) {
     switch (response.giveCharacters.error) {
+      case 'CHARACTER_IN_PARTY':
+        throw new NonFetalCancelableError(
+          'Some of those characters are currently in your party',
+        );
       case 'CHARACTER_NOT_OWNED':
         throw new NonFetalCancelableError(
           'Some of those characters changed hands',
@@ -519,10 +523,17 @@ async function accepted({
 
   if (!response.tradeCharacters.ok) {
     switch (response.tradeCharacters.error) {
-      case 'CHARACTER_NOT_FOUND':
+      case 'CHARACTER_IN_PARTY':
+        throw new NonFetalCancelableError(
+          'Some of those characters are currently in parties',
+        );
       case 'CHARACTER_NOT_OWNED':
         throw new NonFetalCancelableError(
-          'You don\'t have one of those characters!',
+          'Some of those characters changed hands',
+        );
+      case 'CHARACTER_NOT_FOUND':
+        throw new NonFetalCancelableError(
+          'Some of those characters were disabled or removed',
         );
       default:
         throw new Error(response.tradeCharacters.error);

@@ -68,7 +68,7 @@ export const handler = async (r: Request) => {
     resolved,
     member,
     options,
-    // reference,
+    reference,
     subcommand,
     customType,
     customValues,
@@ -254,8 +254,7 @@ export const handler = async (r: Request) => {
             }).send();
           }
           case 'profile':
-          case 'user':
-          case 'pr': {
+          case 'user': {
             const userId = options['user'] as string;
 
             const nick = discord.getUsername(
@@ -273,12 +272,14 @@ export const handler = async (r: Request) => {
               guildId,
             );
 
-            return (await user.profile({
+            return user.profile({
+              index: 0,
               nick,
               avatar,
               userId,
               guildId,
-            })).send();
+              token,
+            }).send();
           }
           case 'party':
           case 'team':
@@ -733,6 +734,30 @@ export const handler = async (r: Request) => {
             }
 
             throw new NoPermissionError();
+          }
+          case 'profile': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            // deno-lint-ignore no-non-null-assertion
+            const nick = reference!.embeds[0].fields![0].value;
+
+            // deno-lint-ignore no-non-null-assertion
+            const avatar = reference!.embeds[0].thumbnail!.url;
+
+            return user.profile({
+              index,
+              token,
+              guildId,
+              userId,
+              avatar,
+              nick: nick.substring(2, nick.length - 2),
+            })
+              .setType(discord.MessageType.Update)
+              .send();
           }
           case 'builtin':
           case 'community': {

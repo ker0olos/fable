@@ -118,11 +118,15 @@ function Filter<T = ExprArg>(
   return _fql.Filter(setOrArray, func) as unknown as T[];
 }
 
+function Any<T = Expr>(setOrArray: T[]): boolean {
+  return _fql.Any(setOrArray) as unknown as boolean;
+}
+
 function All<T = Expr>(setOrArray: T[]): boolean {
   return _fql.All(setOrArray) as unknown as boolean;
 }
 
-function IsNonEmpty(expr: Expr): BooleanExpr {
+function IsNonEmpty(expr: Expr | ExprArg[]): BooleanExpr {
   return _fql.IsNonEmpty(expr);
 }
 
@@ -224,13 +228,13 @@ function TimeDiffInMinutes(a: TimeExpr, b: TimeExpr): NumberExpr {
   return _fql.TimeDiff(a, b, 'minutes');
 }
 
-function And(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
-  return _fql.And(a, b);
+function And(...args: BooleanExpr[]): BooleanExpr {
+  return _fql.And(...args);
 }
 
-// function Or(a: BooleanExpr, b: BooleanExpr): BooleanExpr {
-//   return _fql.Or(a, b);
-// }
+function Or(...args: BooleanExpr[]): BooleanExpr {
+  return _fql.Or(...args);
+}
 
 function TimeAddInMinutes(t: TimeExpr, offset: NumberExpr): NumberExpr {
   return _fql.TimeAdd(t, offset, 'minutes');
@@ -303,6 +307,7 @@ export const fql = {
   Add,
   All,
   And,
+  Any,
   Append,
   AppendAll,
   Concat,
@@ -330,6 +335,7 @@ export const fql = {
   Not,
   Now,
   Null,
+  Or,
   Paginate,
   Ref,
   Remove,
