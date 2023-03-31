@@ -562,4 +562,90 @@ Deno.test('get manifest', async (test) => {
       unzipStub.restore();
     }
   });
+
+  await test.step('not found', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () =>
+        ({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: 'repo_id',
+            }),
+          // deno-lint-ignore no-explicit-any
+        }) as any,
+    );
+
+    const unzipStub = stub(
+      utils,
+      'unzip',
+      () => {
+        throw new Error('https://localhost:8000/repo Status 404: Not Found');
+      },
+    );
+
+    try {
+      await assertRejects(
+        () => github.manifest({ url: 'username/reponame' }),
+        NonFetalError,
+        '**404** Not Found\nFailed to Fetch Repository.',
+      );
+
+      assertSpyCall(fetchStub, 0, {
+        args: [`https://api.github.com/repos/username/reponame`],
+      });
+
+      assertSpyCall(unzipStub, 0, {
+        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+      });
+    } finally {
+      fetchStub.restore();
+      unzipStub.restore();
+    }
+  });
+
+  await test.step('internal error', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () =>
+        ({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: 'repo_id',
+            }),
+          // deno-lint-ignore no-explicit-any
+        }) as any,
+    );
+
+    const unzipStub = stub(
+      utils,
+      'unzip',
+      () => {
+        throw new Error('unknown');
+      },
+    );
+
+    try {
+      await assertRejects(
+        () => github.manifest({ url: 'username/reponame' }),
+        Error,
+        'unknown',
+      );
+
+      assertSpyCall(fetchStub, 0, {
+        args: [`https://api.github.com/repos/username/reponame`],
+      });
+
+      assertSpyCall(unzipStub, 0, {
+        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+      });
+    } finally {
+      fetchStub.restore();
+      unzipStub.restore();
+    }
+  });
 });

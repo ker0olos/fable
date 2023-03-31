@@ -181,9 +181,21 @@ async function manifest(
 }> {
   const repo = await get(url);
 
-  const { entries } = await utils.unzip(
-    `https://api.github.com/repositories/${repo.id}/zipball/${ref ?? ''}`,
-  );
+  let entries: Awaited<ReturnType<typeof utils.unzip>>['entries'];
+
+  try {
+    entries = (await utils.unzip(
+      `https://api.github.com/repositories/${repo.id}/zipball/${ref ?? ''}`,
+    )).entries;
+  } catch (err) {
+    if (err.message.includes('404: Not Found')) {
+      throw new NonFetalError(
+        `**404** Not Found\nFailed to Fetch Repository.`,
+      );
+    }
+
+    throw err;
+  }
 
   const manifests = Object.values(entries)
     .filter(({ name }) => name.endsWith('manifest.json'))
