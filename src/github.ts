@@ -126,7 +126,7 @@ interface Repo {
 
 function resolve(url: string): { username: string; reponame: string } {
   // try username/repo
-  let array = /^([-_a-z0-9]+)\/([-_a-z0-9]+)$/.exec(
+  let array = /^([-_a-zA-Z0-9]+)\/([-_a-zA-Z0-9]+)$/.exec(
     url,
   );
 

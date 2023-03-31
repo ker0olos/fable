@@ -45,6 +45,34 @@ Deno.test('get repo', async (test) => {
     }
   });
 
+  await test.step('with capitalized name', async () => {
+    const url = 'Username/Reponame';
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() => Promise.resolve({ id: 1 })),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const repo = await github.get(url);
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCall(fetchStub, 0, {
+        args: ['https://api.github.com/repos/Username/Reponame'],
+      });
+
+      // deno-lint-ignore no-explicit-any
+      assertEquals(repo, { id: 1 } as any);
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
   await test.step('with url', async () => {
     const url = 'https://github.com/username/reponame';
 
@@ -73,7 +101,7 @@ Deno.test('get repo', async (test) => {
     }
   });
 
-  await test.step('with url.git', async () => {
+  await test.step('ends with .git', async () => {
     const url = 'https://github.com/username/reponame.git';
 
     const fetchStub = stub(
@@ -92,6 +120,34 @@ Deno.test('get repo', async (test) => {
       assertSpyCalls(fetchStub, 1);
       assertSpyCall(fetchStub, 0, {
         args: ['https://api.github.com/repos/username/reponame'],
+      });
+
+      // deno-lint-ignore no-explicit-any
+      assertEquals(repo, { id: 1 } as any);
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('ends with slash', async () => {
+    const url = 'https://github.com/username/reponame/';
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() => Promise.resolve({ id: 1 })),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const repo = await github.get(url);
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCall(fetchStub, 0, {
+        args: ['https://api.github.com/repos/username/reponame/'],
       });
 
       // deno-lint-ignore no-explicit-any
