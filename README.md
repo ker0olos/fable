@@ -16,8 +16,8 @@
 <!-- Development badges -->
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&style=for-the-badge&label=tests)
-![GitHub Last Commit](https://img.shields.io/github/last-commit/Grasscutters/Grasscutter?style=for-the-badge)
 [![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?style=for-the-badge&token=3C7ZTHzGqC)](https://app.codecov.io/github/ker0olos/fable)
+![GitHub Last Commit](https://img.shields.io/github/last-commit/Grasscutters/Grasscutter?style=for-the-badge)
 
 </h1>
 

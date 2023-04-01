@@ -151,9 +151,6 @@ function resolve(url: string): { username: string; reponame: string } {
     ? reponame.substring(0, reponame.length - 1)
     : reponame;
 
-  console.log(username);
-  console.log(reponame);
-
   return {
     username,
     reponame,
@@ -183,18 +180,16 @@ async function get(url: string): Promise<Repo> {
 }
 
 async function manifest(
-  { url, ref }: { url: string; ref?: string },
-): Promise<{
-  repo: Repo;
-  manifest: Manifest;
-}> {
-  const repo = await get(url);
+  { id, url }: { id?: number; url?: string },
+): Promise<{ id: number; manifest: Manifest }> {
+  // deno-lint-ignore no-non-null-assertion
+  id = id ?? (await get(url!.trim())).id;
 
   let entries: Awaited<ReturnType<typeof utils.unzip>>['entries'];
 
   try {
     entries = (await utils.unzip(
-      `https://api.github.com/repositories/${repo.id}/zipball/${ref ?? ''}`,
+      `https://api.github.com/repositories/${id}/zipball`,
     )).entries;
   } catch (err) {
     if (err.message.includes('404: Not Found')) {
@@ -230,7 +225,7 @@ async function manifest(
   }
 
   return {
-    repo,
+    id,
     manifest: packs.populateRelations(manifest),
   };
 }

@@ -537,16 +537,6 @@ snapshot[`model 3`] = `
                                                             var: "githubId",
                                                           },
                                                         },
-                                                        installedBy: Expr {
-                                                          raw: {
-                                                            from: Expr {
-                                                              raw: {
-                                                                var: "user",
-                                                              },
-                                                            },
-                                                            select: "ref",
-                                                          },
-                                                        },
                                                         instances: Expr {
                                                           raw: [
                                                           ],
@@ -594,96 +584,6 @@ snapshot[`model 3`] = `
                               },
                             },
                             let: [
-                              {
-                                user: Expr {
-                                  raw: {
-                                    in: Expr {
-                                      raw: {
-                                        else: Expr {
-                                          raw: {
-                                            create: Expr {
-                                              raw: {
-                                                collection: "user",
-                                              },
-                                            },
-                                            params: Expr {
-                                              raw: {
-                                                object: {
-                                                  data: Expr {
-                                                    raw: {
-                                                      object: {
-                                                        badges: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                id: "357600097731608662",
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "badge",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
-                                                        id: Expr {
-                                                          raw: {
-                                                            var: "userId",
-                                                          },
-                                                        },
-                                                        inventories: Expr {
-                                                          raw: [
-                                                          ],
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                        if: Expr {
-                                          raw: {
-                                            is_nonempty: Expr {
-                                              raw: {
-                                                var: "match",
-                                              },
-                                            },
-                                          },
-                                        },
-                                        then: Expr {
-                                          raw: {
-                                            get: Expr {
-                                              raw: {
-                                                var: "match",
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                    let: [
-                                      {
-                                        match: Expr {
-                                          raw: {
-                                            match: Expr {
-                                              raw: {
-                                                index: "users_discord_id",
-                                              },
-                                            },
-                                            terms: Expr {
-                                              raw: {
-                                                var: "userId",
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    ],
-                                  },
-                                },
-                              },
                               {
                                 guild: Expr {
                                   raw: {
@@ -916,7 +816,6 @@ snapshot[`model 3`] = `
                         },
                         lambda: Expr {
                           raw: [
-                            "userId",
                             "guildId",
                             "githubId",
                             "manifest",
@@ -1290,16 +1189,6 @@ snapshot[`model 3`] = `
                                                             var: "githubId",
                                                           },
                                                         },
-                                                        installedBy: Expr {
-                                                          raw: {
-                                                            from: Expr {
-                                                              raw: {
-                                                                var: "user",
-                                                              },
-                                                            },
-                                                            select: "ref",
-                                                          },
-                                                        },
                                                         instances: Expr {
                                                           raw: [
                                                           ],
@@ -1347,96 +1236,6 @@ snapshot[`model 3`] = `
                               },
                             },
                             let: [
-                              {
-                                user: Expr {
-                                  raw: {
-                                    in: Expr {
-                                      raw: {
-                                        else: Expr {
-                                          raw: {
-                                            create: Expr {
-                                              raw: {
-                                                collection: "user",
-                                              },
-                                            },
-                                            params: Expr {
-                                              raw: {
-                                                object: {
-                                                  data: Expr {
-                                                    raw: {
-                                                      object: {
-                                                        badges: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                id: "357600097731608662",
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "badge",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
-                                                        id: Expr {
-                                                          raw: {
-                                                            var: "userId",
-                                                          },
-                                                        },
-                                                        inventories: Expr {
-                                                          raw: [
-                                                          ],
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                        if: Expr {
-                                          raw: {
-                                            is_nonempty: Expr {
-                                              raw: {
-                                                var: "match",
-                                              },
-                                            },
-                                          },
-                                        },
-                                        then: Expr {
-                                          raw: {
-                                            get: Expr {
-                                              raw: {
-                                                var: "match",
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                    let: [
-                                      {
-                                        match: Expr {
-                                          raw: {
-                                            match: Expr {
-                                              raw: {
-                                                index: "users_discord_id",
-                                              },
-                                            },
-                                            terms: Expr {
-                                              raw: {
-                                                var: "userId",
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    ],
-                                  },
-                                },
-                              },
                               {
                                 guild: Expr {
                                   raw: {
@@ -1669,7 +1468,6 @@ snapshot[`model 3`] = `
                         },
                         lambda: Expr {
                           raw: [
-                            "userId",
                             "guildId",
                             "githubId",
                             "manifest",

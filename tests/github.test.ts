@@ -258,7 +258,7 @@ Deno.test('get repo', async (test) => {
 });
 
 Deno.test('get manifest', async (test) => {
-  await test.step('normal', async () => {
+  await test.step('normal with url', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -267,7 +267,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -295,12 +295,50 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
 
       assertEquals(manifest, {
+        id: 1,
+        manifest: { id: 'manifest' },
+      });
+    } finally {
+      fetchStub.restore();
+      unzipStub.restore();
+    }
+  });
+
+  await test.step('normal with id', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      // deno-lint-ignore no-explicit-any
+      () => undefined as any,
+    );
+
+    const unzipStub = stub(
+      utils,
+      'unzip',
+      () => ({
+        entries: {
+          '0': {
+            name: 'manifest.json',
+            text: (() => Promise.resolve(JSON.stringify({ id: 'manifest' }))),
+          },
+        },
         // deno-lint-ignore no-explicit-any
-        repo: { id: 'repo_id' } as any,
+      } as any),
+    );
+
+    try {
+      const manifest = await github.manifest({ id: 2 });
+
+      assertSpyCall(unzipStub, 0, {
+        args: [`https://api.github.com/repositories/2/zipball`],
+      });
+
+      assertEquals(manifest, {
+        id: 2,
         manifest: { id: 'manifest' },
       });
     } finally {
@@ -318,7 +356,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -346,12 +384,11 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
 
       assertEquals(manifest, {
-        // deno-lint-ignore no-explicit-any
-        repo: { id: 'repo_id' } as any,
+        id: 1,
         manifest: { id: 'manifest }' },
       });
     } finally {
@@ -369,7 +406,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -421,12 +458,11 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
 
       assertEquals(manifest, {
-        // deno-lint-ignore no-explicit-any
-        repo: { id: 'repo_id' } as any,
+        id: 1,
         manifest: {
           id: 'manifest',
           characters: {
@@ -479,7 +515,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -511,7 +547,7 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
     } finally {
       fetchStub.restore();
@@ -528,7 +564,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -555,7 +591,7 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
     } finally {
       fetchStub.restore();
@@ -572,7 +608,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -598,7 +634,7 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
     } finally {
       fetchStub.restore();
@@ -615,7 +651,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -641,7 +677,7 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
     } finally {
       fetchStub.restore();

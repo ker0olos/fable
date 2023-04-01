@@ -10233,81 +10233,6 @@ Deno.test('/packs [builtin-community]', async (test) => {
     }
   });
 
-  await test.step('community packs with installer', async () => {
-    const manifest: Manifest = {
-      id: 'pack-id',
-    };
-
-    const listStub = stub(
-      packs,
-      'all',
-      () =>
-        Promise.resolve([{
-          manifest,
-          type: PackType.Community,
-          installedBy: {
-            id: 'user_id',
-          },
-        }]),
-    );
-
-    try {
-      const message = await packs.pages({
-        type: PackType.Community,
-        guildId: 'guild_id',
-        index: 0,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'community==0=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '1/1',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'community==0=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'puninstall=pack-id',
-                label: 'Uninstall',
-                style: 4,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'The following third-party packs were manually installed by your server members',
-          }, {
-            type: 'rich',
-            description: 'Installed by <@user_id>\n\n',
-            title: 'pack-id',
-          }],
-        },
-      });
-    } finally {
-      listStub.restore();
-    }
-  });
-
   await test.step('use title and id ', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
@@ -10507,10 +10432,8 @@ Deno.test('/packs [install-validate]', async (test) => {
       const message = packs.install({
         shallow: true,
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -10594,10 +10517,8 @@ Deno.test('/packs [install-validate]', async (test) => {
       const message = packs.install({
         shallow: true,
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -10680,10 +10601,8 @@ Deno.test('/packs [install-validate]', async (test) => {
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -10774,10 +10693,8 @@ Deno.test('/packs [install-validate]', async (test) => {
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -10868,10 +10785,8 @@ Deno.test('/packs [install-validate]', async (test) => {
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -10966,10 +10881,8 @@ Deno.test('/packs [install-validate]', async (test) => {
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -11056,10 +10969,8 @@ Deno.test('/packs [install-validate]', async (test) => {
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -11141,10 +11052,8 @@ Deno.test('/packs [install-validate]', async (test) => {
       const message = packs.install({
         shallow: true,
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -11227,10 +11136,8 @@ The .id string must match ^[-_a-z0-9]+$
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -11319,10 +11226,8 @@ The .id string must match ^[-_a-z0-9]+$
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -11420,10 +11325,8 @@ The .id string must match ^[-_a-z0-9]+$
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -11495,7 +11398,7 @@ The .id string must match ^[-_a-z0-9]+$
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 1 },
+          id: 1,
           manifest: { id: 'manifest_id' },
         }) as any,
     );
@@ -11546,10 +11449,8 @@ The .id string must match ^[-_a-z0-9]+$
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {

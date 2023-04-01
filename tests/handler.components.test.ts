@@ -2128,6 +2128,12 @@ Deno.test('packs pages', async (test) => {
 
 Deno.test('packs uninstall', async (test) => {
   await test.step('normal', async () => {
+    const pack = {
+      id: 1,
+      type: PackType.Community,
+      manifest: { id: 'manifest_id' },
+    };
+
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2153,6 +2159,8 @@ Deno.test('packs uninstall', async (test) => {
     const setFlagsSpy = spy(() => ({
       setType: setTypeSpy,
     }));
+
+    const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
 
     const packsStub = stub(packs, 'uninstall', () =>
       ({
@@ -2209,6 +2217,7 @@ Deno.test('packs uninstall', async (test) => {
     } finally {
       delete config.publicKey;
 
+      listStub.restore();
       packsStub.restore();
       validateStub.restore();
       signatureStub.restore();
@@ -2216,6 +2225,12 @@ Deno.test('packs uninstall', async (test) => {
   });
 
   await test.step('dialog', async () => {
+    const pack = {
+      id: 1,
+      type: PackType.Community,
+      manifest: { id: 'manifest_id' },
+    };
+
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2237,6 +2252,8 @@ Deno.test('packs uninstall', async (test) => {
     const setFlagsSpy = spy(() => ({
       send: () => true,
     }));
+
+    const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
 
     const packsStub = stub(packs, 'uninstallDialog', () =>
       ({
@@ -2279,16 +2296,14 @@ Deno.test('packs uninstall', async (test) => {
       });
 
       assertSpyCall(packsStub, 0, {
-        args: [{
-          guildId: 'guild_id',
-          manifestId: 'manifest_id',
-        }],
+        args: [pack],
       });
 
       assertEquals(response, true as any);
     } finally {
       delete config.publicKey;
 
+      listStub.restore();
       packsStub.restore();
       validateStub.restore();
       signatureStub.restore();

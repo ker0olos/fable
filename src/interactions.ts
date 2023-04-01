@@ -162,7 +162,10 @@ export const handler = async (r: Request) => {
         }
 
         // suggest installed packs
-        if (name === 'packs' && subcommand === 'uninstall') {
+        if (
+          // deno-lint-ignore no-non-null-assertion
+          name === 'packs' && ['update', 'uninstall'].includes(subcommand!)
+        ) {
           // deno-lint-ignore no-non-null-assertion
           const id = options[focused!] as string;
 
@@ -479,20 +482,34 @@ export const handler = async (r: Request) => {
                 return packs.install({
                   token,
                   guildId,
-                  userId: member.user.id,
                   shallow: subcommand === 'validate',
                   url: options['github'] as string,
-                  ref: options['ref'] as string,
                 })
                   .setFlags(discord.MessageFlags.Ephemeral)
                   .send();
               }
+              case 'update':
               case 'uninstall': {
-                return (await packs.uninstallDialog({
-                  // deno-lint-ignore no-non-null-assertion
-                  manifestId: options['id']! as string,
+                const list = await packs.all({
+                  type: PackType.Community,
                   guildId,
-                }))
+                });
+
+                const pack = list.find(({ manifest }) =>
+                  manifest.id === options['id'] as string
+                );
+
+                if (!pack) {
+                  throw new Error('404');
+                }
+
+                if (subcommand === 'update') {
+                  return packs.install({ token, guildId, id: pack.id })
+                    .setFlags(discord.MessageFlags.Ephemeral)
+                    .send();
+                }
+
+                return packs.uninstallDialog(pack)
                   .setFlags(discord.MessageFlags.Ephemeral)
                   .send();
               }
@@ -773,10 +790,21 @@ export const handler = async (r: Request) => {
               .send();
           }
           case 'puninstall': {
-            // deno-lint-ignore no-non-null-assertion
-            const manifestId = customValues![0];
+            const list = await packs.all({
+              type: PackType.Community,
+              guildId,
+            });
 
-            return (await packs.uninstallDialog({ manifestId, guildId }))
+            const pack = list.find(({ manifest }) =>
+              // deno-lint-ignore no-non-null-assertion
+              manifest.id === customValues![0]
+            );
+
+            if (!pack) {
+              throw new Error('404');
+            }
+
+            return packs.uninstallDialog(pack)
               .setFlags(discord.MessageFlags.Ephemeral)
               .send();
           }

@@ -95,92 +95,89 @@ async function all(
     query ($guildId: String!) {
       getGuildInstance(guildId: $guildId) {
         packs {
-        id
-        installedBy {
           id
-        }
-        manifest {
-          id
-          title
-          description
-          author
-          image
-          url
-          nsfw
-          media {
-            conflicts
-            new {
-              id
-              type
-              title {
-                english
-                romaji
-                native
-                alternative
-              }
-              format
-              description
-              popularity
-              images {
-                url
-                artist {
-                  username
-                  url
-                }
-              }
-              externalLinks {
-                url
-                site
-              }
-              trailer {
+          manifest {
+            id
+            title
+            description
+            author
+            image
+            url
+            nsfw
+            media {
+              conflicts
+              new {
                 id
-                site
-              }
-              relations {
-                relation
-                mediaId
-              }
-              characters {
-                role
-                characterId
+                type
+                title {
+                  english
+                  romaji
+                  native
+                  alternative
+                }
+                format
+                description
+                popularity
+                images {
+                  url
+                  artist {
+                    username
+                    url
+                  }
+                }
+                externalLinks {
+                  url
+                  site
+                }
+                trailer {
+                  id
+                  site
+                }
+                relations {
+                  relation
+                  mediaId
+                }
+                characters {
+                  role
+                  characterId
+                }
               }
             }
-          }
-          characters {
-            conflicts
-            new {
-              id
-              name {
-                english
-                romaji
-                native
-                alternative
-              }
-              description
-              popularity
-              gender
-              age
-              images {
-                url
-                artist {
-                  username
-                  url
+            characters {
+              conflicts
+              new {
+                id
+                name {
+                  english
+                  romaji
+                  native
+                  alternative
                 }
-              }
-              externalLinks {
-                url
-                site
-              }
-              media {
-                role
-                mediaId
+                description
+                popularity
+                gender
+                age
+                images {
+                  url
+                  artist {
+                    username
+                    url
+                  }
+                }
+                externalLinks {
+                  url
+                  site
+                }
+                media {
+                  role
+                  mediaId
+                }
               }
             }
           }
         }
       }
     }
-  }
   `;
 
   switch (type) {
@@ -259,48 +256,25 @@ function isDisabled(id: string, list: Pack[]): boolean {
 }
 
 function packEmbed(
-  { manifest, installedBy }: { manifest: Manifest; installedBy?: string },
+  { manifest }: { manifest: Manifest },
 ): discord.Embed {
   const embed = new discord.Embed()
     .setFooter({ text: manifest.author })
+    .setDescription(manifest.description)
     .setThumbnail({ url: manifest.image, default: false, proxy: false })
     .setTitle(manifest.title ?? manifest.id);
-
-  if (installedBy) {
-    embed.setDescription(
-      `Installed by <@${installedBy}>\n\n${manifest.description ?? ''}`,
-    );
-  } else {
-    embed.setDescription(manifest.description);
-  }
 
   return embed;
 }
 
-async function uninstallDialog(
-  { manifestId, guildId }: { manifestId: string; guildId: string },
-): Promise<discord.Message> {
-  const list = await packs.all({
-    type: PackType.Community,
-    guildId,
-  });
-
-  const target = list.find(({ manifest }) => manifest.id === manifestId);
-
-  if (!target) {
-    throw new Error('404');
-  }
-
+function uninstallDialog(pack: Pack): discord.Message {
   const message = new discord.Message()
-    .addEmbed(packEmbed({
-      manifest: target.manifest,
-      installedBy: target.installedBy?.id,
-    }));
+    .addEmbed(packEmbed({ manifest: pack.manifest }));
 
   return discord.Message.dialog({
     message,
     type: 'uninstall',
-    confirm: target.manifest.id,
+    confirm: pack.manifest.id,
     description:
       `**Are you sure you want to uninstall this pack?**\n\nUninstalling a pack will disable any characters your server members have from the pack, which may be met with negative reactions.`,
   });
@@ -332,10 +306,7 @@ async function pages(
       : 'The following third-party packs were manually installed by your server members',
   );
 
-  const embed = packEmbed({
-    manifest: pack.manifest,
-    installedBy: pack.installedBy?.id,
-  });
+  const embed = packEmbed({ manifest: pack.manifest });
 
   const message = new discord.Message()
     .addEmbed(disclaimer)
@@ -368,22 +339,20 @@ async function pages(
 }
 
 function install({
+  id,
+  url,
   token,
   shallow,
-  userId,
   guildId,
-  url,
-  ref,
 }: {
+  id?: number;
+  url?: string;
   token: string;
-  userId: string;
   guildId: string;
-  url: string;
-  ref?: string;
   shallow?: boolean;
 }): discord.Message {
-  github.manifest({ url, ref })
-    .then(async ({ repo, manifest }) => {
+  github.manifest({ id, url })
+    .then(async ({ id, manifest }) => {
       const message = new discord.Message();
 
       // validate against json schema
@@ -421,7 +390,7 @@ function install({
         {},
       );
 
-      if (manifest.id in dict && dict[manifest.id].id !== repo.id) {
+      if (manifest.id in dict && dict[manifest.id].id !== id) {
         throw new NonFetalError(
           'A pack with the same id is already installed.',
         );
@@ -484,21 +453,9 @@ function install({
         return await message.patch(token);
       }
 
-      // add pack to the guild database
-
       const mutation = gql`
-        mutation (
-          $userId: String!
-          $guildId: String!
-          $githubId: Int!
-          $manifest: ManifestInput!
-        ) {
-          addPackToInstance(
-            userId: $userId
-            guildId: $guildId
-            githubId: $githubId
-            manifest: $manifest
-          ) {
+        mutation ($guildId: String!, $githubId: Int!,$manifest: ManifestInput!) {
+          addPackToInstance(guildId: $guildId, githubId: $githubId, manifest: $manifest) {
             ok
             error
             manifest {
@@ -513,18 +470,13 @@ function install({
         }
       `;
 
-      const response = (await request<{
-        addPackToInstance: Schema.Mutation;
-      }>({
+      const response = (await request<{ addPackToInstance: Schema.Mutation }>({
         url: faunaUrl,
         query: mutation,
-        headers: {
-          'authorization': `Bearer ${config.faunaSecret}`,
-        },
+        headers: { 'authorization': `Bearer ${config.faunaSecret}` },
         variables: {
-          userId,
           guildId,
-          githubId: repo.id,
+          githubId: id,
           manifest: purgeReservedProps(manifest),
         },
       })).addPackToInstance;

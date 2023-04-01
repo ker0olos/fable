@@ -135,6 +135,7 @@ function pages(
             '- `/packs community`: _list all installed community packs_',
             '',
             '- `/packs install`: _install a community pack_',
+            '- `/packs update`: _update a community pack_',
             '- `/packs uninstall`: _uninstall a pack_',
             '',
             '- `/packs validate`: _validate a pack "manifest.json"_',

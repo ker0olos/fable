@@ -5661,11 +5661,9 @@ Deno.test('packs command handlers', async (test) => {
       assertSpyCall(packsStub, 0, {
         args: [{
           shallow: true,
-          userId: 'user_id',
           guildId: 'guild_id',
           token: 'token',
           url: 'github',
-          ref: 'ref',
         }],
       });
 
@@ -5764,11 +5762,9 @@ Deno.test('packs command handlers', async (test) => {
       assertSpyCall(packsStub, 0, {
         args: [{
           shallow: false,
-          userId: 'user_id',
           guildId: 'guild_id',
           token: 'token',
           url: 'github',
-          ref: 'ref',
         }],
       });
 

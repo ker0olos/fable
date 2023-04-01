@@ -76,8 +76,6 @@ type Pack @collection(name: "pack") {
   instances: [Instance!]!
   # the pack's manifest
   manifest: Manifest!
-  # the user who installed this pack
-  installedBy: User!
   # the first time the pack was installed on an instance
   firstInstall: Time!
   # the last time the pack was installed on an instance

@@ -611,18 +611,16 @@ export const commands = [
             description: 'A github repository url',
             type: Type.STRING,
           }),
-          Option({
-            name: 'ref',
-            description: 'A ref to a branch or commit sha',
-            type: Type.STRING,
-            optional: true,
-          }),
         ],
       }),
       Option({
         name: 'uninstall',
         description: 'Uninstall a pack',
         type: Type.SUB_COMMAND,
+        aliases: [{
+          name: 'update',
+          desc: 'Pull the latest changes made to a community pack',
+        }],
         optional: true,
         options: [
           Option({
