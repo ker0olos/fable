@@ -10481,7 +10481,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id' },
         }) as any,
     );
@@ -10568,7 +10568,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'anilist' },
         }) as any,
     );
@@ -10655,7 +10655,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'anilist' },
         }) as any,
     );
@@ -10734,13 +10734,13 @@ Deno.test('/packs [install-validate]', async (test) => {
     }
   });
 
-  await test.step('already installed', async () => {
+  await test.step('same manifest id but github id changed', async () => {
     const manifestStub = stub(
       github,
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id' },
         }) as any,
     );
@@ -10759,6 +10759,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       () =>
         Promise.resolve([
           {
+            id: 2,
             type: PackType.Community,
             manifest: {
               id: 'manifest_id',
@@ -10833,7 +10834,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id' },
         }) as any,
     );
@@ -10932,7 +10933,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id', conflicts: ['fake-id'] },
         }) as any,
     );
@@ -11030,7 +11031,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id', depends: ['fake-id'] },
         }) as any,
     );
@@ -11120,7 +11121,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: '$&*#&$*#' },
         }) as any,
     );
@@ -11207,7 +11208,7 @@ The .id string must match ^[-_a-z0-9]+$
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: '$&*#&$*#' },
         }) as any,
     );
@@ -11285,7 +11286,7 @@ The .id string must match ^[-_a-z0-9]+$
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'new_manifest_id' },
         }) as any,
     );
@@ -11383,7 +11384,7 @@ The .id string must match ^[-_a-z0-9]+$
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id' },
         }) as any,
     );
@@ -11485,6 +11486,133 @@ The .id string must match ^[-_a-z0-9]+$
       timeStub.restore();
       manifestStub.restore();
       fetchStub.restore();
+    }
+  });
+
+  await test.step('updated', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: 'manifest_id' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              addPackToInstance: {
+                ok: true,
+                manifest: {
+                  author: 'author',
+                  id: 'manifest_id',
+                  description: 'description',
+                  url: 'url',
+                  image: 'image',
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            id: 1,
+            type: PackType.Community,
+            manifest: {
+              id: 'manifest_id',
+            },
+          },
+        ]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        userId: 'user_id',
+        token: 'token',
+        url: 'url',
+        ref: 'ref',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://graphql.us.fauna.com/graphql',
+      );
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Installed',
+            },
+            {
+              type: 'rich',
+              title: 'manifest_id',
+              description: 'description',
+              footer: {
+                text: 'author',
+              },
+              thumbnail: {
+                url: 'image',
+              },
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+      listStub.restore();
     }
   });
 });

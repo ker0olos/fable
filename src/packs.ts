@@ -416,9 +416,12 @@ function install({
 
       const list = await packs.all({ guildId });
 
-      const ids = list.map(({ manifest }) => manifest.id);
+      const dict = list.reduce<Record<string, Pack>>(
+        (dict, pack) => (dict[pack.manifest.id] = pack, dict),
+        {},
+      );
 
-      if (ids.includes(manifest.id)) {
+      if (manifest.id in dict && dict[manifest.id].id !== repo.id) {
         throw new NonFetalError(
           'A pack with the same id is already installed.',
         );
@@ -426,7 +429,7 @@ function install({
 
       // if this pack conflicts existing
       const conflicts = (manifest.conflicts ?? []).filter((conflictId) =>
-        ids.includes(conflictId)
+        conflictId in dict
       ).concat(
         // if existing conflicts this pack
         list
@@ -435,7 +438,7 @@ function install({
       );
 
       const missing = manifest.depends?.filter((dependId) =>
-        !ids.includes(dependId)
+        !(dependId in dict)
       );
 
       if (

@@ -141,9 +141,18 @@ function resolve(url: string): { username: string; reponame: string } {
   }
 
   const username = array[1];
-  const reponame = array[2].endsWith('.git')
-    ? array[2].substring(0, array[2].length - 4)
-    : array[2];
+  let reponame = array[2];
+
+  reponame = array[2].endsWith('.git')
+    ? reponame.substring(0, reponame.length - 4)
+    : reponame;
+
+  reponame = array[2].endsWith('/')
+    ? reponame.substring(0, reponame.length - 1)
+    : reponame;
+
+  console.log(username);
+  console.log(reponame);
 
   return {
     username,

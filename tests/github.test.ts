@@ -147,7 +147,7 @@ Deno.test('get repo', async (test) => {
 
       assertSpyCalls(fetchStub, 1);
       assertSpyCall(fetchStub, 0, {
-        args: ['https://api.github.com/repos/username/reponame/'],
+        args: ['https://api.github.com/repos/username/reponame'],
       });
 
       // deno-lint-ignore no-explicit-any

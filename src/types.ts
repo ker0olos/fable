@@ -166,7 +166,7 @@ export interface Manifest {
 }
 
 export interface Pack {
-  id?: string;
+  id?: number;
   installedBy?: {
     id: string;
   };
