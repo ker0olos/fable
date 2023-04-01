@@ -1,5 +1,4 @@
 import {
-  BooleanExpr,
   CharacterExpr,
   Client,
   fql,
@@ -7,10 +6,9 @@ import {
   MatchExpr,
   NullExpr,
   StringExpr,
-  UserExpr,
 } from './fql.ts';
 
-import { getGuild, getInstance, getUser } from './get_user_inventory.ts';
+import { getGuild, getInstance } from './get_user_inventory.ts';
 
 export interface CharacterNode {
   character: CharacterExpr;
@@ -155,40 +153,6 @@ export function findCharacter(
     ));
 }
 
-export function verifyCharacters(
-  {
-    charactersIds,
-    instance,
-    user,
-  }: {
-    charactersIds: StringExpr[];
-    instance: InstanceExpr;
-    user: UserExpr;
-  },
-): BooleanExpr {
-  return fql.Let({
-    characters: fql.Map(charactersIds, (id) =>
-      fql.Match(
-        fql.Index('characters_instance_id'),
-        id,
-        fql.Ref(instance),
-      )),
-  }, ({ characters }) =>
-    fql.If(
-      fql.All(fql.Map(characters, (char) => fql.IsNonEmpty(char))),
-      fql.If(
-        fql.All(fql.Map(characters, (char) =>
-          fql.Equals(
-            fql.Select(['data', 'user'], fql.Get(char)),
-            fql.Ref(user),
-          ))),
-        'OK',
-        'NOT_OWNED',
-      ),
-      'NOT_FOUND',
-    ));
-}
-
 export default function (client: Client): {
   indexers?: (() => Promise<void>)[];
   resolvers?: (() => Promise<void>)[];
@@ -257,29 +221,6 @@ export default function (client: Client): {
               findCharacter({
                 characterId,
                 instance,
-              }),
-          );
-        },
-      }),
-      fql.Resolver({
-        client,
-        name: 'verify_characters',
-        lambda: (
-          charactersIds: string[],
-          guildId: string,
-          userId: string,
-        ) => {
-          return fql.Let(
-            {
-              user: getUser(userId),
-              guild: getGuild(guildId),
-              instance: getInstance(fql.Var('guild')),
-            },
-            ({ user, instance }) =>
-              verifyCharacters({
-                user,
-                instance,
-                charactersIds,
               }),
           );
         },

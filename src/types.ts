@@ -166,7 +166,7 @@ export interface Manifest {
 }
 
 export interface Pack {
-  id?: string;
+  id?: number;
   installedBy?: {
     id: string;
   };
@@ -181,6 +181,8 @@ export namespace Schema {
     rating: number;
     mediaId: string;
     user: { id: string };
+    nickname?: string;
+    image?: string;
   };
   export type Inventory = {
     availablePulls: number;
@@ -201,6 +203,7 @@ export namespace Schema {
       badges: {
         name: string;
         description: string;
+        emote: string;
       }[];
     };
   };
@@ -235,6 +238,10 @@ export namespace Schema {
       ok: false;
       error: 'CHARACTER_NOT_OWNED';
       character: Character;
+    }
+    | {
+      ok: false;
+      error: 'CHARACTER_IN_PARTY';
     }
     | {
       ok: true;

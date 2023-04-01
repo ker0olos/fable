@@ -124,14 +124,14 @@ snapshot[`/help 2`] = `
 
 __You can't have more than 1 party__ or save your current party to a preset and switch between presets.
 
-__The more your party members are familiar with each other the better they preform__. This is called synergy, 5 party members from the same anime are better than 5 members from a mix of different media.
+__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.
 
-\`/party view\` to view your current party.
+\`/party view\` to see your current party.
 
-\`/party assign [name] [spot?]\` to assign a character you found to your party;
-leaving the \`[spot]\` parameter empty will assign the character to the first empty spot, or override spot #5 if there are no empty spots.
+\`/party assign name: spot:\` to assign a character you have to your party;
+leaving the \`spot:\` empty will assign the character to the first empty spot or override the last spot.
 
-\`/collection stars\` and \`/collection media\` can be used to browse your characters and select your potential party members.
+\`/collection\` can be used to browse your characters and select your potential party members.
 ​",
         footer: {
           text: "aliases: /team, /p",
@@ -204,13 +204,13 @@ snapshot[`/help 3`] = `
         author: {
           name: "Roadmap",
         },
-        description: "__**Releasing the near future (5 days ~ 2 months)**__
+        description: "__**Releasing in the near future (5 days ~ 2 months)**__
 
 **[Customization](https://github.com/ker0olos/fable/issues/57)**
 Allow players to customize their characters including images and names.
 
 **[Synthesis](https://github.com/ker0olos/fable/issues/76)**
-Merging 1-4<:smol_star:1088427421096751224>characters to get specific grade pulls (e.g. Synthesizing five 1<:smol_star:1088427421096751224>characters gives a pull where you are guaranteed a 2<:smol_star:1088427421096751224>character).
+Merging 1-4<:smol_star:1088427421096751224>characters to get specific grade pulls (e.g. Synthesizing five 1-star characters gives a pull where you are guaranteed a 2-star character).
 
 **[Stealing](https://github.com/ker0olos/fable/issues/49)**
 You will be able to steal characters from other users.",
@@ -269,9 +269,15 @@ snapshot[`/help 4`] = `
 - \`/party swap\` \`/team swap\` \`/p swap\`: _swap characters spots with each others_
 - \`/party remove\` \`/team remove\` \`/p remove\`: _remove a character from your party_
 
-- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _list user your stars_
-- \`/collection media\` \`/coll media\` \`/mm media\`: _list user characters from a specific media_
+- \`/collection list\` \`/coll list\` \`/mm list\`: _list user characters in bulks_
+- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user your stars_
+- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters from a specific media_
+
 - \`/found\` \`/obtained\` \`/owned\`: _list all characters found from a specific media_
+
+
+- \`/image\` \`/custom\`: _change the image of a character_
+- \`/nick\`: _change the nickname of a character_
 
 - \`/trade\` \`/offer\`: _trade characters with another user_
 - \`/give\` \`/gift\`: _give characters to another user_

@@ -55,6 +55,10 @@ type Character @collection(name: "character") {
   mediaId: String!
   # the rating of the character
   rating: Int!
+  # a custom image 
+  nickname: String
+  # a custom image url
+  image: String
   # all the ownership transitions of the character
   history: [History!]!
   # the instance that contains this character
@@ -72,8 +76,6 @@ type Pack @collection(name: "pack") {
   instances: [Instance!]!
   # the pack's manifest
   manifest: Manifest!
-  # the user who installed this pack
-  installedBy: User!
   # the first time the pack was installed on an instance
   firstInstall: Time!
   # the last time the pack was installed on an instance
@@ -85,6 +87,8 @@ type Badge @collection(name: "badge") {
   name: String!
   # short description of the badge
   description: String!
+  # the emote representing the badge
+  emote: String! 
   # all users who own this badge
   users: [User!]!
 }

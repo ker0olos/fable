@@ -185,6 +185,7 @@ function decodeDescription(s?: string): string | undefined {
   s = s.replaceAll('&apos;', '\'');
   s = s.replaceAll('&rsquo;', '\'');
   s = s.replaceAll('&amp;', '&');
+  s = s.replaceAll('&mdash;', '-');
 
   s = s.replace(/~![\S\s]+!~/gm, '');
   s = s.replace(/\|\|[\S\s]+\|\|/gm, '');
@@ -250,7 +251,7 @@ function text(s: string | number): Promise<Uint8Array> {
 }
 
 async function proxy(r: Request): Promise<Response> {
-  const { pathname, searchParams, origin } = new URL(r.url);
+  const { pathname, searchParams } = new URL(r.url);
 
   try {
     let cached = true;
@@ -327,10 +328,21 @@ async function proxy(r: Request): Promise<Response> {
 
     return proxy;
   } catch {
+    let fileUrl = new URL('../assets/medium.png', import.meta.url);
+
     if (r.url?.includes('?size=thumbnail')) {
-      return Response.redirect(`${origin}/assets/thumbnail.png`);
+      fileUrl = new URL('../assets/thumbnail.png', import.meta.url);
     }
-    return Response.redirect(`${origin}/assets/medium.png`);
+
+    const body = await Deno.readFile(fileUrl);
+
+    const response = new Response(body);
+
+    response.headers.set('content-type', 'image/png');
+    response.headers.set('cache-control', 'public, max-age=604800');
+    response.headers.set('content-length', `${body.byteLength}`);
+
+    return response;
   }
 }
 

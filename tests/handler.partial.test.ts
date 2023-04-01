@@ -14,7 +14,6 @@ import config from '../src/config.ts';
 
 import { handler } from '../src/interactions.ts';
 
-import user from '../src/user.ts';
 import packs from '../src/packs.ts';
 
 import { PackType } from '../src/types.ts';
@@ -1725,12 +1724,6 @@ Deno.test('party assign character suggestions', async (test) => {
         },
       }] as any));
 
-    const usersStub = stub(
-      user,
-      'userCharacters',
-      () => Promise.resolve([{ id: 'packId:id' }] as any),
-    );
-
     config.publicKey = 'publicKey';
 
     try {
@@ -1767,7 +1760,6 @@ Deno.test('party assign character suggestions', async (test) => {
           key: 'characters',
           search: 'name',
           guildId: 'guild_id',
-          threshold: 35,
         }],
       });
 
@@ -1794,7 +1786,6 @@ Deno.test('party assign character suggestions', async (test) => {
     } finally {
       delete config.publicKey;
 
-      usersStub.restore();
       searchStub.restore();
       validateStub.restore();
       signatureStub.restore();
@@ -1843,12 +1834,6 @@ Deno.test('party assign character suggestions', async (test) => {
         },
       }] as any));
 
-    const usersStub = stub(
-      user,
-      'userCharacters',
-      () => Promise.resolve([{ id: 'packId:id' }] as any),
-    );
-
     config.publicKey = 'publicKey';
 
     try {
@@ -1885,7 +1870,6 @@ Deno.test('party assign character suggestions', async (test) => {
           key: 'characters',
           search: 'name',
           guildId: 'guild_id',
-          threshold: 35,
         }],
       });
 
@@ -1912,7 +1896,6 @@ Deno.test('party assign character suggestions', async (test) => {
     } finally {
       delete config.publicKey;
 
-      usersStub.restore();
       searchStub.restore();
       validateStub.restore();
       signatureStub.restore();
@@ -1961,12 +1944,6 @@ Deno.test('party assign character suggestions', async (test) => {
         },
       }] as any));
 
-    const usersStub = stub(
-      user,
-      'userCharacters',
-      () => Promise.resolve([{ id: 'packId:id' }] as any),
-    );
-
     config.publicKey = 'publicKey';
 
     try {
@@ -2003,7 +1980,6 @@ Deno.test('party assign character suggestions', async (test) => {
           key: 'characters',
           search: 'name',
           guildId: 'guild_id',
-          threshold: 35,
         }],
       });
 
@@ -2030,7 +2006,6 @@ Deno.test('party assign character suggestions', async (test) => {
     } finally {
       delete config.publicKey;
 
-      usersStub.restore();
       searchStub.restore();
       validateStub.restore();
       signatureStub.restore();

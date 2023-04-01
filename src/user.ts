@@ -138,14 +138,7 @@ async function findCharacter({
 }: {
   guildId?: string;
   characterId?: string;
-}): Promise<
-  {
-    id: string;
-    userId: string;
-    mediaId: string;
-    rating: number;
-  } | undefined
-> {
+}): Promise<Schema.Character | undefined> {
   if (!guildId || !characterId) {
     return undefined;
   }
@@ -154,6 +147,8 @@ async function findCharacter({
     query ($guildId: String!, $characterId: String!) {
       findCharacter(guildId: $guildId, characterId: $characterId) {
         id
+        image
+        nickname
         mediaId
         rating
         user {
@@ -180,48 +175,6 @@ async function findCharacter({
   if (!result) {
     return undefined;
   }
-
-  return {
-    id: result.id,
-    userId: result.user.id,
-    mediaId: result.mediaId,
-    rating: result.rating,
-  };
-}
-
-async function verifyCharacters({
-  userId,
-  guildId,
-  charactersIds,
-}: {
-  userId: string;
-  guildId: string;
-  charactersIds: string[];
-}): Promise<'OK' | 'NOT_FOUND' | 'NOT_OWNED'> {
-  const query = gql`
-    query ($userId: String!, $guildId: String!, $charactersIds: [String!]!) {
-      verifyCharacters(
-        userId: $userId
-        guildId: $guildId
-        charactersIds: $charactersIds
-      )
-    }
-  `;
-
-  const result = (await request<{
-    verifyCharacters: 'OK' | 'NOT_FOUND' | 'NOT_OWNED';
-  }>({
-    query,
-    url: faunaUrl,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-      charactersIds,
-    },
-  })).verifyCharacters;
 
   return result;
 }
@@ -515,10 +468,162 @@ async function media({
   });
 }
 
-function all({
+function customize({
   token,
   userId,
   guildId,
+  nick,
+  image,
+  search,
+  id,
+}: {
+  token: string;
+  userId: string;
+  guildId: string;
+  nick?: string;
+  image?: string;
+  search?: string;
+  id?: string;
+}): discord.Message {
+  const mutation = gql`
+    mutation ($userId: String!, $guildId: String!, $characterId: String!, $image: String, $nick: String) {
+      customizeCharacter(userId: $userId, guildId: $guildId, characterId: $characterId, image: $image, nickname: $nick) {
+        ok
+        error
+        character {
+          id
+          image
+          nickname
+          mediaId
+          rating
+          user {
+            id
+          }
+        }
+      }
+    }
+  `;
+
+  packs
+    .characters(id ? { ids: [id], guildId } : { search, guildId })
+    .then(async (results: (Character | DisaggregatedCharacter)[]) => {
+      if (!results.length) {
+        throw new Error('404');
+      }
+
+      const message = new discord.Message();
+
+      const characterId = `${results[0].packId}:${results[0].id}`;
+
+      const response = (await request<{
+        customizeCharacter: Schema.Mutation;
+      }>({
+        url: faunaUrl,
+        query: mutation,
+        headers: {
+          'authorization': `Bearer ${config.faunaSecret}`,
+        },
+        variables: {
+          userId,
+          guildId,
+          characterId,
+          image,
+          nick,
+        },
+      })).customizeCharacter;
+
+      if (!response.ok) {
+        const names = packs.aliasToArray(results[0].name);
+
+        switch (response.error) {
+          case 'CHARACTER_NOT_FOUND': {
+            return message
+              .addEmbed(
+                new discord.Embed().setDescription(
+                  `${names[0]} hasn't been found by anyone yet.`,
+                ),
+              ).addComponents([
+                new discord.Component()
+                  .setId(`character`, characterId)
+                  .setLabel('/character'),
+              ])
+              .patch(token);
+          }
+          case 'CHARACTER_NOT_OWNED':
+            return message
+              .addEmbed(
+                new discord.Embed().setDescription(
+                  `${
+                    names[0]
+                  } is owned by <@${response.character.user.id}> and cannot be customized by you.`,
+                ),
+              ).addComponents([
+                new discord.Component()
+                  .setId(`character`, response.character.id)
+                  .setLabel('/character'),
+              ])
+              .patch(token);
+          default:
+            throw new Error(response.error);
+        }
+      }
+
+      return message
+        .addEmbed(srch.characterEmbed(
+          await packs.aggregate<Character>({
+            guildId,
+            character: results[0],
+            end: 1,
+          }),
+          {
+            rating: false,
+            description: false,
+            media: { title: true },
+            existing: response.character,
+            footer: true,
+          },
+        ))
+        .addComponents([
+          new discord.Component()
+            .setId(`character`, response.character.id)
+            .setLabel('/character'),
+        ])
+        .patch(token);
+    })
+    .catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'Found _nothing_ matching that query!',
+            ),
+          ).patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
+}
+
+function list({
+  token,
+  userId,
+  guildId,
+  filter,
   index,
   nick,
 }: {
@@ -526,6 +631,7 @@ function all({
   index: number;
   userId: string;
   guildId: string;
+  filter?: number;
   nick?: string;
 }): discord.Message {
   const query = gql`
@@ -533,6 +639,7 @@ function all({
       getUserInventory(userId: $userId, guildId: $guildId) {
         characters {
           id
+          nickname
           mediaId
           rating
         }
@@ -558,7 +665,11 @@ function all({
 
       const message = new discord.Message();
 
-      const characters = getUserInventory.characters;
+      let characters = getUserInventory.characters;
+
+      if (filter) {
+        characters = characters.filter(({ rating }) => rating === filter);
+      }
 
       if (!characters?.length) {
         const message = new discord.Message()
@@ -567,7 +678,9 @@ function all({
               .setDescription(
                 `${
                   nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
-                } have any characters`,
+                } have any${
+                  filter ? ` ${filter}${discord.emotes.smolStar}` : ''
+                } characters`,
               ),
           );
 
@@ -625,7 +738,7 @@ function all({
         }
 
         // deno-lint-ignore no-non-null-assertion
-        const mediaTitle = packs.aliasToArray(media!.title)[0];
+        const mediaTitle = utils.wrap(packs.aliasToArray(media!.title)[0]);
 
         const characters = charactersByMediaId[mediaId].map((char) => char.id);
 
@@ -634,11 +747,14 @@ function all({
         );
 
         const charactersNames = charactersResult.map((char) => {
-          // const { rating } = charactersByMediaId[mediaId].find(({ id }) =>
-          //   `${char.packId}:${char.id}` === id
-          // )!;
+          // deno-lint-ignore no-non-null-assertion
+          const { rating, nickname } = charactersByMediaId[mediaId].find((
+            { id },
+          ) => `${char.packId}:${char.id}` === id)!;
 
-          return `${packs.aliasToArray(char.name)[0]}`;
+          return `${rating}${discord.emotes.smolStar} ${
+            utils.wrap(nickname ?? packs.aliasToArray(char.name)[0])
+          }`;
         });
 
         if (charactersResult.length !== characters.length) {
@@ -656,27 +772,204 @@ function all({
         });
       });
 
-      embed.setDescription(`**<@${userId}>\n${discord.empty}**`);
-
       return discord.Message.page({
         index,
-        type: 'call',
-        target: userId,
+        type: 'clist',
+        target: discord.join(userId, filter?.toString() ?? ''),
         total: chunks.length,
         message: message.addEmbed(embed),
         next: index + 1 < chunks.length,
       }).patch(token);
     })
     .catch(async (err) => {
-      // if (err.message === '404') {
-      //   return await new discord.Message()
-      //     .addEmbed(
-      //       new discord.Embed().setDescription(
-      //         'Some of those character do not exist or are disabled',
-      //       ),
-      //     ).patch(token);
-      // }
+      if (!config.sentry) {
+        throw err;
+      }
 
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
+}
+
+function profile({
+  nick,
+  index,
+  avatar,
+  userId,
+  guildId,
+  token,
+}: {
+  nick: string;
+  index: number;
+  avatar: string;
+  userId: string;
+  guildId: string;
+  token: string;
+}): discord.Message {
+  const query = gql`
+    query ($userId: String!, $guildId: String!) {
+      getUserInventory(userId: $userId, guildId: $guildId) {
+        user {
+          totalVotes
+          badges {
+            name
+            description
+            emote
+          }
+        }
+        characters {
+          mediaId
+          rating
+          id
+        }
+        party {
+          member1 {
+            id
+            mediaId
+            rating
+          }
+          member2 {
+            id
+            mediaId
+            rating
+          }
+          member3 {
+            id
+            mediaId
+            rating
+          }
+          member4 {
+            id
+            mediaId
+            rating
+          }
+          member5 {
+            id
+            mediaId
+            rating
+          }
+        }
+      }
+    }
+  `;
+
+  index = index ?? 0;
+
+  request<{
+    getUserInventory: Schema.Inventory;
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+    },
+  })
+    .then(async ({ getUserInventory }) => {
+      const embed = new discord.Embed();
+
+      const message = new discord.Message();
+
+      const { user, party, characters } = getUserInventory;
+
+      const media = Array.from(
+        new Set(characters.map(({ mediaId }) => mediaId)),
+      );
+
+      const ratingCount = characters.map(({ rating }) => rating)
+        .reduce((a, b) => a + b);
+
+      embed.setThumbnail({ url: avatar, proxy: false, default: false });
+
+      if (user.badges?.length) {
+        embed.addField({
+          name: user.badges.map(({ emote }) => emote).join(''),
+          value: `**${nick}**`,
+        });
+      } else {
+        embed.addField({
+          name: nick,
+        });
+      }
+
+      embed.addField({
+        value:
+          `Has ${characters.length} characters across ${media.length} titles.\n\n${ratingCount}${discord.emotes.smolStar}`,
+      });
+
+      const ids = [
+        party?.member1?.id,
+        party?.member2?.id,
+        party?.member3?.id,
+        party?.member4?.id,
+        party?.member5?.id,
+      ].filter(Boolean);
+
+      const ratings = [
+        party?.member1?.rating,
+        party?.member2?.rating,
+        party?.member3?.rating,
+        party?.member4?.rating,
+        party?.member5?.rating,
+      ].filter(Boolean);
+
+      const list = await packs.all({ guildId });
+
+      const chars = await packs.characters({
+        ids,
+        guildId,
+      });
+
+      const partyMembers = ids.map((characterId, i) => {
+        if (!characterId) {
+          return;
+        }
+
+        const character = chars.find(({ packId, id }) =>
+          characterId === `${packId}:${id}`
+        );
+
+        if (
+          !character ||
+          packs.isDisabled(characterId, list)
+        ) {
+          return;
+        }
+
+        return `${ratings[i]}${discord.emotes.smolStar}${
+          packs.aliasToArray(character.name)[0]
+        }`;
+      }).filter(Boolean);
+
+      embed.addField({
+        value: partyMembers.join('\n'),
+      });
+
+      message.addEmbed(embed);
+
+      return discord.Message.page({
+        target: userId,
+        type: 'profile',
+        index: 0,
+        total: 1,
+        message,
+        next: false,
+      }).patch(token);
+    })
+    .catch(async (err) => {
       if (!config.sentry) {
         throw err;
       }
@@ -698,12 +991,13 @@ function all({
 
 const user = {
   now,
+  profile,
   findCharacter,
-  verifyCharacters,
   userCharacters,
+  customize,
   stars,
   media,
-  all,
+  list,
 };
 
 export default user;

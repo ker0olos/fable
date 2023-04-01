@@ -140,7 +140,7 @@ export const Media = ({ pull }: { pull: Pull }) => {
           <Image
             src={`${origin}/external/${
               encodeURIComponent(
-                pull.media.images?.[0].url ?? '',
+                pull.media.images?.[0]?.url ?? '',
               )
             }`}
           />
@@ -193,7 +193,7 @@ export const Gacha = ({ pull }: { pull: Pull }) => {
 
       <Image
         src={`${origin}/external/${
-          encodeURIComponent(pull.character.images?.[0].url ?? '')
+          encodeURIComponent(pull.character.images?.[0]?.url ?? '')
         }`}
       />
     </>

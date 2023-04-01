@@ -45,6 +45,34 @@ Deno.test('get repo', async (test) => {
     }
   });
 
+  await test.step('with capitalized name', async () => {
+    const url = 'Username/Reponame';
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() => Promise.resolve({ id: 1 })),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const repo = await github.get(url);
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCall(fetchStub, 0, {
+        args: ['https://api.github.com/repos/Username/Reponame'],
+      });
+
+      // deno-lint-ignore no-explicit-any
+      assertEquals(repo, { id: 1 } as any);
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
   await test.step('with url', async () => {
     const url = 'https://github.com/username/reponame';
 
@@ -73,8 +101,36 @@ Deno.test('get repo', async (test) => {
     }
   });
 
-  await test.step('with url.git', async () => {
+  await test.step('ends with .git', async () => {
     const url = 'https://github.com/username/reponame.git';
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        json: (() => Promise.resolve({ id: 1 })),
+        // deno-lint-ignore no-explicit-any
+      } as any),
+    );
+
+    try {
+      const repo = await github.get(url);
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCall(fetchStub, 0, {
+        args: ['https://api.github.com/repos/username/reponame'],
+      });
+
+      // deno-lint-ignore no-explicit-any
+      assertEquals(repo, { id: 1 } as any);
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('ends with slash', async () => {
+    const url = 'https://github.com/username/reponame/';
 
     const fetchStub = stub(
       globalThis,
@@ -202,7 +258,7 @@ Deno.test('get repo', async (test) => {
 });
 
 Deno.test('get manifest', async (test) => {
-  await test.step('normal', async () => {
+  await test.step('normal with url', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -211,7 +267,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -239,12 +295,50 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
 
       assertEquals(manifest, {
+        id: 1,
+        manifest: { id: 'manifest' },
+      });
+    } finally {
+      fetchStub.restore();
+      unzipStub.restore();
+    }
+  });
+
+  await test.step('normal with id', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      // deno-lint-ignore no-explicit-any
+      () => undefined as any,
+    );
+
+    const unzipStub = stub(
+      utils,
+      'unzip',
+      () => ({
+        entries: {
+          '0': {
+            name: 'manifest.json',
+            text: (() => Promise.resolve(JSON.stringify({ id: 'manifest' }))),
+          },
+        },
         // deno-lint-ignore no-explicit-any
-        repo: { id: 'repo_id' } as any,
+      } as any),
+    );
+
+    try {
+      const manifest = await github.manifest({ id: 2 });
+
+      assertSpyCall(unzipStub, 0, {
+        args: [`https://api.github.com/repositories/2/zipball`],
+      });
+
+      assertEquals(manifest, {
+        id: 2,
         manifest: { id: 'manifest' },
       });
     } finally {
@@ -262,7 +356,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -290,12 +384,11 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
 
       assertEquals(manifest, {
-        // deno-lint-ignore no-explicit-any
-        repo: { id: 'repo_id' } as any,
+        id: 1,
         manifest: { id: 'manifest }' },
       });
     } finally {
@@ -313,7 +406,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -365,12 +458,11 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
 
       assertEquals(manifest, {
-        // deno-lint-ignore no-explicit-any
-        repo: { id: 'repo_id' } as any,
+        id: 1,
         manifest: {
           id: 'manifest',
           characters: {
@@ -423,7 +515,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -455,7 +547,7 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
     } finally {
       fetchStub.restore();
@@ -472,7 +564,7 @@ Deno.test('get manifest', async (test) => {
           ok: true,
           json: () =>
             Promise.resolve({
-              id: 'repo_id',
+              id: 1,
             }),
           // deno-lint-ignore no-explicit-any
         }) as any,
@@ -499,7 +591,93 @@ Deno.test('get manifest', async (test) => {
       });
 
       assertSpyCall(unzipStub, 0, {
-        args: [`https://api.github.com/repositories/repo_id/zipball/`],
+        args: [`https://api.github.com/repositories/1/zipball`],
+      });
+    } finally {
+      fetchStub.restore();
+      unzipStub.restore();
+    }
+  });
+
+  await test.step('not found', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () =>
+        ({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: 1,
+            }),
+          // deno-lint-ignore no-explicit-any
+        }) as any,
+    );
+
+    const unzipStub = stub(
+      utils,
+      'unzip',
+      () => {
+        throw new Error('https://localhost:8000/repo Status 404: Not Found');
+      },
+    );
+
+    try {
+      await assertRejects(
+        () => github.manifest({ url: 'username/reponame' }),
+        NonFetalError,
+        '**404** Not Found\nFailed to Fetch Repository.',
+      );
+
+      assertSpyCall(fetchStub, 0, {
+        args: [`https://api.github.com/repos/username/reponame`],
+      });
+
+      assertSpyCall(unzipStub, 0, {
+        args: [`https://api.github.com/repositories/1/zipball`],
+      });
+    } finally {
+      fetchStub.restore();
+      unzipStub.restore();
+    }
+  });
+
+  await test.step('internal error', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () =>
+        ({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: 1,
+            }),
+          // deno-lint-ignore no-explicit-any
+        }) as any,
+    );
+
+    const unzipStub = stub(
+      utils,
+      'unzip',
+      () => {
+        throw new Error('unknown');
+      },
+    );
+
+    try {
+      await assertRejects(
+        () => github.manifest({ url: 'username/reponame' }),
+        Error,
+        'unknown',
+      );
+
+      assertSpyCall(fetchStub, 0, {
+        args: [`https://api.github.com/repos/username/reponame`],
+      });
+
+      assertSpyCall(unzipStub, 0, {
+        args: [`https://api.github.com/repositories/1/zipball`],
       });
     } finally {
       fetchStub.restore();

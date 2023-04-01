@@ -6,12 +6,11 @@ import { assertSnapshot } from 'https://deno.land/std@0.179.0/testing/snapshot.t
 
 import { FakeClient } from './fql.mock.ts';
 
-import { default as Model } from './add_vote_to_user.ts';
+import { default as Model } from './customize_character.ts';
 
 Deno.test('model', async (test) => {
   const client = FakeClient();
 
-  Model(client as any).indexers?.forEach((q) => q());
   Model(client as any).resolvers?.forEach((q) => q());
 
   assertSpyCalls(client.query, 1);

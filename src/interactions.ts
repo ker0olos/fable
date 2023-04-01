@@ -7,8 +7,8 @@ import party from './party.ts';
 import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
-import help from './help.ts';
 import trade from './trade.ts';
+import help from './help.ts';
 
 import demo from './demo.tsx';
 
@@ -68,6 +68,7 @@ export const handler = async (r: Request) => {
     resolved,
     member,
     options,
+    reference,
     subcommand,
     customType,
     customValues,
@@ -122,7 +123,20 @@ export const handler = async (r: Request) => {
 
         // suggest characters
         if (
-          ['character', 'char', 'im', 'trade', 'offer', 'give'].includes(name)
+          [
+            'character',
+            'char',
+            'im',
+            'trade',
+            'offer',
+            'give',
+            'nick',
+            'image',
+            'custom',
+            'party',
+            'team',
+            'p',
+          ].includes(name)
         ) {
           // deno-lint-ignore no-non-null-assertion
           const name = options[focused!] as string;
@@ -147,45 +161,11 @@ export const handler = async (r: Request) => {
           return message.send();
         }
 
-        // same as suggest characters but filters out results that the user doesn't have
-        if (['party', 'team', 'p'].includes(name) && subcommand === 'assign') {
-          // deno-lint-ignore no-non-null-assertion
-          const name = options[focused!] as string;
-
-          const message = new discord.Message(
-            discord.MessageType.Suggestions,
-          );
-
-          const results = await Promise.all([
-            packs.searchMany<Character>({
-              guildId,
-              threshold: 35,
-              key: 'characters',
-              search: name,
-            }),
-            user.userCharacters({
-              guildId,
-              userId: member.user.id,
-            }),
-          ]);
-
-          results?.[0].forEach((character) => {
-            const id = `${character.packId}:${character.id}`;
-
-            // filter out results that are not in the user's inventory
-            if (results?.[1].some((character) => character.id === id)) {
-              message.addSuggestions({
-                name: `${packs.aliasToArray(character.name)[0]}`,
-                value: `${idPrefix}${id}`,
-              });
-            }
-          });
-
-          return message.send();
-        }
-
         // suggest installed packs
-        if (name === 'packs' && subcommand === 'uninstall') {
+        if (
+          // deno-lint-ignore no-non-null-assertion
+          name === 'packs' && ['update', 'uninstall'].includes(subcommand!)
+        ) {
           // deno-lint-ignore no-non-null-assertion
           const id = options[focused!] as string;
 
@@ -249,14 +229,15 @@ export const handler = async (r: Request) => {
               })).send();
             }
 
-            return (await search.media({
+            return search.media({
+              token,
               guildId,
               search: title,
               debug: Boolean(options['debug']),
               id: title.startsWith(idPrefix)
                 ? title.substring(idPrefix.length)
                 : undefined,
-            }))
+            })
               .send();
           }
           case 'character':
@@ -264,7 +245,8 @@ export const handler = async (r: Request) => {
           case 'im': {
             const name = options['name'] as string;
 
-            return (await search.character({
+            return search.character({
+              token,
               userId: member.user.id,
               guildId,
               search: name,
@@ -272,8 +254,35 @@ export const handler = async (r: Request) => {
               id: name.startsWith(idPrefix)
                 ? name.substring(idPrefix.length)
                 : undefined,
-            }))
-              .send();
+            }).send();
+          }
+          case 'profile':
+          case 'user': {
+            const userId = options['user'] as string;
+
+            const nick = discord.getUsername(
+              // deno-lint-ignore no-non-null-assertion
+              resolved!.members![userId],
+              // deno-lint-ignore no-non-null-assertion
+              resolved!.users![userId],
+            );
+
+            const avatar = discord.getAvatar(
+              // deno-lint-ignore no-non-null-assertion
+              resolved!.members![userId],
+              // deno-lint-ignore no-non-null-assertion
+              resolved!.users![userId],
+              guildId,
+            );
+
+            return user.profile({
+              index: 0,
+              nick,
+              avatar,
+              userId,
+              guildId,
+              token,
+            }).send();
           }
           case 'party':
           case 'team':
@@ -284,10 +293,11 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'view':
-                return (await party.view({
+                return party.view({
+                  token,
                   userId: member.user.id,
                   guildId,
-                })).send();
+                }).send();
               case 'assign':
                 return (await party.assign({
                   spot,
@@ -330,16 +340,6 @@ export const handler = async (r: Request) => {
               )
               : undefined;
 
-            // const avatar = userId
-            //   ? discord.getAvatar(
-            //     // deno-lint-ignore no-non-null-assertion
-            //     resolved!.members![userId],
-            //     // deno-lint-ignore no-non-null-assertion
-            //     resolved!.users![userId],
-            //     guildId,
-            //   )
-            //   : discord.getAvatar(member, member.user, guildId);
-
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'stars': {
@@ -367,9 +367,12 @@ export const handler = async (r: Request) => {
                 }))
                   .send();
               }
-              case 'all': {
-                return user.all({
+              case 'list': {
+                const filter = options['filter'] as number | undefined;
+
+                return user.list({
                   token,
+                  filter,
                   userId: userId ?? member.user.id,
                   index: 0,
                   guildId,
@@ -443,6 +446,26 @@ export const handler = async (r: Request) => {
                 token,
               })
               .send();
+          case 'nick':
+          case 'image':
+          case 'custom': {
+            const name = options['name'] as string;
+
+            const nick = options['new_nick'] as string | undefined;
+            const image = options['new_image'] as string | undefined;
+
+            return user.customize({
+              nick,
+              image,
+              token,
+              guildId,
+              userId: member.user.id,
+              search: name,
+              id: name.startsWith(idPrefix)
+                ? name.substring(idPrefix.length)
+                : undefined,
+            }).send();
+          }
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
@@ -459,20 +482,34 @@ export const handler = async (r: Request) => {
                 return packs.install({
                   token,
                   guildId,
-                  userId: member.user.id,
                   shallow: subcommand === 'validate',
                   url: options['github'] as string,
-                  ref: options['ref'] as string,
                 })
                   .setFlags(discord.MessageFlags.Ephemeral)
                   .send();
               }
+              case 'update':
               case 'uninstall': {
-                return (await packs.uninstallDialog({
-                  // deno-lint-ignore no-non-null-assertion
-                  manifestId: options['id']! as string,
+                const list = await packs.all({
+                  type: PackType.Community,
                   guildId,
-                }))
+                });
+
+                const pack = list.find(({ manifest }) =>
+                  manifest.id === options['id'] as string
+                );
+
+                if (!pack) {
+                  throw new Error('404');
+                }
+
+                if (subcommand === 'update') {
+                  return packs.install({ token, guildId, id: pack.id })
+                    .setFlags(discord.MessageFlags.Ephemeral)
+                    .send();
+                }
+
+                return packs.uninstallDialog(pack)
                   .setFlags(discord.MessageFlags.Ephemeral)
                   .send();
               }
@@ -505,7 +542,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return (await search.media({ id, guildId }))
+            return search.media({ id, guildId, token })
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -516,11 +553,12 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const type = customValues![1];
 
-            return (await search.character({
+            return search.character({
+              token,
               userId: member.user.id,
               guildId,
               id,
-            }))
+            })
               .setType(
                 type === '1'
                   ? discord.MessageType.New
@@ -594,15 +632,20 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'call': {
+          case 'clist': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
-            // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
 
-            return user.all({
+            // deno-lint-ignore no-non-null-assertion
+            const filter = parseInt(customValues![1]);
+
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![2]);
+
+            return user.list({
               token,
               index,
+              filter,
               guildId,
               userId,
             })
@@ -709,6 +752,30 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
+          case 'profile': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            // deno-lint-ignore no-non-null-assertion
+            const nick = reference!.embeds[0].fields![0].value;
+
+            // deno-lint-ignore no-non-null-assertion
+            const avatar = reference!.embeds[0].thumbnail!.url;
+
+            return user.profile({
+              index,
+              token,
+              guildId,
+              userId,
+              avatar,
+              nick: nick.substring(2, nick.length - 2),
+            })
+              .setType(discord.MessageType.Update)
+              .send();
+          }
           case 'builtin':
           case 'community': {
             // deno-lint-ignore no-non-null-assertion
@@ -723,10 +790,21 @@ export const handler = async (r: Request) => {
               .send();
           }
           case 'puninstall': {
-            // deno-lint-ignore no-non-null-assertion
-            const manifestId = customValues![0];
+            const list = await packs.all({
+              type: PackType.Community,
+              guildId,
+            });
 
-            return (await packs.uninstallDialog({ manifestId, guildId }))
+            const pack = list.find(({ manifest }) =>
+              // deno-lint-ignore no-non-null-assertion
+              manifest.id === customValues![0]
+            );
+
+            if (!pack) {
+              throw new Error('404');
+            }
+
+            return packs.uninstallDialog(pack)
               .setFlags(discord.MessageFlags.Ephemeral)
               .send();
           }

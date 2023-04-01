@@ -29,6 +29,10 @@ export const join = (...args: string[]): string => {
   return args.join(splitter);
 };
 
+export const encode = (text: string): string => {
+  return text.replaceAll(/(^[^\\]?<.*?:.*:.*>)/g, '\\$1');
+};
+
 export enum MessageFlags {
   Ephemeral = 1 << 6,
   SuppressEmbeds = 1 << 2,
@@ -68,6 +72,7 @@ export enum ButtonStyle {
   Grey = 2,
   Green = 3,
   Red = 4,
+  Url = 5,
 }
 
 export enum TextInputStyle {
@@ -96,12 +101,68 @@ export type User = {
 type Resolved = {
   users?: Record<string, User>;
   members?: Record<string, Omit<Member, 'user'>>;
+  attachments?: Record<string, {
+    ephemeral: boolean;
+    content_type: string;
+    url: string;
+  }>;
 };
 
 type AllowedPings = {
   parse?: string[];
   users?: string[];
   roles?: string[];
+};
+
+type ComponentInternal = {
+  type: number;
+  // deno-lint-ignore camelcase
+  custom_id?: string;
+  style?: ButtonStyle | TextInputStyle;
+  label?: string;
+  emoji?: Emote;
+  placeholder?: string;
+  disabled?: boolean;
+  url?: string;
+  // min_values?: number;
+  // max_values?: number;
+  // options?: {
+  //   label: string;
+  //   value: string;
+  //   description?: string;
+  //   default?: boolean;
+  //   emoji?: Emote;
+  // }[];
+};
+
+type EmbedInternal = {
+  type: string;
+  title?: string;
+  url?: string;
+  description?: string;
+  color?: number;
+  fields?: {
+    name: string;
+    value: string;
+    inline?: boolean;
+  }[];
+  thumbnail?: {
+    url: string;
+  };
+  image?: {
+    url: string;
+  };
+  author?: {
+    name?: string;
+    url?: string;
+    // deno-lint-ignore camelcase
+    icon_url?: string;
+  };
+  footer?: {
+    text?: string;
+    // deno-lint-ignore camelcase
+    icon_url?: string;
+  };
 };
 
 export type Emote = {
@@ -113,7 +174,7 @@ export type Emote = {
 export const getUsername = (
   member: Member | Omit<Member, 'user'>,
   user: User,
-) => member.nick ?? user.username;
+) => encode(member.nick ?? user.username);
 
 export const getAvatar = (
   member: Member | Omit<Member, 'user'>,
@@ -154,6 +215,11 @@ export class Interaction<Options> {
 
   customType?: string;
   customValues?: string[];
+
+  reference?: {
+    embeds: EmbedInternal[];
+    components: { type: 1; components: ComponentInternal[] };
+  };
 
   /** user is sent when invoked in a DM */
   // user?: User;
@@ -205,6 +271,8 @@ export class Interaction<Options> {
     this.id = obj.id;
     this.token = obj.token;
     this.type = obj.type;
+
+    this.reference = obj.message;
 
     this.guildId = obj.guild_id;
     this.channelId = obj.channel_id;
@@ -285,25 +353,7 @@ export class Interaction<Options> {
 }
 
 export class Component {
-  #data: {
-    type: number;
-    custom_id?: string;
-    style?: ButtonStyle | TextInputStyle;
-    label?: string;
-    emoji?: Emote;
-    placeholder?: string;
-    disabled?: boolean;
-    url?: string;
-    // min_values?: number;
-    // max_values?: number;
-    // options?: {
-    //   label: string;
-    //   value: string;
-    //   description?: string;
-    //   default?: boolean;
-    //   emoji?: Emote;
-    // }[];
-  };
+  #data: ComponentInternal;
 
   constructor(type: ComponentType = ComponentType.Button) {
     this.#data = {
@@ -362,7 +412,7 @@ export class Component {
           break;
         case ComponentType.Button:
           if (this.#data.url) {
-            this.#data.style = 5;
+            this.#data.style = ButtonStyle.Url;
           } else {
             this.#data.style = ButtonStyle.Grey;
           }
@@ -377,33 +427,7 @@ export class Component {
 }
 
 export class Embed {
-  #data: {
-    type: string;
-    title?: string;
-    url?: string;
-    description?: string;
-    color?: number;
-    fields?: {
-      name: string;
-      value: string;
-      inline?: boolean;
-    }[];
-    thumbnail?: {
-      url: string;
-    };
-    image?: {
-      url: string;
-    };
-    author?: {
-      name?: string;
-      url?: string;
-      icon_url?: string;
-    };
-    footer?: {
-      text?: string;
-      icon_url?: string;
-    };
-  };
+  #data: EmbedInternal;
 
   constructor(type: 'rich' = 'rich') {
     this.#data = {

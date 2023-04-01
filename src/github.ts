@@ -126,7 +126,7 @@ interface Repo {
 
 function resolve(url: string): { username: string; reponame: string } {
   // try username/repo
-  let array = /^([-_a-z0-9]+)\/([-_a-z0-9]+)$/.exec(
+  let array = /^([-_a-zA-Z0-9]+)\/([-_a-zA-Z0-9]+)$/.exec(
     url,
   );
 
@@ -141,9 +141,15 @@ function resolve(url: string): { username: string; reponame: string } {
   }
 
   const username = array[1];
-  const reponame = array[2].endsWith('.git')
-    ? array[2].substring(0, array[2].length - 4)
-    : array[2];
+  let reponame = array[2];
+
+  reponame = array[2].endsWith('.git')
+    ? reponame.substring(0, reponame.length - 4)
+    : reponame;
+
+  reponame = array[2].endsWith('/')
+    ? reponame.substring(0, reponame.length - 1)
+    : reponame;
 
   return {
     username,
@@ -174,16 +180,26 @@ async function get(url: string): Promise<Repo> {
 }
 
 async function manifest(
-  { url, ref }: { url: string; ref?: string },
-): Promise<{
-  repo: Repo;
-  manifest: Manifest;
-}> {
-  const repo = await get(url);
+  { id, url }: { id?: number; url?: string },
+): Promise<{ id: number; manifest: Manifest }> {
+  // deno-lint-ignore no-non-null-assertion
+  id = id ?? (await get(url!.trim())).id;
 
-  const { entries } = await utils.unzip(
-    `https://api.github.com/repositories/${repo.id}/zipball/${ref ?? ''}`,
-  );
+  let entries: Awaited<ReturnType<typeof utils.unzip>>['entries'];
+
+  try {
+    entries = (await utils.unzip(
+      `https://api.github.com/repositories/${id}/zipball`,
+    )).entries;
+  } catch (err) {
+    if (err.message.includes('404: Not Found')) {
+      throw new NonFetalError(
+        `**404** Not Found\nFailed to Fetch Repository.`,
+      );
+    }
+
+    throw err;
+  }
 
   const manifests = Object.values(entries)
     .filter(({ name }) => name.endsWith('manifest.json'))
@@ -209,7 +225,7 @@ async function manifest(
   }
 
   return {
-    repo,
+    id,
     manifest: packs.populateRelations(manifest),
   };
 }

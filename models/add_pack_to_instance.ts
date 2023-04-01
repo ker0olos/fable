@@ -8,15 +8,9 @@ import {
   ResponseExpr,
   StringExpr,
   TimeExpr,
-  UserExpr,
 } from './fql.ts';
 
-import {
-  getGuild,
-  getInstance,
-  getUser,
-  Instance,
-} from './get_user_inventory.ts';
+import { getGuild, getInstance, Instance } from './get_user_inventory.ts';
 
 export interface Manifest {
   id: StringExpr;
@@ -26,19 +20,16 @@ export interface Pack {
   id: NumberExpr;
   instances: RefExpr[];
   manifest: ManifestExpr;
-  installedBy: RefExpr;
   firstInstall: TimeExpr;
   lastInstall: TimeExpr;
 }
 
 export function addPack(
   {
-    user,
     instance,
     githubId,
     manifest,
   }: {
-    user: UserExpr;
     instance: InstanceExpr;
     githubId: NumberExpr;
     manifest: ManifestExpr;
@@ -55,7 +46,6 @@ export function addPack(
       fql.Create<Pack>('pack', {
         id: githubId,
         instances: [],
-        installedBy: fql.Ref(user),
         firstInstall: fql.Now(),
         lastInstall: fql.Now(),
         manifest,
@@ -196,20 +186,17 @@ export default function (client: Client): {
         client,
         name: 'add_pack_to_instance',
         lambda: (
-          userId: StringExpr,
           guildId: StringExpr,
           githubId: NumberExpr,
           manifest: ManifestExpr,
         ) => {
           return fql.Let(
             {
-              user: getUser(userId),
               guild: getGuild(guildId),
               instance: getInstance(fql.Var('guild')),
             },
-            ({ user, instance }) =>
+            ({ instance }) =>
               addPack({
-                user,
                 instance,
                 githubId,
                 manifest,

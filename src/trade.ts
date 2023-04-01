@@ -4,8 +4,6 @@ import search, { idPrefix } from './search.ts';
 
 import packs from './packs.ts';
 
-import user from './user.ts';
-
 import config, { faunaUrl } from './config.ts';
 
 import utils from './utils.ts';
@@ -15,6 +13,51 @@ import * as discord from './discord.ts';
 import { Character, Schema } from './types.ts';
 
 import { NonFetalCancelableError, NonFetalError } from './errors.ts';
+
+async function verifyCharacters({
+  userId,
+  guildId,
+  charactersIds,
+}: {
+  userId: string;
+  guildId: string;
+  charactersIds: string[];
+}): Promise<{
+  ok: boolean;
+  message?: 'NOT_OWNED' | 'NOT_FOUND';
+  errors?: string[];
+}> {
+  const query = gql`
+    query ($userId: String!, $guildId: String!, $charactersIds: [String!]!) {
+      verifyCharacters(
+        userId: $userId
+        guildId: $guildId
+        charactersIds: $charactersIds
+      ) {
+        ok
+        message
+        errors
+      }
+    }
+  `;
+
+  const result = (await request<{
+    verifyCharacters: ReturnType<typeof verifyCharacters>;
+  }>({
+    query,
+    url: faunaUrl,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+      charactersIds,
+    },
+  })).verifyCharacters;
+
+  return result;
+}
 
 function pre({
   token,
@@ -74,6 +117,16 @@ function pre({
         throw new Error('404');
       }
 
+      results = await Promise.all(
+        results.map((character) =>
+          packs.aggregate<Character>({
+            guildId,
+            character,
+            end: 1,
+          })
+        ),
+      );
+
       let giveCharacters = results.slice(0, give.length);
       let takeCharacters = results.slice(give.length);
 
@@ -106,24 +159,14 @@ function pre({
       const giveIds = giveCharacters.map((char) => `${char.packId}:${char.id}`);
       const takeIds = takeCharacters.map((char) => `${char.packId}:${char.id}`);
 
-      results = await Promise.all(
-        results.map((character) =>
-          packs.aggregate<Character>({
-            guildId,
-            character,
-            end: 1,
-          })
-        ),
-      );
-
       const [giveOwnership, takeOwnership] = await Promise.all([
-        user.verifyCharacters({
+        trade.verifyCharacters({
           charactersIds: giveIds,
           guildId,
           userId,
         }),
         take.length
-          ? user.verifyCharacters({
+          ? trade.verifyCharacters({
             guildId,
             userId: targetId,
             charactersIds: takeIds,
@@ -149,26 +192,33 @@ function pre({
         });
       });
 
-      switch (giveOwnership) {
-        case 'NOT_OWNED': {
-          const message = new discord.Message().addEmbed(
-            new discord.Embed().setDescription(
-              `You don't have **${giveNames}**`,
-            ),
+      if (!giveOwnership.ok) {
+        // deno-lint-ignore no-non-null-assertion
+        giveOwnership.errors!.forEach((characterId) => {
+          const i = giveCharacters.findIndex(({ packId, id }) =>
+            `${packId}:${id}` === characterId
           );
 
-          giveEmbeds.forEach((embed) => message.addEmbed(embed));
+          message.addEmbed(giveEmbeds[i]);
+        });
+      }
+
+      switch (giveOwnership.message) {
+        case 'NOT_OWNED': {
+          message.addEmbed(
+            new discord.Embed().setDescription(
+              'You don\'t have the those characters',
+            ),
+          );
 
           return await message.patch(token);
         }
         case 'NOT_FOUND': {
           message.addEmbed(
             new discord.Embed().setDescription(
-              `_${giveNames} hasn't been found by anyone yet_`,
+              `_Those characters haven't been found by anyone yet_`,
             ),
           );
-
-          giveEmbeds.forEach((embed) => message.addEmbed(embed));
 
           return await message.patch(token);
         }
@@ -178,26 +228,34 @@ function pre({
 
       if (take.length) {
         // deno-lint-ignore no-non-null-assertion
-        switch (takeOwnership!) {
-          case 'NOT_OWNED': {
-            const message = new discord.Message().addEmbed(
-              new discord.Embed().setDescription(
-                `<@${targetId}> doesn't have **${takeNames}**`,
-              ),
+        if (!takeOwnership!.ok) {
+          // deno-lint-ignore no-non-null-assertion
+          takeOwnership!.errors!.forEach((characterId) => {
+            const i = takeCharacters.findIndex(({ packId, id }) =>
+              `${packId}:${id}` === characterId
             );
 
-            takeEmbeds.forEach((embed) => message.addEmbed(embed));
+            message.addEmbed(takeEmbeds[i]);
+          });
+        }
+
+        // deno-lint-ignore no-non-null-assertion
+        switch (takeOwnership!.message) {
+          case 'NOT_OWNED': {
+            message.addEmbed(
+              new discord.Embed().setDescription(
+                `<@${targetId}> doesn't those characters**`,
+              ),
+            );
 
             return await message.patch(token);
           }
           case 'NOT_FOUND': {
             message.addEmbed(
               new discord.Embed().setDescription(
-                `_${takeNames} hasn't been found by anyone yet_`,
+                `_Those characters haven't been found by anyone yet_`,
               ),
             );
-
-            takeEmbeds.forEach((embed) => message.addEmbed(embed));
 
             return await message.patch(token);
           }
@@ -349,6 +407,10 @@ async function give({
 
   if (!response.giveCharacters.ok) {
     switch (response.giveCharacters.error) {
+      case 'CHARACTER_IN_PARTY':
+        throw new NonFetalCancelableError(
+          'Some of those characters are currently in your party',
+        );
       case 'CHARACTER_NOT_OWNED':
         throw new NonFetalCancelableError(
           'Some of those characters changed hands',
@@ -461,10 +523,17 @@ async function accepted({
 
   if (!response.tradeCharacters.ok) {
     switch (response.tradeCharacters.error) {
-      case 'CHARACTER_NOT_FOUND':
+      case 'CHARACTER_IN_PARTY':
+        throw new NonFetalCancelableError(
+          'Some of those characters are currently in parties',
+        );
       case 'CHARACTER_NOT_OWNED':
         throw new NonFetalCancelableError(
-          'You don\'t have one of those characters!',
+          'Some of those characters changed hands',
+        );
+      case 'CHARACTER_NOT_FOUND':
+        throw new NonFetalCancelableError(
+          'Some of those characters were disabled or removed',
         );
       default:
         throw new Error(response.tradeCharacters.error);
@@ -544,6 +613,7 @@ const trade = {
   pre,
   give,
   accepted,
+  verifyCharacters,
 };
 
 export default trade;

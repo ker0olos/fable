@@ -4,6 +4,8 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import utils from './utils.ts';
+
 import Rating from './rating.ts';
 
 import packs from './packs.ts';
@@ -97,13 +99,15 @@ async function embed({
   return message;
 }
 
-async function view({
+function view({
+  token,
   userId,
   guildId,
 }: {
+  token: string;
   userId: string;
   guildId: string;
-}): Promise<discord.Message> {
+}): discord.Message {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
       getUserInventory(userId: $userId, guildId: $guildId) {
@@ -138,7 +142,7 @@ async function view({
     }
   `;
 
-  const inventory = (await request<{
+  request<{
     getUserInventory: Schema.Inventory;
   }>({
     url: faunaUrl,
@@ -150,12 +154,33 @@ async function view({
       userId,
       guildId,
     },
-  })).getUserInventory;
+  })
+    .then(async ({ getUserInventory: inventory }) => {
+      const message = await embed({
+        guildId,
+        inventory,
+      });
 
-  return embed({
-    guildId,
-    inventory,
-  });
+      return message.patch(token);
+    })
+    .catch(async (err) => {
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner3.gif` },
+      ),
+    );
+
+  return loading;
 }
 
 async function assign({

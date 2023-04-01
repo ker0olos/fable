@@ -17,15 +17,13 @@ import { assertSnapshot } from 'https://deno.land/std@0.179.0/testing/snapshot.t
 
 import { FakeTime } from 'https://deno.land/std@0.179.0/testing/time.ts';
 
-import packs from '../src/packs.ts';
-
-import config from '../src/config.ts';
-
 import Rating from '../src/rating.ts';
 
-import help from '../src/help.ts';
-
 import gacha, { Pull } from '../src/gacha.ts';
+
+import packs from '../src/packs.ts';
+import config from '../src/config.ts';
+import help from '../src/help.ts';
 
 import party from '../src/party.ts';
 import search from '../src/search.ts';
@@ -70,6 +68,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -94,8 +94,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -103,6 +107,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -111,19 +144,21 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -142,6 +177,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -166,8 +203,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'native title',
       });
@@ -175,6 +216,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -183,19 +253,21 @@ Deno.test('/media', async (test) => {
             title: 'native title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -214,6 +286,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -238,8 +312,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -247,6 +325,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -255,19 +362,21 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -292,6 +401,8 @@ Deno.test('/media', async (test) => {
       ],
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -316,8 +427,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -325,6 +440,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -333,7 +477,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [
@@ -363,13 +507,15 @@ Deno.test('/media', async (test) => {
           ],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -382,6 +528,8 @@ Deno.test('/media', async (test) => {
         english: 'english title',
       },
     };
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -407,8 +555,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -416,27 +568,57 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
               name: 'Anime',
             },
-            description: undefined,
             title: 'english title',
             image: {
-              url: 'undefined/external/',
+              url: 'http://localhost:8000/external/',
             },
           }],
           components: [],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -459,6 +641,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -483,8 +667,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -492,6 +680,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -500,7 +717,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [
@@ -518,13 +735,15 @@ Deno.test('/media', async (test) => {
           ],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -587,6 +806,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -611,8 +832,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -620,6 +845,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -628,7 +882,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }, {
             type: 'rich',
@@ -640,7 +894,8 @@ Deno.test('/media', async (test) => {
               value: 'main character description',
             }],
             thumbnail: {
-              url: 'undefined/external/main%20character%20url?size=thumbnail',
+              url:
+                'http://localhost:8000/external/main%20character%20url?size=thumbnail',
             },
           }, {
             type: 'rich',
@@ -650,7 +905,7 @@ Deno.test('/media', async (test) => {
             }],
             thumbnail: {
               url:
-                'undefined/external/supporting%20character%20url?size=thumbnail',
+                'http://localhost:8000/external/supporting%20character%20url?size=thumbnail',
             },
           }],
           components: [{
@@ -664,13 +919,15 @@ Deno.test('/media', async (test) => {
           }],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -758,6 +1015,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -782,8 +1041,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -791,6 +1054,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -799,7 +1091,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [
@@ -835,13 +1127,15 @@ Deno.test('/media', async (test) => {
           ],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -907,6 +1201,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -931,8 +1227,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -940,6 +1240,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -948,7 +1277,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [
@@ -984,13 +1313,15 @@ Deno.test('/media', async (test) => {
           ],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1022,6 +1353,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -1046,8 +1379,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -1055,6 +1392,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -1063,7 +1429,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [
@@ -1081,13 +1447,15 @@ Deno.test('/media', async (test) => {
           ],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1145,6 +1513,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -1169,8 +1539,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -1178,6 +1552,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -1186,7 +1589,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [
@@ -1210,13 +1613,15 @@ Deno.test('/media', async (test) => {
           ],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1271,6 +1676,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -1295,8 +1702,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -1304,6 +1715,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -1312,7 +1752,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [
@@ -1342,13 +1782,15 @@ Deno.test('/media', async (test) => {
           ],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1400,6 +1842,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -1424,8 +1868,12 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
       });
@@ -1433,6 +1881,35 @@ Deno.test('/media', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             author: {
@@ -1441,7 +1918,7 @@ Deno.test('/media', async (test) => {
             title: 'english title',
             description: 'long description',
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }, {
             type: 'rich',
@@ -1450,7 +1927,7 @@ Deno.test('/media', async (test) => {
               value: '\u200B',
             }],
             thumbnail: {
-              url: 'undefined/external/?size=thumbnail',
+              url: 'http://localhost:8000/external/?size=thumbnail',
             },
           }, {
             type: 'rich',
@@ -1459,7 +1936,7 @@ Deno.test('/media', async (test) => {
               value: '\u200B',
             }],
             thumbnail: {
-              url: 'undefined/external/?size=thumbnail',
+              url: 'http://localhost:8000/external/?size=thumbnail',
             },
           }],
           components: [{
@@ -1473,13 +1950,15 @@ Deno.test('/media', async (test) => {
           }],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1497,6 +1976,8 @@ Deno.test('/media', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -1521,22 +2002,64 @@ Deno.test('/media', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      await assertRejects(
-        async () =>
-          await search.media({
-            guildId: 'guild_id',
-            search: 'x'.repeat(100),
-          }),
-        Error,
-        '404',
+      const message = search.media({
+        token: 'test_token',
+        guildId: 'guild_id',
+        search: 'x'.repeat(100),
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertSpyCalls(fetchStub, 1);
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            description: 'Found _nothing_ matching that query!',
+          }],
+          components: [],
+          attachments: [],
+        },
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1570,6 +2093,8 @@ Deno.test('/media debug', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -1594,8 +2119,12 @@ Deno.test('/media debug', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
         debug: true,
@@ -1604,6 +2133,35 @@ Deno.test('/media debug', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             description: 'romaji title\nnative title',
@@ -1629,20 +2187,22 @@ Deno.test('/media debug', async (test) => {
               },
             ],
             thumbnail: {
-              url: 'undefined/external/image_url?size=thumbnail',
+              url: 'http://localhost:8000/external/image_url?size=thumbnail',
             },
             title: 'english title',
           }],
           components: [],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1655,6 +2215,8 @@ Deno.test('/media debug', async (test) => {
         english: 'english title',
       },
     };
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -1680,8 +2242,12 @@ Deno.test('/media debug', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
         debug: true,
@@ -1690,9 +2256,37 @@ Deno.test('/media debug', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
           embeds: [{
             type: 'rich',
-            description: undefined,
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
             fields: [
               {
                 name: 'Id',
@@ -1715,20 +2309,22 @@ Deno.test('/media debug', async (test) => {
               },
             ],
             thumbnail: {
-              url: 'undefined/external/?size=thumbnail',
+              url: 'http://localhost:8000/external/?size=thumbnail',
             },
             title: 'english title',
           }],
           components: [],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1745,6 +2341,8 @@ Deno.test('/media debug', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -1769,8 +2367,12 @@ Deno.test('/media debug', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.media({
+      const message = search.media({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'english title',
         debug: true,
@@ -1779,9 +2381,37 @@ Deno.test('/media debug', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
           embeds: [{
             type: 'rich',
-            description: undefined,
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
             fields: [
               {
                 name: 'Id',
@@ -1804,20 +2434,22 @@ Deno.test('/media debug', async (test) => {
               },
             ],
             thumbnail: {
-              url: 'undefined/external/?size=thumbnail',
+              url: 'http://localhost:8000/external/?size=thumbnail',
             },
             title: 'english title',
           }],
           components: [],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 1);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1856,6 +2488,8 @@ Deno.test('/character', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -1880,8 +2514,12 @@ Deno.test('/character', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.character({
+      const message = search.character({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'full name',
       });
@@ -1889,6 +2527,35 @@ Deno.test('/character', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             description:
@@ -1900,7 +2567,7 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
             footer: {
               text: 'Male, 420',
@@ -1909,13 +2576,15 @@ Deno.test('/character', async (test) => {
           components: [],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 2);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1930,6 +2599,8 @@ Deno.test('/character', async (test) => {
         large: 'image_url',
       },
     };
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -1962,6 +2633,7 @@ Deno.test('/character', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -1973,8 +2645,12 @@ Deno.test('/character', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.character({
+      const message = search.character({
+        token: 'test_token',
         search: 'full name',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1983,6 +2659,35 @@ Deno.test('/character', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             description:
@@ -1994,7 +2699,7 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [
@@ -2012,13 +2717,15 @@ Deno.test('/character', async (test) => {
           ],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 2);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2035,6 +2742,8 @@ Deno.test('/character', async (test) => {
       gender: 'female',
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -2059,8 +2768,12 @@ Deno.test('/character', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.character({
+      const message = search.character({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'full name',
       });
@@ -2068,6 +2781,35 @@ Deno.test('/character', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             description:
@@ -2079,7 +2821,7 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
             footer: {
               text: 'Female',
@@ -2088,13 +2830,15 @@ Deno.test('/character', async (test) => {
           components: [],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 2);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2111,6 +2855,8 @@ Deno.test('/character', async (test) => {
       age: '18+',
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -2135,8 +2881,12 @@ Deno.test('/character', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
       const message = await search.character({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'full name',
       });
@@ -2144,6 +2894,35 @@ Deno.test('/character', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             description:
@@ -2155,7 +2934,7 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
             footer: {
               text: '18+',
@@ -2164,13 +2943,15 @@ Deno.test('/character', async (test) => {
           components: [],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 2);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2200,6 +2981,8 @@ Deno.test('/character', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -2224,8 +3007,12 @@ Deno.test('/character', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.character({
+      const message = search.character({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'full name',
       });
@@ -2233,6 +3020,35 @@ Deno.test('/character', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           attachments: [],
           embeds: [{
             type: 'rich',
@@ -2245,7 +3061,7 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'undefined/external/image_url',
+              url: 'http://localhost:8000/external/image_url',
             },
           }],
           components: [{
@@ -2258,13 +3074,15 @@ Deno.test('/character', async (test) => {
             }],
           }],
         },
-      });
-
-      assertSpyCalls(fetchStub, 2);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2275,6 +3093,8 @@ Deno.test('/character', async (test) => {
         full: 'full name',
       },
     };
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -2300,8 +3120,12 @@ Deno.test('/character', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.character({
+      const message = search.character({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'full name',
       });
@@ -2309,6 +3133,35 @@ Deno.test('/character', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             description:
@@ -2320,19 +3173,21 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'undefined/external/',
+              url: 'http://localhost:8000/external/',
             },
           }],
           components: [],
           attachments: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 2);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2347,6 +3202,8 @@ Deno.test('/character', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -2371,8 +3228,12 @@ Deno.test('/character', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.character({
+      const message = search.character({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'full name',
       });
@@ -2380,6 +3241,35 @@ Deno.test('/character', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [{
             type: 'rich',
             description:
@@ -2391,19 +3281,21 @@ Deno.test('/character', async (test) => {
               },
             ],
             image: {
-              url: 'undefined/external/',
+              url: 'http://localhost:8000/external/',
             },
           }],
           attachments: [],
           components: [],
         },
-      });
-
-      assertSpyCalls(fetchStub, 2);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2416,6 +3308,8 @@ Deno.test('/character', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -2440,22 +3334,64 @@ Deno.test('/character', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      await assertRejects(
-        async () =>
-          await search.character({
-            guildId: 'guild_id',
-            search: 'x'.repeat(100),
-          }),
-        Error,
-        '404',
+      const message = search.character({
+        token: 'test_token',
+        guildId: 'guild_id',
+        search: 'x'.repeat(100),
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertSpyCalls(fetchStub, 1);
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            description: 'Found _nothing_ matching that query!',
+          }],
+          attachments: [],
+          components: [],
+        },
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 });
@@ -2483,6 +3419,8 @@ Deno.test('/character debug', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -2507,8 +3445,12 @@ Deno.test('/character debug', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.character({
+      const message = search.character({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'full name',
         debug: true,
@@ -2519,13 +3461,41 @@ Deno.test('/character debug', async (test) => {
         data: {
           attachments: [],
           components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
           embeds: [
             {
               type: 'rich',
               title: 'full name',
-              description: undefined,
               thumbnail: {
-                url: 'undefined/external/image_url?size=thumbnail',
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
               fields: [
                 {
@@ -2570,13 +3540,15 @@ Deno.test('/character debug', async (test) => {
             },
           ],
         },
-      });
-
-      assertSpyCalls(fetchStub, 2);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2593,6 +3565,8 @@ Deno.test('/character debug', async (test) => {
       age: '420',
       gender: 'male',
     };
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -2618,8 +3592,12 @@ Deno.test('/character debug', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.character({
+      const message = search.character({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'full name',
         debug: true,
@@ -2628,15 +3606,43 @@ Deno.test('/character debug', async (test) => {
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           components: [],
           attachments: [],
           embeds: [
             {
               type: 'rich',
               title: 'full name',
-              description: undefined,
               thumbnail: {
-                url: 'undefined/external/image_url?size=thumbnail',
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
               fields: [
                 {
@@ -2681,13 +3687,15 @@ Deno.test('/character debug', async (test) => {
             },
           ],
         },
-      });
-
-      assertSpyCalls(fetchStub, 2);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2698,6 +3706,8 @@ Deno.test('/character debug', async (test) => {
         full: 'full name',
       },
     };
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -2723,8 +3733,12 @@ Deno.test('/character debug', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.character({
+      const message = search.character({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'full name',
         debug: true,
@@ -2735,13 +3749,41 @@ Deno.test('/character debug', async (test) => {
         data: {
           attachments: [],
           components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
           embeds: [
             {
               type: 'rich',
               title: 'full name',
-              description: undefined,
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               fields: [
                 {
@@ -2786,13 +3828,15 @@ Deno.test('/character debug', async (test) => {
             },
           ],
         },
-      });
-
-      assertSpyCalls(fetchStub, 2);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2824,6 +3868,8 @@ Deno.test('/character debug', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -2848,8 +3894,12 @@ Deno.test('/character debug', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await search.character({
+      const message = search.character({
+        token: 'test_token',
         guildId: 'guild_id',
         search: 'full name',
         debug: true,
@@ -2860,13 +3910,41 @@ Deno.test('/character debug', async (test) => {
         data: {
           attachments: [],
           components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
           embeds: [
             {
               type: 'rich',
               title: 'full name',
-              description: undefined,
               thumbnail: {
-                url: 'undefined/external/image_url?size=thumbnail',
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
               fields: [
                 {
@@ -2906,13 +3984,15 @@ Deno.test('/character debug', async (test) => {
             },
           ],
         },
-      });
-
-      assertSpyCalls(fetchStub, 2);
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 });
@@ -4589,7 +5669,7 @@ Deno.test('/collection media', async (test) => {
   });
 });
 
-Deno.test('/collection all', async (test) => {
+Deno.test('/collection list', async (test) => {
   await test.step('normal', async () => {
     const media: AniListMedia[] = [
       {
@@ -4763,7 +5843,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
@@ -4778,7 +5858,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -4806,7 +5886,7 @@ Deno.test('/collection all', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'call=user_id=1=prev',
+                  custom_id: 'clist=user_id==1=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -4819,7 +5899,7 @@ Deno.test('/collection all', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'call=user_id=1=next',
+                  custom_id: 'clist=user_id==1=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -4830,33 +5910,531 @@ Deno.test('/collection all', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**<@user_id>\n\u200B**',
-
               fields: [
                 {
                   inline: false,
                   name: 'title 1',
-                  value: 'character 1',
+                  value: '1<:smol_star:1088427421096751224> character 1',
                 },
                 {
                   inline: false,
                   name: 'title 2',
-                  value: 'character 2',
+                  value: '2<:smol_star:1088427421096751224> character 2',
                 },
                 {
                   inline: false,
                   name: 'title 3',
-                  value: 'character 3',
+                  value: '3<:smol_star:1088427421096751224> character 3',
                 },
                 {
                   inline: false,
                   name: 'title 4',
-                  value: 'character 4',
+                  value: '4<:smol_star:1088427421096751224> character 4',
                 },
                 {
                   inline: false,
                   name: 'title 5',
-                  value: 'character 5',
+                  value: '5<:smol_star:1088427421096751224> character 5',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+    }
+  });
+
+  await test.step('normal (Nicknames)', async () => {
+    const media: AniListMedia[] = [
+      {
+        id: '2',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 1',
+        },
+      },
+      {
+        id: '4',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 2',
+        },
+      },
+      {
+        id: '6',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 3',
+        },
+      },
+      {
+        id: '8',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 4',
+        },
+      },
+      {
+        id: '10',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 5',
+        },
+      },
+      {
+        id: '12',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 6',
+        },
+      },
+    ];
+
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character 1',
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'character 2',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'character 3',
+        },
+      },
+      {
+        id: '7',
+        name: {
+          full: 'character 4',
+        },
+      },
+      {
+        id: '9',
+        name: {
+          full: 'character 5',
+        },
+      },
+      {
+        id: '11',
+        name: {
+          full: 'character 6',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  characters: [
+                    {
+                      id: 'anilist:1',
+                      mediaId: 'anilist:2',
+                      nickname: 'Nickname 2',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:3',
+                      mediaId: 'anilist:4',
+                      rating: 2,
+                    },
+                    {
+                      id: 'anilist:5',
+                      mediaId: 'anilist:6',
+                      nickname: 'Nickname 1',
+                      rating: 3,
+                    },
+                    {
+                      id: 'anilist:7',
+                      mediaId: 'anilist:8',
+                      rating: 4,
+                    },
+                    {
+                      id: 'anilist:9',
+                      mediaId: 'anilist:10',
+                      rating: 5,
+                    },
+                    {
+                      id: 'anilist:11',
+                      mediaId: 'anilist:12',
+                      rating: 1,
+                    },
+                  ],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.list({
+        index: 0,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'clist=user_id==1=prev',
+                  label: 'Prev',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: '_',
+                  disabled: true,
+                  label: '1/2',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'clist=user_id==1=next',
+                  label: 'Next',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  inline: false,
+                  name: 'title 1',
+                  value: '1<:smol_star:1088427421096751224> Nickname 2',
+                },
+                {
+                  inline: false,
+                  name: 'title 2',
+                  value: '2<:smol_star:1088427421096751224> character 2',
+                },
+                {
+                  inline: false,
+                  name: 'title 3',
+                  value: '3<:smol_star:1088427421096751224> Nickname 1',
+                },
+                {
+                  inline: false,
+                  name: 'title 4',
+                  value: '4<:smol_star:1088427421096751224> character 4',
+                },
+                {
+                  inline: false,
+                  name: 'title 5',
+                  value: '5<:smol_star:1088427421096751224> character 5',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+    }
+  });
+
+  await test.step('normal (Ratings Filter)', async () => {
+    const media: AniListMedia[] = [
+      {
+        id: '4',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 2',
+        },
+      },
+      {
+        id: '6',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 3',
+        },
+      },
+    ];
+
+    const characters: AniListCharacter[] = [
+      {
+        id: '3',
+        name: {
+          full: 'character 2',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'character 3',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  characters: [
+                    {
+                      id: 'anilist:1',
+                      mediaId: 'anilist:2',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:3',
+                      mediaId: 'anilist:4',
+                      rating: 2,
+                    },
+                    {
+                      id: 'anilist:5',
+                      mediaId: 'anilist:6',
+                      rating: 2,
+                    },
+                    {
+                      id: 'anilist:7',
+                      mediaId: 'anilist:8',
+                      rating: 3,
+                    },
+                    {
+                      id: 'anilist:9',
+                      mediaId: 'anilist:10',
+                      rating: 4,
+                    },
+                    {
+                      id: 'anilist:11',
+                      mediaId: 'anilist:12',
+                      rating: 5,
+                    },
+                  ],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.list({
+        index: 0,
+        filter: 2,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'clist=user_id=2=0=prev',
+                  label: 'Prev',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: '_',
+                  disabled: true,
+                  label: '1/1',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'clist=user_id=2=0=next',
+                  label: 'Next',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  inline: false,
+                  name: 'title 2',
+                  value: '2<:smol_star:1088427421096751224> character 2',
+                },
+                {
+                  inline: false,
+                  name: 'title 3',
+                  value: '2<:smol_star:1088427421096751224> character 3',
                 },
               ],
             },
@@ -5047,7 +6625,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         userId: 'another_user_id',
         guildId: 'guild_id',
@@ -5062,7 +6640,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -5090,7 +6668,7 @@ Deno.test('/collection all', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'call=another_user_id=1=prev',
+                  custom_id: 'clist=another_user_id==1=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -5103,7 +6681,7 @@ Deno.test('/collection all', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'call=another_user_id=1=next',
+                  custom_id: 'clist=another_user_id==1=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -5114,33 +6692,31 @@ Deno.test('/collection all', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**<@another_user_id>\n\u200B**',
-
               fields: [
                 {
                   inline: false,
                   name: 'title 1',
-                  value: 'character 1',
+                  value: '1<:smol_star:1088427421096751224> character 1',
                 },
                 {
                   inline: false,
                   name: 'title 2',
-                  value: 'character 2',
+                  value: '2<:smol_star:1088427421096751224> character 2',
                 },
                 {
                   inline: false,
                   name: 'title 3',
-                  value: 'character 3',
+                  value: '3<:smol_star:1088427421096751224> character 3',
                 },
                 {
                   inline: false,
                   name: 'title 4',
-                  value: 'character 4',
+                  value: '4<:smol_star:1088427421096751224> character 4',
                 },
                 {
                   inline: false,
                   name: 'title 5',
-                  value: 'character 5',
+                  value: '5<:smol_star:1088427421096751224> character 5',
                 },
               ],
             },
@@ -5268,7 +6844,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
@@ -5283,7 +6859,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -5311,7 +6887,7 @@ Deno.test('/collection all', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'call=user_id=0=prev',
+                  custom_id: 'clist=user_id==0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -5324,7 +6900,7 @@ Deno.test('/collection all', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'call=user_id=0=next',
+                  custom_id: 'clist=user_id==0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -5335,13 +6911,11 @@ Deno.test('/collection all', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**<@user_id>\n\u200B**',
-
               fields: [
                 {
                   inline: false,
                   name: 'title 1',
-                  value: 'character 1',
+                  value: '1<:smol_star:1088427421096751224> character 1',
                 },
                 {
                   inline: false,
@@ -5474,7 +7048,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
@@ -5489,7 +7063,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -5517,7 +7091,7 @@ Deno.test('/collection all', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'call=user_id=0=prev',
+                  custom_id: 'clist=user_id==0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -5530,7 +7104,7 @@ Deno.test('/collection all', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'call=user_id=0=next',
+                  custom_id: 'clist=user_id==0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -5541,13 +7115,11 @@ Deno.test('/collection all', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**<@user_id>\n\u200B**',
-
               fields: [
                 {
                   inline: false,
                   name: 'title 1',
-                  value: 'character 1',
+                  value: '1<:smol_star:1088427421096751224> character 1',
                 },
                 {
                   inline: false,
@@ -5604,7 +7176,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         nick: 'Dave',
         userId: 'another_user_id',
@@ -5620,7 +7192,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -5695,7 +7267,7 @@ Deno.test('/collection all', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = user.all({
+      const message = user.list({
         index: 0,
         userId: 'user_id',
         guildId: 'guild_id',
@@ -5710,7 +7282,7 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
+              url: 'http://localhost:8000/assets/spinner.gif',
             },
           }],
         },
@@ -5745,6 +7317,106 @@ Deno.test('/collection all', async (test) => {
           embeds: [{
             type: 'rich',
             description: 'You don\'t have any characters',
+          }],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+    }
+  });
+
+  await test.step('no characters (Self) (Ratings Filter)', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  characters: [],
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.list({
+        index: 0,
+        filter: 3,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'gacha=user_id',
+              label: '/gacha',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'You don\'t have any 3<:smol_star:1088427421096751224> characters',
           }],
         },
       );
@@ -6849,6 +8521,8 @@ Deno.test('/party view', async (test) => {
       },
     ];
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -6914,6 +8588,7 @@ Deno.test('/party view', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -6925,15 +8600,48 @@ Deno.test('/party view', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await party.view({
+      const message = party.view({
         userId: 'user',
         guildId: 'guild',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -6944,7 +8652,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -6958,7 +8666,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -6972,7 +8680,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -6986,7 +8694,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
@@ -7000,7 +8708,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
@@ -7009,11 +8717,15 @@ Deno.test('/party view', async (test) => {
           components: [],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       listStub.restore();
       fetchStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -7061,6 +8773,8 @@ Deno.test('/party view', async (test) => {
       },
     ];
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -7116,6 +8830,7 @@ Deno.test('/party view', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -7127,15 +8842,48 @@ Deno.test('/party view', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await party.view({
+      const message = party.view({
         userId: 'user',
         guildId: 'guild',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -7146,7 +8894,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -7160,7 +8908,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -7182,7 +8930,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
@@ -7191,11 +8939,15 @@ Deno.test('/party view', async (test) => {
           components: [],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       listStub.restore();
       fetchStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -7242,6 +8994,8 @@ Deno.test('/party view', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -7308,6 +9062,7 @@ Deno.test('/party view', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -7344,15 +9099,47 @@ Deno.test('/party view', async (test) => {
       ]),
     );
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
     try {
-      const message = await party.view({
+      const message = party.view({
         userId: 'user',
         guildId: 'guild',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -7363,7 +9150,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -7377,7 +9164,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -7391,7 +9178,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -7409,7 +9196,7 @@ Deno.test('/party view', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
@@ -7418,11 +9205,15 @@ Deno.test('/party view', async (test) => {
           components: [],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 });
@@ -8442,81 +10233,6 @@ Deno.test('/packs [builtin-community]', async (test) => {
     }
   });
 
-  await test.step('community packs with installer', async () => {
-    const manifest: Manifest = {
-      id: 'pack-id',
-    };
-
-    const listStub = stub(
-      packs,
-      'all',
-      () =>
-        Promise.resolve([{
-          manifest,
-          type: PackType.Community,
-          installedBy: {
-            id: 'user_id',
-          },
-        }]),
-    );
-
-    try {
-      const message = await packs.pages({
-        type: PackType.Community,
-        guildId: 'guild_id',
-        index: 0,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'community==0=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '1/1',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'community==0=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'puninstall=pack-id',
-                label: 'Uninstall',
-                style: 4,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'The following third-party packs were manually installed by your server members',
-          }, {
-            type: 'rich',
-            description: 'Installed by <@user_id>\n\n',
-            title: 'pack-id',
-          }],
-        },
-      });
-    } finally {
-      listStub.restore();
-    }
-  });
-
   await test.step('use title and id ', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
@@ -8690,7 +10406,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id' },
         }) as any,
     );
@@ -8716,10 +10432,8 @@ Deno.test('/packs [install-validate]', async (test) => {
       const message = packs.install({
         shallow: true,
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -8777,7 +10491,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'anilist' },
         }) as any,
     );
@@ -8803,10 +10517,8 @@ Deno.test('/packs [install-validate]', async (test) => {
       const message = packs.install({
         shallow: true,
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -8864,7 +10576,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'anilist' },
         }) as any,
     );
@@ -8889,10 +10601,8 @@ Deno.test('/packs [install-validate]', async (test) => {
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -8943,13 +10653,13 @@ Deno.test('/packs [install-validate]', async (test) => {
     }
   });
 
-  await test.step('already installed', async () => {
+  await test.step('same manifest id but github id changed', async () => {
     const manifestStub = stub(
       github,
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id' },
         }) as any,
     );
@@ -8968,6 +10678,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       () =>
         Promise.resolve([
           {
+            id: 2,
             type: PackType.Community,
             manifest: {
               id: 'manifest_id',
@@ -8982,10 +10693,8 @@ Deno.test('/packs [install-validate]', async (test) => {
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -9042,7 +10751,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id' },
         }) as any,
     );
@@ -9076,10 +10785,8 @@ Deno.test('/packs [install-validate]', async (test) => {
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -9141,7 +10848,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id', conflicts: ['fake-id'] },
         }) as any,
     );
@@ -9174,10 +10881,8 @@ Deno.test('/packs [install-validate]', async (test) => {
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -9239,7 +10944,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id', depends: ['fake-id'] },
         }) as any,
     );
@@ -9264,10 +10969,8 @@ Deno.test('/packs [install-validate]', async (test) => {
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -9329,7 +11032,7 @@ Deno.test('/packs [install-validate]', async (test) => {
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: '$&*#&$*#' },
         }) as any,
     );
@@ -9349,10 +11052,8 @@ Deno.test('/packs [install-validate]', async (test) => {
       const message = packs.install({
         shallow: true,
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -9416,7 +11117,7 @@ The .id string must match ^[-_a-z0-9]+$
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: '$&*#&$*#' },
         }) as any,
     );
@@ -9435,10 +11136,8 @@ The .id string must match ^[-_a-z0-9]+$
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -9494,7 +11193,7 @@ The .id string must match ^[-_a-z0-9]+$
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'new_manifest_id' },
         }) as any,
     );
@@ -9527,10 +11226,8 @@ The .id string must match ^[-_a-z0-9]+$
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -9592,7 +11289,7 @@ The .id string must match ^[-_a-z0-9]+$
       'manifest',
       () =>
         Promise.resolve({
-          repo: { id: 'repo_id' },
+          repo: { id: 1 },
           manifest: { id: 'manifest_id' },
         }) as any,
     );
@@ -9628,10 +11325,8 @@ The .id string must match ^[-_a-z0-9]+$
     try {
       const message = packs.install({
         guildId: 'guild_id',
-        userId: 'user_id',
         token: 'token',
         url: 'url',
-        ref: 'ref',
       });
 
       assertEquals(message.json(), {
@@ -9694,6 +11389,131 @@ The .id string must match ^[-_a-z0-9]+$
       timeStub.restore();
       manifestStub.restore();
       fetchStub.restore();
+    }
+  });
+
+  await test.step('updated', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          id: 1,
+          manifest: { id: 'manifest_id' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              addPackToInstance: {
+                ok: true,
+                manifest: {
+                  author: 'author',
+                  id: 'manifest_id',
+                  description: 'description',
+                  url: 'url',
+                  image: 'image',
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            id: 1,
+            type: PackType.Community,
+            manifest: {
+              id: 'manifest_id',
+            },
+          },
+        ]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://graphql.us.fauna.com/graphql',
+      );
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Installed',
+            },
+            {
+              type: 'rich',
+              title: 'manifest_id',
+              description: 'description',
+              footer: {
+                text: 'author',
+              },
+              thumbnail: {
+                url: 'image',
+              },
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+      listStub.restore();
     }
   });
 });
@@ -10377,14 +12197,12 @@ Deno.test('/trade', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
+    const tradeStub = stub(
+      trade,
       'verifyCharacters',
       returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
+        Promise.resolve({ ok: true }),
+        Promise.resolve({ ok: true }),
       ]),
     );
 
@@ -10529,7 +12347,7 @@ Deno.test('/trade', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
+      tradeStub.restore();
       fetchStub.restore();
     }
   });
@@ -10567,14 +12385,12 @@ Deno.test('/trade', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
+    const tradeStub = stub(
+      trade,
       'verifyCharacters',
       returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
+        Promise.resolve({ ok: true }),
+        Promise.resolve({ ok: true }),
       ]),
     );
 
@@ -10719,134 +12535,7 @@ Deno.test('/trade', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('not owned', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-    };
-
-    const characterStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => undefined as any,
-    );
-
-    const aggregateStub = stub(
-      packs,
-      'aggregate',
-      ({ character }) => Promise.resolve(character),
-    );
-
-    const userStub = stub(
-      user,
-      'verifyCharacters',
-      returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('NOT_OWNED' as 'NOT_OWNED'),
-      ]),
-    );
-
-    config.trading = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = trade.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        targetId: 'another_user_id',
-        give: ['give_character_id'],
-        take: ['take_character_id'],
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.tickAsync(0);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              description: '<@another_user_id> doesn\'t have **full name**',
-            },
-            {
-              type: 'rich',
-              description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
-              thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
-              },
-              fields: [
-                {
-                  name: 'full name\n\u200B',
-                  value: '\u200B',
-                },
-              ],
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-      delete config.trading;
-
-      timeStub.restore();
-      characterStub.restore();
-      aggregateStub.restore();
-      userStub.restore();
+      tradeStub.restore();
       fetchStub.restore();
     }
   });
@@ -10884,14 +12573,19 @@ Deno.test('/trade', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
+    const tradeStub = stub(
+      trade,
       'verifyCharacters',
       returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('NOT_FOUND' as 'NOT_FOUND'),
+        Promise.resolve({
+          ok: true,
+        }),
+        Promise.resolve({
+          ok: false,
+          // deno-lint-ignore prefer-as-const
+          message: 'NOT_FOUND' as 'NOT_FOUND',
+          errors: ['id:1'],
+        }),
       ]),
     );
 
@@ -10946,8 +12640,137 @@ Deno.test('/trade', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '_full name hasn\'t been found by anyone yet_',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
             },
+            {
+              type: 'rich',
+              description:
+                '_Those characters haven\'t been found by anyone yet_',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      tradeStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not owned', async () => {
+    const character: Character = {
+      id: '1',
+      packId: 'id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const tradeStub = stub(
+      trade,
+      'verifyCharacters',
+      returnsNext([
+        Promise.resolve({
+          ok: true,
+        }),
+        Promise.resolve({
+          ok: false,
+          // deno-lint-ignore prefer-as-const
+          message: 'NOT_OWNED' as 'NOT_OWNED',
+          errors: ['id:1'],
+        }),
+      ]),
+    );
+
+    config.trading = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: ['take_character_id'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
             {
               type: 'rich',
               description:
@@ -10962,6 +12785,10 @@ Deno.test('/trade', async (test) => {
                 },
               ],
             },
+            {
+              type: 'rich',
+              description: '<@another_user_id> doesn\'t those characters**',
+            },
           ],
         },
       );
@@ -10973,7 +12800,7 @@ Deno.test('/trade', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
+      tradeStub.restore();
       fetchStub.restore();
     }
   });
@@ -11119,12 +12946,11 @@ Deno.test('/give', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
+    const tradeStub = stub(
+      trade,
       'verifyCharacters',
       returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('OK' as 'OK'),
+        Promise.resolve({ ok: true }),
       ]),
     );
 
@@ -11229,131 +13055,7 @@ Deno.test('/give', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('not owned', async () => {
-    const character: Character = {
-      id: '1',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-    };
-
-    const characterStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => undefined as any,
-    );
-
-    const aggregateStub = stub(
-      packs,
-      'aggregate',
-      ({ character }) => Promise.resolve(character),
-    );
-
-    const userStub = stub(
-      user,
-      'verifyCharacters',
-      returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('NOT_OWNED' as 'NOT_OWNED'),
-      ]),
-    );
-
-    config.trading = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = trade.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-        targetId: 'another_user_id',
-        give: ['give_character_id'],
-        take: [],
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.tickAsync(0);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              description: 'You don\'t have **full name**',
-            },
-            {
-              type: 'rich',
-              description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
-              thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
-              },
-              fields: [
-                {
-                  name: 'full name\n\u200B',
-                  value: '\u200B',
-                },
-              ],
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-      delete config.trading;
-
-      timeStub.restore();
-      characterStub.restore();
-      aggregateStub.restore();
-      userStub.restore();
+      tradeStub.restore();
       fetchStub.restore();
     }
   });
@@ -11390,12 +13092,16 @@ Deno.test('/give', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
+    const tradeStub = stub(
+      trade,
       'verifyCharacters',
       returnsNext([
-        // deno-lint-ignore prefer-as-const
-        Promise.resolve('NOT_FOUND' as 'NOT_FOUND'),
+        Promise.resolve({
+          ok: false,
+          // deno-lint-ignore prefer-as-const
+          message: 'NOT_FOUND' as 'NOT_FOUND',
+          errors: ['undefined:1'],
+        }),
       ]),
     );
 
@@ -11450,8 +13156,133 @@ Deno.test('/give', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '_full name hasn\'t been found by anyone yet_',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
             },
+            {
+              type: 'rich',
+              description:
+                '_Those characters haven\'t been found by anyone yet_',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.trading;
+
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      tradeStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not owned', async () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const characterStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const tradeStub = stub(
+      trade,
+      'verifyCharacters',
+      returnsNext([
+        Promise.resolve({
+          ok: false,
+          // deno-lint-ignore prefer-as-const
+          message: 'NOT_OWNED' as 'NOT_OWNED',
+          errors: ['undefined:1'],
+        }),
+      ]),
+    );
+
+    config.trading = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = trade.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        targetId: 'another_user_id',
+        give: ['give_character_id'],
+        take: [],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
             {
               type: 'rich',
               description:
@@ -11466,6 +13297,10 @@ Deno.test('/give', async (test) => {
                 },
               ],
             },
+            {
+              type: 'rich',
+              description: 'You don\'t have the those characters',
+            },
           ],
         },
       );
@@ -11477,8 +13312,977 @@ Deno.test('/give', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
+      tradeStub.restore();
       fetchStub.restore();
+    }
+  });
+});
+
+Deno.test('/profile', async (test) => {
+  await test.step('normal', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                characters: [
+                  {
+                    mediaId: '1',
+                    characterId: '3',
+                    rating: 1,
+                  },
+                  {
+                    mediaId: '2',
+                    characterId: '4',
+                    rating: 3,
+                  },
+                ],
+                user: {
+                  badges: [{
+                    emote: '<:emote:id>',
+                  }],
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.profile({
+        index: 0,
+        nick: 'nickname',
+        avatar: 'avatar_url',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'profile=user_id=0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'profile=user_id=0=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              thumbnail: { url: 'avatar_url' },
+              fields: [
+                {
+                  name: '<:emote:id>',
+                  value: '**nickname**',
+                },
+                {
+                  name: '\u200B',
+                  value:
+                    'Has 2 characters across 2 titles.\n\n4<:smol_star:1088427421096751224>',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+    }
+  });
+});
+
+Deno.test('/nick', async (test) => {
+  await test.step('normal', async () => {
+    const media: AniListMedia = {
+      id: '2',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      popularity: 0,
+    };
+
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'name 1',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: media,
+        }],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters: [character],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                customizeCharacter: {
+                  ok: true,
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:0',
+                    nickname: 'returned_name',
+                    rating: 2,
+                  },
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.customize({
+        token: 'test_token',
+        userId: 'user',
+        guildId: 'guild',
+        id: 'anilist:1',
+        nick: 'new_nick',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**returned_name**',
+                },
+              ],
+              image: {
+                url: 'http://localhost:8000/external/',
+              },
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('character not found', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                customizeCharacter: {
+                  ok: false,
+                  error: 'CHARACTER_NOT_FOUND',
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.customize({
+        token: 'test_token',
+        userId: 'user',
+        guildId: 'guild',
+        id: 'anilist:1',
+        nick: 'new_nick',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'name 1 hasn\'t been found by anyone yet.',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('character not owned', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                customizeCharacter: {
+                  ok: false,
+                  error: 'CHARACTER_NOT_OWNED',
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:0',
+                    rating: 2,
+                    user: {
+                      id: 'user_2',
+                    },
+                  },
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.customize({
+        token: 'test_token',
+        userId: 'user',
+        guildId: 'guild',
+        id: 'anilist:1',
+        nick: 'new_nick',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'name 1 is owned by <@user_2> and cannot be customized by you.',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+});
+
+Deno.test('/image', async (test) => {
+  await test.step('normal', async () => {
+    const media: AniListMedia = {
+      id: '2',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      popularity: 0,
+    };
+
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'name 1',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: media,
+        }],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters: [character],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                customizeCharacter: {
+                  ok: true,
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:0',
+                    rating: 2,
+                    image: 'returned_image',
+                  },
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.customize({
+        token: 'test_token',
+        userId: 'user',
+        guildId: 'guild',
+        id: 'anilist:1',
+        image: 'image_url',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**name 1**',
+                },
+              ],
+              image: {
+                url: 'http://localhost:8000/external/returned_image',
+              },
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('character not found', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                customizeCharacter: {
+                  ok: false,
+                  error: 'CHARACTER_NOT_FOUND',
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.customize({
+        token: 'test_token',
+        userId: 'user',
+        guildId: 'guild',
+        id: 'anilist:1',
+        image: 'image_url',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'name 1 hasn\'t been found by anyone yet.',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('character not owned', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                customizeCharacter: {
+                  ok: false,
+                  error: 'CHARACTER_NOT_OWNED',
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:0',
+                    rating: 2,
+                    user: {
+                      id: 'user_2',
+                    },
+                  },
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.customize({
+        token: 'test_token',
+        userId: 'user',
+        guildId: 'guild',
+        id: 'anilist:1',
+        image: 'image_url',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'name 1 is owned by <@user_2> and cannot be customized by you.',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 });

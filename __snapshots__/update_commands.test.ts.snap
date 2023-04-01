@@ -28,7 +28,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List the characters from the media",
+        description: "View the characters from the media",
         name: "characters",
         options: undefined,
         required: false,
@@ -62,7 +62,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List the characters from the media",
+        description: "View the characters from the media",
         name: "characters",
         options: undefined,
         required: false,
@@ -96,7 +96,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List the characters from the media",
+        description: "View the characters from the media",
         name: "characters",
         options: undefined,
         required: false,
@@ -130,7 +130,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List the characters from the media",
+        description: "View the characters from the media",
         name: "characters",
         options: undefined,
         required: false,
@@ -215,7 +215,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "List all characters found from a specific media",
+    description: "View all characters found from a specific media",
     name: "found",
     options: [
       {
@@ -231,7 +231,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "List all characters found from a specific media",
+    description: "View all characters found from a specific media",
     name: "obtained",
     options: [
       {
@@ -247,7 +247,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "List all characters found from a specific media",
+    description: "View all characters found from a specific media",
     name: "owned",
     options: [
       {
@@ -682,6 +682,81 @@ snapshot[`commands 1`] = `
     description: "Start a quiet gacha pull with no animation",
     name: "q",
     options: undefined,
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Change the image of a character",
+    name: "image",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The name of the character",
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "New image url",
+        name: "new_image",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Change the image of a character",
+    name: "custom",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The name of the character",
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "New image url",
+        name: "new_image",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Change the nickname of a character",
+    name: "nick",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The name of the character",
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "New nickname",
+        name: "new_nick",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
   },
   {
     default_member_permissions: undefined,
@@ -1216,8 +1291,8 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your characters in bulks",
-        name: "all",
+        description: "List all your characters in bulks",
+        name: "list",
         options: [
           {
             autocomplete: undefined,
@@ -1227,6 +1302,36 @@ snapshot[`commands 1`] = `
             options: undefined,
             required: false,
             type: 6,
+          },
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "5",
+                value: 5,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "1",
+                value: 1,
+              },
+            ],
+            description: "Filter by rating",
+            name: "filter",
+            options: undefined,
+            required: false,
+            type: 4,
           },
         ],
         required: false,
@@ -1271,7 +1376,7 @@ snapshot[`commands 1`] = `
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "List someone else's stars",
+            description: "View someone else's stars",
             name: "user",
             options: undefined,
             required: false,
@@ -1319,8 +1424,8 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your characters in bulks",
-        name: "all",
+        description: "List all your characters in bulks",
+        name: "list",
         options: [
           {
             autocomplete: undefined,
@@ -1330,6 +1435,36 @@ snapshot[`commands 1`] = `
             options: undefined,
             required: false,
             type: 6,
+          },
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "5",
+                value: 5,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "1",
+                value: 1,
+              },
+            ],
+            description: "Filter by rating",
+            name: "filter",
+            options: undefined,
+            required: false,
+            type: 4,
           },
         ],
         required: false,
@@ -1374,7 +1509,7 @@ snapshot[`commands 1`] = `
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "List someone else's stars",
+            description: "View someone else's stars",
             name: "user",
             options: undefined,
             required: false,
@@ -1422,8 +1557,8 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your characters in bulks",
-        name: "all",
+        description: "List all your characters in bulks",
+        name: "list",
         options: [
           {
             autocomplete: undefined,
@@ -1433,6 +1568,36 @@ snapshot[`commands 1`] = `
             options: undefined,
             required: false,
             type: 6,
+          },
+          {
+            autocomplete: undefined,
+            choices: [
+              {
+                name: "5",
+                value: 5,
+              },
+              {
+                name: "4",
+                value: 4,
+              },
+              {
+                name: "3",
+                value: 3,
+              },
+              {
+                name: "2",
+                value: 2,
+              },
+              {
+                name: "1",
+                value: 1,
+              },
+            ],
+            description: "Filter by rating",
+            name: "filter",
+            options: undefined,
+            required: false,
+            type: 4,
           },
         ],
         required: false,
@@ -1477,7 +1642,7 @@ snapshot[`commands 1`] = `
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "List someone else's stars",
+            description: "View someone else's stars",
             name: "user",
             options: undefined,
             required: false,
@@ -1525,7 +1690,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List all the builtin packs",
+        description: "View all the builtin packs",
         name: "builtin",
         options: undefined,
         required: false,
@@ -1534,7 +1699,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List all instated community packs",
+        description: "View all instated community packs",
         name: "community",
         options: undefined,
         required: false,
@@ -1553,15 +1718,6 @@ snapshot[`commands 1`] = `
             name: "github",
             options: undefined,
             required: true,
-            type: 3,
-          },
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "A ref to a branch or commit sha",
-            name: "ref",
-            options: undefined,
-            required: false,
             type: 3,
           },
         ],
@@ -1602,13 +1758,23 @@ snapshot[`commands 1`] = `
             required: true,
             type: 3,
           },
+        ],
+        required: false,
+        type: 1,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "Pull the latest changes made to a community pack",
+        name: "update",
+        options: [
           {
-            autocomplete: undefined,
+            autocomplete: true,
             choices: undefined,
-            description: "A ref to a branch or commit sha",
-            name: "ref",
+            description: "The id of the pack",
+            name: "id",
             options: undefined,
-            required: false,
+            required: true,
             type: 3,
           },
         ],

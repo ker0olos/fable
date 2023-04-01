@@ -172,6 +172,7 @@ Deno.test('decode description', async (test) => {
     assertEquals(utils.decodeDescription('&#039;'), '\'');
     assertEquals(utils.decodeDescription('&lt;'), '<');
     assertEquals(utils.decodeDescription('&gt;'), '>');
+    assertEquals(utils.decodeDescription('&mdash;'), '-');
   });
 
   await test.step('strip urls', () => {
@@ -373,12 +374,20 @@ Deno.test('external images', async (test) => {
         }],
       });
 
-      assertEquals(response.status, 302);
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/png');
 
       assertEquals(
-        response.headers.get('location'),
-        'http://localhost:8000/assets/medium.png',
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
       );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.Image);
+
+      assertEquals(`${image}`, 'Image<230x325>');
     } finally {
       abortStub.restore();
       fetchStub.restore();
@@ -516,12 +525,20 @@ Deno.test('external images', async (test) => {
         }],
       });
 
-      assertEquals(response.status, 302);
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/png');
 
       assertEquals(
-        response.headers.get('location'),
-        'http://localhost:8000/assets/thumbnail.png',
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
       );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.Image);
+
+      assertEquals(`${image}`, 'Image<110x155>');
     } finally {
       delete config.origin;
       abortStub.restore();
@@ -560,12 +577,20 @@ Deno.test('external images', async (test) => {
         }],
       });
 
-      assertEquals(response.status, 302);
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/png');
 
       assertEquals(
-        response.headers.get('location'),
-        'http://localhost:8000/assets/medium.png',
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
       );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.Image);
+
+      assertEquals(`${image}`, 'Image<230x325>');
     } finally {
       delete config.origin;
       abortStub.restore();
@@ -604,12 +629,20 @@ Deno.test('external images', async (test) => {
         }],
       });
 
-      assertEquals(response.status, 302);
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/png');
 
       assertEquals(
-        response.headers.get('location'),
-        'http://localhost:8000/assets/medium.png',
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
       );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.Image);
+
+      assertEquals(`${image}`, 'Image<230x325>');
     } finally {
       abortStub.restore();
       fetchStub.restore();
@@ -634,12 +667,20 @@ Deno.test('external images', async (test) => {
 
       assertSpyCalls(fetchStub, 0);
 
-      assertEquals(response.status, 302);
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/png');
 
       assertEquals(
-        response.headers.get('location'),
-        'http://localhost:8000/assets/medium.png',
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
       );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.Image);
+
+      assertEquals(`${image}`, 'Image<230x325>');
     } finally {
       delete config.origin;
       abortStub.restore();

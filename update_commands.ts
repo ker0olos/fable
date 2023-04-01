@@ -223,7 +223,7 @@ export const commands = [
       }),
       Option({
         name: 'characters',
-        description: 'List the characters from the media',
+        description: 'View the characters from the media',
         type: Type.BOOLEAN,
         optional: true,
       }),
@@ -251,7 +251,7 @@ export const commands = [
   ...Command({
     name: 'found',
     aliases: ['obtained', 'owned'],
-    description: 'List all characters found from a specific media',
+    description: 'View all characters found from a specific media',
     options: [
       Option({
         name: 'title',
@@ -395,6 +395,51 @@ export const commands = [
     description: 'Start a quiet gacha pull with no animation',
     aliases: ['q'],
   }),
+  ...Command({
+    name: 'image',
+    description: 'Change the image of a character',
+    aliases: ['custom'],
+    options: [
+      Option({
+        name: 'name',
+        description: 'The name of the character',
+        type: Type.STRING,
+      }),
+      Option({
+        name: 'new_image',
+        description: 'New image url',
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'nick',
+    description: 'Change the nickname of a character',
+    options: [
+      Option({
+        name: 'name',
+        description: 'The name of the character',
+        type: Type.STRING,
+      }),
+      Option({
+        name: 'new_nick',
+        description: 'New nickname',
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  // ...Command({
+  //   name: 'profile',
+  //   aliases: ['user'],
+  //   description: 'View someone\'s profile and party',
+  //   options: [
+  //     Option({
+  //       name: 'user',
+  //       description: 'The user you want to check',
+  //       type: Type.USER,
+  //     }),
+  //   ],
+  // }),
   // party management
   ...Command({
     name: 'party',
@@ -471,8 +516,8 @@ export const commands = [
     aliases: ['coll', 'mm'],
     options: [
       Option({
-        name: 'all',
-        description: 'View all your characters in bulks',
+        name: 'list',
+        description: 'List all your characters in bulks',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -480,6 +525,13 @@ export const commands = [
             name: 'user',
             description: 'List someone else\'s characters',
             type: Type.USER,
+            optional: true,
+          }),
+          Option({
+            name: 'filter',
+            description: 'Filter by rating',
+            type: Type.INTEGER,
+            choices: spots.toReversed(),
             optional: true,
           }),
         ],
@@ -498,7 +550,7 @@ export const commands = [
           }),
           Option({
             name: 'user',
-            description: 'List someone else\'s stars',
+            description: 'View someone else\'s stars',
             type: Type.USER,
             optional: true,
           }),
@@ -534,13 +586,13 @@ export const commands = [
     options: [
       Option({
         name: 'builtin',
-        description: 'List all the builtin packs',
+        description: 'View all the builtin packs',
         type: Type.SUB_COMMAND,
         optional: true,
       }),
       Option({
         name: 'community',
-        description: 'List all instated community packs',
+        description: 'View all instated community packs',
         type: Type.SUB_COMMAND,
         optional: true,
       }),
@@ -559,18 +611,16 @@ export const commands = [
             description: 'A github repository url',
             type: Type.STRING,
           }),
-          Option({
-            name: 'ref',
-            description: 'A ref to a branch or commit sha',
-            type: Type.STRING,
-            optional: true,
-          }),
         ],
       }),
       Option({
         name: 'uninstall',
         description: 'Uninstall a pack',
         type: Type.SUB_COMMAND,
+        aliases: [{
+          name: 'update',
+          desc: 'Pull the latest changes made to a community pack',
+        }],
         optional: true,
         options: [
           Option({
