@@ -115,7 +115,7 @@ function pages(
             '',
             '- `/found` `/obtained` `/owned`: _list all characters found from a specific media_',
             '',
-            // '- `/profile` `/user`: _view user profile and party_',
+            '- `/profile` `/user`: _view user profile and party_',
             '',
             '- `/image` `/custom`: _change the image of a character_',
             '- `/nick`: _change the nickname of a character_',
