@@ -428,18 +428,18 @@ export const commands = [
       }),
     ],
   }),
-  ...Command({
-    name: 'profile',
-    aliases: ['user'],
-    description: 'View someone\'s profile and party',
-    options: [
-      Option({
-        name: 'user',
-        description: 'The user you want to check',
-        type: Type.USER,
-      }),
-    ],
-  }),
+  // ...Command({
+  //   name: 'profile',
+  //   aliases: ['user'],
+  //   description: 'View someone\'s profile and party',
+  //   options: [
+  //     Option({
+  //       name: 'user',
+  //       description: 'The user you want to check',
+  //       type: Type.USER,
+  //     }),
+  //   ],
+  // }),
   // party management
   ...Command({
     name: 'party',

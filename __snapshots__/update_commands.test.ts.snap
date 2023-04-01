@@ -760,38 +760,6 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "View someone's profile and party",
-    name: "profile",
-    options: [
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "The user you want to check",
-        name: "user",
-        options: undefined,
-        required: true,
-        type: 6,
-      },
-    ],
-  },
-  {
-    default_member_permissions: undefined,
-    description: "View someone's profile and party",
-    name: "user",
-    options: [
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "The user you want to check",
-        name: "user",
-        options: undefined,
-        required: true,
-        type: 6,
-      },
-    ],
-  },
-  {
-    default_member_permissions: undefined,
     description: "party management commands",
     name: "party",
     options: [
