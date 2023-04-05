@@ -256,34 +256,6 @@ export const handler = async (r: Request) => {
                 : undefined,
             }).send();
           }
-          case 'profile':
-          case 'user': {
-            const userId = options['user'] as string;
-
-            const nick = discord.getUsername(
-              // deno-lint-ignore no-non-null-assertion
-              resolved!.members![userId],
-              // deno-lint-ignore no-non-null-assertion
-              resolved!.users![userId],
-            );
-
-            const avatar = discord.getAvatar(
-              // deno-lint-ignore no-non-null-assertion
-              resolved!.members![userId],
-              // deno-lint-ignore no-non-null-assertion
-              resolved!.users![userId],
-              guildId,
-            );
-
-            return user.profile({
-              index: 0,
-              nick,
-              avatar,
-              userId,
-              guildId,
-              token,
-            }).send();
-          }
           case 'party':
           case 'team':
           case 'p': {
@@ -292,12 +264,15 @@ export const handler = async (r: Request) => {
 
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'view':
+              case 'view': {
+                const user = options['user'] as string;
+
                 return party.view({
                   token,
-                  userId: member.user.id,
+                  userId: user,
                   guildId,
                 }).send();
+              }
               case 'assign':
                 return (await party.assign({
                   spot,
@@ -751,30 +726,6 @@ export const handler = async (r: Request) => {
             }
 
             throw new NoPermissionError();
-          }
-          case 'profile': {
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![0];
-
-            // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
-
-            // deno-lint-ignore no-non-null-assertion
-            const nick = reference!.embeds[0].fields![0].value;
-
-            // deno-lint-ignore no-non-null-assertion
-            const avatar = reference!.embeds[0].thumbnail!.url;
-
-            return user.profile({
-              index,
-              token,
-              guildId,
-              userId,
-              avatar,
-              nick: nick.substring(2, nick.length - 2),
-            })
-              .setType(discord.MessageType.Update)
-              .send();
           }
           case 'builtin':
           case 'community': {
