@@ -68,7 +68,6 @@ export const handler = async (r: Request) => {
     resolved,
     member,
     options,
-    reference,
     subcommand,
     customType,
     customValues,
