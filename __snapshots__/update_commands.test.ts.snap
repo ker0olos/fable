@@ -766,9 +766,19 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View your current party",
+        description: "View user current party",
         name: "view",
-        options: undefined,
+        options: [
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: 'The user of the party"',
+            name: "user",
+            options: undefined,
+            required: true,
+            type: 6,
+          },
+        ],
         required: false,
         type: 1,
       },
@@ -941,9 +951,19 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View your current party",
+        description: "View user current party",
         name: "view",
-        options: undefined,
+        options: [
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: 'The user of the party"',
+            name: "user",
+            options: undefined,
+            required: true,
+            type: 6,
+          },
+        ],
         required: false,
         type: 1,
       },
@@ -1116,9 +1136,19 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View your current party",
+        description: "View user current party",
         name: "view",
-        options: undefined,
+        options: [
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: 'The user of the party"',
+            name: "user",
+            options: undefined,
+            required: true,
+            type: 6,
+          },
+        ],
         required: false,
         type: 1,
       },
@@ -1291,16 +1321,16 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List all your characters in bulks",
+        description: "List all characters in bulks",
         name: "list",
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "List someone else's characters",
+            description: "The user of the collection",
             name: "user",
             options: undefined,
-            required: false,
+            required: true,
             type: 6,
           },
           {
@@ -1340,9 +1370,18 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your stars",
+        description: "View all stars",
         name: "stars",
         options: [
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: true,
+            type: 6,
+          },
           {
             autocomplete: undefined,
             choices: [
@@ -1373,15 +1412,6 @@ snapshot[`commands 1`] = `
             required: true,
             type: 4,
           },
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "View someone else's stars",
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
         ],
         required: false,
         type: 1,
@@ -1389,9 +1419,18 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View your characters from a specific media",
+        description: "View characters from a specific media",
         name: "media",
         options: [
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: true,
+            type: 6,
+          },
           {
             autocomplete: true,
             choices: undefined,
@@ -1400,15 +1439,6 @@ snapshot[`commands 1`] = `
             options: undefined,
             required: true,
             type: 3,
-          },
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "View someone else's stars",
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
           },
         ],
         required: false,
@@ -1424,16 +1454,16 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List all your characters in bulks",
+        description: "List all characters in bulks",
         name: "list",
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "List someone else's characters",
+            description: "The user of the collection",
             name: "user",
             options: undefined,
-            required: false,
+            required: true,
             type: 6,
           },
           {
@@ -1473,9 +1503,18 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your stars",
+        description: "View all stars",
         name: "stars",
         options: [
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: true,
+            type: 6,
+          },
           {
             autocomplete: undefined,
             choices: [
@@ -1506,15 +1545,6 @@ snapshot[`commands 1`] = `
             required: true,
             type: 4,
           },
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "View someone else's stars",
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
         ],
         required: false,
         type: 1,
@@ -1522,9 +1552,18 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View your characters from a specific media",
+        description: "View characters from a specific media",
         name: "media",
         options: [
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: true,
+            type: 6,
+          },
           {
             autocomplete: true,
             choices: undefined,
@@ -1533,15 +1572,6 @@ snapshot[`commands 1`] = `
             options: undefined,
             required: true,
             type: 3,
-          },
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "View someone else's stars",
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
           },
         ],
         required: false,
@@ -1557,16 +1587,16 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List all your characters in bulks",
+        description: "List all characters in bulks",
         name: "list",
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "List someone else's characters",
+            description: "The user of the collection",
             name: "user",
             options: undefined,
-            required: false,
+            required: true,
             type: 6,
           },
           {
@@ -1606,9 +1636,18 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View all your stars",
+        description: "View all stars",
         name: "stars",
         options: [
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: true,
+            type: 6,
+          },
           {
             autocomplete: undefined,
             choices: [
@@ -1639,15 +1678,6 @@ snapshot[`commands 1`] = `
             required: true,
             type: 4,
           },
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "View someone else's stars",
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
         ],
         required: false,
         type: 1,
@@ -1655,9 +1685,18 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "View your characters from a specific media",
+        description: "View characters from a specific media",
         name: "media",
         options: [
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: true,
+            type: 6,
+          },
           {
             autocomplete: true,
             choices: undefined,
@@ -1666,15 +1705,6 @@ snapshot[`commands 1`] = `
             options: undefined,
             required: true,
             type: 3,
-          },
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "View someone else's stars",
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
           },
         ],
         required: false,

@@ -428,18 +428,6 @@ export const commands = [
       }),
     ],
   }),
-  // ...Command({
-  //   name: 'profile',
-  //   aliases: ['user'],
-  //   description: 'View someone\'s profile and party',
-  //   options: [
-  //     Option({
-  //       name: 'user',
-  //       description: 'The user you want to check',
-  //       type: Type.USER,
-  //     }),
-  //   ],
-  // }),
   // party management
   ...Command({
     name: 'party',
@@ -448,9 +436,16 @@ export const commands = [
     options: [
       Option({
         name: 'view',
-        description: 'View your current party',
+        description: 'View user current party',
         type: Type.SUB_COMMAND,
         optional: true,
+        options: [
+          Option({
+            name: 'user',
+            description: 'The user of the party"',
+            type: Type.USER,
+          }),
+        ],
       }),
       Option({
         name: 'assign',
@@ -517,15 +512,14 @@ export const commands = [
     options: [
       Option({
         name: 'list',
-        description: 'List all your characters in bulks',
+        description: 'List all characters in bulks',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
           Option({
             name: 'user',
-            description: 'List someone else\'s characters',
+            description: 'The user of the collection',
             type: Type.USER,
-            optional: true,
           }),
           Option({
             name: 'filter',
@@ -538,41 +532,39 @@ export const commands = [
       }),
       Option({
         name: 'stars',
-        description: 'View all your stars',
+        description: 'View all stars',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
+          Option({
+            name: 'user',
+            description: 'The user of the collection',
+            type: Type.USER,
+          }),
           Option({
             name: 'rating',
             description: 'The star rating',
             type: Type.INTEGER,
             choices: spots.toReversed(),
           }),
-          Option({
-            name: 'user',
-            description: 'View someone else\'s stars',
-            type: Type.USER,
-            optional: true,
-          }),
         ],
       }),
       Option({
         name: 'media',
-        description: 'View your characters from a specific media',
+        description: 'View characters from a specific media',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
+          Option({
+            name: 'user',
+            description: 'The user of the collection',
+            type: Type.USER,
+          }),
           Option({
             name: 'title',
             description: 'The title of the media',
             autocomplete: true,
             type: Type.STRING,
-          }),
-          Option({
-            name: 'user',
-            description: 'View someone else\'s stars',
-            type: Type.USER,
-            optional: true,
           }),
         ],
       }),

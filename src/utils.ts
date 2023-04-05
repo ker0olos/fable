@@ -184,8 +184,8 @@ function decodeDescription(s?: string): string | undefined {
   s = s.replaceAll('&quot;', '"');
   s = s.replaceAll('&apos;', '\'');
   s = s.replaceAll('&rsquo;', '\'');
-  s = s.replaceAll('&amp;', '&');
   s = s.replaceAll('&mdash;', '-');
+  s = s.replaceAll('&amp;', '&');
 
   s = s.replace(/~![\S\s]+!~/gm, '');
   s = s.replace(/\|\|[\S\s]+\|\|/gm, '');

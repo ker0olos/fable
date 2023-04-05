@@ -81,6 +81,16 @@ Fable is actively developed with new game modes and features frequently.
 
 ## FAQ
 
+<details><summary>The bot didn't appear in my server!</summary>
+<p>
+
+It won't, new bots don't appear as users. Just go ahead and try using the "/"
+commands. If you want to check the bot settings go to server settings then
+"Integrations" (PC client only).
+
+</p>
+</details>
+
 <details><summary>How can I add/install a new pack on my server?</summary>
 <p>
 
