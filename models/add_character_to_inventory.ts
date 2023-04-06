@@ -1,4 +1,5 @@
 import {
+  BooleanExpr,
   Client,
   fql,
   InstanceExpr,
@@ -17,6 +18,7 @@ import {
   getUser,
   Inventory,
   rechargePulls,
+  User,
 } from './get_user_inventory.ts';
 
 export interface Character {
@@ -43,11 +45,38 @@ export interface History {
   };
 }
 
+export function addGuarantee(
+  {
+    user,
+    guarantee,
+  }: {
+    user: UserExpr;
+    guarantee: NumberExpr;
+  },
+): ResponseExpr {
+  return fql.Let(
+    {
+      updatedUser: fql.Update<User>(fql.Ref(user), {
+        guarantees: fql.Append(
+          guarantee,
+          fql.Select(['data', 'guarantees'], user, []),
+        ),
+      }),
+    },
+    ({ updatedUser }) =>
+      ({
+        ok: true,
+        user: fql.Ref(updatedUser),
+      }) as unknown as ResponseExpr,
+  );
+}
+
 export function addCharacter(
   {
     rating,
     mediaId,
     characterId,
+    guaranteed,
     inventory,
     instance,
     user,
@@ -61,6 +90,7 @@ export function addCharacter(
     rating: NumberExpr;
     mediaId: StringExpr;
     characterId: StringExpr;
+    guaranteed: BooleanExpr;
     inventory: InventoryExpr;
     instance: InstanceExpr;
     user: UserExpr;
@@ -89,52 +119,78 @@ export function addCharacter(
       fql.If(
         fql.IsNonEmpty(match),
         { ok: false, error: 'CHARACTER_EXISTS' },
-        fql.Let(
-          {
-            createdCharacter: fql.Create<Character>('character', {
+        fql.If(
+          fql.Or(
+            fql.Equals(guaranteed, false),
+            fql.Includes(
               rating,
-              mediaId,
-              id: characterId,
-              inventory: fql.Ref(inventory),
-              instance: fql.Ref(instance),
-              user: fql.Ref(user),
-              history: [
-                {
-                  gacha: {
-                    by: fql.Ref(user),
-                    pool,
-                    popularityChance,
-                    popularityGreater,
-                    popularityLesser,
-                    roleChance,
-                    role,
+              fql.Select(['data', 'guarantees'], user, []),
+            ),
+          ),
+          fql.Let(
+            {
+              createdCharacter: fql.Create<Character>('character', {
+                rating,
+                mediaId,
+                id: characterId,
+                inventory: fql.Ref(inventory),
+                instance: fql.Ref(instance),
+                user: fql.Ref(user),
+                history: [
+                  {
+                    gacha: {
+                      by: fql.Ref(user),
+                      pool,
+                      popularityChance,
+                      popularityGreater,
+                      popularityLesser,
+                      roleChance,
+                      role,
+                    },
                   },
-                },
-              ],
+                ],
+              }),
+
+              // update the user
+              updatedUser: fql.If(
+                fql.Equals(guaranteed, true),
+                fql.Update<User>(fql.Ref(user), {
+                  guarantees: fql.Remove(
+                    rating,
+                    fql.Select(['data', 'guarantees'], user),
+                  ),
+                }),
+                user,
+              ),
+              // update the inventory
+              updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
+                lastPull: fql.Now(),
+                rechargeTimestamp: fql.Select(
+                  ['data', 'rechargeTimestamp'],
+                  inventory,
+                  fql.Now(),
+                ),
+                availablePulls: fql.Subtract(
+                  fql.Select(['data', 'availablePulls'], inventory),
+                  1,
+                ),
+                characters: fql.Append(
+                  fql.Ref(fql.Var('createdCharacter')),
+                  fql.Select(['data', 'characters'], inventory, []),
+                ),
+              }),
+            },
+            ({ updatedInventory, createdCharacter }) => ({
+              ok: true,
+              inventory: fql.Ref(updatedInventory),
+              character: fql.Ref(createdCharacter),
             }),
-            // update the inventory
-            updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
-              lastPull: fql.Now(),
-              rechargeTimestamp: fql.Select(
-                ['data', 'rechargeTimestamp'],
-                inventory,
-                fql.Now(),
-              ),
-              availablePulls: fql.Subtract(
-                fql.Select(['data', 'availablePulls'], inventory),
-                1,
-              ),
-              characters: fql.Append(
-                fql.Ref(fql.Var('createdCharacter')),
-                fql.Select(['data', 'characters'], inventory),
-              ),
-            }),
+          ),
+          {
+            ok: false,
+            error: 'NO_GUARANTEES',
+            user: fql.Ref(user),
           },
-          ({ createdCharacter }) => ({
-            ok: true,
-            inventory: fql.Ref(inventory),
-            character: fql.Ref(createdCharacter),
-          }),
         ),
       ),
     ));
@@ -148,12 +204,32 @@ export default function (client: Client): {
     resolvers: [
       fql.Resolver({
         client,
+        name: 'add_guarantee_to_user',
+        lambda: (
+          userId: string,
+          guarantee: number,
+        ) => {
+          return fql.Let(
+            {
+              user: getUser(userId),
+            },
+            ({ user }) =>
+              addGuarantee({
+                user,
+                guarantee,
+              }),
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
         name: 'add_character_to_inventory',
         lambda: (
           userId: string,
           guildId: string,
           characterId: string,
           mediaId: string,
+          guaranteed: boolean,
           rating: number,
           pool: number,
           popularityChance: number,
@@ -180,6 +256,7 @@ export default function (client: Client): {
                 rating,
                 mediaId,
                 characterId,
+                guaranteed,
                 inventory,
                 instance,
                 user,

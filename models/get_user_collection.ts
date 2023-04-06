@@ -37,7 +37,7 @@ export function getCharacterStars(
     return {
       character,
       anchor: fql.Select(['id'], character, fql.Null()),
-    };
+    } as CharacterNode;
   });
 }
 
@@ -87,7 +87,7 @@ export function getCharacterMedia(
     return {
       character,
       anchor: fql.Select(['id'], character, fql.Null()),
-    };
+    } as CharacterNode;
   });
 }
 

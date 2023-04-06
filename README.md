@@ -96,7 +96,8 @@ commands. If you want to check the bot settings go to server settings then
 
 We plan to have a Marketplace command where you can browse and install popular
 packs, but as of right now you'll need to know the pack's github url and run
-`/packs install github: https://github.com/username/packname`
+`/packs install github: https://github.com/username/packname` But we also have a
+channel in our discord where people share the packs they made.
 
 </p>
 </details>

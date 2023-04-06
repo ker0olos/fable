@@ -148,6 +148,7 @@ async function rngPull(
           $guildId: String!
           $characterId: String!
           $mediaId: String!
+          $guaranteed: Boolean!
           $rating: Int!
           $pool: Int!
           $popularityChance: Int!
@@ -161,6 +162,7 @@ async function rngPull(
             guildId: $guildId
             characterId: $characterId
             mediaId: $mediaId
+            guaranteed: $guaranteed,
             rating: $rating
             pool: $pool
             popularityChance: $popularityChance
@@ -192,6 +194,8 @@ async function rngPull(
           guildId,
           characterId,
           mediaId: `${edge.node.packId}:${edge.node.id}`,
+          // TODO implement
+          guaranteed: false,
           rating: rating.stars,
           ...poolInfo,
         },

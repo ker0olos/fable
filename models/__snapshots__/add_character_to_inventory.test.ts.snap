@@ -19,151 +19,654 @@ snapshot[`model 1`] = `
                               raw: {
                                 in: Expr {
                                   raw: {
+                                    object: {
+                                      ok: true,
+                                      user: Expr {
+                                        raw: {
+                                          from: Expr {
+                                            raw: {
+                                              var: "updatedUser",
+                                            },
+                                          },
+                                          select: "ref",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    updatedUser: Expr {
+                                      raw: {
+                                        params: Expr {
+                                          raw: {
+                                            object: {
+                                              data: Expr {
+                                                raw: {
+                                                  object: {
+                                                    guarantees: Expr {
+                                                      raw: {
+                                                        append: Expr {
+                                                          raw: {
+                                                            var: "guarantee",
+                                                          },
+                                                        },
+                                                        collection: Expr {
+                                                          raw: {
+                                                            default: Expr {
+                                                              raw: [
+                                                              ],
+                                                            },
+                                                            from: Expr {
+                                                              raw: {
+                                                                var: "user",
+                                                              },
+                                                            },
+                                                            select: Expr {
+                                                              raw: [
+                                                                "data",
+                                                                "guarantees",
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        update: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                var: "user",
+                                              },
+                                            },
+                                            select: "ref",
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                user: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            create: Expr {
+                                              raw: {
+                                                collection: "user",
+                                              },
+                                            },
+                                            params: Expr {
+                                              raw: {
+                                                object: {
+                                                  data: Expr {
+                                                    raw: {
+                                                      object: {
+                                                        badges: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                id: "357600097731608662",
+                                                                ref: Expr {
+                                                                  raw: {
+                                                                    collection: "badge",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
+                                                        guarantees: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                        id: Expr {
+                                                          raw: {
+                                                            var: "userId",
+                                                          },
+                                                        },
+                                                        inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            match: Expr {
+                                              raw: {
+                                                index: "users_discord_id",
+                                              },
+                                            },
+                                            terms: Expr {
+                                              raw: {
+                                                var: "userId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: Expr {
+                          raw: [
+                            "userId",
+                            "guarantee",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "add_guarantee_to_user",
+              },
+            },
+          },
+        },
+      },
+      if: Expr {
+        raw: {
+          exists: Expr {
+            raw: {
+              function: "add_guarantee_to_user",
+            },
+          },
+        },
+      },
+      then: Expr {
+        raw: {
+          params: Expr {
+            raw: {
+              object: {
+                body: Expr {
+                  raw: {
+                    query: Expr {
+                      raw: {
+                        expr: Expr {
+                          raw: {
+                            in: Expr {
+                              raw: {
+                                in: Expr {
+                                  raw: {
+                                    object: {
+                                      ok: true,
+                                      user: Expr {
+                                        raw: {
+                                          from: Expr {
+                                            raw: {
+                                              var: "updatedUser",
+                                            },
+                                          },
+                                          select: "ref",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    updatedUser: Expr {
+                                      raw: {
+                                        params: Expr {
+                                          raw: {
+                                            object: {
+                                              data: Expr {
+                                                raw: {
+                                                  object: {
+                                                    guarantees: Expr {
+                                                      raw: {
+                                                        append: Expr {
+                                                          raw: {
+                                                            var: "guarantee",
+                                                          },
+                                                        },
+                                                        collection: Expr {
+                                                          raw: {
+                                                            default: Expr {
+                                                              raw: [
+                                                              ],
+                                                            },
+                                                            from: Expr {
+                                                              raw: {
+                                                                var: "user",
+                                                              },
+                                                            },
+                                                            select: Expr {
+                                                              raw: [
+                                                                "data",
+                                                                "guarantees",
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        update: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                var: "user",
+                                              },
+                                            },
+                                            select: "ref",
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                user: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            create: Expr {
+                                              raw: {
+                                                collection: "user",
+                                              },
+                                            },
+                                            params: Expr {
+                                              raw: {
+                                                object: {
+                                                  data: Expr {
+                                                    raw: {
+                                                      object: {
+                                                        badges: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                id: "357600097731608662",
+                                                                ref: Expr {
+                                                                  raw: {
+                                                                    collection: "badge",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
+                                                        guarantees: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                        id: Expr {
+                                                          raw: {
+                                                            var: "userId",
+                                                          },
+                                                        },
+                                                        inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            match: Expr {
+                                              raw: {
+                                                index: "users_discord_id",
+                                              },
+                                            },
+                                            terms: Expr {
+                                              raw: {
+                                                var: "userId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: Expr {
+                          raw: [
+                            "userId",
+                            "guarantee",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "add_guarantee_to_user",
+              },
+            },
+          },
+          update: Expr {
+            raw: {
+              function: "add_guarantee_to_user",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;
+
+snapshot[`model 2`] = `
+[
+  Expr {
+    raw: {
+      else: Expr {
+        raw: {
+          create_function: Expr {
+            raw: {
+              object: {
+                body: Expr {
+                  raw: {
+                    query: Expr {
+                      raw: {
+                        expr: Expr {
+                          raw: {
+                            in: Expr {
+                              raw: {
+                                in: Expr {
+                                  raw: {
                                     else: Expr {
                                       raw: {
                                         else: Expr {
                                           raw: {
-                                            in: Expr {
+                                            else: Expr {
                                               raw: {
                                                 object: {
-                                                  character: Expr {
+                                                  error: "NO_GUARANTEES",
+                                                  ok: false,
+                                                  user: Expr {
                                                     raw: {
                                                       from: Expr {
                                                         raw: {
-                                                          var: "createdCharacter",
+                                                          var: "user",
                                                         },
                                                       },
                                                       select: "ref",
                                                     },
                                                   },
-                                                  inventory: Expr {
-                                                    raw: {
-                                                      from: Expr {
-                                                        raw: {
-                                                          var: "inventory",
-                                                        },
-                                                      },
-                                                      select: "ref",
-                                                    },
-                                                  },
-                                                  ok: true,
                                                 },
                                               },
                                             },
-                                            let: [
-                                              {
-                                                createdCharacter: Expr {
-                                                  raw: {
-                                                    create: Expr {
+                                            if: Expr {
+                                              raw: {
+                                                or: Expr {
+                                                  raw: [
+                                                    Expr {
                                                       raw: {
-                                                        collection: "character",
+                                                        equals: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                var: "guaranteed",
+                                                              },
+                                                            },
+                                                            false,
+                                                          ],
+                                                        },
                                                       },
                                                     },
-                                                    params: Expr {
+                                                    Expr {
                                                       raw: {
-                                                        object: {
-                                                          data: Expr {
+                                                        contains_value: Expr {
+                                                          raw: {
+                                                            var: "rating",
+                                                          },
+                                                        },
+                                                        in: Expr {
+                                                          raw: {
+                                                            default: Expr {
+                                                              raw: [
+                                                              ],
+                                                            },
+                                                            from: Expr {
+                                                              raw: {
+                                                                var: "user",
+                                                              },
+                                                            },
+                                                            select: Expr {
+                                                              raw: [
+                                                                "data",
+                                                                "guarantees",
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                            then: Expr {
+                                              raw: {
+                                                in: Expr {
+                                                  raw: {
+                                                    object: {
+                                                      character: Expr {
+                                                        raw: {
+                                                          from: Expr {
                                                             raw: {
-                                                              object: {
-                                                                history: Expr {
-                                                                  raw: [
-                                                                    Expr {
-                                                                      raw: {
-                                                                        object: {
-                                                                          gacha: Expr {
-                                                                            raw: {
-                                                                              object: {
-                                                                                by: Expr {
-                                                                                  raw: {
-                                                                                    from: Expr {
+                                                              var: "createdCharacter",
+                                                            },
+                                                          },
+                                                          select: "ref",
+                                                        },
+                                                      },
+                                                      inventory: Expr {
+                                                        raw: {
+                                                          from: Expr {
+                                                            raw: {
+                                                              var: "updatedInventory",
+                                                            },
+                                                          },
+                                                          select: "ref",
+                                                        },
+                                                      },
+                                                      ok: true,
+                                                    },
+                                                  },
+                                                },
+                                                let: [
+                                                  {
+                                                    createdCharacter: Expr {
+                                                      raw: {
+                                                        create: Expr {
+                                                          raw: {
+                                                            collection: "character",
+                                                          },
+                                                        },
+                                                        params: Expr {
+                                                          raw: {
+                                                            object: {
+                                                              data: Expr {
+                                                                raw: {
+                                                                  object: {
+                                                                    history: Expr {
+                                                                      raw: [
+                                                                        Expr {
+                                                                          raw: {
+                                                                            object: {
+                                                                              gacha: Expr {
+                                                                                raw: {
+                                                                                  object: {
+                                                                                    by: Expr {
                                                                                       raw: {
-                                                                                        var: "user",
+                                                                                        from: Expr {
+                                                                                          raw: {
+                                                                                            var: "user",
+                                                                                          },
+                                                                                        },
+                                                                                        select: "ref",
                                                                                       },
                                                                                     },
-                                                                                    select: "ref",
-                                                                                  },
-                                                                                },
-                                                                                pool: Expr {
-                                                                                  raw: {
-                                                                                    var: "pool",
-                                                                                  },
-                                                                                },
-                                                                                popularityChance: Expr {
-                                                                                  raw: {
-                                                                                    var: "popularityChance",
-                                                                                  },
-                                                                                },
-                                                                                popularityGreater: Expr {
-                                                                                  raw: {
-                                                                                    var: "popularityGreater",
-                                                                                  },
-                                                                                },
-                                                                                popularityLesser: Expr {
-                                                                                  raw: {
-                                                                                    var: "popularityLesser",
-                                                                                  },
-                                                                                },
-                                                                                role: Expr {
-                                                                                  raw: {
-                                                                                    var: "role",
-                                                                                  },
-                                                                                },
-                                                                                roleChance: Expr {
-                                                                                  raw: {
-                                                                                    var: "roleChance",
+                                                                                    pool: Expr {
+                                                                                      raw: {
+                                                                                        var: "pool",
+                                                                                      },
+                                                                                    },
+                                                                                    popularityChance: Expr {
+                                                                                      raw: {
+                                                                                        var: "popularityChance",
+                                                                                      },
+                                                                                    },
+                                                                                    popularityGreater: Expr {
+                                                                                      raw: {
+                                                                                        var: "popularityGreater",
+                                                                                      },
+                                                                                    },
+                                                                                    popularityLesser: Expr {
+                                                                                      raw: {
+                                                                                        var: "popularityLesser",
+                                                                                      },
+                                                                                    },
+                                                                                    role: Expr {
+                                                                                      raw: {
+                                                                                        var: "role",
+                                                                                      },
+                                                                                    },
+                                                                                    roleChance: Expr {
+                                                                                      raw: {
+                                                                                        var: "roleChance",
+                                                                                      },
+                                                                                    },
                                                                                   },
                                                                                 },
                                                                               },
                                                                             },
                                                                           },
                                                                         },
-                                                                      },
+                                                                      ],
                                                                     },
-                                                                  ],
-                                                                },
-                                                                id: Expr {
-                                                                  raw: {
-                                                                    var: "characterId",
-                                                                  },
-                                                                },
-                                                                instance: Expr {
-                                                                  raw: {
-                                                                    from: Expr {
+                                                                    id: Expr {
                                                                       raw: {
-                                                                        var: "instance",
+                                                                        var: "characterId",
                                                                       },
                                                                     },
-                                                                    select: "ref",
-                                                                  },
-                                                                },
-                                                                inventory: Expr {
-                                                                  raw: {
-                                                                    from: Expr {
+                                                                    instance: Expr {
                                                                       raw: {
-                                                                        var: "inventory",
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "instance",
+                                                                          },
+                                                                        },
+                                                                        select: "ref",
                                                                       },
                                                                     },
-                                                                    select: "ref",
-                                                                  },
-                                                                },
-                                                                mediaId: Expr {
-                                                                  raw: {
-                                                                    var: "mediaId",
-                                                                  },
-                                                                },
-                                                                rating: Expr {
-                                                                  raw: {
-                                                                    var: "rating",
-                                                                  },
-                                                                },
-                                                                user: Expr {
-                                                                  raw: {
-                                                                    from: Expr {
+                                                                    inventory: Expr {
                                                                       raw: {
-                                                                        var: "user",
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "inventory",
+                                                                          },
+                                                                        },
+                                                                        select: "ref",
                                                                       },
                                                                     },
-                                                                    select: "ref",
+                                                                    mediaId: Expr {
+                                                                      raw: {
+                                                                        var: "mediaId",
+                                                                      },
+                                                                    },
+                                                                    rating: Expr {
+                                                                      raw: {
+                                                                        var: "rating",
+                                                                      },
+                                                                    },
+                                                                    user: Expr {
+                                                                      raw: {
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "user",
+                                                                          },
+                                                                        },
+                                                                        select: "ref",
+                                                                      },
+                                                                    },
                                                                   },
                                                                 },
                                                               },
@@ -173,23 +676,140 @@ snapshot[`model 1`] = `
                                                       },
                                                     },
                                                   },
-                                                },
-                                              },
-                                              {
-                                                updatedInventory: Expr {
-                                                  raw: {
-                                                    params: Expr {
+                                                  {
+                                                    updatedUser: Expr {
                                                       raw: {
-                                                        object: {
-                                                          data: Expr {
-                                                            raw: {
-                                                              object: {
-                                                                availablePulls: Expr {
+                                                        else: Expr {
+                                                          raw: {
+                                                            var: "user",
+                                                          },
+                                                        },
+                                                        if: Expr {
+                                                          raw: {
+                                                            equals: Expr {
+                                                              raw: [
+                                                                Expr {
                                                                   raw: {
-                                                                    subtract: Expr {
-                                                                      raw: [
-                                                                        Expr {
+                                                                    var: "guaranteed",
+                                                                  },
+                                                                },
+                                                                true,
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                        then: Expr {
+                                                          raw: {
+                                                            params: Expr {
+                                                              raw: {
+                                                                object: {
+                                                                  data: Expr {
+                                                                    raw: {
+                                                                      object: {
+                                                                        guarantees: Expr {
                                                                           raw: {
+                                                                            difference: Expr {
+                                                                              raw: [
+                                                                                Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "user",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "guarantees",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                Expr {
+                                                                                  raw: [
+                                                                                    Expr {
+                                                                                      raw: {
+                                                                                        var: "rating",
+                                                                                      },
+                                                                                    },
+                                                                                  ],
+                                                                                },
+                                                                              ],
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                            update: Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                  {
+                                                    updatedInventory: Expr {
+                                                      raw: {
+                                                        params: Expr {
+                                                          raw: {
+                                                            object: {
+                                                              data: Expr {
+                                                                raw: {
+                                                                  object: {
+                                                                    availablePulls: Expr {
+                                                                      raw: {
+                                                                        subtract: Expr {
+                                                                          raw: [
+                                                                            Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "inventory",
+                                                                                  },
+                                                                                },
+                                                                                select: Expr {
+                                                                                  raw: [
+                                                                                    "data",
+                                                                                    "availablePulls",
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                            1,
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    characters: Expr {
+                                                                      raw: {
+                                                                        append: Expr {
+                                                                          raw: {
+                                                                            from: Expr {
+                                                                              raw: {
+                                                                                var: "createdCharacter",
+                                                                              },
+                                                                            },
+                                                                            select: "ref",
+                                                                          },
+                                                                        },
+                                                                        collection: Expr {
+                                                                          raw: {
+                                                                            default: Expr {
+                                                                              raw: [
+                                                                              ],
+                                                                            },
                                                                             from: Expr {
                                                                               raw: {
                                                                                 var: "inventory",
@@ -198,30 +818,25 @@ snapshot[`model 1`] = `
                                                                             select: Expr {
                                                                               raw: [
                                                                                 "data",
-                                                                                "availablePulls",
+                                                                                "characters",
                                                                               ],
                                                                             },
                                                                           },
                                                                         },
-                                                                        1,
-                                                                      ],
-                                                                    },
-                                                                  },
-                                                                },
-                                                                characters: Expr {
-                                                                  raw: {
-                                                                    append: Expr {
-                                                                      raw: {
-                                                                        from: Expr {
-                                                                          raw: {
-                                                                            var: "createdCharacter",
-                                                                          },
-                                                                        },
-                                                                        select: "ref",
                                                                       },
                                                                     },
-                                                                    collection: Expr {
+                                                                    lastPull: Expr {
                                                                       raw: {
+                                                                        now: null,
+                                                                      },
+                                                                    },
+                                                                    rechargeTimestamp: Expr {
+                                                                      raw: {
+                                                                        default: Expr {
+                                                                          raw: {
+                                                                            now: null,
+                                                                          },
+                                                                        },
                                                                         from: Expr {
                                                                           raw: {
                                                                             var: "inventory",
@@ -230,35 +845,10 @@ snapshot[`model 1`] = `
                                                                         select: Expr {
                                                                           raw: [
                                                                             "data",
-                                                                            "characters",
+                                                                            "rechargeTimestamp",
                                                                           ],
                                                                         },
                                                                       },
-                                                                    },
-                                                                  },
-                                                                },
-                                                                lastPull: Expr {
-                                                                  raw: {
-                                                                    now: null,
-                                                                  },
-                                                                },
-                                                                rechargeTimestamp: Expr {
-                                                                  raw: {
-                                                                    default: Expr {
-                                                                      raw: {
-                                                                        now: null,
-                                                                      },
-                                                                    },
-                                                                    from: Expr {
-                                                                      raw: {
-                                                                        var: "inventory",
-                                                                      },
-                                                                    },
-                                                                    select: Expr {
-                                                                      raw: [
-                                                                        "data",
-                                                                        "rechargeTimestamp",
-                                                                      ],
                                                                     },
                                                                   },
                                                                 },
@@ -266,22 +856,22 @@ snapshot[`model 1`] = `
                                                             },
                                                           },
                                                         },
-                                                      },
-                                                    },
-                                                    update: Expr {
-                                                      raw: {
-                                                        from: Expr {
+                                                        update: Expr {
                                                           raw: {
-                                                            var: "inventory",
+                                                            from: Expr {
+                                                              raw: {
+                                                                var: "inventory",
+                                                              },
+                                                            },
+                                                            select: "ref",
                                                           },
                                                         },
-                                                        select: "ref",
                                                       },
                                                     },
                                                   },
-                                                },
+                                                ],
                                               },
-                                            ],
+                                            },
                                           },
                                         },
                                         if: Expr {
@@ -412,6 +1002,10 @@ snapshot[`model 1`] = `
                                                                 },
                                                               },
                                                             },
+                                                          ],
+                                                        },
+                                                        guarantees: Expr {
+                                                          raw: [
                                                           ],
                                                         },
                                                         id: Expr {
@@ -1142,6 +1736,7 @@ snapshot[`model 1`] = `
                             "guildId",
                             "characterId",
                             "mediaId",
+                            "guaranteed",
                             "rating",
                             "pool",
                             "popularityChance",
@@ -1189,147 +1784,219 @@ snapshot[`model 1`] = `
                                       raw: {
                                         else: Expr {
                                           raw: {
-                                            in: Expr {
+                                            else: Expr {
                                               raw: {
                                                 object: {
-                                                  character: Expr {
+                                                  error: "NO_GUARANTEES",
+                                                  ok: false,
+                                                  user: Expr {
                                                     raw: {
                                                       from: Expr {
                                                         raw: {
-                                                          var: "createdCharacter",
+                                                          var: "user",
                                                         },
                                                       },
                                                       select: "ref",
                                                     },
                                                   },
-                                                  inventory: Expr {
-                                                    raw: {
-                                                      from: Expr {
-                                                        raw: {
-                                                          var: "inventory",
-                                                        },
-                                                      },
-                                                      select: "ref",
-                                                    },
-                                                  },
-                                                  ok: true,
                                                 },
                                               },
                                             },
-                                            let: [
-                                              {
-                                                createdCharacter: Expr {
-                                                  raw: {
-                                                    create: Expr {
+                                            if: Expr {
+                                              raw: {
+                                                or: Expr {
+                                                  raw: [
+                                                    Expr {
                                                       raw: {
-                                                        collection: "character",
+                                                        equals: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                var: "guaranteed",
+                                                              },
+                                                            },
+                                                            false,
+                                                          ],
+                                                        },
                                                       },
                                                     },
-                                                    params: Expr {
+                                                    Expr {
                                                       raw: {
-                                                        object: {
-                                                          data: Expr {
+                                                        contains_value: Expr {
+                                                          raw: {
+                                                            var: "rating",
+                                                          },
+                                                        },
+                                                        in: Expr {
+                                                          raw: {
+                                                            default: Expr {
+                                                              raw: [
+                                                              ],
+                                                            },
+                                                            from: Expr {
+                                                              raw: {
+                                                                var: "user",
+                                                              },
+                                                            },
+                                                            select: Expr {
+                                                              raw: [
+                                                                "data",
+                                                                "guarantees",
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                            then: Expr {
+                                              raw: {
+                                                in: Expr {
+                                                  raw: {
+                                                    object: {
+                                                      character: Expr {
+                                                        raw: {
+                                                          from: Expr {
                                                             raw: {
-                                                              object: {
-                                                                history: Expr {
-                                                                  raw: [
-                                                                    Expr {
-                                                                      raw: {
-                                                                        object: {
-                                                                          gacha: Expr {
-                                                                            raw: {
-                                                                              object: {
-                                                                                by: Expr {
-                                                                                  raw: {
-                                                                                    from: Expr {
+                                                              var: "createdCharacter",
+                                                            },
+                                                          },
+                                                          select: "ref",
+                                                        },
+                                                      },
+                                                      inventory: Expr {
+                                                        raw: {
+                                                          from: Expr {
+                                                            raw: {
+                                                              var: "updatedInventory",
+                                                            },
+                                                          },
+                                                          select: "ref",
+                                                        },
+                                                      },
+                                                      ok: true,
+                                                    },
+                                                  },
+                                                },
+                                                let: [
+                                                  {
+                                                    createdCharacter: Expr {
+                                                      raw: {
+                                                        create: Expr {
+                                                          raw: {
+                                                            collection: "character",
+                                                          },
+                                                        },
+                                                        params: Expr {
+                                                          raw: {
+                                                            object: {
+                                                              data: Expr {
+                                                                raw: {
+                                                                  object: {
+                                                                    history: Expr {
+                                                                      raw: [
+                                                                        Expr {
+                                                                          raw: {
+                                                                            object: {
+                                                                              gacha: Expr {
+                                                                                raw: {
+                                                                                  object: {
+                                                                                    by: Expr {
                                                                                       raw: {
-                                                                                        var: "user",
+                                                                                        from: Expr {
+                                                                                          raw: {
+                                                                                            var: "user",
+                                                                                          },
+                                                                                        },
+                                                                                        select: "ref",
                                                                                       },
                                                                                     },
-                                                                                    select: "ref",
-                                                                                  },
-                                                                                },
-                                                                                pool: Expr {
-                                                                                  raw: {
-                                                                                    var: "pool",
-                                                                                  },
-                                                                                },
-                                                                                popularityChance: Expr {
-                                                                                  raw: {
-                                                                                    var: "popularityChance",
-                                                                                  },
-                                                                                },
-                                                                                popularityGreater: Expr {
-                                                                                  raw: {
-                                                                                    var: "popularityGreater",
-                                                                                  },
-                                                                                },
-                                                                                popularityLesser: Expr {
-                                                                                  raw: {
-                                                                                    var: "popularityLesser",
-                                                                                  },
-                                                                                },
-                                                                                role: Expr {
-                                                                                  raw: {
-                                                                                    var: "role",
-                                                                                  },
-                                                                                },
-                                                                                roleChance: Expr {
-                                                                                  raw: {
-                                                                                    var: "roleChance",
+                                                                                    pool: Expr {
+                                                                                      raw: {
+                                                                                        var: "pool",
+                                                                                      },
+                                                                                    },
+                                                                                    popularityChance: Expr {
+                                                                                      raw: {
+                                                                                        var: "popularityChance",
+                                                                                      },
+                                                                                    },
+                                                                                    popularityGreater: Expr {
+                                                                                      raw: {
+                                                                                        var: "popularityGreater",
+                                                                                      },
+                                                                                    },
+                                                                                    popularityLesser: Expr {
+                                                                                      raw: {
+                                                                                        var: "popularityLesser",
+                                                                                      },
+                                                                                    },
+                                                                                    role: Expr {
+                                                                                      raw: {
+                                                                                        var: "role",
+                                                                                      },
+                                                                                    },
+                                                                                    roleChance: Expr {
+                                                                                      raw: {
+                                                                                        var: "roleChance",
+                                                                                      },
+                                                                                    },
                                                                                   },
                                                                                 },
                                                                               },
                                                                             },
                                                                           },
                                                                         },
-                                                                      },
+                                                                      ],
                                                                     },
-                                                                  ],
-                                                                },
-                                                                id: Expr {
-                                                                  raw: {
-                                                                    var: "characterId",
-                                                                  },
-                                                                },
-                                                                instance: Expr {
-                                                                  raw: {
-                                                                    from: Expr {
+                                                                    id: Expr {
                                                                       raw: {
-                                                                        var: "instance",
+                                                                        var: "characterId",
                                                                       },
                                                                     },
-                                                                    select: "ref",
-                                                                  },
-                                                                },
-                                                                inventory: Expr {
-                                                                  raw: {
-                                                                    from: Expr {
+                                                                    instance: Expr {
                                                                       raw: {
-                                                                        var: "inventory",
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "instance",
+                                                                          },
+                                                                        },
+                                                                        select: "ref",
                                                                       },
                                                                     },
-                                                                    select: "ref",
-                                                                  },
-                                                                },
-                                                                mediaId: Expr {
-                                                                  raw: {
-                                                                    var: "mediaId",
-                                                                  },
-                                                                },
-                                                                rating: Expr {
-                                                                  raw: {
-                                                                    var: "rating",
-                                                                  },
-                                                                },
-                                                                user: Expr {
-                                                                  raw: {
-                                                                    from: Expr {
+                                                                    inventory: Expr {
                                                                       raw: {
-                                                                        var: "user",
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "inventory",
+                                                                          },
+                                                                        },
+                                                                        select: "ref",
                                                                       },
                                                                     },
-                                                                    select: "ref",
+                                                                    mediaId: Expr {
+                                                                      raw: {
+                                                                        var: "mediaId",
+                                                                      },
+                                                                    },
+                                                                    rating: Expr {
+                                                                      raw: {
+                                                                        var: "rating",
+                                                                      },
+                                                                    },
+                                                                    user: Expr {
+                                                                      raw: {
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "user",
+                                                                          },
+                                                                        },
+                                                                        select: "ref",
+                                                                      },
+                                                                    },
                                                                   },
                                                                 },
                                                               },
@@ -1339,23 +2006,140 @@ snapshot[`model 1`] = `
                                                       },
                                                     },
                                                   },
-                                                },
-                                              },
-                                              {
-                                                updatedInventory: Expr {
-                                                  raw: {
-                                                    params: Expr {
+                                                  {
+                                                    updatedUser: Expr {
                                                       raw: {
-                                                        object: {
-                                                          data: Expr {
-                                                            raw: {
-                                                              object: {
-                                                                availablePulls: Expr {
+                                                        else: Expr {
+                                                          raw: {
+                                                            var: "user",
+                                                          },
+                                                        },
+                                                        if: Expr {
+                                                          raw: {
+                                                            equals: Expr {
+                                                              raw: [
+                                                                Expr {
                                                                   raw: {
-                                                                    subtract: Expr {
-                                                                      raw: [
-                                                                        Expr {
+                                                                    var: "guaranteed",
+                                                                  },
+                                                                },
+                                                                true,
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                        then: Expr {
+                                                          raw: {
+                                                            params: Expr {
+                                                              raw: {
+                                                                object: {
+                                                                  data: Expr {
+                                                                    raw: {
+                                                                      object: {
+                                                                        guarantees: Expr {
                                                                           raw: {
+                                                                            difference: Expr {
+                                                                              raw: [
+                                                                                Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "user",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "guarantees",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                Expr {
+                                                                                  raw: [
+                                                                                    Expr {
+                                                                                      raw: {
+                                                                                        var: "rating",
+                                                                                      },
+                                                                                    },
+                                                                                  ],
+                                                                                },
+                                                                              ],
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                            update: Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                  {
+                                                    updatedInventory: Expr {
+                                                      raw: {
+                                                        params: Expr {
+                                                          raw: {
+                                                            object: {
+                                                              data: Expr {
+                                                                raw: {
+                                                                  object: {
+                                                                    availablePulls: Expr {
+                                                                      raw: {
+                                                                        subtract: Expr {
+                                                                          raw: [
+                                                                            Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "inventory",
+                                                                                  },
+                                                                                },
+                                                                                select: Expr {
+                                                                                  raw: [
+                                                                                    "data",
+                                                                                    "availablePulls",
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                            1,
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    characters: Expr {
+                                                                      raw: {
+                                                                        append: Expr {
+                                                                          raw: {
+                                                                            from: Expr {
+                                                                              raw: {
+                                                                                var: "createdCharacter",
+                                                                              },
+                                                                            },
+                                                                            select: "ref",
+                                                                          },
+                                                                        },
+                                                                        collection: Expr {
+                                                                          raw: {
+                                                                            default: Expr {
+                                                                              raw: [
+                                                                              ],
+                                                                            },
                                                                             from: Expr {
                                                                               raw: {
                                                                                 var: "inventory",
@@ -1364,30 +2148,25 @@ snapshot[`model 1`] = `
                                                                             select: Expr {
                                                                               raw: [
                                                                                 "data",
-                                                                                "availablePulls",
+                                                                                "characters",
                                                                               ],
                                                                             },
                                                                           },
                                                                         },
-                                                                        1,
-                                                                      ],
-                                                                    },
-                                                                  },
-                                                                },
-                                                                characters: Expr {
-                                                                  raw: {
-                                                                    append: Expr {
-                                                                      raw: {
-                                                                        from: Expr {
-                                                                          raw: {
-                                                                            var: "createdCharacter",
-                                                                          },
-                                                                        },
-                                                                        select: "ref",
                                                                       },
                                                                     },
-                                                                    collection: Expr {
+                                                                    lastPull: Expr {
                                                                       raw: {
+                                                                        now: null,
+                                                                      },
+                                                                    },
+                                                                    rechargeTimestamp: Expr {
+                                                                      raw: {
+                                                                        default: Expr {
+                                                                          raw: {
+                                                                            now: null,
+                                                                          },
+                                                                        },
                                                                         from: Expr {
                                                                           raw: {
                                                                             var: "inventory",
@@ -1396,35 +2175,10 @@ snapshot[`model 1`] = `
                                                                         select: Expr {
                                                                           raw: [
                                                                             "data",
-                                                                            "characters",
+                                                                            "rechargeTimestamp",
                                                                           ],
                                                                         },
                                                                       },
-                                                                    },
-                                                                  },
-                                                                },
-                                                                lastPull: Expr {
-                                                                  raw: {
-                                                                    now: null,
-                                                                  },
-                                                                },
-                                                                rechargeTimestamp: Expr {
-                                                                  raw: {
-                                                                    default: Expr {
-                                                                      raw: {
-                                                                        now: null,
-                                                                      },
-                                                                    },
-                                                                    from: Expr {
-                                                                      raw: {
-                                                                        var: "inventory",
-                                                                      },
-                                                                    },
-                                                                    select: Expr {
-                                                                      raw: [
-                                                                        "data",
-                                                                        "rechargeTimestamp",
-                                                                      ],
                                                                     },
                                                                   },
                                                                 },
@@ -1432,22 +2186,22 @@ snapshot[`model 1`] = `
                                                             },
                                                           },
                                                         },
-                                                      },
-                                                    },
-                                                    update: Expr {
-                                                      raw: {
-                                                        from: Expr {
+                                                        update: Expr {
                                                           raw: {
-                                                            var: "inventory",
+                                                            from: Expr {
+                                                              raw: {
+                                                                var: "inventory",
+                                                              },
+                                                            },
+                                                            select: "ref",
                                                           },
                                                         },
-                                                        select: "ref",
                                                       },
                                                     },
                                                   },
-                                                },
+                                                ],
                                               },
-                                            ],
+                                            },
                                           },
                                         },
                                         if: Expr {
@@ -1578,6 +2332,10 @@ snapshot[`model 1`] = `
                                                                 },
                                                               },
                                                             },
+                                                          ],
+                                                        },
+                                                        guarantees: Expr {
+                                                          raw: [
                                                           ],
                                                         },
                                                         id: Expr {
@@ -2308,6 +3066,7 @@ snapshot[`model 1`] = `
                             "guildId",
                             "characterId",
                             "mediaId",
+                            "guaranteed",
                             "rating",
                             "pool",
                             "popularityChance",

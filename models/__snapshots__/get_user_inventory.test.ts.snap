@@ -1064,6 +1064,10 @@ snapshot[`model 5`] = `
                                                             },
                                                           ],
                                                         },
+                                                        guarantees: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
@@ -1851,6 +1855,10 @@ snapshot[`model 5`] = `
                                                                 },
                                                               },
                                                             },
+                                                          ],
+                                                        },
+                                                        guarantees: Expr {
+                                                          raw: [
                                                           ],
                                                         },
                                                         id: Expr {

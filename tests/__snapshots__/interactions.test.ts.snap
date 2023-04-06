@@ -72,79 +72,6 @@ __Gacha rates depend on multiple variables__, but generally speaking the chances
 }
 `;
 
-snapshot[`/help 2`] = `
-{
-  data: {
-    attachments: [
-    ],
-    components: [
-      {
-        components: [
-          {
-            custom_id: "help==0=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "_",
-            disabled: true,
-            label: "2/5",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "help==2=next",
-            label: "Next",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "cstars=5=user_id",
-            label: "/collection stars 5",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "cstars=4=user_id",
-            label: "/collection stars 4",
-            style: 2,
-            type: 2,
-          },
-        ],
-        type: 1,
-      },
-    ],
-    embeds: [
-      {
-        author: {
-          name: "2.",
-        },
-        description: "You will need a party to use combat features, but all combat features are still in development, so parties are only an aesthetic right now.
-
-__You can't have more than 1 party__ or save your current party to a preset and switch between presets.
-
-__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.
-
-\`/party view\` to see your current party.
-
-\`/party assign name: spot:\` to assign a character you have to your party;
-leaving the \`spot:\` empty will assign the character to the first empty spot or override the last spot.
-
-\`/collection\` can be used to browse your characters and select your potential party members.
-​",
-        footer: {
-          text: "aliases: /team, /p",
-        },
-        title: "\`/party\`",
-        type: "rich",
-      },
-    ],
-  },
-  type: 4,
-}
-`;
-
 snapshot[`/help 3`] = `
 {
   data: {
@@ -214,6 +141,79 @@ Merging 1-4<:smol_star:1088427421096751224>characters to get specific grade pull
 
 **[Stealing](https://github.com/ker0olos/fable/issues/49)**
 You will be able to steal characters from other users.",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;
+
+snapshot[`/help 2`] = `
+{
+  data: {
+    attachments: [
+    ],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==0=prev",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "2/5",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==2=next",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "cstars=5=user_id",
+            label: "/collection stars 5",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "cstars=4=user_id",
+            label: "/collection stars 4",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "2.",
+        },
+        description: "You will need a party to use combat features, but all combat features are still in development, so parties are only an aesthetic right now.
+
+__You can't have more than 1 party__ or save your current party to a preset and switch between presets.
+
+__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.
+
+\`/party view\` to see your current party.
+
+\`/party assign name: spot:\` to assign a character you have to your party;
+leaving the \`spot:\` empty will assign the character to the first empty spot or override the last spot.
+
+\`/collection\` can be used to browse your characters and select your potential party members.
+​",
+        footer: {
+          text: "aliases: /team, /p",
+        },
+        title: "\`/party\`",
         type: "rich",
       },
     ],

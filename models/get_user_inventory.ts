@@ -17,6 +17,7 @@ export interface User {
   lastVote?: TimeExpr;
   totalVotes?: NumberExpr;
   availableVotes?: NumberExpr;
+  guarantees: NumberExpr[];
   inventories: RefExpr[];
   badges: RefExpr[];
 }
@@ -37,6 +38,9 @@ export interface Inventory {
   availablePulls: NumberExpr;
   lastPull?: TimeExpr;
   rechargeTimestamp?: TimeExpr;
+  characters: RefExpr[];
+  instance: RefExpr;
+  user: RefExpr;
   party?: {
     member1?: RefExpr;
     member2?: RefExpr;
@@ -44,9 +48,6 @@ export interface Inventory {
     member4?: RefExpr;
     member5?: RefExpr;
   };
-  characters: RefExpr[];
-  instance: RefExpr;
-  user: RefExpr;
 }
 
 export const MAX_PULLS = 5;
@@ -63,6 +64,7 @@ export function getUser(id: StringExpr): UserExpr {
       // create a new user then return it
       fql.Create<User>('user', {
         id,
+        guarantees: [],
         inventories: [],
         badges: [
           // Early Bird Gets the Worm
@@ -90,7 +92,7 @@ export function getGuild(id: StringExpr): GuildExpr {
 
 export function getInstance(guild: GuildExpr): InstanceExpr {
   return fql.Let({
-    match: fql.Select(['data', 'instances'], guild),
+    match: fql.Select<InstanceExpr>(['data', 'instances'], guild),
   }, ({ match }) =>
     fql.If(
       fql.IsNonEmpty(match),

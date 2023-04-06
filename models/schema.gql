@@ -11,6 +11,8 @@ type User @collection(name: "user") {
   totalVotes: Int
   # the amount of votes available to be exchanged for rewards
   availableVotes: Int
+  # guaranteed pulls
+  guarantees: [Int!]!
 }
 
 type Guild @collection(name: "guild") {

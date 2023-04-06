@@ -4,6 +4,7 @@ type Response @embedded {
   character: Character
   inventory: Inventory
   manifest: Manifest
+  user: User
 }
 
 type Verify @embedded {
@@ -60,11 +61,16 @@ type Mutation {
     @resolver(name: "remove_pack_from_instance")
 
   #
+  addGuaranteeToUser(userId: String!, guarantee: Int!): Response!
+    @resolver(name: "add_guarantee_to_user")
+  
+  #
   addCharacterToInventory(
     userId: String!
     guildId: String!
     characterId: String!
     mediaId: String!
+    guaranteed: Boolean!
     rating: Int!
     pool: Int!
     popularityChance: Int!
