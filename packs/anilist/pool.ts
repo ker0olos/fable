@@ -64,7 +64,7 @@ async function queryMedia(
           isAdult: false,
         ) {
           id
-          characters(page: $page, perPage: 25) {
+          characters(page: 1, perPage: 25) {
             pageInfo {
               hasNextPage
             }
