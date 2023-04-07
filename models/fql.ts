@@ -138,6 +138,10 @@ function Min(a: NumberExpr, b: NumberExpr): NumberExpr {
   return _fql.Min(a, b);
 }
 
+function Max(a: NumberExpr, b: NumberExpr): NumberExpr {
+  return _fql.Max(a, b);
+}
+
 function GTE(a: NumberExpr, b: NumberExpr): BooleanExpr {
   return _fql.GTE(a, b);
 }
@@ -353,6 +357,7 @@ export const fql = {
   ToString,
   Update,
   Var,
+  Max,
 };
 
 export type { Client };

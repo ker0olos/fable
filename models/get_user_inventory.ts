@@ -172,31 +172,33 @@ export function rechargePulls(
         fql.Now(), // fallback
       ),
       currentPulls: fql.Select(['data', 'availablePulls'], inventory),
-      newPulls: fql.Divide(
-        fql.TimeDiffInMinutes(
-          fql.Var('rechargeTimestamp'),
-          fql.Now(),
+      newPulls: fql.Max(
+        0,
+        fql.Min(
+          fql.Subtract(
+            MAX_PULLS,
+            fql.Var('currentPulls'),
+          ),
+          fql.Divide(
+            fql.TimeDiffInMinutes(
+              fql.Var('rechargeTimestamp'),
+              fql.Now(),
+            ),
+            RECHARGE_MINS,
+          ),
         ),
-        RECHARGE_MINS,
       ),
-      rechargedPulls: fql.Min(
-        MAX_PULLS,
-        fql.Add(fql.Var('currentPulls'), fql.Var('newPulls')),
-      ),
-      diffPulls: fql.Subtract(
-        fql.Var('rechargedPulls'),
-        fql.Var('currentPulls'),
-      ),
+      rechargedPulls: fql.Add(fql.Var('currentPulls'), fql.Var('newPulls')),
     },
-    ({ rechargeTimestamp, diffPulls, rechargedPulls }) =>
+    ({ rechargeTimestamp, newPulls, rechargedPulls }) =>
       fql.Update<Inventory>(fql.Ref(inventory), {
-        availablePulls: rechargedPulls,
+        availablePulls: fql.Min(99, rechargedPulls),
         rechargeTimestamp: fql.If(
           fql.GTE(rechargedPulls, MAX_PULLS),
           fql.Null(),
           fql.TimeAddInMinutes(
             rechargeTimestamp,
-            fql.Multiply(diffPulls, RECHARGE_MINS),
+            fql.Multiply(newPulls, RECHARGE_MINS),
           ),
         ),
       }),
