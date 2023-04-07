@@ -17,6 +17,11 @@ jobs:
         with:
           deno-version: v1.x
       - run: deno run -A packs/anilist/pool.ts
+      - name: Upload Pool As Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: anilist-pool
+          path: packs/anilist/pool.json
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
@@ -24,7 +29,6 @@ jobs:
           title: 'Updated "anilist/pool.json"'
           commit-message: '[bot] Updated "anilist/pool.json"'
           branch: update-anilist-pool
-          delete-branch: true
           body: |
             This PR is auto-generated
 

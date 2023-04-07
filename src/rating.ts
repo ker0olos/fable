@@ -36,7 +36,7 @@ export default class Rating {
       } else {
         this.#stars = 3;
       }
-    } else if (popularity > 400_000) {
+    } else if (popularity >= 400_000) {
       if (role === CharacterRole.Main) {
         this.#stars = 5;
       } else if (!role && popularity >= 1_000_000) {
