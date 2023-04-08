@@ -1,5 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 
+import { spy } from 'https://deno.land/std@0.179.0/testing/mock.ts';
+
 import {
   Client,
   query,
@@ -359,5 +361,9 @@ export const fql = {
   Var,
   Max,
 };
+
+export const FakeClient = () => ({
+  query: spy(),
+});
 
 export type { Client };

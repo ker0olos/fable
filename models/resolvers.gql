@@ -49,10 +49,6 @@ type Query {
 
 type Mutation {
   #
-  addVoteToUser(userId: String!, weekend: Boolean!): Response!
-    @resolver(name: "add_vote_to_user")
-
-  #
   addPackToInstance(guildId: String!, githubId: Int!, manifest: ManifestInput!): Response!
     @resolver(name: "add_pack_to_instance")
   
@@ -61,9 +57,17 @@ type Mutation {
     @resolver(name: "remove_pack_from_instance")
 
   #
-  addGuaranteeToUser(userId: String!, guarantee: Int!): Response!
-    @resolver(name: "add_guarantee_to_user")
+  addVoteToUser(userId: String!, weekend: Boolean!): Response!
+    @resolver(name: "add_vote_to_user")
+
+  #
+  exchangeVotesForGuarantees(userId: String!, guarantee: Int!): Response!
+    @resolver(name: "exchange_votes_for_guarantees")
   
+  # 
+  exchangeVotesForPulls(userId: String!, guildId: String!, votes: Int!): Response!
+    @resolver(name: "exchange_votes_for_pulls")
+
   #
   addCharacterToInventory(
     userId: String!

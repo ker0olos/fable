@@ -46,32 +46,6 @@ export interface History {
   };
 }
 
-export function addGuarantee(
-  {
-    user,
-    guarantee,
-  }: {
-    user: UserExpr;
-    guarantee: NumberExpr;
-  },
-): ResponseExpr {
-  return fql.Let(
-    {
-      updatedUser: fql.Update<User>(fql.Ref(user), {
-        guarantees: fql.Append(
-          guarantee,
-          fql.Select(['data', 'guarantees'], user, []),
-        ),
-      }),
-    },
-    ({ updatedUser }) =>
-      ({
-        ok: true,
-        user: fql.Ref(updatedUser),
-      }) as unknown as ResponseExpr,
-  );
-}
-
 export function addCharacter(
   {
     rating,
@@ -208,25 +182,6 @@ export default function (client: Client): {
 } {
   return {
     resolvers: [
-      fql.Resolver({
-        client,
-        name: 'add_guarantee_to_user',
-        lambda: (
-          userId: string,
-          guarantee: number,
-        ) => {
-          return fql.Let(
-            {
-              user: getUser(userId),
-            },
-            ({ user }) =>
-              addGuarantee({
-                user,
-                guarantee,
-              }),
-          );
-        },
-      }),
       fql.Resolver({
         client,
         name: 'add_character_to_inventory',
