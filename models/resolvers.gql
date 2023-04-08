@@ -73,8 +73,8 @@ type Mutation {
     guaranteed: Boolean!
     rating: Int!
     pool: Int!
-    popularityChance: Int!
-    popularityGreater: Int!
+    popularityChance: Int
+    popularityGreater: Int
     popularityLesser: Int
     roleChance: Int
     role: String

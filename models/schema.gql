@@ -103,8 +103,9 @@ type History @embedded {
 type Gacha @embedded {
   by: User!
   pool: Int!
-  popularityChance: Int!
-  popularityGreater: Int!
+  guaranteed: Int
+  popularityChance: Int
+  popularityGreater: Int
   popularityLesser: Int
   roleChance: Int
   role: String

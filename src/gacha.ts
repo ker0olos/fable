@@ -12,13 +12,19 @@ import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
-import { Character, CharacterRole, Media, PoolInfo, Schema } from './types.ts';
+import {
+  Character,
+  CharacterRole,
+  DisaggregatedCharacter,
+  Media,
+  PoolInfo,
+  Schema,
+} from './types.ts';
 
 import { NonFetalError, NoPullsError, PoolError } from './errors.ts';
 
 export type Pull = {
   index?: number;
-  role?: CharacterRole;
   remaining?: number;
   character: Character;
   media: Media;
@@ -44,15 +50,15 @@ const variables = {
   },
 };
 
-async function rngPull(
-  { userId, guildId }: { userId?: string; guildId: string },
-): Promise<Pull> {
-  // rng for popularity range
+async function rangePool({ guildId }: { guildId: string }): Promise<{
+  pool: { id: string }[];
+  poolInfo: PoolInfo;
+  validate: (character: Character | DisaggregatedCharacter) => boolean;
+}> {
   const { value: range, chance: rangeChance } = utils.rng(
     gacha.variables.ranges,
   );
 
-  // rng for character roll in media[0]
   const { value: role, chance: roleChance } = range[0] <= lowest
     // include all roles in the pool
     ? { value: undefined, chance: undefined }
@@ -65,14 +71,43 @@ async function rngPull(
     guildId,
   });
 
-  let inventory: Schema.Inventory | undefined = undefined;
+  const validate = (character: Character | DisaggregatedCharacter): boolean => {
+    if (
+      typeof character.popularity === 'number' &&
+      !(character.popularity >= range[0] &&
+        (isNaN(range[1]) || character.popularity <= range[1]))
+    ) {
+      return false;
+    }
 
-  let rating: Rating | undefined = undefined;
-  let character: Character | undefined = undefined;
-  let media: Media | undefined = undefined;
+    if (
+      role &&
+      Array.isArray(character.media) &&
+      (character.media.length <= 0 || character.media[0].role !== role)
+    ) {
+      return false;
+    }
 
-  const inRange = (popularity: number): boolean =>
-    popularity >= range[0] && (isNaN(range[1]) || popularity <= range[1]);
+    // deno-lint-ignore no-non-null-assertion
+    const edge = character.media && 'edges' in character.media! &&
+      character.media.edges[0];
+
+    if (edge) {
+      const popularity = character.popularity || edge.node.popularity || lowest;
+
+      if (
+        !(popularity >= range[0] && (isNaN(range[1]) || popularity <= range[1]))
+      ) {
+        return false;
+      }
+
+      if (role && edge.role !== role) {
+        return false;
+      }
+    }
+
+    return true;
+  };
 
   const poolInfo: PoolInfo = {
     pool: pool.length,
@@ -82,6 +117,82 @@ async function rngPull(
     roleChance,
     role,
   };
+
+  return {
+    pool,
+    poolInfo,
+    validate,
+  };
+}
+
+async function guaranteedPool(
+  { guildId, guarantee }: { guildId: string; guarantee: number },
+): Promise<{
+  pool: { id: string }[];
+  poolInfo: PoolInfo;
+  validate: (character: Character | DisaggregatedCharacter) => boolean;
+}> {
+  const pool = (await packs.pool({
+    stars: guarantee,
+    guildId,
+  }))
+    .filter(({ rating }) => rating === guarantee);
+
+  const validate = (character: Character | DisaggregatedCharacter): boolean => {
+    if (
+      typeof character.popularity === 'number' &&
+      new Rating({ popularity: character.popularity }).stars !== guarantee
+    ) {
+      return false;
+    }
+
+    // deno-lint-ignore no-non-null-assertion
+    const edge = character.media && 'edges' in character.media! &&
+      character.media.edges[0];
+
+    if (edge) {
+      const popularity = character.popularity || edge.node.popularity || lowest;
+
+      if (new Rating({ popularity, role: edge.role }).stars !== guarantee) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const poolInfo: PoolInfo = {
+    pool: pool.length,
+  };
+
+  return {
+    pool,
+    poolInfo,
+    validate,
+  };
+}
+
+async function rngPull(
+  { guildId, userId, guarantee }: {
+    guildId: string;
+    userId?: string;
+    guarantee?: number;
+  },
+): Promise<Pull> {
+  const { pool, poolInfo, validate } = typeof guarantee === 'number'
+    ? await guaranteedPool({
+      guildId,
+      guarantee,
+    })
+    : await rangePool({
+      guildId,
+    });
+
+  let inventory: Schema.Inventory | undefined = undefined;
+
+  let rating: Rating | undefined = undefined;
+  let character: Character | undefined = undefined;
+  let media: Media | undefined = undefined;
 
   while (pool.length > 0) {
     const i = Math.floor(Math.random() * pool.length);
@@ -95,21 +206,7 @@ async function rngPull(
       continue;
     }
 
-    if (
-      // if the character has specified popularity
-      // and that specified popularity is not in range of
-      // the pool parameters
-      (
-        typeof results[0].popularity === 'number' &&
-        !inRange(results[0].popularity)
-      ) ||
-      (
-        Array.isArray(results[0].media) &&
-        // no media or
-        // or role is not equal to the pool parameter
-        (!results[0].media[0] || results[0].media[0].role !== role)
-      )
-    ) {
+    if (!validate(results[0])) {
       continue;
     }
 
@@ -127,16 +224,18 @@ async function rngPull(
       continue;
     }
 
-    const popularity = candidate.popularity || edge.node.popularity || lowest;
-
-    if (!inRange(popularity) || (role && edge?.role !== role)) {
+    if (!validate(candidate)) {
       continue;
     }
 
-    // const popularity = candidate.popularity || edge.node.popularity || lowest;
     rating = Rating.fromCharacter(candidate);
 
     if (rating.stars < 1) {
+      continue;
+    }
+
+    // ensure guaranteed rating
+    if (typeof guarantee === 'number' && rating.stars !== guarantee) {
       continue;
     }
 
@@ -151,8 +250,8 @@ async function rngPull(
           $guaranteed: Boolean!
           $rating: Int!
           $pool: Int!
-          $popularityChance: Int!
-          $popularityGreater: Int!
+          $popularityChance: Int
+          $popularityGreater: Int
           $popularityLesser: Int
           $roleChance: Int
           $role: String
@@ -194,8 +293,7 @@ async function rngPull(
           guildId,
           characterId,
           mediaId: `${edge.node.packId}:${edge.node.id}`,
-          // TODO implement
-          guaranteed: false,
+          guaranteed: typeof guarantee === 'number',
           rating: rating.stars,
           ...poolInfo,
         },
@@ -205,10 +303,13 @@ async function rngPull(
         inventory = response.inventory;
       } else {
         switch (response.error) {
-          case 'CHARACTER_EXISTS':
-            continue;
+          case 'NO_GUARANTEES':
+            throw new Error('403');
           case 'NO_PULLS_AVAILABLE':
             throw new NoPullsError(response.inventory.rechargeTimestamp);
+          // duplicate character
+          case 'CHARACTER_EXISTS':
+            continue;
           default:
             throw new Error(response.error);
         }
@@ -226,10 +327,9 @@ async function rngPull(
   }
 
   return {
-    role: role,
-    media: media,
-    rating: rating,
-    character: character,
+    media,
+    rating,
+    character,
     remaining: inventory?.availablePulls,
     ...poolInfo,
   };
@@ -239,10 +339,11 @@ async function rngPull(
  * start the pull's animation
  */
 function start(
-  { token, userId, guildId, mention, quiet }: {
+  { token, guildId, userId, guarantee, mention, quiet }: {
     token: string;
     guildId: string;
     userId?: string;
+    guarantee?: number;
     mention?: boolean;
     quiet?: boolean;
   },
@@ -253,7 +354,7 @@ function start(
     );
   }
 
-  gacha.rngPull({ userId, guildId })
+  gacha.rngPull({ userId, guildId, guarantee })
     .then(async (pull) => {
       const media = pull.media;
 
@@ -296,7 +397,7 @@ function start(
 
         await message.patch(token);
 
-        await utils.sleep(pull.rating.stars + 2);
+        await utils.sleep(pull.rating.stars + 3);
       }
 
       message = search.characterMessage(pull.character, {
@@ -349,6 +450,28 @@ function start(
               .setDescription(`_+1 pull <t:${err.rechargeTimestamp}:R>_`),
           )
           .patch(token);
+      }
+
+      if (err?.message === '403') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              `You don\`t have any guaranteed ${guarantee}${discord.emotes.smolStar}pulls`,
+            ),
+          ).patch(token);
+      }
+
+      if (err instanceof PoolError) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'There are no more ' +
+                (typeof guarantee === 'number'
+                  ? `${guarantee}${discord.emotes.smolStar}`
+                  : '') +
+                'characters left',
+            ),
+          ).patch(token);
       }
 
       if (!config.sentry) {

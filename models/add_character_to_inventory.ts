@@ -37,8 +37,9 @@ export interface History {
   gacha?: {
     by: RefExpr;
     pool: NumberExpr;
-    popularityChance: NumberExpr;
-    popularityGreater: NumberExpr;
+    guaranteed: NumberExpr;
+    popularityChance?: NumberExpr;
+    popularityGreater?: NumberExpr;
     popularityLesser?: NumberExpr;
     roleChance?: NumberExpr;
     role?: StringExpr;
@@ -95,8 +96,8 @@ export function addCharacter(
     instance: InstanceExpr;
     user: UserExpr;
     pool: NumberExpr;
-    popularityChance: NumberExpr;
-    popularityGreater: NumberExpr;
+    popularityChance?: NumberExpr;
+    popularityGreater?: NumberExpr;
     popularityLesser?: NumberExpr;
     roleChance?: NumberExpr;
     role?: StringExpr;
@@ -139,8 +140,13 @@ export function addCharacter(
                 history: [
                   {
                     gacha: {
-                      by: fql.Ref(user),
                       pool,
+                      by: fql.Ref(user),
+                      guaranteed: fql.If(
+                        fql.Equals(guaranteed, true),
+                        rating,
+                        fql.Null(),
+                      ),
                       popularityChance,
                       popularityGreater,
                       popularityLesser,

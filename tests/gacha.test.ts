@@ -31,28 +31,37 @@ import { AniListCharacter } from '../packs/anilist/types.ts';
 import { NoPullsError, PoolError } from '../src/errors.ts';
 
 function fakePool(
-  fill: AniListCharacter | DisaggregatedCharacter,
+  fill:
+    | (AniListCharacter | DisaggregatedCharacter)
+    | (AniListCharacter | DisaggregatedCharacter)[],
   variables: { range: number[]; role?: CharacterRole },
   length = 1,
 ): {
   readJsonStub: Stub;
   fetchStub: Stub;
 } {
-  const nodes: (AniListCharacter | DisaggregatedCharacter)[] = [];
+  let nodes: (AniListCharacter | DisaggregatedCharacter)[];
 
-  for (let index = 0; index < length; index++) {
-    nodes.push(
-      Object.assign(
-        {},
-        (fill.id = `${index + 1}`, fill),
-      ),
-    );
+  if (Array.isArray(fill)) {
+    nodes = fill;
+  } else {
+    nodes = [];
+
+    for (let index = 0; index < length; index++) {
+      nodes.push(
+        Object.assign(
+          {},
+          (fill.id = `${index + 1}`, fill),
+        ),
+      );
+    }
   }
 
   const readJsonStub = stub(utils, 'readJson', () => {
     return Promise.resolve({
       [JSON.stringify(variables.range)]: {
         [variables.role || 'ALL']: nodes.map((node) => ({
+          rating: Rating.fromCharacter(node).stars,
           id: `${node.packId}:${node.id}`,
         })),
       },
@@ -543,6 +552,187 @@ Deno.test('filter invalid pools', async (test) => {
     } finally {
       packs.cachedGuilds = {};
 
+      rngStub.restore();
+      randomStub.restore();
+      readJsonStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('guaranteed 1-star', async () => {
+    const variables = {
+      range: [1000, 50_000],
+    };
+
+    const { readJsonStub, fetchStub } = fakePool(
+      [
+        {
+          id: '1',
+          packId: 'anilist',
+          name: {
+            full: 'name 1',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: '2',
+                popularity: 50_000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title 1',
+                },
+              },
+            }],
+          },
+        },
+        {
+          id: '3',
+          packId: 'anilist',
+          name: {
+            full: 'name 2',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: '4',
+                popularity: 300_000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title 2',
+                },
+              },
+            }],
+          },
+        },
+      ],
+      variables,
+      25,
+    );
+
+    // deno-lint-ignore no-explicit-any
+    const rngStub = stub(utils, 'rng', () => undefined as any);
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    try {
+      await assertRejects(
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+            guarantee: 1,
+          }),
+        PoolError,
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+      );
+
+      assertSpyCalls(fetchStub, 0);
+      assertSpyCalls(rngStub, 0);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      readJsonStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('guaranteed 5-star', async () => {
+    const variables = {
+      range: [400_000, NaN],
+    };
+
+    const { readJsonStub, fetchStub } = fakePool(
+      [
+        {
+          id: '1',
+          packId: 'anilist',
+          name: {
+            full: 'name 1',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: '2',
+                popularity: 1000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title 1',
+                },
+              },
+            }],
+          },
+        },
+        {
+          id: '3',
+          packId: 'anilist',
+          name: {
+            full: 'name 2',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: '4',
+                popularity: 300_000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title 2',
+                },
+              },
+            }],
+          },
+        },
+      ],
+      variables,
+      25,
+    );
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([
+        { value: CharacterRole.Main, chance: 100 },
+      ]),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    try {
+      await assertRejects(
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+            guarantee: 5,
+          }),
+        PoolError,
+        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
+      );
+
+      assertSpyCalls(fetchStub, 0);
+      assertSpyCalls(rngStub, 0);
+    } finally {
       rngStub.restore();
       randomStub.restore();
       readJsonStub.restore();
@@ -1179,6 +1369,253 @@ Deno.test('valid pool', async (test) => {
       listStub.restore();
     }
   });
+
+  await test.step('guaranteed 1-star', async () => {
+    const variables = {
+      range: [1000, 50_000],
+    };
+
+    const { readJsonStub, fetchStub } = fakePool(
+      [
+        {
+          id: '1',
+          packId: 'anilist',
+          name: {
+            full: 'name 1',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: '2',
+                popularity: 1000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title 1',
+                },
+              },
+            }],
+          },
+        },
+        {
+          id: '1',
+          packId: 'anilist',
+          name: {
+            full: 'name 1',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: '2',
+                popularity: 1000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title 1',
+                },
+              },
+            }],
+          },
+        },
+      ],
+      variables,
+      25,
+    );
+
+    // deno-lint-ignore no-explicit-any
+    const rngStub = stub(utils, 'rng', () => undefined as any);
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    try {
+      assertEquals(
+        await gacha.rngPull({
+          guildId: 'guild_id',
+          guarantee: 1,
+        }),
+        {
+          character: {
+            id: '1',
+            packId: 'anilist',
+            name: {
+              english: 'name 1',
+            },
+            media: {
+              edges: [
+                {
+                  node: {
+                    format: MediaFormat.TV,
+                    id: '2',
+                    packId: 'anilist',
+                    popularity: 1000,
+                    title: {
+                      english: 'title 1',
+                    },
+                    type: MediaType.Anime,
+                  },
+                  role: CharacterRole.Main,
+                },
+              ],
+            },
+          },
+          media: {
+            format: MediaFormat.TV,
+            id: '2',
+            packId: 'anilist',
+            popularity: 1000,
+            title: {
+              english: 'title 1',
+            },
+            type: MediaType.Anime,
+          },
+          pool: 2,
+          remaining: undefined,
+          rating: new Rating({ role: CharacterRole.Main, popularity: 1000 }),
+        },
+      );
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(rngStub, 0);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      readJsonStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('guaranteed 5-star', async () => {
+    const variables = {
+      range: [400_000, NaN],
+    };
+
+    const { readJsonStub, fetchStub } = fakePool(
+      [
+        {
+          id: '1',
+          packId: 'anilist',
+          name: {
+            full: 'name 1',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: '2',
+                popularity: 1000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title 1',
+                },
+              },
+            }],
+          },
+        },
+        {
+          id: '3',
+          packId: 'anilist',
+          name: {
+            full: 'name 2',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: '4',
+                popularity: 400_000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title 2',
+                },
+              },
+            }],
+          },
+        },
+      ],
+      variables,
+      25,
+    );
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([
+        { value: CharacterRole.Main, chance: 100 },
+      ]),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    try {
+      assertEquals(
+        await gacha.rngPull({
+          guildId: 'guild_id',
+          guarantee: 5,
+        }),
+        {
+          character: {
+            id: '3',
+            packId: 'anilist',
+            name: {
+              english: 'name 2',
+            },
+            media: {
+              edges: [
+                {
+                  node: {
+                    format: MediaFormat.TV,
+                    id: '4',
+                    packId: 'anilist',
+                    popularity: 400_000,
+                    title: {
+                      english: 'title 2',
+                    },
+                    type: MediaType.Anime,
+                  },
+                  role: CharacterRole.Main,
+                },
+              ],
+            },
+          },
+          media: {
+            format: MediaFormat.TV,
+            id: '4',
+            packId: 'anilist',
+            popularity: 400_000,
+            title: {
+              english: 'title 2',
+            },
+            type: MediaType.Anime,
+          },
+          pool: 1,
+          remaining: undefined,
+          rating: new Rating({ role: CharacterRole.Main, popularity: 400_000 }),
+        },
+      );
+
+      assertSpyCalls(fetchStub, 1);
+      assertSpyCalls(rngStub, 0);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      readJsonStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
 });
 
 Deno.test('adding character to inventory', async (test) => {
@@ -1191,6 +1628,7 @@ Deno.test('adding character to inventory', async (test) => {
     const poolStub = stub(packs, 'pool', () =>
       Promise.resolve([
         {
+          rating: 1,
           id: 'anilist:1',
         },
       ]));
@@ -1288,6 +1726,7 @@ Deno.test('adding character to inventory', async (test) => {
     const poolStub = stub(packs, 'pool', () =>
       Promise.resolve([
         {
+          rating: 1,
           id: 'anilist:1',
         },
       ]));
@@ -1388,6 +1827,7 @@ Deno.test('adding character to inventory', async (test) => {
     const poolStub = stub(packs, 'pool', () =>
       Promise.resolve([
         {
+          rating: 1,
           id: 'anilist:1',
         },
       ]));
@@ -1626,7 +2066,7 @@ Deno.test('rating', async (test) => {
   });
 
   await test.step('5 stars', () => {
-    let rating = new Rating({ role: CharacterRole.Main, popularity: 500000 });
+    let rating = new Rating({ role: CharacterRole.Main, popularity: 400000 });
 
     assertEquals(rating.stars, 5);
     assertEquals(

@@ -1,8 +1,10 @@
-import { Character, CharacterRole, DisaggregatedCharacter } from './types.ts';
-
 import utils from './utils.ts';
 
 import { emotes } from './discord.ts';
+
+import { Character, CharacterRole, DisaggregatedCharacter } from './types.ts';
+
+import { AniListCharacter } from '../packs/anilist/types.ts';
 
 export default class Rating {
   #stars = 0;
@@ -61,7 +63,9 @@ export default class Rating {
     }`;
   }
 
-  static fromCharacter(character: Character | DisaggregatedCharacter): Rating {
+  static fromCharacter(
+    character: Character | DisaggregatedCharacter | AniListCharacter,
+  ): Rating {
     if (character.popularity) {
       return new Rating({ popularity: character.popularity });
     }
@@ -72,7 +76,7 @@ export default class Rating {
       if (edge) {
         return new Rating({
           popularity: edge.node.popularity,
-          role: edge.role,
+          role: 'characterRole' in edge ? edge.characterRole : edge.role,
         });
       }
     }

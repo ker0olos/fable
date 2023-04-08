@@ -19,6 +19,8 @@ import validate, { purgeReservedProps } from './validate.ts';
 import utils from './utils.ts';
 import github from './github.ts';
 
+import Rating from './rating.ts';
+
 import {
   Alias,
   Character,
@@ -1024,25 +1026,39 @@ async function aggregate<T>({ media, character, start, end, guildId }: {
   throw new Error();
 }
 
-async function pool({ guildId, range, role }: {
+async function pool({ guildId, range, role, stars }: {
   guildId: string;
-  range: number[];
+  range?: number[];
   role?: CharacterRole;
+  stars?: number;
 }): Promise<Pool['']['ALL']> {
   const [list, anilist] = await Promise.all([
     packs.all({ guildId }),
     utils.readJson<Pool>('packs/anilist/pool.json'),
   ]);
 
-  const pool = anilist[JSON.stringify(range)][role || 'ALL'];
+  let pool: Pool[0]['ALL'] = [];
+
+  if (typeof stars === 'number') {
+    Object.values(anilist).forEach((range) => {
+      pool = pool.concat(range.ALL);
+    });
+  } else {
+    pool = anilist[JSON.stringify(range)][role ?? 'ALL'];
+  }
 
   list.forEach(({ manifest }) => {
     if (manifest.characters && Array.isArray(manifest.characters.new)) {
-      const characters = manifest.characters.new.map(({ id }) => ({
-        id: `${manifest.id}:${id}`,
-      }));
+      const characters = manifest.characters.new.map((character) => {
+        const rating = Rating.fromCharacter(character).stars;
 
-      pool.push(...characters);
+        return {
+          id: `${manifest.id}:${character.id}`,
+          rating,
+        };
+      });
+
+      pool = pool.concat(characters);
     }
   });
 

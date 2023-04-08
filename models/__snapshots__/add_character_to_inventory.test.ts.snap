@@ -584,6 +584,30 @@ snapshot[`model 2`] = `
                                                                                         select: "ref",
                                                                                       },
                                                                                     },
+                                                                                    guaranteed: Expr {
+                                                                                      raw: {
+                                                                                        else: null,
+                                                                                        if: Expr {
+                                                                                          raw: {
+                                                                                            equals: Expr {
+                                                                                              raw: [
+                                                                                                Expr {
+                                                                                                  raw: {
+                                                                                                    var: "guaranteed",
+                                                                                                  },
+                                                                                                },
+                                                                                                true,
+                                                                                              ],
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        then: Expr {
+                                                                                          raw: {
+                                                                                            var: "rating",
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
                                                                                     pool: Expr {
                                                                                       raw: {
                                                                                         var: "pool",
@@ -1544,7 +1568,16 @@ snapshot[`model 2`] = `
                                                   object: {
                                                     availablePulls: Expr {
                                                       raw: {
-                                                        var: "rechargedPulls",
+                                                        min: Expr {
+                                                          raw: [
+                                                            99,
+                                                            Expr {
+                                                              raw: {
+                                                                var: "rechargedPulls",
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                     rechargeTimestamp: Expr {
@@ -1557,7 +1590,7 @@ snapshot[`model 2`] = `
                                                                   raw: [
                                                                     Expr {
                                                                       raw: {
-                                                                        var: "diffPulls",
+                                                                        var: "newPulls",
                                                                       },
                                                                     },
                                                                     30,
@@ -1651,47 +1684,49 @@ snapshot[`model 2`] = `
                                       {
                                         newPulls: Expr {
                                           raw: {
-                                            divide: Expr {
+                                            max: Expr {
                                               raw: [
+                                                0,
                                                 Expr {
                                                   raw: {
-                                                    other: Expr {
-                                                      raw: {
-                                                        now: null,
-                                                      },
-                                                    },
-                                                    time_diff: Expr {
-                                                      raw: {
-                                                        var: "rechargeTimestamp",
-                                                      },
-                                                    },
-                                                    unit: "minutes",
-                                                  },
-                                                },
-                                                30,
-                                              ],
-                                            },
-                                          },
-                                        },
-                                      },
-                                      {
-                                        rechargedPulls: Expr {
-                                          raw: {
-                                            min: Expr {
-                                              raw: [
-                                                5,
-                                                Expr {
-                                                  raw: {
-                                                    add: Expr {
+                                                    min: Expr {
                                                       raw: [
                                                         Expr {
                                                           raw: {
-                                                            var: "currentPulls",
+                                                            subtract: Expr {
+                                                              raw: [
+                                                                5,
+                                                                Expr {
+                                                                  raw: {
+                                                                    var: "currentPulls",
+                                                                  },
+                                                                },
+                                                              ],
+                                                            },
                                                           },
                                                         },
                                                         Expr {
                                                           raw: {
-                                                            var: "newPulls",
+                                                            divide: Expr {
+                                                              raw: [
+                                                                Expr {
+                                                                  raw: {
+                                                                    other: Expr {
+                                                                      raw: {
+                                                                        now: null,
+                                                                      },
+                                                                    },
+                                                                    time_diff: Expr {
+                                                                      raw: {
+                                                                        var: "rechargeTimestamp",
+                                                                      },
+                                                                    },
+                                                                    unit: "minutes",
+                                                                  },
+                                                                },
+                                                                30,
+                                                              ],
+                                                            },
                                                           },
                                                         },
                                                       ],
@@ -1704,18 +1739,18 @@ snapshot[`model 2`] = `
                                         },
                                       },
                                       {
-                                        diffPulls: Expr {
+                                        rechargedPulls: Expr {
                                           raw: {
-                                            subtract: Expr {
+                                            add: Expr {
                                               raw: [
                                                 Expr {
                                                   raw: {
-                                                    var: "rechargedPulls",
+                                                    var: "currentPulls",
                                                   },
                                                 },
                                                 Expr {
                                                   raw: {
-                                                    var: "currentPulls",
+                                                    var: "newPulls",
                                                   },
                                                 },
                                               ],
@@ -1914,6 +1949,30 @@ snapshot[`model 2`] = `
                                                                                         select: "ref",
                                                                                       },
                                                                                     },
+                                                                                    guaranteed: Expr {
+                                                                                      raw: {
+                                                                                        else: null,
+                                                                                        if: Expr {
+                                                                                          raw: {
+                                                                                            equals: Expr {
+                                                                                              raw: [
+                                                                                                Expr {
+                                                                                                  raw: {
+                                                                                                    var: "guaranteed",
+                                                                                                  },
+                                                                                                },
+                                                                                                true,
+                                                                                              ],
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        then: Expr {
+                                                                                          raw: {
+                                                                                            var: "rating",
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
                                                                                     pool: Expr {
                                                                                       raw: {
                                                                                         var: "pool",
@@ -2874,7 +2933,16 @@ snapshot[`model 2`] = `
                                                   object: {
                                                     availablePulls: Expr {
                                                       raw: {
-                                                        var: "rechargedPulls",
+                                                        min: Expr {
+                                                          raw: [
+                                                            99,
+                                                            Expr {
+                                                              raw: {
+                                                                var: "rechargedPulls",
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                     rechargeTimestamp: Expr {
@@ -2887,7 +2955,7 @@ snapshot[`model 2`] = `
                                                                   raw: [
                                                                     Expr {
                                                                       raw: {
-                                                                        var: "diffPulls",
+                                                                        var: "newPulls",
                                                                       },
                                                                     },
                                                                     30,
@@ -2981,47 +3049,49 @@ snapshot[`model 2`] = `
                                       {
                                         newPulls: Expr {
                                           raw: {
-                                            divide: Expr {
+                                            max: Expr {
                                               raw: [
+                                                0,
                                                 Expr {
                                                   raw: {
-                                                    other: Expr {
-                                                      raw: {
-                                                        now: null,
-                                                      },
-                                                    },
-                                                    time_diff: Expr {
-                                                      raw: {
-                                                        var: "rechargeTimestamp",
-                                                      },
-                                                    },
-                                                    unit: "minutes",
-                                                  },
-                                                },
-                                                30,
-                                              ],
-                                            },
-                                          },
-                                        },
-                                      },
-                                      {
-                                        rechargedPulls: Expr {
-                                          raw: {
-                                            min: Expr {
-                                              raw: [
-                                                5,
-                                                Expr {
-                                                  raw: {
-                                                    add: Expr {
+                                                    min: Expr {
                                                       raw: [
                                                         Expr {
                                                           raw: {
-                                                            var: "currentPulls",
+                                                            subtract: Expr {
+                                                              raw: [
+                                                                5,
+                                                                Expr {
+                                                                  raw: {
+                                                                    var: "currentPulls",
+                                                                  },
+                                                                },
+                                                              ],
+                                                            },
                                                           },
                                                         },
                                                         Expr {
                                                           raw: {
-                                                            var: "newPulls",
+                                                            divide: Expr {
+                                                              raw: [
+                                                                Expr {
+                                                                  raw: {
+                                                                    other: Expr {
+                                                                      raw: {
+                                                                        now: null,
+                                                                      },
+                                                                    },
+                                                                    time_diff: Expr {
+                                                                      raw: {
+                                                                        var: "rechargeTimestamp",
+                                                                      },
+                                                                    },
+                                                                    unit: "minutes",
+                                                                  },
+                                                                },
+                                                                30,
+                                                              ],
+                                                            },
                                                           },
                                                         },
                                                       ],
@@ -3034,18 +3104,18 @@ snapshot[`model 2`] = `
                                         },
                                       },
                                       {
-                                        diffPulls: Expr {
+                                        rechargedPulls: Expr {
                                           raw: {
-                                            subtract: Expr {
+                                            add: Expr {
                                               raw: [
                                                 Expr {
                                                   raw: {
-                                                    var: "rechargedPulls",
+                                                    var: "currentPulls",
                                                   },
                                                 },
                                                 Expr {
                                                   raw: {
-                                                    var: "currentPulls",
+                                                    var: "newPulls",
                                                   },
                                                 },
                                               ],
