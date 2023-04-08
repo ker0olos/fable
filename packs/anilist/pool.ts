@@ -184,7 +184,6 @@ for (const range of ranges) {
         if (excludeList.includes(`${id}`)) {
           continue;
         }
-
         let charactersPage = 1;
 
         while (true) {
@@ -218,7 +217,10 @@ for (const range of ranges) {
                 }
               });
 
-              const rating = Rating.fromCharacter(character).stars;
+              const rating = new Rating({
+                role: primely?.characterRole,
+                popularity: primely?.node.popularity,
+              }).stars;
 
               if (
                 primely?.node.popularity &&
