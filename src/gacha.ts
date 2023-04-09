@@ -26,6 +26,7 @@ import { NonFetalError, NoPullsError, PoolError } from './errors.ts';
 export type Pull = {
   index?: number;
   remaining?: number;
+  guarantees?: number[];
   character: Character;
   media: Media;
   rating: Rating;
@@ -275,6 +276,9 @@ async function rngPull(
             inventory {
               availablePulls
               rechargeTimestamp
+              user {
+                guarantees
+              }
             }
           }
         }
@@ -331,6 +335,7 @@ async function rngPull(
     rating,
     character,
     remaining: inventory?.availablePulls,
+    guarantees: inventory?.user?.guarantees,
     ...poolInfo,
   };
 }
@@ -412,11 +417,21 @@ function start(
       });
 
       if (userId) {
-        message.addComponents([
-          new discord.Component()
-            .setId(quiet ? 'q' : 'gacha', userId)
-            .setLabel(`/${quiet ? 'q' : 'gacha'}`),
-        ]);
+        if (typeof guarantee === 'number' && pull.guarantees?.length) {
+          const next = pull.guarantees?.sort((a, b) => b - a)[0];
+
+          message.addComponents([
+            new discord.Component()
+              .setId('pull', userId, `${next}`)
+              .setLabel(`/pull ${next}`),
+          ]);
+        } else {
+          message.addComponents([
+            new discord.Component()
+              .setId(quiet ? 'q' : 'gacha', userId)
+              .setLabel(`/${quiet ? 'q' : 'gacha'}`),
+          ]);
+        }
       }
 
       message.addComponents([

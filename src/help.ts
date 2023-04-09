@@ -83,11 +83,11 @@ function pages(
           .setDescription([
             '__**Releasing in the near future (5 days ~ 2 months)**__',
             '',
-            '**[Customization](https://github.com/ker0olos/fable/issues/57)**',
-            'Allow players to customize their characters including images and names.',
-            '',
             '**[Synthesis](https://github.com/ker0olos/fable/issues/76)**',
             `Merging 1-4${discord.emotes.smolStar}characters to get specific grade pulls (e.g. Synthesizing five 1-star characters gives a pull where you are guaranteed a 2-star character).`,
+            '',
+            '**[Daily Quests](https://github.com/ker0olos/fable/issues/75)**',
+            'Complete quests for rewards.',
             '',
             '**[Stealing](https://github.com/ker0olos/fable/issues/49)**',
             'You will be able to steal characters from other users.',
@@ -99,8 +99,8 @@ function pages(
           .setAuthor({ name: 'All Commands' })
           .setDescription([
             '- `/gacha` `/w`: _start a new gacha pull_',
-            '- `/q`: _start a quiet gacha pull with no animations_',
-            '- `/pull`: _pull a character from a specific rank_',
+            '- `/q`: _start a gacha pull but with no animations_',
+            '- `/pull`: _pull a character from a specific grade_',
             '',
             '- `/now` `/vote` `/daily` `/tu`: _check what you can do right now_',
             '- `/search` `/anime` `/manga`: _search for specific media_',
@@ -113,7 +113,7 @@ function pages(
             '',
             '- `/collection list` `/coll list` `/mm list`: _list user characters in bulks_',
             '- `/collection stars` `/coll stars` `/mm stars`: _view user your stars_',
-            '- `/collection media` `/coll media` `/mm media`: _view user characters from a specific media_',
+            '- `/collection media` `/coll media` `/mm media`: _view user characters in a specific media_',
             '',
             '- `/found` `/obtained` `/owned`: _list all characters found from a specific media_',
             '',
@@ -140,7 +140,7 @@ function pages(
             '- `/packs update`: _update a community pack_',
             '- `/packs uninstall`: _uninstall a pack_',
             '',
-            '- `/packs validate`: _validate a pack "manifest.json"_',
+            '- `/packs validate`: _find errors in a pack\'s "manifest.json"_',
           ].join('\n')),
       ),
   ];

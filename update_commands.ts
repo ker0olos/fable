@@ -251,7 +251,7 @@ export const commands = [
   ...Command({
     name: 'found',
     aliases: ['obtained', 'owned'],
-    description: 'View all characters found from a specific media',
+    description: 'View all characters found in a specific media',
     options: [
       Option({
         name: 'title',
@@ -396,7 +396,7 @@ export const commands = [
   }),
   ...Command({
     name: 'pull',
-    description: 'Pull a character from a specific rank',
+    description: 'Pull a character from a specific grade',
     options: [
       Option({
         name: 'stars',
@@ -618,7 +618,7 @@ export const commands = [
         type: Type.SUB_COMMAND,
         aliases: [{
           name: 'validate',
-          desc: 'Validate a community pack\'s manifest',
+          desc: 'find errors in a pack\'s manifest.json',
         }],
         optional: true,
         options: [

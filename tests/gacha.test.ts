@@ -1008,6 +1008,7 @@ Deno.test('valid pool', async (test) => {
           popularityGreater: 2000,
           popularityLesser: 3000,
           remaining: undefined,
+          guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 75 }),
           roleChance: 0,
           role: CharacterRole.Main,
@@ -1119,6 +1120,7 @@ Deno.test('valid pool', async (test) => {
           popularityGreater: 2000,
           popularityLesser: 3000,
           remaining: undefined,
+          guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 100 }),
           roleChance: 0,
           role: CharacterRole.Main,
@@ -1232,6 +1234,7 @@ Deno.test('valid pool', async (test) => {
           popularityGreater: 100_000,
           popularityLesser: 500_000,
           remaining: undefined,
+          guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 500_000 }),
           roleChance: 0,
           role: CharacterRole.Main,
@@ -1351,6 +1354,7 @@ Deno.test('valid pool', async (test) => {
           popularityGreater: 2000,
           popularityLesser: 3000,
           remaining: undefined,
+          guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 2500 }),
           roleChance: 0,
           role: CharacterRole.Main,
@@ -1474,6 +1478,7 @@ Deno.test('valid pool', async (test) => {
           },
           pool: 2,
           remaining: undefined,
+          guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 1000 }),
         },
       );
@@ -1602,6 +1607,7 @@ Deno.test('valid pool', async (test) => {
           },
           pool: 1,
           remaining: undefined,
+          guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 400_000 }),
         },
       );
@@ -1887,6 +1893,9 @@ Deno.test('adding character to inventory', async (test) => {
                 },
                 inventory: {
                   availablePulls: 2,
+                  user: {
+                    guaranteed: [5, 4, 4, 3],
+                  },
                 },
               },
             },

@@ -1,5 +1,3 @@
-import type { User } from '../models/get_user_inventory.ts';
-
 export type Modify<T, R> = Omit<T, keyof R> & R;
 
 export enum MediaType {
@@ -186,27 +184,29 @@ export namespace Schema {
     nickname?: string;
     image?: string;
   };
+  export type User = {
+    lastVote?: string;
+    totalVotes?: number;
+    availableVotes?: number;
+    guarantees?: number[];
+    badges: {
+      name: string;
+      description: string;
+      emote: string;
+    }[];
+  };
   export type Inventory = {
     availablePulls: number;
     rechargeTimestamp?: string;
     lastPull?: string;
     characters: Character[];
+    user: User;
     party?: {
       member1?: Character;
       member2?: Character;
       member3?: Character;
       member4?: Character;
       member5?: Character;
-    };
-    user: {
-      lastVote?: string;
-      totalVotes?: number;
-      availableVotes?: number;
-      badges: {
-        name: string;
-        description: string;
-        emote: string;
-      }[];
     };
   };
   export type Mutation =
@@ -252,6 +252,7 @@ export namespace Schema {
     }
     | {
       ok: true;
+      user: User;
       inventory: Inventory;
       character: Character;
       manifest: Manifest;

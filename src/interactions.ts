@@ -648,11 +648,16 @@ export const handler = async (r: Request) => {
               .send();
           }
           case 'q':
+          case 'pull':
           case 'gacha': {
+            // deno-lint-ignore no-non-null-assertion
+            const stars = utils.parseInt(customValues![1]);
+
             return gacha
               .start({
                 token,
                 mention: true,
+                guarantee: stars,
                 quiet: customType === 'q',
                 userId: member.user.id,
                 guildId,

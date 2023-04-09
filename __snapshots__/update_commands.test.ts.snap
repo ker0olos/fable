@@ -215,7 +215,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "View all characters found from a specific media",
+    description: "View all characters found in a specific media",
     name: "found",
     options: [
       {
@@ -231,7 +231,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "View all characters found from a specific media",
+    description: "View all characters found in a specific media",
     name: "obtained",
     options: [
       {
@@ -247,7 +247,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "View all characters found from a specific media",
+    description: "View all characters found in a specific media",
     name: "owned",
     options: [
       {
@@ -679,7 +679,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Pull a character from a specific rank",
+    description: "Pull a character from a specific grade",
     name: "pull",
     options: [
       {
@@ -1799,7 +1799,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Validate a community pack's manifest",
+        description: "find errors in a pack's manifest.json",
         name: "validate",
         options: [
           {
