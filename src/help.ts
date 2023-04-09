@@ -30,7 +30,7 @@ function pages(
             '',
             `__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5${discord.emotes.smolStar}appearing is equal or less than 1%.`,
             '',
-            '`/pull` allows you to do gacha pulls with no animations.',
+            '`/q` allows you to do gacha pulls with no animations.',
             '\u200B',
           ].join('\n'))
           .setFooter({ text: 'aliases: /w, /q' }),
@@ -99,7 +99,9 @@ function pages(
           .setAuthor({ name: 'All Commands' })
           .setDescription([
             '- `/gacha` `/w`: _start a new gacha pull_',
-            '- `/pull` `/q`: _start a quiet gacha pull with no animation_',
+            '- `/q`: _start a quiet gacha pull with no animations_',
+            '- `/pull`: _pull a character from a specific rank_',
+            '',
             '- `/now` `/vote` `/daily` `/tu`: _check what you can do right now_',
             '- `/search` `/anime` `/manga`: _search for specific media_',
             '- `/character` `/char` `/im`: _search for a specific character_',

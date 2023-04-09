@@ -414,8 +414,8 @@ function start(
       if (userId) {
         message.addComponents([
           new discord.Component()
-            .setId(quiet ? 'pull' : 'gacha', userId)
-            .setLabel(`/${quiet ? 'pull' : 'gacha'}`),
+            .setId(quiet ? 'q' : 'gacha', userId)
+            .setLabel(`/${quiet ? 'q' : 'gacha'}`),
         ]);
       }
 
@@ -456,7 +456,7 @@ function start(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              `You don\`t have any guaranteed ${guarantee}${discord.emotes.smolStar}pulls`,
+              `You don\`t have any ${guarantee}${discord.emotes.smolStar}pulls`,
             ),
           ).patch(token);
       }

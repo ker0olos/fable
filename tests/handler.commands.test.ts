@@ -3991,6 +3991,7 @@ Deno.test('gacha command handlers', async (test) => {
       assertSpyCall(gachaStub, 0, {
         args: [{
           quiet: false,
+          guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
           token: 'token',
@@ -4072,6 +4073,7 @@ Deno.test('gacha command handlers', async (test) => {
       assertSpyCall(gachaStub, 0, {
         args: [{
           quiet: false,
+          guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
           token: 'token',
@@ -4102,6 +4104,10 @@ Deno.test('gacha command handlers', async (test) => {
       },
       data: {
         name: 'pull',
+        options: [{
+          name: 'stars',
+          value: 4,
+        }],
       },
     });
 
@@ -4152,7 +4158,8 @@ Deno.test('gacha command handlers', async (test) => {
 
       assertSpyCall(gachaStub, 0, {
         args: [{
-          quiet: true,
+          quiet: false,
+          guarantee: 4,
           userId: 'user_id',
           guildId: 'guild_id',
           token: 'token',
@@ -4234,6 +4241,7 @@ Deno.test('gacha command handlers', async (test) => {
       assertSpyCall(gachaStub, 0, {
         args: [{
           quiet: true,
+          guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
           token: 'token',

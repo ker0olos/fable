@@ -411,15 +411,19 @@ export const handler = async (r: Request) => {
           case 'gacha':
           case 'pull':
           case 'w':
-          case 'q':
+          case 'q': {
+            const stars = options['stars'] as number | undefined;
+
             return gacha
               .start({
-                quiet: ['pull', 'q'].includes(name),
+                guarantee: stars,
+                quiet: name === 'q',
                 userId: member.user.id,
                 guildId,
                 token,
               })
               .send();
+          }
           case 'nick':
           case 'image':
           case 'custom': {
@@ -643,13 +647,13 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'pull':
+          case 'q':
           case 'gacha': {
             return gacha
               .start({
                 token,
                 mention: true,
-                quiet: customType === 'pull',
+                quiet: customType === 'q',
                 userId: member.user.id,
                 guildId,
               }).send();

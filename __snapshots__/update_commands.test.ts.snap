@@ -661,6 +661,12 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "Start a quiet gacha pull with no animations",
+    name: "q",
+    options: undefined,
+  },
+  {
+    default_member_permissions: undefined,
     description: "Start a gacha pull",
     name: "gacha",
     options: undefined,
@@ -673,15 +679,32 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Start a quiet gacha pull with no animation",
+    description: "Pull a character from a specific rank",
     name: "pull",
-    options: undefined,
-  },
-  {
-    default_member_permissions: undefined,
-    description: "Start a quiet gacha pull with no animation",
-    name: "q",
-    options: undefined,
+    options: [
+      {
+        autocomplete: undefined,
+        choices: [
+          {
+            name: "5",
+            value: 5,
+          },
+          {
+            name: "4",
+            value: 4,
+          },
+          {
+            name: "3",
+            value: 3,
+          },
+        ],
+        description: "The star rating",
+        name: "stars",
+        options: undefined,
+        required: true,
+        type: 4,
+      },
+    ],
   },
   {
     default_member_permissions: undefined,

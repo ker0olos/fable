@@ -386,14 +386,38 @@ export const commands = [
     aliases: ['vote', 'daily', 'tu'],
   }),
   ...Command({
+    name: 'q',
+    description: 'Start a quiet gacha pull with no animations',
+  }),
+  ...Command({
     name: 'gacha',
     description: 'Start a gacha pull',
     aliases: ['w'],
   }),
   ...Command({
     name: 'pull',
-    description: 'Start a quiet gacha pull with no animation',
-    aliases: ['q'],
+    description: 'Pull a character from a specific rank',
+    options: [
+      Option({
+        name: 'stars',
+        description: 'The star rating',
+        type: Type.INTEGER,
+        choices: [
+          {
+            name: '5',
+            value: 5,
+          },
+          {
+            name: '4',
+            value: 4,
+          },
+          {
+            name: '3',
+            value: 3,
+          },
+        ],
+      }),
+    ],
   }),
   ...Command({
     name: 'image',

@@ -8369,8 +8369,8 @@ Deno.test('/gacha', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'pull=user_id',
-                label: '/pull',
+                custom_id: 'q=user_id',
+                label: '/q',
                 style: 2,
                 type: 2,
               },
@@ -8538,7 +8538,7 @@ Deno.test('/gacha', async (test) => {
             {
               type: 'rich',
               description:
-                'You don`t have any guaranteed 5<:smol_star:1088427421096751224>pulls',
+                'You don`t have any 5<:smol_star:1088427421096751224>pulls',
             },
           ],
           components: [],

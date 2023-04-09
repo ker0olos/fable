@@ -1243,7 +1243,7 @@ Deno.test('gacha components', async (test) => {
         },
       },
       data: {
-        custom_id: 'pull=user_id',
+        custom_id: 'q=user_id',
       },
     });
 
