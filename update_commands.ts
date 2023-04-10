@@ -396,7 +396,7 @@ export const commands = [
   }),
   ...Command({
     name: 'pull',
-    description: 'Pull a character from a specific grade',
+    description: 'Pull a character from a specific rank',
     options: [
       Option({
         name: 'stars',

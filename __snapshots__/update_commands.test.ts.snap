@@ -679,7 +679,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Pull a character from a specific grade",
+    description: "Pull a character from a specific rank",
     name: "pull",
     options: [
       {

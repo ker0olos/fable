@@ -22,7 +22,7 @@ function pages(
           .setDescription([
             'Before anything: You will need characters.',
             '',
-            `__You get a free pull every ${RECHARGE_MINS} minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your pulls recharge.`,
+            `__You get a free pull every ${RECHARGE_MINS} minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.`,
             '',
             '__Characters are exclusive__, once a player on the server finds a character, no one else can find that character in gacha again. You will need trade to get them.',
             '',
@@ -84,7 +84,7 @@ function pages(
             '__**Releasing in the near future (5 days ~ 2 months)**__',
             '',
             '**[Synthesis](https://github.com/ker0olos/fable/issues/76)**',
-            `Merging 1-4${discord.emotes.smolStar}characters to get specific grade pulls (e.g. Synthesizing five 1-star characters gives a pull where you are guaranteed a 2-star character).`,
+            `Merging 1-4${discord.emotes.smolStar}characters to get a specific rank pull (e.g. Synthesizing five 1-star characters gives a pull where you are guaranteed a 2-star character).`,
             '',
             '**[Daily Quests](https://github.com/ker0olos/fable/issues/75)**',
             'Complete quests for rewards.',
@@ -100,7 +100,7 @@ function pages(
           .setDescription([
             '- `/gacha` `/w`: _start a new gacha pull_',
             '- `/q`: _start a gacha pull but with no animations_',
-            '- `/pull`: _pull a character from a specific grade_',
+            '- `/pull`: _pull a character from a specific rank_',
             '',
             '- `/now` `/vote` `/daily` `/tu`: _check what you can do right now_',
             '- `/search` `/anime` `/manga`: _search for specific media_',

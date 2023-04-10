@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-explicit-any
+
 import {
   assertEquals,
   assertObjectMatch,
@@ -31,11 +33,14 @@ import { AniListCharacter } from '../packs/anilist/types.ts';
 import { NoPullsError, PoolError } from '../src/errors.ts';
 
 function fakePool(
-  fill:
-    | (AniListCharacter | DisaggregatedCharacter)
-    | (AniListCharacter | DisaggregatedCharacter)[],
-  variables: { range: number[]; role?: CharacterRole },
-  length = 1,
+  { fill, variables, length = 1, rating }: {
+    fill:
+      | (AniListCharacter | DisaggregatedCharacter)
+      | (AniListCharacter | DisaggregatedCharacter)[];
+    variables: { range: number[]; role?: CharacterRole };
+    length?: number;
+    rating?: number;
+  },
 ): {
   readJsonStub: Stub;
   fetchStub: Stub;
@@ -61,7 +66,7 @@ function fakePool(
     return Promise.resolve({
       [JSON.stringify(variables.range)]: {
         [variables.role || 'ALL']: nodes.map((node) => ({
-          rating: Rating.fromCharacter(node).stars,
+          rating: rating ?? Rating.fromCharacter(node).stars,
           id: `${node.packId}:${node.id}`,
         })),
       },
@@ -81,7 +86,6 @@ function fakePool(
             },
           },
         }))),
-      // deno-lint-ignore no-explicit-any
     } as any),
   );
 
@@ -97,18 +101,20 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: '',
-        packId: 'anilist',
-        name: {
-          full: 'name',
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          popularity: 2500,
+          media: {
+            edges: [],
+          },
         },
-        popularity: 2500,
-        media: {
-          edges: [],
-        },
+        variables,
+        length: 25,
       },
-      variables,
-      25,
     );
 
     const rngStub = stub(
@@ -153,28 +159,30 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: '',
-        packId: 'anilist',
-        name: {
-          full: 'name',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: 'anime',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              popularity: 2001,
-              title: {
-                english: 'title',
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                popularity: 2001,
+                title: {
+                  english: 'title',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
+        variables,
+        length: 25,
       },
-      variables,
-      25,
     );
 
     const rngStub = stub(
@@ -218,29 +226,31 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: '',
-        packId: 'anilist',
-        name: {
-          full: 'name',
-        },
-        popularity: 2001,
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: 'anime',
-              popularity: 1000,
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'title',
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          popularity: 2001,
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                popularity: 1000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
+        variables,
+        length: 25,
       },
-      variables,
-      25,
     );
 
     const rngStub = stub(
@@ -285,28 +295,30 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: '',
-        packId: 'anilist',
-        name: {
-          full: 'name',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: 'anime',
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              popularity: 1999,
-              title: {
-                english: 'title',
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                popularity: 1999,
+                title: {
+                  english: 'title',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
+        variables,
+        length: 25,
       },
-      variables,
-      25,
     );
 
     const rngStub = stub(
@@ -352,29 +364,31 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: '',
-        packId: 'anilist',
-        name: {
-          full: 'name',
-        },
-        popularity: 1999,
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: 'anime',
-              popularity: 2500,
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'title',
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          popularity: 1999,
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                popularity: 2500,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
+        variables,
+        length: 25,
       },
-      variables,
-      25,
     );
 
     const rngStub = stub(
@@ -420,28 +434,30 @@ Deno.test('filter invalid pools', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: '',
-        packId: 'anilist',
-        name: {
-          full: 'name',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Supporting,
-            node: {
-              id: 'anime',
-              popularity: 2500,
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'title',
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Supporting,
+              node: {
+                id: 'anime',
+                popularity: 2500,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
+        variables,
+        length: 25,
       },
-      variables,
-      25,
     );
 
     const rngStub = stub(
@@ -485,8 +501,11 @@ Deno.test('filter invalid pools', async (test) => {
       role: CharacterRole.Main,
     };
 
-    // deno-lint-ignore no-explicit-any
-    const { fetchStub, readJsonStub } = fakePool({} as any, variables, 0);
+    const { fetchStub, readJsonStub } = fakePool({
+      fill: {} as any,
+      variables,
+      length: 0,
+    });
 
     const manifest: Manifest = {
       id: 'pack-id',
@@ -560,61 +579,63 @@ Deno.test('filter invalid pools', async (test) => {
     }
   });
 
-  await test.step('guaranteed 1-star', async () => {
+  await test.step('filter not equal stars', async () => {
     const variables = {
-      range: [1000, 50_000],
+      range: [1000, 1_000_000],
     };
 
     const { readJsonStub, fetchStub } = fakePool(
-      [
-        {
-          id: '1',
-          packId: 'anilist',
-          name: {
-            full: 'name 1',
-          },
-          media: {
-            edges: [{
-              characterRole: CharacterRole.Main,
-              node: {
-                id: '2',
-                popularity: 50_000,
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'title 1',
+      {
+        fill: [
+          {
+            id: '1',
+            packId: 'anilist',
+            name: {
+              full: 'name 1',
+            },
+            media: {
+              edges: [{
+                characterRole: CharacterRole.Main,
+                node: {
+                  id: '2',
+                  popularity: 200_000,
+                  type: MediaType.Anime,
+                  format: MediaFormat.TV,
+                  title: {
+                    english: 'title 1',
+                  },
                 },
-              },
-            }],
+              }],
+            },
           },
-        },
-        {
-          id: '3',
-          packId: 'anilist',
-          name: {
-            full: 'name 2',
-          },
-          media: {
-            edges: [{
-              characterRole: CharacterRole.Main,
-              node: {
-                id: '4',
-                popularity: 300_000,
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'title 2',
+          {
+            id: '3',
+            packId: 'anilist',
+            name: {
+              full: 'name 2',
+            },
+            popularity: 1_000_000,
+            media: {
+              edges: [{
+                characterRole: CharacterRole.Main,
+                node: {
+                  id: '4',
+                  popularity: 1000,
+                  type: MediaType.Anime,
+                  format: MediaFormat.TV,
+                  title: {
+                    english: 'title 2',
+                  },
                 },
-              },
-            }],
+              }],
+            },
           },
-        },
-      ],
-      variables,
-      25,
+        ],
+        variables,
+        rating: 1,
+      },
     );
 
-    // deno-lint-ignore no-explicit-any
     const rngStub = stub(utils, 'rng', () => undefined as any);
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -637,100 +658,7 @@ Deno.test('filter invalid pools', async (test) => {
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
-      assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(rngStub, 0);
-    } finally {
-      rngStub.restore();
-      randomStub.restore();
-      readJsonStub.restore();
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
-  await test.step('guaranteed 5-star', async () => {
-    const variables = {
-      range: [400_000, NaN],
-    };
-
-    const { readJsonStub, fetchStub } = fakePool(
-      [
-        {
-          id: '1',
-          packId: 'anilist',
-          name: {
-            full: 'name 1',
-          },
-          media: {
-            edges: [{
-              characterRole: CharacterRole.Main,
-              node: {
-                id: '2',
-                popularity: 1000,
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'title 1',
-                },
-              },
-            }],
-          },
-        },
-        {
-          id: '3',
-          packId: 'anilist',
-          name: {
-            full: 'name 2',
-          },
-          media: {
-            edges: [{
-              characterRole: CharacterRole.Main,
-              node: {
-                id: '4',
-                popularity: 300_000,
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'title 2',
-                },
-              },
-            }],
-          },
-        },
-      ],
-      variables,
-      25,
-    );
-
-    const rngStub = stub(
-      utils,
-      'rng',
-      returnsNext([
-        { value: CharacterRole.Main, chance: 100 },
-      ]),
-    );
-
-    const randomStub = stub(Math, 'random', () => 0);
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    try {
-      await assertRejects(
-        async () =>
-          await gacha.rngPull({
-            userId: 'user_id',
-            guildId: 'guild_id',
-            guarantee: 5,
-          }),
-        PoolError,
-        'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
-      );
-
-      assertSpyCalls(fetchStub, 0);
+      assertSpyCalls(fetchStub, 2);
       assertSpyCalls(rngStub, 0);
     } finally {
       rngStub.restore();
@@ -758,29 +686,31 @@ Deno.test('disabled', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: '',
-        packId: 'anilist',
-        name: {
-          full: 'name',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: 'anime',
-              packId: 'anilist',
-              popularity: 2500,
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'title',
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                packId: 'anilist',
+                popularity: 2500,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
+        variables,
+        length: 25,
       },
-      variables,
-      25,
     );
 
     const rngStub = stub(
@@ -843,28 +773,30 @@ Deno.test('disabled', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: '',
-        packId: 'anilist',
-        name: {
-          full: 'name',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: 'anime',
-              popularity: 75,
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'title',
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                popularity: 75,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
+        variables,
+        length: 1,
       },
-      variables,
-      1,
     );
 
     const rngStub = stub(
@@ -922,28 +854,30 @@ Deno.test('valid pool', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: '',
-        packId: 'anilist',
-        name: {
-          full: 'name',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: 'anime',
-              popularity: 2500,
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'title',
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                popularity: 2500,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
+        variables,
+        length: 25,
       },
-      variables,
-      25,
     );
 
     const rngStub = stub(
@@ -1034,28 +968,30 @@ Deno.test('valid pool', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: '',
-        packId: 'anilist',
-        name: {
-          full: 'name',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: 'anime',
-              popularity: 2000,
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'title',
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                popularity: 2000,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
+        variables,
+        length: 25,
       },
-      variables,
-      25,
     );
 
     const rngStub = stub(
@@ -1146,29 +1082,31 @@ Deno.test('valid pool', async (test) => {
 
     const { readJsonStub, fetchStub } = fakePool(
       {
-        id: '',
-        packId: 'anilist',
-        name: {
-          full: 'name',
-        },
-        popularity: 500_000,
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: 'anime',
-              popularity: 100,
-              type: MediaType.Anime,
-              format: MediaFormat.TV,
-              title: {
-                english: 'title',
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          popularity: 500000,
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                popularity: 100,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
               },
-            },
-          }],
+            }],
+          },
         },
+        variables,
+        length: 25,
       },
-      variables,
-      25,
     );
 
     const rngStub = stub(
@@ -1258,8 +1196,11 @@ Deno.test('valid pool', async (test) => {
       role: CharacterRole.Main,
     };
 
-    // deno-lint-ignore no-explicit-any
-    const { fetchStub, readJsonStub } = fakePool({} as any, variables, 0);
+    const { fetchStub, readJsonStub } = fakePool({
+      fill: {} as any,
+      variables,
+      length: 0,
+    });
 
     const manifest: Manifest = {
       id: 'pack-id',
@@ -1380,55 +1321,55 @@ Deno.test('valid pool', async (test) => {
     };
 
     const { readJsonStub, fetchStub } = fakePool(
-      [
-        {
-          id: '1',
-          packId: 'anilist',
-          name: {
-            full: 'name 1',
-          },
-          media: {
-            edges: [{
-              characterRole: CharacterRole.Main,
-              node: {
-                id: '2',
-                popularity: 1000,
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'title 1',
+      {
+        fill: [
+          {
+            id: '1',
+            packId: 'anilist',
+            name: {
+              full: 'name 1',
+            },
+            media: {
+              edges: [{
+                characterRole: CharacterRole.Main,
+                node: {
+                  id: '2',
+                  popularity: 1000,
+                  type: MediaType.Anime,
+                  format: MediaFormat.TV,
+                  title: {
+                    english: 'title 1',
+                  },
                 },
-              },
-            }],
+              }],
+            },
           },
-        },
-        {
-          id: '1',
-          packId: 'anilist',
-          name: {
-            full: 'name 1',
-          },
-          media: {
-            edges: [{
-              characterRole: CharacterRole.Main,
-              node: {
-                id: '2',
-                popularity: 1000,
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'title 1',
+          {
+            id: '1',
+            packId: 'anilist',
+            name: {
+              full: 'name 1',
+            },
+            media: {
+              edges: [{
+                characterRole: CharacterRole.Main,
+                node: {
+                  id: '2',
+                  popularity: 1000,
+                  type: MediaType.Anime,
+                  format: MediaFormat.TV,
+                  title: {
+                    english: 'title 1',
+                  },
                 },
-              },
-            }],
+              }],
+            },
           },
-        },
-      ],
-      variables,
-      25,
+        ],
+        variables,
+      },
     );
 
-    // deno-lint-ignore no-explicit-any
     const rngStub = stub(utils, 'rng', () => undefined as any);
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -1500,52 +1441,53 @@ Deno.test('valid pool', async (test) => {
     };
 
     const { readJsonStub, fetchStub } = fakePool(
-      [
-        {
-          id: '1',
-          packId: 'anilist',
-          name: {
-            full: 'name 1',
-          },
-          media: {
-            edges: [{
-              characterRole: CharacterRole.Main,
-              node: {
-                id: '2',
-                popularity: 1000,
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'title 1',
+      {
+        fill: [
+          {
+            id: '1',
+            packId: 'anilist',
+            name: {
+              full: 'name 1',
+            },
+            media: {
+              edges: [{
+                characterRole: CharacterRole.Main,
+                node: {
+                  id: '2',
+                  popularity: 1000,
+                  type: MediaType.Anime,
+                  format: MediaFormat.TV,
+                  title: {
+                    english: 'title 1',
+                  },
                 },
-              },
-            }],
+              }],
+            },
           },
-        },
-        {
-          id: '3',
-          packId: 'anilist',
-          name: {
-            full: 'name 2',
-          },
-          media: {
-            edges: [{
-              characterRole: CharacterRole.Main,
-              node: {
-                id: '4',
-                popularity: 400_000,
-                type: MediaType.Anime,
-                format: MediaFormat.TV,
-                title: {
-                  english: 'title 2',
+          {
+            id: '3',
+            packId: 'anilist',
+            name: {
+              full: 'name 2',
+            },
+            media: {
+              edges: [{
+                characterRole: CharacterRole.Main,
+                node: {
+                  id: '4',
+                  popularity: 400000,
+                  type: MediaType.Anime,
+                  format: MediaFormat.TV,
+                  title: {
+                    english: 'title 2',
+                  },
                 },
-              },
-            }],
+              }],
+            },
           },
-        },
-      ],
-      variables,
-      25,
+        ],
+        variables,
+      },
     );
 
     const rngStub = stub(
@@ -1681,7 +1623,6 @@ Deno.test('adding character to inventory', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any, {
         ok: true,
         text: (() =>
@@ -1779,7 +1720,6 @@ Deno.test('adding character to inventory', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any, {
         ok: true,
         text: (() =>
@@ -1812,6 +1752,104 @@ Deno.test('adding character to inventory', async (test) => {
           }),
         NoPullsError,
         'NO_PULLS_AVAILABLE',
+      );
+
+      assertSpyCalls(poolStub, 1);
+      assertSpyCalls(fetchStub, 2);
+    } finally {
+      poolStub.restore();
+      rngStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('no guarantees', async () => {
+    const variables = {
+      range: [2000, 3000],
+      role: CharacterRole.Main,
+    };
+
+    const poolStub = stub(packs, 'pool', () =>
+      Promise.resolve([
+        {
+          rating: 1,
+          id: 'anilist:1',
+        },
+      ]));
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([
+        { value: variables.range, chance: NaN },
+        { value: variables.role, chance: NaN },
+      ]),
+    );
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([{
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                characters: [{
+                  id: '1',
+                  packId: 'anilist',
+                  name: {
+                    full: 'name',
+                  },
+                  media: {
+                    edges: [{
+                      characterRole: CharacterRole.Main,
+                      node: {
+                        id: 'anime',
+                        popularity: 2500,
+                        type: MediaType.Anime,
+                        format: MediaFormat.TV,
+                        title: {
+                          english: 'title',
+                        },
+                      },
+                    }],
+                  },
+                }],
+              },
+            },
+          }))),
+      } as any, {
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              addCharacterToInventory: {
+                ok: false,
+                error: 'NO_GUARANTEES',
+              },
+            },
+          }))),
+      }]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    try {
+      await assertRejects(
+        async () =>
+          await gacha.rngPull({
+            userId: 'user_id',
+            guildId: 'guild_id',
+            guarantee: 1,
+          }),
+        Error,
+        '403',
       );
 
       assertSpyCalls(poolStub, 1);
@@ -1880,7 +1918,6 @@ Deno.test('adding character to inventory', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any, {
         ok: true,
         text: (() =>
@@ -2108,7 +2145,7 @@ Deno.test('rating', async (test) => {
     await test.step('undefined popularity with role', () => {
       const rating = new Rating({
         role: CharacterRole.Main,
-        // deno-lint-ignore no-explicit-any
+
         popularity: undefined as any,
       });
 
@@ -2117,7 +2154,6 @@ Deno.test('rating', async (test) => {
 
     await test.step('undefined popularity', () => {
       const rating = new Rating({
-        // deno-lint-ignore no-explicit-any
         popularity: undefined as any,
       });
 

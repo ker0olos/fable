@@ -235,11 +235,6 @@ async function rngPull(
       continue;
     }
 
-    // ensure guaranteed rating
-    if (typeof guarantee === 'number' && rating.stars !== guarantee) {
-      continue;
-    }
-
     // add character to user's inventory
     if (userId) {
       const mutation = gql`
