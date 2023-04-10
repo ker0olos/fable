@@ -72,79 +72,6 @@ __Gacha rates depend on multiple variables__, but generally speaking the chances
 }
 `;
 
-snapshot[`/help 2`] = `
-{
-  data: {
-    attachments: [
-    ],
-    components: [
-      {
-        components: [
-          {
-            custom_id: "help==0=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "_",
-            disabled: true,
-            label: "2/5",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "help==2=next",
-            label: "Next",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "cstars=5=user_id",
-            label: "/collection stars 5",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "cstars=4=user_id",
-            label: "/collection stars 4",
-            style: 2,
-            type: 2,
-          },
-        ],
-        type: 1,
-      },
-    ],
-    embeds: [
-      {
-        author: {
-          name: "2.",
-        },
-        description: "You will need a party to use combat features, but all combat features are still in development, so parties are only an aesthetic right now.
-
-__You can't have more than 1 party__ or save your current party to a preset and switch between presets.
-
-__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.
-
-\`/party view\` to see your current party.
-
-\`/party assign name: spot:\` to assign a character you have to your party;
-leaving the \`spot:\` empty will assign the character to the first empty spot or override the last spot.
-
-\`/collection\` can be used to browse your characters and select your potential party members.
-​",
-        footer: {
-          text: "aliases: /team, /p",
-        },
-        title: "\`/party\`",
-        type: "rich",
-      },
-    ],
-  },
-  type: 4,
-}
-`;
-
 snapshot[`/help 3`] = `
 {
   data: {
@@ -222,6 +149,79 @@ You will be able to steal characters from other users.",
 }
 `;
 
+snapshot[`/help 2`] = `
+{
+  data: {
+    attachments: [
+    ],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==0=prev",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "2/5",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==2=next",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "cstars=5=user_id",
+            label: "/collection stars 5",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "cstars=4=user_id",
+            label: "/collection stars 4",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "2.",
+        },
+        description: "You will need a party to use combat features, but all combat features are still in development, so parties are only an aesthetic right now.
+
+__You can't have more than 1 party__ or save your current party to a preset and switch between presets.
+
+__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.
+
+\`/party view\` to see your current party.
+
+\`/party assign name: spot:\` to assign a character you have to your party;
+leaving the \`spot:\` empty will assign the character to the first empty spot or override the last spot.
+
+\`/collection\` can be used to browse your characters and select your potential party members.
+​",
+        footer: {
+          text: "aliases: /team, /p",
+        },
+        title: "\`/party\`",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;
+
 snapshot[`/help 4`] = `
 {
   data: {
@@ -260,7 +260,7 @@ snapshot[`/help 4`] = `
         },
         description: "- \`/gacha\` \`/w\`: _start a new gacha pull_
 - \`/q\`: _start a gacha pull but with no animations_
-- \`/pull\`: _pull a character from a specific rank_
+- \`/pull\` \`/guaranteed\`: _pull a character with a guaranteed rank_
 
 - \`/now\` \`/vote\` \`/daily\` \`/tu\`: _check what you can do right now_
 - \`/search\` \`/anime\` \`/manga\`: _search for specific media_
@@ -284,6 +284,9 @@ snapshot[`/help 4`] = `
 
 - \`/trade\` \`/offer\`: _trade characters with another user_
 - \`/give\` \`/gift\`: _give characters to another user_
+
+- \`/buy random\` \`/shop random\`: _use votes to buy random pulls_
+- \`/buy guaranteed\` \`/shop guaranteed\`: _use votes to buy pulls with a guaranteed rank_
 
 - \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
         type: "rich",

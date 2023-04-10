@@ -229,6 +229,11 @@ export namespace Schema {
     }
     | {
       ok: false;
+      error: 'INSUFFICIENT_VOTES';
+      user: User;
+    }
+    | {
+      ok: false;
       error: 'PACK_NOT_INSTALLED';
     }
     | {

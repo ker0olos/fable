@@ -57,11 +57,11 @@ Fable is actively developed with new game modes and features frequently.
 
 ### Essential Commands
 
-- **`/gacha`, `/w`**: _start a new gacha pull_
+- **`/help`, `/tuto`**: _to learn more information and commands_
 - **`/now`, `/tu`**: _check what you can do right now_
+- **`/gacha`, `/w`**: _start a new gacha pull_
 - **`/search`, `/anime`, `/manga`**: _to search for specific media_
 - **`/character`, `/im`**: _to search for a specific character_
-- **`/help`, `/tuto`**: _to learn more information and commands_
 
 ### Get Involved
 
@@ -84,9 +84,21 @@ Fable is actively developed with new game modes and features frequently.
 <details><summary>The bot didn't appear in my server!</summary>
 <p>
 
-It won't, new bots don't appear as users. Just go ahead and try using the "/"
-commands. If you want to check the bot settings go to server settings then
+**It won't**. New bots don't appear as users. Just go ahead and try using the
+"/" commands. If you want to check the bot settings go to server settings then
 "Integrations" (PC client only).
+
+</p>
+</details>
+
+<details><summary>Can I use prefixes like `$`?</summary>
+<p>
+
+**No**. Fable was built from the ground up to only support slash commands,
+prefixes are an entirely different thing that requires the bot to manually
+monitor all incoming messages in a server. We won't add prefixes to Fable, but
+you can go tell discord to add custom prefixes to "slash" commands instead of
+"/" for all bots.
 
 </p>
 </details>
@@ -109,18 +121,6 @@ Currently, it's only possible through editing JSON files, we recommend that you
 check
 [fable-community/example](https://github.com/fable-community/fable-pack-example),
 it includes most of the info you need.
-
-</p>
-</details>
-
-<details><summary>Can I use prefixes like `$`?</summary>
-<p>
-
-<strong>No</strong>. Fable was built from the ground up to only support slash
-commands, prefixes are an entirely different thing that requires the bot to
-manually monitor all incoming messages in a server. We won't add prefixes to
-Fable, but you can go tell discord to add custom prefixes to "slash" commands
-instead of "/" for all bots.
 
 </p>
 </details>

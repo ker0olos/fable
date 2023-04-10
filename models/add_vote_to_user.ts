@@ -69,7 +69,11 @@ export function addGuarantee(
                 user: fql.Ref(updatedUser),
               }) as unknown as ResponseExpr,
           ),
-          { ok: false, error: 'INSUFFICIENT_VOTES' },
+          {
+            ok: false,
+            error: 'INSUFFICIENT_VOTES',
+            user: fql.Ref(user),
+          },
         ),
       ),
   );
@@ -105,7 +109,11 @@ export function addPulls(
           inventory: fql.Ref(updatedInventory),
         }) as unknown as ResponseExpr,
     ),
-    { ok: false, error: 'INSUFFICIENT_VOTES' },
+    {
+      ok: false,
+      error: 'INSUFFICIENT_VOTES',
+      user: fql.Ref(user),
+    },
   );
 }
 

@@ -26,6 +26,16 @@ snapshot[`model 1`] = `
                                             object: {
                                               error: "INSUFFICIENT_VOTES",
                                               ok: false,
+                                              user: Expr {
+                                                raw: {
+                                                  from: Expr {
+                                                    raw: {
+                                                      var: "user",
+                                                    },
+                                                  },
+                                                  select: "ref",
+                                                },
+                                              },
                                             },
                                           },
                                         },
@@ -400,6 +410,16 @@ snapshot[`model 1`] = `
                                             object: {
                                               error: "INSUFFICIENT_VOTES",
                                               ok: false,
+                                              user: Expr {
+                                                raw: {
+                                                  from: Expr {
+                                                    raw: {
+                                                      var: "user",
+                                                    },
+                                                  },
+                                                  select: "ref",
+                                                },
+                                              },
                                             },
                                           },
                                         },
@@ -775,6 +795,16 @@ snapshot[`model 2`] = `
                                     object: {
                                       error: "INSUFFICIENT_VOTES",
                                       ok: false,
+                                      user: Expr {
+                                        raw: {
+                                          from: Expr {
+                                            raw: {
+                                              var: "user",
+                                            },
+                                          },
+                                          select: "ref",
+                                        },
+                                      },
                                     },
                                   },
                                 },
@@ -1758,6 +1788,16 @@ snapshot[`model 2`] = `
                                     object: {
                                       error: "INSUFFICIENT_VOTES",
                                       ok: false,
+                                      user: Expr {
+                                        raw: {
+                                          from: Expr {
+                                            raw: {
+                                              var: "user",
+                                            },
+                                          },
+                                          select: "ref",
+                                        },
+                                      },
                                     },
                                   },
                                 },

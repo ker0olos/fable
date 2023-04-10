@@ -1,3 +1,5 @@
+// deno-lint-ignore-file camelcase
+
 import { load as Dotenv } from 'https://deno.land/std@0.179.0/dotenv/mod.ts';
 
 import { green } from 'https://deno.land/std@0.179.0/fmt/colors.ts';
@@ -61,6 +63,8 @@ type Option = {
   choices?: Choice[];
   optional?: boolean;
   aliases?: (string | { name: string; desc: string })[];
+  min_value?: number;
+  max_value?: number;
 };
 
 type Command = {
@@ -396,7 +400,8 @@ export const commands = [
   }),
   ...Command({
     name: 'pull',
-    description: 'Pull a character from a specific rank',
+    description: 'Pull a character with a guaranteed rank',
+    aliases: ['guaranteed'],
     options: [
       Option({
         name: 'stars',
@@ -449,6 +454,56 @@ export const commands = [
         name: 'new_nick',
         description: 'New nickname',
         type: Type.STRING,
+      }),
+    ],
+  }),
+  // shop
+  ...Command({
+    name: 'buy',
+    description: 'vote shop commands',
+    aliases: ['shop'],
+    options: [
+      Option({
+        name: 'random',
+        description: 'Buy extra random pulls',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            min_value: 1,
+            max_value: 99,
+            name: 'amount',
+            description: 'The amount you want to buy',
+            type: Type.INTEGER,
+          }),
+        ],
+      }),
+      Option({
+        name: 'guaranteed',
+        description: 'Buy guaranteed pulls',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'stars',
+            description: 'The star rating',
+            type: Type.INTEGER,
+            choices: [
+              {
+                name: '5',
+                value: 5,
+              },
+              {
+                name: '4',
+                value: 4,
+              },
+              {
+                name: '3',
+                value: 3,
+              },
+            ],
+          }),
+        ],
       }),
     ],
   }),

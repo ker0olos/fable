@@ -100,7 +100,7 @@ function pages(
           .setDescription([
             '- `/gacha` `/w`: _start a new gacha pull_',
             '- `/q`: _start a gacha pull but with no animations_',
-            '- `/pull`: _pull a character from a specific rank_',
+            '- `/pull` `/guaranteed`: _pull a character with a guaranteed rank_',
             '',
             '- `/now` `/vote` `/daily` `/tu`: _check what you can do right now_',
             '- `/search` `/anime` `/manga`: _search for specific media_',
@@ -124,6 +124,9 @@ function pages(
             '',
             '- `/trade` `/offer`: _trade characters with another user_',
             '- `/give` `/gift`: _give characters to another user_',
+            '',
+            '- `/buy random` `/shop random`: _use votes to buy random pulls_',
+            '- `/buy guaranteed` `/shop guaranteed`: _use votes to buy pulls with a guaranteed rank_',
             '',
             '- `/anilist next_episode`: _find when the next episode of an anime is airing_',
           ].join('\n')),

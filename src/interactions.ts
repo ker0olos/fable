@@ -8,6 +8,7 @@ import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
 import trade from './trade.ts';
+import shop from './shop.ts';
 import help from './help.ts';
 
 import demo from './demo.tsx';
@@ -408,6 +409,7 @@ export const handler = async (r: Request) => {
             }))
               .send();
           }
+          case 'guaranteed':
           case 'gacha':
           case 'pull':
           case 'w':
@@ -443,6 +445,26 @@ export const handler = async (r: Request) => {
                 ? name.substring(idPrefix.length)
                 : undefined,
             }).send();
+          }
+
+          case 'shop':
+          case 'buy': {
+            //deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'guaranteed':
+                return shop.guaranteed({
+                  userId: member.user.id,
+                  stars: options['stars'] as number,
+                }).send();
+              case 'random':
+                return shop.random({
+                  userId: member.user.id,
+                  amount: options['amount'] as number,
+                }).send();
+              default:
+                break;
+            }
+            break;
           }
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion
@@ -678,6 +700,40 @@ export const handler = async (r: Request) => {
             return help.pages({ userId: member.user.id, index })
               .setType(discord.MessageType.Update)
               .send();
+          }
+          case 'buy': {
+            // deno-lint-ignore no-non-null-assertion
+            const item = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![1];
+
+            // deno-lint-ignore no-non-null-assertion
+            const value = parseInt(customValues![2]);
+
+            if (userId === member.user.id) {
+              switch (item) {
+                case 'guaranteed':
+                  return (await shop.confirmGuaranteed({
+                    userId: member.user.id,
+                    stars: value,
+                  }))
+                    .setType(discord.MessageType.Update)
+                    .send();
+                case 'random':
+                  return (await shop.confirmRandom({
+                    guildId,
+                    userId: member.user.id,
+                    amount: value,
+                  }))
+                    .setType(discord.MessageType.Update)
+                    .send();
+                default:
+                  break;
+              }
+            }
+
+            throw new NoPermissionError();
           }
           case 'give': {
             // deno-lint-ignore no-non-null-assertion
