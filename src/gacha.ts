@@ -468,7 +468,14 @@ function start(
             new discord.Embed().setDescription(
               `You don\`t have any ${guarantee}${discord.emotes.smolStar}pulls`,
             ),
-          ).patch(token);
+          )
+          .addComponents([
+            new discord.Component()
+              // deno-lint-ignore no-non-null-assertion
+              .setId('buy', 'bguaranteed', userId!, `${guarantee}`)
+              .setLabel(`/buy guaranteed ${guarantee}`),
+          ])
+          .patch(token);
       }
 
       if (err instanceof PoolError) {

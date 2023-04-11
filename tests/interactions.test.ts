@@ -8700,6 +8700,7 @@ Deno.test('/gacha', async (test) => {
     try {
       const message = gacha.start({
         token: 'test_token',
+        userId: 'user_id',
         guildId: 'guild_id',
         guarantee: 5,
       });
@@ -8734,6 +8735,16 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'buy=bguaranteed=user_id=5',
+              label: '/buy guaranteed 5',
+              style: 2,
+              type: 2,
+            }],
+          }],
           embeds: [
             {
               type: 'rich',
@@ -8741,8 +8752,6 @@ Deno.test('/gacha', async (test) => {
                 'You don`t have any 5<:smol_star:1088427421096751224>pulls',
             },
           ],
-          components: [],
-          attachments: [],
         },
       );
     } finally {

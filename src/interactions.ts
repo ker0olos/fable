@@ -713,6 +713,13 @@ export const handler = async (r: Request) => {
 
             if (userId === member.user.id) {
               switch (item) {
+                case 'bguaranteed':
+                  return shop.guaranteed({
+                    userId: member.user.id,
+                    stars: value,
+                  })
+                    .setType(discord.MessageType.Update)
+                    .send();
                 case 'guaranteed':
                   return (await shop.confirmGuaranteed({
                     userId: member.user.id,

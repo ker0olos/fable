@@ -108,16 +108,18 @@ async function topgg(r: Request): Promise<Response> {
 
       new discord.Message()
         .setContent(
-          `Thanks for voting, <@${data.user}>.\n\n__You can't use your votes right now__, but we highly recommend collecting them, they will be extremely useful and overpowered.\n\n- You will be able to use votes to buy guaranteed 3, 4 or even 5 star pulls.`,
-        ).followup(token);
+          `Thanks for voting, <@${data.user}>. Use \`/buy random\` and \`/buy guaranteed\` to spent your votes.`,
+        )
+        .followup(token);
 
       await message.patch(token);
-    })().catch(console.error);
+    })()
+      .catch(console.error);
   }
 
-  return utils.json(
-    { message: 'OK' },
-  );
+  return utils.json({
+    message: 'OK',
+  });
 }
 
 const webhooks = {
