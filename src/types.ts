@@ -122,17 +122,17 @@ export type DisaggregatedCharacter = Modify<Character, {
 
 export type Pool = {
   [key: string]: {
-    'ALL': { id: string }[];
-    [CharacterRole.Main]: { id: string }[];
-    [CharacterRole.Supporting]: { id: string }[];
-    [CharacterRole.Background]: { id: string }[];
+    'ALL': { id: string; rating: number }[];
+    [CharacterRole.Main]: { id: string; rating: number }[];
+    [CharacterRole.Supporting]: { id: string; rating: number }[];
+    [CharacterRole.Background]: { id: string; rating: number }[];
   };
 };
 
 export type PoolInfo = {
   pool: number;
-  popularityChance: number;
-  popularityGreater: number;
+  popularityChance?: number;
+  popularityGreater?: number;
   popularityLesser?: number;
   roleChance?: number;
   role?: CharacterRole;
@@ -184,27 +184,29 @@ export namespace Schema {
     nickname?: string;
     image?: string;
   };
+  export type User = {
+    lastVote?: string;
+    totalVotes?: number;
+    availableVotes?: number;
+    guarantees?: number[];
+    badges: {
+      name: string;
+      description: string;
+      emote: string;
+    }[];
+  };
   export type Inventory = {
     availablePulls: number;
     rechargeTimestamp?: string;
     lastPull?: string;
     characters: Character[];
+    user: User;
     party?: {
       member1?: Character;
       member2?: Character;
       member3?: Character;
       member4?: Character;
       member5?: Character;
-    };
-    user: {
-      lastVote?: string;
-      totalVotes?: number;
-      availableVotes?: number;
-      badges: {
-        name: string;
-        description: string;
-        emote: string;
-      }[];
     };
   };
   export type Mutation =
@@ -219,6 +221,16 @@ export namespace Schema {
     | {
       ok: false;
       error: 'PACK_NOT_FOUND';
+    }
+    | {
+      ok: false;
+      error: 'NO_GUARANTEES';
+      user: User;
+    }
+    | {
+      ok: false;
+      error: 'INSUFFICIENT_VOTES';
+      user: User;
     }
     | {
       ok: false;
@@ -245,6 +257,7 @@ export namespace Schema {
     }
     | {
       ok: true;
+      user: User;
       inventory: Inventory;
       character: Character;
       manifest: Manifest;

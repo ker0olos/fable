@@ -39,6 +39,7 @@ async function now({
         user {
           lastVote
           availableVotes
+          guarantees
         }
       }
     }
@@ -63,22 +64,25 @@ async function now({
   const recharge = utils.rechargeTimestamp(rechargeTimestamp);
   const voting = utils.votingTimestamp(user.lastVote);
 
-  message.addAttachment({
-    arrayBuffer: await utils.text(availablePulls),
-    filename: 'pulls.png',
-    type: 'image/png',
-  });
+  const guarantees = Array.from(new Set(user.guarantees ?? []))
+    .sort((a, b) => b - a);
 
   message.addEmbed(
     new discord.Embed()
-      .setImage({ url: `attachment://pulls.png` })
+      .setTitle(`**${availablePulls}**`)
+      .setDescription(`${
+        guarantees
+          .map((r) => `${r}${discord.emotes.smolStar}`)
+          .join(' ')
+      }`)
       .setFooter({ text: 'Available Pulls' }),
   );
 
   if (user.availableVotes) {
     message.addEmbed(
       new discord.Embed()
-        .setFooter({ text: `${user.availableVotes} Available Votes` }),
+        .setTitle(`**${user.availableVotes}**`)
+        .setFooter({ text: `Available Votes` }),
     );
   }
 
@@ -108,6 +112,15 @@ async function now({
       new discord.Component()
         .setId('gacha', userId)
         .setLabel('/gacha'),
+    ]);
+  }
+
+  if (guarantees.length) {
+    message.addComponents([
+      // `/pull` shortcut
+      new discord.Component()
+        .setId('pull', userId, `${guarantees[0]}`)
+        .setLabel(`/pull ${guarantees[0]}`),
     ]);
   }
 

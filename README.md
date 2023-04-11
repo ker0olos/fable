@@ -6,7 +6,7 @@
 
 <h1 align="center">
 
-[![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
+[![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304/vote)
 [![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
 
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
@@ -57,11 +57,11 @@ Fable is actively developed with new game modes and features frequently.
 
 ### Essential Commands
 
-- **`/gacha`, `/w`**: _start a new gacha pull_
+- **`/help`, `/tuto`**: _to learn more information and commands_
 - **`/now`, `/tu`**: _check what you can do right now_
+- **`/gacha`, `/w`**: _start a new gacha pull_
 - **`/search`, `/anime`, `/manga`**: _to search for specific media_
 - **`/character`, `/im`**: _to search for a specific character_
-- **`/help`, `/tuto`**: _to learn more information and commands_
 
 ### Get Involved
 
@@ -84,9 +84,21 @@ Fable is actively developed with new game modes and features frequently.
 <details><summary>The bot didn't appear in my server!</summary>
 <p>
 
-It won't, new bots don't appear as users. Just go ahead and try using the "/"
-commands. If you want to check the bot settings go to server settings then
+**It won't**. New bots don't appear as users. Just go ahead and try using the
+"/" commands. If you want to check the bot settings go to server settings then
 "Integrations" (PC client only).
+
+</p>
+</details>
+
+<details><summary>Can I use prefixes like `$`?</summary>
+<p>
+
+**No**. Fable was built from the ground up to only support slash commands,
+prefixes are an entirely different thing that requires the bot to manually
+monitor all incoming messages in a server. We won't add prefixes to Fable, but
+you can go tell discord to add custom prefixes to "slash" commands instead of
+"/" for all bots.
 
 </p>
 </details>
@@ -96,7 +108,8 @@ commands. If you want to check the bot settings go to server settings then
 
 We plan to have a Marketplace command where you can browse and install popular
 packs, but as of right now you'll need to know the pack's github url and run
-`/packs install github: https://github.com/username/packname`
+`/packs install github: https://github.com/username/packname` But we also have a
+channel in our discord where people share the packs they made.
 
 </p>
 </details>
@@ -108,18 +121,6 @@ Currently, it's only possible through editing JSON files, we recommend that you
 check
 [fable-community/example](https://github.com/fable-community/fable-pack-example),
 it includes most of the info you need.
-
-</p>
-</details>
-
-<details><summary>Can I use prefixes like `$`?</summary>
-<p>
-
-<strong>No</strong>. Fable was built from the ground up to only support slash
-commands, prefixes are an entirely different thing that requires the bot to
-manually monitor all incoming messages in a server. We won't add prefixes to
-Fable, but you can go tell discord to add custom prefixes to "slash" commands
-instead of "/" for all bots.
 
 </p>
 </details>

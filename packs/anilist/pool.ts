@@ -6,6 +6,8 @@ import gacha from '../../src/gacha.ts';
 
 import { gql, request } from '../../src/graphql.ts';
 
+import Rating from '../../src/rating.ts';
+
 import { CharacterRole } from '../../src/types.ts';
 
 import { AniListCharacter, AniListMedia, Pool } from './types.ts';
@@ -62,6 +64,24 @@ async function queryMedia(
           isAdult: false,
         ) {
           id
+          characters(page: 1, perPage: 25) {
+            pageInfo {
+              hasNextPage
+            }
+            nodes {
+              id # character id
+              media(sort: POPULARITY_DESC) {
+                edges {
+                  characterRole # actual role
+                  # actual media
+                  node { 
+                    id
+                    popularity
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -159,20 +179,22 @@ for (const range of ranges) {
         BACKGROUND: characters.BACKGROUND.length,
       };
 
-      for (const { id } of media) {
-        let charactersPage = 1;
-
+      for (const { id, characters: firstPage } of media) {
         // exclude specific media from the pool
         if (excludeList.includes(`${id}`)) {
           continue;
         }
+        let charactersPage = 1;
 
         while (true) {
           try {
-            const { nodes, pageInfo } = await queryCharacters({
-              id,
-              page: charactersPage,
-            });
+            const { nodes, pageInfo } = charactersPage === 1
+              // deno-lint-ignore no-non-null-assertion
+              ? { nodes: firstPage!.nodes!, pageInfo: firstPage!.pageInfo }
+              : await queryCharacters({
+                id,
+                page: charactersPage,
+              });
 
             nodes.forEach((character) => {
               const id = `anilist:${character.id}`;
@@ -195,14 +217,18 @@ for (const range of ranges) {
                 }
               });
 
+              const rating = new Rating({
+                role: primely?.characterRole,
+                popularity: primely?.node.popularity,
+              }).stars;
+
               if (
                 primely?.node.popularity &&
                 primely.node.popularity >= range[0] &&
                 (isNaN(range[1]) || primely.node.popularity <= range[1])
               ) {
-                characters.ALL.push({ id });
-
-                characters[primely.characterRole].push({ id });
+                characters.ALL.push({ id, rating });
+                characters[primely.characterRole].push({ id, rating });
               }
             });
 
@@ -256,11 +282,6 @@ for (const range of ranges) {
   console.log(`${key}: finished`);
 
   if (characters.ALL.length > 0) {
-    utils.shuffle(characters.ALL);
-    utils.shuffle(characters.MAIN);
-    utils.shuffle(characters.SUPPORTING);
-    utils.shuffle(characters.BACKGROUND);
-
     cache[JSON.stringify(range)] = characters;
   }
 }

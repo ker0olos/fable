@@ -942,6 +942,10 @@ snapshot[`model 1`] = `
                                                             },
                                                           ],
                                                         },
+                                                        guarantees: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
@@ -2433,6 +2437,10 @@ snapshot[`model 1`] = `
                                                             },
                                                           ],
                                                         },
+                                                        guarantees: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
@@ -3714,6 +3722,10 @@ snapshot[`model 2`] = `
                                                             },
                                                           ],
                                                         },
+                                                        guarantees: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
@@ -4990,6 +5002,10 @@ snapshot[`model 2`] = `
                                                             },
                                                           ],
                                                         },
+                                                        guarantees: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
@@ -5878,6 +5894,10 @@ snapshot[`model 3`] = `
                                                             },
                                                           ],
                                                         },
+                                                        guarantees: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
@@ -6758,6 +6778,10 @@ snapshot[`model 3`] = `
                                                                 },
                                                               },
                                                             },
+                                                          ],
+                                                        },
+                                                        guarantees: Expr {
+                                                          raw: [
                                                           ],
                                                         },
                                                         id: Expr {

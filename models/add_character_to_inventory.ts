@@ -1,4 +1,5 @@
 import {
+  BooleanExpr,
   Client,
   fql,
   InstanceExpr,
@@ -17,6 +18,7 @@ import {
   getUser,
   Inventory,
   rechargePulls,
+  User,
 } from './get_user_inventory.ts';
 
 export interface Character {
@@ -35,8 +37,9 @@ export interface History {
   gacha?: {
     by: RefExpr;
     pool: NumberExpr;
-    popularityChance: NumberExpr;
-    popularityGreater: NumberExpr;
+    guaranteed: NumberExpr;
+    popularityChance?: NumberExpr;
+    popularityGreater?: NumberExpr;
     popularityLesser?: NumberExpr;
     roleChance?: NumberExpr;
     role?: StringExpr;
@@ -48,6 +51,7 @@ export function addCharacter(
     rating,
     mediaId,
     characterId,
+    guaranteed,
     inventory,
     instance,
     user,
@@ -61,12 +65,13 @@ export function addCharacter(
     rating: NumberExpr;
     mediaId: StringExpr;
     characterId: StringExpr;
+    guaranteed: BooleanExpr;
     inventory: InventoryExpr;
     instance: InstanceExpr;
     user: UserExpr;
     pool: NumberExpr;
-    popularityChance: NumberExpr;
-    popularityGreater: NumberExpr;
+    popularityChance?: NumberExpr;
+    popularityGreater?: NumberExpr;
     popularityLesser?: NumberExpr;
     roleChance?: NumberExpr;
     role?: StringExpr;
@@ -89,52 +94,83 @@ export function addCharacter(
       fql.If(
         fql.IsNonEmpty(match),
         { ok: false, error: 'CHARACTER_EXISTS' },
-        fql.Let(
-          {
-            createdCharacter: fql.Create<Character>('character', {
+        fql.If(
+          fql.Or(
+            fql.Equals(guaranteed, false),
+            fql.Includes(
               rating,
-              mediaId,
-              id: characterId,
-              inventory: fql.Ref(inventory),
-              instance: fql.Ref(instance),
-              user: fql.Ref(user),
-              history: [
-                {
-                  gacha: {
-                    by: fql.Ref(user),
-                    pool,
-                    popularityChance,
-                    popularityGreater,
-                    popularityLesser,
-                    roleChance,
-                    role,
+              fql.Select(['data', 'guarantees'], user, []),
+            ),
+          ),
+          fql.Let(
+            {
+              createdCharacter: fql.Create<Character>('character', {
+                rating,
+                mediaId,
+                id: characterId,
+                inventory: fql.Ref(inventory),
+                instance: fql.Ref(instance),
+                user: fql.Ref(user),
+                history: [
+                  {
+                    gacha: {
+                      pool,
+                      by: fql.Ref(user),
+                      guaranteed: fql.If(
+                        fql.Equals(guaranteed, true),
+                        rating,
+                        fql.Null(),
+                      ),
+                      popularityChance,
+                      popularityGreater,
+                      popularityLesser,
+                      roleChance,
+                      role,
+                    },
                   },
-                },
-              ],
+                ],
+              }),
+
+              // update the user
+              updatedUser: fql.If(
+                fql.Equals(guaranteed, true),
+                fql.Update<User>(fql.Ref(user), {
+                  guarantees: fql.Remove(
+                    rating,
+                    fql.Select(['data', 'guarantees'], user),
+                  ),
+                }),
+                user,
+              ),
+              // update the inventory
+              updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
+                lastPull: fql.Now(),
+                rechargeTimestamp: fql.Select(
+                  ['data', 'rechargeTimestamp'],
+                  inventory,
+                  fql.Now(),
+                ),
+                availablePulls: fql.Subtract(
+                  fql.Select(['data', 'availablePulls'], inventory),
+                  1,
+                ),
+                characters: fql.Append(
+                  fql.Ref(fql.Var('createdCharacter')),
+                  fql.Select(['data', 'characters'], inventory, []),
+                ),
+              }),
+            },
+            ({ updatedInventory, createdCharacter }) => ({
+              ok: true,
+              inventory: fql.Ref(updatedInventory),
+              character: fql.Ref(createdCharacter),
             }),
-            // update the inventory
-            updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
-              lastPull: fql.Now(),
-              rechargeTimestamp: fql.Select(
-                ['data', 'rechargeTimestamp'],
-                inventory,
-                fql.Now(),
-              ),
-              availablePulls: fql.Subtract(
-                fql.Select(['data', 'availablePulls'], inventory),
-                1,
-              ),
-              characters: fql.Append(
-                fql.Ref(fql.Var('createdCharacter')),
-                fql.Select(['data', 'characters'], inventory),
-              ),
-            }),
+          ),
+          {
+            ok: false,
+            error: 'NO_GUARANTEES',
+            user: fql.Ref(user),
           },
-          ({ createdCharacter }) => ({
-            ok: true,
-            inventory: fql.Ref(inventory),
-            character: fql.Ref(createdCharacter),
-          }),
         ),
       ),
     ));
@@ -154,6 +190,7 @@ export default function (client: Client): {
           guildId: string,
           characterId: string,
           mediaId: string,
+          guaranteed: boolean,
           rating: number,
           pool: number,
           popularityChance: number,
@@ -180,6 +217,7 @@ export default function (client: Client): {
                 rating,
                 mediaId,
                 characterId,
+                guaranteed,
                 inventory,
                 instance,
                 user,

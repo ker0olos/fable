@@ -7,7 +7,6 @@ import {
 } from 'https://deno.land/std@0.179.0/testing/asserts.ts';
 
 import {
-  assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
@@ -29,10 +28,9 @@ import party from '../src/party.ts';
 import search from '../src/search.ts';
 import user from '../src/user.ts';
 import trade from '../src/trade.ts';
+import shop from '../src/shop.ts';
 
 import github from '../src/github.ts';
-
-import utils from '../src/utils.ts';
 
 import {
   Character,
@@ -48,7 +46,7 @@ import {
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
-import { NonFetalError, NoPullsError } from '../src/errors.ts';
+import { NonFetalError, NoPullsError, PoolError } from '../src/errors.ts';
 
 Deno.test('/media', async (test) => {
   await test.step('normal search', async () => {
@@ -8044,6 +8042,208 @@ Deno.test('/gacha', async (test) => {
     }
   });
 
+  await test.step('guarantees', async () => {
+    const media: Media = {
+      id: '1',
+      packId: 'pack-id',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      popularity: 100,
+      title: {
+        english: 'title',
+      },
+      images: [{
+        url: 'media_image_url',
+      }],
+    };
+
+    const character: Character = {
+      id: '2',
+      packId: 'pack-id-2',
+      name: {
+        english: 'name',
+      },
+      images: [{
+        url: 'character_image_url',
+      }],
+      media: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: media,
+        }],
+      },
+    };
+
+    const pull: Pull = {
+      media,
+      character,
+      popularityChance: 0,
+      popularityGreater: 0,
+      popularityLesser: 100,
+      guarantees: [3, 4, 3],
+      rating: new Rating({ popularity: 100 }),
+      pool: 1,
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const pullStub = stub(
+      gacha,
+      'rngPull',
+      returnsNext([Promise.resolve(pull)]),
+    );
+
+    config.gacha = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = gacha.start({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        guarantee: 5,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            title: 'title',
+            image: {
+              url: 'http://localhost:8000/external/media_image_url?size=medium',
+            },
+          }],
+          components: [],
+          attachments: [],
+        },
+      );
+
+      await timeStub.tickAsync(4000);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/stars/1.gif',
+            },
+          }],
+          components: [],
+          attachments: [],
+        },
+      );
+
+      await timeStub.tickAsync(6000);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          embeds: [{
+            type: 'rich',
+            description: new Rating({ popularity: 100 }).emotes,
+            fields: [{
+              name: 'title',
+              value: '**name**',
+            }],
+            image: {
+              url: 'http://localhost:8000/external/character_image_url',
+            },
+          }],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'pull=user_id=4',
+                label: '/pull 4',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'character=pack-id-2:2=1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.gacha;
+
+      timeStub.restore();
+      pullStub.restore();
+      fetchStub.restore();
+    }
+  });
+
   await test.step('mention', async () => {
     const media: Media = {
       id: '1',
@@ -8369,8 +8569,8 @@ Deno.test('/gacha', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'pull=user_id',
-                label: '/pull',
+                custom_id: 'q=user_id',
+                label: '/q',
                 style: 2,
                 type: 2,
               },
@@ -8459,6 +8659,256 @@ Deno.test('/gacha', async (test) => {
               description: 'You don\'t have any more pulls!',
             },
             { type: 'rich', description: '_+1 pull <t:1675732989:R>_' },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.gacha;
+
+      timeStub.restore();
+      pullStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('no guaranteed', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const pullStub = stub(
+      gacha,
+      'rngPull',
+      // deno-lint-ignore require-await
+      async () => {
+        throw new Error('403');
+      },
+    );
+
+    config.gacha = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = gacha.start({
+        token: 'test_token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        guarantee: 5,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'buy=bguaranteed=user_id=5',
+              label: '/buy guaranteed 5',
+              style: 2,
+              type: 2,
+            }],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You don`t have any 5<:smol_star:1088427421096751224>pulls',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.gacha;
+
+      timeStub.restore();
+      pullStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('no more characters', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const pullStub = stub(
+      gacha,
+      'rngPull',
+      // deno-lint-ignore require-await
+      async () => {
+        throw new PoolError({} as any);
+      },
+    );
+
+    config.gacha = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = gacha.start({
+        token: 'test_token',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'There are no more characters left',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.gacha;
+
+      timeStub.restore();
+      pullStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('no more guaranteed characters', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const pullStub = stub(
+      gacha,
+      'rngPull',
+      // deno-lint-ignore require-await
+      async () => {
+        throw new PoolError({} as any);
+      },
+    );
+
+    config.gacha = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = gacha.start({
+        token: 'test_token',
+        guildId: 'guild_id',
+        guarantee: 5,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'There are no more 5<:smol_star:1088427421096751224>characters left',
+            },
           ],
           components: [],
           attachments: [],
@@ -11717,12 +12167,6 @@ Deno.test('/help', async (test) => {
 
 Deno.test('/now', async (test) => {
   await test.step('with pulls', async () => {
-    const textStub = stub(
-      utils,
-      'text',
-      () => Promise.resolve(new Uint8Array()),
-    );
-
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -11751,30 +12195,19 @@ Deno.test('/now', async (test) => {
       });
 
       assertSpyCalls(fetchStub, 1);
-      assertSpyCalls(textStub, 1);
-
-      assertSpyCall(textStub, 0, {
-        args: [5],
-      });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [
-            {
-              filename: 'pulls.png',
-              id: '0',
-            },
-          ],
+          attachments: [],
           embeds: [
             {
+              type: 'rich',
+              title: '**5**',
               footer: {
                 text: 'Available Pulls',
               },
-              image: {
-                url: 'attachment://pulls.png',
-              },
-              type: 'rich',
+              description: undefined,
             },
           ],
           components: [
@@ -11802,19 +12235,12 @@ Deno.test('/now', async (test) => {
     } finally {
       delete config.topggCipher;
 
-      textStub.restore();
       fetchStub.restore();
     }
   });
 
   await test.step('no pulls', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
-
-    const textStub = stub(
-      utils,
-      'text',
-      () => Promise.resolve(new Uint8Array()),
-    );
 
     const fetchStub = stub(
       globalThis,
@@ -11844,30 +12270,19 @@ Deno.test('/now', async (test) => {
       });
 
       assertSpyCalls(fetchStub, 1);
-      assertSpyCalls(textStub, 1);
-
-      assertSpyCall(textStub, 0, {
-        args: [0],
-      });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [
-            {
-              filename: 'pulls.png',
-              id: '0',
-            },
-          ],
+          attachments: [],
           embeds: [
             {
+              type: 'rich',
+              title: '**0**',
               footer: {
                 text: 'Available Pulls',
               },
-              image: {
-                url: 'attachment://pulls.png',
-              },
-              type: 'rich',
+              description: undefined,
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
@@ -11886,19 +12301,12 @@ Deno.test('/now', async (test) => {
     } finally {
       delete config.topggCipher;
 
-      textStub.restore();
       fetchStub.restore();
     }
   });
 
   await test.step('no pulls with mention', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
-
-    const textStub = stub(
-      utils,
-      'text',
-      () => Promise.resolve(new Uint8Array()),
-    );
 
     const fetchStub = stub(
       globalThis,
@@ -11929,32 +12337,21 @@ Deno.test('/now', async (test) => {
       });
 
       assertSpyCalls(fetchStub, 1);
-      assertSpyCalls(textStub, 1);
-
-      assertSpyCall(textStub, 0, {
-        args: [0],
-      });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
           content: '<@user_id>',
           allowed_mentions: { parse: [] },
-          attachments: [
-            {
-              filename: 'pulls.png',
-              id: '0',
-            },
-          ],
+          attachments: [],
           embeds: [
             {
+              type: 'rich',
+              title: '**0**',
               footer: {
                 text: 'Available Pulls',
               },
-              image: {
-                url: 'attachment://pulls.png',
-              },
-              type: 'rich',
+              description: undefined,
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
@@ -11973,19 +12370,12 @@ Deno.test('/now', async (test) => {
     } finally {
       delete config.topggCipher;
 
-      textStub.restore();
       fetchStub.restore();
     }
   });
 
   await test.step('with votes', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
-
-    const textStub = stub(
-      utils,
-      'text',
-      () => Promise.resolve(new Uint8Array()),
-    );
 
     const fetchStub = stub(
       globalThis,
@@ -12018,35 +12408,25 @@ Deno.test('/now', async (test) => {
       });
 
       assertSpyCalls(fetchStub, 1);
-      assertSpyCalls(textStub, 1);
-
-      assertSpyCall(textStub, 0, {
-        args: [0],
-      });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [
-            {
-              filename: 'pulls.png',
-              id: '0',
-            },
-          ],
+          attachments: [],
           embeds: [
             {
+              type: 'rich',
+              title: '**0**',
               footer: {
                 text: 'Available Pulls',
               },
-              image: {
-                url: 'attachment://pulls.png',
-              },
-              type: 'rich',
+              description: undefined,
             },
             {
               type: 'rich',
+              title: '**5**',
               footer: {
-                text: '5 Available Votes',
+                text: 'Available Votes',
               },
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
@@ -12066,7 +12446,98 @@ Deno.test('/now', async (test) => {
     } finally {
       delete config.topggCipher;
 
-      textStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('with guarantees', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                availablePulls: 4,
+                rechargeTimestamp: time.toISOString(),
+                user: {
+                  availableVotes: 5,
+                  lastVote: time.toISOString(),
+                  guarantees: [5, 5, 4, 4, 3],
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.topggCipher = 12;
+
+    try {
+      const message = await user.now({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: '**4**',
+              footer: {
+                text: 'Available Pulls',
+              },
+              description:
+                '5<:smol_star:1088427421096751224> 4<:smol_star:1088427421096751224> 3<:smol_star:1088427421096751224>',
+            },
+            {
+              type: 'rich',
+              title: '**5**',
+              footer: {
+                text: 'Available Votes',
+              },
+            },
+            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                style: 2,
+                type: 2,
+                custom_id: 'gacha=user_id',
+                label: '/gacha',
+              },
+              {
+                style: 2,
+                type: 2,
+                custom_id: 'pull=user_id=5',
+                label: '/pull 5',
+              },
+              {
+                label: 'Vote',
+                style: 5,
+                type: 2,
+                url:
+                  'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
+              },
+            ],
+          }],
+        },
+      });
+    } finally {
+      delete config.topggCipher;
+
       fetchStub.restore();
     }
   });
@@ -12075,12 +12546,6 @@ Deno.test('/now', async (test) => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const timeStub = new FakeTime(time);
-
-    const textStub = stub(
-      utils,
-      'text',
-      () => Promise.resolve(new Uint8Array()),
-    );
 
     const fetchStub = stub(
       globalThis,
@@ -12113,35 +12578,25 @@ Deno.test('/now', async (test) => {
       });
 
       assertSpyCalls(fetchStub, 1);
-      assertSpyCalls(textStub, 1);
-
-      assertSpyCall(textStub, 0, {
-        args: [0],
-      });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          attachments: [
-            {
-              filename: 'pulls.png',
-              id: '0',
-            },
-          ],
+          attachments: [],
           embeds: [
             {
               type: 'rich',
+              title: '**0**',
               footer: {
                 text: 'Available Pulls',
               },
-              image: {
-                url: 'attachment://pulls.png',
-              },
+              description: undefined,
             },
             {
               type: 'rich',
+              title: '**5**',
               footer: {
-                text: '5 Available Votes',
+                text: 'Available Votes',
               },
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
@@ -12157,7 +12612,6 @@ Deno.test('/now', async (test) => {
       delete config.topggCipher;
 
       timeStub.restore();
-      textStub.restore();
       fetchStub.restore();
     }
   });
@@ -13313,6 +13767,769 @@ Deno.test('/give', async (test) => {
       characterStub.restore();
       aggregateStub.restore();
       tradeStub.restore();
+      fetchStub.restore();
+    }
+  });
+});
+
+Deno.test('/buy', async (test) => {
+  await test.step('random dialog', () => {
+    const message = shop.random({
+      userId: 'user_id',
+      amount: 1,
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        attachments: [],
+        components: [{
+          type: 1,
+          components: [
+            {
+              custom_id: 'buy=random=user_id=1',
+              label: 'Confirm',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'cancel=user_id',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
+            },
+          ],
+        }],
+        embeds: [{
+          type: 'rich',
+          description:
+            'Are you sure you want to spent **1** vote <:remove:1085033678180208641>',
+        }],
+      },
+    });
+  });
+
+  await test.step('random dialog (plural)', () => {
+    const message = shop.random({
+      userId: 'user_id',
+      amount: 4,
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        attachments: [],
+        components: [{
+          type: 1,
+          components: [
+            {
+              custom_id: 'buy=random=user_id=4',
+              label: 'Confirm',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'cancel=user_id',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
+            },
+          ],
+        }],
+        embeds: [{
+          type: 'rich',
+          description:
+            'Are you sure you want to spent **4** votes <:remove:1085033678180208641>',
+        }],
+      },
+    });
+  });
+
+  await test.step('random confirmed', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              exchangeVotesForPulls: {
+                ok: true,
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await shop.confirmRandom({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        amount: 1,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'gacha=user_id',
+                label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'q=user_id',
+                label: '/q',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'You bought **1** random pull <:add:1085034731810332743>',
+          }],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('random confirmed (plural)', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              exchangeVotesForPulls: {
+                ok: true,
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await shop.confirmRandom({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        amount: 5,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'gacha=user_id',
+                label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'q=user_id',
+                label: '/q',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'You bought **5** random pulls <:add:1085034731810332743>',
+          }],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('random no votes', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              exchangeVotesForPulls: {
+                ok: false,
+                error: 'INSUFFICIENT_VOTES',
+                user: {},
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await shop.confirmRandom({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        amount: 1,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'now=user_id',
+                label: '/vote',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description: 'You don\'t have any votes',
+          }],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('random insufficient votes', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              exchangeVotesForPulls: {
+                ok: false,
+                error: 'INSUFFICIENT_VOTES',
+                user: {
+                  availableVotes: 1,
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await shop.confirmRandom({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        amount: 10,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'now=user_id',
+                label: '/vote',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description: 'You only have **1** vote',
+          }],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('random insufficient votes (plural)', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              exchangeVotesForPulls: {
+                ok: false,
+                error: 'INSUFFICIENT_VOTES',
+                user: {
+                  availableVotes: 5,
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await shop.confirmRandom({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        amount: 10,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'now=user_id',
+                label: '/vote',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description: 'You only have **5** votes',
+          }],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('guaranteed 3*', () => {
+    const message = shop.guaranteed({
+      userId: 'user_id',
+      stars: 3,
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        attachments: [],
+        components: [{
+          type: 1,
+          components: [
+            {
+              custom_id: 'buy=guaranteed=user_id=3',
+              label: 'Confirm',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'cancel=user_id',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
+            },
+          ],
+        }],
+        embeds: [{
+          type: 'rich',
+          description:
+            'Are you sure you want to spent **4** votes <:remove:1085033678180208641>',
+        }],
+      },
+    });
+  });
+
+  await test.step('guaranteed 4*', () => {
+    const message = shop.guaranteed({
+      userId: 'user_id',
+      stars: 4,
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        attachments: [],
+        components: [{
+          type: 1,
+          components: [
+            {
+              custom_id: 'buy=guaranteed=user_id=4',
+              label: 'Confirm',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'cancel=user_id',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
+            },
+          ],
+        }],
+        embeds: [{
+          type: 'rich',
+          description:
+            'Are you sure you want to spent **12** votes <:remove:1085033678180208641>',
+        }],
+      },
+    });
+  });
+
+  await test.step('guaranteed 5*', () => {
+    const message = shop.guaranteed({
+      userId: 'user_id',
+      stars: 5,
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        attachments: [],
+        components: [{
+          type: 1,
+          components: [
+            {
+              custom_id: 'buy=guaranteed=user_id=5',
+              label: 'Confirm',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'cancel=user_id',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
+            },
+          ],
+        }],
+        embeds: [{
+          type: 'rich',
+          description:
+            'Are you sure you want to spent **36** votes <:remove:1085033678180208641>',
+        }],
+      },
+    });
+  });
+
+  await test.step('guaranteed 3* confirmed', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              exchangeVotesForGuarantees: {
+                ok: true,
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await shop.confirmGuaranteed({
+        userId: 'user_id',
+        stars: 3,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'pull=user_id=3',
+                label: '/pull 3',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'You bought a **3**<:smol_star:1088427421096751224>pull <:add:1085034731810332743>',
+          }],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('guaranteed 4* confirmed', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              exchangeVotesForGuarantees: {
+                ok: true,
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await shop.confirmGuaranteed({
+        userId: 'user_id',
+        stars: 4,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'pull=user_id=4',
+                label: '/pull 4',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'You bought a **4**<:smol_star:1088427421096751224>pull <:add:1085034731810332743>',
+          }],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('guaranteed 5* confirmed', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              exchangeVotesForGuarantees: {
+                ok: true,
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await shop.confirmGuaranteed({
+        userId: 'user_id',
+        stars: 5,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'pull=user_id=5',
+                label: '/pull 5',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'You bought a **5**<:smol_star:1088427421096751224>pull <:add:1085034731810332743>',
+          }],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('guaranteed no votes', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              exchangeVotesForGuarantees: {
+                ok: false,
+                error: 'INSUFFICIENT_VOTES',
+                user: {},
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await shop.confirmGuaranteed({
+        userId: 'user_id',
+        stars: 4,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'now=user_id',
+                label: '/vote',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description: 'You don\'t have any votes',
+          }],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('guaranteed insufficient votes', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              exchangeVotesForGuarantees: {
+                ok: false,
+                error: 'INSUFFICIENT_VOTES',
+                user: {
+                  availableVotes: 1,
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await shop.confirmGuaranteed({
+        userId: 'user_id',
+        stars: 4,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'now=user_id',
+                label: '/vote',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description: 'You only have **1** vote',
+          }],
+        },
+      });
+    } finally {
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('guaranteed insufficient votes (plural', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              exchangeVotesForGuarantees: {
+                ok: false,
+                error: 'INSUFFICIENT_VOTES',
+                user: {
+                  availableVotes: 5,
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    try {
+      const message = await shop.confirmGuaranteed({
+        userId: 'user_id',
+        stars: 4,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'now=user_id',
+                label: '/vote',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description: 'You only have **5** votes',
+          }],
+        },
+      });
+    } finally {
       fetchStub.restore();
     }
   });

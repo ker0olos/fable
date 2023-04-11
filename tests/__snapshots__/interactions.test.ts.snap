@@ -50,7 +50,7 @@ snapshot[`/help 1`] = `
         },
         description: "Before anything: You will need characters.
 
-__You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your pulls recharge.
+__You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.
 
 __Characters are exclusive__, once a player on the server finds a character, no one else can find that character in gacha again. You will need trade to get them.
 
@@ -58,12 +58,89 @@ __Characters vary in ranks from 1<:smol_star:1088427421096751224>to 5<:smol_star
 
 __Gacha rates depend on multiple variables__, but generally speaking the chances of a 5<:smol_star:1088427421096751224>appearing is equal or less than 1%.
 
-\`/pull\` allows you to do gacha pulls with no animations.
+\`/q\` allows you to do gacha pulls with no animations.
 ​",
         footer: {
           text: "aliases: /w, /q",
         },
         title: "\`/gacha\`",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;
+
+snapshot[`/help 3`] = `
+{
+  data: {
+    attachments: [
+    ],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==1=prev",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "3/5",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==3=next",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+          {
+            label: "Full Roadmap",
+            style: 5,
+            type: 2,
+            url: "https://github.com/ker0olos/fable/issues/1",
+          },
+          {
+            label: "GitHub",
+            style: 5,
+            type: 2,
+            url: "https://github.com/ker0olos/fable",
+          },
+        ],
+        type: 1,
+      },
+      {
+        components: [
+          {
+            label: "Discord Support Server",
+            style: 5,
+            type: 2,
+            url: "https://discord.gg/H69RVBxeYY",
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "Roadmap",
+        },
+        description: "__**Releasing in the near future (5 days ~ 2 months)**__
+
+**[Synthesis](https://github.com/ker0olos/fable/issues/76)**
+Merging 1-4<:smol_star:1088427421096751224>characters to get a specific rank pull (e.g. Synthesizing five 1-star characters gives a pull where you are guaranteed a 2-star character).
+
+**[Daily Quests](https://github.com/ker0olos/fable/issues/75)**
+Complete quests for rewards.
+
+**[Stealing](https://github.com/ker0olos/fable/issues/49)**
+You will be able to steal characters from other users.",
         type: "rich",
       },
     ],
@@ -145,83 +222,6 @@ leaving the \`spot:\` empty will assign the character to the first empty spot or
 }
 `;
 
-snapshot[`/help 3`] = `
-{
-  data: {
-    attachments: [
-    ],
-    components: [
-      {
-        components: [
-          {
-            custom_id: "help==1=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "_",
-            disabled: true,
-            label: "3/5",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "help==3=next",
-            label: "Next",
-            style: 2,
-            type: 2,
-          },
-          {
-            label: "Full Roadmap",
-            style: 5,
-            type: 2,
-            url: "https://github.com/ker0olos/fable/issues/1",
-          },
-          {
-            label: "GitHub",
-            style: 5,
-            type: 2,
-            url: "https://github.com/ker0olos/fable",
-          },
-        ],
-        type: 1,
-      },
-      {
-        components: [
-          {
-            label: "Discord Support Server",
-            style: 5,
-            type: 2,
-            url: "https://discord.gg/H69RVBxeYY",
-          },
-        ],
-        type: 1,
-      },
-    ],
-    embeds: [
-      {
-        author: {
-          name: "Roadmap",
-        },
-        description: "__**Releasing in the near future (5 days ~ 2 months)**__
-
-**[Customization](https://github.com/ker0olos/fable/issues/57)**
-Allow players to customize their characters including images and names.
-
-**[Synthesis](https://github.com/ker0olos/fable/issues/76)**
-Merging 1-4<:smol_star:1088427421096751224>characters to get specific grade pulls (e.g. Synthesizing five 1-star characters gives a pull where you are guaranteed a 2-star character).
-
-**[Stealing](https://github.com/ker0olos/fable/issues/49)**
-You will be able to steal characters from other users.",
-        type: "rich",
-      },
-    ],
-  },
-  type: 4,
-}
-`;
-
 snapshot[`/help 4`] = `
 {
   data: {
@@ -259,7 +259,9 @@ snapshot[`/help 4`] = `
           name: "All Commands",
         },
         description: "- \`/gacha\` \`/w\`: _start a new gacha pull_
-- \`/pull\` \`/q\`: _start a quiet gacha pull with no animation_
+- \`/q\`: _start a gacha pull but with no animations_
+- \`/pull\` \`/guaranteed\`: _pull a character with a guaranteed rank_
+
 - \`/now\` \`/vote\` \`/daily\` \`/tu\`: _check what you can do right now_
 - \`/search\` \`/anime\` \`/manga\`: _search for specific media_
 - \`/character\` \`/char\` \`/im\`: _search for a specific character_
@@ -271,7 +273,7 @@ snapshot[`/help 4`] = `
 
 - \`/collection list\` \`/coll list\` \`/mm list\`: _list user characters in bulks_
 - \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user your stars_
-- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters from a specific media_
+- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters in a specific media_
 
 - \`/found\` \`/obtained\` \`/owned\`: _list all characters found from a specific media_
 
@@ -282,6 +284,9 @@ snapshot[`/help 4`] = `
 
 - \`/trade\` \`/offer\`: _trade characters with another user_
 - \`/give\` \`/gift\`: _give characters to another user_
+
+- \`/buy random\` \`/shop random\`: _use votes to buy random pulls_
+- \`/buy guaranteed\` \`/shop guaranteed\`: _use votes to buy pulls with a guaranteed rank_
 
 - \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
         type: "rich",

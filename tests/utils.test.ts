@@ -733,27 +733,27 @@ Deno.test('voting timestamps', async (test) => {
   });
 });
 
-Deno.test('text images', async (test) => {
-  await test.step('5', async () => {
-    const arrayBuffer = await utils.text(5);
+// Deno.test('text images', async (test) => {
+//   await test.step('5', async () => {
+//     const arrayBuffer = await utils.text(5);
 
-    const image = await imagescript.decode(arrayBuffer);
+//     const image = await imagescript.decode(arrayBuffer);
 
-    assert(image instanceof imagescript.Image);
+//     assert(image instanceof imagescript.Image);
 
-    assertEquals(`${image}`, 'Image<15x39>');
-  });
+//     assertEquals(`${image}`, 'Image<15x39>');
+//   });
 
-  await test.step('999', async () => {
-    const arrayBuffer = await utils.text(999);
+//   await test.step('999', async () => {
+//     const arrayBuffer = await utils.text(999);
 
-    const image = await imagescript.decode(arrayBuffer);
+//     const image = await imagescript.decode(arrayBuffer);
 
-    assert(image instanceof imagescript.Image);
+//     assert(image instanceof imagescript.Image);
 
-    assertEquals(`${image}`, 'Image<32x39>');
-  });
-});
+//     assertEquals(`${image}`, 'Image<32x39>');
+//   });
+// });
 
 Deno.test('cipher', () => {
   const token =

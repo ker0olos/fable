@@ -1,5 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 
+import { spy } from 'https://deno.land/std@0.179.0/testing/mock.ts';
+
 import {
   Client,
   query,
@@ -67,25 +69,29 @@ function Get(refOrMatch: RefExpr | MatchExpr): Expr {
   return _fql.Get(refOrMatch);
 }
 
-function Append(ref: RefExpr, items: Expr): RefExpr[] {
-  return _fql.Append(ref, items) as unknown as RefExpr[];
+function Append<T extends ExprArg>(ref: T, items: T[]): T[] {
+  return _fql.Append(ref, items) as unknown as T[];
 }
 
-function AppendAll(refs: RefExpr[], items: Expr): RefExpr[] {
-  return _fql.Union(items, refs) as unknown as RefExpr[];
+function AppendAll<T extends ExprArg>(refs: T[], items: T[]): T[] {
+  return _fql.Union(items, refs) as unknown as T[];
 }
 
-function Remove(ref: RefExpr, items: Expr): RefExpr[] {
-  return _fql.Difference(items, [ref]) as unknown as RefExpr[];
+function Remove<T extends ExprArg>(ref: T, items: T[]): T[] {
+  return _fql.Difference(items, [ref]) as unknown as T[];
 }
 
-function RemoveAll(refs: RefExpr[], items: Expr): RefExpr[] {
-  return _fql.Difference(items, refs) as unknown as RefExpr[];
+function RemoveAll<T extends ExprArg>(refs: T[], items: T[]): T[] {
+  return _fql.Difference(items, refs) as unknown as T[];
 }
 
-function Includes(value: ExprArg, documentOrArray: Expr): BooleanExpr {
+function Includes<T extends ExprArg>(
+  value: T,
+  documentOrArray: T | T[],
+): BooleanExpr {
   return _fql.ContainsValue(value, documentOrArray) as unknown as BooleanExpr;
 }
+
 function Paginate(
   expr: Expr,
   { size, before, after }: { size?: number; before?: any; after?: any },
@@ -132,6 +138,10 @@ function IsNonEmpty(expr: Expr | ExprArg[]): BooleanExpr {
 
 function Min(a: NumberExpr, b: NumberExpr): NumberExpr {
   return _fql.Min(a, b);
+}
+
+function Max(a: NumberExpr, b: NumberExpr): NumberExpr {
+  return _fql.Max(a, b);
 }
 
 function GTE(a: NumberExpr, b: NumberExpr): BooleanExpr {
@@ -205,12 +215,12 @@ function Var(name: StringExpr): Expr {
   return _fql.Var(name);
 }
 
-function Select(
+function Select<T extends ExprArg>(
   path: (StringExpr | NumberExpr)[],
   from: Expr,
-  _default?: any,
-): Expr {
-  return _fql.Select(path, from, _default);
+  _default?: T,
+): T {
+  return _fql.Select(path, from, _default) as unknown as T;
 }
 
 function Merge(
@@ -349,6 +359,11 @@ export const fql = {
   ToString,
   Update,
   Var,
+  Max,
 };
+
+export const FakeClient = () => ({
+  query: spy(),
+});
 
 export type { Client };

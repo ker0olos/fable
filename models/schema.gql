@@ -11,6 +11,8 @@ type User @collection(name: "user") {
   totalVotes: Int
   # the amount of votes available to be exchanged for rewards
   availableVotes: Int
+  # guaranteed pulls
+  guarantees: [Int!]!
 }
 
 type Guild @collection(name: "guild") {
@@ -101,8 +103,9 @@ type History @embedded {
 type Gacha @embedded {
   by: User!
   pool: Int!
-  popularityChance: Int!
-  popularityGreater: Int!
+  guaranteed: Int
+  popularityChance: Int
+  popularityGreater: Int
   popularityLesser: Int
   roleChance: Int
   role: String

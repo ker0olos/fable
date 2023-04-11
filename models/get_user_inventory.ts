@@ -17,6 +17,7 @@ export interface User {
   lastVote?: TimeExpr;
   totalVotes?: NumberExpr;
   availableVotes?: NumberExpr;
+  guarantees: NumberExpr[];
   inventories: RefExpr[];
   badges: RefExpr[];
 }
@@ -37,6 +38,9 @@ export interface Inventory {
   availablePulls: NumberExpr;
   lastPull?: TimeExpr;
   rechargeTimestamp?: TimeExpr;
+  characters: RefExpr[];
+  instance: RefExpr;
+  user: RefExpr;
   party?: {
     member1?: RefExpr;
     member2?: RefExpr;
@@ -44,9 +48,6 @@ export interface Inventory {
     member4?: RefExpr;
     member5?: RefExpr;
   };
-  characters: RefExpr[];
-  instance: RefExpr;
-  user: RefExpr;
 }
 
 export const MAX_PULLS = 5;
@@ -63,6 +64,7 @@ export function getUser(id: StringExpr): UserExpr {
       // create a new user then return it
       fql.Create<User>('user', {
         id,
+        guarantees: [],
         inventories: [],
         badges: [
           // Early Bird Gets the Worm
@@ -90,7 +92,7 @@ export function getGuild(id: StringExpr): GuildExpr {
 
 export function getInstance(guild: GuildExpr): InstanceExpr {
   return fql.Let({
-    match: fql.Select(['data', 'instances'], guild),
+    match: fql.Select<InstanceExpr>(['data', 'instances'], guild),
   }, ({ match }) =>
     fql.If(
       fql.IsNonEmpty(match),
@@ -170,31 +172,33 @@ export function rechargePulls(
         fql.Now(), // fallback
       ),
       currentPulls: fql.Select(['data', 'availablePulls'], inventory),
-      newPulls: fql.Divide(
-        fql.TimeDiffInMinutes(
-          fql.Var('rechargeTimestamp'),
-          fql.Now(),
+      newPulls: fql.Max(
+        0,
+        fql.Min(
+          fql.Subtract(
+            MAX_PULLS,
+            fql.Var('currentPulls'),
+          ),
+          fql.Divide(
+            fql.TimeDiffInMinutes(
+              fql.Var('rechargeTimestamp'),
+              fql.Now(),
+            ),
+            RECHARGE_MINS,
+          ),
         ),
-        RECHARGE_MINS,
       ),
-      rechargedPulls: fql.Min(
-        MAX_PULLS,
-        fql.Add(fql.Var('currentPulls'), fql.Var('newPulls')),
-      ),
-      diffPulls: fql.Subtract(
-        fql.Var('rechargedPulls'),
-        fql.Var('currentPulls'),
-      ),
+      rechargedPulls: fql.Add(fql.Var('currentPulls'), fql.Var('newPulls')),
     },
-    ({ rechargeTimestamp, diffPulls, rechargedPulls }) =>
+    ({ rechargeTimestamp, newPulls, rechargedPulls }) =>
       fql.Update<Inventory>(fql.Ref(inventory), {
-        availablePulls: rechargedPulls,
+        availablePulls: fql.Min(99, rechargedPulls),
         rechargeTimestamp: fql.If(
           fql.GTE(rechargedPulls, MAX_PULLS),
           fql.Null(),
           fql.TimeAddInMinutes(
             rechargeTimestamp,
-            fql.Multiply(diffPulls, RECHARGE_MINS),
+            fql.Multiply(newPulls, RECHARGE_MINS),
           ),
         ),
       }),

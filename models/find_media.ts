@@ -126,7 +126,7 @@ export function findMedia(
     return {
       character,
       anchor: fql.Select(['id'], character, fql.Null()),
-    };
+    } as CharacterNode;
   });
 }
 
