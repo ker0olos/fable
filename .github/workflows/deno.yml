@@ -33,3 +33,28 @@ jobs:
         with:
           deno-version: v1.x
       - run: deno lint --config deno.json
+
+  deploy:
+    name: deploy
+    needs: [test]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # NOTE: this is used since we need to wait for
+      # fauna.yml to update the schema and models
+      # and github doesn't support waiting for ouside jobs
+      - name: Wait for other jobs to succeed
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.ref }}
+          check-name: 'update-models'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - uses: actions/checkout@v3
+      - uses: denoland/deployctl@v1
+        with:
+          project: fable
+          entrypoint: src/interactions.ts
