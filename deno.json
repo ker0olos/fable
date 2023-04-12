@@ -16,6 +16,7 @@
     }
   },
   "tasks": {
+    "discord": "deno run -A update_commands.ts",
     "fauna": "deno run -A update_schema.ts && deno run -A update_models.ts",
     "update": "deno run -A https://deno.land/x/udd/main.ts *.ts **/*.ts",
     "start": "deno run --watch --allow-net --allow-read --allow-env src/interactions.ts",
