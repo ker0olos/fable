@@ -6949,6 +6949,112 @@ Deno.test('packs command handlers', async (test) => {
       signatureStub.restore();
     }
   });
+
+  await test.step('packs update', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      data: {
+        name: 'packs',
+        options: [{
+          type: 1,
+          name: `update`,
+          options: [{
+            name: 'id',
+            value: 'manifest_id',
+          }],
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const manifest: Manifest = {
+      id: 'manifest_id',
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          { id: 123, manifest, type: PackType.Community },
+        ]),
+    );
+
+    const setFlagsSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const packsStub = stub(packs, 'install', () =>
+      ({
+        setFlags: setFlagsSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(packsStub, 0, {
+        args: [{
+          guildId: 'guild_id',
+          token: 'token',
+          id: 123,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      listStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+      packsStub.restore();
+    }
+  });
 });
 
 Deno.test('invalid request', async (test) => {

@@ -909,7 +909,7 @@ Deno.test('/media', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'mcharacters=anilist:1',
+              custom_id: 'mcharacters=anilist:1=0',
               label: 'View Characters',
               style: 2,
               type: 2,
@@ -1940,7 +1940,7 @@ Deno.test('/media', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'mcharacters=anilist:1',
+              custom_id: 'mcharacters=anilist:1=0',
               label: 'View Characters',
               style: 2,
               type: 2,

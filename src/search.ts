@@ -143,6 +143,7 @@ function mediaMessage(media: Media): discord.Message {
       new discord.Component().setLabel('View Characters').setId(
         'mcharacters',
         `${media.packId}:${media.id}`,
+        '0',
       ),
     );
   }

@@ -317,7 +317,7 @@ export const handler = async (r: Request) => {
 
             return user.likeslist({
               token,
-              userId: userId ?? member.user.id,
+              userId,
               index: 0,
               guildId,
               nick,
@@ -343,7 +343,7 @@ export const handler = async (r: Request) => {
                 const stars = options['rating'] as number;
 
                 return (await user.stars({
-                  userId: userId ?? member.user.id,
+                  userId,
                   stars,
                   guildId,
                   nick,
@@ -354,8 +354,8 @@ export const handler = async (r: Request) => {
                 const title = options['title'] as string;
 
                 return (await user.media({
+                  userId,
                   search: title,
-                  userId: userId ?? member.user.id,
                   id: title.startsWith(idPrefix)
                     ? title.substring(idPrefix.length)
                     : undefined,
@@ -368,9 +368,9 @@ export const handler = async (r: Request) => {
                 const filter = options['filter'] as number | undefined;
 
                 return user.list({
+                  userId,
                   token,
                   filter,
-                  userId: userId ?? member.user.id,
                   index: 0,
                   guildId,
                   nick,
@@ -609,7 +609,7 @@ export const handler = async (r: Request) => {
             const mediaId = customValues![0];
 
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]) || 0;
+            const index = parseInt(customValues![1]);
 
             return (await search.mediaCharacters({
               userId: member.user.id,
