@@ -1702,12 +1702,25 @@ Deno.test('collection command handlers', async (test) => {
       },
       data: {
         name: 'collection',
+        resolved: {
+          members: {
+            'another_user_id': {
+              nick: 'nickname',
+            },
+          },
+          users: {
+            'another_user_id': {},
+          },
+        },
         options: [{
           type: 1,
           name: 'stars',
           options: [{
             name: 'rating',
             value: 5,
+          }, {
+            name: 'user',
+            value: 'user_id',
           }],
         }],
       },
@@ -1801,17 +1814,22 @@ Deno.test('collection command handlers', async (test) => {
             'another_user_id': {},
           },
         },
-        options: [{
-          type: 1,
-          name: 'stars',
-          options: [{
-            name: 'rating',
-            value: 5,
-          }, {
-            name: 'user',
-            value: 'another_user_id',
-          }],
-        }],
+        options: [
+          {
+            type: 1,
+            name: 'stars',
+            options: [
+              {
+                name: 'user',
+                value: 'another_user_id',
+              },
+              {
+                name: 'rating',
+                value: 5,
+              },
+            ],
+          },
+        ],
       },
     });
 
@@ -1998,10 +2016,16 @@ Deno.test('collection command handlers', async (test) => {
         options: [{
           type: 1,
           name: 'media',
-          options: [{
-            name: 'title',
-            value: 'title',
-          }],
+          options: [
+            {
+              name: 'user',
+              value: 'user_id',
+            },
+            {
+              name: 'title',
+              value: 'title',
+            },
+          ],
         }],
       },
     });
@@ -2071,7 +2095,103 @@ Deno.test('collection command handlers', async (test) => {
     }
   });
 
-  await test.step('collection stars with specific user', async () => {
+  await test.step('collection media (id prefix)', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'collection',
+        options: [{
+          type: 1,
+          name: 'media',
+          options: [
+            {
+              name: 'user',
+              value: 'user_id',
+            },
+            {
+              name: 'title',
+              value: 'id=media_id',
+            },
+          ],
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const partyStub = stub(user, 'media', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(partyStub, 0, {
+        args: [{
+          search: 'id=media_id',
+          userId: 'user_id',
+          guildId: 'guild_id',
+          nick: undefined,
+          id: 'media_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      partyStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('collection media (another user)', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2174,7 +2294,7 @@ Deno.test('collection command handlers', async (test) => {
     }
   });
 
-  await test.step('collection stars with (user) (no nickname)', async () => {
+  await test.step('collection media with (another user) (no nickname)', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -2277,96 +2397,6 @@ Deno.test('collection command handlers', async (test) => {
     }
   });
 
-  await test.step('collection media (id prefix)', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      channel_id: 'channel_id',
-      member: {
-        user: {
-          id: 'user_id',
-        },
-      },
-      data: {
-        name: 'collection',
-        options: [{
-          type: 1,
-          name: 'media',
-          options: [{
-            name: 'title',
-            value: 'id=uuid',
-          }],
-        }],
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const partyStub = stub(user, 'media', () => ({
-      send: () => true,
-    } as any));
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [
-          request,
-          {
-            POST: {
-              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-            },
-          },
-        ],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(partyStub, 0, {
-        args: [{
-          search: 'id=uuid',
-          userId: 'user_id',
-          guildId: 'guild_id',
-          id: 'uuid',
-          nick: undefined,
-        }],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      partyStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-
   await test.step('collection list', async () => {
     const body = JSON.stringify({
       id: 'id',
@@ -2381,10 +2411,26 @@ Deno.test('collection command handlers', async (test) => {
       },
       data: {
         name: 'collection',
-        options: [{
-          type: 1,
-          name: 'list',
-        }],
+        resolved: {
+          members: {
+            'another_user_id': {},
+          },
+          users: {
+            'another_user_id': {
+              username: 'username',
+            },
+          },
+        },
+        options: [
+          {
+            type: 1,
+            name: 'list',
+            options: [{
+              name: 'user',
+              value: 'user_id',
+            }],
+          },
+        ],
       },
     });
 
@@ -2468,14 +2514,32 @@ Deno.test('collection command handlers', async (test) => {
       },
       data: {
         name: 'collection',
-        options: [{
-          type: 1,
-          name: 'list',
-          options: [{
-            name: 'filter',
-            value: 2,
-          }],
-        }],
+        resolved: {
+          members: {
+            'another_user_id': {},
+          },
+          users: {
+            'another_user_id': {
+              username: 'username',
+            },
+          },
+        },
+        options: [
+          {
+            type: 1,
+            name: 'list',
+            options: [
+              {
+                name: 'user',
+                value: 'user_id',
+              },
+              {
+                name: 'filter',
+                value: 2,
+              },
+            ],
+          },
+        ],
       },
     });
 
@@ -2545,14 +2609,13 @@ Deno.test('collection command handlers', async (test) => {
     }
   });
 
-  await test.step('collection list (user)', async () => {
+  await test.step('collection list (another user)', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
       channel_id: 'channel_id',
-
       member: {
         user: {
           id: 'user_id',
@@ -2632,6 +2695,293 @@ Deno.test('collection command handlers', async (test) => {
         args: [{
           token: 'token',
           filter: undefined,
+          userId: 'another_user_id',
+          guildId: 'guild_id',
+          nick: 'username',
+          index: 0,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      userStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('likeslist', async (test) => {
+  await test.step('normal', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'likeslist',
+        options: [
+          {
+            name: 'user',
+            value: 'user_id',
+          },
+        ],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const userStub = stub(user, 'likeslist', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(userStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'user_id',
+          guildId: 'guild_id',
+          nick: undefined,
+          index: 0,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      userStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('another user', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'likeslist',
+        resolved: {
+          members: {
+            'another_user_id': {
+              nick: 'nickname',
+            },
+          },
+          users: {
+            'another_user_id': {},
+          },
+        },
+        options: [
+          {
+            name: 'user',
+            value: 'another_user_id',
+          },
+        ],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const userStub = stub(user, 'likeslist', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(userStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'another_user_id',
+          guildId: 'guild_id',
+          nick: 'nickname',
+          index: 0,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      userStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('another user (no nickname)', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'likeslist',
+        resolved: {
+          members: {
+            'another_user_id': {},
+          },
+          users: {
+            'another_user_id': {
+              username: 'username',
+            },
+          },
+        },
+        options: [
+          {
+            name: 'user',
+            value: 'another_user_id',
+          },
+        ],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const userStub = stub(user, 'likeslist', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(userStub, 0, {
+        args: [{
+          token: 'token',
           userId: 'another_user_id',
           guildId: 'guild_id',
           nick: 'username',
@@ -4774,6 +5124,356 @@ Deno.test('buy command handlers', async (test) => {
         args: [{
           userId: 'user_id',
           stars: 4,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      shopStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('like command handlers', async (test) => {
+  await test.step('like', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'like',
+        options: [{
+          name: 'name',
+          value: 'character',
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const shopStub = stub(user, 'like', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(shopStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'user_id',
+          guildId: 'guild_id',
+          search: 'character',
+          id: undefined,
+          undo: false,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      shopStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('like (id prefix)', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'like',
+        options: [{
+          name: 'name',
+          value: 'id=character_id',
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const shopStub = stub(user, 'like', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(shopStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'user_id',
+          guildId: 'guild_id',
+          search: 'id=character_id',
+          id: 'character_id',
+          undo: false,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      shopStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('unlike', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'unlike',
+        options: [{
+          name: 'name',
+          value: 'character',
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const shopStub = stub(user, 'like', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(shopStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'user_id',
+          guildId: 'guild_id',
+          search: 'character',
+          id: undefined,
+          undo: true,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      shopStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('unlike (id prefix)', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'unlike',
+        options: [{
+          name: 'name',
+          value: 'id=character_id',
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const shopStub = stub(user, 'like', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(shopStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'user_id',
+          guildId: 'guild_id',
+          search: 'id=character_id',
+          id: 'character_id',
+          undo: true,
         }],
       });
 

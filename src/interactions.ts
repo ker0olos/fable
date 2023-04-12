@@ -124,18 +124,20 @@ export const handler = async (r: Request) => {
         // suggest characters
         if (
           [
-            'character',
-            'char',
             'im',
+            'char',
+            'character',
+            'p',
+            'party',
+            'team',
+            'give',
             'trade',
             'offer',
-            'give',
             'nick',
             'image',
             'custom',
-            'party',
-            'team',
-            'p',
+            'like',
+            'unlike',
           ].includes(name)
         ) {
           // deno-lint-ignore no-non-null-assertion
@@ -301,12 +303,32 @@ export const handler = async (r: Request) => {
             }
             break;
           }
+          case 'likeslist': {
+            const userId = options['user'] as string;
+
+            const nick = userId && userId !== member.user.id
+              ? discord.getUsername(
+                // deno-lint-ignore no-non-null-assertion
+                resolved!.members![userId],
+                // deno-lint-ignore no-non-null-assertion
+                resolved!.users![userId],
+              )
+              : undefined;
+
+            return user.likeslist({
+              token,
+              userId: userId ?? member.user.id,
+              index: 0,
+              guildId,
+              nick,
+            }).send();
+          }
           case 'collection':
           case 'coll':
           case 'mm': {
             const userId = options['user'] as string;
 
-            const nick = userId
+            const nick = userId && userId !== member.user.id
               ? discord.getUsername(
                 // deno-lint-ignore no-non-null-assertion
                 resolved!.members![userId],
@@ -358,6 +380,22 @@ export const handler = async (r: Request) => {
                 break;
             }
             break;
+          }
+          case 'like':
+          case 'unlike': {
+            const search = options['name'] as string;
+
+            return user.like({
+              token,
+              search,
+              undo: name === 'unlike',
+              userId: member.user.id,
+              id: search.startsWith(idPrefix)
+                ? search.substring(idPrefix.length)
+                : undefined,
+              guildId,
+            })
+              .send();
           }
           case 'found':
           case 'obtained':
@@ -646,6 +684,22 @@ export const handler = async (r: Request) => {
               token,
               index,
               filter,
+              guildId,
+              userId,
+            })
+              .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'likes': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            return user.likeslist({
+              token,
+              index,
               guildId,
               userId,
             })

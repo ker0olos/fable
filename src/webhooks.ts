@@ -108,7 +108,7 @@ async function topgg(r: Request): Promise<Response> {
 
       new discord.Message()
         .setContent(
-          `Thanks for voting, <@${data.user}>. Use \`/buy random\` and \`/buy guaranteed\` to spent your votes.`,
+          `Thanks for voting, <@${data.user}>.\nUse </buy random:1095251308530913311> or </buy guaranteed:1095251308530913311> to spent your votes.`,
         )
         .followup(token);
 

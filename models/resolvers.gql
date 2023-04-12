@@ -85,6 +85,13 @@ type Mutation {
   ): Response! @resolver(name: "add_character_to_inventory")
 
   #
+  likeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
+    @resolver(name: "like_character")
+  #
+  unlikeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
+    @resolver(name: "unlike_character")
+
+  #
   setCharacterToParty(userId: String!, guildId: String!, characterId: String!, spot: Int): Response!
     @resolver(name: "set_character_to_party")
   #

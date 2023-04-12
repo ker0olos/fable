@@ -263,6 +263,38 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "Like a character to be notified if someone finds them",
+    name: "like",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The name of the character",
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Remove a character from your likes list",
+    name: "unlike",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The name of the character",
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
     description: "Give characters to another user",
     name: "give",
     options: [
@@ -923,6 +955,22 @@ snapshot[`commands 1`] = `
         ],
         required: false,
         type: 1,
+      },
+    ],
+  },
+  {
+    default_member_permissions: undefined,
+    description: "List all characters liked",
+    name: "likeslist",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The user of the likes list",
+        name: "user",
+        options: undefined,
+        required: true,
+        type: 6,
       },
     ],
   },

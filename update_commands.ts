@@ -266,6 +266,30 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'like',
+    description: 'Like a character to be notified if someone finds them',
+    options: [
+      Option({
+        name: 'name',
+        description: 'The name of the character',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'unlike',
+    description: 'Remove a character from your likes list',
+    options: [
+      Option({
+        name: 'name',
+        description: 'The name of the character',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
     name: 'give',
     description: 'Give characters to another user',
     aliases: ['gift'],
@@ -504,6 +528,17 @@ export const commands = [
             ],
           }),
         ],
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'likeslist',
+    description: 'List all characters liked',
+    options: [
+      Option({
+        name: 'user',
+        description: 'The user of the likes list',
+        type: Type.USER,
       }),
     ],
   }),

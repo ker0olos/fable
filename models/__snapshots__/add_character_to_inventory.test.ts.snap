@@ -610,6 +610,10 @@ snapshot[`model 1`] = `
                                                           raw: [
                                                           ],
                                                         },
+                                                        likes: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                   },
@@ -1972,6 +1976,10 @@ snapshot[`model 1`] = `
                                                           },
                                                         },
                                                         inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                        likes: Expr {
                                                           raw: [
                                                           ],
                                                         },

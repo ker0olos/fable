@@ -1088,6 +1088,10 @@ snapshot[`model 5`] = `
                                                           raw: [
                                                           ],
                                                         },
+                                                        likes: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                   },
@@ -1889,6 +1893,10 @@ snapshot[`model 5`] = `
                                                           },
                                                         },
                                                         inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                        likes: Expr {
                                                           raw: [
                                                           ],
                                                         },
