@@ -519,6 +519,7 @@ Deno.test('collection stars components', async (test) => {
 
       assertSpyCall(userStub, 0, {
         args: [{
+          token: 'token',
           stars: 5,
           userId: 'user_id',
           guildId: 'guild_id',
@@ -607,6 +608,7 @@ Deno.test('collection stars components', async (test) => {
 
       assertSpyCall(userStub, 0, {
         args: [{
+          token: 'token',
           stars: 5,
           userId: 'user_id',
           guildId: 'guild_id',
@@ -697,6 +699,7 @@ Deno.test('collection media components', async (test) => {
 
       assertSpyCall(userStub, 0, {
         args: [{
+          token: 'token',
           id: 'media_id',
           userId: 'user_id',
           guildId: 'guild_id',
@@ -785,6 +788,7 @@ Deno.test('collection media components', async (test) => {
 
       assertSpyCall(userStub, 0, {
         args: [{
+          token: 'token',
           id: 'media_id',
           userId: 'user_id',
           guildId: 'guild_id',

@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-explicit-any
+
 import {
   assertEquals,
   assertRejects,
@@ -26,7 +28,6 @@ Deno.test('get repo', async (test) => {
       () => ({
         ok: true,
         json: (() => Promise.resolve({ id: 1 })),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -38,7 +39,6 @@ Deno.test('get repo', async (test) => {
         args: ['https://api.github.com/repos/username/reponame'],
       });
 
-      // deno-lint-ignore no-explicit-any
       assertEquals(repo, { id: 1 } as any);
     } finally {
       fetchStub.restore();
@@ -54,7 +54,6 @@ Deno.test('get repo', async (test) => {
       () => ({
         ok: true,
         json: (() => Promise.resolve({ id: 1 })),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -66,7 +65,6 @@ Deno.test('get repo', async (test) => {
         args: ['https://api.github.com/repos/Username/Reponame'],
       });
 
-      // deno-lint-ignore no-explicit-any
       assertEquals(repo, { id: 1 } as any);
     } finally {
       fetchStub.restore();
@@ -82,7 +80,6 @@ Deno.test('get repo', async (test) => {
       () => ({
         ok: true,
         json: (() => Promise.resolve({ id: 1 })),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -94,7 +91,6 @@ Deno.test('get repo', async (test) => {
         args: ['https://api.github.com/repos/username/reponame'],
       });
 
-      // deno-lint-ignore no-explicit-any
       assertEquals(repo, { id: 1 } as any);
     } finally {
       fetchStub.restore();
@@ -110,7 +106,6 @@ Deno.test('get repo', async (test) => {
       () => ({
         ok: true,
         json: (() => Promise.resolve({ id: 1 })),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -122,7 +117,6 @@ Deno.test('get repo', async (test) => {
         args: ['https://api.github.com/repos/username/reponame'],
       });
 
-      // deno-lint-ignore no-explicit-any
       assertEquals(repo, { id: 1 } as any);
     } finally {
       fetchStub.restore();
@@ -138,7 +132,6 @@ Deno.test('get repo', async (test) => {
       () => ({
         ok: true,
         json: (() => Promise.resolve({ id: 1 })),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -150,7 +143,6 @@ Deno.test('get repo', async (test) => {
         args: ['https://api.github.com/repos/username/reponame'],
       });
 
-      // deno-lint-ignore no-explicit-any
       assertEquals(repo, { id: 1 } as any);
     } finally {
       fetchStub.restore();
@@ -207,7 +199,6 @@ Deno.test('get repo', async (test) => {
         ok: false,
         status: 404,
         statusText: 'Not Found',
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -236,7 +227,6 @@ Deno.test('get repo', async (test) => {
       () => ({
         ok: true,
         json: (() => Promise.resolve({ message: 'Not Found' })),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -269,7 +259,6 @@ Deno.test('get manifest', async (test) => {
             Promise.resolve({
               id: 1,
             }),
-          // deno-lint-ignore no-explicit-any
         }) as any,
     );
 
@@ -283,7 +272,6 @@ Deno.test('get manifest', async (test) => {
             text: (() => Promise.resolve(JSON.stringify({ id: 'manifest' }))),
           },
         },
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -312,7 +300,6 @@ Deno.test('get manifest', async (test) => {
     const fetchStub = stub(
       globalThis,
       'fetch',
-      // deno-lint-ignore no-explicit-any
       () => undefined as any,
     );
 
@@ -326,7 +313,6 @@ Deno.test('get manifest', async (test) => {
             text: (() => Promise.resolve(JSON.stringify({ id: 'manifest' }))),
           },
         },
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -358,7 +344,6 @@ Deno.test('get manifest', async (test) => {
             Promise.resolve({
               id: 1,
             }),
-          // deno-lint-ignore no-explicit-any
         }) as any,
     );
 
@@ -372,7 +357,6 @@ Deno.test('get manifest', async (test) => {
             text: (() => Promise.resolve('{ "id": "manifest }')),
           },
         },
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -408,7 +392,6 @@ Deno.test('get manifest', async (test) => {
             Promise.resolve({
               id: 1,
             }),
-          // deno-lint-ignore no-explicit-any
         }) as any,
     );
 
@@ -446,7 +429,6 @@ Deno.test('get manifest', async (test) => {
               }))),
           },
         },
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -517,7 +499,6 @@ Deno.test('get manifest', async (test) => {
             Promise.resolve({
               id: 1,
             }),
-          // deno-lint-ignore no-explicit-any
         }) as any,
     );
 
@@ -531,7 +512,6 @@ Deno.test('get manifest', async (test) => {
             text: (() => Promise.resolve('\/\/\\//\/')),
           },
         },
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -566,7 +546,6 @@ Deno.test('get manifest', async (test) => {
             Promise.resolve({
               id: 1,
             }),
-          // deno-lint-ignore no-explicit-any
         }) as any,
     );
 
@@ -575,7 +554,6 @@ Deno.test('get manifest', async (test) => {
       'unzip',
       () => ({
         entries: {},
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -610,7 +588,6 @@ Deno.test('get manifest', async (test) => {
             Promise.resolve({
               id: 1,
             }),
-          // deno-lint-ignore no-explicit-any
         }) as any,
     );
 
@@ -653,7 +630,6 @@ Deno.test('get manifest', async (test) => {
             Promise.resolve({
               id: 1,
             }),
-          // deno-lint-ignore no-explicit-any
         }) as any,
     );
 

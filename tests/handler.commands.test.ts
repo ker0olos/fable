@@ -1773,6 +1773,7 @@ Deno.test('collection command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           stars: 5,
           userId: 'user_id',
           guildId: 'guild_id',
@@ -1880,6 +1881,7 @@ Deno.test('collection command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           stars: 5,
           userId: 'another_user_id',
           guildId: 'guild_id',
@@ -1982,6 +1984,7 @@ Deno.test('collection command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           stars: 5,
           userId: 'another_user_id',
           guildId: 'guild_id',
@@ -2077,6 +2080,7 @@ Deno.test('collection command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           search: 'title',
           userId: 'user_id',
           guildId: 'guild_id',
@@ -2173,6 +2177,7 @@ Deno.test('collection command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           search: 'id=media_id',
           userId: 'user_id',
           guildId: 'guild_id',
@@ -2276,6 +2281,7 @@ Deno.test('collection command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           search: 'title',
           userId: 'another_user_id',
           guildId: 'guild_id',
@@ -2379,6 +2385,7 @@ Deno.test('collection command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           search: 'title',
           userId: 'another_user_id',
           guildId: 'guild_id',

@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-explicit-any
+
 import {
   assertEquals,
   assertRejects,
@@ -30,7 +32,6 @@ Deno.test('media', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -70,7 +71,6 @@ Deno.test('media', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -112,7 +112,6 @@ Deno.test('character', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -152,7 +151,6 @@ Deno.test('character', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -198,7 +196,6 @@ Deno.test('next episode', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -238,7 +235,6 @@ Deno.test('next episode', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -279,7 +275,6 @@ Deno.test('next episode', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -319,7 +314,6 @@ Deno.test('next episode', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -359,7 +353,6 @@ Deno.test('next episode', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -400,7 +393,6 @@ Deno.test('next episode', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -436,7 +428,6 @@ Deno.test('next episode', async (test) => {
               Media: {},
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 

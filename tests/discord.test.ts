@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-non-null-assertion
+// deno-lint-ignore-file no-non-null-assertion no-explicit-any
 
 import {
   assert,
@@ -549,7 +549,6 @@ Deno.test('patch messages', async () => {
   const fetchStub = stub(
     globalThis,
     'fetch',
-    // deno-lint-ignore no-explicit-any
     () => true as any,
   );
 
@@ -579,7 +578,6 @@ Deno.test('patch messages', async () => {
           body: form,
         },
       ],
-      // deno-lint-ignore no-explicit-any
       returned: true as any,
     });
   } finally {
@@ -591,7 +589,6 @@ Deno.test('followup messages', async () => {
   const fetchStub = stub(
     globalThis,
     'fetch',
-    // deno-lint-ignore no-explicit-any
     () => true as any,
   );
 
@@ -621,7 +618,6 @@ Deno.test('followup messages', async () => {
           body: form,
         },
       ],
-      // deno-lint-ignore no-explicit-any
       returned: true as any,
     });
   } finally {

@@ -342,18 +342,19 @@ export const handler = async (r: Request) => {
               case 'stars': {
                 const stars = options['rating'] as number;
 
-                return (await user.stars({
+                return user.stars({
+                  token,
                   userId,
                   stars,
                   guildId,
                   nick,
-                }))
-                  .send();
+                }).send();
               }
               case 'media': {
                 const title = options['title'] as string;
 
-                return (await user.media({
+                return user.media({
+                  token,
                   userId,
                   search: title,
                   id: title.startsWith(idPrefix)
@@ -361,8 +362,7 @@ export const handler = async (r: Request) => {
                     : undefined,
                   guildId,
                   nick,
-                }))
-                  .send();
+                }).send();
               }
               case 'list': {
                 const filter = options['filter'] as number | undefined;
@@ -640,13 +640,14 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const action = customValues![3];
 
-            return (await user.stars({
+            return user.stars({
+              token,
               stars,
               guildId,
               userId,
               after: action === 'next' ? anchor : undefined,
               before: action === 'prev' ? anchor : undefined,
-            }))
+            })
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -660,13 +661,14 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const action = customValues![3];
 
-            return (await user.media({
+            return user.media({
+              token,
               id,
               guildId,
               userId,
               after: action === 'next' ? anchor : undefined,
               before: action === 'prev' ? anchor : undefined,
-            }))
+            })
               .setType(discord.MessageType.Update)
               .send();
           }
