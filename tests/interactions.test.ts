@@ -7027,26 +7027,24 @@ Deno.test('/like', async (test) => {
   });
 
   await test.step('normal (exists)', async () => {
-    const characters: AniListCharacter[] = [
-      {
-        id: '1',
-        name: {
-          full: 'character',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: '2',
-              type: MediaType.Anime,
-              title: {
-                english: 'title',
-              },
-            },
-          }],
-        },
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'character',
       },
-    ];
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: '2',
+            type: MediaType.Anime,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    };
 
     const timeStub = new FakeTime();
 
@@ -7060,7 +7058,7 @@ Deno.test('/like', async (test) => {
             Promise.resolve(JSON.stringify({
               data: {
                 Page: {
-                  characters,
+                  characters: [character],
                 },
               },
             }))),
@@ -7185,6 +7183,107 @@ Deno.test('/like', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       userStub.restore();
+    }
+  });
+
+  await test.step('not found', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters: [],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                likeCharacter: {
+                  ok: true,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.like({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        search: 'character',
+        undo: false,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Found _nothing_ matching that query!',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
     }
   });
 
@@ -7539,6 +7638,161 @@ Deno.test('/likeslist', async (test) => {
 1<:smol_star:1088427421096751224> character 6
 1<:smol_star:1088427421096751224> character 7
 1<:smol_star:1088427421096751224> character 8`,
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      userStub.restore();
+    }
+  });
+
+  await test.step('normal (exists)', async () => {
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'character',
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  user: {
+                    likes: ['anilist:1'],
+                  },
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters: [character],
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () =>
+        Promise.resolve({
+          id: '',
+          mediaId: '',
+          rating: 3,
+          nickname: 'nickname',
+          image: 'http://image_url',
+          user: {
+            id: 'another_user_id',
+          },
+        }),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.likeslist({
+        index: 0,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'likes=user_id=0=prev',
+                  label: 'Prev',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: '_',
+                  disabled: true,
+                  label: '1/1',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'likes=user_id=0=next',
+                  label: 'Next',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '3<:smol_star:1088427421096751224> <@another_user_id> character',
             },
           ],
         },
@@ -15179,6 +15433,99 @@ Deno.test('/nick', async (test) => {
     }
   });
 
+  await test.step('not found', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media: [],
+                  characters: [],
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.customize({
+        token: 'test_token',
+        userId: 'user',
+        guildId: 'guild',
+        id: 'anilist:1',
+        nick: 'new_nick',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          components: [],
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Found _nothing_ matching that query!',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      timeStub.restore();
+    }
+  });
+
   await test.step('character not found', async () => {
     const characters: AniListCharacter[] = [
       {
@@ -15592,6 +15939,99 @@ Deno.test('/image', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('not found', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media: [],
+                  characters: [],
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.customize({
+        token: 'test_token',
+        userId: 'user',
+        guildId: 'guild',
+        id: 'anilist:1',
+        image: 'image_url',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          components: [],
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Found _nothing_ matching that query!',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
       timeStub.restore();
     }
   });
