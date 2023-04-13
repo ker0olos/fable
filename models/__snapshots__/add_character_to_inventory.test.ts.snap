@@ -6,6 +6,97 @@ snapshot[`model 1`] = `
     raw: {
       else: Expr {
         raw: {
+          create_index: Expr {
+            raw: {
+              object: {
+                name: "users_likes_character",
+                source: Expr {
+                  raw: {
+                    collection: "user",
+                  },
+                },
+                terms: Expr {
+                  raw: [
+                    Expr {
+                      raw: {
+                        object: {
+                          field: Expr {
+                            raw: [
+                              "data",
+                              "likes",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+                unique: false,
+                values: undefined,
+              },
+            },
+          },
+        },
+      },
+      if: Expr {
+        raw: {
+          exists: Expr {
+            raw: {
+              index: "users_likes_character",
+            },
+          },
+        },
+      },
+      then: Expr {
+        raw: {
+          params: Expr {
+            raw: {
+              object: {
+                name: "users_likes_character",
+                source: Expr {
+                  raw: {
+                    collection: "user",
+                  },
+                },
+                terms: Expr {
+                  raw: [
+                    Expr {
+                      raw: {
+                        object: {
+                          field: Expr {
+                            raw: [
+                              "data",
+                              "likes",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+                unique: false,
+                values: undefined,
+              },
+            },
+          },
+          update: Expr {
+            raw: {
+              index: "users_likes_character",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;
+
+snapshot[`model 2`] = `
+[
+  Expr {
+    raw: {
+      else: Expr {
+        raw: {
           create_function: Expr {
             raw: {
               object: {
@@ -114,6 +205,64 @@ snapshot[`model 1`] = `
                                                             },
                                                           },
                                                           select: "ref",
+                                                        },
+                                                      },
+                                                      likes: Expr {
+                                                        raw: {
+                                                          from: Expr {
+                                                            raw: {
+                                                              collection: Expr {
+                                                                raw: {
+                                                                  after: undefined,
+                                                                  before: undefined,
+                                                                  paginate: Expr {
+                                                                    raw: {
+                                                                      match: Expr {
+                                                                        raw: {
+                                                                          index: "users_likes_character",
+                                                                        },
+                                                                      },
+                                                                      terms: Expr {
+                                                                        raw: {
+                                                                          var: "characterId",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                  size: undefined,
+                                                                },
+                                                              },
+                                                              map: Expr {
+                                                                raw: {
+                                                                  expr: Expr {
+                                                                    raw: {
+                                                                      from: Expr {
+                                                                        raw: {
+                                                                          get: Expr {
+                                                                            raw: {
+                                                                              var: "user",
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                      select: Expr {
+                                                                        raw: [
+                                                                          "data",
+                                                                          "id",
+                                                                        ],
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                  lambda: "user",
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          select: Expr {
+                                                            raw: [
+                                                              "data",
+                                                            ],
+                                                          },
                                                         },
                                                       },
                                                       ok: true,
@@ -1483,6 +1632,64 @@ snapshot[`model 1`] = `
                                                             },
                                                           },
                                                           select: "ref",
+                                                        },
+                                                      },
+                                                      likes: Expr {
+                                                        raw: {
+                                                          from: Expr {
+                                                            raw: {
+                                                              collection: Expr {
+                                                                raw: {
+                                                                  after: undefined,
+                                                                  before: undefined,
+                                                                  paginate: Expr {
+                                                                    raw: {
+                                                                      match: Expr {
+                                                                        raw: {
+                                                                          index: "users_likes_character",
+                                                                        },
+                                                                      },
+                                                                      terms: Expr {
+                                                                        raw: {
+                                                                          var: "characterId",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                  size: undefined,
+                                                                },
+                                                              },
+                                                              map: Expr {
+                                                                raw: {
+                                                                  expr: Expr {
+                                                                    raw: {
+                                                                      from: Expr {
+                                                                        raw: {
+                                                                          get: Expr {
+                                                                            raw: {
+                                                                              var: "user",
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                      select: Expr {
+                                                                        raw: [
+                                                                          "data",
+                                                                          "id",
+                                                                        ],
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                  lambda: "user",
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          select: Expr {
+                                                            raw: [
+                                                              "data",
+                                                            ],
+                                                          },
                                                         },
                                                       },
                                                       ok: true,

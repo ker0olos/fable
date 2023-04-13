@@ -164,6 +164,19 @@ export function addCharacter(
               ok: true,
               inventory: fql.Ref(updatedInventory),
               character: fql.Ref(createdCharacter),
+              likes: fql.Select(
+                ['data'],
+                fql.Map(
+                  fql.Paginate(
+                    fql.Match(
+                      fql.Index('users_likes_character'),
+                      characterId,
+                    ),
+                    {},
+                  ),
+                  (user) => fql.Select(['data', 'id'], fql.Get(user)),
+                ),
+              ),
             }),
           ),
           {
@@ -181,6 +194,15 @@ export default function (client: Client): {
   resolvers?: (() => Promise<void>)[];
 } {
   return {
+    indexers: [
+      fql.Indexer({
+        client,
+        unique: false,
+        collection: 'user',
+        name: 'users_likes_character',
+        terms: [{ field: ['data', 'likes'] }],
+      }),
+    ],
     resolvers: [
       fql.Resolver({
         client,
