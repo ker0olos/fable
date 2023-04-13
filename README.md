@@ -9,7 +9,7 @@
 [![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304/vote)
 [![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
 
-[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
+[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot)
 
 [![Discord Support Server](https://img.shields.io/discord/992416714497212518?label=Discord%20Support%20Server&style=for-the-badge)][discord]
 
@@ -80,16 +80,6 @@ Fable is actively developed with new game modes and features frequently.
 ---
 
 ## FAQ
-
-<details><summary>The bot didn't appear in my server!</summary>
-<p>
-
-**It won't**. New bots don't appear as users. Just go ahead and try using the
-"/" commands. If you want to check the bot settings go to server settings then
-"Integrations" (PC client only).
-
-</p>
-</details>
 
 <details><summary>How can I limit Fable to 1 channel?</summary>
 <p>
