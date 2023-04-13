@@ -30,12 +30,18 @@ export function likeCharacter(
       characterId,
       fql.Ref(instance),
     ),
-  }, ({ exists, match }) => {
+    character: fql.If(
+      fql.IsNonEmpty(fql.Var('match')),
+      fql.Ref(fql.Get(fql.Var('match'))),
+      fql.Null(),
+    ),
+  }, ({ exists, character }) => {
     return fql.If(
       fql.Equals(exists, true),
       {
         ok: true,
         user: fql.Ref(user),
+        character,
       },
       fql.Let({
         updatedUser: fql.Update<User>(fql.Ref(user), {
@@ -47,11 +53,7 @@ export function likeCharacter(
       }, ({ updatedUser }) => ({
         ok: true,
         user: fql.Ref(updatedUser),
-        character: fql.If(
-          fql.IsNonEmpty(match),
-          fql.Ref(fql.Get(match)),
-          fql.Null(),
-        ),
+        character,
       })),
     );
   });
@@ -78,7 +80,12 @@ export function unlikeCharacter(
       characterId,
       fql.Ref(instance),
     ),
-  }, ({ exists, match }) => {
+    character: fql.If(
+      fql.IsNonEmpty(fql.Var('match')),
+      fql.Ref(fql.Get(fql.Var('match'))),
+      fql.Null(),
+    ),
+  }, ({ exists, character }) => {
     return fql.If(
       fql.Equals(exists, true),
       fql.Let({
@@ -91,15 +98,12 @@ export function unlikeCharacter(
       }, ({ updatedUser }) => ({
         ok: true,
         user: fql.Ref(updatedUser),
+        character,
       })),
       {
         ok: true,
         user: fql.Ref(user),
-        character: fql.If(
-          fql.IsNonEmpty(match),
-          fql.Ref(fql.Get(match)),
-          fql.Null(),
-        ),
+        character,
       },
     );
   });

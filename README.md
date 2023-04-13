@@ -91,6 +91,15 @@ Fable is actively developed with new game modes and features frequently.
 </p>
 </details>
 
+<details><summary>How can I limit Fable to 1 channel?</summary>
+<p>
+
+Go to **Server Settings** then **Integrations** then **Fable**\
+From there you can control the permissions globally or even per command.
+
+</p>
+</details>
+
 <details><summary>Can I use prefixes like `$`?</summary>
 <p>
 
@@ -103,13 +112,14 @@ you can go tell discord to add custom prefixes to "slash" commands instead of
 </p>
 </details>
 
-<details><summary>How can I add/install a new pack on my server?</summary>
+<details><summary>How can I install a new pack on my server?</summary>
 <p>
 
 We plan to have a Marketplace command where you can browse and install popular
-packs, but as of right now you'll need to know the pack's github url and run
-`/packs install github: https://github.com/username/packname` But we also have a
-channel in our discord where people share the packs they made.
+but for now we have a channel in our discord where people share the packs they
+made.\
+Check them then use
+`/packs install github: https://github.com/username/packname`
 
 </p>
 </details>
@@ -117,19 +127,17 @@ channel in our discord where people share the packs they made.
 <details><summary>How can I create a new pack?</summary>
 <p>
 
-Currently, it's only possible through editing JSON files, we recommend that you
-check
+Currently, it's only possible through editing JSON files. Please visit check
 [fable-community/example](https://github.com/fable-community/fable-pack-example),
 it includes most of the info you need.
 
 </p>
 </details>
 
-<details><summary>How to remove/uninstall a pack from my server?</summary>
+<details><summary>How to uninstall a pack from my server?</summary>
 <p>
 
-Like installing packs, run `/packs uninstall id: pack-id`. If you don't know the
-id of the pack you want to uninstall, then use `/packs community` instead.
+Use `/packs community` or `/packs uninstall id: pack-id`.
 
 </p>
 </details>

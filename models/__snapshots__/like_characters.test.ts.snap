@@ -26,30 +26,7 @@ snapshot[`model 1`] = `
                                             object: {
                                               character: Expr {
                                                 raw: {
-                                                  else: null,
-                                                  if: Expr {
-                                                    raw: {
-                                                      is_nonempty: Expr {
-                                                        raw: {
-                                                          var: "match",
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                  then: Expr {
-                                                    raw: {
-                                                      from: Expr {
-                                                        raw: {
-                                                          get: Expr {
-                                                            raw: {
-                                                              var: "match",
-                                                            },
-                                                          },
-                                                        },
-                                                      },
-                                                      select: "ref",
-                                                    },
-                                                  },
+                                                  var: "character",
                                                 },
                                               },
                                               ok: true,
@@ -143,6 +120,11 @@ snapshot[`model 1`] = `
                                     then: Expr {
                                       raw: {
                                         object: {
+                                          character: Expr {
+                                            raw: {
+                                              var: "character",
+                                            },
+                                          },
                                           ok: true,
                                           user: Expr {
                                             raw: {
@@ -216,6 +198,36 @@ snapshot[`model 1`] = `
                                               },
                                             },
                                           ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    character: Expr {
+                                      raw: {
+                                        else: null,
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                get: Expr {
+                                                  raw: {
+                                                    var: "match",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            select: "ref",
+                                          },
                                         },
                                       },
                                     },
@@ -600,30 +612,7 @@ snapshot[`model 1`] = `
                                             object: {
                                               character: Expr {
                                                 raw: {
-                                                  else: null,
-                                                  if: Expr {
-                                                    raw: {
-                                                      is_nonempty: Expr {
-                                                        raw: {
-                                                          var: "match",
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                  then: Expr {
-                                                    raw: {
-                                                      from: Expr {
-                                                        raw: {
-                                                          get: Expr {
-                                                            raw: {
-                                                              var: "match",
-                                                            },
-                                                          },
-                                                        },
-                                                      },
-                                                      select: "ref",
-                                                    },
-                                                  },
+                                                  var: "character",
                                                 },
                                               },
                                               ok: true,
@@ -717,6 +706,11 @@ snapshot[`model 1`] = `
                                     then: Expr {
                                       raw: {
                                         object: {
+                                          character: Expr {
+                                            raw: {
+                                              var: "character",
+                                            },
+                                          },
                                           ok: true,
                                           user: Expr {
                                             raw: {
@@ -790,6 +784,36 @@ snapshot[`model 1`] = `
                                               },
                                             },
                                           ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    character: Expr {
+                                      raw: {
+                                        else: null,
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                get: Expr {
+                                                  raw: {
+                                                    var: "match",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            select: "ref",
+                                          },
                                         },
                                       },
                                     },
@@ -1177,30 +1201,7 @@ snapshot[`model 2`] = `
                                         object: {
                                           character: Expr {
                                             raw: {
-                                              else: null,
-                                              if: Expr {
-                                                raw: {
-                                                  is_nonempty: Expr {
-                                                    raw: {
-                                                      var: "match",
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                              then: Expr {
-                                                raw: {
-                                                  from: Expr {
-                                                    raw: {
-                                                      get: Expr {
-                                                        raw: {
-                                                          var: "match",
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                  select: "ref",
-                                                },
-                                              },
+                                              var: "character",
                                             },
                                           },
                                           ok: true,
@@ -1236,6 +1237,11 @@ snapshot[`model 2`] = `
                                         in: Expr {
                                           raw: {
                                             object: {
+                                              character: Expr {
+                                                raw: {
+                                                  var: "character",
+                                                },
+                                              },
                                               ok: true,
                                               user: Expr {
                                                 raw: {
@@ -1377,6 +1383,36 @@ snapshot[`model 2`] = `
                                               },
                                             },
                                           ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    character: Expr {
+                                      raw: {
+                                        else: null,
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                get: Expr {
+                                                  raw: {
+                                                    var: "match",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            select: "ref",
+                                          },
                                         },
                                       },
                                     },
@@ -1759,30 +1795,7 @@ snapshot[`model 2`] = `
                                         object: {
                                           character: Expr {
                                             raw: {
-                                              else: null,
-                                              if: Expr {
-                                                raw: {
-                                                  is_nonempty: Expr {
-                                                    raw: {
-                                                      var: "match",
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                              then: Expr {
-                                                raw: {
-                                                  from: Expr {
-                                                    raw: {
-                                                      get: Expr {
-                                                        raw: {
-                                                          var: "match",
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                  select: "ref",
-                                                },
-                                              },
+                                              var: "character",
                                             },
                                           },
                                           ok: true,
@@ -1818,6 +1831,11 @@ snapshot[`model 2`] = `
                                         in: Expr {
                                           raw: {
                                             object: {
+                                              character: Expr {
+                                                raw: {
+                                                  var: "character",
+                                                },
+                                              },
                                               ok: true,
                                               user: Expr {
                                                 raw: {
@@ -1959,6 +1977,36 @@ snapshot[`model 2`] = `
                                               },
                                             },
                                           ],
+                                        },
+                                      },
+                                    },
+                                  },
+                                  {
+                                    character: Expr {
+                                      raw: {
+                                        else: null,
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                get: Expr {
+                                                  raw: {
+                                                    var: "match",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            select: "ref",
+                                          },
                                         },
                                       },
                                     },

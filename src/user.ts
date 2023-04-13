@@ -723,7 +723,12 @@ function like({
         }
       }
 
-      return message
+      message
+        .addEmbed(
+          new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked'),
+        );
+
+      message
         .addEmbed(srch.characterEmbed(
           await packs.aggregate<Character>({
             guildId,
@@ -732,18 +737,33 @@ function like({
           }),
           {
             footer: true,
-            rating: true,
             description: false,
             media: { title: true },
-            existing: response.character,
+            rating: response.character?.rating
+              ? new Rating({ stars: response.character?.rating })
+              : true,
+            existing: !undo ? response.character : undefined,
+            mode: !undo ? 'full' : 'thumbnail',
           },
-        ))
-        .addComponents([
+        ));
+
+      if (!undo) {
+        message.addComponents([
           new discord.Component()
             .setId(`character`, characterId)
             .setLabel('/character'),
-        ])
-        .patch(token);
+        ]);
+
+        if (response.character?.user?.id === userId) {
+          message.addComponents([
+            new discord.Component()
+              .setId('passign', response.character.id)
+              .setLabel(`/p assign`),
+          ]);
+        }
+      }
+
+      return message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
