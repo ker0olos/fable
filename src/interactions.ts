@@ -266,15 +266,6 @@ export const handler = async (r: Request) => {
 
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'view': {
-                const user = options['user'] as string;
-
-                return party.view({
-                  token,
-                  userId: user,
-                  guildId,
-                }).send();
-              }
               case 'assign':
                 return (await party.assign({
                   spot,
@@ -298,10 +289,16 @@ export const handler = async (r: Request) => {
                   userId: member.user.id,
                   guildId,
                 })).send();
-              default:
-                break;
+              default: {
+                const user = options['user'] as string;
+
+                return party.view({
+                  token,
+                  userId: user,
+                  guildId,
+                }).send();
+              }
             }
-            break;
           }
           case 'likeslist': {
             const userId = options['user'] as string;

@@ -12,10 +12,10 @@ try {
   //
 }
 
-// enum CommandType {
-//   'CHAT' = 1,
-//   'USER' = 2,
-// }
+enum CommandType {
+  'CHAT' = 1,
+  'USER' = 2,
+}
 
 const spots = [{
   name: '1',
@@ -69,7 +69,7 @@ type Option = {
 
 type Command = {
   name: string;
-  // type?: CommandType;
+  type?: CommandType;
   description?: string;
   options?: ReturnType<typeof Option>[];
   aliases?: string[];
@@ -86,7 +86,7 @@ const Option = (option: Option): Option => option;
 const Command = ({
   name,
   description,
-  // type,
+  type,
   options,
   aliases,
   defaultPermission,
@@ -104,7 +104,7 @@ const Command = ({
 
   const commands = [{
     name,
-    // type,
+    type,
     description,
     'default_member_permissions': defaultPermission,
     options: options?.map((option) => transformOption(option)),
@@ -543,6 +543,10 @@ export const commands = [
     ],
   }),
   // party management
+  ...Command({
+    name: 'Party',
+    type: CommandType.USER,
+  }),
   ...Command({
     name: 'party',
     description: 'party management commands',
