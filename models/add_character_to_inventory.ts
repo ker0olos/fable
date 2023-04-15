@@ -8,6 +8,7 @@ import {
   RefExpr,
   ResponseExpr,
   StringExpr,
+  TimeExpr,
   UserExpr,
 } from './fql.ts';
 
@@ -36,6 +37,7 @@ export interface Character {
 export interface History {
   gacha?: {
     by: RefExpr;
+    ts: TimeExpr;
     pool: NumberExpr;
     guaranteed: NumberExpr;
     popularityChance?: NumberExpr;
@@ -43,6 +45,11 @@ export interface History {
     popularityLesser?: NumberExpr;
     roleChance?: NumberExpr;
     role?: StringExpr;
+  };
+  trade?: {
+    ts: TimeExpr;
+    to: UserExpr;
+    from: UserExpr;
   };
 }
 
@@ -114,7 +121,7 @@ export function addCharacter(
                 history: [
                   {
                     gacha: {
-                      pool,
+                      ts: fql.Now(),
                       by: fql.Ref(user),
                       guaranteed: fql.If(
                         fql.Equals(guaranteed, true),
@@ -126,6 +133,7 @@ export function addCharacter(
                       popularityLesser,
                       roleChance,
                       role,
+                      pool,
                     },
                   },
                 ],

@@ -356,6 +356,11 @@ snapshot[`model 2`] = `
                                                                                         var: "roleChance",
                                                                                       },
                                                                                     },
+                                                                                    ts: Expr {
+                                                                                      raw: {
+                                                                                        now: null,
+                                                                                      },
+                                                                                    },
                                                                                   },
                                                                                 },
                                                                               },
@@ -1781,6 +1786,11 @@ snapshot[`model 2`] = `
                                                                                     roleChance: Expr {
                                                                                       raw: {
                                                                                         var: "roleChance",
+                                                                                      },
+                                                                                    },
+                                                                                    ts: Expr {
+                                                                                      raw: {
+                                                                                        now: null,
                                                                                       },
                                                                                     },
                                                                                   },

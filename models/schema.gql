@@ -104,6 +104,7 @@ type History @embedded {
 
 type Gacha @embedded {
   by: User!
+  ts: Time!
   pool: Int!
   guaranteed: Int
   popularityChance: Int
@@ -114,6 +115,7 @@ type Gacha @embedded {
 }
 
 type Trade @embedded {
+  ts: Time!
   from: User!
   to: User!
 }
