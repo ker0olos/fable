@@ -9,7 +9,7 @@ Deno.test('/help', async (test) => {
     const message = help.pages({ userId: 'user_id', index: 0 });
 
     assertEquals(message.json().data.components[0].components[0], {
-      custom_id: 'help==4=prev',
+      custom_id: 'help==6=prev',
       label: 'Prev',
       style: 2,
       type: 2,
@@ -18,7 +18,7 @@ Deno.test('/help', async (test) => {
     assertEquals(message.json().data.components[0].components[1], {
       custom_id: '_',
       disabled: true,
-      label: '1/5',
+      label: '1/7',
       style: 2,
       type: 2,
     });
@@ -31,27 +31,11 @@ Deno.test('/help', async (test) => {
     });
   });
 
-  await test.step('page 1', () => {
-    const message = help.pages({ userId: 'user_id', index: 0 });
+  await test.step('pages', async () => {
+    for (let i = 0; i < 7; i++) {
+      const message = help.pages({ userId: 'user_id', index: i });
 
-    assertSnapshot(test, message.json());
-  });
-
-  await test.step('page 2', () => {
-    const message = help.pages({ userId: 'user_id', index: 1 });
-
-    assertSnapshot(test, message.json());
-  });
-
-  await test.step('page 3', () => {
-    const message = help.pages({ userId: 'user_id', index: 2 });
-
-    assertSnapshot(test, message.json());
-  });
-
-  await test.step('page 4', () => {
-    const message = help.pages({ userId: 'user_id', index: 3 });
-
-    assertSnapshot(test, message.json());
+      await assertSnapshot(test, message.json());
+    }
   });
 });

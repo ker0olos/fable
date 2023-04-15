@@ -290,6 +290,17 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'likeslist',
+    description: 'List all characters liked',
+    options: [
+      Option({
+        name: 'user',
+        description: 'The user of the likes list',
+        type: Type.USER,
+      }),
+    ],
+  }),
+  ...Command({
     name: 'give',
     description: 'Give characters to another user',
     aliases: ['gift'],
@@ -393,16 +404,24 @@ export const commands = [
             value: 1,
           },
           {
-            name: 'Roadmap',
+            name: 'Voting',
             value: 2,
           },
           {
-            name: 'All Commands',
+            name: 'Roadmap',
             value: 3,
           },
           {
-            name: 'Admin Commands',
+            name: 'Essential Commands',
             value: 4,
+          },
+          {
+            name: 'Other Commands',
+            value: 5,
+          },
+          {
+            name: 'Admin Commands',
+            value: 6,
           },
         ],
       }),
@@ -528,17 +547,6 @@ export const commands = [
             ],
           }),
         ],
-      }),
-    ],
-  }),
-  ...Command({
-    name: 'likeslist',
-    description: 'List all characters liked',
-    options: [
-      Option({
-        name: 'user',
-        description: 'The user of the likes list',
-        type: Type.USER,
       }),
     ],
   }),

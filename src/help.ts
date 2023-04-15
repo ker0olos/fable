@@ -30,7 +30,7 @@ function pages(
             '',
             `__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5${discord.emotes.smolStar}appearing is equal or less than 1%.`,
             '',
-            '`/q` allows you to do gacha pulls with no animations.',
+            '> *`/q` allows you to do gacha pulls with no animations.*',
             '\u200B',
           ].join('\n'))
           .setFooter({ text: 'aliases: /w, /q' }),
@@ -60,10 +60,39 @@ function pages(
             '`/party assign name: spot:` to assign a character you have to your party;',
             'leaving the `spot:` empty will assign the character to the first empty spot or override the last spot.',
             '',
-            '`/collection` can be used to browse your characters and select your potential party members.',
+            '> *`/collection` can be used to browse your characters and select your potential party members.*',
             '\u200B',
           ].join('\n'))
           .setFooter({ text: 'aliases: /team, /p' }),
+      ),
+    new discord.Message()
+      .addComponents([
+        new discord.Component()
+          .setLabel('/vote')
+          .setId('now', userId),
+        new discord.Component()
+          .setId('buy', 'bguaranteed', userId, '5')
+          .setLabel(`/buy guaranteed 5`),
+      ])
+      .addEmbed(
+        new discord.Embed()
+          .setAuthor({ name: '3.' })
+          .setTitle('`/vote`')
+          .setDescription([
+            'Voting allows everyone to buy guaranteed pulls of specific ranks.',
+            '',
+            '> **Note** There will be another way to get guaranteed pulls without voting coming soon',
+            '',
+            '__Voting on weekends__ awards **2** votes instead of **1** (_Saturday and Sunday_).',
+            '',
+            `\`/buy random\` gets you random pulls, they are identical to the pulls you can get each ${RECHARGE_MINS} minutes.`,
+            '',
+            '`/buy guaranteed` however is special, while it can expansive it will guarantee that you get a character form one specific rank. Use the guaranteed pulls you have by calling `/pull stars:`',
+            '',
+            `> *Example: \`/buy guaranteed stars: 5\` will guarantee you a random 5${discord.emotes.smolStar} character.*`,
+            '\u200B',
+          ].join('\n'))
+          .setFooter({ text: 'aliases: /shop' }),
       ),
     new discord.Message()
       .addComponents([
@@ -96,7 +125,7 @@ function pages(
     new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setAuthor({ name: 'All Commands' })
+          .setAuthor({ name: 'Essential Commands' })
           .setDescription([
             '- `/gacha` `/w`: _start a new gacha pull_',
             '- `/q`: _start a gacha pull but with no animations_',
@@ -114,16 +143,23 @@ function pages(
             '- `/collection list` `/coll list` `/mm list`: _list user characters in bulks_',
             '- `/collection stars` `/coll stars` `/mm stars`: _view user your stars_',
             '- `/collection media` `/coll media` `/mm media`: _view user characters in a specific media_',
-            '',
             '- `/found` `/obtained` `/owned`: _list all characters found from a specific media_',
-            '',
-            '- `/profile` `/user`: _view user profile and party_',
-            '',
-            '- `/image` `/custom`: _change the image of a character_',
-            '- `/nick`: _change the nickname of a character_',
             '',
             '- `/trade` `/offer`: _trade characters with another user_',
             '- `/give` `/gift`: _give characters to another user_',
+          ].join('\n')),
+      ),
+    new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setAuthor({ name: 'Other Commands' })
+          .setDescription([
+            '- `/nick`: _change the nickname of a character_',
+            '- `/image` `/custom`: _change the image of a character_',
+            '',
+            '- `/like`: _like a character to be notified if someone finds them',
+            '- `/unlike`: _remove character from your likes',
+            '- `/likeslist`: _list user liked characters_',
             '',
             '- `/buy random` `/shop random`: _use votes to buy random pulls_',
             '- `/buy guaranteed` `/shop guaranteed`: _use votes to buy pulls with a guaranteed rank_',
