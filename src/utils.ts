@@ -1,5 +1,5 @@
-// @deno-types="https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.d.ts"
-import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.js';
+// @deno-types="https://raw.githubusercontent.com/greggman/unzipit/v1.4.3/dist/unzipit.module.d.ts"
+import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.4.3/dist/unzipit.module.js';
 
 import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 

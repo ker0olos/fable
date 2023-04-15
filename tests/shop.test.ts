@@ -1,8 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from 'https://deno.land/std@0.179.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.183.0/testing/asserts.ts';
 
-import { stub } from 'https://deno.land/std@0.179.0/testing/mock.ts';
+import { stub } from 'https://deno.land/std@0.183.0/testing/mock.ts';
 
 import shop from '../src/shop.ts';
 

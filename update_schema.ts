@@ -1,4 +1,4 @@
-import { load as Dotenv } from 'https://deno.land/std@0.179.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.183.0/dotenv/mod.ts';
 
 try {
   await Dotenv({ export: true, allowEmptyValues: true });

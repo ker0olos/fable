@@ -3,15 +3,15 @@
 import {
   assertEquals,
   assertRejects,
-} from 'https://deno.land/std@0.179.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.183.0/testing/asserts.ts';
 
-import { FakeTime } from 'https://deno.land/std@0.179.0/testing/time.ts';
+import { FakeTime } from 'https://deno.land/std@0.183.0/testing/time.ts';
 
 import {
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.179.0/testing/mock.ts';
+} from 'https://deno.land/std@0.183.0/testing/mock.ts';
 
 import packs from '../src/packs.ts';
 import trade from '../src/trade.ts';

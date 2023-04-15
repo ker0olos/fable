@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { spy } from 'https://deno.land/std@0.179.0/testing/mock.ts';
+import { spy } from 'https://deno.land/std@0.183.0/testing/mock.ts';
 
 import {
   Client,
