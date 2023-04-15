@@ -192,43 +192,8 @@ async function findCharacter({
   return result;
 }
 
-async function userCharacters({
-  userId,
-  guildId,
-}: {
-  userId: string;
-  guildId: string;
-}): Promise<Schema.Inventory['characters']> {
-  const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        characters {
-          id
-          mediaId
-          rating
-        }
-      }
-    }
-  `;
-
-  const { characters } = (await request<{
-    getUserInventory: Schema.Inventory;
-  }>({
-    url: faunaUrl,
-    query,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-    },
-  })).getUserInventory;
-
-  return characters;
-}
-
-async function stars({
+function stars({
+  token,
   userId,
   guildId,
   stars,
@@ -236,13 +201,14 @@ async function stars({
   before,
   after,
 }: {
+  token: string;
   userId: string;
   guildId: string;
   stars: number;
   nick?: string;
   before?: string;
   after?: string;
-}): Promise<discord.Message> {
+}): discord.Message {
   const query = gql`
     query ($userId: String!, $guildId: String!, $stars: Int!, $before: String, $after: String) {
       getUserStars(userId: $userId, guildId: $guildId, stars: $stars, before: $before, after: $after) {
@@ -256,7 +222,7 @@ async function stars({
     }
   `;
 
-  const { character, anchor } = (await request<{
+  request<{
     getUserStars: {
       character?: Schema.Inventory['characters'][0];
       anchor?: string;
@@ -274,88 +240,110 @@ async function stars({
       before,
       after,
     },
-  })).getUserStars;
+  })
+    .then(async ({ getUserStars }) => {
+      const { character, anchor } = getUserStars;
 
-  if (!character || !anchor) {
-    const message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setDescription(
-            `${
-              nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
-            } have any ${stars}${discord.emotes.smolStar}characters`,
-          ),
-      );
+      if (!character || !anchor) {
+        const message = new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(
+                `${
+                  nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
+                } have any ${stars}${discord.emotes.smolStar}characters`,
+              ),
+          );
 
-    if (!nick) {
-      message.addComponents([
-        // `/gacha` shortcut
-        new discord.Component()
-          .setId('gacha', userId)
-          .setLabel('/gacha'),
+        if (!nick) {
+          message.addComponents([
+            // `/gacha` shortcut
+            new discord.Component()
+              .setId('gacha', userId)
+              .setLabel('/gacha'),
+          ]);
+        }
+
+        return message.patch(token);
+      }
+
+      const results: [
+        (Media | DisaggregatedMedia)[],
+        (Character | DisaggregatedCharacter)[],
+      ] = await Promise.all([
+        packs.media({ ids: [character.mediaId], guildId }),
+        packs.characters({ ids: [character.id], guildId }),
       ]);
-    }
 
-    return message;
-  }
+      let message: discord.Message;
 
-  const results: [
-    (Media | DisaggregatedMedia)[],
-    (Character | DisaggregatedCharacter)[],
-  ] = await Promise.all([
-    packs.media({ ids: [character.mediaId], guildId }),
-    packs.characters({ ids: [character.id], guildId }),
-  ]);
+      if (!results[0].length) {
+        message = new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setDescription('This media was removed or disabled'),
+          );
+      } else if (!results[1].length) {
+        message = new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setDescription('This character was removed or disabled'),
+          );
+      } else {
+        const media = results[0][0];
 
-  let message: discord.Message;
+        message = srch.characterMessage(
+          results[1][0],
+          {
+            rating: new Rating({ stars: character.rating }),
+            media: { title: packs.aliasToArray(media.title)[0] },
+            relations: false,
+          },
+        ).addComponents([
+          new discord.Component()
+            .setId('media', `${media.packId}:${media.id}`)
+            .setLabel(`/${media.type.toLowerCase()}`),
+        ]);
 
-  if (!results[0].length) {
-    message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setDescription('This media was removed or disabled'),
-      );
-  } else if (!results[1].length) {
-    message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setDescription('This character was removed or disabled'),
-      );
-  } else {
-    const media = results[0][0];
+        if (!nick) {
+          message.insertComponents([
+            new discord.Component()
+              .setId('passign', character.id)
+              .setLabel(`/p assign`),
+          ]);
+        }
+      }
 
-    message = srch.characterMessage(
-      results[1][0],
-      {
-        rating: new Rating({ stars: character.rating }),
-        media: { title: packs.aliasToArray(media.title)[0] },
-        relations: false,
-      },
-    ).addComponents([
-      new discord.Component()
-        .setId('media', `${media.packId}:${media.id}`)
-        .setLabel(`/${media.type.toLowerCase()}`),
-    ]);
+      return discord.Message.anchor({
+        id: userId,
+        type: 'cstars',
+        target: stars,
+        anchor,
+        message,
+      }).patch(token);
+    })
+    .catch(async (err) => {
+      if (!config.sentry) {
+        throw err;
+      }
 
-    if (!nick) {
-      message.insertComponents([
-        new discord.Component()
-          .setId('passign', character.id)
-          .setLabel(`/p assign`),
-      ]);
-    }
-  }
+      const refId = utils.captureException(err);
 
-  return discord.Message.anchor({
-    id: userId,
-    type: 'cstars',
-    target: stars,
-    anchor,
-    message,
-  });
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
 }
 
-async function media({
+function media({
+  token,
   userId,
   guildId,
   id,
@@ -364,6 +352,7 @@ async function media({
   before,
   after,
 }: {
+  token: string;
   userId: string;
   guildId: string;
   id?: string;
@@ -371,114 +360,145 @@ async function media({
   nick?: string;
   before?: string;
   after?: string;
-}): Promise<discord.Message> {
-  const results: (Media | DisaggregatedMedia)[] = await packs
-    .media(id ? { ids: [id], guildId } : { search, guildId });
-
-  if (!results.length) {
-    throw new Error('404');
-  }
-
-  const media = results[0];
-  const mediaId = `${media.packId}:${media.id}`;
-
-  const titles = packs.aliasToArray(media.title);
-
-  const query = gql`
-    query ($userId: String!, $guildId: String!, $mediaId: String!, $before: String, $after: String) {
-      getUserMedia(userId: $userId, guildId: $guildId, mediaId: $mediaId, before: $before, after: $after) {
-        anchor
-        character {
-          id
-          mediaId
-          rating
+}): discord.Message {
+  packs
+    .media(id ? { ids: [id], guildId } : { search, guildId }).then(
+      async (results) => {
+        if (!results.length) {
+          throw new Error('404');
         }
-      }
-    }
-  `;
 
-  const { character, anchor } = (await request<{
-    getUserMedia: {
-      character?: Schema.Inventory['characters'][0];
-      anchor?: string;
-    };
-  }>({
-    url: faunaUrl,
-    query,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-      mediaId,
-      before,
-      after,
-    },
-  })).getUserMedia;
+        const media = results[0];
+        const mediaId = `${media.packId}:${media.id}`;
 
-  if (!character || !anchor) {
-    const message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setDescription(
-            `${
-              nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
-            } have any ${titles[0]} characters`,
-          ),
-      );
+        const titles = packs.aliasToArray(media.title);
 
-    if (!nick) {
-      message.insertComponents([
-        // `/gacha` shortcut
-        new discord.Component()
-          .setId('gacha', userId)
-          .setLabel('/gacha'),
-      ]);
-    }
+        const query = gql`
+          query ($userId: String!, $guildId: String!, $mediaId: String!, $before: String, $after: String) {
+            getUserMedia(userId: $userId, guildId: $guildId, mediaId: $mediaId, before: $before, after: $after) {
+              anchor
+              character {
+                id
+                mediaId
+                rating
+              }
+            }
+          }
+        `;
 
-    return message;
-  }
+        const { character, anchor } = (await request<{
+          getUserMedia: {
+            character?: Schema.Inventory['characters'][0];
+            anchor?: string;
+          };
+        }>({
+          url: faunaUrl,
+          query,
+          headers: {
+            'authorization': `Bearer ${config.faunaSecret}`,
+          },
+          variables: {
+            userId,
+            guildId,
+            mediaId,
+            before,
+            after,
+          },
+        })).getUserMedia;
 
-  const characters = await packs.characters({ ids: [character.id], guildId });
+        if (!character || !anchor) {
+          const message = new discord.Message()
+            .addEmbed(
+              new discord.Embed()
+                .setDescription(
+                  `${
+                    nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
+                  } have any ${titles[0]} characters`,
+                ),
+            );
 
-  let message: discord.Message;
+          if (!nick) {
+            message.insertComponents([
+              // `/gacha` shortcut
+              new discord.Component()
+                .setId('gacha', userId)
+                .setLabel('/gacha'),
+            ]);
+          }
 
-  if (!characters.length) {
-    message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setDescription('This character was removed or disabled'),
-      );
-  } else {
-    message = srch.characterMessage(
-      characters[0],
-      {
-        rating: new Rating({ stars: character.rating }),
-        relations: false,
+          return message.patch(token);
+        }
+
+        const characters = await packs.characters({
+          ids: [character.id],
+          guildId,
+        });
+
+        let message: discord.Message;
+
+        if (!characters.length) {
+          message = new discord.Message()
+            .addEmbed(
+              new discord.Embed()
+                .setDescription('This character was removed or disabled'),
+            );
+        } else {
+          message = srch.characterMessage(
+            characters[0],
+            {
+              rating: new Rating({ stars: character.rating }),
+              relations: false,
+            },
+          ).addComponents([
+            new discord.Component()
+              .setId('media', `${media.packId}:${media.id}`)
+              .setLabel(`/${media.type.toLowerCase()}`),
+          ]);
+
+          if (!nick) {
+            message.insertComponents([
+              new discord.Component()
+                .setId('passign', character.id)
+                .setLabel(`/p assign`),
+            ]);
+          }
+        }
+
+        return discord.Message.anchor({
+          id: userId,
+          type: 'cmedia',
+          target: mediaId,
+          anchor,
+          message,
+        }).patch(token);
       },
-    ).addComponents([
-      new discord.Component()
-        .setId('media', `${media.packId}:${media.id}`)
-        .setLabel(`/${media.type.toLowerCase()}`),
-    ]);
+    ).catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'Found _nothing_ matching that query!',
+            ),
+          ).patch(token);
+      }
 
-    if (!nick) {
-      message.insertComponents([
-        new discord.Component()
-          .setId('passign', character.id)
-          .setLabel(`/p assign`),
-      ]);
-    }
-  }
+      if (!config.sentry) {
+        throw err;
+      }
 
-  return discord.Message.anchor({
-    id: userId,
-    type: 'cmedia',
-    target: mediaId,
-    anchor,
-    message,
-  });
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
 }
 
 function customize({
@@ -632,6 +652,148 @@ function customize({
   return loading;
 }
 
+function like({
+  token,
+  userId,
+  guildId,
+  search,
+  undo,
+  id,
+}: {
+  token: string;
+  userId: string;
+  guildId: string;
+  undo: boolean;
+  search?: string;
+  id?: string;
+}): discord.Message {
+  const mutation = gql`
+    mutation ($userId: String!, $guildId: String!, $characterId: String!) {
+  ${
+    undo
+      ? 'unlikeCharacter'
+      : 'likeCharacter'
+  }(userId: $userId, guildId: $guildId, characterId: $characterId) {
+        ok
+        character {
+          id
+          image
+          nickname
+          mediaId
+          rating
+          user {
+            id
+          }
+        }
+      }
+    }
+  `;
+
+  packs
+    .characters(id ? { ids: [id], guildId } : { search, guildId })
+    .then(async (results: (Character | DisaggregatedCharacter)[]) => {
+      if (!results.length) {
+        throw new Error('404');
+      }
+
+      const message = new discord.Message();
+
+      const characterId = `${results[0].packId}:${results[0].id}`;
+
+      const response = (await request<{
+        likeCharacter: Schema.Mutation;
+        unlikeCharacter: Schema.Mutation;
+      }>({
+        url: faunaUrl,
+        query: mutation,
+        headers: {
+          'authorization': `Bearer ${config.faunaSecret}`,
+        },
+        variables: {
+          userId,
+          guildId,
+          characterId,
+        },
+      }))[undo ? 'unlikeCharacter' : 'likeCharacter'];
+
+      if (!response.ok) {
+        switch (response.error) {
+          default:
+            throw new Error(response.error);
+        }
+      }
+
+      message
+        .addEmbed(
+          new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked'),
+        );
+
+      message
+        .addEmbed(srch.characterEmbed(
+          await packs.aggregate<Character>({
+            guildId,
+            character: results[0],
+            end: 1,
+          }),
+          {
+            footer: true,
+            description: false,
+            media: { title: true },
+            rating: response.character?.rating
+              ? new Rating({ stars: response.character?.rating })
+              : true,
+            existing: !undo ? response.character : undefined,
+            mode: !undo ? 'full' : 'thumbnail',
+          },
+        ));
+
+      if (!undo) {
+        message.addComponents([
+          new discord.Component()
+            .setId(`character`, characterId)
+            .setLabel('/character'),
+        ]);
+
+        if (response.character?.user?.id === userId) {
+          message.addComponents([
+            new discord.Component()
+              .setId('passign', response.character.id)
+              .setLabel(`/p assign`),
+          ]);
+        }
+      }
+
+      return message.patch(token);
+    })
+    .catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'Found _nothing_ matching that query!',
+            ),
+          ).patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
+}
+
 function list({
   token,
   userId,
@@ -644,6 +806,7 @@ function list({
   index: number;
   userId: string;
   guildId: string;
+  likes?: boolean;
   filter?: number;
   nick?: string;
 }): discord.Message {
@@ -814,14 +977,135 @@ function list({
   return loading;
 }
 
+function likeslist({
+  token,
+  userId,
+  guildId,
+  index,
+  nick,
+}: {
+  token: string;
+  index: number;
+  userId: string;
+  guildId: string;
+  nick?: string;
+}): discord.Message {
+  const query = gql`
+    query ($userId: String!, $guildId: String!) {
+      getUserInventory(userId: $userId, guildId: $guildId) {
+        user {
+          likes
+        }
+      }
+    }
+  `;
+
+  request<{
+    getUserInventory: Schema.Inventory;
+  }>({
+    url: faunaUrl,
+    query,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+    },
+  })
+    .then(async ({ getUserInventory }) => {
+      const embed = new discord.Embed();
+
+      const message = new discord.Message();
+
+      const charactersIds = getUserInventory.user.likes;
+
+      if (!charactersIds?.length) {
+        const message = new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(
+                `${
+                  nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
+                } have any likes`,
+              ),
+          );
+
+        return message.patch(token);
+      }
+
+      const chunks = utils.chunks(Array.from(charactersIds), 8);
+
+      const results = await packs.characters({ ids: chunks[index], guildId });
+
+      const charactersNames = await Promise.all(
+        results.map(async (character) => {
+          const [char, existing] = await Promise.all([
+            await packs.aggregate<Character>({
+              guildId,
+              character,
+              end: 1,
+            }),
+            await user.findCharacter({
+              guildId,
+              characterId: `${character.packId}:${character.id}`,
+            }),
+          ]);
+
+          const rating = existing?.rating ?? Rating.fromCharacter(char).stars;
+
+          return `${rating}${discord.emotes.smolStar} ${
+            existing ? `<@${existing.user.id}> ` : ''
+          }${utils.wrap(packs.aliasToArray(char.name)[0])}`;
+        }),
+      );
+
+      if (results.length !== chunks[index].length) {
+        charactersNames.push(
+          `_${chunks[index].length - results.length} disabled characters_`,
+        );
+      }
+
+      embed.setDescription(charactersNames.join('\n'));
+
+      return discord.Message.page({
+        index,
+        type: 'likes',
+        target: discord.join(userId),
+        total: chunks.length,
+        message: message.addEmbed(embed),
+        next: index + 1 < chunks.length,
+      }).patch(token);
+    })
+    .catch(async (err) => {
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
+}
+
 const user = {
   now,
   findCharacter,
-  userCharacters,
   customize,
   stars,
   media,
+  likeslist,
   list,
+  like,
 };
 
 export default user;

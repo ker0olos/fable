@@ -19,6 +19,7 @@ export interface User {
   availableVotes?: NumberExpr;
   guarantees: NumberExpr[];
   inventories: RefExpr[];
+  likes: StringExpr[];
   badges: RefExpr[];
 }
 
@@ -64,6 +65,7 @@ export function getUser(id: StringExpr): UserExpr {
       // create a new user then return it
       fql.Create<User>('user', {
         id,
+        likes: [],
         guarantees: [],
         inventories: [],
         badges: [
@@ -136,8 +138,8 @@ export function getInventory(
         {
           // create a new inventory
           createdInventory: fql.Create<Inventory>('inventory', {
-            availablePulls: MAX_PULLS,
             characters: [],
+            availablePulls: MAX_PULLS,
             instance: fql.Ref(instance),
             user: fql.Ref(user),
           }),

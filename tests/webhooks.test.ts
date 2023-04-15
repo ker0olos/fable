@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-explicit-any
+
 import {
   assertEquals,
   assertRejects,
@@ -31,7 +33,6 @@ Deno.test('topgg', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -82,7 +83,6 @@ Deno.test('topgg', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -98,7 +98,6 @@ Deno.test('topgg', async (test) => {
       () =>
         Promise.resolve({
           setContent: setContentStub,
-          // deno-lint-ignore no-explicit-any
         } as any),
     );
 
@@ -160,12 +159,11 @@ Deno.test('topgg', async (test) => {
         JSON.parse(
           (fetchStub.calls[1].args[1]?.body as FormData)?.get(
             'payload_json',
-            // deno-lint-ignore no-explicit-any
           ) as any,
         ),
         {
           content:
-            'Thanks for voting, <@user_id>. Use `/buy random` and `/buy guaranteed` to spent your votes.',
+            'Thanks for voting, <@user_id>.\nUse </buy random:1095251308530913311> or </buy guaranteed:1095251308530913311> to spent your votes.',
           embeds: [],
           components: [],
           attachments: [],
@@ -195,7 +193,6 @@ Deno.test('topgg', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -238,7 +235,6 @@ Deno.test('topgg', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -284,7 +280,6 @@ Deno.test('topgg', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -330,7 +325,6 @@ Deno.test('topgg', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 
@@ -382,7 +376,6 @@ Deno.test('topgg', async (test) => {
               },
             },
           }))),
-        // deno-lint-ignore no-explicit-any
       } as any),
     );
 

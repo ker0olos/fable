@@ -601,6 +601,10 @@ snapshot[`model 3`] = `
                                                           raw: [
                                                           ],
                                                         },
+                                                        likes: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                   },
@@ -1456,6 +1460,10 @@ snapshot[`model 3`] = `
                                                           },
                                                         },
                                                         inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                        likes: Expr {
                                                           raw: [
                                                           ],
                                                         },
@@ -2416,6 +2424,10 @@ snapshot[`model 4`] = `
                                                           raw: [
                                                           ],
                                                         },
+                                                        likes: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                   },
@@ -3365,6 +3377,10 @@ snapshot[`model 4`] = `
                                                           },
                                                         },
                                                         inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                        likes: Expr {
                                                           raw: [
                                                           ],
                                                         },

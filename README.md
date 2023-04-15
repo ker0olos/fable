@@ -9,7 +9,7 @@
 [![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304/vote)
 [![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
 
-[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands)
+[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot)
 
 [![Discord Support Server](https://img.shields.io/discord/992416714497212518?label=Discord%20Support%20Server&style=for-the-badge)][discord]
 
@@ -26,7 +26,7 @@
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227321932-2ad8d36c-e56c-46e9-91da-161b79eeb029.gif" alt="Animated Pulls">
 </i>
 
-Fable is a free, open-source gacha[^1] app — a simple, powerful Mudae
+Fable is a free, open-source gacha[^1] bot — a simple, powerful Mudae
 alternative. Like Mudae, you can pull anime characters. Unlike Mudae, there are
 no premiums and no pay-to-win bullshit.
 
@@ -81,12 +81,11 @@ Fable is actively developed with new game modes and features frequently.
 
 ## FAQ
 
-<details><summary>The bot didn't appear in my server!</summary>
+<details><summary>How can I limit Fable to 1 channel?</summary>
 <p>
 
-**It won't**. New bots don't appear as users. Just go ahead and try using the
-"/" commands. If you want to check the bot settings go to server settings then
-"Integrations" (PC client only).
+Go to **Server Settings** then **Integrations** then **Fable**\
+From there you can control the permissions globally or even per command.
 
 </p>
 </details>
@@ -103,13 +102,14 @@ you can go tell discord to add custom prefixes to "slash" commands instead of
 </p>
 </details>
 
-<details><summary>How can I add/install a new pack on my server?</summary>
+<details><summary>How can I install a new pack on my server?</summary>
 <p>
 
 We plan to have a Marketplace command where you can browse and install popular
-packs, but as of right now you'll need to know the pack's github url and run
-`/packs install github: https://github.com/username/packname` But we also have a
-channel in our discord where people share the packs they made.
+but for now we have a channel in our discord where people share the packs they
+made.\
+Check them then use
+`/packs install github: https://github.com/username/packname`
 
 </p>
 </details>
@@ -117,19 +117,17 @@ channel in our discord where people share the packs they made.
 <details><summary>How can I create a new pack?</summary>
 <p>
 
-Currently, it's only possible through editing JSON files, we recommend that you
-check
+Currently, it's only possible through editing JSON files. Please visit check
 [fable-community/example](https://github.com/fable-community/fable-pack-example),
 it includes most of the info you need.
 
 </p>
 </details>
 
-<details><summary>How to remove/uninstall a pack from my server?</summary>
+<details><summary>How to uninstall a pack from my server?</summary>
 <p>
 
-Like installing packs, run `/packs uninstall id: pack-id`. If you don't know the
-id of the pack you want to uninstall, then use `/packs community` instead.
+Use `/packs community` or `/packs uninstall id: pack-id`.
 
 </p>
 </details>

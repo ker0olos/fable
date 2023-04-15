@@ -65,7 +65,7 @@ function Match(index: IndexExpr, ...terms: ExprArg[]): MatchExpr {
   return _fql.Match(index, ...terms);
 }
 
-function Get(refOrMatch: RefExpr | MatchExpr): Expr {
+function Get(refOrMatch: Expr | ExprArg): Expr {
   return _fql.Get(refOrMatch);
 }
 
@@ -92,15 +92,15 @@ function Includes<T extends ExprArg>(
   return _fql.ContainsValue(value, documentOrArray) as unknown as BooleanExpr;
 }
 
-function Paginate(
+function Paginate<T extends ExprArg>(
   expr: Expr,
   { size, before, after }: { size?: number; before?: any; after?: any },
-): Expr {
+): T[] {
   return _fql.Paginate(expr, {
     size,
     before,
     after,
-  });
+  }) as unknown as T[];
 }
 
 function Foreach<T = ExprArg>(
@@ -217,7 +217,7 @@ function Var(name: StringExpr): Expr {
 
 function Select<T extends ExprArg>(
   path: (StringExpr | NumberExpr)[],
-  from: Expr,
+  from: Expr | ExprArg[],
   _default?: T,
 ): T {
   return _fql.Select(path, from, _default) as unknown as T;
@@ -339,6 +339,7 @@ export const fql = {
   LTE,
   Map,
   Match,
+  Max,
   Merge,
   Min,
   Multiply,
@@ -359,7 +360,6 @@ export const fql = {
   ToString,
   Update,
   Var,
-  Max,
 };
 
 export const FakeClient = () => ({

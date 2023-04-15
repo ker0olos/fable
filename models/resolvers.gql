@@ -1,10 +1,11 @@
 type Response @embedded {
   ok: Boolean!
   error: String
-  character: Character
-  inventory: Inventory
-  manifest: Manifest
   user: User
+  likes: [String]
+  inventory: Inventory
+  character: Character
+  manifest: Manifest
 }
 
 type Verify @embedded {
@@ -83,6 +84,13 @@ type Mutation {
     roleChance: Int
     role: String
   ): Response! @resolver(name: "add_character_to_inventory")
+
+  #
+  likeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
+    @resolver(name: "like_character")
+  #
+  unlikeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
+    @resolver(name: "unlike_character")
 
   #
   setCharacterToParty(userId: String!, guildId: String!, characterId: String!, spot: Int): Response!

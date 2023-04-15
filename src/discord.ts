@@ -85,6 +85,14 @@ export type Suggestion = {
   value: unknown;
 };
 
+export type Option = {
+  label: string;
+  value: string;
+  description?: string;
+  default?: boolean;
+  emote?: Emote;
+};
+
 export type Member = {
   nick?: string;
   avatar?: string;
@@ -124,15 +132,17 @@ type ComponentInternal = {
   placeholder?: string;
   disabled?: boolean;
   url?: string;
-  // min_values?: number;
-  // max_values?: number;
-  // options?: {
-  //   label: string;
-  //   value: string;
-  //   description?: string;
-  //   default?: boolean;
-  //   emoji?: Emote;
-  // }[];
+  // deno-lint-ignore camelcase
+  min_values?: number;
+  // deno-lint-ignore camelcase
+  max_values?: number;
+  options?: {
+    label: string;
+    value: string;
+    description?: string;
+    default?: boolean;
+    emoji?: Emote;
+  }[];
 };
 
 type EmbedInternal = {
@@ -247,6 +257,7 @@ export class Interaction<Options> {
       channel_id: string;
       resolved?: Resolved;
       target_id?: string;
+      values?: string[];
       options?: {
         type: number;
         name: string;
@@ -335,14 +346,14 @@ export class Interaction<Options> {
         const custom = data.custom_id.split(splitter);
 
         this.customType = custom[0];
-        this.customValues = custom.slice(1);
+        this.customValues = data.values?.length ? data.values : custom.slice(1);
 
-        if (data.components) {
-          // deno-lint-ignore no-explicit-any
-          data.components[0].components.forEach((component: any) => {
-            this.options[component.custom_id] = component.value as Options;
-          });
-        }
+        // if (data.components) {
+        //   // deno-lint-ignore no-explicit-any
+        //   data.components[0].components.forEach((component: any) => {
+        //     this.options[component.custom_id] = component.value as Options;
+        //   });
+        // }
 
         break;
       }
@@ -400,6 +411,20 @@ export class Component {
 
   setUrl(url: string): Component {
     this.#data.url = url;
+    return this;
+  }
+
+  setOptions(options: Option[]): Component {
+    if (options.length) {
+      this.#data.type = ComponentType.StringSelect;
+      this.#data.options = options.slice(0, 25).map((option) => ({
+        label: option.label,
+        value: option.value,
+        description: option.description,
+        default: option.default,
+        emoji: option.emote,
+      }));
+    }
     return this;
   }
 

@@ -12,10 +12,10 @@ try {
   //
 }
 
-// enum CommandType {
-//   'CHAT' = 1,
-//   'USER' = 2,
-// }
+enum CommandType {
+  'CHAT' = 1,
+  'USER' = 2,
+}
 
 const spots = [{
   name: '1',
@@ -69,7 +69,7 @@ type Option = {
 
 type Command = {
   name: string;
-  // type?: CommandType;
+  type?: CommandType;
   description?: string;
   options?: ReturnType<typeof Option>[];
   aliases?: string[];
@@ -86,7 +86,7 @@ const Option = (option: Option): Option => option;
 const Command = ({
   name,
   description,
-  // type,
+  type,
   options,
   aliases,
   defaultPermission,
@@ -104,7 +104,7 @@ const Command = ({
 
   const commands = [{
     name,
-    // type,
+    type,
     description,
     'default_member_permissions': defaultPermission,
     options: options?.map((option) => transformOption(option)),
@@ -266,6 +266,41 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'like',
+    description: 'Like a character to be notified if someone finds them',
+    options: [
+      Option({
+        name: 'name',
+        description: 'The name of the character',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'unlike',
+    description: 'Remove a character from your likes list',
+    options: [
+      Option({
+        name: 'name',
+        description: 'The name of the character',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'likeslist',
+    description: 'List all characters liked',
+    options: [
+      Option({
+        name: 'user',
+        description: 'The user of the likes list',
+        type: Type.USER,
+      }),
+    ],
+  }),
+  ...Command({
     name: 'give',
     description: 'Give characters to another user',
     aliases: ['gift'],
@@ -369,16 +404,24 @@ export const commands = [
             value: 1,
           },
           {
-            name: 'Roadmap',
+            name: 'Voting',
             value: 2,
           },
           {
-            name: 'All Commands',
+            name: 'Roadmap',
             value: 3,
           },
           {
-            name: 'Admin Commands',
+            name: 'Essential Commands',
             value: 4,
+          },
+          {
+            name: 'Other Commands',
+            value: 5,
+          },
+          {
+            name: 'Admin Commands',
+            value: 6,
           },
         ],
       }),
@@ -508,6 +551,10 @@ export const commands = [
     ],
   }),
   // party management
+  ...Command({
+    name: 'Party',
+    type: CommandType.USER,
+  }),
   ...Command({
     name: 'party',
     description: 'party management commands',

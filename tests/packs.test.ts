@@ -7,6 +7,8 @@ import {
   assertRejects,
 } from 'https://deno.land/std@0.179.0/testing/asserts.ts';
 
+import { FakeTime } from 'https://deno.land/std@0.179.0/testing/time.ts';
+
 import {
   assertSpyCalls,
   stub,
@@ -17,6 +19,9 @@ import { assertSnapshot } from 'https://deno.land/std@0.179.0/testing/snapshot.t
 import validate, { assertValidManifest } from '../src/validate.ts';
 
 import packs from '../src/packs.ts';
+import github from '../src/github.ts';
+
+import config from '../src/config.ts';
 
 import * as anilist from '../packs/anilist/api.ts';
 
@@ -4252,5 +4257,1592 @@ Deno.test('populate relations', async (test) => {
         },
       },
     );
+  });
+});
+
+Deno.test('/packs [builtin-community]', async (test) => {
+  await test.step('builtin packs', async () => {
+    const manifest: Manifest = {
+      author: 'author',
+      id: 'manifest_id',
+      description: 'description',
+      image: 'image',
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Builtin },
+          { manifest, type: PackType.Builtin },
+        ]),
+    );
+
+    try {
+      const message = await packs.pages({
+        type: PackType.Builtin,
+        guildId: 'guild_id',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'builtin==1=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/2',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'builtin==1=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'Builtin packs are developed and maintained directly by Fable',
+          }, {
+            type: 'rich',
+            title: 'manifest_id',
+            description: 'description',
+            footer: {
+              text: 'author',
+            },
+            thumbnail: {
+              url: 'image',
+            },
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
+  });
+
+  await test.step('community packs', async () => {
+    const manifest: Manifest = {
+      author: 'author',
+      id: 'manifest_id',
+      description: 'description',
+      image: 'image',
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Community },
+          { manifest, type: PackType.Community },
+        ]),
+    );
+
+    try {
+      const message = await packs.pages({
+        type: PackType.Community,
+        guildId: 'guild_id',
+        index: 1,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'community==0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '2/2',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'community==0=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'puninstall=manifest_id',
+                label: 'Uninstall',
+                style: 4,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'The following third-party packs were manually installed by your server members',
+          }, {
+            type: 'rich',
+            title: 'manifest_id',
+            description: 'description',
+            footer: {
+              text: 'author',
+            },
+            thumbnail: {
+              url: 'image',
+            },
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
+  });
+
+  await test.step('use title and id ', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      title: 'Title',
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Builtin }]),
+    );
+
+    try {
+      const message = await packs.pages({
+        type: PackType.Builtin,
+        guildId: 'guild_id',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'builtin==0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'builtin==0=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'Builtin packs are developed and maintained directly by Fable',
+          }, {
+            type: 'rich',
+            description: undefined,
+            title: 'Title',
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
+  });
+
+  await test.step('homepage url', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      url: 'https://example.org',
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          { manifest, type: PackType.Builtin },
+        ]),
+    );
+
+    try {
+      const message = await packs.pages({
+        type: PackType.Builtin,
+        guildId: 'guild_id',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'builtin==0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'builtin==0=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+              {
+                label: 'Homepage',
+                url: 'https://example.org',
+                style: 5,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description:
+              'Builtin packs are developed and maintained directly by Fable',
+          }, {
+            type: 'rich',
+            description: undefined,
+            title: 'pack-id',
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
+  });
+
+  await test.step('no manifest', async () => {
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    try {
+      const message = await packs.pages({
+        type: PackType.Builtin,
+        guildId: 'guild_id',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          components: [],
+          attachments: [],
+          embeds: [{
+            type: 'rich',
+            description: 'No packs have been installed yet',
+          }],
+        },
+      });
+    } finally {
+      listStub.restore();
+    }
+  });
+});
+
+Deno.test('/packs [install-validate]', async (test) => {
+  await test.step('shallow validate', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: 'manifest_id' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        shallow: true,
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              color: 43115,
+              description: 'Valid',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('reserved id (shallow)', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: 'anilist' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        shallow: true,
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              color: 10819367,
+              description: '```json\nanilist is a reserved id\n```',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('reserved id (not shallow)', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: 'anilist' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Pack is invalid and cannot be installed.',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('same manifest id but github id changed', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: 'manifest_id' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            id: 2,
+            type: PackType.Community,
+            manifest: {
+              id: 'manifest_id',
+            },
+          },
+        ]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'A pack with the same id is already installed.',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('existing conflicts with installation', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: 'manifest_id' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            type: PackType.Community,
+            manifest: {
+              id: 'fake-id',
+              conflicts: ['manifest_id'],
+            },
+          },
+        ]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '__Conflicts must be removed before you can install this pack__.',
+            },
+            {
+              type: 'rich',
+              description: `This pack conflicts with fake-id`,
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('installation conflicts with existing', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: 'manifest_id', conflicts: ['fake-id'] },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            type: PackType.Community,
+            manifest: {
+              id: 'fake-id',
+            },
+          },
+        ]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '__Conflicts must be removed before you can install this pack__.',
+            },
+            {
+              type: 'rich',
+              description: `This pack conflicts with fake-id`,
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('installation missing dependencies', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: 'manifest_id', depends: ['fake-id'] },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '__Dependencies must be installed before you can install this pack__.',
+            },
+            {
+              type: 'rich',
+              description: `This pack requires fake-id`,
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('invalid manifest (shallow)', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: '$&*#&$*#' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        shallow: true,
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              color: 10819367,
+              description: `\`\`\`json
+The .id string must match ^[-_a-z0-9]+$
+
+  1 | {
+> 2 |   "id": "$&*#&$*#"
+    |         ^^^^^^^^^^ Ensure this matches the regex pattern
+  3 | }
+\`\`\``,
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('invalid manifest (not shallow)', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: '$&*#&$*#' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Pack is invalid and cannot be installed.',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('pack id changed', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: 'new_manifest_id' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              addPackToInstance: {
+                ok: false,
+                error: 'PACK_ID_CHANGED',
+                manifest: {
+                  id: 'manifest_id',
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://graphql.us.fauna.com/graphql',
+      );
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'Pack id changed. Found `new_manifest_id` but it should ne `manifest_id`',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('installed', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          repo: { id: 1 },
+          manifest: { id: 'manifest_id' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              addPackToInstance: {
+                ok: true,
+                manifest: {
+                  author: 'author',
+                  id: 'manifest_id',
+                  description: 'description',
+                  url: 'url',
+                  image: 'image',
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://graphql.us.fauna.com/graphql',
+      );
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Installed',
+            },
+            {
+              type: 'rich',
+              title: 'manifest_id',
+              description: 'description',
+              footer: {
+                text: 'author',
+              },
+              thumbnail: {
+                url: 'image',
+              },
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('updated', async () => {
+    const manifestStub = stub(
+      github,
+      'manifest',
+      () =>
+        Promise.resolve({
+          id: 1,
+          manifest: { id: 'manifest_id' },
+        }) as any,
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              addPackToInstance: {
+                ok: true,
+                manifest: {
+                  author: 'author',
+                  id: 'manifest_id',
+                  description: 'description',
+                  url: 'url',
+                  image: 'image',
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            id: 1,
+            type: PackType.Community,
+            manifest: {
+              id: 'manifest_id',
+            },
+          },
+        ]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = packs.install({
+        guildId: 'guild_id',
+        token: 'token',
+        url: 'url',
+      });
+
+      assertEquals(message.json(), {
+        type: 5,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://graphql.us.fauna.com/graphql',
+      );
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Installed',
+            },
+            {
+              type: 'rich',
+              title: 'manifest_id',
+              description: 'description',
+              footer: {
+                text: 'author',
+              },
+              thumbnail: {
+                url: 'image',
+              },
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      manifestStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+});
+
+Deno.test('/packs uninstall', async (test) => {
+  await test.step('normal', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              removePackFromInstance: {
+                ok: true,
+                manifest: {
+                  author: 'author',
+                  id: 'manifest_id',
+                  description: 'description',
+                  url: 'url',
+                  image: 'image',
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await packs.uninstall({
+        guildId: 'guild_id',
+        manifestId: 'manifest_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              description: 'Uninstalled',
+              type: 'rich',
+            },
+            {
+              type: 'rich',
+              description: 'description',
+              footer: {
+                text: 'author',
+              },
+              thumbnail: {
+                url: 'image',
+              },
+              title: 'manifest_id',
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not found', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              removePackFromInstance: {
+                ok: false,
+                error: 'PACK_NOT_FOUND',
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      await assertRejects(
+        async () =>
+          await packs.uninstall({
+            guildId: 'guild_id',
+            manifestId: 'manifest_id',
+          }),
+        Error,
+        '404',
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('not installed', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              removePackFromInstance: {
+                ok: false,
+                error: 'PACK_NOT_INSTALLED',
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      await assertRejects(
+        async () =>
+          await packs.uninstall({
+            guildId: 'guild_id',
+            manifestId: 'manifest_id',
+          }),
+        Error,
+        '404',
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+    }
   });
 });

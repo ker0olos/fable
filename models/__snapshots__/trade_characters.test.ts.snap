@@ -326,6 +326,10 @@ snapshot[`model 1`] = `
                                                           raw: [
                                                           ],
                                                         },
+                                                        likes: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                   },
@@ -953,6 +957,10 @@ snapshot[`model 1`] = `
                                                           raw: [
                                                           ],
                                                         },
+                                                        likes: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                   },
@@ -1547,6 +1555,11 @@ snapshot[`model 2`] = `
                                                                                               select: "ref",
                                                                                             },
                                                                                           },
+                                                                                          ts: Expr {
+                                                                                            raw: {
+                                                                                              now: null,
+                                                                                            },
+                                                                                          },
                                                                                         },
                                                                                       },
                                                                                     },
@@ -1931,6 +1944,10 @@ snapshot[`model 2`] = `
                                                           raw: [
                                                           ],
                                                         },
+                                                        likes: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                   },
@@ -2022,6 +2039,10 @@ snapshot[`model 2`] = `
                                                           },
                                                         },
                                                         inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                        likes: Expr {
                                                           raw: [
                                                           ],
                                                         },
@@ -3091,6 +3112,11 @@ snapshot[`model 2`] = `
                                                                                               select: "ref",
                                                                                             },
                                                                                           },
+                                                                                          ts: Expr {
+                                                                                            raw: {
+                                                                                              now: null,
+                                                                                            },
+                                                                                          },
                                                                                         },
                                                                                       },
                                                                                     },
@@ -3475,6 +3501,10 @@ snapshot[`model 2`] = `
                                                           raw: [
                                                           ],
                                                         },
+                                                        likes: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                   },
@@ -3566,6 +3596,10 @@ snapshot[`model 2`] = `
                                                           },
                                                         },
                                                         inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                        likes: Expr {
                                                           raw: [
                                                           ],
                                                         },
@@ -4764,6 +4798,11 @@ snapshot[`model 3`] = `
                                                                                               select: "ref",
                                                                                             },
                                                                                           },
+                                                                                          ts: Expr {
+                                                                                            raw: {
+                                                                                              now: null,
+                                                                                            },
+                                                                                          },
                                                                                         },
                                                                                       },
                                                                                     },
@@ -4868,6 +4907,11 @@ snapshot[`model 3`] = `
                                                                                                 },
                                                                                               },
                                                                                               select: "ref",
+                                                                                            },
+                                                                                          },
+                                                                                          ts: Expr {
+                                                                                            raw: {
+                                                                                              now: null,
                                                                                             },
                                                                                           },
                                                                                         },
@@ -5512,6 +5556,10 @@ snapshot[`model 3`] = `
                                                           raw: [
                                                           ],
                                                         },
+                                                        likes: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                   },
@@ -5603,6 +5651,10 @@ snapshot[`model 3`] = `
                                                           },
                                                         },
                                                         inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                        likes: Expr {
                                                           raw: [
                                                           ],
                                                         },
@@ -6797,6 +6849,11 @@ snapshot[`model 3`] = `
                                                                                               select: "ref",
                                                                                             },
                                                                                           },
+                                                                                          ts: Expr {
+                                                                                            raw: {
+                                                                                              now: null,
+                                                                                            },
+                                                                                          },
                                                                                         },
                                                                                       },
                                                                                     },
@@ -6901,6 +6958,11 @@ snapshot[`model 3`] = `
                                                                                                 },
                                                                                               },
                                                                                               select: "ref",
+                                                                                            },
+                                                                                          },
+                                                                                          ts: Expr {
+                                                                                            raw: {
+                                                                                              now: null,
                                                                                             },
                                                                                           },
                                                                                         },
@@ -7545,6 +7607,10 @@ snapshot[`model 3`] = `
                                                           raw: [
                                                           ],
                                                         },
+                                                        likes: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
                                                       },
                                                     },
                                                   },
@@ -7636,6 +7702,10 @@ snapshot[`model 3`] = `
                                                           },
                                                         },
                                                         inventories: Expr {
+                                                          raw: [
+                                                          ],
+                                                        },
+                                                        likes: Expr {
                                                           raw: [
                                                           ],
                                                         },
