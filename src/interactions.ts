@@ -1005,6 +1005,10 @@ if (import.meta.main) {
     '/demo': demo,
     '/external/*': utils.proxy,
     '/webhooks/topgg': webhooks.topgg,
+    '/invite': () =>
+      Response.redirect(
+        'https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot',
+      ),
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       intervene: override(604800),
       baseUrl: import.meta.url,
