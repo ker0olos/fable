@@ -12,6 +12,8 @@ import {
 } from 'https://deno.land/std@0.183.0/testing/mock.ts';
 
 import * as discord from '../src/discord.ts';
+import { ImageSize } from '../src/utils.ts';
+import config from '../src/config.ts';
 
 Deno.test('interactions', async (test) => {
   await test.step('command', () => {
@@ -1070,4 +1072,235 @@ Deno.test('encode emotes', () => {
     discord.encode('<:star:1061016362832642098><:no_star:1061016360190222466>'),
     '\\<:star:1061016362832642098>\<:no_star:1061016360190222466>',
   );
+});
+
+Deno.test('images', async (test) => {
+  await test.step('no proxy no default', () => {
+    const embed = new discord.Embed();
+
+    embed.setImage({
+      blur: false,
+      default: false,
+      proxy: false,
+      size: ImageSize.Medium,
+      url: 'url',
+    });
+
+    assertEquals(
+      embed.json().image!.url,
+      'url',
+    );
+  });
+
+  await test.step('attachment', () => {
+    const embed = new discord.Embed();
+
+    embed.setImage({
+      blur: true,
+      default: true,
+      proxy: true,
+      size: ImageSize.Medium,
+      url: 'attachment://image',
+    });
+
+    assertEquals(
+      embed.json().image!.url,
+      'attachment://image',
+    );
+  });
+
+  await test.step('origin', () => {
+    try {
+      config.origin = 'http://localhost:8080';
+
+      const embed = new discord.Embed();
+
+      embed.setImage({
+        blur: true,
+        default: true,
+        proxy: true,
+        size: ImageSize.Medium,
+        url: 'http://localhost:8080/image',
+      });
+
+      assertEquals(
+        embed.json().image!.url,
+        'http://localhost:8080/image',
+      );
+    } finally {
+      delete config.origin;
+    }
+  });
+
+  await test.step('no default', () => {
+    const embed = new discord.Embed();
+
+    embed.setImage({
+      blur: false,
+      default: false,
+      proxy: true,
+      size: ImageSize.Large,
+      url: 'url',
+    });
+
+    assertEquals(
+      embed.json().image!.url,
+      'undefined/external/url',
+    );
+  });
+
+  await test.step('no proxy', () => {
+    const embed = new discord.Embed();
+
+    embed.setImage({
+      blur: false,
+      default: true,
+      proxy: false,
+      size: ImageSize.Large,
+      url: 'url',
+    });
+
+    assertEquals(
+      embed.json().image!.url,
+      'undefined/external/url',
+    );
+  });
+
+  await test.step('blur', () => {
+    const embed = new discord.Embed();
+
+    embed.setImage({
+      blur: true,
+      default: true,
+      proxy: true,
+      size: ImageSize.Large,
+      url: 'url',
+    });
+
+    assertEquals(
+      embed.json().image!.url,
+      'undefined/external/url?blur',
+    );
+  });
+
+  await test.step('blur 2', () => {
+    const embed = new discord.Embed();
+
+    embed.setImage({
+      blur: true,
+      default: true,
+      proxy: true,
+      size: ImageSize.Medium,
+      url: 'url',
+    });
+
+    assertEquals(
+      embed.json().image!.url,
+      'undefined/external/url?size=medium&blur',
+    );
+  });
+});
+
+Deno.test('thumbnails', async (test) => {
+  await test.step('no proxy no default', () => {
+    const embed = new discord.Embed();
+
+    embed.setThumbnail({
+      blur: false,
+      default: false,
+      proxy: false,
+      url: 'url',
+    });
+
+    assertEquals(
+      embed.json().thumbnail!.url,
+      'url',
+    );
+  });
+
+  await test.step('attachment', () => {
+    const embed = new discord.Embed();
+
+    embed.setThumbnail({
+      blur: true,
+      default: true,
+      proxy: true,
+      url: 'attachment://image',
+    });
+
+    assertEquals(
+      embed.json().thumbnail!.url,
+      'attachment://image',
+    );
+  });
+
+  await test.step('origin', () => {
+    try {
+      config.origin = 'http://localhost:8080';
+
+      const embed = new discord.Embed();
+
+      embed.setThumbnail({
+        blur: true,
+        default: true,
+        proxy: true,
+        url: 'http://localhost:8080/image',
+      });
+
+      assertEquals(
+        embed.json().thumbnail!.url,
+        'http://localhost:8080/image',
+      );
+    } finally {
+      delete config.origin;
+    }
+  });
+
+  await test.step('no default', () => {
+    const embed = new discord.Embed();
+
+    embed.setThumbnail({
+      blur: false,
+      default: false,
+      proxy: true,
+      url: 'url',
+    });
+
+    assertEquals(
+      embed.json().thumbnail!.url,
+      'undefined/external/url?size=thumbnail',
+    );
+  });
+
+  await test.step('no proxy', () => {
+    const embed = new discord.Embed();
+
+    embed.setThumbnail({
+      blur: false,
+      default: true,
+      proxy: false,
+      url: 'url',
+    });
+
+    assertEquals(
+      embed.json().thumbnail!.url,
+      'undefined/external/url?size=thumbnail',
+    );
+  });
+
+  await test.step('blur', () => {
+    const embed = new discord.Embed();
+
+    embed.setThumbnail({
+      blur: true,
+      default: true,
+      proxy: true,
+      url: 'url',
+    });
+
+    assertEquals(
+      embed.json().thumbnail!.url,
+      'undefined/external/url?size=thumbnail&blur',
+    );
+  });
 });

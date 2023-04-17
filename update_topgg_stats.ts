@@ -6,6 +6,7 @@ import {
 import {
   type query as _query,
 } from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.d.ts';
+import config from './src/config.ts';
 
 const fql = query as typeof _query;
 
@@ -28,7 +29,7 @@ if (import.meta.main) {
   );
 
   const response = await fetch(
-    'https://top.gg/api/bots/1041970851559522304/stats',
+    `https://top.gg/api/bots/${config.appId}/stats`,
     {
       method: 'POST',
       headers: {

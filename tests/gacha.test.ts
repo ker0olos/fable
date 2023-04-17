@@ -2241,6 +2241,7 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
       });
 
@@ -2442,6 +2443,7 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         guarantee: 5,
       });
@@ -2644,6 +2646,7 @@ Deno.test('/gacha', async (test) => {
         mention: true,
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
       });
 
@@ -2853,6 +2856,7 @@ Deno.test('/gacha', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         quiet: true,
       });
 
@@ -2995,6 +2999,7 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
       });
 
@@ -3182,6 +3187,7 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -3263,6 +3269,7 @@ Deno.test('/gacha', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         guarantee: 5,
       });
 
@@ -3352,6 +3359,7 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -3431,6 +3439,7 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         guarantee: 5,
       });
 

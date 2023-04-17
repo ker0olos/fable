@@ -94,6 +94,7 @@ Deno.test('media components', async () => {
         token: 'token',
         id: 'media_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
       }],
     });
 
@@ -181,6 +182,7 @@ Deno.test('character components', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           id: 'character_id',
         }],
       });
@@ -268,6 +270,7 @@ Deno.test('character components', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           id: 'character_id',
         }],
       });
@@ -356,6 +359,7 @@ Deno.test('media characters components', async () => {
         id: 'media_id',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         index: 1,
       }],
     });
@@ -434,6 +438,7 @@ Deno.test('party assign components', async () => {
       args: [{
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'character_id',
       }],
     });
@@ -523,6 +528,7 @@ Deno.test('collection stars components', async (test) => {
           stars: 5,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           before: 'anchor',
           after: undefined,
         }],
@@ -612,6 +618,7 @@ Deno.test('collection stars components', async (test) => {
           stars: 5,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           after: 'anchor',
           before: undefined,
         }],
@@ -703,6 +710,7 @@ Deno.test('collection media components', async (test) => {
           id: 'media_id',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           before: 'anchor',
           after: undefined,
         }],
@@ -792,6 +800,7 @@ Deno.test('collection media components', async (test) => {
           id: 'media_id',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           before: undefined,
           after: 'anchor',
         }],
@@ -1144,6 +1153,7 @@ Deno.test('found components', async (test) => {
         args: [{
           id: 'media_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           before: 'anchor',
           after: undefined,
         }],
@@ -1227,6 +1237,7 @@ Deno.test('found components', async (test) => {
         args: [{
           id: 'media_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           before: undefined,
           after: 'anchor',
         }],
@@ -1312,6 +1323,7 @@ Deno.test('gacha components', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
         }],
       });
 
@@ -1393,6 +1405,7 @@ Deno.test('gacha components', async (test) => {
           mention: true,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
         }],
       });
 
@@ -1474,6 +1487,7 @@ Deno.test('gacha components', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
         }],
       });
 
@@ -2176,6 +2190,7 @@ Deno.test('give components', async (test) => {
           targetId: 'target_id',
           giveCharactersIds: ['character_id', 'character_id2', 'character_id3'],
           guildId: 'guild_id',
+          channelId: 'channel_id',
         }],
       });
 
@@ -2373,6 +2388,7 @@ Deno.test('trade components', async (test) => {
             'taken_character_id3',
           ],
           guildId: 'guild_id',
+          channelId: 'channel_id',
         }],
       });
 

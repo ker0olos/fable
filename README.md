@@ -26,20 +26,14 @@
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227321932-2ad8d36c-e56c-46e9-91da-161b79eeb029.gif" alt="Animated Pulls">
 </i>
 
-Fable is a free, open-source gacha[^1] bot — a simple, powerful Mudae
-alternative. Like Mudae, you can pull anime characters. Unlike Mudae, there are
-no premiums and no pay-to-win bullshit.
+Fable is a free, open-source gacha bot — a simple, powerful Mudae alternative.
+Like Mudae, you can pull anime characters. Unlike Mudae, there are no premiums
+and no pay-to-win bullshit.
 
 There's an intuitive system to manage and customize the characters in your
 servers, like adding extensions to chrome and installing apps on your phone, you
 can install community-made packs that are full of new characters with a single
 command.
-
-[^1]: Currently the default packs include anime/manga/vtubers, but you can
-install other packs, e.g. video game characters or real-life celebrities. ~~And
-you can disable all anime packs entirely (In case it's a sports server or
-else~~, we try our best to include term natural commands along with anime
-analogies).
 
 You can try an online demo of Fable before adding it to your server by going to
 <https://fable.deno.dev/demo>

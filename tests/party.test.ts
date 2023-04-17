@@ -151,8 +151,9 @@ Deno.test('/party view', async (test) => {
 
     try {
       const message = party.view({
-        userId: 'user',
-        guildId: 'guild',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
       });
 
@@ -255,6 +256,269 @@ Deno.test('/party view', async (test) => {
               ],
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      listStub.restore();
+      fetchStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('custom', async () => {
+    const media: AniListMedia[] = [
+      {
+        id: '0',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
+      },
+    ];
+
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'name 2',
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'name 3',
+        },
+      },
+      {
+        id: '4',
+        name: {
+          full: 'name 4',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'name 5',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  party: {
+                    member1: {
+                      id: 'anilist:1',
+                      mediaId: 'anilist:0',
+                      rating: 1,
+                      nickname: 'nickname 1',
+                      image: 'image 1',
+                    },
+                    member2: {
+                      id: 'anilist:2',
+                      mediaId: 'anilist:0',
+                      rating: 2,
+                      nickname: 'nickname 2',
+                      image: 'image 2',
+                    },
+                    member3: {
+                      id: 'anilist:3',
+                      mediaId: 'anilist:0',
+                      rating: 3,
+                      nickname: 'nickname 3',
+                      image: 'image 3',
+                    },
+                    member4: {
+                      id: 'anilist:4',
+                      mediaId: 'anilist:0',
+                      rating: 4,
+                      nickname: 'nickname 4',
+                      image: 'image 4',
+                    },
+                    member5: {
+                      id: 'anilist:5',
+                      mediaId: 'anilist:0',
+                      rating: 5,
+                      nickname: 'nickname 5',
+                      image: 'image 5',
+                    },
+                  },
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = party.view({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**nickname 1**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image%201?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**nickname 2**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image%202?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**nickname 3**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image%203?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**nickname 4**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image%204?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**nickname 5**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image%205?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
@@ -393,8 +657,9 @@ Deno.test('/party view', async (test) => {
 
     try {
       const message = party.view({
-        userId: 'user',
-        guildId: 'guild',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
       });
 
@@ -649,8 +914,9 @@ Deno.test('/party view', async (test) => {
     config.origin = 'http://localhost:8000';
     try {
       const message = party.view({
-        userId: 'user',
-        guildId: 'guild',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
       });
 
@@ -820,8 +1086,9 @@ Deno.test('/party assign', async (test) => {
     try {
       const message = await party.assign({
         spot: 1,
-        userId: 'user',
-        guildId: 'guild',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:1',
       });
 
@@ -863,6 +1130,119 @@ Deno.test('/party assign', async (test) => {
         },
       });
     } finally {
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+    }
+  });
+
+  await test.step('custom', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+    ];
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                setCharacterToParty: {
+                  ok: true,
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:0',
+                    rating: 2,
+                    nickname: 'nickname',
+                    image: 'image',
+                  },
+                },
+              },
+            }))),
+        } as any,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await party.assign({
+        spot: 1,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        id: 'anilist:1',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'ASSIGNED',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'nickname',
+                  value: '\u200B',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
@@ -920,8 +1300,9 @@ Deno.test('/party assign', async (test) => {
     try {
       const message = await party.assign({
         spot: 1,
-        userId: 'user',
-        guildId: 'guild',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:1',
       });
 
@@ -1015,8 +1396,9 @@ Deno.test('/party assign', async (test) => {
     try {
       const message = await party.assign({
         spot: 1,
-        userId: 'user',
-        guildId: 'guild',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:1',
       });
 
@@ -1181,8 +1563,9 @@ Deno.test('/party swap', async (test) => {
       const message = await party.swap({
         a: 1,
         b: 2,
-        userId: 'user',
-        guildId: 'guild',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -1271,6 +1654,240 @@ Deno.test('/party swap', async (test) => {
     }
   });
 
+  await test.step('custom', async () => {
+    const media: AniListMedia[] = [
+      {
+        id: '0',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
+      },
+    ];
+
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'name 2',
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'name 3',
+        },
+      },
+      {
+        id: '4',
+        name: {
+          full: 'name 4',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'name 5',
+        },
+      },
+    ];
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                swapCharactersInParty: {
+                  ok: true,
+                  inventory: {
+                    party: {
+                      member1: {
+                        id: 'anilist:1',
+                        mediaId: 'anilist:0',
+                        rating: 1,
+                        nickname: 'nickname 1',
+                        image: 'image 1',
+                      },
+                      member2: {
+                        id: 'anilist:2',
+                        mediaId: 'anilist:0',
+                        rating: 2,
+                        nickname: 'nickname 2',
+                        image: 'image 2',
+                      },
+                      member3: {
+                        id: 'anilist:3',
+                        mediaId: 'anilist:0',
+                        rating: 3,
+                        nickname: 'nickname 3',
+                        image: 'image 3',
+                      },
+                      member4: {
+                        id: 'anilist:4',
+                        mediaId: 'anilist:0',
+                        rating: 4,
+                        nickname: 'nickname 4',
+                        image: 'image 4',
+                      },
+                      member5: {
+                        id: 'anilist:5',
+                        mediaId: 'anilist:0',
+                        rating: 5,
+                        nickname: 'nickname 5',
+                        image: 'image 5',
+                      },
+                    },
+                  },
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await party.swap({
+        a: 1,
+        b: 2,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**nickname 1**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image%201?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**nickname 2**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image%202?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**nickname 3**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image%203?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**nickname 4**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image%204?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**nickname 5**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image%205?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+            },
+          ],
+          components: [],
+          attachments: [],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+    }
+  });
+
   await test.step('unknown error', async () => {
     const fetchStub = stub(
       globalThis,
@@ -1298,8 +1915,9 @@ Deno.test('/party swap', async (test) => {
           await party.swap({
             a: 1,
             b: 2,
-            userId: 'user',
-            guildId: 'guild',
+            userId: 'user_id',
+            guildId: 'guild_id',
+            channelId: 'channel_id',
           }),
         Error,
         'UNKNOWN_ERROR',
@@ -1366,8 +1984,9 @@ Deno.test('/party remove', async (test) => {
     try {
       const message = await party.remove({
         spot: 1,
-        userId: 'user',
-        guildId: 'guild',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -1408,6 +2027,118 @@ Deno.test('/party remove', async (test) => {
         },
       });
     } finally {
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+    }
+  });
+
+  await test.step('custom', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+    ];
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                removeCharacterFromParty: {
+                  ok: true,
+                  character: {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:0',
+                    rating: 2,
+                    nickname: 'nickname',
+                    image: 'image',
+                  },
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await party.remove({
+        spot: 1,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          embeds: [
+            {
+              type: 'rich',
+              description: 'REMOVED',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'nickname',
+                  value: '\u200B',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'character=anilist:1',
+                label: '/character',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
@@ -1473,8 +2204,9 @@ Deno.test('/party remove', async (test) => {
     try {
       const message = await party.remove({
         spot: 2,
-        userId: 'user',
-        guildId: 'guild',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -1551,8 +2283,9 @@ Deno.test('/party remove', async (test) => {
     try {
       const message = await party.remove({
         spot: 1,
-        userId: 'user',
-        guildId: 'guild',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -1609,8 +2342,9 @@ Deno.test('/party remove', async (test) => {
         async () =>
           await party.remove({
             spot: 1,
-            userId: 'user',
-            guildId: 'guild',
+            userId: 'user_id',
+            guildId: 'guild_id',
+            channelId: 'channel_id',
           }),
         Error,
         'UNKNOWN_ERROR',

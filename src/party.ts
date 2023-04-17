@@ -18,9 +18,11 @@ import { Character, DisaggregatedCharacter, Schema } from './types.ts';
 
 async function embed({
   guildId,
+  channelId,
   inventory,
 }: {
   guildId: string;
+  channelId: string;
   inventory: Schema.Inventory;
 }): Promise<discord.Message> {
   const message = new discord.Message();
@@ -41,12 +43,12 @@ async function embed({
     inventory.party?.member5?.mediaId,
   ];
 
-  const ratings = [
-    inventory.party?.member1?.rating,
-    inventory.party?.member2?.rating,
-    inventory.party?.member3?.rating,
-    inventory.party?.member4?.rating,
-    inventory.party?.member5?.rating,
+  const members = [
+    inventory.party?.member1,
+    inventory.party?.member2,
+    inventory.party?.member3,
+    inventory.party?.member4,
+    inventory.party?.member5,
   ];
 
   const list = await packs.all({ guildId });
@@ -85,12 +87,16 @@ async function embed({
       );
     }
 
-    const embed = srch.characterEmbed(character, {
+    const embed = srch.characterEmbed(character, channelId, {
       mode: 'thumbnail',
       media: { title: packs.aliasToArray(media[mediaIndex].title)[0] },
-      rating: new Rating({ stars: ratings[i] }),
+      rating: new Rating({ stars: members[i]?.rating }),
       description: false,
       footer: false,
+      existing: {
+        image: members[i]?.image,
+        nickname: members[i]?.nickname,
+      },
     });
 
     message.addEmbed(embed);
@@ -103,10 +109,12 @@ function view({
   token,
   userId,
   guildId,
+  channelId,
 }: {
   token: string;
   userId: string;
   guildId: string;
+  channelId: string;
 }): discord.Message {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -116,26 +124,36 @@ function view({
             id
             mediaId
             rating
+            image
+            nickname
           }
           member2 {
             id
             mediaId
             rating
+            image
+            nickname
           }
           member3 {
             id
             mediaId
             rating
+            image
+            nickname
           }
           member4 {
             id
             mediaId
             rating
+            image
+            nickname
           }
           member5 {
             id
             mediaId
             rating
+            image
+            nickname
           }
         }
       }
@@ -158,6 +176,7 @@ function view({
     .then(async ({ getUserInventory: inventory }) => {
       const message = await embed({
         guildId,
+        channelId,
         inventory,
       });
 
@@ -187,11 +206,13 @@ async function assign({
   spot,
   userId,
   guildId,
+  channelId,
   search,
   id,
 }: {
   userId: string;
   guildId: string;
+  channelId: string;
   spot?: number;
   search?: string;
   id?: string;
@@ -205,6 +226,8 @@ async function assign({
           id
           mediaId
           rating
+          image
+          nickname
           user {
             id
           }
@@ -279,11 +302,15 @@ async function assign({
 
   return message
     .addEmbed(new discord.Embed().setDescription('ASSIGNED'))
-    .addEmbed(srch.characterEmbed(results[0], {
+    .addEmbed(srch.characterEmbed(results[0], channelId, {
       mode: 'thumbnail',
       rating: new Rating({ stars: response.character.rating }),
       description: true,
       footer: false,
+      existing: {
+        image: response.character.image,
+        nickname: response.character.nickname,
+      },
     }))
     .addComponents([
       new discord.Component()
@@ -300,11 +327,13 @@ async function swap({
   b,
   userId,
   guildId,
+  channelId,
 }: {
   a: number;
   b: number;
   userId: string;
   guildId: string;
+  channelId: string;
 }): Promise<discord.Message> {
   const mutation = gql`
     mutation ($userId: String!, $guildId: String!, $a: Int!, $b: Int!) {
@@ -316,26 +345,36 @@ async function swap({
               id
               mediaId
               rating
+              image
+              nickname
             }
             member2 {
               id
               mediaId
               rating
+              image
+              nickname
             }
             member3 {
               id
               mediaId
               rating
+              image
+              nickname
             }
             member4 {
               id
               mediaId
               rating
+              image
+              nickname
             }
             member5 {
               id
               mediaId
               rating
+              image
+              nickname
             }
           }
         }
@@ -365,6 +404,7 @@ async function swap({
 
   return embed({
     guildId,
+    channelId,
     inventory: response.inventory,
   });
 }
@@ -373,10 +413,12 @@ async function remove({
   spot,
   userId,
   guildId,
+  channelId,
 }: {
   spot: number;
   userId: string;
   guildId: string;
+  channelId: string;
 }): Promise<discord.Message> {
   const mutation = gql`
     mutation ($userId: String!, $guildId: String!, $spot: Int!) {
@@ -386,6 +428,8 @@ async function remove({
           id
           mediaId
           rating
+          image
+          nickname
         }
       }
     }
@@ -437,11 +481,15 @@ async function remove({
 
   return message
     .addEmbed(new discord.Embed().setDescription('REMOVED'))
-    .addEmbed(srch.characterEmbed(characters[0], {
+    .addEmbed(srch.characterEmbed(characters[0], channelId, {
       mode: 'thumbnail',
       rating: new Rating({ stars: response.character.rating }),
       description: true,
       footer: false,
+      existing: {
+        image: response.character.image,
+        nickname: response.character.nickname,
+      },
     }))
     .addComponents([
       new discord.Component()

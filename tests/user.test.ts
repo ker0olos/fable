@@ -98,6 +98,7 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.appId = 'app_id';
     config.topggCipher = 12;
 
     try {
@@ -137,7 +138,7 @@ Deno.test('/now', async (test) => {
                   style: 5,
                   type: 2,
                   url:
-                    'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
+                    'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
                 },
               ],
               type: 1,
@@ -146,6 +147,7 @@ Deno.test('/now', async (test) => {
         },
       });
     } finally {
+      delete config.appId;
       delete config.topggCipher;
 
       fetchStub.restore();
@@ -174,6 +176,7 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.appId = 'app_id';
     config.topggCipher = 12;
 
     try {
@@ -206,13 +209,13 @@ Deno.test('/now', async (test) => {
               label: 'Vote for Rewards',
               style: 5,
               type: 2,
-              url:
-                'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
+              url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
             }],
           }],
         },
       });
     } finally {
+      delete config.appId;
       delete config.topggCipher;
 
       fetchStub.restore();
@@ -240,6 +243,7 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.appId = 'app_id';
     config.topggCipher = 12;
 
     try {
@@ -275,13 +279,13 @@ Deno.test('/now', async (test) => {
               label: 'Vote for Rewards',
               style: 5,
               type: 2,
-              url:
-                'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
+              url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
             }],
           }],
         },
       });
     } finally {
+      delete config.appId;
       delete config.topggCipher;
 
       fetchStub.restore();
@@ -312,6 +316,7 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.appId = 'app_id';
     config.topggCipher = 12;
 
     try {
@@ -351,13 +356,13 @@ Deno.test('/now', async (test) => {
               label: 'Vote',
               style: 5,
               type: 2,
-              url:
-                'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
+              url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
             }],
           }],
         },
       });
     } finally {
+      delete config.appId;
       delete config.topggCipher;
 
       fetchStub.restore();
@@ -389,6 +394,7 @@ Deno.test('/now', async (test) => {
       } as any),
     );
 
+    config.appId = 'app_id';
     config.topggCipher = 12;
 
     try {
@@ -442,14 +448,14 @@ Deno.test('/now', async (test) => {
                 label: 'Vote',
                 style: 5,
                 type: 2,
-                url:
-                  'https://top.gg/bot/1041970851559522304/vote?ref=gHt3cXo=&gid=guild_id',
+                url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
               },
             ],
           }],
         },
       });
     } finally {
+      delete config.appId;
       delete config.topggCipher;
 
       fetchStub.restore();
@@ -481,8 +487,6 @@ Deno.test('/now', async (test) => {
           }))),
       } as any),
     );
-
-    config.topggCipher = 12;
 
     try {
       const message = await user.now({
@@ -523,8 +527,6 @@ Deno.test('/now', async (test) => {
         },
       });
     } finally {
-      delete config.topggCipher;
-
       timeStub.restore();
       fetchStub.restore();
     }
@@ -610,7 +612,8 @@ Deno.test('/nick', async (test) => {
       const message = user.customize({
         token: 'test_token',
         userId: 'user',
-        guildId: 'guild',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:1',
         nick: 'new_nick',
       });
@@ -722,7 +725,8 @@ Deno.test('/nick', async (test) => {
       const message = user.customize({
         token: 'test_token',
         userId: 'user',
-        guildId: 'guild',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:1',
         nick: 'new_nick',
       });
@@ -837,7 +841,8 @@ Deno.test('/nick', async (test) => {
       const message = user.customize({
         token: 'test_token',
         userId: 'user',
-        guildId: 'guild',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:1',
         nick: 'new_nick',
       });
@@ -971,7 +976,8 @@ Deno.test('/nick', async (test) => {
       const message = user.customize({
         token: 'test_token',
         userId: 'user',
-        guildId: 'guild',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:1',
         nick: 'new_nick',
       });
@@ -1120,7 +1126,8 @@ Deno.test('/image', async (test) => {
       const message = user.customize({
         token: 'test_token',
         userId: 'user',
-        guildId: 'guild',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -1232,7 +1239,8 @@ Deno.test('/image', async (test) => {
       const message = user.customize({
         token: 'test_token',
         userId: 'user',
-        guildId: 'guild',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -1347,7 +1355,8 @@ Deno.test('/image', async (test) => {
       const message = user.customize({
         token: 'test_token',
         userId: 'user',
-        guildId: 'guild',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -1481,7 +1490,8 @@ Deno.test('/image', async (test) => {
       const message = user.customize({
         token: 'test_token',
         userId: 'user',
-        guildId: 'guild',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -1601,6 +1611,7 @@ Deno.test('media characters', async (test) => {
       const message = await search.mediaCharacters({
         id: 'pack-id:1',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         index: 0,
       });
 
@@ -1717,6 +1728,7 @@ Deno.test('media characters', async (test) => {
         id: 'pack-id:1',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         index: 0,
       });
 
@@ -1819,6 +1831,7 @@ Deno.test('media characters', async (test) => {
           await search.mediaCharacters({
             id: 'pack-id:1',
             guildId: 'guild_id',
+            channelId: 'channel_id',
             index: 0,
           }),
         NonFetalError,
@@ -1860,6 +1873,7 @@ Deno.test('media characters', async (test) => {
           await search.mediaCharacters({
             id: 'pack-id:1',
             guildId: 'guild_id',
+            channelId: 'channel_id',
             index: 0,
           }),
         NonFetalError,
@@ -1900,6 +1914,7 @@ Deno.test('media characters', async (test) => {
           await search.mediaCharacters({
             id: 'pack-id:1',
             guildId: 'guild_id',
+            channelId: 'channel_id',
             index: 1,
           }),
         NonFetalError,
@@ -1927,6 +1942,7 @@ Deno.test('media characters', async (test) => {
           await search.mediaCharacters({
             id: 'pack-id:1',
             guildId: 'guild_id',
+            channelId: 'channel_id',
             index: 0,
           }),
         Error,
@@ -2029,6 +2045,7 @@ Deno.test('/collection stars', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         stars: 5,
       });
 
@@ -2168,6 +2185,7 @@ Deno.test('/collection stars', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         stars: 5,
       });
 
@@ -2320,6 +2338,7 @@ Deno.test('/collection stars', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         stars: 5,
       });
 
@@ -2424,6 +2443,7 @@ Deno.test('/collection stars', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         stars: 5,
         nick: 'Dave',
       });
@@ -2514,6 +2534,7 @@ Deno.test('/collection stars', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         stars: 5,
       });
 
@@ -2670,6 +2691,7 @@ Deno.test('/collection media', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:2',
       });
 
@@ -2828,6 +2850,7 @@ Deno.test('/collection media', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:2',
       });
 
@@ -2964,6 +2987,7 @@ Deno.test('/collection media', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:2',
       });
 
@@ -3089,6 +3113,7 @@ Deno.test('/collection media', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:2',
         nick: 'Dave',
       });
@@ -3199,6 +3224,7 @@ Deno.test('/collection media', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:2',
       });
 
@@ -4821,6 +4847,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -4985,6 +5012,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -5149,6 +5177,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -5313,6 +5342,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         search: 'character',
         undo: true,
@@ -5467,6 +5497,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         search: 'character',
         undo: true,
@@ -5621,6 +5652,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         search: 'character',
         undo: true,
@@ -5738,6 +5770,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -6610,6 +6643,7 @@ Deno.test('/found', async (test) => {
     try {
       const message = await search.mediaFound({
         guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:2',
       });
 
@@ -6725,6 +6759,7 @@ Deno.test('/found', async (test) => {
         async () =>
           await search.mediaFound({
             guildId: 'guild_id',
+            channelId: 'channel_id',
             id: 'anilist:2',
           }),
         Error,
@@ -6826,6 +6861,7 @@ Deno.test('/found', async (test) => {
     try {
       const message = await search.mediaFound({
         guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:2',
       });
 
@@ -6912,6 +6948,7 @@ Deno.test('/found', async (test) => {
     try {
       const message = await search.mediaFound({
         guildId: 'guild_id',
+        channelId: 'channel_id',
         id: 'anilist:2',
       });
 

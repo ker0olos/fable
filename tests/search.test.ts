@@ -82,6 +82,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -191,6 +192,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'native title',
       });
 
@@ -300,6 +302,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -415,6 +418,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -543,6 +547,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -655,6 +660,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -820,6 +826,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1029,6 +1036,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1215,6 +1223,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1367,6 +1376,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1527,6 +1537,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1690,6 +1701,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1856,6 +1868,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1990,6 +2003,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'x'.repeat(100),
       });
 
@@ -2052,7 +2066,7 @@ Deno.test('/media', async (test) => {
       title: {},
     };
 
-    assertThrows(() => search.mediaMessage(media), Error, '404');
+    assertThrows(() => search.mediaMessage(media, 'channel_id'), Error, '404');
   });
 });
 
@@ -2107,6 +2121,7 @@ Deno.test('/media debug', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
         debug: true,
       });
@@ -2230,6 +2245,7 @@ Deno.test('/media debug', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
         debug: true,
       });
@@ -2355,6 +2371,7 @@ Deno.test('/media debug', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
         debug: true,
       });
@@ -2502,6 +2519,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -2635,6 +2653,7 @@ Deno.test('/character', async (test) => {
         search: 'full name',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -2756,6 +2775,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -2869,6 +2889,7 @@ Deno.test('/character', async (test) => {
       const message = await search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -2995,6 +3016,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -3108,6 +3130,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -3216,6 +3239,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -3322,6 +3346,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'x'.repeat(100),
       });
 
@@ -3433,6 +3458,7 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
         debug: true,
       });
@@ -3580,6 +3606,7 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
         debug: true,
       });
@@ -3721,6 +3748,7 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
         debug: true,
       });
@@ -3882,6 +3910,7 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
         debug: true,
       });
