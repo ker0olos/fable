@@ -269,7 +269,7 @@ export const App = ({ children }: React.PropsWithChildren) => {
           <div style={{ display: 'flex', gap: '6px' }}>
             <Button
               color={colors.blue}
-              url={`https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`}
+              url={`${origin}/invite`}
               label='Add Fable to Your Server'
             />
             <Button

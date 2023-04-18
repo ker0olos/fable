@@ -129,7 +129,7 @@ async function now({
       new discord.Component()
         .setLabel(!user.lastVote ? 'Vote for Rewards' : 'Vote')
         .setUrl(
-          `https://top.gg/bot/1041970851559522304/vote?ref=${
+          `https://top.gg/bot/${config.appId}/vote?ref=${
             // deno-lint-ignore no-non-null-assertion
             utils.cipher(token, config.topggCipher!)}&gid=${guildId}`,
         ),
@@ -196,6 +196,7 @@ function stars({
   token,
   userId,
   guildId,
+  channelId,
   stars,
   nick,
   before,
@@ -204,6 +205,7 @@ function stars({
   token: string;
   userId: string;
   guildId: string;
+  channelId: string;
   stars: number;
   nick?: string;
   before?: string;
@@ -294,6 +296,7 @@ function stars({
 
         message = srch.characterMessage(
           results[1][0],
+          channelId,
           {
             rating: new Rating({ stars: character.rating }),
             media: { title: packs.aliasToArray(media.title)[0] },
@@ -346,6 +349,7 @@ function media({
   token,
   userId,
   guildId,
+  channelId,
   id,
   search,
   nick,
@@ -355,6 +359,7 @@ function media({
   token: string;
   userId: string;
   guildId: string;
+  channelId: string;
   id?: string;
   search?: string;
   nick?: string;
@@ -445,6 +450,7 @@ function media({
         } else {
           message = srch.characterMessage(
             characters[0],
+            channelId,
             {
               rating: new Rating({ stars: character.rating }),
               relations: false,
@@ -505,6 +511,7 @@ function customize({
   token,
   userId,
   guildId,
+  channelId,
   nick,
   image,
   search,
@@ -513,6 +520,7 @@ function customize({
   token: string;
   userId: string;
   guildId: string;
+  channelId: string;
   nick?: string;
   image?: string;
   search?: string;
@@ -608,6 +616,7 @@ function customize({
             character: results[0],
             end: 1,
           }),
+          channelId,
           {
             rating: false,
             description: false,
@@ -656,6 +665,7 @@ function like({
   token,
   userId,
   guildId,
+  channelId,
   search,
   undo,
   id,
@@ -663,6 +673,7 @@ function like({
   token: string;
   userId: string;
   guildId: string;
+  channelId: string;
   undo: boolean;
   search?: string;
   id?: string;
@@ -735,6 +746,7 @@ function like({
             character: results[0],
             end: 1,
           }),
+          channelId,
           {
             footer: true,
             description: false,

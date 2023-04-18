@@ -50,6 +50,7 @@ type AnilistSearchOptions = {
 };
 
 const cachedGuilds: Record<string, Pack[]> = {};
+const cachedChannels: Record<string, discord.Channel> = {};
 
 const packs = {
   aggregate,
@@ -57,6 +58,7 @@ const packs = {
   all,
   anilist,
   cachedGuilds,
+  cachedChannels,
   characters,
   formatToString,
   install,
@@ -105,7 +107,6 @@ async function all(
             author
             image
             url
-            nsfw
             media {
               conflicts
               new {
@@ -122,6 +123,7 @@ async function all(
                 popularity
                 images {
                   url
+                  nsfw
                   artist {
                     username
                     url
@@ -161,6 +163,7 @@ async function all(
                 age
                 images {
                   url
+                  nsfw
                   artist {
                     username
                     url

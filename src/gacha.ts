@@ -346,9 +346,10 @@ async function rngPull(
  * start the pull's animation
  */
 function start(
-  { token, guildId, userId, guarantee, mention, quiet }: {
+  { token, guildId, channelId, userId, guarantee, mention, quiet }: {
     token: string;
     guildId: string;
+    channelId: string;
     userId?: string;
     guarantee?: number;
     mention?: boolean;
@@ -367,13 +368,17 @@ function start(
 
       const mediaTitles = packs.aliasToArray(media.title);
 
+      const mediaImage = media.images?.[0];
+
       let message = new discord.Message()
         .addEmbed(
           new discord.Embed()
             .setTitle(utils.wrap(mediaTitles[0]))
             .setImage({
               size: ImageSize.Medium,
-              url: media.images?.[0]?.url,
+              url: mediaImage?.url,
+              blur: mediaImage?.nsfw &&
+                !packs.cachedChannels[channelId]?.nsfw,
             }),
         );
 
@@ -407,7 +412,7 @@ function start(
         await utils.sleep(pull.rating.stars + 3);
       }
 
-      message = search.characterMessage(pull.character, {
+      message = search.characterMessage(pull.character, channelId, {
         relations: false,
         rating: pull.rating,
         description: false,

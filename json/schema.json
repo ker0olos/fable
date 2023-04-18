@@ -24,11 +24,6 @@
       "description": "Small description about the pack and what it contains",
       "maxLength": 2048
     },
-    "nsfw": {
-      "title": "nsfw",
-      "type": "boolean",
-      "description": "If the pack contains any nsfw explicit content (If true you pack won't work outside of nsfw channels)"
-    },
     "author": {
       "title": "author",
       "type": "string",

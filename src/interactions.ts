@@ -64,10 +64,12 @@ export const handler = async (r: Request) => {
     name,
     type,
     token,
+    channelId,
     guildId,
     focused,
     resolved,
     member,
+    channel,
     options,
     subcommand,
     customType,
@@ -79,6 +81,8 @@ export const handler = async (r: Request) => {
   }
 
   config.origin = origin;
+
+  packs.cachedChannels[channelId] = channel;
 
   try {
     switch (type) {
@@ -221,6 +225,7 @@ export const handler = async (r: Request) => {
 
             if (options['characters']) {
               return (await search.mediaCharacters({
+                channelId,
                 guildId,
                 index: 0,
                 search: title,
@@ -234,6 +239,7 @@ export const handler = async (r: Request) => {
             return search.media({
               token,
               guildId,
+              channelId,
               search: title,
               debug: Boolean(options['debug']),
               id: title.startsWith(idPrefix)
@@ -249,9 +255,10 @@ export const handler = async (r: Request) => {
 
             return search.character({
               token,
-              userId: member.user.id,
               guildId,
+              channelId,
               search: name,
+              userId: member.user.id,
               debug: Boolean(options['debug']),
               id: name.startsWith(idPrefix)
                 ? name.substring(idPrefix.length)
@@ -271,6 +278,7 @@ export const handler = async (r: Request) => {
                   spot,
                   userId: member.user.id,
                   guildId,
+                  channelId,
                   search: character,
                   id: character.startsWith(idPrefix)
                     ? character.substring(idPrefix.length)
@@ -278,24 +286,27 @@ export const handler = async (r: Request) => {
                 })).send();
               case 'swap':
                 return (await party.swap({
+                  guildId,
+                  channelId,
+                  userId: member.user.id,
                   a: options['a'] as number,
                   b: options['b'] as number,
-                  userId: member.user.id,
-                  guildId,
                 })).send();
               case 'remove':
                 return (await party.remove({
                   spot,
-                  userId: member.user.id,
                   guildId,
+                  channelId,
+                  userId: member.user.id,
                 })).send();
               default: {
                 const user = options['user'] as string;
 
                 return party.view({
                   token,
-                  userId: user,
                   guildId,
+                  channelId,
+                  userId: user,
                 }).send();
               }
             }
@@ -313,11 +324,11 @@ export const handler = async (r: Request) => {
               : undefined;
 
             return user.likeslist({
+              nick,
               token,
+              guildId,
               userId,
               index: 0,
-              guildId,
-              nick,
             }).send();
           }
           case 'collection':
@@ -340,25 +351,27 @@ export const handler = async (r: Request) => {
                 const stars = options['rating'] as number;
 
                 return user.stars({
-                  token,
-                  userId,
-                  stars,
-                  guildId,
                   nick,
+                  token,
+                  stars,
+                  userId,
+                  guildId,
+                  channelId,
                 }).send();
               }
               case 'media': {
                 const title = options['title'] as string;
 
                 return user.media({
+                  nick,
                   token,
                   userId,
+                  guildId,
+                  channelId,
                   search: title,
                   id: title.startsWith(idPrefix)
                     ? title.substring(idPrefix.length)
                     : undefined,
-                  guildId,
-                  nick,
                 }).send();
               }
               case 'list': {
@@ -385,12 +398,13 @@ export const handler = async (r: Request) => {
             return user.like({
               token,
               search,
-              undo: name === 'unlike',
+              guildId,
+              channelId,
               userId: member.user.id,
+              undo: name === 'unlike',
               id: search.startsWith(idPrefix)
                 ? search.substring(idPrefix.length)
                 : undefined,
-              guildId,
             })
               .send();
           }
@@ -400,11 +414,12 @@ export const handler = async (r: Request) => {
             const title = options['title'] as string;
 
             return (await search.mediaFound({
+              guildId,
+              channelId,
               search: title,
               id: title.startsWith(idPrefix)
                 ? title.substring(idPrefix.length)
                 : undefined,
-              guildId,
             }))
               .send();
           }
@@ -427,6 +442,7 @@ export const handler = async (r: Request) => {
             return trade.pre({
               token,
               guildId,
+              channelId,
               userId: member.user.id,
               targetId: options['user'] as string,
               give: giveCharacters,
@@ -453,11 +469,12 @@ export const handler = async (r: Request) => {
 
             return gacha
               .start({
+                token,
+                guildId,
+                channelId,
                 guarantee: stars,
                 quiet: name === 'q',
                 userId: member.user.id,
-                guildId,
-                token,
               })
               .send();
           }
@@ -474,8 +491,9 @@ export const handler = async (r: Request) => {
               image,
               token,
               guildId,
-              userId: member.user.id,
+              channelId,
               search: name,
+              userId: member.user.id,
               id: name.startsWith(idPrefix)
                 ? name.substring(idPrefix.length)
                 : undefined,
@@ -577,7 +595,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return search.media({ id, guildId, token })
+            return search.media({ id, guildId, channelId, token })
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -589,10 +607,11 @@ export const handler = async (r: Request) => {
             const type = customValues![1];
 
             return search.character({
-              token,
-              userId: member.user.id,
-              guildId,
               id,
+              token,
+              guildId,
+              channelId,
+              userId: member.user.id,
             })
               .setType(
                 type === '1'
@@ -609,10 +628,11 @@ export const handler = async (r: Request) => {
             const index = parseInt(customValues![1]);
 
             return (await search.mediaCharacters({
-              userId: member.user.id,
-              id: mediaId,
-              guildId,
               index,
+              guildId,
+              channelId,
+              id: mediaId,
+              userId: member.user.id,
             }))
               .setType(discord.MessageType.Update)
               .send();
@@ -622,9 +642,10 @@ export const handler = async (r: Request) => {
             const characterId = customValues![0];
 
             return (await party.assign({
+              guildId,
+              channelId,
               id: characterId,
               userId: member.user.id,
-              guildId,
             })).send();
           }
           case 'cstars': {
@@ -640,8 +661,9 @@ export const handler = async (r: Request) => {
             return user.stars({
               token,
               stars,
-              guildId,
               userId,
+              guildId,
+              channelId,
               after: action === 'next' ? anchor : undefined,
               before: action === 'prev' ? anchor : undefined,
             })
@@ -659,10 +681,11 @@ export const handler = async (r: Request) => {
             const action = customValues![3];
 
             return user.media({
-              token,
               id,
-              guildId,
+              token,
               userId,
+              guildId,
+              channelId,
               after: action === 'next' ? anchor : undefined,
               before: action === 'prev' ? anchor : undefined,
             })
@@ -697,10 +720,10 @@ export const handler = async (r: Request) => {
             const index = parseInt(customValues![1]);
 
             return user.likeslist({
-              token,
               index,
-              guildId,
+              token,
               userId,
+              guildId,
             })
               .setType(discord.MessageType.Update)
               .send();
@@ -716,6 +739,7 @@ export const handler = async (r: Request) => {
             return (await search.mediaFound({
               id,
               guildId,
+              channelId,
               after: action === 'next' ? anchor : undefined,
               before: action === 'prev' ? anchor : undefined,
             }))
@@ -731,11 +755,12 @@ export const handler = async (r: Request) => {
             return gacha
               .start({
                 token,
+                guildId,
+                channelId,
                 mention: true,
                 guarantee: stars,
                 quiet: customType === 'q',
                 userId: member.user.id,
-                guildId,
               }).send();
           }
           case 'now': {
@@ -808,9 +833,10 @@ export const handler = async (r: Request) => {
             if (userId === member.user.id) {
               const [updateMessage, newMessage] = await trade.give({
                 userId,
+                guildId,
+                channelId,
                 targetId: targetId,
                 giveCharactersIds,
-                guildId,
               });
 
               newMessage.followup(token);
@@ -836,11 +862,12 @@ export const handler = async (r: Request) => {
 
             if (targetId === member.user.id) {
               const [updateMessage, newMessage] = await trade.accepted({
+                guildId,
+                channelId,
                 userId,
                 targetId,
                 giveCharactersIds,
                 takeCharactersIds,
-                guildId,
               });
 
               newMessage.followup(token);
@@ -1005,6 +1032,10 @@ if (import.meta.main) {
     '/demo': demo,
     '/external/*': utils.proxy,
     '/webhooks/topgg': webhooks.topgg,
+    '/invite': () =>
+      Response.redirect(
+        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`,
+      ),
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       intervene: override(604800),
       baseUrl: import.meta.url,

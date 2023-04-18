@@ -32,12 +32,13 @@ const externalUrlRegex =
   /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoon\.com|amazon\.com)[\S]*$/;
 
 function media(
-  { token, id, search, debug, guildId }: {
+  { token, id, search, debug, guildId, channelId }: {
     token: string;
     id?: string;
     search?: string;
     debug?: boolean;
     guildId: string;
+    channelId: string;
   },
 ): discord.Message {
   packs
@@ -55,11 +56,11 @@ function media(
     })
     .then(async (media) => {
       if (debug) {
-        return await mediaDebugMessage(media)
+        return await mediaDebugMessage(media, channelId)
           .patch(token);
       }
 
-      return await mediaMessage(media)
+      return await mediaMessage(media, channelId)
         .patch(token);
     })
     .catch(async (err) => {
@@ -91,7 +92,7 @@ function media(
   return loading;
 }
 
-function mediaMessage(media: Media): discord.Message {
+function mediaMessage(media: Media, channelId: string): discord.Message {
   const titles = packs.aliasToArray(media.title);
 
   if (!titles?.length) {
@@ -102,14 +103,14 @@ function mediaMessage(media: Media): discord.Message {
   const musicGroup: discord.Component[] = [];
 
   const message = new discord.Message()
-    .addEmbed(mediaEmbed(media, titles));
+    .addEmbed(mediaEmbed(media, channelId, titles));
 
   // character embeds
   // sort characters by popularity
   media.characters?.edges
     ?.slice(0, 2)
     .forEach((edge) => {
-      const embed = characterEmbed(edge.node, {
+      const embed = characterEmbed(edge.node, channelId, {
         mode: 'thumbnail',
         rating: false,
       });
@@ -186,16 +187,24 @@ function mediaMessage(media: Media): discord.Message {
   return message.addComponents([...linksGroup, ...musicGroup]);
 }
 
-function mediaEmbed(media: Media, titles: string[]): discord.Embed {
+function mediaEmbed(
+  media: Media,
+  channelId: string,
+  titles: string[],
+): discord.Embed {
   return new discord.Embed()
     .setTitle(utils.wrap(titles[0]))
     .setAuthor({ name: packs.formatToString(media.format) })
     .setDescription(utils.decodeDescription(media.description))
-    .setImage({ url: media.images?.[0]?.url });
+    .setImage({
+      url: media.images?.[0]?.url,
+      blur: media.images?.[0]?.nsfw && !packs.cachedChannels[channelId]?.nsfw,
+    });
 }
 
 function mediaDebugMessage(
   media: Media | DisaggregatedMedia,
+  channelId: string,
 ): discord.Message | discord.Message {
   const titles = packs.aliasToArray(media.title);
 
@@ -206,7 +215,10 @@ function mediaDebugMessage(
   const embed = new discord.Embed()
     .setTitle(titles.shift())
     .setDescription(titles.join('\n'))
-    .setThumbnail({ url: media.images?.[0]?.url })
+    .setThumbnail({
+      url: media.images?.[0]?.url,
+      blur: media.images?.[0]?.nsfw && !packs.cachedChannels[channelId]?.nsfw,
+    })
     .addField({ name: 'Id', value: `${media.packId}:${media.id}` })
     .addField({
       name: 'Type',
@@ -228,8 +240,9 @@ function mediaDebugMessage(
 }
 
 function character(
-  { token, userId, guildId, search, id, debug }: {
+  { token, userId, guildId, channelId, search, id, debug }: {
     token: string;
+    channelId: string;
     guildId: string;
     userId?: string;
     id?: string;
@@ -260,11 +273,11 @@ function character(
     })
     .then(async ([character, existing]) => {
       if (debug) {
-        return await characterDebugMessage(character)
+        return await characterDebugMessage(character, channelId)
           .patch(token);
       }
 
-      const message = characterMessage(character, {
+      const message = characterMessage(character, channelId, {
         existing,
       });
 
@@ -309,7 +322,8 @@ function character(
 
 function characterMessage(
   character: Character | DisaggregatedCharacter,
-  options?: Parameters<typeof characterEmbed>[1] & {
+  channelId: string,
+  options?: Parameters<typeof characterEmbed>[2] & {
     externalLinks?: boolean;
     relations?: boolean | number | DisaggregatedMedia[];
   },
@@ -323,7 +337,7 @@ function characterMessage(
   };
 
   const message = new discord.Message()
-    .addEmbed(characterEmbed(character, options));
+    .addEmbed(characterEmbed(character, channelId, options));
 
   const group: discord.Component[] = [];
 
@@ -374,6 +388,7 @@ function characterMessage(
 
 function characterEmbed(
   character: Character | DisaggregatedCharacter,
+  channelId: string,
   options?: {
     existing?: Partial<Schema.Character>;
     rating?: Rating | boolean;
@@ -397,14 +412,25 @@ function characterEmbed(
 
   const embed = new discord.Embed();
 
-  const imageUrl = options.existing?.image ?? character.images?.[0]?.url;
+  const image = options.existing?.image
+    ? { url: options.existing?.image }
+    : character.images?.[0];
+
   const alias = options.existing?.nickname ??
     packs.aliasToArray(character.name)[0];
 
   if (options.mode === 'full') {
-    embed.setImage({ url: imageUrl });
+    embed.setImage({
+      url: image?.url,
+      blur: image?.nsfw &&
+        !packs.cachedChannels[channelId]?.nsfw,
+    });
   } else {
-    embed.setThumbnail({ url: imageUrl });
+    embed.setThumbnail({
+      url: image?.url,
+      blur: image?.nsfw &&
+        !packs.cachedChannels[channelId]?.nsfw,
+    });
   }
 
   if (options?.existing?.rating) {
@@ -474,7 +500,10 @@ function characterEmbed(
   return embed;
 }
 
-function characterDebugMessage(character: Character): discord.Message {
+function characterDebugMessage(
+  character: Character,
+  channelId: string,
+): discord.Message {
   const media = character.media?.edges?.[0];
 
   const role = media?.role;
@@ -490,7 +519,11 @@ function characterDebugMessage(character: Character): discord.Message {
   const embed = new discord.Embed()
     .setTitle(titles.splice(0, 1)[0])
     .setDescription(titles.join('\n'))
-    .setThumbnail({ url: character.images?.[0]?.url })
+    .setThumbnail({
+      url: character.images?.[0]?.url,
+      blur: character.images?.[0]?.nsfw &&
+        !packs.cachedChannels[channelId]?.nsfw,
+    })
     .addField({ name: 'Id', value: `${character.packId}:${character.id}` })
     .addField({
       name: 'Rating',
@@ -530,10 +563,11 @@ function characterDebugMessage(character: Character): discord.Message {
 }
 
 async function mediaCharacters(
-  { search, id, userId, guildId, index }: {
+  { search, id, userId, guildId, channelId, index }: {
     search?: string;
     id?: string;
     guildId: string;
+    channelId: string;
     userId?: string;
     index: number;
   },
@@ -579,7 +613,7 @@ async function mediaCharacters(
     }),
   ]);
 
-  const message = characterMessage(character, {
+  const message = characterMessage(character, channelId, {
     existing,
     relations: false,
   }).addComponents([
@@ -607,8 +641,9 @@ async function mediaCharacters(
 }
 
 async function mediaFound(
-  { search, id, guildId, before, after }: {
+  { search, id, guildId, channelId, before, after }: {
     guildId: string;
+    channelId: string;
     search?: string;
     id?: string;
     before?: string;
@@ -685,6 +720,7 @@ async function mediaFound(
   } else {
     message = characterMessage(
       characters[0],
+      channelId,
       {
         existing: character,
         rating: new Rating({ stars: character.rating }),

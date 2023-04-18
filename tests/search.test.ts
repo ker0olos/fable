@@ -3,15 +3,15 @@
 import {
   assertEquals,
   assertThrows,
-} from 'https://deno.land/std@0.179.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.183.0/testing/asserts.ts';
 
 import {
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.179.0/testing/mock.ts';
+} from 'https://deno.land/std@0.183.0/testing/mock.ts';
 
-import { FakeTime } from 'https://deno.land/std@0.179.0/testing/time.ts';
+import { FakeTime } from 'https://deno.land/std@0.183.0/testing/time.ts';
 
 import packs from '../src/packs.ts';
 import config from '../src/config.ts';
@@ -21,6 +21,7 @@ import search from '../src/search.ts';
 import {
   CharacterRole,
   DisaggregatedCharacter,
+  DisaggregatedMedia,
   Manifest,
   Media,
   MediaFormat,
@@ -32,8 +33,8 @@ import {
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 Deno.test('/media', async (test) => {
-  await test.step('normal search', async () => {
-    const media: AniListMedia = {
+  await test.step('normal', async () => {
+    const media: DisaggregatedMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -44,8 +45,15 @@ Deno.test('/media', async (test) => {
         romaji: 'romaji title',
         native: 'native title',
       },
-      coverImage: {
-        extraLarge: 'image_url',
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [media],
       },
     };
 
@@ -60,7 +68,7 @@ Deno.test('/media', async (test) => {
           Promise.resolve(JSON.stringify({
             data: {
               Page: {
-                media: [media],
+                media: [],
               },
             },
           }))),
@@ -70,7 +78,7 @@ Deno.test('/media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -82,6 +90,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -191,6 +200,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'native title',
       });
 
@@ -300,6 +310,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -415,6 +426,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -543,6 +555,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -603,6 +616,254 @@ Deno.test('/media', async (test) => {
     }
   });
 
+  await test.step('nsfw image', async () => {
+    const media: DisaggregatedMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+        romaji: 'romaji title',
+        native: 'native title',
+      },
+      images: [{
+        nsfw: true,
+        url: 'image_url',
+      }],
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [media],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                media: [],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = search.media({
+        token: 'test_token',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        search: 'english title',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            author: {
+              name: 'Anime',
+            },
+            title: 'english title',
+            description: 'long description',
+            image: {
+              url: 'http://localhost:8000/external/image_url?blur',
+            },
+          }],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('nsfw image 2', async () => {
+    const media: DisaggregatedMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+        romaji: 'romaji title',
+        native: 'native title',
+      },
+      images: [{
+        nsfw: true,
+        url: 'image_url',
+      }],
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [media],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                media: [],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    packs.cachedChannels['channel_id'] = {
+      nsfw: true,
+      name: 'channel',
+      id: 'channel_id',
+    };
+
+    try {
+      const message = search.media({
+        token: 'test_token',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        search: 'english title',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            author: {
+              name: 'Anime',
+            },
+            title: 'english title',
+            description: 'long description',
+            image: {
+              url: 'http://localhost:8000/external/image_url',
+            },
+          }],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      delete packs.cachedChannels['channel_id'];
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
   await test.step('youtube trailer', async () => {
     const media: AniListMedia = {
       id: '1',
@@ -655,6 +916,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -820,6 +1082,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1029,6 +1292,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1215,6 +1479,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1367,6 +1632,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1527,6 +1793,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1690,6 +1957,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1856,6 +2124,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
       });
 
@@ -1990,6 +2259,7 @@ Deno.test('/media', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'x'.repeat(100),
       });
 
@@ -2052,13 +2322,13 @@ Deno.test('/media', async (test) => {
       title: {},
     };
 
-    assertThrows(() => search.mediaMessage(media), Error, '404');
+    assertThrows(() => search.mediaMessage(media, 'channel_id'), Error, '404');
   });
 });
 
 Deno.test('/media debug', async (test) => {
   await test.step('normal', async () => {
-    const media: AniListMedia = {
+    const media: DisaggregatedMedia = {
       id: '1',
       type: MediaType.Anime,
       format: MediaFormat.TV,
@@ -2069,8 +2339,15 @@ Deno.test('/media debug', async (test) => {
         romaji: 'romaji title',
         native: 'native title',
       },
-      coverImage: {
-        extraLarge: 'image_url',
+      images: [{
+        url: 'image_url',
+      }],
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [media],
       },
     };
 
@@ -2085,7 +2362,7 @@ Deno.test('/media debug', async (test) => {
           Promise.resolve(JSON.stringify({
             data: {
               Page: {
-                media: [media],
+                media: [],
               },
             },
           }))),
@@ -2095,7 +2372,7 @@ Deno.test('/media debug', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -2107,6 +2384,7 @@ Deno.test('/media debug', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
         debug: true,
       });
@@ -2149,7 +2427,7 @@ Deno.test('/media debug', async (test) => {
             fields: [
               {
                 name: 'Id',
-                value: 'anilist:1',
+                value: 'pack-id:1',
               },
               {
                 inline: true,
@@ -2230,6 +2508,7 @@ Deno.test('/media debug', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
         debug: true,
       });
@@ -2355,6 +2634,7 @@ Deno.test('/media debug', async (test) => {
       const message = search.media({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'english title',
         debug: true,
       });
@@ -2434,6 +2714,293 @@ Deno.test('/media debug', async (test) => {
     }
   });
 
+  await test.step('nsfw image', async () => {
+    const media: DisaggregatedMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+        romaji: 'romaji title',
+        native: 'native title',
+      },
+      images: [{
+        nsfw: true,
+        url: 'image_url',
+      }],
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [media],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                media: [],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = search.media({
+        token: 'test_token',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        search: 'english title',
+        debug: true,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            description: 'romaji title\nnative title',
+            fields: [
+              {
+                name: 'Id',
+                value: 'pack-id:1',
+              },
+              {
+                inline: true,
+                name: 'Type',
+                value: 'Anime',
+              },
+              {
+                inline: true,
+                name: 'Format',
+                value: 'TV',
+              },
+              {
+                inline: true,
+                name: 'Popularity',
+                value: '0',
+              },
+            ],
+            thumbnail: {
+              url:
+                'http://localhost:8000/external/image_url?size=thumbnail&blur',
+            },
+            title: 'english title',
+          }],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('nsfw image 2', async () => {
+    const media: DisaggregatedMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      description: 'long description',
+      popularity: 0,
+      title: {
+        english: 'english title',
+        romaji: 'romaji title',
+        native: 'native title',
+      },
+      images: [{
+        nsfw: true,
+        url: 'image_url',
+      }],
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [media],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                media: [],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    packs.cachedChannels['channel_id'] = {
+      nsfw: true,
+      name: 'channel',
+      id: 'channel_id',
+    };
+
+    try {
+      const message = search.media({
+        token: 'test_token',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        search: 'english title',
+        debug: true,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            description: 'romaji title\nnative title',
+            fields: [
+              {
+                name: 'Id',
+                value: 'pack-id:1',
+              },
+              {
+                inline: true,
+                name: 'Type',
+                value: 'Anime',
+              },
+              {
+                inline: true,
+                name: 'Format',
+                value: 'TV',
+              },
+              {
+                inline: true,
+                name: 'Popularity',
+                value: '0',
+              },
+            ],
+            thumbnail: {
+              url: 'http://localhost:8000/external/image_url?size=thumbnail',
+            },
+            title: 'english title',
+          }],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      delete packs.cachedChannels['channel_id'];
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
   await test.step('no titles', () => {
     const media: Media = {
       id: '1',
@@ -2442,12 +3009,16 @@ Deno.test('/media debug', async (test) => {
       title: {},
     };
 
-    assertThrows(() => search.mediaDebugMessage(media), Error, '404');
+    assertThrows(
+      () => search.mediaDebugMessage(media, 'channel_id'),
+      Error,
+      '404',
+    );
   });
 });
 
 Deno.test('/character', async (test) => {
-  await test.step('normal search', async () => {
+  await test.step('normal', async () => {
     const character: DisaggregatedCharacter = {
       id: '1',
       description: 'long description',
@@ -2502,6 +3073,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -2635,6 +3207,7 @@ Deno.test('/character', async (test) => {
         search: 'full name',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -2756,6 +3329,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -2869,6 +3443,7 @@ Deno.test('/character', async (test) => {
       const message = await search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -2995,6 +3570,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -3108,6 +3684,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -3216,6 +3793,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
       });
 
@@ -3280,6 +3858,262 @@ Deno.test('/character', async (test) => {
     }
   });
 
+  await test.step('nsfw image', async () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        nsfw: true,
+        url: 'image_url',
+      }],
+      popularity: 1_000_000,
+      age: '420',
+      gender: 'male',
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [character],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                characters: [],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = search.character({
+        token: 'test_token',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        search: 'full name',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            description:
+              '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: 'long description',
+              },
+            ],
+            image: {
+              url: 'http://localhost:8000/external/image_url?blur',
+            },
+            footer: {
+              text: 'Male, 420',
+            },
+          }],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('nsfw image 2', async () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        nsfw: true,
+        url: 'image_url',
+      }],
+      popularity: 1_000_000,
+      age: '420',
+      gender: 'male',
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [character],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                characters: [],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    packs.cachedChannels['channel_id'] = {
+      nsfw: true,
+      name: 'channel',
+      id: 'channel_id',
+    };
+
+    try {
+      const message = search.character({
+        token: 'test_token',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        search: 'full name',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            description:
+              '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
+            fields: [
+              {
+                name: 'full name\n\u200B',
+                value: 'long description',
+              },
+            ],
+            image: {
+              url: 'http://localhost:8000/external/image_url',
+            },
+            footer: {
+              text: 'Male, 420',
+            },
+          }],
+          components: [],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      delete packs.cachedChannels['channel_id'];
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
   await test.step('not found', async () => {
     const character: AniListCharacter = {
       id: '1',
@@ -3322,6 +4156,7 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'x'.repeat(100),
       });
 
@@ -3373,6 +4208,150 @@ Deno.test('/character', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+    }
+  });
+});
+
+Deno.test('character embed', async (test) => {
+  await test.step('normal', () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+      popularity: 1_000_000,
+      age: '420',
+      gender: 'male',
+    };
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const embed = search.characterEmbed(character, 'channel_id', {
+        mode: 'thumbnail',
+        description: false,
+        footer: false,
+        rating: false,
+      });
+
+      assertEquals(embed.json(), {
+        fields: [
+          {
+            name: 'full name\n\u200B',
+            value: '\u200B',
+          },
+        ],
+        thumbnail: {
+          url: 'http://localhost:8000/external/image_url?size=thumbnail',
+        },
+        type: 'rich',
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+    }
+  });
+
+  await test.step('nsfw image', () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        nsfw: true,
+        url: 'image_url',
+      }],
+      popularity: 1_000_000,
+      age: '420',
+      gender: 'male',
+    };
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const embed = search.characterEmbed(character, 'channel_id', {
+        mode: 'thumbnail',
+        description: false,
+        footer: false,
+        rating: false,
+      });
+
+      assertEquals(embed.json(), {
+        fields: [
+          {
+            name: 'full name\n\u200B',
+            value: '\u200B',
+          },
+        ],
+        thumbnail: {
+          url: 'http://localhost:8000/external/image_url?size=thumbnail&blur',
+        },
+        type: 'rich',
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+    }
+  });
+
+  await test.step('nsfw image 2', () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        nsfw: true,
+        url: 'image_url',
+      }],
+      popularity: 1_000_000,
+      age: '420',
+      gender: 'male',
+    };
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    packs.cachedChannels['channel_id'] = {
+      nsfw: true,
+      name: 'channel',
+      id: 'channel_id',
+    };
+
+    try {
+      const embed = search.characterEmbed(character, 'channel_id', {
+        mode: 'thumbnail',
+        description: false,
+        footer: false,
+        rating: false,
+      });
+
+      assertEquals(embed.json(), {
+        fields: [
+          {
+            name: 'full name\n\u200B',
+            value: '\u200B',
+          },
+        ],
+        thumbnail: {
+          url: 'http://localhost:8000/external/image_url?size=thumbnail',
+        },
+        type: 'rich',
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      delete packs.cachedChannels['channel_id'];
     }
   });
 });
@@ -3433,6 +4412,7 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
         debug: true,
       });
@@ -3580,6 +4560,7 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
         debug: true,
       });
@@ -3680,6 +4661,163 @@ Deno.test('/character debug', async (test) => {
     }
   });
 
+  await test.step('with media', async () => {
+    const character: AniListCharacter = {
+      id: '1',
+      description: 'long description',
+      name: {
+        full: 'full name',
+      },
+      image: {
+        large: 'image_url',
+      },
+      age: '420',
+      gender: 'male',
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: '5',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            popularity: 10,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                characters: [character],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = search.character({
+        token: 'test_token',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        search: 'full name',
+        debug: true,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: 'full name',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'Id',
+                  value: 'anilist:1',
+                },
+                {
+                  name: 'Rating',
+                  value: '1*',
+                },
+                {
+                  inline: true,
+                  name: 'Gender',
+                  value: 'male',
+                },
+                {
+                  inline: true,
+                  name: 'Age',
+                  value: '420',
+                },
+                {
+                  inline: true,
+                  name: 'Media',
+                  value: 'anilist:5',
+                },
+                {
+                  inline: true,
+                  name: 'Role',
+                  value: 'Main',
+                },
+                {
+                  inline: true,
+                  name: 'Popularity',
+                  value: '10',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
   await test.step('default image', async () => {
     const character: AniListCharacter = {
       id: '1',
@@ -3721,6 +4859,7 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
         debug: true,
       });
@@ -3821,31 +4960,26 @@ Deno.test('/character debug', async (test) => {
     }
   });
 
-  await test.step('with media', async () => {
-    const character: AniListCharacter = {
+  await test.step('nsfw image', async () => {
+    const character: DisaggregatedCharacter = {
       id: '1',
       description: 'long description',
       name: {
-        full: 'full name',
+        english: 'full name',
       },
-      image: {
-        large: 'image_url',
-      },
+      images: [{
+        nsfw: true,
+        url: 'image_url',
+      }],
       age: '420',
       gender: 'male',
-      media: {
-        edges: [{
-          characterRole: CharacterRole.Main,
-          node: {
-            id: '5',
-            type: MediaType.Anime,
-            format: MediaFormat.TV,
-            popularity: 10,
-            title: {
-              english: 'title',
-            },
-          },
-        }],
+      popularity: 1_000_000,
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [character],
       },
     };
 
@@ -3860,7 +4994,7 @@ Deno.test('/character debug', async (test) => {
           Promise.resolve(JSON.stringify({
             data: {
               Page: {
-                characters: [character],
+                characters: [],
               },
             },
           }))),
@@ -3870,7 +5004,7 @@ Deno.test('/character debug', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -3882,6 +5016,171 @@ Deno.test('/character debug', async (test) => {
       const message = search.character({
         token: 'test_token',
         guildId: 'guild_id',
+        channelId: 'channel_id',
+        search: 'full name',
+        debug: true,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.tickAsync(0);
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: 'full name',
+              thumbnail: {
+                url:
+                  'http://localhost:8000/external/image_url?size=thumbnail&blur',
+              },
+              fields: [
+                {
+                  name: 'Id',
+                  value: 'pack-id:1',
+                },
+                {
+                  name: 'Rating',
+                  value: '5*',
+                },
+                {
+                  inline: true,
+                  name: 'Gender',
+                  value: 'male',
+                },
+                {
+                  inline: true,
+                  name: 'Age',
+                  value: '420',
+                },
+                {
+                  inline: true,
+                  name: 'Media',
+                  value: 'undefined:undefined',
+                },
+                {
+                  inline: true,
+                  name: 'Role',
+                  value: 'undefined',
+                },
+                {
+                  inline: true,
+                  name: 'Popularity',
+                  value: '1,000,000',
+                },
+                {
+                  name: '**WARN**',
+                  value:
+                    'Character not available in gacha.\nAdd at least one media to the character.',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('nsfw image 2', async () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        nsfw: true,
+        url: 'image_url',
+      }],
+      age: '420',
+      gender: 'male',
+      popularity: 1_000_000,
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [character],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                characters: [],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    packs.cachedChannels['channel_id'] = {
+      nsfw: true,
+      name: 'channel',
+      id: 'channel_id',
+    };
+
+    try {
+      const message = search.character({
+        token: 'test_token',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
         search: 'full name',
         debug: true,
       });
@@ -3930,11 +5229,11 @@ Deno.test('/character debug', async (test) => {
               fields: [
                 {
                   name: 'Id',
-                  value: 'anilist:1',
+                  value: 'pack-id:1',
                 },
                 {
                   name: 'Rating',
-                  value: '1*',
+                  value: '5*',
                 },
                 {
                   inline: true,
@@ -3949,17 +5248,22 @@ Deno.test('/character debug', async (test) => {
                 {
                   inline: true,
                   name: 'Media',
-                  value: 'anilist:5',
+                  value: 'undefined:undefined',
                 },
                 {
                   inline: true,
                   name: 'Role',
-                  value: 'Main',
+                  value: 'undefined',
                 },
                 {
                   inline: true,
                   name: 'Popularity',
-                  value: '10',
+                  value: '1,000,000',
+                },
+                {
+                  name: '**WARN**',
+                  value:
+                    'Character not available in gacha.\nAdd at least one media to the character.',
                 },
               ],
             },
@@ -3969,6 +5273,8 @@ Deno.test('/character debug', async (test) => {
     } finally {
       delete config.appId;
       delete config.origin;
+
+      delete packs.cachedChannels['channel_id'];
 
       fetchStub.restore();
       listStub.restore();

@@ -9,7 +9,7 @@
 [![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304/vote)
 [![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
 
-[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot)
+[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?style=for-the-badge&logo=discord&logoColor=white)](https://fable.deno.dev/invite)
 
 [![Discord Support Server](https://img.shields.io/discord/992416714497212518?label=Discord%20Support%20Server&style=for-the-badge)][discord]
 
@@ -26,20 +26,14 @@
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227321932-2ad8d36c-e56c-46e9-91da-161b79eeb029.gif" alt="Animated Pulls">
 </i>
 
-Fable is a free, open-source gacha[^1] bot — a simple, powerful Mudae
-alternative. Like Mudae, you can pull anime characters. Unlike Mudae, there are
-no premiums and no pay-to-win bullshit.
+Fable is a free, open-source gacha bot — a simple, powerful Mudae alternative.
+Like Mudae, you can pull anime characters. Unlike Mudae, there are no premiums
+and no pay-to-win bullshit.
 
 There's an intuitive system to manage and customize the characters in your
 servers, like adding extensions to chrome and installing apps on your phone, you
 can install community-made packs that are full of new characters with a single
 command.
-
-[^1]: Currently the default packs include anime/manga/vtubers, but you can
-install other packs, e.g. video game characters or real-life celebrities. ~~And
-you can disable all anime packs entirely (In case it's a sports server or
-else~~, we try our best to include term natural commands along with anime
-analogies).
 
 You can try an online demo of Fable before adding it to your server by going to
 <https://fable.deno.dev/demo>
@@ -131,24 +125,6 @@ Use `/packs community` or `/packs uninstall id: pack-id`.
 
 </p>
 </details>
-
-<details><summary>How are you keeping Fable free?</summary>
-<p>
-
-We're using serverless for the servers and the database, which is much cheaper
-to maintain right now.
-
-If things get out of hand we'll rate limit big servers for something like 1M
-command calls per month[^2]. only server owners will be required to cover what
-"their" server costs us (their portion of the bill), we'll keep covering the
-bill for small servers with less activity.
-
-Fable will always remain 100% free-to-play to the players.
-
-</p>
-</details>
-
-[^2]: Currently there are no limits on any server.
 
 [discord]: https://discord.gg/ceKyEfhyPQ
 [contributing]: https://github.com/ker0olos/fable/wiki/Contributing

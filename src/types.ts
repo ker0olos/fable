@@ -49,6 +49,7 @@ export type Alias = {
 
 export type Image = {
   url: string;
+  nsfw?: boolean;
   artist?: {
     username: string;
     url?: string;
@@ -147,7 +148,6 @@ export interface Manifest {
   id: string;
   title?: string;
   description?: string;
-  nsfw?: boolean;
   author?: string;
   image?: string;
   url?: string;

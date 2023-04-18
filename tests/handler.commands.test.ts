@@ -1,13 +1,13 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from 'https://deno.land/std@0.179.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.183.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCallArg,
   spy,
   stub,
-} from 'https://deno.land/std@0.179.0/testing/mock.ts';
+} from 'https://deno.land/std@0.183.0/testing/mock.ts';
 
 import * as discord from '../src/discord.ts';
 
@@ -95,6 +95,7 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -176,6 +177,7 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -257,6 +259,7 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -338,6 +341,7 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -422,6 +426,7 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'title',
           debug: true,
           id: undefined,
@@ -503,6 +508,7 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'id=uuid',
           debug: false,
           id: 'uuid',
@@ -596,6 +602,7 @@ Deno.test('search command handlers', async (test) => {
           index: 0,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'title',
           id: undefined,
         }],
@@ -688,6 +695,7 @@ Deno.test('search command handlers', async (test) => {
           index: 0,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'id=uuid',
           id: 'uuid',
         }],
@@ -776,6 +784,7 @@ Deno.test('character command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'name',
           debug: false,
           id: undefined,
@@ -863,6 +872,7 @@ Deno.test('character command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'name',
           debug: false,
           id: undefined,
@@ -950,6 +960,7 @@ Deno.test('character command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'name',
           debug: false,
           id: undefined,
@@ -1040,6 +1051,7 @@ Deno.test('character command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'name',
           debug: true,
           id: undefined,
@@ -1127,6 +1139,7 @@ Deno.test('character command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'id=uuid',
           debug: false,
           id: 'uuid',
@@ -1220,6 +1233,7 @@ Deno.test('party command handlers', async (test) => {
           token: 'token',
           userId: 'another_user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
         }],
       });
 
@@ -1304,6 +1318,7 @@ Deno.test('party command handlers', async (test) => {
           token: 'token',
           userId: 'another_user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
         }],
       });
 
@@ -1391,6 +1406,7 @@ Deno.test('party command handlers', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'name',
           spot: undefined,
           id: undefined,
@@ -1484,6 +1500,7 @@ Deno.test('party command handlers', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'name',
           spot: 5,
           id: undefined,
@@ -1574,6 +1591,7 @@ Deno.test('party command handlers', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'id=uuid',
           spot: undefined,
           id: 'uuid',
@@ -1667,6 +1685,7 @@ Deno.test('party command handlers', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           a: 5,
           b: 1,
         }],
@@ -1756,6 +1775,7 @@ Deno.test('party command handlers', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           spot: 5,
         }],
       });
@@ -1861,6 +1881,7 @@ Deno.test('collection command handlers', async (test) => {
           stars: 5,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           nick: undefined,
         }],
       });
@@ -1969,6 +1990,7 @@ Deno.test('collection command handlers', async (test) => {
           stars: 5,
           userId: 'another_user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           nick: 'nickname',
         }],
       });
@@ -2072,6 +2094,7 @@ Deno.test('collection command handlers', async (test) => {
           stars: 5,
           userId: 'another_user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           nick: 'username',
         }],
       });
@@ -2168,6 +2191,7 @@ Deno.test('collection command handlers', async (test) => {
           search: 'title',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           nick: undefined,
           id: undefined,
         }],
@@ -2265,6 +2289,7 @@ Deno.test('collection command handlers', async (test) => {
           search: 'id=media_id',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           nick: undefined,
           id: 'media_id',
         }],
@@ -2369,6 +2394,7 @@ Deno.test('collection command handlers', async (test) => {
           search: 'title',
           userId: 'another_user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           nick: 'nickname',
           id: undefined,
         }],
@@ -2473,6 +2499,7 @@ Deno.test('collection command handlers', async (test) => {
           search: 'title',
           userId: 'another_user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           nick: 'username',
           id: undefined,
         }],
@@ -3156,6 +3183,7 @@ Deno.test('found command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'title',
           id: undefined,
         }],
@@ -3235,6 +3263,7 @@ Deno.test('found command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'title',
           id: undefined,
         }],
@@ -3314,6 +3343,7 @@ Deno.test('found command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'title',
           id: undefined,
         }],
@@ -3393,6 +3423,7 @@ Deno.test('found command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'id=uuid',
           id: 'uuid',
         }],
@@ -3830,6 +3861,7 @@ Deno.test('trade command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           targetId: 'another_user_id',
           give: [
             'give_character_id',
@@ -3937,6 +3969,7 @@ Deno.test('trade command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           targetId: 'another_user_id',
           give: ['give_character_id_3'],
           take: ['take_character_id_3'],
@@ -4148,6 +4181,7 @@ Deno.test('give command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           targetId: 'another_user_id',
           give: [
             'give_character_id',
@@ -4247,6 +4281,7 @@ Deno.test('give command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           targetId: 'another_user_id',
           give: ['give_character_id_3'],
           take: [],
@@ -4436,6 +4471,7 @@ Deno.test('gacha command handlers', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           token: 'token',
         }],
       });
@@ -4518,6 +4554,7 @@ Deno.test('gacha command handlers', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           token: 'token',
         }],
       });
@@ -4604,6 +4641,7 @@ Deno.test('gacha command handlers', async (test) => {
           guarantee: 4,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           token: 'token',
         }],
       });
@@ -4690,6 +4728,7 @@ Deno.test('gacha command handlers', async (test) => {
           guarantee: 4,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           token: 'token',
         }],
       });
@@ -4772,6 +4811,7 @@ Deno.test('gacha command handlers', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           token: 'token',
         }],
       });
@@ -5301,6 +5341,7 @@ Deno.test('like command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'character',
           id: undefined,
           undo: false,
@@ -5388,6 +5429,7 @@ Deno.test('like command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'id=character_id',
           id: 'character_id',
           undo: false,
@@ -5475,6 +5517,7 @@ Deno.test('like command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'character',
           id: undefined,
           undo: true,
@@ -5562,6 +5605,7 @@ Deno.test('like command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'id=character_id',
           id: 'character_id',
           undo: true,
@@ -6132,6 +6176,7 @@ Deno.test('custom command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           search: 'character',
           nick: 'New Nickname',
           image: undefined,
@@ -6226,6 +6271,7 @@ Deno.test('custom command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           image: 'https://image_url.png',
           search: 'character',
           nick: undefined,
@@ -6320,6 +6366,7 @@ Deno.test('custom command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           image: 'https://image_url.png',
           search: 'id=character',
           nick: undefined,
@@ -6414,6 +6461,7 @@ Deno.test('custom command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           image: 'https://image_url.png',
           search: 'character',
           nick: undefined,

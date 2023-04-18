@@ -93,6 +93,12 @@ export type Option = {
   emote?: Emote;
 };
 
+export type Channel = {
+  id: string;
+  nsfw: boolean;
+  name: string;
+};
+
 export type Member = {
   nick?: string;
   avatar?: string;
@@ -231,15 +237,14 @@ export class Interaction<Options> {
     components: { type: 1; components: ComponentInternal[] };
   };
 
-  /** user is sent when invoked in a DM */
+  /** user is sent when the interaction is invoked in a DM */
   // user?: User;
 
   /** member is sent when the interaction is invoked in a guild */
-  member: {
-    nick?: string;
-    avatar: string;
-    user: User;
-  };
+  member: Member;
+
+  /** channel is sent when the interaction is invoked in a guild */
+  channel: Channel;
 
   // /** available on all interaction types except PING */
   // locale?: string;
@@ -291,6 +296,7 @@ export class Interaction<Options> {
     // this.user = obj.user;
     // this.message = obj?.message
     this.member = obj.member;
+    this.channel = obj.channel;
 
     // this.locale = obj.locale;
     // this.guildLocale = obj.guild_locale;
@@ -524,7 +530,11 @@ export class Embed {
     default?: boolean;
     proxy?: boolean;
     size?: ImageSize;
+    blur?: boolean;
   }): Embed {
+    const size = image.size === ImageSize.Medium ? '?size=medium' : '';
+    const blur = image.blur ? size.length ? '&blur' : '?blur' : '';
+
     image.default = image.default ?? true;
     image.proxy = image.proxy ?? true;
 
@@ -542,7 +552,7 @@ export class Embed {
         this.#data.image = {
           url: `${config.origin}/external/${
             encodeURIComponent(image.url ?? '')
-          }${image.size === ImageSize.Medium ? '?size=medium' : ''}`,
+          }${size}${blur}`,
         };
       }
     }
@@ -550,8 +560,15 @@ export class Embed {
   }
 
   setThumbnail(
-    thumbnail: { url?: string; default?: boolean; proxy?: boolean },
+    thumbnail: {
+      url?: string;
+      default?: boolean;
+      proxy?: boolean;
+      blur?: boolean;
+    },
   ): Embed {
+    const blur = thumbnail.blur ? '&blur' : '';
+
     thumbnail.default = thumbnail.default ?? true;
     thumbnail.proxy = thumbnail.proxy ?? true;
 
@@ -569,7 +586,7 @@ export class Embed {
         this.#data.thumbnail = {
           url: `${config.origin}/external/${
             encodeURIComponent(thumbnail.url ?? '')
-          }?size=thumbnail`,
+          }?size=thumbnail${blur}`,
         };
       }
     }

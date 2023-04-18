@@ -17,6 +17,11 @@
           "https://i.redd.it/xozj7btis2na1.jpg"
         ]
       },
+      "nsfw": {
+        "title": "nsfw",
+        "type": "boolean",
+        "description": "Whether or not or not the image should be blurred on sfw channels"
+      },
       "artist": {
         "title": "artist",
         "description": "The artist responsible for the image",

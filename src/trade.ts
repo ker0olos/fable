@@ -63,6 +63,7 @@ function pre({
   token,
   userId,
   guildId,
+  channelId,
   targetId,
   give,
   take,
@@ -70,6 +71,7 @@ function pre({
   token: string;
   userId: string;
   guildId: string;
+  channelId: string;
   targetId: string;
   give: string[];
   take: string[];
@@ -175,7 +177,7 @@ function pre({
       ]);
 
       const giveEmbeds = giveCharacters.map((character) => {
-        return search.characterEmbed(character, {
+        return search.characterEmbed(character, channelId, {
           footer: false,
           description: false,
           media: { title: true },
@@ -184,7 +186,7 @@ function pre({
       });
 
       const takeEmbeds = takeCharacters.map((character) => {
-        return search.characterEmbed(character, {
+        return search.characterEmbed(character, channelId, {
           footer: false,
           description: false,
           media: { title: true },
@@ -361,11 +363,13 @@ async function give({
   targetId,
   giveCharactersIds,
   guildId,
+  channelId,
 }: {
   userId: string;
   targetId: string;
   giveCharactersIds: string[];
   guildId: string;
+  channelId: string;
 }): Promise<[discord.Message, discord.Message]> {
   const mutation = gql`
     mutation (
@@ -449,7 +453,7 @@ async function give({
   );
 
   giveCharacters.forEach((character) => {
-    const embed = search.characterEmbed(character, {
+    const embed = search.characterEmbed(character, channelId, {
       rating: true,
       mode: 'thumbnail',
       footer: false,
@@ -470,12 +474,14 @@ async function accepted({
   giveCharactersIds,
   takeCharactersIds,
   guildId,
+  channelId,
 }: {
   userId: string;
   targetId: string;
   giveCharactersIds: string[];
   takeCharactersIds: string[];
   guildId: string;
+  channelId: string;
 }): Promise<[discord.Message, discord.Message]> {
   const mutation = gql`
     mutation (
@@ -579,6 +585,7 @@ async function accepted({
   takeCharacters.forEach((character) => {
     const embed = search.characterEmbed(
       character,
+      channelId,
       {
         rating: true,
         mode: 'thumbnail',
@@ -594,6 +601,7 @@ async function accepted({
   giveCharacters.forEach((character) => {
     const embed = search.characterEmbed(
       character,
+      channelId,
       {
         rating: true,
         mode: 'thumbnail',

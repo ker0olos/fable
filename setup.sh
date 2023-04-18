@@ -1,22 +1,22 @@
 #!/bin/bash
 echo "Enter your discord application id (https://discord.com/developers/applications): "
-read APP_ID
+read -r APP_ID
 
 printf "\n"
 echo "Enter your discord public key (https://discord.com/developers/applications): "
-read PUBLIC_KEY
+read -r PUBLIC_KEY
 
 printf "\n"
 echo "Enter your discord bot token (https://discord.com/developers/applications): "
-read BOT_TOKEN
+read -r BOT_TOKEN
 
 printf "\n"
 echo "Enter a discord server id (https://github.com/ker0olos/fable/wiki/Get-Server-ID): "
-read GUILD_ID
+read -r GUILD_ID
 
 printf "\n"
 echo "Enter a FaunaDB auth key (https://github.com/ker0olos/fable/wiki/FaunaDB): "
-read FAUNA_SECRET
+read -r FAUNA_SECRET
 
 ENV="APP_ID=$APP_ID\n\
 PUBLIC_KEY=$PUBLIC_KEY\n\
@@ -27,11 +27,12 @@ GACHA=1\n\
 TRADING=1\n\
 COMMUNITY_PACKS=1\n"
 
-printf $ENV > .env
+# shellcheck disable=SC2059
+printf "$ENV" > .env
 
 printf "\n"
-echo "(https://discord.com/api/oauth2/authorize?client_id=$APP_ID&scope=applications.commands)"
-read -p "Did you invite the bot to your server using the url above? ..."
+echo "(https://discord.com/api/oauth2/authorize?client_id=$APP_ID&scope=applications.commands%20bot)"
+read -r -p "Did you invite the bot to your server using the url above? ..."
 
 printf "\n\n"
 echo "Updating Discord Slash Commands"

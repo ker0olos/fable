@@ -3,15 +3,15 @@
 import {
   assertEquals,
   assertRejects,
-} from 'https://deno.land/std@0.179.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.183.0/testing/asserts.ts';
 
-import { FakeTime } from 'https://deno.land/std@0.179.0/testing/time.ts';
+import { FakeTime } from 'https://deno.land/std@0.183.0/testing/time.ts';
 
 import {
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.179.0/testing/mock.ts';
+} from 'https://deno.land/std@0.183.0/testing/mock.ts';
 
 import packs from '../src/packs.ts';
 import trade from '../src/trade.ts';
@@ -88,6 +88,7 @@ Deno.test('give', async (test) => {
         userId: 'user_id',
         targetId: 'target_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         giveCharactersIds: ['anilist:1', 'anilist:1'],
       });
 
@@ -264,6 +265,7 @@ Deno.test('give', async (test) => {
             userId: 'user_id',
             targetId: 'target_id',
             guildId: 'guild_id',
+            channelId: 'channel_id',
             giveCharactersIds: ['anilist:1', 'anilist:1'],
           }),
         NonFetalCancelableError,
@@ -342,6 +344,7 @@ Deno.test('give', async (test) => {
             userId: 'user_id',
             targetId: 'target_id',
             guildId: 'guild_id',
+            channelId: 'channel_id',
             giveCharactersIds: ['anilist:1', 'anilist:1'],
           }),
         NonFetalCancelableError,
@@ -420,6 +423,7 @@ Deno.test('give', async (test) => {
             userId: 'user_id',
             targetId: 'target_id',
             guildId: 'guild_id',
+            channelId: 'channel_id',
             giveCharactersIds: ['anilist:1', 'anilist:1'],
           }),
         NonFetalCancelableError,
@@ -517,6 +521,7 @@ Deno.test('trade', async (test) => {
         userId: 'user_id',
         targetId: 'target_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         giveCharactersIds: ['anilist:1', 'anilist:1'],
         takeCharactersIds: ['anilist:2', 'anilist:2'],
       });
@@ -710,6 +715,7 @@ Deno.test('trade', async (test) => {
             userId: 'user_id',
             targetId: 'target_id',
             guildId: 'guild_id',
+            channelId: 'channel_id',
             giveCharactersIds: ['anilist:1', 'anilist:1'],
             takeCharactersIds: ['anilist:2', 'anilist:2'],
           }),
@@ -809,6 +815,7 @@ Deno.test('trade', async (test) => {
             userId: 'user_id',
             targetId: 'target_id',
             guildId: 'guild_id',
+            channelId: 'channel_id',
             giveCharactersIds: ['anilist:1', 'anilist:1'],
             takeCharactersIds: ['anilist:2', 'anilist:2'],
           }),
@@ -908,6 +915,7 @@ Deno.test('trade', async (test) => {
             userId: 'user_id',
             targetId: 'target_id',
             guildId: 'guild_id',
+            channelId: 'channel_id',
             giveCharactersIds: ['anilist:1', 'anilist:1'],
             takeCharactersIds: ['anilist:2', 'anilist:2'],
           }),
@@ -973,6 +981,7 @@ Deno.test('/trade', async (test) => {
       const message = trade.pre({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
         give: ['give_character_id'],
@@ -1161,6 +1170,7 @@ Deno.test('/trade', async (test) => {
       const message = trade.pre({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
         give: ['give_character_id', 'give_character_id'],
@@ -1356,6 +1366,7 @@ Deno.test('/trade', async (test) => {
       const message = trade.pre({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
         give: ['give_character_id'],
@@ -1489,6 +1500,7 @@ Deno.test('/trade', async (test) => {
       const message = trade.pre({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
         give: ['give_character_id'],
@@ -1568,6 +1580,7 @@ Deno.test('/trade', async (test) => {
     const message = trade.pre({
       userId: 'user_id',
       guildId: 'guild_id',
+      channelId: 'channel_id',
       token: 'test_token',
       targetId: 'user_id',
       give: ['give_character_id'],
@@ -1611,6 +1624,7 @@ Deno.test('/trade', async (test) => {
       const message = trade.pre({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
         give: ['give_character_id'],
@@ -1721,6 +1735,7 @@ Deno.test('/give', async (test) => {
       const message = trade.pre({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
         give: ['give_character_id'],
@@ -1872,6 +1887,7 @@ Deno.test('/give', async (test) => {
       const message = trade.pre({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
         give: ['give_character_id'],
@@ -2001,6 +2017,7 @@ Deno.test('/give', async (test) => {
       const message = trade.pre({
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
         give: ['give_character_id'],

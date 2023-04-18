@@ -1,5 +1,5 @@
-// @deno-types="https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.d.ts"
-import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.3.6/dist/unzipit.module.js';
+// @deno-types="https://raw.githubusercontent.com/greggman/unzipit/v1.4.3/dist/unzipit.module.d.ts"
+import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.4.3/dist/unzipit.module.js';
 
 import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 
@@ -21,10 +21,6 @@ import {
   serveStatic,
   validateRequest,
 } from 'https://deno.land/x/sift@0.6.0/mod.ts';
-
-// const notoSans = await (await fetch(
-//   'https://raw.githubusercontent.com/google/fonts/a901a106ee395b99afa37dcc3f860d310dd157a7/ofl/notosans/NotoSans-SemiBold.ttf',
-// )).arrayBuffer();
 
 import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
 
@@ -235,21 +231,6 @@ function verifySignature(
   return { valid, body };
 }
 
-// function text(s: string | number): Promise<Uint8Array> {
-//   const text = imagescript.Image.renderText(
-//     new Uint8Array(notoSans),
-//     28,
-//     `${s}`.substring(0, 2),
-//     0xffffffff,
-//     new imagescript.TextLayout({
-//       maxWidth: 48,
-//       maxHeight: 48,
-//     }),
-//   );
-
-//   return text.encode(2);
-// }
-
 async function proxy(r: Request): Promise<Response> {
   const { pathname, searchParams } = new URL(r.url);
 
@@ -277,6 +258,10 @@ async function proxy(r: Request): Promise<Response> {
     }
 
     if (response?.status !== 200 || !type?.startsWith('image/')) {
+      throw new Error();
+    }
+
+    if (searchParams.has('blur')) {
       throw new Error();
     }
 

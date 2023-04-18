@@ -14,12 +14,12 @@ assignees: ''
 
 **Describe your request**
 
-A clear description of what you want to happen.
+<!-- A clear description of what you want to happen. -->
 
 **Images**
 
-If applicable, add images to help explain your request.
+<!-- If applicable, add images to help explain your request. -->
 
 **Any additional context**
 
-Add any other context about your request here.
+<!-- Add any other context about your request here. -->
