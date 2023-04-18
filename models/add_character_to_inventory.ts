@@ -4,6 +4,7 @@ import {
   fql,
   InstanceExpr,
   InventoryExpr,
+  NullExpr,
   NumberExpr,
   RefExpr,
   ResponseExpr,
@@ -26,8 +27,8 @@ export interface Character {
   id: StringExpr;
   mediaId: StringExpr;
   rating: NumberExpr;
-  nickname?: string;
-  image?: string;
+  nickname?: string | NullExpr;
+  image?: string | NullExpr;
   history: History[];
   inventory: RefExpr;
   instance: RefExpr;

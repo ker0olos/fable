@@ -1584,6 +1584,7 @@ snapshot[`model 2`] = `
                                                                                     },
                                                                                   },
                                                                                 },
+                                                                                image: null,
                                                                                 inventory: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
@@ -1594,6 +1595,7 @@ snapshot[`model 2`] = `
                                                                                     select: "ref",
                                                                                   },
                                                                                 },
+                                                                                nickname: null,
                                                                                 user: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
@@ -3141,6 +3143,7 @@ snapshot[`model 2`] = `
                                                                                     },
                                                                                   },
                                                                                 },
+                                                                                image: null,
                                                                                 inventory: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
@@ -3151,6 +3154,7 @@ snapshot[`model 2`] = `
                                                                                     select: "ref",
                                                                                   },
                                                                                 },
+                                                                                nickname: null,
                                                                                 user: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
@@ -4827,6 +4831,7 @@ snapshot[`model 3`] = `
                                                                                     },
                                                                                   },
                                                                                 },
+                                                                                image: null,
                                                                                 inventory: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
@@ -4837,6 +4842,7 @@ snapshot[`model 3`] = `
                                                                                     select: "ref",
                                                                                   },
                                                                                 },
+                                                                                nickname: null,
                                                                                 user: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
@@ -4938,6 +4944,7 @@ snapshot[`model 3`] = `
                                                                                     },
                                                                                   },
                                                                                 },
+                                                                                image: null,
                                                                                 inventory: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
@@ -4948,6 +4955,7 @@ snapshot[`model 3`] = `
                                                                                     select: "ref",
                                                                                   },
                                                                                 },
+                                                                                nickname: null,
                                                                                 user: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
@@ -6878,6 +6886,7 @@ snapshot[`model 3`] = `
                                                                                     },
                                                                                   },
                                                                                 },
+                                                                                image: null,
                                                                                 inventory: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
@@ -6888,6 +6897,7 @@ snapshot[`model 3`] = `
                                                                                     select: "ref",
                                                                                   },
                                                                                 },
+                                                                                nickname: null,
                                                                                 user: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
@@ -6989,6 +6999,7 @@ snapshot[`model 3`] = `
                                                                                     },
                                                                                   },
                                                                                 },
+                                                                                image: null,
                                                                                 inventory: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
@@ -6999,6 +7010,7 @@ snapshot[`model 3`] = `
                                                                                     select: "ref",
                                                                                   },
                                                                                 },
+                                                                                nickname: null,
                                                                                 user: Expr {
                                                                                   raw: {
                                                                                     from: Expr {
