@@ -126,23 +126,5 @@ Use `/packs community` or `/packs uninstall id: pack-id`.
 </p>
 </details>
 
-<details><summary>How are you keeping Fable free?</summary>
-<p>
-
-We're using serverless for the servers and the database, which is much cheaper
-to maintain right now.
-
-If things get out of hand we'll rate limit big servers for something like 1M
-command calls per month[^2]. only server owners will be required to cover what
-"their" server costs us (their portion of the bill), we'll keep covering the
-bill for small servers with less activity.
-
-Fable will always remain 100% free-to-play to the players.
-
-</p>
-</details>
-
-[^2]: Currently there are no limits on any server.
-
 [discord]: https://discord.gg/ceKyEfhyPQ
 [contributing]: https://github.com/ker0olos/fable/wiki/Contributing

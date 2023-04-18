@@ -56,7 +56,7 @@ function media(
     })
     .then(async (media) => {
       if (debug) {
-        return await mediaDebugMessage(media)
+        return await mediaDebugMessage(media, channelId)
           .patch(token);
       }
 
@@ -204,6 +204,7 @@ function mediaEmbed(
 
 function mediaDebugMessage(
   media: Media | DisaggregatedMedia,
+  channelId: string,
 ): discord.Message | discord.Message {
   const titles = packs.aliasToArray(media.title);
 
@@ -214,7 +215,10 @@ function mediaDebugMessage(
   const embed = new discord.Embed()
     .setTitle(titles.shift())
     .setDescription(titles.join('\n'))
-    .setThumbnail({ url: media.images?.[0]?.url })
+    .setThumbnail({
+      url: media.images?.[0]?.url,
+      blur: media.images?.[0]?.nsfw && !packs.cachedChannels[channelId]?.nsfw,
+    })
     .addField({ name: 'Id', value: `${media.packId}:${media.id}` })
     .addField({
       name: 'Type',
@@ -269,7 +273,7 @@ function character(
     })
     .then(async ([character, existing]) => {
       if (debug) {
-        return await characterDebugMessage(character)
+        return await characterDebugMessage(character, channelId)
           .patch(token);
       }
 
@@ -496,7 +500,10 @@ function characterEmbed(
   return embed;
 }
 
-function characterDebugMessage(character: Character): discord.Message {
+function characterDebugMessage(
+  character: Character,
+  channelId: string,
+): discord.Message {
   const media = character.media?.edges?.[0];
 
   const role = media?.role;
@@ -512,7 +519,11 @@ function characterDebugMessage(character: Character): discord.Message {
   const embed = new discord.Embed()
     .setTitle(titles.splice(0, 1)[0])
     .setDescription(titles.join('\n'))
-    .setThumbnail({ url: character.images?.[0]?.url })
+    .setThumbnail({
+      url: character.images?.[0]?.url,
+      blur: character.images?.[0]?.nsfw &&
+        !packs.cachedChannels[channelId]?.nsfw,
+    })
     .addField({ name: 'Id', value: `${character.packId}:${character.id}` })
     .addField({
       name: 'Rating',
