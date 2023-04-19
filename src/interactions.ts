@@ -28,6 +28,14 @@ import {
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
 
+  // redirect to /demo on browsers
+  if (
+    r.method === 'GET' &&
+    r.headers.get('accept')?.includes('text/html')
+  ) {
+    return Response.redirect(`${origin}/demo`);
+  }
+
   const { error } = await utils.validateRequest(r, {
     POST: {
       headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
