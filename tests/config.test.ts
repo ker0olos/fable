@@ -37,6 +37,7 @@ Deno.test('init', async (test) => {
         '1',
         '1',
         '1',
+        '1',
       ]),
     );
 
@@ -53,6 +54,7 @@ Deno.test('init', async (test) => {
         topggSecret: 'topgg_secret',
         gacha: true,
         trading: true,
+        synthesis: true,
         communityPacks: true,
         origin: undefined,
       });
@@ -91,6 +93,7 @@ Deno.test('init', async (test) => {
         '0',
         '0',
         '0',
+        '0',
       ]),
     );
 
@@ -107,6 +110,7 @@ Deno.test('init', async (test) => {
         topggSecret: 'topgg_secret',
         gacha: false,
         trading: false,
+        synthesis: false,
         communityPacks: false,
         origin: undefined,
       });
