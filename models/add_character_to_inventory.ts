@@ -40,7 +40,8 @@ export interface History {
     by: RefExpr;
     ts: TimeExpr;
     pool: NumberExpr;
-    guaranteed: NumberExpr;
+    guaranteed?: NumberExpr;
+    sacrifices?: StringExpr[];
     popularityChance?: NumberExpr;
     popularityGreater?: NumberExpr;
     popularityLesser?: NumberExpr;

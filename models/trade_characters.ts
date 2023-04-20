@@ -163,7 +163,7 @@ export function giveCharacters(
             fql.Let({
               updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
                 characters: fql.RemoveAll(
-                  fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+                  giveCharactersRefs,
                   fql.Select(['data', 'characters'], inventory),
                 ),
               }),
@@ -171,13 +171,13 @@ export function giveCharacters(
                 fql.Ref(targetInventory),
                 {
                   characters: fql.AppendAll(
-                    fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+                    giveCharactersRefs,
                     fql.Select(['data', 'characters'], targetInventory),
                   ),
                 },
               ),
               updatedCharacters: fql.Foreach(
-                fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+                giveCharactersRefs,
                 (characterRef) =>
                   fql.Update<Character>(
                     characterRef,
@@ -372,11 +372,10 @@ export function tradeCharacters(
               updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
                 characters: fql.AppendAll(
                   fql.RemoveAll(
-                    fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+                    giveCharactersRefs,
                     fql.Select(['data', 'characters'], inventory),
                   ),
-                  // deno-lint-ignore no-explicit-any
-                  fql.Var('takeCharactersRefs') as any,
+                  takeCharactersRefs,
                 ),
               }),
               updatedTargetInventory: fql.Update<Inventory>(
@@ -384,16 +383,15 @@ export function tradeCharacters(
                 {
                   characters: fql.AppendAll(
                     fql.RemoveAll(
-                      fql.Var('takeCharactersRefs') as unknown as RefExpr[],
+                      takeCharactersRefs,
                       fql.Select(['data', 'characters'], inventory),
                     ),
-                    // deno-lint-ignore no-explicit-any
-                    fql.Var('giveCharactersRefs') as any,
+                    giveCharactersRefs,
                   ),
                 },
               ),
               updatedCharacters: fql.Foreach(
-                fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+                giveCharactersRefs,
                 (characterRef) =>
                   fql.Update<Character>(
                     characterRef,
@@ -414,7 +412,7 @@ export function tradeCharacters(
                   ),
               ),
               updatedTakeCharacters: fql.Foreach(
-                fql.Var('takeCharactersRefs') as unknown as RefExpr[],
+                takeCharactersRefs,
                 (characterRef) =>
                   fql.Update<Character>(
                     characterRef,

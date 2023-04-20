@@ -107,6 +107,7 @@ type Gacha @embedded {
   ts: Time!
   pool: Int!
   guaranteed: Int
+  sacrifices: [String!]
   popularityChance: Int
   popularityGreater: Int
   popularityLesser: Int

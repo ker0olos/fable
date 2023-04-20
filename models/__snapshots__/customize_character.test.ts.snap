@@ -319,20 +319,12 @@ snapshot[`model 1`] = `
                                                             },
                                                           ],
                                                         },
-                                                        guarantees: Expr {
-                                                          raw: [
-                                                          ],
-                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
                                                           },
                                                         },
                                                         inventories: Expr {
-                                                          raw: [
-                                                          ],
-                                                        },
-                                                        likes: Expr {
                                                           raw: [
                                                           ],
                                                         },
@@ -1196,20 +1188,12 @@ snapshot[`model 1`] = `
                                                             },
                                                           ],
                                                         },
-                                                        guarantees: Expr {
-                                                          raw: [
-                                                          ],
-                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
                                                           },
                                                         },
                                                         inventories: Expr {
-                                                          raw: [
-                                                          ],
-                                                        },
-                                                        likes: Expr {
                                                           raw: [
                                                           ],
                                                         },

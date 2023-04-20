@@ -85,11 +85,24 @@ function RemoveAll<T extends ExprArg>(refs: T[], items: T[]): T[] {
   return _fql.Difference(items, refs) as unknown as T[];
 }
 
+function Delete(ref: RefExpr): Expr {
+  return _fql.Delete(ref);
+}
+
 function Includes<T extends ExprArg>(
   value: T,
   documentOrArray: T | T[],
 ): BooleanExpr {
   return _fql.ContainsValue(value, documentOrArray) as unknown as BooleanExpr;
+}
+
+function IncludesAll<T extends ExprArg>(
+  values: T[],
+  array: T[],
+): BooleanExpr {
+  return _fql.All(
+    _fql.Map(values, (v) => _fql.ContainsValue(v, array)),
+  ) as unknown as BooleanExpr;
 }
 
 function Paginate<T extends ExprArg>(
@@ -130,6 +143,10 @@ function Any<T = Expr>(setOrArray: T[]): boolean {
 
 function All<T = Expr>(setOrArray: T[]): boolean {
   return _fql.All(setOrArray) as unknown as boolean;
+}
+
+function IsEmpty(expr: Expr | ExprArg[]): BooleanExpr {
+  return _fql.IsEmpty(expr);
 }
 
 function IsNonEmpty(expr: Expr | ExprArg[]): BooleanExpr {
@@ -211,8 +228,8 @@ function Let<T, U>(
   return _fql.Let(params, cb(shadows) as any) as U;
 }
 
-function Var(name: StringExpr): Expr {
-  return _fql.Var(name);
+function Var<T extends ExprArg>(name: StringExpr): T {
+  return _fql.Var(name) as unknown as T;
 }
 
 function Select<T extends ExprArg>(
@@ -322,6 +339,7 @@ export const fql = {
   AppendAll,
   Concat,
   Create,
+  Delete,
   Divide,
   Equals,
   Filter,
@@ -331,8 +349,10 @@ export const fql = {
   Id,
   If,
   Includes,
+  IncludesAll,
   Index,
   Indexer,
+  IsEmpty,
   IsNonEmpty,
   IsNull,
   Let,
