@@ -6,6 +6,7 @@ import {
 import {
   type query as _query,
 } from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.d.ts';
+
 import config from './src/config.ts';
 
 const fql = query as typeof _query;
@@ -28,6 +29,9 @@ if (import.meta.main) {
     fql.Count(fql.Documents(fql.Collection('guild'))),
   );
 
+  console.log(`APP ID: ${config.appId}`);
+  console.log(`Server Count: ${serverCount}`);
+
   const response = await fetch(
     `https://top.gg/api/bots/${config.appId}/stats`,
     {
@@ -42,7 +46,13 @@ if (import.meta.main) {
     },
   );
 
-  if (response.ok) {
-    console.log(`Updated server count to: ${serverCount}`);
+  console.log(
+    response.status,
+    response.statusText,
+    await response.text(),
+  );
+
+  if (!response.ok) {
+    Deno.exit(1);
   }
 }
