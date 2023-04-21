@@ -859,6 +859,8 @@ function list({
         characters = characters.filter(({ rating }) => rating === filter);
       }
 
+      characters = characters.sort((a, b) => b.rating - a.rating);
+
       if (!characters?.length) {
         const message = new discord.Message()
           .addEmbed(
@@ -1053,12 +1055,12 @@ function likeslist({
       const charactersNames = await Promise.all(
         results.map(async (character) => {
           const [char, existing] = await Promise.all([
-            await packs.aggregate<Character>({
+            packs.aggregate<Character>({
               guildId,
               character,
               end: 1,
             }),
-            await user.findCharacter({
+            user.findCharacter({
               guildId,
               characterId: `${character.packId}:${character.id}`,
             }),

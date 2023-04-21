@@ -3534,18 +3534,8 @@ Deno.test('/collection list', async (test) => {
               fields: [
                 {
                   inline: false,
-                  name: 'title 1',
-                  value: '1<:smol_star:1088427421096751224> character 1',
-                },
-                {
-                  inline: false,
-                  name: 'title 2',
-                  value: '2<:smol_star:1088427421096751224> character 2',
-                },
-                {
-                  inline: false,
-                  name: 'title 3',
-                  value: '3<:smol_star:1088427421096751224> character 3',
+                  name: 'title 5',
+                  value: '5<:smol_star:1088427421096751224> character 5',
                 },
                 {
                   inline: false,
@@ -3554,8 +3544,18 @@ Deno.test('/collection list', async (test) => {
                 },
                 {
                   inline: false,
-                  name: 'title 5',
-                  value: '5<:smol_star:1088427421096751224> character 5',
+                  name: 'title 3',
+                  value: '3<:smol_star:1088427421096751224> character 3',
+                },
+                {
+                  inline: false,
+                  name: 'title 2',
+                  value: '2<:smol_star:1088427421096751224> character 2',
+                },
+                {
+                  inline: false,
+                  name: 'title 1',
+                  value: '1<:smol_star:1088427421096751224> character 1',
                 },
               ],
             },
