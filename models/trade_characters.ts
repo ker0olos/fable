@@ -1,5 +1,4 @@
 import {
-  BooleanExpr,
   Client,
   fql,
   InstanceExpr,
@@ -19,57 +18,6 @@ import {
 } from './get_user_inventory.ts';
 
 import { Character, History } from './add_character_to_inventory.ts';
-
-export function verifyCharacters(
-  {
-    user,
-    instance,
-    charactersIds,
-  }: {
-    user: UserExpr;
-    instance: InstanceExpr;
-    charactersIds: StringExpr[];
-  },
-): BooleanExpr {
-  return fql.Let({
-    characters: fql.Map(charactersIds, (id) =>
-      fql.Match(
-        fql.Index('characters_instance_id'),
-        id,
-        fql.Ref(instance),
-      )),
-  }, ({ characters }) =>
-    fql.If(
-      fql.All(fql.Map(characters, (char) => fql.IsNonEmpty(char))),
-      fql.Let({
-        errors: fql.Filter(characters, (char) =>
-          fql.Not(fql.Equals(
-            fql.Select(['data', 'user'], fql.Get(char)),
-            fql.Ref(user),
-          ))),
-      }, ({ errors }) =>
-        fql.If(
-          fql.IsNonEmpty(errors),
-          {
-            ok: false,
-            message: 'NOT_OWNED',
-            errors: fql.Map(
-              errors,
-              (char) => fql.Select(['data', 'id'], fql.Get(char)),
-            ),
-          },
-          { ok: true },
-        )),
-      {
-        ok: false,
-        message: 'NOT_FOUND',
-        errors: fql.Map(
-          fql.Filter(characters, (char) => fql.Not(fql.IsNonEmpty(char))),
-          (char) => fql.Select(['@set', 'terms', 0], char),
-        ),
-      },
-    ));
-}
 
 export function giveCharacters(
   {
@@ -455,29 +403,6 @@ export default function (client: Client): {
 } {
   return {
     resolvers: [
-      fql.Resolver({
-        client,
-        name: 'verify_characters',
-        lambda: (
-          charactersIds: string[],
-          guildId: string,
-          userId: string,
-        ) => {
-          return fql.Let(
-            {
-              user: getUser(userId),
-              guild: getGuild(guildId),
-              instance: getInstance(fql.Var('guild')),
-            },
-            ({ user, instance }) =>
-              verifyCharacters({
-                user,
-                instance,
-                charactersIds,
-              }),
-          );
-        },
-      }),
       fql.Resolver({
         client,
         name: 'give_characters',

@@ -1,10 +1,12 @@
-import { gql, request } from './graphql.ts';
+import { gql } from './graphql.ts';
 
-import config, { faunaUrl } from './config.ts';
+import config from './config.ts';
 
 import * as discord from './discord.ts';
 
 import packs from './packs.ts';
+
+import user from './user.ts';
 
 import gacha from './gacha.ts';
 
@@ -23,66 +25,15 @@ const synthesis = {
 async function getFilteredCharacters(
   { userId, guildId }: { userId: string; guildId: string },
 ): Promise<Schema.Character[]> {
-  const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        party {
-          member1 {
-            id
-            rating
-            nickname
-          }
-          member2 {
-            id
-            rating
-            nickname
-          }
-          member3 {
-            id
-            rating
-            nickname
-          }
-          member4 {
-            id
-            rating
-            nickname
-          }
-          member5 {
-            id
-            rating
-            nickname
-          }
-        }
-        user {
-          likes
-        }
-        characters {
-          id
-          nickname
-          rating
-        }
-      }
-    }
-  `;
-
-  let { getUserInventory: { user, party, characters } } = await request<{
-    getUserInventory: Schema.Inventory;
-  }>({
-    query,
-    url: faunaUrl,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-    },
+  let { likes, party, characters } = await user.getUserCharacters({
+    userId,
+    guildId,
   });
 
   characters = characters
     .filter(({ id }) =>
       // filter liked characters
-      !user.likes?.includes(id) &&
+      !likes?.includes(id) &&
       // filter party members
       ![
         party?.member1?.id,

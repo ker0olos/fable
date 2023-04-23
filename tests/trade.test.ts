@@ -14,6 +14,7 @@ import {
 } from 'https://deno.land/std@0.183.0/testing/mock.ts';
 
 import packs from '../src/packs.ts';
+import user from '../src/user.ts';
 import trade from '../src/trade.ts';
 
 import config from '../src/config.ts';
@@ -928,12 +929,30 @@ Deno.test('/trade', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const tradeStub = stub(
-      trade,
-      'verifyCharacters',
+    const userStub = stub(
+      user,
+      'getUserCharacters',
       returnsNext([
-        Promise.resolve({ ok: true }),
-        Promise.resolve({ ok: true }),
+        Promise.resolve({
+          characters: [{
+            id: 'id:1',
+            user: { id: 'user_id' },
+            mediaId: 'media_id',
+            rating: 1,
+          }],
+          likes: [],
+          party: {},
+        }),
+        Promise.resolve({
+          characters: [{
+            id: 'id:1',
+            user: { id: 'another_user_id' },
+            mediaId: 'media_id',
+            rating: 1,
+          }],
+          likes: [],
+          party: {},
+        }),
       ]),
     );
 
@@ -948,8 +967,8 @@ Deno.test('/trade', async (test) => {
         channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
-        give: ['give_character_id'],
-        take: ['take_character_id'],
+        give: ['pack-id:give_character_id'],
+        take: ['pack-id:take_character_id'],
       });
 
       assertEquals(message.json(), {
@@ -1079,7 +1098,7 @@ Deno.test('/trade', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      tradeStub.restore();
+      userStub.restore();
       fetchStub.restore();
     }
   });
@@ -1117,12 +1136,30 @@ Deno.test('/trade', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const tradeStub = stub(
-      trade,
-      'verifyCharacters',
+    const userStub = stub(
+      user,
+      'getUserCharacters',
       returnsNext([
-        Promise.resolve({ ok: true }),
-        Promise.resolve({ ok: true }),
+        Promise.resolve({
+          characters: [{
+            id: 'id:1',
+            user: { id: 'user_id' },
+            mediaId: 'media_id',
+            rating: 1,
+          }],
+          likes: [],
+          party: {},
+        }),
+        Promise.resolve({
+          characters: [{
+            id: 'id:1',
+            user: { id: 'another_user_id' },
+            mediaId: 'media_id',
+            rating: 1,
+          }],
+          likes: [],
+          party: {},
+        }),
       ]),
     );
 
@@ -1268,141 +1305,7 @@ Deno.test('/trade', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      tradeStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('not found', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-    };
-
-    const characterStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => undefined as any,
-    );
-
-    const aggregateStub = stub(
-      packs,
-      'aggregate',
-      ({ character }) => Promise.resolve(character),
-    );
-
-    const tradeStub = stub(
-      trade,
-      'verifyCharacters',
-      returnsNext([
-        Promise.resolve({
-          ok: true,
-        }),
-        Promise.resolve({
-          ok: false,
-          // deno-lint-ignore prefer-as-const
-          message: 'NOT_FOUND' as 'NOT_FOUND',
-          errors: ['id:1'],
-        }),
-      ]),
-    );
-
-    config.trading = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = trade.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        token: 'test_token',
-        targetId: 'another_user_id',
-        give: ['give_character_id'],
-        take: ['take_character_id'],
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.tickAsync(0);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
-              thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
-              },
-              fields: [
-                {
-                  name: 'full name\n\u200B',
-                  value: '\u200B',
-                },
-              ],
-            },
-            {
-              type: 'rich',
-              description:
-                '_Those characters haven\'t been found by anyone yet_',
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-      delete config.trading;
-
-      timeStub.restore();
-      characterStub.restore();
-      aggregateStub.restore();
-      tradeStub.restore();
+      userStub.restore();
       fetchStub.restore();
     }
   });
@@ -1440,18 +1343,24 @@ Deno.test('/trade', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const tradeStub = stub(
-      trade,
-      'verifyCharacters',
+    const userStub = stub(
+      user,
+      'getUserCharacters',
       returnsNext([
         Promise.resolve({
-          ok: true,
+          characters: [{
+            id: 'id:1',
+            user: { id: 'user_id' },
+            mediaId: 'media_id',
+            rating: 1,
+          }],
+          likes: [],
+          party: {},
         }),
         Promise.resolve({
-          ok: false,
-          // deno-lint-ignore prefer-as-const
-          message: 'NOT_OWNED' as 'NOT_OWNED',
-          errors: ['id:1'],
+          characters: [],
+          likes: [],
+          party: {},
         }),
       ]),
     );
@@ -1508,6 +1417,10 @@ Deno.test('/trade', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description: '<@another_user_id> doesn\'t have those characters',
+            },
+            {
+              type: 'rich',
               description:
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               thumbnail: {
@@ -1520,10 +1433,6 @@ Deno.test('/trade', async (test) => {
                 },
               ],
             },
-            {
-              type: 'rich',
-              description: '<@another_user_id> doesn\'t those characters**',
-            },
           ],
         },
       );
@@ -1535,7 +1444,7 @@ Deno.test('/trade', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      tradeStub.restore();
+      userStub.restore();
       fetchStub.restore();
     }
   });
@@ -1654,6 +1563,7 @@ Deno.test('/give', async (test) => {
   await test.step('normal', async () => {
     const character: Character = {
       id: '1',
+      packId: 'id',
       description: 'long description',
       name: {
         english: 'full name',
@@ -1683,11 +1593,20 @@ Deno.test('/give', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const tradeStub = stub(
-      trade,
-      'verifyCharacters',
+    const userStub = stub(
+      user,
+      'getUserCharacters',
       returnsNext([
-        Promise.resolve({ ok: true }),
+        Promise.resolve({
+          characters: [{
+            id: 'id:1',
+            user: { id: 'user_id' },
+            mediaId: 'media_id',
+            rating: 1,
+          }],
+          likes: [],
+          party: {},
+        }),
       ]),
     );
 
@@ -1769,7 +1688,7 @@ Deno.test('/give', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'give=user_id=another_user_id=undefined:1',
+                  custom_id: 'give=user_id=another_user_id=id:1',
                   label: 'Confirm',
                   style: 2,
                   type: 2,
@@ -1793,7 +1712,7 @@ Deno.test('/give', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      tradeStub.restore();
+      userStub.restore();
       fetchStub.restore();
     }
   });
@@ -1821,136 +1740,6 @@ Deno.test('/give', async (test) => {
         }],
       },
     });
-  });
-
-  await test.step('not found', async () => {
-    const character: Character = {
-      id: '1',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-    };
-
-    const characterStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => undefined as any,
-    );
-
-    const aggregateStub = stub(
-      packs,
-      'aggregate',
-      ({ character }) => Promise.resolve(character),
-    );
-
-    const tradeStub = stub(
-      trade,
-      'verifyCharacters',
-      returnsNext([
-        Promise.resolve({
-          ok: false,
-          // deno-lint-ignore prefer-as-const
-          message: 'NOT_FOUND' as 'NOT_FOUND',
-          errors: ['undefined:1'],
-        }),
-      ]),
-    );
-
-    config.trading = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = trade.pre({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        token: 'test_token',
-        targetId: 'another_user_id',
-        give: ['give_character_id'],
-        take: [],
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.tickAsync(0);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
-              thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=thumbnail',
-              },
-              fields: [
-                {
-                  name: 'full name\n\u200B',
-                  value: '\u200B',
-                },
-              ],
-            },
-            {
-              type: 'rich',
-              description:
-                '_Those characters haven\'t been found by anyone yet_',
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-      delete config.trading;
-
-      timeStub.restore();
-      characterStub.restore();
-      aggregateStub.restore();
-      tradeStub.restore();
-      fetchStub.restore();
-    }
   });
 
   await test.step('not owned', async () => {
@@ -1985,15 +1774,14 @@ Deno.test('/give', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const tradeStub = stub(
-      trade,
-      'verifyCharacters',
+    const userStub = stub(
+      user,
+      'getUserCharacters',
       returnsNext([
         Promise.resolve({
-          ok: false,
-          // deno-lint-ignore prefer-as-const
-          message: 'NOT_OWNED' as 'NOT_OWNED',
-          errors: ['undefined:1'],
+          characters: [],
+          likes: [],
+          party: {},
         }),
       ]),
     );
@@ -2050,6 +1838,10 @@ Deno.test('/give', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description: 'You don\'t have those characters',
+            },
+            {
+              type: 'rich',
               description:
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               thumbnail: {
@@ -2062,10 +1854,6 @@ Deno.test('/give', async (test) => {
                 },
               ],
             },
-            {
-              type: 'rich',
-              description: 'You don\'t have the those characters',
-            },
           ],
         },
       );
@@ -2077,7 +1865,7 @@ Deno.test('/give', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      tradeStub.restore();
+      userStub.restore();
       fetchStub.restore();
     }
   });

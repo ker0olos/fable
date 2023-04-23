@@ -20,6 +20,88 @@ import {
   Schema,
 } from './types.ts';
 
+async function getUserCharacters(
+  { userId, guildId }: { userId: string; guildId: string },
+): Promise<{
+  likes: Schema.User['likes'];
+  characters: Schema.Inventory['characters'];
+  party: Schema.Inventory['party'];
+}> {
+  const query = gql`
+    query ($userId: String!, $guildId: String!) {
+      getUserInventory(userId: $userId, guildId: $guildId) {
+        party {
+          member1 {
+            id
+            mediaId
+            rating
+            nickname
+            image
+          }
+          member2 {
+            id
+            mediaId
+            rating
+            nickname
+            image
+          }
+          member3 {
+            id
+            mediaId
+            rating
+            nickname
+            image
+          }
+          member4 {
+            id
+            mediaId
+            rating
+            nickname
+            image
+          }
+          member5 {
+            id
+            mediaId
+            rating
+            nickname
+            image
+          }
+        }
+        user {
+          likes
+        }
+        characters {
+          id
+          mediaId
+          rating
+          nickname
+          image
+        }
+      }
+    }
+  `;
+
+  const { getUserInventory: { user, party, characters } } = await request<{
+    getUserInventory: Schema.Inventory;
+  }>({
+    query,
+    url: faunaUrl,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+    },
+  });
+
+  return {
+    party,
+    characters,
+    likes: user.likes,
+  };
+}
+
 async function now({
   token,
   userId,
@@ -1113,6 +1195,7 @@ function likeslist({
 
 const user = {
   now,
+  getUserCharacters,
   findCharacter,
   customize,
   stars,
