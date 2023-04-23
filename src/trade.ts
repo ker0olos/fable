@@ -1,3 +1,5 @@
+import 'https://esm.sh/@total-typescript/ts-reset@0.4.2/filter-boolean';
+
 import { gql, request } from './graphql.ts';
 
 import search, { idPrefix } from './search.ts';
@@ -6,6 +8,7 @@ import packs from './packs.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import user from './user.ts';
 import utils from './utils.ts';
 
 import * as discord from './discord.ts';
@@ -13,52 +16,6 @@ import * as discord from './discord.ts';
 import { Character, Schema } from './types.ts';
 
 import { NonFetalCancelableError, NonFetalError } from './errors.ts';
-import user from './user.ts';
-
-// async function verifyCharacters({
-//   userId,
-//   guildId,
-//   charactersIds,
-// }: {
-//   userId: string;
-//   guildId: string;
-//   charactersIds: string[];
-// }): Promise<{
-//   ok: boolean;
-//   message?: 'NOT_OWNED' | 'NOT_FOUND';
-//   errors?: string[];
-// }> {
-//   const query = gql`
-//     query ($userId: String!, $guildId: String!, $charactersIds: [String!]!) {
-//       verifyCharacters(
-//         userId: $userId
-//         guildId: $guildId
-//         charactersIds: $charactersIds
-//       ) {
-//         ok
-//         message
-//         errors
-//       }
-//     }
-//   `;
-
-//   const result = (await request<{
-//     verifyCharacters: ReturnType<typeof verifyCharacters>;
-//   }>({
-//     query,
-//     url: faunaUrl,
-//     headers: {
-//       'authorization': `Bearer ${config.faunaSecret}`,
-//     },
-//     variables: {
-//       userId,
-//       guildId,
-//       charactersIds,
-//     },
-//   })).verifyCharacters;
-
-//   return result;
-// }
 
 function pre({
   token,
@@ -192,9 +149,29 @@ function pre({
         });
       });
 
-      const giveFilter = giveIds.filter((id) =>
-        !giveCollection.characters.some((char) => char.id === id)
-      );
+      const giveParty: string[] = [
+        giveCollection.party?.member1?.id,
+        giveCollection.party?.member2?.id,
+        giveCollection.party?.member3?.id,
+        giveCollection.party?.member4?.id,
+        giveCollection.party?.member5?.id,
+      ]
+        .filter(Boolean)
+        .filter((id) => giveIds.includes(id));
+
+      const giveFilter = giveParty.length
+        ? giveParty
+        : giveIds.filter((id) =>
+          !giveCollection.characters.some((char) => char.id === id)
+        );
+
+      // const giveLiked = giveIds.filter((id) =>
+      //   giveCollection.likes?.includes(id)
+      // );
+
+      const takeLiked = takeCollection
+        ? takeIds.filter((id) => takeCollection.likes?.includes(id))
+        : undefined;
 
       // not owned
       if (giveFilter.length) {
@@ -205,18 +182,33 @@ function pre({
 
           message.addEmbed(
             new discord.Embed()
-              .setDescription('You don\'t have those characters'),
+              .setDescription(
+                giveParty.length
+                  ? 'Those characters are in your party and can\'t be traded'
+                  : 'You don\'t have those characters',
+              ),
           ).addEmbed(giveEmbeds[i]);
         });
 
         return await message.patch(token);
       }
 
-      if (take.length) {
-        const takeFilter = takeIds.filter((id) =>
-          // deno-lint-ignore no-non-null-assertion
-          !takeCollection!.characters.some((char) => char.id === id)
-        );
+      if (takeCollection) {
+        const takeParty: string[] = [
+          takeCollection.party?.member1?.id,
+          takeCollection.party?.member2?.id,
+          takeCollection.party?.member3?.id,
+          takeCollection.party?.member4?.id,
+          takeCollection.party?.member5?.id,
+        ]
+          .filter(Boolean)
+          .filter((id) => takeIds.includes(id));
+
+        const takeFilter = takeParty.length
+          ? takeParty
+          : takeIds.filter((id) => {
+            return !takeCollection.characters.some((char) => char.id === id);
+          });
 
         // not owned
         if (takeFilter.length) {
@@ -228,7 +220,9 @@ function pre({
             message.addEmbed(
               new discord.Embed()
                 .setDescription(
-                  `<@${targetId}> doesn't have those characters`,
+                  takeParty.length
+                    ? `Those characters are in <@${targetId}>'s party and can't be traded`
+                    : `<@${targetId}> doesn't have those characters`,
                 ),
             ).addEmbed(takeEmbeds[i]);
           });
@@ -249,7 +243,7 @@ function pre({
         }));
       });
 
-      if (take.length) {
+      if (takeCollection) {
         await discord.Message.dialog({
           userId,
           targetId,
@@ -267,7 +261,16 @@ function pre({
           cancelText: 'Decline',
         }).patch(token);
 
-        await new discord.Message()
+        const followup = new discord.Message();
+
+        // deno-lint-ignore no-non-null-assertion
+        if (takeLiked!.length) {
+          followup.addEmbed(new discord.Embed().setDescription(
+            'You like some of those characters',
+          ));
+        }
+
+        await followup
           .setContent(`<@${targetId}> you received an offer!`)
           .followup(token);
       } else {
