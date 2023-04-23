@@ -1098,7 +1098,7 @@ Deno.test('/party assign', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'ASSIGNED',
+              description: 'Assigned',
             },
             {
               type: 'rich',
@@ -1208,7 +1208,7 @@ Deno.test('/party assign', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'ASSIGNED',
+              description: 'Assigned',
             },
             {
               type: 'rich',
@@ -1995,7 +1995,7 @@ Deno.test('/party remove', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'REMOVED',
+              description: 'Removed',
             },
             {
               type: 'rich',
@@ -2104,7 +2104,7 @@ Deno.test('/party remove', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'REMOVED',
+              description: 'Removed',
             },
             {
               type: 'rich',
@@ -2215,7 +2215,7 @@ Deno.test('/party remove', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'REMOVED FROM #2',
+              description: 'Removed #2',
             },
             {
               type: 'rich',

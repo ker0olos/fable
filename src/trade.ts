@@ -82,7 +82,7 @@ function pre({
       .setFlags(discord.MessageFlags.Ephemeral)
       .addEmbed(
         new discord.Embed().setDescription(
-          'You can\'t trade with yourself.',
+          `You can\'t ${take.length ? 'trade with' : 'gift'} yourself.`,
         ),
       );
   }
@@ -279,54 +279,34 @@ function pre({
       });
 
       if (take.length) {
-        message.addEmbed(
-          new discord.Embed().setDescription(
+        await discord.Message.dialog({
+          userId,
+          targetId,
+          message: message.setContent(`<@${targetId}>`),
+          description:
             `<@${userId}> is offering that you lose **${takeNames}** ${discord.emotes.remove} and get **${giveNames}** ${discord.emotes.add}`,
-          ),
-        );
-
-        message.addComponents([
-          new discord.Component().setId(
+          confirm: [
             'trade',
             userId,
             targetId,
             giveIds.join('&'),
             takeIds.join('&'),
-          )
-            .setLabel('Accept'),
-          new discord.Component().setId('cancel', userId, targetId)
-            .setStyle(discord.ButtonStyle.Red)
-            .setLabel('Decline'),
-        ]);
-
-        await message
-          .setContent(`<@${targetId}>`)
-          .patch(token);
+          ],
+          confirmText: 'Accept',
+          cancelText: 'Decline',
+        }).patch(token);
 
         await new discord.Message()
           .setContent(`<@${targetId}> you received an offer!`)
           .followup(token);
       } else {
-        message.addEmbed(
-          new discord.Embed().setDescription(
+        await discord.Message.dialog({
+          userId,
+          message,
+          description:
             `Are you sure you want to give **${giveNames}** ${discord.emotes.remove} to <@${targetId}> for free?`,
-          ),
-        );
-
-        message.addComponents([
-          new discord.Component().setId(
-            'give',
-            userId,
-            targetId,
-            giveIds.join('&'),
-          )
-            .setLabel('Confirm'),
-          new discord.Component().setId('cancel', userId)
-            .setStyle(discord.ButtonStyle.Red)
-            .setLabel('Cancel'),
-        ]);
-
-        await message.patch(token);
+          confirm: ['give', userId, targetId, giveIds.join('&')],
+        }).patch(token);
       }
     })
     .catch(async (err) => {
@@ -461,7 +441,6 @@ async function give({
       media: { title: true },
     }).addField({ value: `${discord.emotes.add}` });
 
-    updateMessage.addEmbed(embed);
     newMessage.addEmbed(embed);
   });
 

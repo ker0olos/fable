@@ -175,18 +175,26 @@ async function guaranteedPool(
 }
 
 async function rngPull(
-  { guildId, userId, guarantee }: {
+  { guildId, userId, guarantee, mutation, extra }: {
     guildId: string;
     userId?: string;
     guarantee?: number;
+    mutation?: {
+      name: string;
+      query: string;
+    };
+    extra?: {
+      // deno-lint-ignore no-explicit-any
+      [key: string]: any;
+    };
   },
 ): Promise<Pull> {
   const { pool, poolInfo, validate } = typeof guarantee === 'number'
-    ? await guaranteedPool({
+    ? await gacha.guaranteedPool({
       guildId,
       guarantee,
     })
-    : await rangePool({
+    : await gacha.rangePool({
       guildId,
     });
 
@@ -239,7 +247,7 @@ async function rngPull(
 
     // add character to user's inventory
     if (userId) {
-      const mutation = gql`
+      const _mutation = mutation?.query ?? gql`
         mutation (
           $userId: String!
           $guildId: String!
@@ -283,10 +291,10 @@ async function rngPull(
       `;
 
       const response = (await request<{
-        addCharacterToInventory: Schema.Mutation;
+        [key: string]: Schema.Mutation;
       }>({
         url: faunaUrl,
-        query: mutation,
+        query: _mutation,
         headers: {
           'authorization': `Bearer ${config.faunaSecret}`,
         },
@@ -298,8 +306,9 @@ async function rngPull(
           guaranteed: typeof guarantee === 'number',
           rating: rating.stars,
           ...poolInfo,
+          ...extra,
         },
-      })).addCharacterToInventory;
+      }))[mutation?.name ?? 'addCharacterToInventory'];
 
       if (response.ok) {
         likes = response.likes
@@ -312,6 +321,8 @@ async function rngPull(
             throw new Error('403');
           case 'NO_PULLS_AVAILABLE':
             throw new NoPullsError(response.inventory.rechargeTimestamp);
+          case 'CHARACTER_NOT_OWNED':
+            throw new NonFetalError('Some of those characters changed hands');
           // duplicate character
           case 'CHARACTER_EXISTS':
             continue;
@@ -342,6 +353,119 @@ async function rngPull(
   };
 }
 
+async function pullAnimation(
+  { token, pull, userId, channelId, quiet, mention, guarantee }: {
+    token: string;
+    pull: Pull;
+    channelId: string;
+    userId?: string;
+    quiet?: boolean;
+    mention?: boolean;
+    guarantee?: number;
+  },
+): Promise<void> {
+  const media = pull.media;
+
+  const mediaTitles = packs.aliasToArray(media.title);
+
+  const mediaImage = media.images?.[0];
+
+  let message = new discord.Message()
+    .addEmbed(
+      new discord.Embed()
+        .setTitle(utils.wrap(mediaTitles[0]))
+        .setImage({
+          size: ImageSize.Medium,
+          url: mediaImage?.url,
+          blur: mediaImage?.nsfw &&
+            !packs.cachedChannels[channelId]?.nsfw,
+        }),
+    );
+
+  if (mention && userId) {
+    message
+      .setContent(`<@${userId}>`)
+      .setPing();
+  }
+
+  if (!quiet) {
+    await message.patch(token);
+
+    await utils.sleep(4);
+
+    message = new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setImage({
+            url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
+          }),
+      );
+
+    if (mention && userId) {
+      message
+        .setContent(`<@${userId}>`)
+        .setPing();
+    }
+
+    await message.patch(token);
+
+    await utils.sleep(pull.rating.stars + 3);
+  }
+
+  message = search.characterMessage(pull.character, channelId, {
+    relations: false,
+    rating: pull.rating,
+    description: false,
+    externalLinks: false,
+    footer: false,
+    media: {
+      title: true,
+    },
+  });
+
+  if (userId) {
+    if (typeof guarantee === 'number' && pull.guarantees?.length) {
+      const next = pull.guarantees?.sort((a, b) => b - a)[0];
+
+      message.addComponents([
+        new discord.Component()
+          .setId('pull', userId, `${next}`)
+          .setLabel(`/pull ${next}`),
+      ]);
+    } else {
+      message.addComponents([
+        new discord.Component()
+          .setId(quiet ? 'q' : 'gacha', userId)
+          .setLabel(`/${quiet ? 'q' : 'gacha'}`),
+      ]);
+    }
+  }
+
+  message.addComponents([
+    new discord.Component()
+      .setLabel('/character')
+      .setId(
+        `character`,
+        `${pull.character.packId}:${pull.character.id}`,
+        '1',
+      ),
+  ]);
+
+  if (mention && userId) {
+    message
+      .setContent(`<@${userId}>`)
+      .setPing();
+  }
+
+  await message.patch(token);
+
+  if (pull.likes?.length && userId) {
+    await new discord.Message()
+      .setContent(pull.likes.map((id) => `<@${id}>`).join(''))
+      .followup(token);
+  }
+}
+
 /**
  * start the pull's animation
  */
@@ -363,115 +487,23 @@ function start(
   }
 
   gacha.rngPull({ userId, guildId, guarantee })
-    .then(async (pull) => {
-      const media = pull.media;
-
-      const mediaTitles = packs.aliasToArray(media.title);
-
-      const mediaImage = media.images?.[0];
-
-      let message = new discord.Message()
-        .addEmbed(
-          new discord.Embed()
-            .setTitle(utils.wrap(mediaTitles[0]))
-            .setImage({
-              size: ImageSize.Medium,
-              url: mediaImage?.url,
-              blur: mediaImage?.nsfw &&
-                !packs.cachedChannels[channelId]?.nsfw,
-            }),
-        );
-
-      if (mention) {
-        message
-          .setContent(`<@${userId}>`)
-          .setPing();
-      }
-
-      if (!quiet) {
-        await message.patch(token);
-
-        await utils.sleep(4);
-
-        message = new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setImage({
-                url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
-              }),
-          );
-
-        if (mention) {
-          message
-            .setContent(`<@${userId}>`)
-            .setPing();
-        }
-
-        await message.patch(token);
-
-        await utils.sleep(pull.rating.stars + 3);
-      }
-
-      message = search.characterMessage(pull.character, channelId, {
-        relations: false,
-        rating: pull.rating,
-        description: false,
-        externalLinks: false,
-        footer: false,
-        media: {
-          title: true,
-        },
-      });
-
-      if (userId) {
-        if (typeof guarantee === 'number' && pull.guarantees?.length) {
-          const next = pull.guarantees?.sort((a, b) => b - a)[0];
-
-          message.addComponents([
-            new discord.Component()
-              .setId('pull', userId, `${next}`)
-              .setLabel(`/pull ${next}`),
-          ]);
-        } else {
-          message.addComponents([
-            new discord.Component()
-              .setId(quiet ? 'q' : 'gacha', userId)
-              .setLabel(`/${quiet ? 'q' : 'gacha'}`),
-          ]);
-        }
-      }
-
-      message.addComponents([
-        new discord.Component()
-          .setLabel('/character')
-          .setId(
-            `character`,
-            `${pull.character.packId}:${pull.character.id}`,
-            '1',
-          ),
-      ]);
-
-      if (mention) {
-        message
-          .setContent(`<@${userId}>`)
-          .setPing();
-      }
-
-      await message.patch(token);
-
-      if (pull.likes?.length && userId) {
-        await new discord.Message()
-          .setContent(pull.likes.map((id) => `<@${id}>`).join(''))
-          .followup(token);
-      }
-    })
+    .then((pull) =>
+      pullAnimation({
+        pull,
+        token,
+        channelId,
+        userId,
+        guarantee,
+        mention,
+        quiet,
+      })
+    )
     .catch(async (err) => {
       if (err instanceof NoPullsError) {
         return await new discord.Message()
           .addEmbed(
-            new discord.Embed().setDescription(
-              'You don\'t have any more pulls!',
-            ),
+            new discord.Embed()
+              .setDescription('You don\'t have any more pulls!'),
           )
           .addEmbed(
             new discord.Embed()
@@ -500,11 +532,11 @@ function start(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'There are no more ' +
-                (typeof guarantee === 'number'
+              `There are no more ${
+                typeof guarantee === 'number'
                   ? `${guarantee}${discord.emotes.smolStar}`
-                  : '') +
-                'characters left',
+                  : ''
+              }characters left`,
             ),
           ).patch(token);
       }
@@ -538,6 +570,9 @@ const gacha = {
   lowest,
   variables,
   rngPull,
+  pullAnimation,
+  guaranteedPool,
+  rangePool,
   start,
 };
 

@@ -79,7 +79,8 @@ function pages(
           .setAuthor({ name: '3.' })
           .setTitle('`/vote`')
           .setDescription([
-            'Voting allows everyone to buy guaranteed pulls of specific ranks.',
+            'Voting is another way to acquire character with a specific guaranteed rating.',
+            // TODO Redo to include synthesis
             '',
             '> **Note** There will be another way to get guaranteed pulls without voting coming soon',
             '',
@@ -87,7 +88,7 @@ function pages(
             '',
             `\`/buy random\` gets you random pulls, they are identical to the pulls you can get each ${RECHARGE_MINS} minutes.`,
             '',
-            '`/buy guaranteed` however is special, while it can expansive it will guarantee that you get a character form one specific rank. Use the guaranteed pulls you have by calling `/pull stars:`',
+            '`/buy guaranteed` however is special, while it can expansive it will guarantee that you get a character from one specific rank. Use the guaranteed pulls you bought by calling `/pull stars:`',
             '',
             `> *Example: \`/buy guaranteed 5\` will guarantee you a random 5${discord.emotes.smolStar}character.*`,
             '\u200B',
@@ -112,9 +113,6 @@ function pages(
           .setDescription([
             '__**Releasing in the near future (5 days ~ 2 months)**__',
             '',
-            '**[Synthesis](https://github.com/ker0olos/fable/issues/76)**',
-            `Merging 1-4${discord.emotes.smolStar}characters to get a specific rank pull (e.g. Synthesizing five 1-star characters gives a pull where you are guaranteed a 2-star character).`,
-            '',
             '**[Daily Quests](https://github.com/ker0olos/fable/issues/75)**',
             'Complete quests for rewards.',
             '',
@@ -129,7 +127,7 @@ function pages(
           .setDescription([
             '- `/gacha` `/w`: _start a new gacha pull_',
             '- `/q`: _start a gacha pull but with no animations_',
-            '- `/pull` `/guaranteed`: _pull a character with a guaranteed rank_',
+            '- `/pull` `/guaranteed`: _use the guaranteed pulls you have_',
             '',
             '- `/now` `/vote` `/daily` `/tu`: _check what you can do right now_',
             '- `/search` `/anime` `/manga`: _search for specific media_',
@@ -143,7 +141,6 @@ function pages(
             '- `/collection list` `/coll list` `/mm list`: _list user characters in bulks_',
             '- `/collection stars` `/coll stars` `/mm stars`: _view user your stars_',
             '- `/collection media` `/coll media` `/mm media`: _view user characters in a specific media_',
-            '- `/found` `/obtained` `/owned`: _list all characters found from a specific media_',
             '',
             '- `/trade` `/offer`: _trade characters with another user_',
             '- `/give` `/gift`: _give characters to another user_',
@@ -157,12 +154,16 @@ function pages(
             '- `/nick`: _change the nickname of a character_',
             '- `/image` `/custom`: _change the image of a character_',
             '',
+            '- `/found` `/obtained` `/owned`: _list all characters found from a specific media_',
+            '',
             '- `/like`: _like a character to be notified if someone finds them_',
             '- `/unlike`: _remove character from your likes_',
             '- `/likeslist`: _list user liked characters_',
             '',
+            '- `/synthesize` `/merge`: _synthesize characters together to pull a new character with a specific rating_',
+            '',
             '- `/buy random` `/shop random`: _use votes to buy random pulls_',
-            '- `/buy guaranteed` `/shop guaranteed`: _use votes to buy pulls with a guaranteed rank_',
+            '- `/buy guaranteed` `/shop guaranteed`: _use votes to buy pulls with a specific guaranteed rating_',
             '',
             '- `/anilist next_episode`: _find when the next episode of an anime is airing_',
           ].join('\n')),

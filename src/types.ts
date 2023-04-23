@@ -189,8 +189,8 @@ export namespace Schema {
     totalVotes?: number;
     availableVotes?: number;
     guarantees?: number[];
-    likes: string[];
-    badges: {
+    likes?: string[];
+    badges?: {
       name: string;
       description: string;
       emote: string;

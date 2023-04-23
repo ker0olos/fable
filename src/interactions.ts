@@ -11,6 +11,8 @@ import trade from './trade.ts';
 import shop from './shop.ts';
 import help from './help.ts';
 
+import synthesis from './synthesis.ts';
+
 import demo from './demo.tsx';
 
 import webhooks from './webhooks.ts';
@@ -507,7 +509,17 @@ export const handler = async (r: Request) => {
                 : undefined,
             }).send();
           }
+          case 'synthesize':
+          case 'merge': {
+            const target = options['target'] as number;
 
+            return synthesis.synthesize({
+              token,
+              target,
+              guildId,
+              userId: member.user.id,
+            }).send();
+          }
           case 'shop':
           case 'buy': {
             //deno-lint-ignore no-non-null-assertion
@@ -849,7 +861,8 @@ export const handler = async (r: Request) => {
 
               newMessage.followup(token);
 
-              return updateMessage.setType(discord.MessageType.Update)
+              return updateMessage
+                .setType(discord.MessageType.Update)
                 .send();
             }
 
@@ -880,7 +893,29 @@ export const handler = async (r: Request) => {
 
               newMessage.followup(token);
 
-              return updateMessage.setType(discord.MessageType.Update)
+              return updateMessage
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'synthesis': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const target = parseInt(customValues![1]);
+
+            if (userId === member.user.id) {
+              return synthesis.confirmed({
+                token,
+                target,
+                guildId,
+                channelId,
+                userId: member.user.id,
+              })
+                .setType(discord.MessageType.Update)
                 .send();
             }
 
