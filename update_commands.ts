@@ -443,27 +443,14 @@ export const commands = [
   }),
   ...Command({
     name: 'pull',
-    description: 'Pull a character with a guaranteed rank',
+    description: 'Pull a character with a guaranteed rating',
     aliases: ['guaranteed'],
     options: [
       Option({
         name: 'stars',
         description: 'The star rating',
         type: Type.INTEGER,
-        choices: [
-          {
-            name: '5',
-            value: 5,
-          },
-          {
-            name: '4',
-            value: 4,
-          },
-          {
-            name: '3',
-            value: 3,
-          },
-        ],
+        choices: spots.slice(2).toReversed(),
       }),
     ],
   }),
@@ -500,6 +487,20 @@ export const commands = [
       }),
     ],
   }),
+  ...Command({
+    name: 'synthesize',
+    description:
+      'synthesize characters together to pull a new character of a specific rating',
+    aliases: ['merge'],
+    options: [
+      Option({
+        name: 'target',
+        description: 'The target star rating of this synthesis',
+        choices: spots.slice(1).toReversed(),
+        type: Type.INTEGER,
+      }),
+    ],
+  }),
   // shop
   ...Command({
     name: 'buy',
@@ -508,7 +509,7 @@ export const commands = [
     options: [
       Option({
         name: 'random',
-        description: 'Buy extra random pulls',
+        description: 'Use votes to buy random pulls',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -516,35 +517,22 @@ export const commands = [
             min_value: 1,
             max_value: 99,
             name: 'amount',
-            description: 'The amount you want to buy',
+            description: 'The amount of pulls you want to buy',
             type: Type.INTEGER,
           }),
         ],
       }),
       Option({
         name: 'guaranteed',
-        description: 'Buy guaranteed pulls',
+        description: 'Use votes to buy pulls with a specific rating',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
           Option({
             name: 'stars',
-            description: 'The star rating',
+            description: 'The star rating you want to buy',
             type: Type.INTEGER,
-            choices: [
-              {
-                name: '5',
-                value: 5,
-              },
-              {
-                name: '4',
-                value: 4,
-              },
-              {
-                name: '3',
-                value: 3,
-              },
-            ],
+            choices: spots.slice(2).toReversed(),
           }),
         ],
       }),

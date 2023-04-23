@@ -21,8 +21,8 @@ export const emotes = {
   star: '<:star:1061016362832642098>',
   noStar: '<:no_star:1061016360190222466>',
   smolStar: '<:smol_star:1088427421096751224>',
-  remove: '<:remove:1085033678180208641>',
-  add: '<:add:1085034731810332743>',
+  remove: '<:remove:1099004424111792158>',
+  add: '<:add:1099004747123523644>',
 };
 
 export const join = (...args: string[]): string => {
@@ -956,23 +956,53 @@ export class Message {
   }
 
   static dialog(
-    { type, description, message, confirm }: {
-      type: string;
+    {
+      type,
+      description,
+      message,
+      confirm,
+      confirmText,
+      cancelText,
+      userId,
+      targetId,
+    }: {
+      type?: string;
+      userId?: string;
+      targetId?: string;
       description: string;
-      confirm: string;
+      confirm: string | string[];
       message: Message;
+      confirmText?: string;
+      cancelText?: string;
     },
   ): Message {
+    const confirmComponent = new Component()
+      .setLabel(confirmText ?? 'Confirm');
+
+    const cancelComponent = new Component()
+      .setStyle(ButtonStyle.Red)
+      .setLabel(cancelText ?? 'Cancel');
+
+    if (Array.isArray(confirm)) {
+      confirmComponent.setId(...confirm);
+    } else {
+      // deno-lint-ignore no-non-null-assertion
+      confirmComponent.setId(type!, confirm);
+    }
+
+    if (userId && targetId) {
+      cancelComponent.setId('cancel', userId, targetId);
+    } else if (userId) {
+      cancelComponent.setId('cancel', userId);
+    } else {
+      cancelComponent.setId('cancel');
+    }
+
     return message
       .addEmbed(new Embed().setDescription(description))
       .insertComponents([
-        new Component()
-          .setId(type, confirm)
-          .setLabel('Confirm'),
-        new Component()
-          .setStyle(ButtonStyle.Red)
-          .setLabel('Cancel')
-          .setId('cancel'),
+        confirmComponent,
+        cancelComponent,
       ]);
   }
 

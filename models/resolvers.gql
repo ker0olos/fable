@@ -86,7 +86,7 @@ type Mutation {
   ): Response! @resolver(name: "add_character_to_inventory")
 
   #
-  mergeCharacters(
+  replaceCharacters(
     userId: String!
     guildId: String!
     characterId: String!
@@ -94,8 +94,7 @@ type Mutation {
     rating: Int!
     pool: Int!
     sacrifices: [String!]!
-    guarantees: [Int!]!
-  ): Response! @resolver(name: "merge_characters")
+  ): Response! @resolver(name: "replace_characters")
 
   #
   likeCharacter(userId: String!, guildId: String!, characterId: String!): Response!

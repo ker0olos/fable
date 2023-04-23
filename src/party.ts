@@ -301,7 +301,7 @@ async function assign({
   }
 
   return message
-    .addEmbed(new discord.Embed().setDescription('ASSIGNED'))
+    .addEmbed(new discord.Embed().setDescription('Assigned'))
     .addEmbed(srch.characterEmbed(results[0], channelId, {
       mode: 'thumbnail',
       rating: new Rating({ stars: response.character.rating }),
@@ -471,7 +471,7 @@ async function remove({
 
   if (!characters.length) {
     return message
-      .addEmbed(new discord.Embed().setDescription(`REMOVED FROM #${spot}`))
+      .addEmbed(new discord.Embed().setDescription(`Removed #${spot}`))
       .addEmbed(
         new discord.Embed().setDescription(
           'This character was removed or disabled',
@@ -480,7 +480,7 @@ async function remove({
   }
 
   return message
-    .addEmbed(new discord.Embed().setDescription('REMOVED'))
+    .addEmbed(new discord.Embed().setDescription('Removed'))
     .addEmbed(srch.characterEmbed(characters[0], channelId, {
       mode: 'thumbnail',
       rating: new Rating({ stars: response.character.rating }),

@@ -37,7 +37,7 @@ Deno.test('/buy', async (test) => {
         embeds: [{
           type: 'rich',
           description:
-            'Are you sure you want to spent **1** vote <:remove:1085033678180208641>',
+            'Are you sure you want to spent **1** vote <:remove:1099004424111792158>',
         }],
       },
     });
@@ -73,7 +73,7 @@ Deno.test('/buy', async (test) => {
         embeds: [{
           type: 'rich',
           description:
-            'Are you sure you want to spent **4** votes <:remove:1085033678180208641>',
+            'Are you sure you want to spent **4** votes <:remove:1099004424111792158>',
         }],
       },
     });
@@ -127,7 +127,7 @@ Deno.test('/buy', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You bought **1** random pull <:add:1085034731810332743>',
+              'You bought **1** random pull <:add:1099004747123523644>',
           }],
         },
       });
@@ -184,7 +184,7 @@ Deno.test('/buy', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You bought **5** random pulls <:add:1085034731810332743>',
+              'You bought **5** random pulls <:add:1099004747123523644>',
           }],
         },
       });
@@ -383,7 +383,7 @@ Deno.test('/buy', async (test) => {
         embeds: [{
           type: 'rich',
           description:
-            'Are you sure you want to spent **4** votes <:remove:1085033678180208641>',
+            'Are you sure you want to spent **4** votes <:remove:1099004424111792158>',
         }],
       },
     });
@@ -419,7 +419,7 @@ Deno.test('/buy', async (test) => {
         embeds: [{
           type: 'rich',
           description:
-            'Are you sure you want to spent **12** votes <:remove:1085033678180208641>',
+            'Are you sure you want to spent **12** votes <:remove:1099004424111792158>',
         }],
       },
     });
@@ -455,7 +455,7 @@ Deno.test('/buy', async (test) => {
         embeds: [{
           type: 'rich',
           description:
-            'Are you sure you want to spent **36** votes <:remove:1085033678180208641>',
+            'Are you sure you want to spent **36** votes <:remove:1099004424111792158>',
         }],
       },
     });
@@ -502,7 +502,7 @@ Deno.test('/buy', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You bought a **3**<:smol_star:1088427421096751224>pull <:add:1085034731810332743>',
+              'You bought a **3**<:smol_star:1088427421096751224>pull <:add:1099004747123523644>',
           }],
         },
       });
@@ -552,7 +552,7 @@ Deno.test('/buy', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You bought a **4**<:smol_star:1088427421096751224>pull <:add:1085034731810332743>',
+              'You bought a **4**<:smol_star:1088427421096751224>pull <:add:1099004747123523644>',
           }],
         },
       });
@@ -602,7 +602,7 @@ Deno.test('/buy', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You bought a **5**<:smol_star:1088427421096751224>pull <:add:1085034731810332743>',
+              'You bought a **5**<:smol_star:1088427421096751224>pull <:add:1099004747123523644>',
           }],
         },
       });

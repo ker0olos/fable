@@ -73,7 +73,7 @@ async function now({
       .setDescription(`${
         guarantees
           .map((r) => `${r}${discord.emotes.smolStar}`)
-          .join(' ')
+          .join('')
       }`)
       .setFooter({ text: 'Available Pulls' }),
   );

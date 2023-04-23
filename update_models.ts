@@ -1,5 +1,9 @@
 import 'https://esm.sh/@total-typescript/ts-reset@0.4.2/filter-boolean';
 
+import $ from 'https://deno.land/x/dax@0.31.0/mod.ts';
+
+import { green } from 'https://deno.land/std@0.183.0/fmt/colors.ts';
+
 import { load as Dotenv } from 'https://deno.land/std@0.183.0/dotenv/mod.ts';
 
 try {
@@ -23,7 +27,8 @@ import addCharacterToInventory from './models/add_character_to_inventory.ts';
 import setCharacterToParty from './models/set_character_to_party.ts';
 import customizeCharacters from './models/customize_character.ts';
 import tradeCharacters from './models/trade_characters.ts';
-import likeCharacters from './models/like_characters.ts';
+import replaceCharacters from './models/replace_characters.ts';
+import likeCharacters from './models/like_character.ts';
 
 if (import.meta.main) {
   const FAUNA_SECRET = Deno.env.get('FAUNA_SECRET');
@@ -46,6 +51,7 @@ if (import.meta.main) {
     setCharacterToParty(client),
     customizeCharacters(client),
     tradeCharacters(client),
+    replaceCharacters(client),
     likeCharacters(client),
   ];
 
@@ -54,24 +60,32 @@ if (import.meta.main) {
     .filter(Boolean)
     .reduce((a, b) => a.concat(b));
 
-  console.log(`updating ${_indexers.length} indexes`);
+  let pb = $.progress('Updating Indexes', {
+    length: _indexers.length,
+  });
 
   for (let i = 0; i < _indexers.length; i++) {
     const index = _indexers[i];
-    // console.log(`${i + 1}/${_indexers.length}`);
-    await index();
+    await index(), pb.increment();
   }
+
+  pb.finish();
 
   const _resolvers = all
     .map((obj) => obj.resolvers)
     .filter(Boolean)
     .reduce((a, b) => a.concat(b));
 
-  console.log(`updating ${_resolvers.length} user-defined functions`);
+  pb = $.progress('Updating User-defined Functions', {
+    length: _resolvers.length,
+  });
 
   for (let i = 0; i < _resolvers.length; i++) {
     const resolver = _resolvers[i];
-    // console.log(`${i + 1}/${_resolvers.length}`);
-    await resolver();
+    await resolver(), pb.increment();
   }
+
+  pb.finish();
+
+  console.log(green('OK'));
 }

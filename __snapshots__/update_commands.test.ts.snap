@@ -787,7 +787,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Pull a character with a guaranteed rank",
+    description: "Pull a character with a guaranteed rating",
     name: "pull",
     options: [
       {
@@ -817,7 +817,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Pull a character with a guaranteed rank",
+    description: "Pull a character with a guaranteed rating",
     name: "guaranteed",
     options: [
       {
@@ -925,19 +925,87 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "synthesize characters together to pull a new character of a specific rating",
+    name: "synthesize",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: [
+          {
+            name: "5",
+            value: 5,
+          },
+          {
+            name: "4",
+            value: 4,
+          },
+          {
+            name: "3",
+            value: 3,
+          },
+          {
+            name: "2",
+            value: 2,
+          },
+        ],
+        description: "The target star rating of this synthesis",
+        name: "target",
+        options: undefined,
+        required: true,
+        type: 4,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
+    description: "synthesize characters together to pull a new character of a specific rating",
+    name: "merge",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: [
+          {
+            name: "5",
+            value: 5,
+          },
+          {
+            name: "4",
+            value: 4,
+          },
+          {
+            name: "3",
+            value: 3,
+          },
+          {
+            name: "2",
+            value: 2,
+          },
+        ],
+        description: "The target star rating of this synthesis",
+        name: "target",
+        options: undefined,
+        required: true,
+        type: 4,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
     description: "vote shop commands",
     name: "buy",
     options: [
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Buy extra random pulls",
+        description: "Use votes to buy random pulls",
         name: "random",
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "The amount you want to buy",
+            description: "The amount of pulls you want to buy",
             name: "amount",
             options: undefined,
             required: true,
@@ -950,7 +1018,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Buy guaranteed pulls",
+        description: "Use votes to buy pulls with a specific rating",
         name: "guaranteed",
         options: [
           {
@@ -969,7 +1037,7 @@ snapshot[`commands 1`] = `
                 value: 3,
               },
             ],
-            description: "The star rating",
+            description: "The star rating you want to buy",
             name: "stars",
             options: undefined,
             required: true,
@@ -990,13 +1058,13 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Buy extra random pulls",
+        description: "Use votes to buy random pulls",
         name: "random",
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "The amount you want to buy",
+            description: "The amount of pulls you want to buy",
             name: "amount",
             options: undefined,
             required: true,
@@ -1009,7 +1077,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Buy guaranteed pulls",
+        description: "Use votes to buy pulls with a specific rating",
         name: "guaranteed",
         options: [
           {
@@ -1028,7 +1096,7 @@ snapshot[`commands 1`] = `
                 value: 3,
               },
             ],
-            description: "The star rating",
+            description: "The star rating you want to buy",
             name: "stars",
             options: undefined,
             required: true,

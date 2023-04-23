@@ -102,42 +102,6 @@ Deno.test('give', async (test) => {
               type: 'rich',
               description: 'Gift sent to <@target_id>!',
             },
-            {
-              type: 'rich',
-              description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
-              fields: [
-                {
-                  name: 'media',
-                  value: '**title**',
-                },
-                {
-                  name: '\u200B',
-                  value: '<:add:1085034731810332743>',
-                },
-              ],
-              thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
-              },
-            },
-            {
-              type: 'rich',
-              description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
-              fields: [
-                {
-                  name: 'media',
-                  value: '**title**',
-                },
-                {
-                  name: '\u200B',
-                  value: '<:add:1085034731810332743>',
-                },
-              ],
-              thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
-              },
-            },
           ],
         },
       });
@@ -164,7 +128,7 @@ Deno.test('give', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: '<:add:1085034731810332743>',
+                  value: '<:add:1099004747123523644>',
                 },
               ],
               thumbnail: {
@@ -182,7 +146,7 @@ Deno.test('give', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: '<:add:1085034731810332743>',
+                  value: '<:add:1099004747123523644>',
                 },
               ],
               thumbnail: {
@@ -548,7 +512,7 @@ Deno.test('trade', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: '<:add:1085034731810332743>',
+                  value: '<:add:1099004747123523644>',
                 },
               ],
               thumbnail: {
@@ -566,7 +530,7 @@ Deno.test('trade', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: '<:add:1085034731810332743>',
+                  value: '<:add:1099004747123523644>',
                 },
               ],
               thumbnail: {
@@ -584,7 +548,7 @@ Deno.test('trade', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: '<:remove:1085033678180208641>',
+                  value: '<:remove:1099004424111792158>',
                 },
               ],
               thumbnail: {
@@ -602,7 +566,7 @@ Deno.test('trade', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: '<:remove:1085033678180208641>',
+                  value: '<:remove:1099004424111792158>',
                 },
               ],
               thumbnail: {
@@ -1037,7 +1001,7 @@ Deno.test('/trade', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: '<:remove:1085033678180208641>',
+                  value: '<:remove:1099004424111792158>',
                 },
               ],
             },
@@ -1055,14 +1019,14 @@ Deno.test('/trade', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: '<:add:1085034731810332743>',
+                  value: '<:add:1099004747123523644>',
                 },
               ],
             },
             {
               type: 'rich',
               description:
-                '<@user_id> is offering that you lose **full name** <:remove:1085033678180208641> and get **full name** <:add:1085034731810332743>',
+                '<@user_id> is offering that you lose **full name** <:remove:1099004424111792158> and get **full name** <:add:1099004747123523644>',
             },
           ],
           components: [
@@ -1226,7 +1190,7 @@ Deno.test('/trade', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: '<:remove:1085033678180208641>',
+                  value: '<:remove:1099004424111792158>',
                 },
               ],
             },
@@ -1244,14 +1208,14 @@ Deno.test('/trade', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: '<:add:1085034731810332743>',
+                  value: '<:add:1099004747123523644>',
                 },
               ],
             },
             {
               type: 'rich',
               description:
-                '<@user_id> is offering that you lose **full name** <:remove:1085033678180208641> and get **full name** <:add:1085034731810332743>',
+                '<@user_id> is offering that you lose **full name** <:remove:1099004424111792158> and get **full name** <:add:1099004747123523644>',
             },
           ],
           components: [
@@ -1790,14 +1754,14 @@ Deno.test('/give', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: '<:remove:1085033678180208641>',
+                  value: '<:remove:1099004424111792158>',
                 },
               ],
             },
             {
               type: 'rich',
               description:
-                'Are you sure you want to give **full name** <:remove:1085033678180208641> to <@another_user_id> for free?',
+                'Are you sure you want to give **full name** <:remove:1099004424111792158> to <@another_user_id> for free?',
             },
           ],
           components: [
@@ -1832,6 +1796,31 @@ Deno.test('/give', async (test) => {
       tradeStub.restore();
       fetchStub.restore();
     }
+  });
+
+  await test.step('gifting yourself', () => {
+    const message = trade.pre({
+      userId: 'user_id',
+      guildId: 'guild_id',
+      channelId: 'channel_id',
+      token: 'test_token',
+      targetId: 'user_id',
+      give: ['give_character_id'],
+      take: [],
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        flags: 64,
+        attachments: [],
+        components: [],
+        embeds: [{
+          type: 'rich',
+          description: 'You can\'t gift yourself.',
+        }],
+      },
+    });
   });
 
   await test.step('not found', async () => {

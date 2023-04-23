@@ -1,6 +1,6 @@
 import $ from 'https://deno.land/x/dax@0.31.0/mod.ts';
 
-import { green } from 'https://deno.land/std@0.182.0/fmt/colors.ts';
+import { green, red } from 'https://deno.land/std@0.182.0/fmt/colors.ts';
 
 const APP_ID = await $.prompt(
   'Enter your discord application id (https://discord.com/developers/applications): ',
@@ -25,9 +25,8 @@ const FAUNA_SECRET = await $.prompt(
 );
 
 await Deno.writeTextFile(
-  './.env',
-  `
-APP_ID=${APP_ID}
+  '.env',
+  `APP_ID=${APP_ID}
 PUBLIC_KEY=${PUBLIC_KEY}
 BOT_TOKEN=${BOT_TOKEN}
 GUILD_ID=${GUILD_ID}
@@ -35,7 +34,7 @@ FAUNA_SECRET=${FAUNA_SECRET}
 GACHA=1
 TRADING=1
 SYNTHESIS=1
-COMMUNITY_PACKS=1`.trim(),
+COMMUNITY_PACKS=1`,
 );
 
 await $.confirm({
@@ -49,17 +48,24 @@ let pb = $.progress('Updating Discord Slash Commands');
 
 try {
   await $`deno run -A update_commands.ts`.quiet();
+} catch {
+  console.error(red('Error running: deno run -A update_commands.ts`'));
+  Deno.exit(1);
 } finally {
   pb.finish();
 }
 
 pb = $.progress('Updating GraphQL Schema');
 
+// update_schema.ts requires fauna-shell installed
 if (!(await $.commandExists('fauna'))) {
   const pb = $.progress('Installing Fauna CLI');
 
   try {
-    await $`npm install -g fauna-shell`.quiet();
+    await $`npm i -g fauna-shell`.quiet();
+  } catch {
+    console.error(red('Error running: npm i -g fauna-shell'));
+    Deno.exit(1);
   } finally {
     pb.finish();
   }
@@ -67,6 +73,9 @@ if (!(await $.commandExists('fauna'))) {
 
 try {
   await $`deno run -A update_schema.ts`.quiet();
+} catch {
+  console.error(red('Error running: deno run -A update_schema.ts`'));
+  Deno.exit(1);
 } finally {
   pb.finish();
 }
@@ -75,6 +84,9 @@ pb = $.progress('Updating Database Models');
 
 try {
   await $`deno run -A update_models.ts`.quiet();
+} catch {
+  console.error(red('Error running: deno run -A update_models.ts`'));
+  Deno.exit(1);
 } finally {
   pb.finish();
 }
