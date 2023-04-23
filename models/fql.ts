@@ -96,15 +96,6 @@ function Includes<T extends ExprArg>(
   return _fql.ContainsValue(value, documentOrArray) as unknown as BooleanExpr;
 }
 
-function IncludesAll<T extends ExprArg>(
-  values: T[],
-  array: T[],
-): BooleanExpr {
-  return _fql.All(
-    _fql.Map(values, (v) => _fql.ContainsValue(v, array)),
-  ) as unknown as BooleanExpr;
-}
-
 function Paginate<T extends ExprArg>(
   expr: Expr,
   { size, before, after }: { size?: number; before?: any; after?: any },
@@ -130,12 +121,12 @@ function Map<T = ExprArg, V = Expr>(
   return _fql.Map(setOrArray, func) as unknown as V[];
 }
 
-function Filter<T = ExprArg>(
-  setOrArray: T[],
-  func: (...args: T[]) => BooleanExpr,
-): T[] {
-  return _fql.Filter(setOrArray, func) as unknown as T[];
-}
+// function Filter<T = ExprArg>(
+//   setOrArray: T[],
+//   func: (...args: T[]) => BooleanExpr,
+// ): T[] {
+//   return _fql.Filter(setOrArray, func) as unknown as T[];
+// }
 
 function Any<T = Expr>(setOrArray: T[]): boolean {
   return _fql.Any(setOrArray) as unknown as boolean;
@@ -198,9 +189,9 @@ function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
   return _fql.Equals(a!, b!);
 }
 
-function Not(b: BooleanExpr): BooleanExpr {
-  return _fql.Not(b);
-}
+// function Not(b: BooleanExpr): BooleanExpr {
+//   return _fql.Not(b);
+// }
 
 function Concat(s: StringExpr[], sep?: StringExpr): StringExpr {
   return _fql.Concat(s, sep ?? '');
@@ -342,14 +333,12 @@ export const fql = {
   Delete,
   Divide,
   Equals,
-  Filter,
   Foreach,
   Get,
   GTE,
   Id,
   If,
   Includes,
-  IncludesAll,
   Index,
   Indexer,
   IsEmpty,
@@ -363,7 +352,6 @@ export const fql = {
   Merge,
   Min,
   Multiply,
-  Not,
   Now,
   Null,
   Or,
