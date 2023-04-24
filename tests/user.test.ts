@@ -123,6 +123,11 @@ Deno.test('/now', async (test) => {
               },
               description: undefined,
             },
+            {
+              type: 'rich',
+              description:
+                '**New** `/synthesize`\n_merge characters together to pull a new character_',
+            },
           ],
           components: [
             {
@@ -201,6 +206,11 @@ Deno.test('/now', async (test) => {
               },
               description: undefined,
             },
+            {
+              type: 'rich',
+              description:
+                '**New** `/synthesize`\n_merge characters together to pull a new character_',
+            },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
           components: [{
@@ -270,6 +280,11 @@ Deno.test('/now', async (test) => {
                 text: 'Available Pulls',
               },
               description: undefined,
+            },
+            {
+              type: 'rich',
+              description:
+                '**New** `/synthesize`\n_merge characters together to pull a new character_',
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
@@ -347,6 +362,11 @@ Deno.test('/now', async (test) => {
               footer: {
                 text: 'Available Votes',
               },
+            },
+            {
+              type: 'rich',
+              description:
+                '**New** `/synthesize`\n_merge characters together to pull a new character_',
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
@@ -426,6 +446,11 @@ Deno.test('/now', async (test) => {
               footer: {
                 text: 'Available Votes',
               },
+            },
+            {
+              type: 'rich',
+              description:
+                '**New** `/synthesize`\n_merge characters together to pull a new character_',
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
@@ -516,6 +541,11 @@ Deno.test('/now', async (test) => {
               footer: {
                 text: 'Available Votes',
               },
+            },
+            {
+              type: 'rich',
+              description:
+                '**New** `/synthesize`\n_merge characters together to pull a new character_',
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
             {

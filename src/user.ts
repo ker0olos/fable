@@ -168,6 +168,16 @@ async function now({
     );
   }
 
+  // for the next 5 days show this notice
+  if (Date.now() < 1682760544226) {
+    message.addEmbed(
+      new discord.Embed()
+        .setDescription(
+          '**New** `/synthesize`\n_merge characters together to pull a new character_',
+        ),
+    );
+  }
+
   if (availablePulls < 5) {
     message.addEmbed(
       new discord.Embed()
