@@ -107,9 +107,12 @@ async function topgg(r: Request): Promise<Response> {
       })).setContent(`<@${data.user}>`);
 
       new discord.Message()
-        .setContent(
-          `Thanks for voting, <@${data.user}>.\nUse </buy random:1095251308530913311> or </buy guaranteed:1095251308530913311> to spent your votes.`,
-        )
+        .setContent(`Thanks for voting, <@${data.user}>.`)
+        .addComponents([
+          new discord.Component()
+            .setId('help', '3')
+            .setLabel('/help voting'),
+        ])
         .followup(token);
 
       await message.patch(token);

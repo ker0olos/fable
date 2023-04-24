@@ -321,27 +321,7 @@ export const handler = async (r: Request) => {
               }
             }
           }
-          case 'likes':
-          case 'likeslist': {
-            const userId = options['user'] as string;
 
-            const nick = userId && userId !== member.user.id
-              ? discord.getUsername(
-                // deno-lint-ignore no-non-null-assertion
-                resolved!.members![userId],
-                // deno-lint-ignore no-non-null-assertion
-                resolved!.users![userId],
-              )
-              : undefined;
-
-            return user.likeslist({
-              nick,
-              token,
-              guildId,
-              userId,
-              index: 0,
-            }).send();
-          }
           case 'collection':
           case 'coll':
           case 'mm': {
@@ -418,6 +398,27 @@ export const handler = async (r: Request) => {
                 : undefined,
             })
               .send();
+          }
+          case 'likes':
+          case 'likeslist': {
+            const userId = options['user'] as string ?? member.user.id;
+
+            const nick = userId !== member.user.id
+              ? discord.getUsername(
+                // deno-lint-ignore no-non-null-assertion
+                resolved!.members![userId],
+                // deno-lint-ignore no-non-null-assertion
+                resolved!.users![userId],
+              )
+              : undefined;
+
+            return user.likeslist({
+              nick,
+              token,
+              guildId,
+              userId,
+              index: 0,
+            }).send();
           }
           case 'found':
           case 'obtained':

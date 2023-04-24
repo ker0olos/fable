@@ -41,10 +41,21 @@ if (import.meta.main) {
 
   const mode: Mode = 'replace';
 
+  if ((mode as Mode) === 'override') {
+    const t = await $.confirm(
+      'You will be deleting ALL user data from the database; An irreversible action; Manual confirmation required.',
+      { default: false },
+    );
+
+    if (!t) {
+      throw new Error('Error: Override cancelled');
+    }
+  }
+
   pb = $.progress(`Uploading Schema (mode=${mode})`);
 
   if (!(await $.commandExists('fauna'))) {
-    throw new Error('Error: fauna-shell is not installed`');
+    throw new Error('Error: `fauna-shell is not installed`');
   }
 
   try {

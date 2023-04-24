@@ -301,6 +301,7 @@ export const commands = [
         name: 'user',
         description: 'The user of the likes list',
         type: Type.USER,
+        optional: true,
       }),
     ],
   }),
@@ -404,24 +405,28 @@ export const commands = [
             value: 0,
           },
           {
-            name: 'Party',
+            name: 'Synthesis',
             value: 1,
           },
           {
-            name: 'Voting',
+            name: 'Party',
             value: 2,
           },
           {
-            name: 'Roadmap',
+            name: 'Voting',
             value: 3,
           },
           {
-            name: 'Essential Commands',
+            name: 'Roadmap',
             value: 4,
           },
           {
-            name: 'Other Commands',
+            name: 'Essential Commands',
             value: 5,
+          },
+          {
+            name: 'Other Commands',
+            value: 6,
           },
           {
             name: 'Admin Commands',
@@ -493,8 +498,7 @@ export const commands = [
   }),
   ...Command({
     name: 'synthesize',
-    description:
-      'synthesize characters together to pull a new character of a specific rating',
+    description: 'synthesize characters together to pull a new character',
     aliases: ['merge'],
     options: [
       Option({

@@ -323,7 +323,7 @@ snapshot[`commands 1`] = `
         description: "The user of the likes list",
         name: "user",
         options: undefined,
-        required: true,
+        required: false,
         type: 6,
       },
     ],
@@ -572,24 +572,28 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Party",
+            name: "Synthesis",
             value: 1,
           },
           {
-            name: "Voting",
+            name: "Party",
             value: 2,
           },
           {
-            name: "Roadmap",
+            name: "Voting",
             value: 3,
           },
           {
-            name: "Essential Commands",
+            name: "Roadmap",
             value: 4,
           },
           {
-            name: "Other Commands",
+            name: "Essential Commands",
             value: 5,
+          },
+          {
+            name: "Other Commands",
+            value: 6,
           },
           {
             name: "Admin Commands",
@@ -618,24 +622,28 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Party",
+            name: "Synthesis",
             value: 1,
           },
           {
-            name: "Voting",
+            name: "Party",
             value: 2,
           },
           {
-            name: "Roadmap",
+            name: "Voting",
             value: 3,
           },
           {
-            name: "Essential Commands",
+            name: "Roadmap",
             value: 4,
           },
           {
-            name: "Other Commands",
+            name: "Essential Commands",
             value: 5,
+          },
+          {
+            name: "Other Commands",
+            value: 6,
           },
           {
             name: "Admin Commands",
@@ -664,24 +672,28 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Party",
+            name: "Synthesis",
             value: 1,
           },
           {
-            name: "Voting",
+            name: "Party",
             value: 2,
           },
           {
-            name: "Roadmap",
+            name: "Voting",
             value: 3,
           },
           {
-            name: "Essential Commands",
+            name: "Roadmap",
             value: 4,
           },
           {
-            name: "Other Commands",
+            name: "Essential Commands",
             value: 5,
+          },
+          {
+            name: "Other Commands",
+            value: 6,
           },
           {
             name: "Admin Commands",
@@ -710,24 +722,28 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Party",
+            name: "Synthesis",
             value: 1,
           },
           {
-            name: "Voting",
+            name: "Party",
             value: 2,
           },
           {
-            name: "Roadmap",
+            name: "Voting",
             value: 3,
           },
           {
-            name: "Essential Commands",
+            name: "Roadmap",
             value: 4,
           },
           {
-            name: "Other Commands",
+            name: "Essential Commands",
             value: 5,
+          },
+          {
+            name: "Other Commands",
+            value: 6,
           },
           {
             name: "Admin Commands",
@@ -932,7 +948,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "synthesize characters together to pull a new character of a specific rating",
+    description: "synthesize characters together to pull a new character",
     name: "synthesize",
     options: [
       {
@@ -966,7 +982,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "synthesize characters together to pull a new character of a specific rating",
+    description: "synthesize characters together to pull a new character",
     name: "merge",
     options: [
       {
