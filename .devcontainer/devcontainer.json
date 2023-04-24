@@ -10,5 +10,24 @@
     "8000": {
       "label": "discord"
     }
+  },
+  "secrets": {
+    "APP_ID": {
+      "description": "Your discord app id"
+    },
+    "PUBLIC_KEY": {
+      "description": "Your discord app public key"
+    },
+    "BOT_TOKEN": {
+      "description": "Your discord app public key"
+    },
+    "GUILD_ID": {
+      "description": "A discord server id",
+      "documentationUrl": "https://github.com/ker0olos/fable/wiki/Get-Server-ID"
+    },
+    "FAUNA_SECRET": {
+      "description": "A fauna database auth key",
+      "documentationUrl": "https://github.com/ker0olos/fable/wiki/FaunaDB"
+    }
   }
 }

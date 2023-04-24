@@ -53,10 +53,17 @@ export async function initConfig(): Promise<void> {
     config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');
 
     // feature flags
-    config.gacha = Boolean(Deno.env.get('GACHA') === '1');
-    config.trading = Boolean(Deno.env.get('TRADING') === '1');
-    config.synthesis = Boolean(Deno.env.get('SYNTHESIS') === '1');
-    config.communityPacks = Boolean(Deno.env.get('COMMUNITY_PACKS') === '1');
+    config.gacha = !Deno.env.has('GACHA') ||
+      Deno.env.get('GACHA') === '1';
+
+    config.trading = !Deno.env.has('TRADING') ||
+      Deno.env.get('TRADING') === '1';
+
+    config.synthesis = !Deno.env.has('SYNTHESIS') ||
+      Deno.env.get('SYNTHESIS') === '1';
+
+    config.communityPacks = !Deno.env.has('COMMUNITY_PACKS') ||
+      Deno.env.get('COMMUNITY_PACKS') === '1';
 
     config.origin = undefined;
   }

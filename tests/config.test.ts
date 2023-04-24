@@ -23,7 +23,18 @@ Deno.test('init', async (test) => {
       () => Promise.resolve(''),
     );
 
-    const envStub = stub(
+    const hasStub = stub(
+      Deno.env,
+      'has',
+      returnsNext([
+        false,
+        false,
+        false,
+        false,
+      ]),
+    );
+
+    const getStub = stub(
       Deno.env,
       'get',
       returnsNext([
@@ -34,10 +45,6 @@ Deno.test('init', async (test) => {
         'fauna_secret',
         '123',
         'topgg_secret',
-        '1',
-        '1',
-        '1',
-        '1',
       ]),
     );
 
@@ -62,7 +69,8 @@ Deno.test('init', async (test) => {
       clearConfig();
       permissionsStub.restore();
       readFileStub.restore();
-      envStub.restore();
+      hasStub.restore();
+      getStub.restore();
     }
   });
 
@@ -79,7 +87,18 @@ Deno.test('init', async (test) => {
       () => Promise.resolve(''),
     );
 
-    const envStub = stub(
+    const hasStub = stub(
+      Deno.env,
+      'has',
+      returnsNext([
+        true,
+        true,
+        true,
+        true,
+      ]),
+    );
+
+    const getStub = stub(
       Deno.env,
       'get',
       returnsNext([
@@ -118,7 +137,8 @@ Deno.test('init', async (test) => {
       clearConfig();
       permissionsStub.restore();
       readFileStub.restore();
-      envStub.restore();
+      hasStub.restore();
+      getStub.restore();
     }
   });
 });

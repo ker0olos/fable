@@ -173,7 +173,7 @@ async function now({
     message.addEmbed(
       new discord.Embed()
         .setDescription(
-          '**New** `/synthesize`\n_merge characters together to pull a new character_',
+          '***`/synthesize`*** ***(new feature)***_\nmerge characters together to pull new characters_',
         ),
     );
   }

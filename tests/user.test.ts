@@ -126,7 +126,7 @@ Deno.test('/now', async (test) => {
             {
               type: 'rich',
               description:
-                '**New** `/synthesize`\n_merge characters together to pull a new character_',
+                '***`/synthesize`*** ***(new feature)***_\nmerge characters together to pull new characters_',
             },
           ],
           components: [
@@ -209,7 +209,7 @@ Deno.test('/now', async (test) => {
             {
               type: 'rich',
               description:
-                '**New** `/synthesize`\n_merge characters together to pull a new character_',
+                '***`/synthesize`*** ***(new feature)***_\nmerge characters together to pull new characters_',
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
@@ -284,7 +284,7 @@ Deno.test('/now', async (test) => {
             {
               type: 'rich',
               description:
-                '**New** `/synthesize`\n_merge characters together to pull a new character_',
+                '***`/synthesize`*** ***(new feature)***_\nmerge characters together to pull new characters_',
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
@@ -366,7 +366,7 @@ Deno.test('/now', async (test) => {
             {
               type: 'rich',
               description:
-                '**New** `/synthesize`\n_merge characters together to pull a new character_',
+                '***`/synthesize`*** ***(new feature)***_\nmerge characters together to pull new characters_',
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
@@ -450,7 +450,7 @@ Deno.test('/now', async (test) => {
             {
               type: 'rich',
               description:
-                '**New** `/synthesize`\n_merge characters together to pull a new character_',
+                '***`/synthesize`*** ***(new feature)***_\nmerge characters together to pull new characters_',
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
           ],
@@ -545,7 +545,7 @@ Deno.test('/now', async (test) => {
             {
               type: 'rich',
               description:
-                '**New** `/synthesize`\n_merge characters together to pull a new character_',
+                '***`/synthesize`*** ***(new feature)***_\nmerge characters together to pull new characters_',
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
             {
