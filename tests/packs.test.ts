@@ -4629,7 +4629,7 @@ Deno.test('/packs [install-validate]', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -4714,7 +4714,7 @@ Deno.test('/packs [install-validate]', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -4798,7 +4798,7 @@ Deno.test('/packs [install-validate]', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -4890,7 +4890,7 @@ Deno.test('/packs [install-validate]', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -4982,7 +4982,7 @@ Deno.test('/packs [install-validate]', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -5078,7 +5078,7 @@ Deno.test('/packs [install-validate]', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -5166,7 +5166,7 @@ Deno.test('/packs [install-validate]', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -5249,7 +5249,7 @@ Deno.test('/packs [install-validate]', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -5333,7 +5333,7 @@ The .id string must match ^[-_a-z0-9]+$
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -5423,7 +5423,7 @@ The .id string must match ^[-_a-z0-9]+$
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 2);
 
@@ -5522,7 +5522,7 @@ The .id string must match ^[-_a-z0-9]+$
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 2);
 
@@ -5646,7 +5646,7 @@ The .id string must match ^[-_a-z0-9]+$
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 2);
 

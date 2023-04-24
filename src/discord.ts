@@ -865,14 +865,32 @@ export class Message {
     return response;
   }
 
-  patch(token: string): Promise<Response> {
+  async patch(token: string): Promise<Response> {
+    // discord doesn't wait for the initial message to apply patches
+    // causing a race condition where any delay to the initial message
+    // will cause the patch to apply first
+    // then applying the initial message overriding the patch
+    // this can be easily fixed on there size by invalidating late initial messages
+    // but discord never fixes things after they release them
+
+    // delaying patches means our users are the ones to suffer
+    // and it won't work if the initial message doesn't apply in those 35ms
+    // but it's the only workaround I can think of
+    if (config.deploy) {
+      await utils.sleep(35);
+    }
+
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
       'PATCH',
     );
   }
 
-  followup(token: string): Promise<Response> {
+  async followup(token: string): Promise<Response> {
+    if (config.deploy) {
+      await utils.sleep(35);
+    }
+
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}`,
       'POST',

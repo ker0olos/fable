@@ -662,7 +662,7 @@ Deno.test('/nick', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -775,7 +775,7 @@ Deno.test('/nick', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 2);
 
@@ -891,7 +891,7 @@ Deno.test('/nick', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -1026,7 +1026,7 @@ Deno.test('/nick', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -1176,7 +1176,7 @@ Deno.test('/image', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -1289,7 +1289,7 @@ Deno.test('/image', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 2);
 
@@ -1405,7 +1405,7 @@ Deno.test('/image', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -1540,7 +1540,7 @@ Deno.test('/image', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -2093,7 +2093,7 @@ Deno.test('/collection stars', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[3].args[0],
@@ -2233,7 +2233,7 @@ Deno.test('/collection stars', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[1].args[0],
@@ -2386,7 +2386,7 @@ Deno.test('/collection stars', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -2492,7 +2492,7 @@ Deno.test('/collection stars', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[1].args[0],
@@ -2582,7 +2582,7 @@ Deno.test('/collection stars', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[1].args[0],
@@ -2739,7 +2739,7 @@ Deno.test('/collection media', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[3].args[0],
@@ -2898,7 +2898,7 @@ Deno.test('/collection media', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[0].args[0],
@@ -3035,7 +3035,7 @@ Deno.test('/collection media', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -3162,7 +3162,7 @@ Deno.test('/collection media', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -3272,7 +3272,7 @@ Deno.test('/collection media', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -3515,7 +3515,7 @@ Deno.test('/collection list', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[3].args[0],
@@ -3799,7 +3799,7 @@ Deno.test('/collection list', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[3].args[0],
@@ -4030,7 +4030,7 @@ Deno.test('/collection list', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[3].args[0],
@@ -4234,7 +4234,7 @@ Deno.test('/collection list', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[3].args[0],
@@ -4438,7 +4438,7 @@ Deno.test('/collection list', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[3].args[0],
@@ -4567,7 +4567,7 @@ Deno.test('/collection list', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[1].args[0],
@@ -4657,7 +4657,7 @@ Deno.test('/collection list', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[1].args[0],
@@ -4756,7 +4756,7 @@ Deno.test('/collection list', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[1].args[0],
@@ -4897,7 +4897,7 @@ Deno.test('/like', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -5062,7 +5062,7 @@ Deno.test('/like', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -5227,7 +5227,7 @@ Deno.test('/like', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -5392,7 +5392,7 @@ Deno.test('/like', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -5547,7 +5547,7 @@ Deno.test('/like', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -5702,7 +5702,7 @@ Deno.test('/like', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -5820,7 +5820,7 @@ Deno.test('/like', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[1].args[0],
@@ -5999,7 +5999,7 @@ Deno.test('/likeslist', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -6160,7 +6160,7 @@ Deno.test('/likeslist', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -6320,7 +6320,7 @@ Deno.test('/likeslist', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[2].args[0],
@@ -6447,7 +6447,7 @@ Deno.test('/likeslist', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[1].args[0],
@@ -6549,7 +6549,7 @@ Deno.test('/likeslist', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[1].args[0],

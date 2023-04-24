@@ -166,7 +166,7 @@ Deno.test('synthesis confirmed', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -420,7 +420,7 @@ Deno.test('synthesis confirmed', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -600,7 +600,7 @@ Deno.test('synthesis confirmed', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -676,7 +676,7 @@ Deno.test('synthesis confirmed', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -797,7 +797,7 @@ Deno.test('synthesis confirmed', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -959,7 +959,7 @@ Deno.test('/synthesis', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -1151,7 +1151,7 @@ Deno.test('/synthesis', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -1348,7 +1348,7 @@ Deno.test('/synthesis', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -1469,7 +1469,7 @@ Deno.test('/synthesis', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 2);
 

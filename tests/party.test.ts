@@ -171,7 +171,7 @@ Deno.test('/party view', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 4);
 
@@ -434,7 +434,7 @@ Deno.test('/party view', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 4);
 
@@ -677,7 +677,7 @@ Deno.test('/party view', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 4);
 
@@ -934,7 +934,7 @@ Deno.test('/party view', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 4);
 
