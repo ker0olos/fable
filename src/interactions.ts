@@ -310,7 +310,7 @@ export const handler = async (r: Request) => {
                   userId: member.user.id,
                 })).send();
               default: {
-                const user = options['user'] as string;
+                const user = options['user'] as string ?? member.user.id;
 
                 return party.view({
                   token,
@@ -321,6 +321,7 @@ export const handler = async (r: Request) => {
               }
             }
           }
+          case 'likes':
           case 'likeslist': {
             const userId = options['user'] as string;
 
@@ -344,9 +345,9 @@ export const handler = async (r: Request) => {
           case 'collection':
           case 'coll':
           case 'mm': {
-            const userId = options['user'] as string;
+            const userId = options['user'] as string ?? member.user.id;
 
-            const nick = userId && userId !== member.user.id
+            const nick = userId !== member.user.id
               ? discord.getUsername(
                 // deno-lint-ignore no-non-null-assertion
                 resolved!.members![userId],

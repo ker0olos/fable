@@ -290,6 +290,10 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'Likes',
+    type: CommandType.USER,
+  }),
+  ...Command({
     name: 'likeslist',
     description: 'List all characters liked',
     options: [
@@ -558,6 +562,7 @@ export const commands = [
             name: 'user',
             description: 'The user of the party"',
             type: Type.USER,
+            optional: true,
           }),
         ],
       }),
@@ -631,15 +636,16 @@ export const commands = [
         optional: true,
         options: [
           Option({
-            name: 'user',
-            description: 'The user of the collection',
-            type: Type.USER,
-          }),
-          Option({
             name: 'filter',
             description: 'Filter by rating',
             type: Type.INTEGER,
             choices: spots.toReversed(),
+            optional: true,
+          }),
+          Option({
+            name: 'user',
+            description: 'The user of the collection',
+            type: Type.USER,
             optional: true,
           }),
         ],
@@ -651,15 +657,16 @@ export const commands = [
         optional: true,
         options: [
           Option({
-            name: 'user',
-            description: 'The user of the collection',
-            type: Type.USER,
-          }),
-          Option({
             name: 'rating',
             description: 'The star rating',
             type: Type.INTEGER,
             choices: spots.toReversed(),
+          }),
+          Option({
+            name: 'user',
+            description: 'The user of the collection',
+            type: Type.USER,
+            optional: true,
           }),
         ],
       }),
@@ -670,15 +677,16 @@ export const commands = [
         optional: true,
         options: [
           Option({
-            name: 'user',
-            description: 'The user of the collection',
-            type: Type.USER,
-          }),
-          Option({
             name: 'title',
             description: 'The title of the media',
             autocomplete: true,
             type: Type.STRING,
+          }),
+          Option({
+            name: 'user',
+            description: 'The user of the collection',
+            type: Type.USER,
+            optional: true,
           }),
         ],
       }),
