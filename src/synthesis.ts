@@ -18,6 +18,7 @@ import { NonFetalError, NoPullsError, PoolError } from './errors.ts';
 
 const synthesis = {
   getFilteredCharacters,
+  getSacrifices,
   synthesize,
   confirmed,
 };
@@ -44,10 +45,74 @@ async function getFilteredCharacters(
       ].includes(id)
     );
 
-  characters = characters
-    .sort((a, b) => b.rating - a.rating);
-
   return characters;
+}
+
+function getSacrifices(
+  characters: Schema.Character[],
+  target: number,
+): Schema.Character[] {
+  // I'm sure there is a faster way to do this with just math
+  // but i am not smart enough to figure it out
+  // the important thing is that all the tests pass
+
+  const split: Record<number, Schema.Character[]> = {
+    1: [],
+    2: [],
+    3: [],
+    4: [],
+    5: [],
+  };
+
+  // separate each rating into its own array
+  characters.forEach((char) => {
+    if (char.rating < target) {
+      split[char.rating].push(char);
+    }
+  });
+
+  const possibilities: Record<number, Schema.Character[][]> = {
+    1: [],
+    2: [],
+    3: [],
+    4: [],
+    5: [],
+  };
+
+  for (let i = 1; i <= target; i++) {
+    // break if target is possible
+    if (possibilities[target].length) {
+      break;
+    }
+
+    // add the current ratings to the possibilities list
+    possibilities[i].push(...split[i].map((c) => [c]));
+
+    if (i > 1) {
+      // since we need 5 characters from the previous rating
+      // to make a new rating
+      // divide the length of characters by 5 then floor it
+      // to get how many new characters are possible to make
+      const length = Math.floor(possibilities[i - 1].length / 5);
+
+      possibilities[i].push(
+        // split the previous possibilities into arrays of 5
+        ...utils.chunks(possibilities[i - 1], 5)
+          // only use the required amount of chunks
+          .slice(0, length)
+          // flatten them so all of them are Character[] instead of Character[][]
+          .map((t) => t.flat()),
+      );
+    }
+  }
+
+  if (!possibilities[target].length) {
+    throw new NonFetalError(
+      `You don't have enough sacrifices for a ${target}${discord.emotes.smolStar}`,
+    );
+  }
+
+  return possibilities[target][0];
 }
 
 function synthesize({
@@ -71,17 +136,8 @@ function synthesize({
     .then(async (characters) => {
       const message = new discord.Message();
 
-      // TODO allow lower ranks
-      const sacrifices: Schema.Character[] = characters
-        .filter(({ rating }) => rating === target - 1)
-        .slice(0, 5);
-
-      // TODO allow lower ranks
-      if (sacrifices.length < 5) {
-        throw new NonFetalError(
-          `You don't have enough sacrifices for a ${target}${discord.emotes.smolStar}`,
-        );
-      }
+      const sacrifices: Schema.Character[] = getSacrifices(characters, target)
+        .sort((a, b) => b.rating - a.rating);
 
       // highlight the first 5 characters
       const highlights = sacrifices.slice(0, 5);
@@ -198,17 +254,7 @@ function confirmed({
 
   synthesis.getFilteredCharacters({ userId, guildId })
     .then(async (characters) => {
-      // TODO allow lower ranks
-      const sacrifices = characters
-        .filter(({ rating }) => rating === target - 1)
-        .slice(0, 5).map(({ id }) => id);
-
-      // TODO allow lower ranks
-      if (sacrifices.length < 5) {
-        throw new NonFetalError(
-          `You don't have enough sacrifices for a ${target}${discord.emotes.smolStar}`,
-        );
-      }
+      const sacrifices: Schema.Character[] = getSacrifices(characters, target);
 
       const pull = await gacha.rngPull({
         userId,

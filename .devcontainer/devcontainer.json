@@ -3,9 +3,19 @@
   "features": {
     "ghcr.io/devcontainers-contrib/features/deno:1": {}
   },
-  "extensions": [
-    "denoland.vscode-deno"
-  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "denoland.vscode-deno"
+      ]
+    },
+    "codespaces": {
+      "openFiles": [
+        "src/interactions.ts"
+      ]
+    }
+  },
+  "forwardPorts": [8000],
   "portsAttributes": {
     "8000": {
       "label": "discord"
@@ -13,19 +23,23 @@
   },
   "secrets": {
     "APP_ID": {
-      "description": "Your discord app id"
+      "required": true,
+      "description": "Your discord app's id"
     },
     "PUBLIC_KEY": {
-      "description": "Your discord app public key"
+      "required": true,
+      "description": "A discord app's public key"
     },
     "BOT_TOKEN": {
-      "description": "Your discord app public key"
+      "required": true,
+      "description": "A discord bot token"
     },
     "GUILD_ID": {
       "description": "A discord server id",
       "documentationUrl": "https://github.com/ker0olos/fable/wiki/Get-Server-ID"
     },
     "FAUNA_SECRET": {
+      "required": true,
       "description": "A fauna database auth key",
       "documentationUrl": "https://github.com/ker0olos/fable/wiki/FaunaDB"
     }

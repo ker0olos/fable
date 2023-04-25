@@ -11,6 +11,8 @@ import {
   stub,
 } from 'https://deno.land/std@0.183.0/testing/mock.ts';
 
+import { assertSnapshot } from 'https://deno.land/std@0.183.0/testing/snapshot.ts';
+
 import { FakeTime } from 'https://deno.land/std@0.183.0/testing/time.ts';
 
 import packs from '../src/packs.ts';
@@ -21,11 +23,114 @@ import Rating from '../src/rating.ts';
 
 import synthesis from '../src/synthesis.ts';
 
-import { CharacterRole, MediaFormat, MediaType } from '../src/types.ts';
+import { CharacterRole, MediaFormat, MediaType, Schema } from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 import { NonFetalError, PoolError } from '../src/errors.ts';
+
+Deno.test('auto synthesize', async (test) => {
+  // TODO write more complicated tests
+  // TODO write more for a variety of situations
+
+  await test.step('5 ones', async (test) => {
+    const characters: Schema.Character[] = Array(25).fill({}).map((_, i) => ({
+      rating: 1,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    }));
+
+    const sacrifices = synthesis.getSacrifices(characters, 2);
+
+    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 5);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('25 ones', async (test) => {
+    const characters: Schema.Character[] = Array(50).fill({}).map((_, i) => ({
+      rating: 1,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    }));
+
+    const sacrifices = synthesis.getSacrifices(characters, 3);
+
+    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 25);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('5 twos', async (test) => {
+    const characters: Schema.Character[] = Array(25).fill({}).map((_, i) => ({
+      rating: 2,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    }));
+
+    const sacrifices = synthesis.getSacrifices(characters, 3);
+
+    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 5);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('20 ones + 1 two', async (test) => {
+    const characters: Schema.Character[] = Array(20).fill({}).map((_, i) => ({
+      rating: 1,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    })).concat(
+      [{
+        rating: 2,
+        id: `id:20`,
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      }],
+    );
+
+    const sacrifices = synthesis.getSacrifices(characters, 3);
+
+    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 20);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 1);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('5 fives', () => {
+    const characters: Schema.Character[] = Array(25).fill({}).map((_, i) => ({
+      rating: 5,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    }));
+
+    assertThrows(
+      () => synthesis.getSacrifices(characters, 5),
+      NonFetalError,
+      'You don\'t have enough sacrifices for a 5<:smol_star:1088427421096751224>',
+    );
+  });
+});
 
 Deno.test('synthesis confirmed', async (test) => {
   await test.step('normal', async () => {
@@ -1398,6 +1503,212 @@ Deno.test('/synthesis', async (test) => {
 +2 Others <:remove:1099004424111792158>`,
             },
           ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.synthesis;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('filtered', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character 1',
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'character 2',
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'character 3',
+        },
+      },
+      {
+        id: '4',
+        name: {
+          full: 'character 4',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'character 5',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  party: {
+                    member1: {
+                      id: 'anilist:1',
+                    },
+                    member2: {
+                      id: 'anilist:2',
+                    },
+                    member3: {
+                      id: 'anilist:3',
+                    },
+                    member4: {
+                      id: 'anilist:4',
+                    },
+                    member5: {
+                      id: 'anilist:5',
+                    },
+                  },
+                  user: {
+                    likes: [
+                      'anilist:6',
+                      'anilist:7',
+                      'anilist:8',
+                      'anilist:9',
+                      'anilist:10',
+                    ],
+                  },
+                  characters: [
+                    {
+                      id: 'anilist:1',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:2',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:3',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:4',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:5',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:6',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:7',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:8',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:9',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:10',
+                      rating: 1,
+                    },
+                  ],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.synthesis = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = synthesis.synthesize({
+        token: 'test_token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        target: 2,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            description:
+              'You don\'t have enough sacrifices for a 2<:smol_star:1088427421096751224>',
+          }],
         },
       );
     } finally {

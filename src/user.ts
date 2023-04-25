@@ -168,8 +168,8 @@ async function now({
     );
   }
 
-  // for the next 5 days show this notice
-  if (Date.now() < 1682760544226) {
+  // TODO REMOVE for the next 5 days show this notice
+  if (Date.now() < 1682932098486) {
     message.addEmbed(
       new discord.Embed()
         .setDescription(

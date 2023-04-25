@@ -836,7 +836,9 @@ export class Message {
 
     const response = await fetch(url, { method, body: formData });
 
-    console.log(method, response?.status, response?.statusText);
+    if (config.deploy) {
+      console.log(method, response?.status, response?.statusText);
+    }
 
     if (response?.status === 429) {
       const extra = {
