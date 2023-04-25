@@ -3,6 +3,11 @@
   "features": {
     "ghcr.io/devcontainers-contrib/features/deno:1": {}
   },
+  "hostRequirements": {
+    "cpus": 4
+  },
+  "waitFor": "onCreateCommand",
+  "postCreateCommand": "npm i -g fauna-shell ngrok concurrently",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -15,23 +20,20 @@
       ]
     }
   },
-  "forwardPorts": [8000],
   "portsAttributes": {
     "8000": {
       "label": "discord"
     }
   },
+  "forwardPorts": [8000],
   "secrets": {
     "APP_ID": {
-      "required": true,
       "description": "Your discord app's id"
     },
     "PUBLIC_KEY": {
-      "required": true,
       "description": "A discord app's public key"
     },
     "BOT_TOKEN": {
-      "required": true,
       "description": "A discord bot token"
     },
     "GUILD_ID": {
@@ -39,7 +41,6 @@
       "documentationUrl": "https://github.com/ker0olos/fable/wiki/Get-Server-ID"
     },
     "FAUNA_SECRET": {
-      "required": true,
       "description": "A fauna database auth key",
       "documentationUrl": "https://github.com/ker0olos/fable/wiki/FaunaDB"
     }

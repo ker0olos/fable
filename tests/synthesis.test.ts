@@ -30,9 +30,6 @@ import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 import { NonFetalError, PoolError } from '../src/errors.ts';
 
 Deno.test('auto synthesize', async (test) => {
-  // TODO write more complicated tests
-  // TODO write more for a variety of situations
-
   await test.step('5 ones', async (test) => {
     const characters: Schema.Character[] = Array(25).fill({}).map((_, i) => ({
       rating: 1,
@@ -111,6 +108,89 @@ Deno.test('auto synthesize', async (test) => {
     assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 1);
     assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
     assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('625 ones', async (test) => {
+    const characters: Schema.Character[] = Array(625).fill({}).map((
+      _,
+      i,
+    ) => ({
+      rating: 1,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    })).concat(
+      [{
+        rating: 4,
+        id: `id:20`,
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      }],
+    );
+
+    const sacrifices = synthesis.getSacrifices(characters, 5);
+
+    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 625);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('500 ones + 5 threes', async (test) => {
+    const characters: Schema.Character[] = Array(500).fill({}).map((
+      _,
+      i,
+    ) => ({
+      rating: 1,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    })).concat(
+      Array(25).fill({}).map((
+        _,
+        i,
+      ) => ({
+        rating: 3,
+        id: `id:${i}`,
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      })),
+    );
+
+    const sacrifices = synthesis.getSacrifices(characters, 5);
+
+    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 500);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 5);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('5 fours', async (test) => {
+    const characters: Schema.Character[] = Array(25).fill({}).map((
+      _,
+      i,
+    ) => ({
+      rating: 4,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    }));
+
+    const sacrifices = synthesis.getSacrifices(characters, 5);
+
+    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 5);
     assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
 
     await assertSnapshot(test, sacrifices);

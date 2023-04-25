@@ -339,6 +339,12 @@ snapshot[`/help 5`] = `
             type: 2,
             url: "https://discord.gg/H69RVBxeYY",
           },
+          {
+            label: "Donate",
+            style: 5,
+            type: 2,
+            url: "https://github.com/sponsors/ker0olos",
+          },
         ],
         type: 1,
       },

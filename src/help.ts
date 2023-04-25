@@ -36,11 +36,6 @@ function pages(
           .setFooter({ text: 'aliases: /w, /q' }),
       ),
     new discord.Message()
-      .addComponents([
-        // new discord.Component()
-        //   .setId('cstars', '5', userId)
-        //   .setLabel('/collection stars 5'),
-      ])
       .addEmbed(
         new discord.Embed()
           .setAuthor({ name: '2.' })
@@ -135,6 +130,9 @@ function pages(
         new discord.Component()
           .setLabel('Discord Support Server')
           .setUrl('https://discord.gg/H69RVBxeYY'),
+        new discord.Component()
+          .setLabel('Donate')
+          .setUrl('https://github.com/sponsors/ker0olos'),
       ])
       .addEmbed(
         new discord.Embed()

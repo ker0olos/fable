@@ -85,9 +85,6 @@ function getSacrifices(
       break;
     }
 
-    // add the current ratings to the possibilities list
-    possibilities[i].push(...split[i].map((c) => [c]));
-
     if (i > 1) {
       // since we need 5 characters from the previous rating
       // to make a new rating
@@ -104,6 +101,9 @@ function getSacrifices(
           .map((t) => t.flat()),
       );
     }
+
+    // add the current ratings to the possibilities list
+    possibilities[i].push(...split[i].map((c) => [c]));
   }
 
   if (!possibilities[target].length) {
@@ -254,7 +254,8 @@ function confirmed({
 
   synthesis.getFilteredCharacters({ userId, guildId })
     .then(async (characters) => {
-      const sacrifices: Schema.Character[] = getSacrifices(characters, target);
+      const sacrifices = getSacrifices(characters, target)
+        .map(({ id }) => id);
 
       const pull = await gacha.rngPull({
         userId,

@@ -30,7 +30,14 @@ await Deno.writeTextFile(
 PUBLIC_KEY=${PUBLIC_KEY}
 BOT_TOKEN=${BOT_TOKEN}
 GUILD_ID=${GUILD_ID}
-FAUNA_SECRET=${FAUNA_SECRET}`,
+FAUNA_SECRET=${FAUNA_SECRET}
+SENTRY_DSN=
+TOPGG_WEBHOOK_CIPHER=
+TOPGG_WEBHOOK_SECRET=
+GACHA=1
+TRADING=1
+SYNTHESIS=1
+COMMUNITY_PACKS=1`,
 );
 
 await $.confirm({
@@ -40,7 +47,18 @@ await $.confirm({
 Did you invite the bot to your server using the url above?`,
 });
 
-let pb = $.progress('Updating Discord Slash Commands');
+let pb = $.progress('Install Developer Tools');
+
+try {
+  await $`npm i -g fauna-shell ngrok concurrently`.quiet();
+} catch {
+  console.error(red('Error running: npm i -g fauna-shell ngrok concurrently'));
+  Deno.exit(1);
+} finally {
+  pb.finish();
+}
+
+pb = $.progress('Updating Discord Slash Commands');
 
 try {
   await $`deno run -A update_commands.ts`.quiet();
@@ -52,20 +70,6 @@ try {
 }
 
 pb = $.progress('Updating GraphQL Schema');
-
-// update_schema.ts requires fauna-shell installed
-if (!(await $.commandExists('fauna'))) {
-  const pb = $.progress('Installing Fauna CLI');
-
-  try {
-    await $`npm i -g fauna-shell`.quiet();
-  } catch {
-    console.error(red('Error running: npm i -g fauna-shell'));
-    Deno.exit(1);
-  } finally {
-    pb.finish();
-  }
-}
 
 try {
   await $`deno run -A update_schema.ts`.quiet();
