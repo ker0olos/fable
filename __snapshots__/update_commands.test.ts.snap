@@ -307,6 +307,13 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: undefined,
+    name: "Likes",
+    options: undefined,
+    type: 2,
+  },
+  {
+    default_member_permissions: undefined,
     description: "List all characters liked",
     name: "likeslist",
     options: [
@@ -316,7 +323,7 @@ snapshot[`commands 1`] = `
         description: "The user of the likes list",
         name: "user",
         options: undefined,
-        required: true,
+        required: false,
         type: 6,
       },
     ],
@@ -565,24 +572,28 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Party",
+            name: "Synthesis",
             value: 1,
           },
           {
-            name: "Voting",
+            name: "Party",
             value: 2,
           },
           {
-            name: "Roadmap",
+            name: "Voting",
             value: 3,
           },
           {
-            name: "Essential Commands",
+            name: "Roadmap",
             value: 4,
           },
           {
-            name: "Other Commands",
+            name: "Essential Commands",
             value: 5,
+          },
+          {
+            name: "Other Commands",
+            value: 6,
           },
           {
             name: "Admin Commands",
@@ -611,24 +622,28 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Party",
+            name: "Synthesis",
             value: 1,
           },
           {
-            name: "Voting",
+            name: "Party",
             value: 2,
           },
           {
-            name: "Roadmap",
+            name: "Voting",
             value: 3,
           },
           {
-            name: "Essential Commands",
+            name: "Roadmap",
             value: 4,
           },
           {
-            name: "Other Commands",
+            name: "Essential Commands",
             value: 5,
+          },
+          {
+            name: "Other Commands",
+            value: 6,
           },
           {
             name: "Admin Commands",
@@ -657,24 +672,28 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Party",
+            name: "Synthesis",
             value: 1,
           },
           {
-            name: "Voting",
+            name: "Party",
             value: 2,
           },
           {
-            name: "Roadmap",
+            name: "Voting",
             value: 3,
           },
           {
-            name: "Essential Commands",
+            name: "Roadmap",
             value: 4,
           },
           {
-            name: "Other Commands",
+            name: "Essential Commands",
             value: 5,
+          },
+          {
+            name: "Other Commands",
+            value: 6,
           },
           {
             name: "Admin Commands",
@@ -703,24 +722,28 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Party",
+            name: "Synthesis",
             value: 1,
           },
           {
-            name: "Voting",
+            name: "Party",
             value: 2,
           },
           {
-            name: "Roadmap",
+            name: "Voting",
             value: 3,
           },
           {
-            name: "Essential Commands",
+            name: "Roadmap",
             value: 4,
           },
           {
-            name: "Other Commands",
+            name: "Essential Commands",
             value: 5,
+          },
+          {
+            name: "Other Commands",
+            value: 6,
           },
           {
             name: "Admin Commands",
@@ -787,7 +810,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Pull a character with a guaranteed rank",
+    description: "Pull a character with a guaranteed rating",
     name: "pull",
     options: [
       {
@@ -817,7 +840,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Pull a character with a guaranteed rank",
+    description: "Pull a character with a guaranteed rating",
     name: "guaranteed",
     options: [
       {
@@ -925,19 +948,87 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "synthesize characters together to pull a new character",
+    name: "synthesize",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: [
+          {
+            name: "5",
+            value: 5,
+          },
+          {
+            name: "4",
+            value: 4,
+          },
+          {
+            name: "3",
+            value: 3,
+          },
+          {
+            name: "2",
+            value: 2,
+          },
+        ],
+        description: "The target star rating of this synthesis",
+        name: "target",
+        options: undefined,
+        required: true,
+        type: 4,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
+    description: "synthesize characters together to pull a new character",
+    name: "merge",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: [
+          {
+            name: "5",
+            value: 5,
+          },
+          {
+            name: "4",
+            value: 4,
+          },
+          {
+            name: "3",
+            value: 3,
+          },
+          {
+            name: "2",
+            value: 2,
+          },
+        ],
+        description: "The target star rating of this synthesis",
+        name: "target",
+        options: undefined,
+        required: true,
+        type: 4,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
     description: "vote shop commands",
     name: "buy",
     options: [
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Buy extra random pulls",
+        description: "Use votes to buy random pulls",
         name: "random",
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "The amount you want to buy",
+            description: "The amount of pulls you want to buy",
             name: "amount",
             options: undefined,
             required: true,
@@ -950,7 +1041,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Buy guaranteed pulls",
+        description: "Use votes to buy pulls with a specific rating",
         name: "guaranteed",
         options: [
           {
@@ -969,7 +1060,7 @@ snapshot[`commands 1`] = `
                 value: 3,
               },
             ],
-            description: "The star rating",
+            description: "The star rating you want to buy",
             name: "stars",
             options: undefined,
             required: true,
@@ -990,13 +1081,13 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Buy extra random pulls",
+        description: "Use votes to buy random pulls",
         name: "random",
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
-            description: "The amount you want to buy",
+            description: "The amount of pulls you want to buy",
             name: "amount",
             options: undefined,
             required: true,
@@ -1009,7 +1100,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Buy guaranteed pulls",
+        description: "Use votes to buy pulls with a specific rating",
         name: "guaranteed",
         options: [
           {
@@ -1028,7 +1119,7 @@ snapshot[`commands 1`] = `
                 value: 3,
               },
             ],
-            description: "The star rating",
+            description: "The star rating you want to buy",
             name: "stars",
             options: undefined,
             required: true,
@@ -1065,7 +1156,7 @@ snapshot[`commands 1`] = `
             description: 'The user of the party"',
             name: "user",
             options: undefined,
-            required: true,
+            required: false,
             type: 6,
           },
         ],
@@ -1251,7 +1342,7 @@ snapshot[`commands 1`] = `
             description: 'The user of the party"',
             name: "user",
             options: undefined,
-            required: true,
+            required: false,
             type: 6,
           },
         ],
@@ -1437,7 +1528,7 @@ snapshot[`commands 1`] = `
             description: 'The user of the party"',
             name: "user",
             options: undefined,
-            required: true,
+            required: false,
             type: 6,
           },
         ],
@@ -1619,15 +1710,6 @@ snapshot[`commands 1`] = `
         options: [
           {
             autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
-          {
-            autocomplete: undefined,
             choices: [
               {
                 name: "5",
@@ -1656,6 +1738,15 @@ snapshot[`commands 1`] = `
             required: false,
             type: 4,
           },
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: false,
+            type: 6,
+          },
         ],
         required: false,
         type: 1,
@@ -1666,15 +1757,6 @@ snapshot[`commands 1`] = `
         description: "View all stars",
         name: "stars",
         options: [
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
           {
             autocomplete: undefined,
             choices: [
@@ -1705,6 +1787,15 @@ snapshot[`commands 1`] = `
             required: true,
             type: 4,
           },
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: false,
+            type: 6,
+          },
         ],
         required: false,
         type: 1,
@@ -1716,15 +1807,6 @@ snapshot[`commands 1`] = `
         name: "media",
         options: [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
-          {
             autocomplete: true,
             choices: undefined,
             description: "The title of the media",
@@ -1732,6 +1814,15 @@ snapshot[`commands 1`] = `
             options: undefined,
             required: true,
             type: 3,
+          },
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: false,
+            type: 6,
           },
         ],
         required: false,
@@ -1753,15 +1844,6 @@ snapshot[`commands 1`] = `
         options: [
           {
             autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
-          {
-            autocomplete: undefined,
             choices: [
               {
                 name: "5",
@@ -1790,6 +1872,15 @@ snapshot[`commands 1`] = `
             required: false,
             type: 4,
           },
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: false,
+            type: 6,
+          },
         ],
         required: false,
         type: 1,
@@ -1800,15 +1891,6 @@ snapshot[`commands 1`] = `
         description: "View all stars",
         name: "stars",
         options: [
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
           {
             autocomplete: undefined,
             choices: [
@@ -1839,6 +1921,15 @@ snapshot[`commands 1`] = `
             required: true,
             type: 4,
           },
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: false,
+            type: 6,
+          },
         ],
         required: false,
         type: 1,
@@ -1850,15 +1941,6 @@ snapshot[`commands 1`] = `
         name: "media",
         options: [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
-          {
             autocomplete: true,
             choices: undefined,
             description: "The title of the media",
@@ -1866,6 +1948,15 @@ snapshot[`commands 1`] = `
             options: undefined,
             required: true,
             type: 3,
+          },
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: false,
+            type: 6,
           },
         ],
         required: false,
@@ -1887,15 +1978,6 @@ snapshot[`commands 1`] = `
         options: [
           {
             autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
-          {
-            autocomplete: undefined,
             choices: [
               {
                 name: "5",
@@ -1924,6 +2006,15 @@ snapshot[`commands 1`] = `
             required: false,
             type: 4,
           },
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: false,
+            type: 6,
+          },
         ],
         required: false,
         type: 1,
@@ -1934,15 +2025,6 @@ snapshot[`commands 1`] = `
         description: "View all stars",
         name: "stars",
         options: [
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
           {
             autocomplete: undefined,
             choices: [
@@ -1973,6 +2055,15 @@ snapshot[`commands 1`] = `
             required: true,
             type: 4,
           },
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: false,
+            type: 6,
+          },
         ],
         required: false,
         type: 1,
@@ -1984,15 +2075,6 @@ snapshot[`commands 1`] = `
         name: "media",
         options: [
           {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: true,
-            type: 6,
-          },
-          {
             autocomplete: true,
             choices: undefined,
             description: "The title of the media",
@@ -2000,6 +2082,15 @@ snapshot[`commands 1`] = `
             options: undefined,
             required: true,
             type: 3,
+          },
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "The user of the collection",
+            name: "user",
+            options: undefined,
+            required: false,
+            type: 6,
           },
         ],
         required: false,

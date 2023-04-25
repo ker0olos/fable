@@ -17,10 +17,10 @@ export interface User {
   lastVote?: TimeExpr;
   totalVotes?: NumberExpr;
   availableVotes?: NumberExpr;
-  guarantees: NumberExpr[];
   inventories: RefExpr[];
-  likes: StringExpr[];
-  badges: RefExpr[];
+  guarantees?: NumberExpr[];
+  likes?: StringExpr[];
+  badges?: RefExpr[];
 }
 
 export interface Guild {
@@ -65,8 +65,6 @@ export function getUser(id: StringExpr): UserExpr {
       // create a new user then return it
       fql.Create<User>('user', {
         id,
-        likes: [],
-        guarantees: [],
         inventories: [],
         badges: [
           // Early Bird Gets the Worm

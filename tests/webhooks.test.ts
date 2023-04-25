@@ -162,10 +162,17 @@ Deno.test('topgg', async (test) => {
           ) as any,
         ),
         {
-          content:
-            'Thanks for voting, <@user_id>.\nUse </buy random:1095251308530913311> or </buy guaranteed:1095251308530913311> to spent your votes.',
+          content: 'Thanks for voting, <@user_id>.',
+          components: [{
+            type: 1,
+            components: [{
+              custom_id: 'help=3',
+              label: '/help voting',
+              style: 2,
+              type: 2,
+            }],
+          }],
           embeds: [],
-          components: [],
           attachments: [],
         },
       );

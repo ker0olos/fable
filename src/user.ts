@@ -20,6 +20,88 @@ import {
   Schema,
 } from './types.ts';
 
+async function getUserCharacters(
+  { userId, guildId }: { userId: string; guildId: string },
+): Promise<{
+  likes: Schema.User['likes'];
+  characters: Schema.Inventory['characters'];
+  party: Schema.Inventory['party'];
+}> {
+  const query = gql`
+    query ($userId: String!, $guildId: String!) {
+      getUserInventory(userId: $userId, guildId: $guildId) {
+        party {
+          member1 {
+            id
+            mediaId
+            rating
+            nickname
+            image
+          }
+          member2 {
+            id
+            mediaId
+            rating
+            nickname
+            image
+          }
+          member3 {
+            id
+            mediaId
+            rating
+            nickname
+            image
+          }
+          member4 {
+            id
+            mediaId
+            rating
+            nickname
+            image
+          }
+          member5 {
+            id
+            mediaId
+            rating
+            nickname
+            image
+          }
+        }
+        user {
+          likes
+        }
+        characters {
+          id
+          mediaId
+          rating
+          nickname
+          image
+        }
+      }
+    }
+  `;
+
+  const { getUserInventory: { user, party, characters } } = await request<{
+    getUserInventory: Schema.Inventory;
+  }>({
+    query,
+    url: faunaUrl,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+    },
+  });
+
+  return {
+    party,
+    characters,
+    likes: user.likes,
+  };
+}
+
 async function now({
   token,
   userId,
@@ -73,7 +155,7 @@ async function now({
       .setDescription(`${
         guarantees
           .map((r) => `${r}${discord.emotes.smolStar}`)
-          .join(' ')
+          .join('')
       }`)
       .setFooter({ text: 'Available Pulls' }),
   );
@@ -83,6 +165,16 @@ async function now({
       new discord.Embed()
         .setTitle(`**${user.availableVotes}**`)
         .setFooter({ text: `Available Votes` }),
+    );
+  }
+
+  // TODO REMOVE for the next 5 days show this notice
+  if (Date.now() < 1682932098486) {
+    message.addEmbed(
+      new discord.Embed()
+        .setDescription(
+          '***`/synthesize`*** ***(new feature)***_\nmerge characters together to pull new characters_',
+        ),
     );
   }
 
@@ -859,6 +951,8 @@ function list({
         characters = characters.filter(({ rating }) => rating === filter);
       }
 
+      characters = characters.sort((a, b) => b.rating - a.rating);
+
       if (!characters?.length) {
         const message = new discord.Message()
           .addEmbed(
@@ -1053,12 +1147,12 @@ function likeslist({
       const charactersNames = await Promise.all(
         results.map(async (character) => {
           const [char, existing] = await Promise.all([
-            await packs.aggregate<Character>({
+            packs.aggregate<Character>({
               guildId,
               character,
               end: 1,
             }),
-            await user.findCharacter({
+            user.findCharacter({
               guildId,
               characterId: `${character.packId}:${character.id}`,
             }),
@@ -1111,6 +1205,7 @@ function likeslist({
 
 const user = {
   now,
+  getUserCharacters,
   findCharacter,
   customize,
   stars,

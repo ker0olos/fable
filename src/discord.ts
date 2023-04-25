@@ -21,8 +21,8 @@ export const emotes = {
   star: '<:star:1061016362832642098>',
   noStar: '<:no_star:1061016360190222466>',
   smolStar: '<:smol_star:1088427421096751224>',
-  remove: '<:remove:1085033678180208641>',
-  add: '<:add:1085034731810332743>',
+  remove: '<:remove:1099004424111792158>',
+  add: '<:add:1099004747123523644>',
 };
 
 export const join = (...args: string[]): string => {
@@ -836,7 +836,9 @@ export class Message {
 
     const response = await fetch(url, { method, body: formData });
 
-    console.log(method, response?.status, response?.statusText);
+    if (config.deploy) {
+      console.log(method, response?.status, response?.statusText);
+    }
 
     if (response?.status === 429) {
       const extra = {
@@ -865,14 +867,32 @@ export class Message {
     return response;
   }
 
-  patch(token: string): Promise<Response> {
+  async patch(token: string): Promise<Response> {
+    // discord doesn't wait for the initial message to apply patches
+    // causing a race condition where any delay to the initial message
+    // will cause the patch to apply first
+    // then applying the initial message overriding the patch
+    // this can be easily fixed on there size by invalidating late initial messages
+    // but discord never fixes things after they release them
+
+    // delaying patches means our users are the ones to suffer
+    // and it won't work if the initial message doesn't apply in those 35ms
+    // but it's the only workaround I can think of
+    if (config.deploy) {
+      await utils.sleep(35);
+    }
+
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
       'PATCH',
     );
   }
 
-  followup(token: string): Promise<Response> {
+  async followup(token: string): Promise<Response> {
+    if (config.deploy) {
+      await utils.sleep(35);
+    }
+
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}`,
       'POST',
@@ -956,23 +976,53 @@ export class Message {
   }
 
   static dialog(
-    { type, description, message, confirm }: {
-      type: string;
+    {
+      type,
+      description,
+      message,
+      confirm,
+      confirmText,
+      cancelText,
+      userId,
+      targetId,
+    }: {
+      type?: string;
+      userId?: string;
+      targetId?: string;
       description: string;
-      confirm: string;
+      confirm: string | string[];
       message: Message;
+      confirmText?: string;
+      cancelText?: string;
     },
   ): Message {
+    const confirmComponent = new Component()
+      .setLabel(confirmText ?? 'Confirm');
+
+    const cancelComponent = new Component()
+      .setStyle(ButtonStyle.Red)
+      .setLabel(cancelText ?? 'Cancel');
+
+    if (Array.isArray(confirm)) {
+      confirmComponent.setId(...confirm);
+    } else {
+      // deno-lint-ignore no-non-null-assertion
+      confirmComponent.setId(type!, confirm);
+    }
+
+    if (userId && targetId) {
+      cancelComponent.setId('cancel', userId, targetId);
+    } else if (userId) {
+      cancelComponent.setId('cancel', userId);
+    } else {
+      cancelComponent.setId('cancel');
+    }
+
     return message
       .addEmbed(new Embed().setDescription(description))
       .insertComponents([
-        new Component()
-          .setId(type, confirm)
-          .setLabel('Confirm'),
-        new Component()
-          .setStyle(ButtonStyle.Red)
-          .setLabel('Cancel')
-          .setId('cancel'),
+        confirmComponent,
+        cancelComponent,
       ]);
   }
 

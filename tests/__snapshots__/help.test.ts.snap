@@ -9,7 +9,7 @@ snapshot[`/help 1`] = `
       {
         components: [
           {
-            custom_id: "help==6=prev",
+            custom_id: "help==7=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -17,7 +17,7 @@ snapshot[`/help 1`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "1/7",
+            label: "1/8",
             style: 2,
             type: 2,
           },
@@ -52,13 +52,13 @@ snapshot[`/help 1`] = `
 
 __You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.
 
-__Characters are exclusive__, once a player on the server finds a character, no one else can find that character in gacha again. You will need trade to get them.
+__Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.
 
-__Characters vary in ranks from 1<:smol_star:1088427421096751224>to 5<:smol_star:1088427421096751224>__ A character rating is based on their popularity (as of right now, a character rating cannot be raised).
+__Characters vary in ranks from 1<:smol_star:1088427421096751224>to 5<:smol_star:1088427421096751224>__ A character rating is based on their popularity (a character rating cannot be raised).
 
 __Gacha rates depend on multiple variables__, but generally speaking the chances of a 5<:smol_star:1088427421096751224>appearing is equal or less than 1%.
 
-> *\`/q\` allows you to do gacha pulls with no animations.*
+> *\`/q\` allows you to do gacha pulls with no animations*
 ​",
         footer: {
           text: "aliases: /w, /q",
@@ -89,25 +89,13 @@ snapshot[`/help 2`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "2/7",
+            label: "2/8",
             style: 2,
             type: 2,
           },
           {
             custom_id: "help==2=next",
             label: "Next",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "cstars=5=user_id",
-            label: "/collection stars 5",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "cstars=4=user_id",
-            label: "/collection stars 4",
             style: 2,
             type: 2,
           },
@@ -120,23 +108,26 @@ snapshot[`/help 2`] = `
         author: {
           name: "2.",
         },
-        description: "You will need a party to use combat features, but all combat features are still in development, so parties are only an aesthetic right now.
+        description: '~~Synthesize Merge~~ Sacrifice characters to pull a new character with a higher rating.
 
-__You can't have more than 1 party__ or save your current party to a preset and switch between presets.
+__Be careful where you sacrifice your characters.__
+Characters are the main currency in Fable. While synthesis returns a higher-rated character its *"currency"* value will always be lower than the sum of the sacrificed characters.
 
-__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.
+__Your party members and likes will never be sacrificed.__ To protect characters from synthesis, add them to your likeslist with \`/like\`
 
-\`/party view\` to see your current party.
+__It takes 5 characters from a specific rating__ to get a new character with 1 more star than the sacrificed.
 
-\`/party assign name: spot:\` to assign a character you have to your party;
-leaving the \`spot:\` empty will assign the character to the first empty spot or override the last spot.
+__Fable will always auto-synthesize your lower-rated characters first.__
 
-> *\`/collection\` can be used to browse your characters and select your potential party members.*
-​",
+Example: \`/synthesize 3\` will sacrifice __25 of your 1<:smol_star:1088427421096751224>characters__
+or __5 of your 2<:smol_star:1088427421096751224>characters__ or any other combination of both lower ratings.
+
+> *Sacrificed characters will return to being available in \`/gacha\`*
+​',
         footer: {
-          text: "aliases: /team, /p",
+          text: "aliases: /merge",
         },
-        title: "\`/party\`",
+        title: "\`/synthesize\`",
         type: "rich",
       },
     ],
@@ -162,7 +153,7 @@ snapshot[`/help 3`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "3/7",
+            label: "3/8",
             style: 2,
             type: 2,
           },
@@ -173,14 +164,14 @@ snapshot[`/help 3`] = `
             type: 2,
           },
           {
-            custom_id: "now=user_id",
-            label: "/vote",
+            custom_id: "cstars=5=user_id",
+            label: "/collection stars 5",
             style: 2,
             type: 2,
           },
           {
-            custom_id: "buy=bguaranteed=user_id=5",
-            label: "/buy guaranteed 5",
+            custom_id: "cstars=4=user_id",
+            label: "/collection stars 4",
             style: 2,
             type: 2,
           },
@@ -193,22 +184,23 @@ snapshot[`/help 3`] = `
         author: {
           name: "3.",
         },
-        description: "Voting allows everyone to buy guaranteed pulls of specific ranks.
+        description: "You will need a party to use combat features but all combat features are still in development, so parties are only an aesthetic right now.
 
-> **Note** There will be another way to get guaranteed pulls without voting coming soon
+__You can't have more than 1 party__ or save your current party to a preset and switch between presets.
 
-__Voting on weekends__ awards **2** votes instead of **1** (_Saturday and Sunday_).
+__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.
 
-\`/buy random\` gets you random pulls, they are identical to the pulls you can get each 30 minutes.
+\`/party view\` to see your current party.
 
-\`/buy guaranteed\` however is special, while it can expansive it will guarantee that you get a character form one specific rank. Use the guaranteed pulls you have by calling \`/pull stars:\`
+\`/party assign name: spot:\` to assign a character you have to your party;
+leaving the \`spot:\` empty will assign the character to the first empty spot or override the last spot.
 
-> *Example: \`/buy guaranteed 5\` will guarantee you a random 5<:smol_star:1088427421096751224>character.*
+> *\`/collection\` can be used to browse your characters and select your potential party members*
 ​",
         footer: {
-          text: "aliases: /shop",
+          text: "aliases: /team, /p",
         },
-        title: "\`/vote\`",
+        title: "\`/party\`",
         type: "rich",
       },
     ],
@@ -234,12 +226,92 @@ snapshot[`/help 4`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "4/7",
+            label: "4/8",
             style: 2,
             type: 2,
           },
           {
             custom_id: "help==4=next",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "now=user_id",
+            label: "/vote",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "buy=bguaranteed=user_id=4",
+            label: "/buy guaranteed 5",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+      {
+        components: [
+          {
+            custom_id: "buy=bguaranteed=user_id=5",
+            label: "/buy guaranteed 5",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "Voting",
+        },
+        description: "Voting is an additional way to acquire character with a specific guaranteed rating.
+
+__Voting on weekends__ awards **2** votes instead of **1** (_Saturday and Sunday_).
+
+\`/buy random\` gets you random pulls, they are identical to the pulls you can get each 30 minutes.
+
+\`/buy guaranteed\` however is special, while it can expansive it will guarantee that you get a character from one specific rank. Use the guaranteed pulls you bought by calling \`/pull stars:\`
+
+> *Example: \`/buy guaranteed 5\` will guarantee you a random 5<:smol_star:1088427421096751224>character.*
+​",
+        footer: {
+          text: "aliases: /shop",
+        },
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;
+
+snapshot[`/help 5`] = `
+{
+  data: {
+    attachments: [
+    ],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==3=prev",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "5/8",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==5=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -267,6 +339,12 @@ snapshot[`/help 4`] = `
             type: 2,
             url: "https://discord.gg/H69RVBxeYY",
           },
+          {
+            label: "Donate",
+            style: 5,
+            type: 2,
+            url: "https://github.com/sponsors/ker0olos",
+          },
         ],
         type: 1,
       },
@@ -276,80 +354,18 @@ snapshot[`/help 4`] = `
         author: {
           name: "Roadmap",
         },
-        description: "__**Releasing in the near future (5 days ~ 2 months)**__
+        description: "__**Recently Added**__
 
-**[Synthesis](https://github.com/ker0olos/fable/issues/76)**
-Merging 1-4<:smol_star:1088427421096751224>characters to get a specific rank pull (e.g. Synthesizing five 1-star characters gives a pull where you are guaranteed a 2-star character).
+\`/synthesize\`
+_merge characters together to pull a new character_
+
+__**Releasing in the near future (5 days ~ 2 months)**__
 
 **[Daily Quests](https://github.com/ker0olos/fable/issues/75)**
-Complete quests for rewards.
+Complete quests for rewards
 
 **[Stealing](https://github.com/ker0olos/fable/issues/49)**
-You will be able to steal characters from other users.",
-        type: "rich",
-      },
-    ],
-  },
-  type: 4,
-}
-`;
-
-snapshot[`/help 5`] = `
-{
-  data: {
-    attachments: [
-    ],
-    components: [
-      {
-        components: [
-          {
-            custom_id: "help==3=prev",
-            label: "Prev",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "_",
-            disabled: true,
-            label: "5/7",
-            style: 2,
-            type: 2,
-          },
-          {
-            custom_id: "help==5=next",
-            label: "Next",
-            style: 2,
-            type: 2,
-          },
-        ],
-        type: 1,
-      },
-    ],
-    embeds: [
-      {
-        author: {
-          name: "Essential Commands",
-        },
-        description: "- \`/gacha\` \`/w\`: _start a new gacha pull_
-- \`/q\`: _start a gacha pull but with no animations_
-- \`/pull\` \`/guaranteed\`: _pull a character with a guaranteed rank_
-
-- \`/now\` \`/vote\` \`/daily\` \`/tu\`: _check what you can do right now_
-- \`/search\` \`/anime\` \`/manga\`: _search for specific media_
-- \`/character\` \`/char\` \`/im\`: _search for a specific character_
-
-- \`/party view\` \`/team view\` \`/p view\`: _view your current party_
-- \`/party assign\` \`/team assign\` \`/p assign\`: _assign a character to your party_
-- \`/party swap\` \`/team swap\` \`/p swap\`: _swap characters spots with each others_
-- \`/party remove\` \`/team remove\` \`/p remove\`: _remove a character from your party_
-
-- \`/collection list\` \`/coll list\` \`/mm list\`: _list user characters in bulks_
-- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user your stars_
-- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters in a specific media_
-- \`/found\` \`/obtained\` \`/owned\`: _list all characters found from a specific media_
-
-- \`/trade\` \`/offer\`: _trade characters with another user_
-- \`/give\` \`/gift\`: _give characters to another user_",
+You will be able to steal characters from other users",
         type: "rich",
       },
     ],
@@ -375,7 +391,7 @@ snapshot[`/help 6`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "6/7",
+            label: "6/8",
             style: 2,
             type: 2,
           },
@@ -392,19 +408,29 @@ snapshot[`/help 6`] = `
     embeds: [
       {
         author: {
-          name: "Other Commands",
+          name: "Essential Commands",
         },
-        description: "- \`/nick\`: _change the nickname of a character_
-- \`/image\` \`/custom\`: _change the image of a character_
+        description: "- \`/gacha\` \`/w\`: _start a new gacha pull_
+- \`/q\`: _start a gacha pull but with no animations_
+- \`/pull\` \`/guaranteed\`: _use the guaranteed pulls you have_
 
-- \`/like\`: _like a character to be notified if someone finds them_
-- \`/unlike\`: _remove character from your likes_
-- \`/likeslist\`: _list user liked characters_
+- \`/now\` \`/vote\` \`/daily\` \`/tu\`: _check what you can do right now_
+- \`/search\` \`/anime\` \`/manga\`: _search for specific media_
+- \`/character\` \`/char\` \`/im\`: _search for a specific character_
 
-- \`/buy random\` \`/shop random\`: _use votes to buy random pulls_
-- \`/buy guaranteed\` \`/shop guaranteed\`: _use votes to buy pulls with a guaranteed rank_
+- \`/synthesize\` \`/merge\`: _synthesize characters together to pull a new character_
 
-- \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
+- \`/party view\` \`/team view\` \`/p view\`: _view your current party_
+- \`/party assign\` \`/team assign\` \`/p assign\`: _assign a character to your party_
+- \`/party swap\` \`/team swap\` \`/p swap\`: _swap characters spots with each others_
+- \`/party remove\` \`/team remove\` \`/p remove\`: _remove a character from your party_
+
+- \`/collection list\` \`/coll list\` \`/mm list\`: _list user characters in bulks_
+- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user your stars_
+- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters in a specific media_
+
+- \`/trade\` \`/offer\`: _trade characters with another user_
+- \`/give\` \`/gift\`: _give characters to another user_",
         type: "rich",
       },
     ],
@@ -430,12 +456,12 @@ snapshot[`/help 7`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "7/7",
+            label: "7/8",
             style: 2,
             type: 2,
           },
           {
-            custom_id: "help==0=next",
+            custom_id: "help==7=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -447,17 +473,21 @@ snapshot[`/help 7`] = `
     embeds: [
       {
         author: {
-          name: "Admin Commands",
+          name: "Other Commands",
         },
-        description: "_> \`/packs\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we don't recommend that._
-- \`/packs builtin\`: _list all the builtin packs_
-- \`/packs community\`: _list all installed community packs_
+        description: "- \`/nick\`: _change the nickname of a character_
+- \`/image\` \`/custom\`: _change the image of a character_
 
-- \`/packs install\`: _install a community pack_
-- \`/packs update\`: _update a community pack_
-- \`/packs uninstall\`: _uninstall a pack_
+- \`/found\` \`/obtained\` \`/owned\`: _list all characters found from a specific media_
 
-- \`/packs validate\`: _find errors in a pack's \\"manifest.json\\"_",
+- \`/like\`: _like a character to be notified if someone finds them_
+- \`/unlike\`: _remove character from your likes_
+- \`/likeslist\`: _list user liked characters_
+
+- \`/buy random\` \`/shop random\`: _use votes to buy random pulls_
+- \`/buy guaranteed\` \`/shop guaranteed\`: _use votes to buy pulls with a specific guaranteed rating_
+
+- \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
         type: "rich",
       },
     ],

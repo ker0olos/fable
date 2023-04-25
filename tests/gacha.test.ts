@@ -2259,7 +2259,7 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -2289,7 +2289,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(4000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 2);
 
@@ -2318,7 +2318,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(6000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -2462,7 +2462,7 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -2492,7 +2492,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(4000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 2);
 
@@ -2521,7 +2521,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(6000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -2666,7 +2666,7 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -2698,7 +2698,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(4000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 2);
 
@@ -2729,7 +2729,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(6000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -2874,7 +2874,7 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -3017,7 +3017,7 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -3047,7 +3047,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(4000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 2);
 
@@ -3076,7 +3076,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(6000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -3126,7 +3126,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 4);
 
@@ -3245,7 +3245,7 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -3276,7 +3276,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(4000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 2);
 
@@ -3305,7 +3305,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(6000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -3455,7 +3455,7 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 1);
 
@@ -3485,7 +3485,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(4000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 2);
 
@@ -3514,7 +3514,7 @@ Deno.test('/gacha', async (test) => {
         },
       );
 
-      await timeStub.tickAsync(6000);
+      await timeStub.nextAsync();
 
       assertSpyCalls(fetchStub, 3);
 
@@ -3619,7 +3619,7 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[0].args[0],
@@ -3702,7 +3702,7 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[0].args[0],
@@ -3791,7 +3791,7 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[0].args[0],
@@ -3872,7 +3872,7 @@ Deno.test('/gacha', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertEquals(
         fetchStub.calls[0].args[0],

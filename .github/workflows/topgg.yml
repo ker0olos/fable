@@ -3,8 +3,8 @@ name: topgg
 on:
   workflow_dispatch:
   schedule:
-    # Every two days a week "At 00:00 on Sunday" (see https://crontab.guru/#0_0_*/2_*_*)
-    - cron: "0 0 */2 * *"
+    # Everyday "At 00:00" (see https://crontab.guru/daily)
+    - cron: "0 0 * * *"
 
 jobs:
   update-stats:
@@ -17,8 +17,9 @@ jobs:
 
       - name: Set environment variables
         run: >
+          echo "APP_ID=${{ secrets.APP_ID }}" >> "$GITHUB_ENV" |
           echo "FAUNA_SECRET=${{ secrets.FAUNA_SECRET }}" >> "$GITHUB_ENV" |
           echo "TOPGG_TOKEN=${{ secrets.TOPGG_TOKEN }}" >> "$GITHUB_ENV"
 
-      - name: Update top.gg server count
+      - name: Update top.gg stats
         run: deno run -A update_topgg_stats.ts

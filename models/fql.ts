@@ -85,6 +85,10 @@ function RemoveAll<T extends ExprArg>(refs: T[], items: T[]): T[] {
   return _fql.Difference(items, refs) as unknown as T[];
 }
 
+function Delete(ref: RefExpr): Expr {
+  return _fql.Delete(ref);
+}
+
 function Includes<T extends ExprArg>(
   value: T,
   documentOrArray: T | T[],
@@ -117,12 +121,12 @@ function Map<T = ExprArg, V = Expr>(
   return _fql.Map(setOrArray, func) as unknown as V[];
 }
 
-function Filter<T = ExprArg>(
-  setOrArray: T[],
-  func: (...args: T[]) => BooleanExpr,
-): T[] {
-  return _fql.Filter(setOrArray, func) as unknown as T[];
-}
+// function Filter<T = ExprArg>(
+//   setOrArray: T[],
+//   func: (...args: T[]) => BooleanExpr,
+// ): T[] {
+//   return _fql.Filter(setOrArray, func) as unknown as T[];
+// }
 
 function Any<T = Expr>(setOrArray: T[]): boolean {
   return _fql.Any(setOrArray) as unknown as boolean;
@@ -130,6 +134,10 @@ function Any<T = Expr>(setOrArray: T[]): boolean {
 
 function All<T = Expr>(setOrArray: T[]): boolean {
   return _fql.All(setOrArray) as unknown as boolean;
+}
+
+function IsEmpty(expr: Expr | ExprArg[]): BooleanExpr {
+  return _fql.IsEmpty(expr);
 }
 
 function IsNonEmpty(expr: Expr | ExprArg[]): BooleanExpr {
@@ -181,9 +189,9 @@ function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
   return _fql.Equals(a!, b!);
 }
 
-function Not(b: BooleanExpr): BooleanExpr {
-  return _fql.Not(b);
-}
+// function Not(b: BooleanExpr): BooleanExpr {
+//   return _fql.Not(b);
+// }
 
 function Concat(s: StringExpr[], sep?: StringExpr): StringExpr {
   return _fql.Concat(s, sep ?? '');
@@ -211,8 +219,8 @@ function Let<T, U>(
   return _fql.Let(params, cb(shadows) as any) as U;
 }
 
-function Var(name: StringExpr): Expr {
-  return _fql.Var(name);
+function Var<T extends ExprArg>(name: StringExpr): T {
+  return _fql.Var(name) as unknown as T;
 }
 
 function Select<T extends ExprArg>(
@@ -322,9 +330,9 @@ export const fql = {
   AppendAll,
   Concat,
   Create,
+  Delete,
   Divide,
   Equals,
-  Filter,
   Foreach,
   Get,
   GTE,
@@ -333,6 +341,7 @@ export const fql = {
   Includes,
   Index,
   Indexer,
+  IsEmpty,
   IsNonEmpty,
   IsNull,
   Let,
@@ -343,7 +352,6 @@ export const fql = {
   Merge,
   Min,
   Multiply,
-  Not,
   Now,
   Null,
   Or,

@@ -1,15 +1,14 @@
+import { Character } from './add_character_to_inventory.ts';
+
 import {
-  BooleanExpr,
   Client,
   fql,
   InstanceExpr,
   InventoryExpr,
-  NullExpr,
   NumberExpr,
   RefExpr,
   ResponseExpr,
   StringExpr,
-  TimeExpr,
   UserExpr,
 } from './fql.ts';
 
@@ -20,70 +19,27 @@ import {
   getUser,
   Inventory,
   rechargePulls,
-  User,
 } from './get_user_inventory.ts';
 
-export interface Character {
-  id: StringExpr;
-  mediaId: StringExpr;
-  rating: NumberExpr;
-  nickname?: string | NullExpr;
-  image?: string | NullExpr;
-  history: History[];
-  inventory: RefExpr;
-  instance: RefExpr;
-  user: RefExpr;
-}
-
-export interface History {
-  gacha?: {
-    by: RefExpr;
-    ts: TimeExpr;
-    pool: NumberExpr;
-    guaranteed?: NumberExpr;
-    sacrifices?: StringExpr[];
-    popularityChance?: NumberExpr;
-    popularityGreater?: NumberExpr;
-    popularityLesser?: NumberExpr;
-    roleChance?: NumberExpr;
-    role?: StringExpr;
-  };
-  trade?: {
-    ts: TimeExpr;
-    to: UserExpr;
-    from: UserExpr;
-  };
-}
-
-export function addCharacter(
+export function replaceCharacters(
   {
     rating,
     mediaId,
     characterId,
-    guaranteed,
     inventory,
     instance,
     user,
     pool,
-    popularityChance,
-    popularityGreater,
-    popularityLesser,
-    roleChance,
-    role,
+    sacrifices,
   }: {
     rating: NumberExpr;
     mediaId: StringExpr;
     characterId: StringExpr;
-    guaranteed: BooleanExpr;
     inventory: InventoryExpr;
     instance: InstanceExpr;
     user: UserExpr;
     pool: NumberExpr;
-    popularityChance?: NumberExpr;
-    popularityGreater?: NumberExpr;
-    popularityLesser?: NumberExpr;
-    roleChance?: NumberExpr;
-    role?: StringExpr;
+    sacrifices: StringExpr[];
   },
 ): ResponseExpr {
   return fql.Let({
@@ -92,7 +48,13 @@ export function addCharacter(
       characterId,
       fql.Ref(instance),
     ),
-  }, ({ match }) =>
+    sacrificedCharacters: fql.Map(sacrifices, (id) =>
+      fql.Match(
+        fql.Index('characters_instance_id'),
+        id,
+        fql.Ref(instance),
+      )),
+  }, ({ match, sacrificedCharacters }) =>
     fql.If(
       fql.LTE(fql.Select(['data', 'availablePulls'], inventory), 0),
       {
@@ -101,18 +63,23 @@ export function addCharacter(
         inventory: fql.Ref(inventory),
       },
       fql.If(
-        fql.IsNonEmpty(match),
-        { ok: false, error: 'CHARACTER_EXISTS' },
+        fql.All(fql.Map(sacrificedCharacters, (char) =>
+          fql.Equals(
+            fql.Select(['data', 'user'], fql.Get(char)),
+            fql.Ref(user),
+          ))),
         fql.If(
-          fql.Or(
-            fql.Equals(guaranteed, false),
-            fql.Includes(
-              rating,
-              fql.Select(['data', 'guarantees'], user, []),
-            ),
-          ),
+          fql.IsEmpty(match),
           fql.Let(
             {
+              sacrificedCharactersRefs: fql.Map(
+                sacrificedCharacters,
+                (char) => fql.Ref(fql.Get(char)),
+              ),
+              deletedCharacters: fql.Foreach(
+                fql.Var<RefExpr[]>('sacrificedCharactersRefs'),
+                fql.Delete,
+              ),
               createdCharacter: fql.Create<Character>('character', {
                 rating,
                 mediaId,
@@ -123,36 +90,14 @@ export function addCharacter(
                 history: [
                   {
                     gacha: {
+                      sacrifices,
                       ts: fql.Now(),
                       by: fql.Ref(user),
-                      guaranteed: fql.If(
-                        fql.Equals(guaranteed, true),
-                        rating,
-                        fql.Null(),
-                      ),
-                      popularityChance,
-                      popularityGreater,
-                      popularityLesser,
-                      roleChance,
-                      role,
                       pool,
                     },
                   },
                 ],
               }),
-
-              // update the user
-              updatedUser: fql.If(
-                fql.Equals(guaranteed, true),
-                fql.Update<User>(fql.Ref(user), {
-                  guarantees: fql.Remove(
-                    rating,
-                    fql.Select(['data', 'guarantees'], user),
-                  ),
-                }),
-                user,
-              ),
-              // update the inventory
               updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
                 lastPull: fql.Now(),
                 rechargeTimestamp: fql.Select(
@@ -166,7 +111,10 @@ export function addCharacter(
                 ),
                 characters: fql.Append(
                   fql.Ref(fql.Var('createdCharacter')),
-                  fql.Select(['data', 'characters'], inventory, []),
+                  fql.RemoveAll(
+                    fql.Var<RefExpr[]>('sacrificedCharactersRefs'),
+                    fql.Select(['data', 'characters'], inventory),
+                  ),
                 ),
               }),
             },
@@ -189,12 +137,13 @@ export function addCharacter(
               ),
             }),
           ),
-          {
-            ok: false,
-            error: 'NO_GUARANTEES',
-            user: fql.Ref(user),
-          },
+          { ok: false, error: 'CHARACTER_EXISTS' },
         ),
+        {
+          ok: false,
+          error: 'CHARACTER_NOT_OWNED',
+          inventory: fql.Ref(inventory),
+        },
       ),
     ));
 }
@@ -204,32 +153,19 @@ export default function (client: Client): {
   resolvers?: (() => Promise<void>)[];
 } {
   return {
-    indexers: [
-      fql.Indexer({
-        client,
-        unique: false,
-        collection: 'user',
-        name: 'users_likes_character',
-        terms: [{ field: ['data', 'likes'] }],
-      }),
-    ],
     resolvers: [
       fql.Resolver({
         client,
-        name: 'add_character_to_inventory',
+        name: 'replace_characters',
         lambda: (
           userId: string,
           guildId: string,
           characterId: string,
           mediaId: string,
-          guaranteed: boolean,
           rating: number,
           pool: number,
-          popularityChance: number,
-          popularityGreater: number,
-          popularityLesser?: number,
-          roleChance?: number,
-          role?: string,
+          sacrifices: string[],
+          // guarantees: number[],
         ) => {
           return fql.Let(
             {
@@ -245,20 +181,16 @@ export default function (client: Client): {
               }),
             },
             ({ inventory, instance, user }) =>
-              addCharacter({
+              replaceCharacters({
                 rating,
                 mediaId,
                 characterId,
-                guaranteed,
                 inventory,
                 instance,
                 user,
                 pool,
-                popularityChance,
-                popularityGreater,
-                popularityLesser,
-                roleChance,
-                role,
+                sacrifices,
+                // guarantees,
               }),
           );
         },

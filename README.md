@@ -99,11 +99,13 @@ you can go tell discord to add custom prefixes to "slash" commands instead of
 <details><summary>How can I install a new pack on my server?</summary>
 <p>
 
-We plan to have a Marketplace command where you can browse and install popular
-but for now we have a channel in our discord where people share the packs they
-made.\
-Check them then use
+We plan to have a `/marketplace` command where you can browse and install
+popular packs but since Fable is still new a there ain't that many people making
+packs, You will have to join our discord to manually check the packs currently
+available. Then install them by running
 `/packs install github: https://github.com/username/packname`
+
+> `Manage Server` permission is required to install packs on "your" server
 
 </p>
 </details>

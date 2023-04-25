@@ -171,7 +171,7 @@ Deno.test('/party view', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 4);
 
@@ -434,7 +434,7 @@ Deno.test('/party view', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 4);
 
@@ -677,7 +677,7 @@ Deno.test('/party view', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 4);
 
@@ -934,7 +934,7 @@ Deno.test('/party view', async (test) => {
         },
       });
 
-      await timeStub.tickAsync(0);
+      await timeStub.runMicrotasks();
 
       assertSpyCalls(fetchStub, 4);
 
@@ -1098,7 +1098,7 @@ Deno.test('/party assign', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'ASSIGNED',
+              description: 'Assigned',
             },
             {
               type: 'rich',
@@ -1208,7 +1208,7 @@ Deno.test('/party assign', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'ASSIGNED',
+              description: 'Assigned',
             },
             {
               type: 'rich',
@@ -1995,7 +1995,7 @@ Deno.test('/party remove', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'REMOVED',
+              description: 'Removed',
             },
             {
               type: 'rich',
@@ -2104,7 +2104,7 @@ Deno.test('/party remove', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'REMOVED',
+              description: 'Removed',
             },
             {
               type: 'rich',
@@ -2215,7 +2215,7 @@ Deno.test('/party remove', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'REMOVED FROM #2',
+              description: 'Removed #2',
             },
             {
               type: 'rich',

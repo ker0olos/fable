@@ -1,3 +1,5 @@
+import 'https://esm.sh/@total-typescript/ts-reset@0.4.2/filter-boolean';
+
 import { gql, request } from './graphql.ts';
 
 import search, { idPrefix } from './search.ts';
@@ -6,6 +8,7 @@ import packs from './packs.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import user from './user.ts';
 import utils from './utils.ts';
 
 import * as discord from './discord.ts';
@@ -13,51 +16,6 @@ import * as discord from './discord.ts';
 import { Character, Schema } from './types.ts';
 
 import { NonFetalCancelableError, NonFetalError } from './errors.ts';
-
-async function verifyCharacters({
-  userId,
-  guildId,
-  charactersIds,
-}: {
-  userId: string;
-  guildId: string;
-  charactersIds: string[];
-}): Promise<{
-  ok: boolean;
-  message?: 'NOT_OWNED' | 'NOT_FOUND';
-  errors?: string[];
-}> {
-  const query = gql`
-    query ($userId: String!, $guildId: String!, $charactersIds: [String!]!) {
-      verifyCharacters(
-        userId: $userId
-        guildId: $guildId
-        charactersIds: $charactersIds
-      ) {
-        ok
-        message
-        errors
-      }
-    }
-  `;
-
-  const result = (await request<{
-    verifyCharacters: ReturnType<typeof verifyCharacters>;
-  }>({
-    query,
-    url: faunaUrl,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-      charactersIds,
-    },
-  })).verifyCharacters;
-
-  return result;
-}
 
 function pre({
   token,
@@ -82,7 +40,7 @@ function pre({
       .setFlags(discord.MessageFlags.Ephemeral)
       .addEmbed(
         new discord.Embed().setDescription(
-          'You can\'t trade with yourself.',
+          `You can\'t ${take.length ? 'trade with' : 'gift'} yourself.`,
         ),
       );
   }
@@ -94,7 +52,6 @@ function pre({
   }
 
   Promise.all([
-    // TODO optimize this to lower the number of external requests
     ...give.map((char) =>
       packs.characters(
         char.startsWith(idPrefix)
@@ -161,17 +118,15 @@ function pre({
       const giveIds = giveCharacters.map((char) => `${char.packId}:${char.id}`);
       const takeIds = takeCharacters.map((char) => `${char.packId}:${char.id}`);
 
-      const [giveOwnership, takeOwnership] = await Promise.all([
-        trade.verifyCharacters({
-          charactersIds: giveIds,
-          guildId,
+      const [giveCollection, takeCollection] = await Promise.all([
+        user.getUserCharacters({
           userId,
+          guildId,
         }),
         take.length
-          ? trade.verifyCharacters({
+          ? user.getUserCharacters({
             guildId,
             userId: targetId,
-            charactersIds: takeIds,
           })
           : undefined,
       ]);
@@ -194,75 +149,85 @@ function pre({
         });
       });
 
-      if (!giveOwnership.ok) {
-        // deno-lint-ignore no-non-null-assertion
-        giveOwnership.errors!.forEach((characterId) => {
+      const giveParty: string[] = [
+        giveCollection.party?.member1?.id,
+        giveCollection.party?.member2?.id,
+        giveCollection.party?.member3?.id,
+        giveCollection.party?.member4?.id,
+        giveCollection.party?.member5?.id,
+      ]
+        .filter(Boolean)
+        .filter((id) => giveIds.includes(id));
+
+      const giveFilter = giveParty.length
+        ? giveParty
+        : giveIds.filter((id) =>
+          !giveCollection.characters.some((char) => char.id === id)
+        );
+
+      // const giveLiked = giveIds.filter((id) =>
+      //   giveCollection.likes?.includes(id)
+      // );
+
+      const takeLiked = takeCollection
+        ? takeIds.filter((id) => takeCollection.likes?.includes(id))
+        : undefined;
+
+      // not owned
+      if (giveFilter.length) {
+        giveFilter.forEach((characterId) => {
           const i = giveCharacters.findIndex(({ packId, id }) =>
             `${packId}:${id}` === characterId
           );
 
-          message.addEmbed(giveEmbeds[i]);
+          message.addEmbed(
+            new discord.Embed()
+              .setDescription(
+                giveParty.length
+                  ? 'Those characters are in your party and can\'t be traded'
+                  : 'You don\'t have those characters',
+              ),
+          ).addEmbed(giveEmbeds[i]);
         });
+
+        return await message.patch(token);
       }
 
-      switch (giveOwnership.message) {
-        case 'NOT_OWNED': {
-          message.addEmbed(
-            new discord.Embed().setDescription(
-              'You don\'t have the those characters',
-            ),
-          );
+      if (takeCollection) {
+        const takeParty: string[] = [
+          takeCollection.party?.member1?.id,
+          takeCollection.party?.member2?.id,
+          takeCollection.party?.member3?.id,
+          takeCollection.party?.member4?.id,
+          takeCollection.party?.member5?.id,
+        ]
+          .filter(Boolean)
+          .filter((id) => takeIds.includes(id));
 
-          return await message.patch(token);
-        }
-        case 'NOT_FOUND': {
-          message.addEmbed(
-            new discord.Embed().setDescription(
-              `_Those characters haven't been found by anyone yet_`,
-            ),
-          );
+        const takeFilter = takeParty.length
+          ? takeParty
+          : takeIds.filter((id) => {
+            return !takeCollection.characters.some((char) => char.id === id);
+          });
 
-          return await message.patch(token);
-        }
-        default:
-          break;
-      }
-
-      if (take.length) {
-        // deno-lint-ignore no-non-null-assertion
-        if (!takeOwnership!.ok) {
-          // deno-lint-ignore no-non-null-assertion
-          takeOwnership!.errors!.forEach((characterId) => {
+        // not owned
+        if (takeFilter.length) {
+          takeFilter.forEach((characterId) => {
             const i = takeCharacters.findIndex(({ packId, id }) =>
               `${packId}:${id}` === characterId
             );
 
-            message.addEmbed(takeEmbeds[i]);
+            message.addEmbed(
+              new discord.Embed()
+                .setDescription(
+                  takeParty.length
+                    ? `Those characters are in <@${targetId}>'s party and can't be traded`
+                    : `<@${targetId}> doesn't have those characters`,
+                ),
+            ).addEmbed(takeEmbeds[i]);
           });
-        }
 
-        // deno-lint-ignore no-non-null-assertion
-        switch (takeOwnership!.message) {
-          case 'NOT_OWNED': {
-            message.addEmbed(
-              new discord.Embed().setDescription(
-                `<@${targetId}> doesn't those characters**`,
-              ),
-            );
-
-            return await message.patch(token);
-          }
-          case 'NOT_FOUND': {
-            message.addEmbed(
-              new discord.Embed().setDescription(
-                `_Those characters haven't been found by anyone yet_`,
-              ),
-            );
-
-            return await message.patch(token);
-          }
-          default:
-            break;
+          return await message.patch(token);
         }
 
         takeEmbeds.forEach((embed) => {
@@ -278,55 +243,44 @@ function pre({
         }));
       });
 
-      if (take.length) {
-        message.addEmbed(
-          new discord.Embed().setDescription(
+      if (takeCollection) {
+        await discord.Message.dialog({
+          userId,
+          targetId,
+          message: message.setContent(`<@${targetId}>`),
+          description:
             `<@${userId}> is offering that you lose **${takeNames}** ${discord.emotes.remove} and get **${giveNames}** ${discord.emotes.add}`,
-          ),
-        );
-
-        message.addComponents([
-          new discord.Component().setId(
+          confirm: [
             'trade',
             userId,
             targetId,
             giveIds.join('&'),
             takeIds.join('&'),
-          )
-            .setLabel('Accept'),
-          new discord.Component().setId('cancel', userId, targetId)
-            .setStyle(discord.ButtonStyle.Red)
-            .setLabel('Decline'),
-        ]);
+          ],
+          confirmText: 'Accept',
+          cancelText: 'Decline',
+        }).patch(token);
 
-        await message
-          .setContent(`<@${targetId}>`)
-          .patch(token);
+        const followup = new discord.Message();
 
-        await new discord.Message()
+        // deno-lint-ignore no-non-null-assertion
+        if (takeLiked!.length) {
+          followup.addEmbed(new discord.Embed().setDescription(
+            'You like some of those characters',
+          ));
+        }
+
+        await followup
           .setContent(`<@${targetId}> you received an offer!`)
           .followup(token);
       } else {
-        message.addEmbed(
-          new discord.Embed().setDescription(
+        await discord.Message.dialog({
+          userId,
+          message,
+          description:
             `Are you sure you want to give **${giveNames}** ${discord.emotes.remove} to <@${targetId}> for free?`,
-          ),
-        );
-
-        message.addComponents([
-          new discord.Component().setId(
-            'give',
-            userId,
-            targetId,
-            giveIds.join('&'),
-          )
-            .setLabel('Confirm'),
-          new discord.Component().setId('cancel', userId)
-            .setStyle(discord.ButtonStyle.Red)
-            .setLabel('Cancel'),
-        ]);
-
-        await message.patch(token);
+          confirm: ['give', userId, targetId, giveIds.join('&')],
+        }).patch(token);
       }
     })
     .catch(async (err) => {
@@ -461,7 +415,6 @@ async function give({
       media: { title: true },
     }).addField({ value: `${discord.emotes.add}` });
 
-    updateMessage.addEmbed(embed);
     newMessage.addEmbed(embed);
   });
 
@@ -621,7 +574,6 @@ const trade = {
   pre,
   give,
   accepted,
-  verifyCharacters,
 };
 
 export default trade;

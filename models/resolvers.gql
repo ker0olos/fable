@@ -8,12 +8,6 @@ type Response @embedded {
   manifest: Manifest
 }
 
-type Verify @embedded {
-  ok: Boolean!
-  message: String
-  errors: [String!]
-}
-
 type CharacterNode @embedded {
   character: Character
   anchor: String
@@ -42,10 +36,6 @@ type Query {
   #
   findCharacter(characterId: String!, guildId: String!): Character
     @resolver(name: "find_character")
-  
-  #
-  verifyCharacters(charactersIds: [String!]!, guildId: String!, userId: String!): Verify!
-    @resolver(name: "verify_characters")
 }
 
 type Mutation {
@@ -84,6 +74,17 @@ type Mutation {
     roleChance: Int
     role: String
   ): Response! @resolver(name: "add_character_to_inventory")
+
+  #
+  replaceCharacters(
+    userId: String!
+    guildId: String!
+    characterId: String!
+    mediaId: String!
+    rating: Int!
+    pool: Int!
+    sacrifices: [String!]!
+  ): Response! @resolver(name: "replace_characters")
 
   #
   likeCharacter(userId: String!, guildId: String!, characterId: String!): Response!

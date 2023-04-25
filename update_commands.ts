@@ -290,6 +290,10 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'Likes',
+    type: CommandType.USER,
+  }),
+  ...Command({
     name: 'likeslist',
     description: 'List all characters liked',
     options: [
@@ -297,6 +301,7 @@ export const commands = [
         name: 'user',
         description: 'The user of the likes list',
         type: Type.USER,
+        optional: true,
       }),
     ],
   }),
@@ -400,24 +405,28 @@ export const commands = [
             value: 0,
           },
           {
-            name: 'Party',
+            name: 'Synthesis',
             value: 1,
           },
           {
-            name: 'Voting',
+            name: 'Party',
             value: 2,
           },
           {
-            name: 'Roadmap',
+            name: 'Voting',
             value: 3,
           },
           {
-            name: 'Essential Commands',
+            name: 'Roadmap',
             value: 4,
           },
           {
-            name: 'Other Commands',
+            name: 'Essential Commands',
             value: 5,
+          },
+          {
+            name: 'Other Commands',
+            value: 6,
           },
           {
             name: 'Admin Commands',
@@ -443,27 +452,14 @@ export const commands = [
   }),
   ...Command({
     name: 'pull',
-    description: 'Pull a character with a guaranteed rank',
+    description: 'Pull a character with a guaranteed rating',
     aliases: ['guaranteed'],
     options: [
       Option({
         name: 'stars',
         description: 'The star rating',
         type: Type.INTEGER,
-        choices: [
-          {
-            name: '5',
-            value: 5,
-          },
-          {
-            name: '4',
-            value: 4,
-          },
-          {
-            name: '3',
-            value: 3,
-          },
-        ],
+        choices: spots.slice(2).toReversed(),
       }),
     ],
   }),
@@ -500,6 +496,19 @@ export const commands = [
       }),
     ],
   }),
+  ...Command({
+    name: 'synthesize',
+    description: 'synthesize characters together to pull a new character',
+    aliases: ['merge'],
+    options: [
+      Option({
+        name: 'target',
+        description: 'The target star rating of this synthesis',
+        choices: spots.slice(1).toReversed(),
+        type: Type.INTEGER,
+      }),
+    ],
+  }),
   // shop
   ...Command({
     name: 'buy',
@@ -508,7 +517,7 @@ export const commands = [
     options: [
       Option({
         name: 'random',
-        description: 'Buy extra random pulls',
+        description: 'Use votes to buy random pulls',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -516,35 +525,22 @@ export const commands = [
             min_value: 1,
             max_value: 99,
             name: 'amount',
-            description: 'The amount you want to buy',
+            description: 'The amount of pulls you want to buy',
             type: Type.INTEGER,
           }),
         ],
       }),
       Option({
         name: 'guaranteed',
-        description: 'Buy guaranteed pulls',
+        description: 'Use votes to buy pulls with a specific rating',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
           Option({
             name: 'stars',
-            description: 'The star rating',
+            description: 'The star rating you want to buy',
             type: Type.INTEGER,
-            choices: [
-              {
-                name: '5',
-                value: 5,
-              },
-              {
-                name: '4',
-                value: 4,
-              },
-              {
-                name: '3',
-                value: 3,
-              },
-            ],
+            choices: spots.slice(2).toReversed(),
           }),
         ],
       }),
@@ -570,6 +566,7 @@ export const commands = [
             name: 'user',
             description: 'The user of the party"',
             type: Type.USER,
+            optional: true,
           }),
         ],
       }),
@@ -643,15 +640,16 @@ export const commands = [
         optional: true,
         options: [
           Option({
-            name: 'user',
-            description: 'The user of the collection',
-            type: Type.USER,
-          }),
-          Option({
             name: 'filter',
             description: 'Filter by rating',
             type: Type.INTEGER,
             choices: spots.toReversed(),
+            optional: true,
+          }),
+          Option({
+            name: 'user',
+            description: 'The user of the collection',
+            type: Type.USER,
             optional: true,
           }),
         ],
@@ -663,15 +661,16 @@ export const commands = [
         optional: true,
         options: [
           Option({
-            name: 'user',
-            description: 'The user of the collection',
-            type: Type.USER,
-          }),
-          Option({
             name: 'rating',
             description: 'The star rating',
             type: Type.INTEGER,
             choices: spots.toReversed(),
+          }),
+          Option({
+            name: 'user',
+            description: 'The user of the collection',
+            type: Type.USER,
+            optional: true,
           }),
         ],
       }),
@@ -682,15 +681,16 @@ export const commands = [
         optional: true,
         options: [
           Option({
-            name: 'user',
-            description: 'The user of the collection',
-            type: Type.USER,
-          }),
-          Option({
             name: 'title',
             description: 'The title of the media',
             autocomplete: true,
             type: Type.STRING,
+          }),
+          Option({
+            name: 'user',
+            description: 'The user of the collection',
+            type: Type.USER,
+            optional: true,
           }),
         ],
       }),

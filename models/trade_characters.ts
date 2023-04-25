@@ -1,5 +1,4 @@
 import {
-  BooleanExpr,
   Client,
   fql,
   InstanceExpr,
@@ -19,57 +18,6 @@ import {
 } from './get_user_inventory.ts';
 
 import { Character, History } from './add_character_to_inventory.ts';
-
-export function verifyCharacters(
-  {
-    user,
-    instance,
-    charactersIds,
-  }: {
-    user: UserExpr;
-    instance: InstanceExpr;
-    charactersIds: StringExpr[];
-  },
-): BooleanExpr {
-  return fql.Let({
-    characters: fql.Map(charactersIds, (id) =>
-      fql.Match(
-        fql.Index('characters_instance_id'),
-        id,
-        fql.Ref(instance),
-      )),
-  }, ({ characters }) =>
-    fql.If(
-      fql.All(fql.Map(characters, (char) => fql.IsNonEmpty(char))),
-      fql.Let({
-        errors: fql.Filter(characters, (char) =>
-          fql.Not(fql.Equals(
-            fql.Select(['data', 'user'], fql.Get(char)),
-            fql.Ref(user),
-          ))),
-      }, ({ errors }) =>
-        fql.If(
-          fql.IsNonEmpty(errors),
-          {
-            ok: false,
-            message: 'NOT_OWNED',
-            errors: fql.Map(
-              errors,
-              (char) => fql.Select(['data', 'id'], fql.Get(char)),
-            ),
-          },
-          { ok: true },
-        )),
-      {
-        ok: false,
-        message: 'NOT_FOUND',
-        errors: fql.Map(
-          fql.Filter(characters, (char) => fql.Not(fql.IsNonEmpty(char))),
-          (char) => fql.Select(['@set', 'terms', 0], char),
-        ),
-      },
-    ));
-}
 
 export function giveCharacters(
   {
@@ -163,7 +111,7 @@ export function giveCharacters(
             fql.Let({
               updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
                 characters: fql.RemoveAll(
-                  fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+                  giveCharactersRefs,
                   fql.Select(['data', 'characters'], inventory),
                 ),
               }),
@@ -171,13 +119,13 @@ export function giveCharacters(
                 fql.Ref(targetInventory),
                 {
                   characters: fql.AppendAll(
-                    fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+                    giveCharactersRefs,
                     fql.Select(['data', 'characters'], targetInventory),
                   ),
                 },
               ),
               updatedCharacters: fql.Foreach(
-                fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+                giveCharactersRefs,
                 (characterRef) =>
                   fql.Update<Character>(
                     characterRef,
@@ -192,6 +140,8 @@ export function giveCharacters(
                         } as unknown as RefExpr,
                         fql.Select(['data', 'history'], fql.Get(characterRef)),
                       ) as unknown as History[],
+                      nickname: fql.Null(),
+                      image: fql.Null(),
                     },
                   ),
               ),
@@ -370,11 +320,10 @@ export function tradeCharacters(
               updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
                 characters: fql.AppendAll(
                   fql.RemoveAll(
-                    fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+                    giveCharactersRefs,
                     fql.Select(['data', 'characters'], inventory),
                   ),
-                  // deno-lint-ignore no-explicit-any
-                  fql.Var('takeCharactersRefs') as any,
+                  takeCharactersRefs,
                 ),
               }),
               updatedTargetInventory: fql.Update<Inventory>(
@@ -382,16 +331,15 @@ export function tradeCharacters(
                 {
                   characters: fql.AppendAll(
                     fql.RemoveAll(
-                      fql.Var('takeCharactersRefs') as unknown as RefExpr[],
+                      takeCharactersRefs,
                       fql.Select(['data', 'characters'], inventory),
                     ),
-                    // deno-lint-ignore no-explicit-any
-                    fql.Var('giveCharactersRefs') as any,
+                    giveCharactersRefs,
                   ),
                 },
               ),
               updatedCharacters: fql.Foreach(
-                fql.Var('giveCharactersRefs') as unknown as RefExpr[],
+                giveCharactersRefs,
                 (characterRef) =>
                   fql.Update<Character>(
                     characterRef,
@@ -406,11 +354,13 @@ export function tradeCharacters(
                         } as unknown as RefExpr,
                         fql.Select(['data', 'history'], fql.Get(characterRef)),
                       ) as unknown as History[],
+                      nickname: fql.Null(),
+                      image: fql.Null(),
                     },
                   ),
               ),
               updatedTakeCharacters: fql.Foreach(
-                fql.Var('takeCharactersRefs') as unknown as RefExpr[],
+                takeCharactersRefs,
                 (characterRef) =>
                   fql.Update<Character>(
                     characterRef,
@@ -425,6 +375,8 @@ export function tradeCharacters(
                         } as unknown as RefExpr,
                         fql.Select(['data', 'history'], fql.Get(characterRef)),
                       ) as unknown as History[],
+                      nickname: fql.Null(),
+                      image: fql.Null(),
                     },
                   ),
               ),
@@ -451,29 +403,6 @@ export default function (client: Client): {
 } {
   return {
     resolvers: [
-      fql.Resolver({
-        client,
-        name: 'verify_characters',
-        lambda: (
-          charactersIds: string[],
-          guildId: string,
-          userId: string,
-        ) => {
-          return fql.Let(
-            {
-              user: getUser(userId),
-              guild: getGuild(guildId),
-              instance: getInstance(fql.Var('guild')),
-            },
-            ({ user, instance }) =>
-              verifyCharacters({
-                user,
-                instance,
-                charactersIds,
-              }),
-          );
-        },
-      }),
       fql.Resolver({
         client,
         name: 'give_characters',

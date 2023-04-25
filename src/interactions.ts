@@ -11,6 +11,8 @@ import trade from './trade.ts';
 import shop from './shop.ts';
 import help from './help.ts';
 
+import synthesis from './synthesis.ts';
+
 import demo from './demo.tsx';
 
 import webhooks from './webhooks.ts';
@@ -27,6 +29,14 @@ import {
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
+
+  // redirect to /demo on browsers
+  if (
+    r.method === 'GET' &&
+    r.headers.get('accept')?.includes('text/html')
+  ) {
+    return Response.redirect(`${origin}/demo`);
+  }
 
   const { error } = await utils.validateRequest(r, {
     POST: {
@@ -300,7 +310,7 @@ export const handler = async (r: Request) => {
                   userId: member.user.id,
                 })).send();
               default: {
-                const user = options['user'] as string;
+                const user = options['user'] as string ?? member.user.id;
 
                 return party.view({
                   token,
@@ -311,32 +321,13 @@ export const handler = async (r: Request) => {
               }
             }
           }
-          case 'likeslist': {
-            const userId = options['user'] as string;
 
-            const nick = userId && userId !== member.user.id
-              ? discord.getUsername(
-                // deno-lint-ignore no-non-null-assertion
-                resolved!.members![userId],
-                // deno-lint-ignore no-non-null-assertion
-                resolved!.users![userId],
-              )
-              : undefined;
-
-            return user.likeslist({
-              nick,
-              token,
-              guildId,
-              userId,
-              index: 0,
-            }).send();
-          }
           case 'collection':
           case 'coll':
           case 'mm': {
-            const userId = options['user'] as string;
+            const userId = options['user'] as string ?? member.user.id;
 
-            const nick = userId && userId !== member.user.id
+            const nick = userId !== member.user.id
               ? discord.getUsername(
                 // deno-lint-ignore no-non-null-assertion
                 resolved!.members![userId],
@@ -407,6 +398,27 @@ export const handler = async (r: Request) => {
                 : undefined,
             })
               .send();
+          }
+          case 'likes':
+          case 'likeslist': {
+            const userId = options['user'] as string ?? member.user.id;
+
+            const nick = userId !== member.user.id
+              ? discord.getUsername(
+                // deno-lint-ignore no-non-null-assertion
+                resolved!.members![userId],
+                // deno-lint-ignore no-non-null-assertion
+                resolved!.users![userId],
+              )
+              : undefined;
+
+            return user.likeslist({
+              nick,
+              token,
+              guildId,
+              userId,
+              index: 0,
+            }).send();
           }
           case 'found':
           case 'obtained':
@@ -499,7 +511,17 @@ export const handler = async (r: Request) => {
                 : undefined,
             }).send();
           }
+          case 'synthesize':
+          case 'merge': {
+            const target = options['target'] as number;
 
+            return synthesis.synthesize({
+              token,
+              target,
+              guildId,
+              userId: member.user.id,
+            }).send();
+          }
           case 'shop':
           case 'buy': {
             //deno-lint-ignore no-non-null-assertion
@@ -841,7 +863,8 @@ export const handler = async (r: Request) => {
 
               newMessage.followup(token);
 
-              return updateMessage.setType(discord.MessageType.Update)
+              return updateMessage
+                .setType(discord.MessageType.Update)
                 .send();
             }
 
@@ -872,7 +895,29 @@ export const handler = async (r: Request) => {
 
               newMessage.followup(token);
 
-              return updateMessage.setType(discord.MessageType.Update)
+              return updateMessage
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'synthesis': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const target = parseInt(customValues![1]);
+
+            if (userId === member.user.id) {
+              return synthesis.confirmed({
+                token,
+                target,
+                guildId,
+                channelId,
+                userId: member.user.id,
+              })
+                .setType(discord.MessageType.Update)
                 .send();
             }
 
