@@ -826,12 +826,12 @@ function like({
           {
             footer: true,
             description: false,
+            mode: 'thumbnail',
             media: { title: true },
             rating: response.character?.rating
               ? new Rating({ stars: response.character?.rating })
               : true,
             existing: !undo ? response.character : undefined,
-            mode: !undo ? 'full' : 'thumbnail',
           },
         ));
 

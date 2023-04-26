@@ -4934,8 +4934,8 @@ Deno.test('/like', async (test) => {
                   value: '**character**',
                 },
               ],
-              image: {
-                url: 'http://localhost:8000/external/',
+              thumbnail: {
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -5099,8 +5099,9 @@ Deno.test('/like', async (test) => {
                   value: '**nickname**',
                 },
               ],
-              image: {
-                url: 'http://localhost:8000/external/http%3A%2F%2Fimage_url',
+              thumbnail: {
+                url:
+                  'http://localhost:8000/external/http%3A%2F%2Fimage_url?size=thumbnail',
               },
               description:
                 '<@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -5264,8 +5265,9 @@ Deno.test('/like', async (test) => {
                   value: '**nickname**',
                 },
               ],
-              image: {
-                url: 'http://localhost:8000/external/http%3A%2F%2Fimage_url',
+              thumbnail: {
+                url:
+                  'http://localhost:8000/external/http%3A%2F%2Fimage_url?size=thumbnail',
               },
               description:
                 '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
