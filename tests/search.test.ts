@@ -3215,7 +3215,6 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         search: 'full name',
-        userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
       });

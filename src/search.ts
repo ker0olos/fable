@@ -240,11 +240,10 @@ function mediaDebugMessage(
 }
 
 function character(
-  { token, userId, guildId, channelId, search, id, debug }: {
+  { token, guildId, channelId, search, id, debug }: {
     token: string;
     channelId: string;
     guildId: string;
-    userId?: string;
     id?: string;
     search?: string;
     debug?: boolean;
@@ -561,12 +560,11 @@ function characterDebugMessage(
 }
 
 async function mediaCharacters(
-  { search, id, userId, guildId, channelId, index }: {
+  { search, id, guildId, channelId, index }: {
     search?: string;
     id?: string;
     guildId: string;
     channelId: string;
-    userId?: string;
     index: number;
   },
 ): Promise<discord.Message> {

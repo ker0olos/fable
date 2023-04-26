@@ -1762,7 +1762,6 @@ Deno.test('media characters', async (test) => {
     try {
       const message = await search.mediaCharacters({
         id: 'pack-id:1',
-        userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
         index: 0,

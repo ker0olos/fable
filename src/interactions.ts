@@ -238,7 +238,6 @@ export const handler = async (r: Request) => {
                 guildId,
                 index: 0,
                 search: title,
-                userId: member.user.id,
                 id: title.startsWith(idPrefix)
                   ? title.substring(idPrefix.length)
                   : undefined,
@@ -266,7 +265,6 @@ export const handler = async (r: Request) => {
               guildId,
               channelId,
               search: name,
-              userId: member.user.id,
               debug: Boolean(options['debug']),
               id: name.startsWith(idPrefix)
                 ? name.substring(idPrefix.length)
@@ -630,7 +628,6 @@ export const handler = async (r: Request) => {
               token,
               guildId,
               channelId,
-              userId: member.user.id,
             })
               .setType(
                 type === '1'
@@ -651,7 +648,6 @@ export const handler = async (r: Request) => {
               guildId,
               channelId,
               id: mediaId,
-              userId: member.user.id,
             }))
               .setType(discord.MessageType.Update)
               .send();

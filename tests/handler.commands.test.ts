@@ -622,7 +622,6 @@ Deno.test('search command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           index: 0,
-          userId: 'user_id',
           guildId: 'guild_id',
           channelId: 'channel_id',
           search: 'title',
@@ -715,7 +714,6 @@ Deno.test('search command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           index: 0,
-          userId: 'user_id',
           guildId: 'guild_id',
           channelId: 'channel_id',
           search: 'id=uuid',
@@ -804,7 +802,6 @@ Deno.test('character command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           token: 'token',
-          userId: 'user_id',
           guildId: 'guild_id',
           channelId: 'channel_id',
           search: 'name',
@@ -892,7 +889,6 @@ Deno.test('character command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           token: 'token',
-          userId: 'user_id',
           guildId: 'guild_id',
           channelId: 'channel_id',
           search: 'name',
@@ -983,7 +979,6 @@ Deno.test('character command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           token: 'token',
-          userId: 'user_id',
           guildId: 'guild_id',
           channelId: 'channel_id',
           search: 'name',
@@ -1071,7 +1066,6 @@ Deno.test('character command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           token: 'token',
-          userId: 'user_id',
           guildId: 'guild_id',
           channelId: 'channel_id',
           search: 'id=uuid',

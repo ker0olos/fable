@@ -18,7 +18,6 @@ import { handler } from '../src/interactions.ts';
 import user from '../src/user.ts';
 import packs from '../src/packs.ts';
 import search from '../src/search.ts';
-import party from '../src/party.ts';
 import gacha from '../src/gacha.ts';
 import help from '../src/help.ts';
 import trade from '../src/trade.ts';
@@ -182,7 +181,6 @@ Deno.test('character components', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           token: 'token',
-          userId: 'user_id',
           guildId: 'guild_id',
           channelId: 'channel_id',
           id: 'character_id',
@@ -270,7 +268,6 @@ Deno.test('character components', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           token: 'token',
-          userId: 'user_id',
           guildId: 'guild_id',
           channelId: 'channel_id',
           id: 'character_id',
@@ -359,7 +356,6 @@ Deno.test('media characters components', async () => {
     assertSpyCall(searchStub, 0, {
       args: [{
         id: 'media_id',
-        userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
         index: 1,
