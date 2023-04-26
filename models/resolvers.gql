@@ -23,13 +23,6 @@ type Query {
     @resolver(name: "get_user_inventory")
   
   #
-  getUserStars(userId: String!, guildId: String!, stars: Int!, before: String, after: String): CharacterNode!
-    @resolver(name: "get_user_stars")
-  #
-  getUserMedia(userId: String!, guildId: String!, mediaId: String!, before: String, after: String): CharacterNode!
-    @resolver(name: "get_user_media")
-  
-  #
   findMedia(mediaId: String!, guildId: String!, before: String, after: String): CharacterNode
     @resolver(name: "find_media")
 

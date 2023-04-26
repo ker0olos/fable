@@ -300,305 +300,6 @@ async function findCharacter({
   return result;
 }
 
-function stars({
-  token,
-  userId,
-  guildId,
-  channelId,
-  stars,
-  nick,
-  before,
-  after,
-}: {
-  token: string;
-  userId: string;
-  guildId: string;
-  channelId: string;
-  stars: number;
-  nick?: string;
-  before?: string;
-  after?: string;
-}): discord.Message {
-  const query = gql`
-    query ($userId: String!, $guildId: String!, $stars: Int!, $before: String, $after: String) {
-      getUserStars(userId: $userId, guildId: $guildId, stars: $stars, before: $before, after: $after) {
-        anchor
-        character {
-          id
-          mediaId
-          rating
-        }
-      }
-    }
-  `;
-
-  request<{
-    getUserStars: {
-      character?: Schema.Inventory['characters'][0];
-      anchor?: string;
-    };
-  }>({
-    url: faunaUrl,
-    query,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-      stars,
-      before,
-      after,
-    },
-  })
-    .then(async ({ getUserStars }) => {
-      const { character, anchor } = getUserStars;
-
-      if (!character || !anchor) {
-        const message = new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription(
-                `${
-                  nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
-                } have any ${stars}${discord.emotes.smolStar}characters`,
-              ),
-          );
-
-        if (!nick) {
-          message.addComponents([
-            // `/gacha` shortcut
-            new discord.Component()
-              .setId('gacha', userId)
-              .setLabel('/gacha'),
-          ]);
-        }
-
-        return message.patch(token);
-      }
-
-      const results: [
-        (Media | DisaggregatedMedia)[],
-        (Character | DisaggregatedCharacter)[],
-      ] = await Promise.all([
-        packs.media({ ids: [character.mediaId], guildId }),
-        packs.characters({ ids: [character.id], guildId }),
-      ]);
-
-      let message: discord.Message;
-
-      if (!results[0].length) {
-        message = new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription('This media was removed or disabled'),
-          );
-      } else if (!results[1].length) {
-        message = new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription('This character was removed or disabled'),
-          );
-      } else {
-        const media = results[0][0];
-
-        message = srch.characterMessage(
-          results[1][0],
-          channelId,
-          {
-            rating: new Rating({ stars: character.rating }),
-            media: { title: packs.aliasToArray(media.title)[0] },
-            relations: false,
-          },
-        ).addComponents([
-          new discord.Component()
-            .setId('media', `${media.packId}:${media.id}`)
-            .setLabel(`/${media.type.toLowerCase()}`),
-        ]);
-      }
-
-      return discord.Message.anchor({
-        id: userId,
-        type: 'cstars',
-        target: stars,
-        anchor,
-        message,
-      }).patch(token);
-    })
-    .catch(async (err) => {
-      if (!config.sentry) {
-        throw err;
-      }
-
-      const refId = utils.captureException(err);
-
-      await discord.Message.internal(refId).patch(token);
-    });
-
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
-}
-
-function media({
-  token,
-  userId,
-  guildId,
-  channelId,
-  id,
-  search,
-  nick,
-  before,
-  after,
-}: {
-  token: string;
-  userId: string;
-  guildId: string;
-  channelId: string;
-  id?: string;
-  search?: string;
-  nick?: string;
-  before?: string;
-  after?: string;
-}): discord.Message {
-  packs
-    .media(id ? { ids: [id], guildId } : { search, guildId }).then(
-      async (results) => {
-        if (!results.length) {
-          throw new Error('404');
-        }
-
-        const media = results[0];
-        const mediaId = `${media.packId}:${media.id}`;
-
-        const titles = packs.aliasToArray(media.title);
-
-        const query = gql`
-          query ($userId: String!, $guildId: String!, $mediaId: String!, $before: String, $after: String) {
-            getUserMedia(userId: $userId, guildId: $guildId, mediaId: $mediaId, before: $before, after: $after) {
-              anchor
-              character {
-                id
-                mediaId
-                rating
-              }
-            }
-          }
-        `;
-
-        const { character, anchor } = (await request<{
-          getUserMedia: {
-            character?: Schema.Inventory['characters'][0];
-            anchor?: string;
-          };
-        }>({
-          url: faunaUrl,
-          query,
-          headers: {
-            'authorization': `Bearer ${config.faunaSecret}`,
-          },
-          variables: {
-            userId,
-            guildId,
-            mediaId,
-            before,
-            after,
-          },
-        })).getUserMedia;
-
-        if (!character || !anchor) {
-          const message = new discord.Message()
-            .addEmbed(
-              new discord.Embed()
-                .setDescription(
-                  `${
-                    nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
-                  } have any ${titles[0]} characters`,
-                ),
-            );
-
-          if (!nick) {
-            message.insertComponents([
-              // `/gacha` shortcut
-              new discord.Component()
-                .setId('gacha', userId)
-                .setLabel('/gacha'),
-            ]);
-          }
-
-          return message.patch(token);
-        }
-
-        const characters = await packs.characters({
-          ids: [character.id],
-          guildId,
-        });
-
-        let message: discord.Message;
-
-        if (!characters.length) {
-          message = new discord.Message()
-            .addEmbed(
-              new discord.Embed()
-                .setDescription('This character was removed or disabled'),
-            );
-        } else {
-          message = srch.characterMessage(
-            characters[0],
-            channelId,
-            {
-              rating: new Rating({ stars: character.rating }),
-              relations: false,
-            },
-          ).addComponents([
-            new discord.Component()
-              .setId('media', `${media.packId}:${media.id}`)
-              .setLabel(`/${media.type.toLowerCase()}`),
-          ]);
-        }
-
-        return discord.Message.anchor({
-          id: userId,
-          type: 'cmedia',
-          target: mediaId,
-          anchor,
-          message,
-        }).patch(token);
-      },
-    ).catch(async (err) => {
-      if (err.message === '404') {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
-            ),
-          ).patch(token);
-      }
-
-      if (!config.sentry) {
-        throw err;
-      }
-
-      const refId = utils.captureException(err);
-
-      await discord.Message.internal(refId).patch(token);
-    });
-
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner.gif` },
-      ),
-    );
-
-  return loading;
-}
-
 function customize({
   token,
   userId,
@@ -894,7 +595,9 @@ function list({
   token,
   userId,
   guildId,
-  filter,
+  rating,
+  search,
+  id,
   index,
   nick,
 }: {
@@ -902,8 +605,9 @@ function list({
   index: number;
   userId: string;
   guildId: string;
-  likes?: boolean;
-  filter?: number;
+  rating?: number;
+  search?: string;
+  id?: string;
   nick?: string;
 }): discord.Message {
   const query = gql`
@@ -939,8 +643,26 @@ function list({
 
       let characters = getUserInventory.characters;
 
-      if (filter) {
-        characters = characters.filter(({ rating }) => rating === filter);
+      let media: Media | DisaggregatedMedia | undefined;
+
+      if (rating) {
+        characters = characters.filter((char) => char.rating === rating);
+      }
+
+      if (search || id) {
+        const results = await packs
+          .media(id ? { ids: [id], guildId } : { search, guildId });
+
+        if (!results.length) {
+          throw new Error('404');
+        }
+
+        media = results[0];
+
+        characters = characters.filter((char) =>
+          // deno-lint-ignore no-non-null-assertion
+          char.mediaId === `${media!.packId}:${media!.id}`
+        );
       }
 
       characters = characters.sort((a, b) => b.rating - a.rating);
@@ -952,9 +674,13 @@ function list({
               .setDescription(
                 `${
                   nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
-                } have any${
-                  filter ? ` ${filter}${discord.emotes.smolStar}` : ''
-                } characters`,
+                } have any ${
+                  rating ? `${rating}${discord.emotes.smolStar}characters` : ''
+                }${
+                  media
+                    ? `characters from ${packs.aliasToArray(media.title)[0]}`
+                    : ''
+                }`,
               ),
           );
 
@@ -995,7 +721,7 @@ function list({
         (Media | DisaggregatedMedia)[],
         (Character | DisaggregatedCharacter)[],
       ] = await Promise.all([
-        packs.media({ ids: chunks[index], guildId }),
+        media ? [media] : packs.media({ ids: chunks[index], guildId }),
         packs.characters({ ids: charactersIds, guildId }),
       ]);
 
@@ -1048,14 +774,27 @@ function list({
 
       return discord.Message.page({
         index,
-        type: 'clist',
-        target: discord.join(userId, filter?.toString() ?? ''),
+        type: 'list',
+        target: discord.join(
+          userId,
+          media ? `${media.packId}:${media.id}` : '',
+          `${rating ?? ''}`,
+        ),
         total: chunks.length,
         message: message.addEmbed(embed),
         next: index + 1 < chunks.length,
       }).patch(token);
     })
     .catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'Found _nothing_ matching that query!',
+            ),
+          ).patch(token);
+      }
+
       if (!config.sentry) {
         throw err;
       }
@@ -1200,8 +939,6 @@ const user = {
   getUserCharacters,
   findCharacter,
   customize,
-  stars,
-  media,
   likeslist,
   list,
   like,

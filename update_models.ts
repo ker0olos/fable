@@ -15,7 +15,6 @@ try {
 import { Client } from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.js';
 
 import getUserInventory from './models/get_user_inventory.ts';
-import getUserCollection from './models/get_user_collection.ts';
 
 import addVoteToUser from './models/add_vote_to_user.ts';
 
@@ -43,7 +42,6 @@ if (import.meta.main) {
 
   const all = [
     getUserInventory(client),
-    getUserCollection(client),
     addVoteToUser(client),
     findMedia(client),
     addPackToInstance(client),

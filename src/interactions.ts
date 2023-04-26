@@ -334,42 +334,30 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'stars': {
-                const stars = options['rating'] as number;
+                const rating = options['rating'] as number;
 
-                return user.stars({
+                return user.list({
                   nick,
                   token,
-                  stars,
                   userId,
                   guildId,
-                  channelId,
+                  index: 0,
+                  rating,
                 }).send();
               }
               case 'media': {
                 const title = options['title'] as string;
 
-                return user.media({
+                return user.list({
                   nick,
                   token,
                   userId,
                   guildId,
-                  channelId,
+                  index: 0,
                   search: title,
                   id: title.startsWith(idPrefix)
                     ? title.substring(idPrefix.length)
                     : undefined,
-                }).send();
-              }
-              case 'list': {
-                const filter = options['filter'] as number | undefined;
-
-                return user.list({
-                  userId,
-                  token,
-                  filter,
-                  index: 0,
-                  guildId,
-                  nick,
                 }).send();
               }
               default:
@@ -652,66 +640,25 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'cstars': {
-            // deno-lint-ignore no-non-null-assertion
-            const stars = parseInt(customValues![0]);
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![1];
-            // deno-lint-ignore no-non-null-assertion
-            const anchor = customValues![2];
-            // deno-lint-ignore no-non-null-assertion
-            const action = customValues![3];
-
-            return user.stars({
-              token,
-              stars,
-              userId,
-              guildId,
-              channelId,
-              after: action === 'next' ? anchor : undefined,
-              before: action === 'prev' ? anchor : undefined,
-            })
-              .setType(discord.MessageType.Update)
-              .send();
-          }
-          case 'cmedia': {
-            // deno-lint-ignore no-non-null-assertion
-            const id = customValues![0];
-            // deno-lint-ignore no-non-null-assertion
-            const userId = customValues![1];
-            // deno-lint-ignore no-non-null-assertion
-            const anchor = customValues![2];
-            // deno-lint-ignore no-non-null-assertion
-            const action = customValues![3];
-
-            return user.media({
-              id,
-              token,
-              userId,
-              guildId,
-              channelId,
-              after: action === 'next' ? anchor : undefined,
-              before: action === 'prev' ? anchor : undefined,
-            })
-              .setType(discord.MessageType.Update)
-              .send();
-          }
-          case 'clist': {
+          case 'list': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
-            const filter = parseInt(customValues![1]);
+            const mediaId = customValues?.[1] || undefined;
 
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![2]);
+            const rating = parseInt(customValues![2]);
+
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![3]);
 
             return user.list({
               token,
               index,
-              filter,
               guildId,
               userId,
+              rating,
+              id: mediaId,
             })
               .setType(discord.MessageType.Update)
               .send();
@@ -1055,7 +1002,9 @@ export const handler = async (r: Request) => {
     return discord.Message.internal(refId).send();
   }
 
-  return new discord.Message().setContent(`Unimplemented`).send();
+  return new discord.Message().setContent(`Unimplemented or removed.`)
+    .setFlags(discord.MessageFlags.Ephemeral)
+    .send();
 };
 
 function override(
