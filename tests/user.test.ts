@@ -307,7 +307,7 @@ Deno.test('/now', async (test) => {
     }
   });
 
-  await test.step('with votes', async () => {
+  await test.step('with 5 votes', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
@@ -378,6 +378,198 @@ Deno.test('/now', async (test) => {
               type: 2,
               url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
             }],
+          }],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.topggCipher;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('with 36 votes', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                availablePulls: 4,
+                rechargeTimestamp: time.toISOString(),
+                user: {
+                  availableVotes: 36,
+                  lastVote: time.toISOString(),
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.topggCipher = 12;
+
+    try {
+      const message = await user.now({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: '**4**',
+              footer: {
+                text: 'Available Pulls',
+              },
+              description: undefined,
+            },
+            {
+              type: 'rich',
+              title: '**36**',
+              footer: {
+                text: 'Available Votes',
+              },
+            },
+            {
+              type: 'rich',
+              description:
+                '***`/synthesize`*** ***(new feature)***_\nmerge characters together to pull new characters_',
+            },
+            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'gacha=user_id',
+                label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'buy=bguaranteed=user_id=5',
+                label: '/buy guaranteed 5',
+                style: 2,
+                type: 2,
+              },
+              {
+                label: 'Vote',
+                style: 5,
+                type: 2,
+                url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+              },
+            ],
+          }],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.topggCipher;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('with 35 votes', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                availablePulls: 4,
+                rechargeTimestamp: time.toISOString(),
+                user: {
+                  availableVotes: 35,
+                  lastVote: time.toISOString(),
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.topggCipher = 12;
+
+    try {
+      const message = await user.now({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: '**4**',
+              footer: {
+                text: 'Available Pulls',
+              },
+              description: undefined,
+            },
+            {
+              type: 'rich',
+              title: '**35**',
+              footer: {
+                text: 'Available Votes',
+              },
+            },
+            {
+              type: 'rich',
+              description:
+                '***`/synthesize`*** ***(new feature)***_\nmerge characters together to pull new characters_',
+            },
+            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'gacha=user_id',
+                label: '/gacha',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'buy=bguaranteed=user_id=4',
+                label: '/buy guaranteed 4',
+                style: 2,
+                type: 2,
+              },
+              {
+                label: 'Vote',
+                style: 5,
+                type: 2,
+                url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+              },
+            ],
           }],
         },
       });
@@ -1666,6 +1858,12 @@ Deno.test('media characters', async (test) => {
                 type: 2,
               },
               {
+                custom_id: 'like=pack-id:2',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+              {
                 custom_id: 'media=pack-id:1',
                 label: '/anime',
                 style: 2,
@@ -1756,7 +1954,6 @@ Deno.test('media characters', async (test) => {
     try {
       const message = await search.mediaCharacters({
         id: 'pack-id:1',
-        userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
         index: 0,
@@ -1783,8 +1980,8 @@ Deno.test('media characters', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'passign=character_id',
-                label: '/p assign',
+                custom_id: 'like=pack-id:2',
+                label: '/like',
                 style: 2,
                 type: 2,
               },
@@ -2122,12 +2319,6 @@ Deno.test('/collection stars', async (test) => {
               {
                 custom_id: 'cstars=5=user_id=anchor=next',
                 label: 'Next',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'passign=anilist:1',
-                label: '/p assign',
                 style: 2,
                 type: 2,
               },
@@ -2768,12 +2959,6 @@ Deno.test('/collection media', async (test) => {
               {
                 custom_id: 'cmedia=anilist:2=user_id=anchor=next',
                 label: 'Next',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'passign=anilist:1',
-                label: '/p assign',
                 style: 2,
                 type: 2,
               },
@@ -4940,8 +5125,8 @@ Deno.test('/like', async (test) => {
                   value: '**character**',
                 },
               ],
-              image: {
-                url: 'http://localhost:8000/external/',
+              thumbnail: {
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -5105,8 +5290,9 @@ Deno.test('/like', async (test) => {
                   value: '**nickname**',
                 },
               ],
-              image: {
-                url: 'http://localhost:8000/external/http%3A%2F%2Fimage_url',
+              thumbnail: {
+                url:
+                  'http://localhost:8000/external/http%3A%2F%2Fimage_url?size=thumbnail',
               },
               description:
                 '<@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
@@ -5254,12 +5440,6 @@ Deno.test('/like', async (test) => {
                   style: 2,
                   type: 2,
                 },
-                {
-                  custom_id: 'passign=',
-                  label: '/p assign',
-                  style: 2,
-                  type: 2,
-                },
               ],
             },
           ],
@@ -5276,8 +5456,9 @@ Deno.test('/like', async (test) => {
                   value: '**nickname**',
                 },
               ],
-              image: {
-                url: 'http://localhost:8000/external/http%3A%2F%2Fimage_url',
+              thumbnail: {
+                url:
+                  'http://localhost:8000/external/http%3A%2F%2Fimage_url?size=thumbnail',
               },
               description:
                 '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',

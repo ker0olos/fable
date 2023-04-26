@@ -207,6 +207,22 @@ async function now({
     ]);
   }
 
+  if (user.availableVotes && user.availableVotes >= 36) {
+    // `/buy guaranteed` 5 shortcut
+    message.addComponents([
+      new discord.Component()
+        .setId('buy', 'bguaranteed', userId, '5')
+        .setLabel(`/buy guaranteed 5`),
+    ]);
+  } else if (user.availableVotes && user.availableVotes >= 12) {
+    // `/buy guaranteed 4` shortcut
+    message.addComponents([
+      new discord.Component()
+        .setId('buy', 'bguaranteed', userId, '4')
+        .setLabel(`/buy guaranteed 4`),
+    ]);
+  }
+
   if (guarantees.length) {
     message.addComponents([
       // `/pull` shortcut
@@ -399,14 +415,6 @@ function stars({
             .setId('media', `${media.packId}:${media.id}`)
             .setLabel(`/${media.type.toLowerCase()}`),
         ]);
-
-        if (!nick) {
-          message.insertComponents([
-            new discord.Component()
-              .setId('passign', character.id)
-              .setLabel(`/p assign`),
-          ]);
-        }
       }
 
       return discord.Message.anchor({
@@ -552,14 +560,6 @@ function media({
               .setId('media', `${media.packId}:${media.id}`)
               .setLabel(`/${media.type.toLowerCase()}`),
           ]);
-
-          if (!nick) {
-            message.insertComponents([
-              new discord.Component()
-                .setId('passign', character.id)
-                .setLabel(`/p assign`),
-            ]);
-          }
         }
 
         return discord.Message.anchor({
@@ -842,12 +842,12 @@ function like({
           {
             footer: true,
             description: false,
+            mode: 'thumbnail',
             media: { title: true },
             rating: response.character?.rating
               ? new Rating({ stars: response.character?.rating })
               : true,
             existing: !undo ? response.character : undefined,
-            mode: !undo ? 'full' : 'thumbnail',
           },
         ));
 
@@ -857,14 +857,6 @@ function like({
             .setId(`character`, characterId)
             .setLabel('/character'),
         ]);
-
-        if (response.character?.user?.id === userId) {
-          message.addComponents([
-            new discord.Component()
-              .setId('passign', response.character.id)
-              .setLabel(`/p assign`),
-          ]);
-        }
       }
 
       return message.patch(token);

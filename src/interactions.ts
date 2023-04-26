@@ -138,7 +138,6 @@ export const handler = async (r: Request) => {
         // suggest characters
         if (
           [
-            'im',
             'char',
             'character',
             'p',
@@ -239,7 +238,6 @@ export const handler = async (r: Request) => {
                 guildId,
                 index: 0,
                 search: title,
-                userId: member.user.id,
                 id: title.startsWith(idPrefix)
                   ? title.substring(idPrefix.length)
                   : undefined,
@@ -259,8 +257,7 @@ export const handler = async (r: Request) => {
               .send();
           }
           case 'character':
-          case 'char':
-          case 'im': {
+          case 'char': {
             const name = options['name'] as string;
 
             return search.character({
@@ -268,7 +265,6 @@ export const handler = async (r: Request) => {
               guildId,
               channelId,
               search: name,
-              userId: member.user.id,
               debug: Boolean(options['debug']),
               id: name.startsWith(idPrefix)
                 ? name.substring(idPrefix.length)
@@ -321,7 +317,6 @@ export const handler = async (r: Request) => {
               }
             }
           }
-
           case 'collection':
           case 'coll':
           case 'mm': {
@@ -633,7 +628,6 @@ export const handler = async (r: Request) => {
               token,
               guildId,
               channelId,
-              userId: member.user.id,
             })
               .setType(
                 type === '1'
@@ -654,21 +648,9 @@ export const handler = async (r: Request) => {
               guildId,
               channelId,
               id: mediaId,
-              userId: member.user.id,
             }))
               .setType(discord.MessageType.Update)
               .send();
-          }
-          case 'passign': {
-            // deno-lint-ignore no-non-null-assertion
-            const characterId = customValues![0];
-
-            return (await party.assign({
-              guildId,
-              channelId,
-              id: characterId,
-              userId: member.user.id,
-            })).send();
           }
           case 'cstars': {
             // deno-lint-ignore no-non-null-assertion
@@ -734,6 +716,28 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
+          case 'like': {
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const type = customValues![1];
+
+            return user.like({
+              id,
+              token,
+              guildId,
+              channelId,
+              userId: member.user.id,
+              undo: false,
+            })
+              .setType(
+                type === '1'
+                  ? discord.MessageType.New
+                  : discord.MessageType.Update,
+              )
+              .send();
+          }
           case 'likes': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
@@ -795,7 +799,7 @@ export const handler = async (r: Request) => {
           }
           case 'help': {
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
+            const index = parseInt(customValues![0]);
 
             return help.pages({ userId: member.user.id, index })
               .setType(discord.MessageType.Update)

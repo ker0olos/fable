@@ -3126,7 +3126,17 @@ Deno.test('/character', async (test) => {
               text: 'Male, 420',
             },
           }],
-          components: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'like=pack-id:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
         },
       );
@@ -3205,7 +3215,6 @@ Deno.test('/character', async (test) => {
       const message = search.character({
         token: 'test_token',
         search: 'full name',
-        userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
       });
@@ -3256,19 +3265,17 @@ Deno.test('/character', async (test) => {
               url: 'http://localhost:8000/external/image_url',
             },
           }],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'passign=character_id',
-                  label: '/p assign',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'like=anilist:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
         },
       );
@@ -3382,7 +3389,17 @@ Deno.test('/character', async (test) => {
               text: 'Female',
             },
           }],
-          components: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'like=anilist:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
         },
       );
@@ -3496,7 +3513,17 @@ Deno.test('/character', async (test) => {
               text: '18+',
             },
           }],
-          components: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'like=anilist:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
         },
       );
@@ -3623,12 +3650,20 @@ Deno.test('/character', async (test) => {
           }],
           components: [{
             type: 1,
-            components: [{
-              custom_id: 'media=anilist:5',
-              label: 'movie (Movie)',
-              style: 2,
-              type: 2,
-            }],
+            components: [
+              {
+                custom_id: 'like=anilist:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'media=anilist:5',
+                label: 'movie (Movie)',
+                style: 2,
+                type: 2,
+              },
+            ],
           }],
         },
       );
@@ -3734,7 +3769,17 @@ Deno.test('/character', async (test) => {
               url: 'http://localhost:8000/external/',
             },
           }],
-          components: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'like=anilist:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
         },
       );
@@ -3843,8 +3888,18 @@ Deno.test('/character', async (test) => {
               url: 'http://localhost:8000/external/',
             },
           }],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'like=anilist:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
-          components: [],
         },
       );
     } finally {
@@ -3967,7 +4022,17 @@ Deno.test('/character', async (test) => {
               text: 'Male, 420',
             },
           }],
-          components: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'like=pack-id:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
         },
       );
@@ -4097,7 +4162,17 @@ Deno.test('/character', async (test) => {
               text: 'Male, 420',
             },
           }],
-          components: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'like=pack-id:1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           attachments: [],
         },
       );

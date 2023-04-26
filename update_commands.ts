@@ -236,7 +236,7 @@ export const commands = [
   ...Command({
     name: 'character',
     description: 'Search for a specific character',
-    aliases: ['char', 'im'],
+    aliases: ['char'],
     options: [
       Option({
         name: 'name',

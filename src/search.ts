@@ -240,11 +240,10 @@ function mediaDebugMessage(
 }
 
 function character(
-  { token, userId, guildId, channelId, search, id, debug }: {
+  { token, guildId, channelId, search, id, debug }: {
     token: string;
     channelId: string;
     guildId: string;
-    userId?: string;
     id?: string;
     search?: string;
     debug?: boolean;
@@ -281,13 +280,11 @@ function character(
         existing,
       });
 
-      if (userId && existing?.user.id === userId) {
-        message.insertComponents([
-          new discord.Component()
-            .setId('passign', existing.id)
-            .setLabel(`/p assign`),
-        ]);
-      }
+      message.insertComponents([
+        new discord.Component()
+          .setLabel('/like')
+          .setId(`like`, `${character.packId}:${character.id}`),
+      ]);
 
       return await message.patch(token);
     })
@@ -563,12 +560,11 @@ function characterDebugMessage(
 }
 
 async function mediaCharacters(
-  { search, id, userId, guildId, channelId, index }: {
+  { search, id, guildId, channelId, index }: {
     search?: string;
     id?: string;
     guildId: string;
     channelId: string;
-    userId?: string;
     index: number;
   },
 ): Promise<discord.Message> {
@@ -622,13 +618,11 @@ async function mediaCharacters(
       .setLabel(`/${media.type.toLowerCase()}`),
   ]);
 
-  if (userId && existing?.user.id === userId) {
-    message.insertComponents([
-      new discord.Component()
-        .setId('passign', existing.id)
-        .setLabel(`/p assign`),
-    ]);
-  }
+  message.insertComponents([
+    new discord.Component()
+      .setLabel('/like')
+      .setId(`like`, `${character.packId}:${character.id}`),
+  ]);
 
   return discord.Message.page({
     total,

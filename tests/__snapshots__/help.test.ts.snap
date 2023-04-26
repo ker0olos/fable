@@ -244,7 +244,7 @@ snapshot[`/help 4`] = `
           },
           {
             custom_id: "buy=bguaranteed=user_id=4",
-            label: "/buy guaranteed 5",
+            label: "/buy guaranteed 4",
             style: 2,
             type: 2,
           },
@@ -416,7 +416,7 @@ snapshot[`/help 6`] = `
 
 - \`/now\` \`/vote\` \`/daily\` \`/tu\`: _check what you can do right now_
 - \`/search\` \`/anime\` \`/manga\`: _search for specific media_
-- \`/character\` \`/char\` \`/im\`: _search for a specific character_
+- \`/character\` \`/char\`: _search for a specific character_
 
 - \`/synthesize\` \`/merge\`: _synthesize characters together to pull a new character_
 
