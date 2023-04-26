@@ -97,7 +97,7 @@ function pages(
           .setId('now', userId),
         new discord.Component()
           .setId('buy', 'bguaranteed', userId, '4')
-          .setLabel(`/buy guaranteed 5`),
+          .setLabel(`/buy guaranteed 4`),
         new discord.Component()
           .setId('buy', 'bguaranteed', userId, '5')
           .setLabel(`/buy guaranteed 5`),

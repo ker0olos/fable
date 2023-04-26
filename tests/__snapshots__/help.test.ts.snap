@@ -244,7 +244,7 @@ snapshot[`/help 4`] = `
           },
           {
             custom_id: "buy=bguaranteed=user_id=4",
-            label: "/buy guaranteed 5",
+            label: "/buy guaranteed 4",
             style: 2,
             type: 2,
           },

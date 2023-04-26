@@ -207,6 +207,22 @@ async function now({
     ]);
   }
 
+  if (user.availableVotes && user.availableVotes >= 36) {
+    // `/buy guaranteed` 5 shortcut
+    message.addComponents([
+      new discord.Component()
+        .setId('buy', 'bguaranteed', userId, '5')
+        .setLabel(`/buy guaranteed 5`),
+    ]);
+  } else if (user.availableVotes && user.availableVotes >= 12) {
+    // `/buy guaranteed 4` shortcut
+    message.addComponents([
+      new discord.Component()
+        .setId('buy', 'bguaranteed', userId, '4')
+        .setLabel(`/buy guaranteed 4`),
+    ]);
+  }
+
   if (guarantees.length) {
     message.addComponents([
       // `/pull` shortcut
