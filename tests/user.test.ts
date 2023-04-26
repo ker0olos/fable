@@ -1666,6 +1666,12 @@ Deno.test('media characters', async (test) => {
                 type: 2,
               },
               {
+                custom_id: 'like=pack-id:2',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
+              {
                 custom_id: 'media=pack-id:1',
                 label: '/anime',
                 style: 2,
@@ -1783,8 +1789,8 @@ Deno.test('media characters', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'passign=character_id',
-                label: '/p assign',
+                custom_id: 'like=pack-id:2',
+                label: '/like',
                 style: 2,
                 type: 2,
               },
@@ -2122,12 +2128,6 @@ Deno.test('/collection stars', async (test) => {
               {
                 custom_id: 'cstars=5=user_id=anchor=next',
                 label: 'Next',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'passign=anilist:1',
-                label: '/p assign',
                 style: 2,
                 type: 2,
               },
@@ -2768,12 +2768,6 @@ Deno.test('/collection media', async (test) => {
               {
                 custom_id: 'cmedia=anilist:2=user_id=anchor=next',
                 label: 'Next',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'passign=anilist:1',
-                label: '/p assign',
                 style: 2,
                 type: 2,
               },
@@ -5251,12 +5245,6 @@ Deno.test('/like', async (test) => {
                 {
                   custom_id: 'character=anilist:1',
                   label: '/character',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'passign=',
-                  label: '/p assign',
                   style: 2,
                   type: 2,
                 },

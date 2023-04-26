@@ -281,13 +281,11 @@ function character(
         existing,
       });
 
-      if (userId && existing?.user.id === userId) {
-        message.insertComponents([
-          new discord.Component()
-            .setId('passign', existing.id)
-            .setLabel(`/p assign`),
-        ]);
-      }
+      message.insertComponents([
+        new discord.Component()
+          .setLabel('/like')
+          .setId(`like`, `${character.packId}:${character.id}`),
+      ]);
 
       return await message.patch(token);
     })
@@ -622,13 +620,11 @@ async function mediaCharacters(
       .setLabel(`/${media.type.toLowerCase()}`),
   ]);
 
-  if (userId && existing?.user.id === userId) {
-    message.insertComponents([
-      new discord.Component()
-        .setId('passign', existing.id)
-        .setLabel(`/p assign`),
-    ]);
-  }
+  message.insertComponents([
+    new discord.Component()
+      .setLabel('/like')
+      .setId(`like`, `${character.packId}:${character.id}`),
+  ]);
 
   return discord.Message.page({
     total,

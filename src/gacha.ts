@@ -444,11 +444,10 @@ async function pullAnimation(
   message.addComponents([
     new discord.Component()
       .setLabel('/character')
-      .setId(
-        `character`,
-        `${pull.character.packId}:${pull.character.id}`,
-        '1',
-      ),
+      .setId(`character`, `${pull.character.packId}:${pull.character.id}`, '1'),
+    new discord.Component()
+      .setLabel('/like')
+      .setId(`like`, `${pull.character.packId}:${pull.character.id}`, '1'),
   ]);
 
   if (mention && userId) {

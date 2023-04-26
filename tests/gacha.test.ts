@@ -2363,6 +2363,12 @@ Deno.test('/gacha', async (test) => {
                 style: 2,
                 type: 2,
               },
+              {
+                custom_id: 'like=pack-id-2:2=1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
             ],
           }],
         },
@@ -2563,6 +2569,12 @@ Deno.test('/gacha', async (test) => {
               {
                 custom_id: 'character=pack-id-2:2=1',
                 label: '/character',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'like=pack-id-2:2=1',
+                label: '/like',
                 style: 2,
                 type: 2,
               },
@@ -2776,6 +2788,12 @@ Deno.test('/gacha', async (test) => {
                 style: 2,
                 type: 2,
               },
+              {
+                custom_id: 'like=pack-id-2:2=1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
             ],
           }],
         },
@@ -2916,6 +2934,12 @@ Deno.test('/gacha', async (test) => {
               {
                 custom_id: 'character=pack-id-2:2=1',
                 label: '/character',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'like=pack-id-2:2=1',
+                label: '/like',
                 style: 2,
                 type: 2,
               },
@@ -3118,6 +3142,12 @@ Deno.test('/gacha', async (test) => {
               {
                 custom_id: 'character=pack-id-2:2=1',
                 label: '/character',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'like=pack-id-2:2=1',
+                label: '/like',
                 style: 2,
                 type: 2,
               },
@@ -3350,6 +3380,12 @@ Deno.test('/gacha', async (test) => {
                 style: 2,
                 type: 2,
               },
+              {
+                custom_id: 'like=pack-id-2:2=1',
+                label: '/like',
+                style: 2,
+                type: 2,
+              },
             ],
           }],
         },
@@ -3556,6 +3592,12 @@ Deno.test('/gacha', async (test) => {
               {
                 custom_id: 'character=pack-id-2:2=1',
                 label: '/character',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'like=pack-id-2:2=1',
+                label: '/like',
                 style: 2,
                 type: 2,
               },

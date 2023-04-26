@@ -399,14 +399,6 @@ function stars({
             .setId('media', `${media.packId}:${media.id}`)
             .setLabel(`/${media.type.toLowerCase()}`),
         ]);
-
-        if (!nick) {
-          message.insertComponents([
-            new discord.Component()
-              .setId('passign', character.id)
-              .setLabel(`/p assign`),
-          ]);
-        }
       }
 
       return discord.Message.anchor({
@@ -552,14 +544,6 @@ function media({
               .setId('media', `${media.packId}:${media.id}`)
               .setLabel(`/${media.type.toLowerCase()}`),
           ]);
-
-          if (!nick) {
-            message.insertComponents([
-              new discord.Component()
-                .setId('passign', character.id)
-                .setLabel(`/p assign`),
-            ]);
-          }
         }
 
         return discord.Message.anchor({
@@ -857,14 +841,6 @@ function like({
             .setId(`character`, characterId)
             .setLabel('/character'),
         ]);
-
-        if (response.character?.user?.id === userId) {
-          message.addComponents([
-            new discord.Component()
-              .setId('passign', response.character.id)
-              .setLabel(`/p assign`),
-          ]);
-        }
       }
 
       return message.patch(token);

@@ -656,17 +656,6 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'passign': {
-            // deno-lint-ignore no-non-null-assertion
-            const characterId = customValues![0];
-
-            return (await party.assign({
-              guildId,
-              channelId,
-              id: characterId,
-              userId: member.user.id,
-            })).send();
-          }
           case 'cstars': {
             // deno-lint-ignore no-non-null-assertion
             const stars = parseInt(customValues![0]);
@@ -729,6 +718,28 @@ export const handler = async (r: Request) => {
               userId,
             })
               .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'like': {
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const type = customValues![1];
+
+            return user.like({
+              id,
+              token,
+              guildId,
+              channelId,
+              userId: member.user.id,
+              undo: false,
+            })
+              .setType(
+                type === '1'
+                  ? discord.MessageType.New
+                  : discord.MessageType.Update,
+              )
               .send();
           }
           case 'likes': {
