@@ -138,7 +138,6 @@ export const handler = async (r: Request) => {
         // suggest characters
         if (
           [
-            'im',
             'char',
             'character',
             'p',
@@ -259,8 +258,7 @@ export const handler = async (r: Request) => {
               .send();
           }
           case 'character':
-          case 'char':
-          case 'im': {
+          case 'char': {
             const name = options['name'] as string;
 
             return search.character({

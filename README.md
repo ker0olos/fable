@@ -55,7 +55,7 @@ Fable is actively developed with new game modes and features frequently.
 - **`/now`, `/tu`**: _check what you can do right now_
 - **`/gacha`, `/w`**: _start a new gacha pull_
 - **`/search`, `/anime`, `/manga`**: _to search for specific media_
-- **`/character`, `/im`**: _to search for a specific character_
+- **`/character`**: _to search for a specific character_
 
 ### Get Involved
 

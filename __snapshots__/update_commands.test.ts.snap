@@ -196,32 +196,6 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Search for a specific character",
-    name: "im",
-    options: [
-      {
-        autocomplete: true,
-        choices: undefined,
-        description: "The name of the character",
-        name: "name",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "Display the nerdy stuff",
-        name: "debug",
-        options: undefined,
-        required: false,
-        type: 5,
-      },
-    ],
-    type: undefined,
-  },
-  {
-    default_member_permissions: undefined,
     description: "View all characters found in a specific media",
     name: "found",
     options: [

@@ -162,7 +162,7 @@ function pages(
             '',
             '- `/now` `/vote` `/daily` `/tu`: _check what you can do right now_',
             '- `/search` `/anime` `/manga`: _search for specific media_',
-            '- `/character` `/char` `/im`: _search for a specific character_',
+            '- `/character` `/char`: _search for a specific character_',
             '',
             '- `/synthesize` `/merge`: _synthesize characters together to pull a new character_',
             '',
