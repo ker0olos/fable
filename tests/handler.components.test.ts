@@ -2036,7 +2036,7 @@ Deno.test('help components', async () => {
       },
     },
     data: {
-      custom_id: 'help==1',
+      custom_id: 'help=1',
     },
   });
 
