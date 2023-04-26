@@ -13,20 +13,24 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          token: ${{ secrets.PAT }}
+          repository: ker0olos/fable
+      
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
       - run: deno run -A packs/anilist/pool.ts
-      - name: Upload Pool As Artifact
-        uses: actions/upload-artifact@v3
+    
+      - uses: actions/upload-artifact@v3
         with:
           name: anilist-pool
           path: packs/anilist/pool.json
+          
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v5
         with:
-          author: GitHub <noreply@github.com>
+          token: ${{ secrets.PAT }}
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           title: 'Updated "anilist/pool.json"'
           commit-message: '[bot] Updated "anilist/pool.json"'
           branch: update-anilist-pool
@@ -36,7 +40,6 @@ jobs:
 
             Updated the pool cache for each possible gacha query
 
-            (See #9)
-            (See #45)
+            (See #9 #45)
           labels: |
             anilist

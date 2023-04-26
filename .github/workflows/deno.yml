@@ -43,6 +43,7 @@ jobs:
       contents: read
 
     steps:
+      - uses: actions/checkout@v3
       # NOTE: this is used since we need to wait for
       # fauna.yml to update the schema and models
       # and github doesn't support waiting for ouside jobs
@@ -53,7 +54,6 @@ jobs:
           check-name: 'update-models'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       
-      - uses: actions/checkout@v3
       - uses: denoland/deployctl@v1
         with:
           project: ${{ secrets.DENO_ID }}
