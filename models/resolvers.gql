@@ -80,13 +80,6 @@ type Mutation {
   ): Response! @resolver(name: "replace_characters")
 
   #
-  likeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
-    @resolver(name: "like_character")
-  #
-  unlikeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
-    @resolver(name: "unlike_character")
-
-  #
   setCharacterToParty(userId: String!, guildId: String!, characterId: String!, spot: Int): Response!
     @resolver(name: "set_character_to_party")
   #
@@ -117,4 +110,15 @@ type Mutation {
     nickname: String
     image: String
   ): Response! @resolver(name: "customize_character")
+
+  #
+  likeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
+    @resolver(name: "like_character")
+  #
+  unlikeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
+    @resolver(name: "unlike_character")
+
+  #
+  stealCharacter(userId: String!, guildId: String!, characterId: String!): Response!
+    @resolver(name: "steal_character")
 }

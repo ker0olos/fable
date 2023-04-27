@@ -100,6 +100,7 @@ type Badge @collection(name: "badge") {
 type History @embedded {
   gacha: Gacha
   trade: Trade
+  steal: Steal
 }
 
 type Gacha @embedded {
@@ -116,6 +117,12 @@ type Gacha @embedded {
 }
 
 type Trade @embedded {
+  ts: Time!
+  from: User!
+  to: User!
+}
+
+type Steal @embedded {
   ts: Time!
   from: User!
   to: User!
