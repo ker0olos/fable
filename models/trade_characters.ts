@@ -134,10 +134,12 @@ export function giveCharacters(
                       inventory: fql.Ref(targetInventory),
                       history: fql.Append(
                         {
-                          ts: fql.Now(),
-                          from: fql.Ref(user),
-                          to: fql.Ref(target),
-                        } as unknown as RefExpr,
+                          trade: {
+                            ts: fql.Now(),
+                            from: fql.Ref(user),
+                            to: fql.Ref(target),
+                          },
+                        },
                         fql.Select(['data', 'history'], fql.Get(characterRef)),
                       ) as unknown as History[],
                       nickname: fql.Null(),
@@ -348,10 +350,12 @@ export function tradeCharacters(
                       inventory: fql.Ref(targetInventory),
                       history: fql.Append(
                         {
-                          ts: fql.Now(),
-                          from: fql.Ref(user),
-                          to: fql.Ref(target),
-                        } as unknown as RefExpr,
+                          trade: {
+                            ts: fql.Now(),
+                            from: fql.Ref(user),
+                            to: fql.Ref(target),
+                          },
+                        },
                         fql.Select(['data', 'history'], fql.Get(characterRef)),
                       ) as unknown as History[],
                       nickname: fql.Null(),

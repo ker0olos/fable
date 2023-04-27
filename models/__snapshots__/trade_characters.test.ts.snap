@@ -268,29 +268,35 @@ snapshot[`model 1`] = `
                                                                                     append: Expr {
                                                                                       raw: {
                                                                                         object: {
-                                                                                          from: Expr {
+                                                                                          trade: Expr {
                                                                                             raw: {
-                                                                                              from: Expr {
-                                                                                                raw: {
-                                                                                                  var: "user",
+                                                                                              object: {
+                                                                                                from: Expr {
+                                                                                                  raw: {
+                                                                                                    from: Expr {
+                                                                                                      raw: {
+                                                                                                        var: "user",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: "ref",
+                                                                                                  },
+                                                                                                },
+                                                                                                to: Expr {
+                                                                                                  raw: {
+                                                                                                    from: Expr {
+                                                                                                      raw: {
+                                                                                                        var: "target",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: "ref",
+                                                                                                  },
+                                                                                                },
+                                                                                                ts: Expr {
+                                                                                                  raw: {
+                                                                                                    now: null,
+                                                                                                  },
                                                                                                 },
                                                                                               },
-                                                                                              select: "ref",
-                                                                                            },
-                                                                                          },
-                                                                                          to: Expr {
-                                                                                            raw: {
-                                                                                              from: Expr {
-                                                                                                raw: {
-                                                                                                  var: "target",
-                                                                                                },
-                                                                                              },
-                                                                                              select: "ref",
-                                                                                            },
-                                                                                          },
-                                                                                          ts: Expr {
-                                                                                            raw: {
-                                                                                              now: null,
                                                                                             },
                                                                                           },
                                                                                         },
@@ -1811,29 +1817,35 @@ snapshot[`model 1`] = `
                                                                                     append: Expr {
                                                                                       raw: {
                                                                                         object: {
-                                                                                          from: Expr {
+                                                                                          trade: Expr {
                                                                                             raw: {
-                                                                                              from: Expr {
-                                                                                                raw: {
-                                                                                                  var: "user",
+                                                                                              object: {
+                                                                                                from: Expr {
+                                                                                                  raw: {
+                                                                                                    from: Expr {
+                                                                                                      raw: {
+                                                                                                        var: "user",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: "ref",
+                                                                                                  },
+                                                                                                },
+                                                                                                to: Expr {
+                                                                                                  raw: {
+                                                                                                    from: Expr {
+                                                                                                      raw: {
+                                                                                                        var: "target",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: "ref",
+                                                                                                  },
+                                                                                                },
+                                                                                                ts: Expr {
+                                                                                                  raw: {
+                                                                                                    now: null,
+                                                                                                  },
                                                                                                 },
                                                                                               },
-                                                                                              select: "ref",
-                                                                                            },
-                                                                                          },
-                                                                                          to: Expr {
-                                                                                            raw: {
-                                                                                              from: Expr {
-                                                                                                raw: {
-                                                                                                  var: "target",
-                                                                                                },
-                                                                                              },
-                                                                                              select: "ref",
-                                                                                            },
-                                                                                          },
-                                                                                          ts: Expr {
-                                                                                            raw: {
-                                                                                              now: null,
                                                                                             },
                                                                                           },
                                                                                         },
@@ -3483,29 +3495,35 @@ snapshot[`model 2`] = `
                                                                                     append: Expr {
                                                                                       raw: {
                                                                                         object: {
-                                                                                          from: Expr {
+                                                                                          trade: Expr {
                                                                                             raw: {
-                                                                                              from: Expr {
-                                                                                                raw: {
-                                                                                                  var: "user",
+                                                                                              object: {
+                                                                                                from: Expr {
+                                                                                                  raw: {
+                                                                                                    from: Expr {
+                                                                                                      raw: {
+                                                                                                        var: "user",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: "ref",
+                                                                                                  },
+                                                                                                },
+                                                                                                to: Expr {
+                                                                                                  raw: {
+                                                                                                    from: Expr {
+                                                                                                      raw: {
+                                                                                                        var: "target",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: "ref",
+                                                                                                  },
+                                                                                                },
+                                                                                                ts: Expr {
+                                                                                                  raw: {
+                                                                                                    now: null,
+                                                                                                  },
                                                                                                 },
                                                                                               },
-                                                                                              select: "ref",
-                                                                                            },
-                                                                                          },
-                                                                                          to: Expr {
-                                                                                            raw: {
-                                                                                              from: Expr {
-                                                                                                raw: {
-                                                                                                  var: "target",
-                                                                                                },
-                                                                                              },
-                                                                                              select: "ref",
-                                                                                            },
-                                                                                          },
-                                                                                          ts: Expr {
-                                                                                            raw: {
-                                                                                              now: null,
                                                                                             },
                                                                                           },
                                                                                         },
@@ -5522,29 +5540,35 @@ snapshot[`model 2`] = `
                                                                                     append: Expr {
                                                                                       raw: {
                                                                                         object: {
-                                                                                          from: Expr {
+                                                                                          trade: Expr {
                                                                                             raw: {
-                                                                                              from: Expr {
-                                                                                                raw: {
-                                                                                                  var: "user",
+                                                                                              object: {
+                                                                                                from: Expr {
+                                                                                                  raw: {
+                                                                                                    from: Expr {
+                                                                                                      raw: {
+                                                                                                        var: "user",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: "ref",
+                                                                                                  },
+                                                                                                },
+                                                                                                to: Expr {
+                                                                                                  raw: {
+                                                                                                    from: Expr {
+                                                                                                      raw: {
+                                                                                                        var: "target",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: "ref",
+                                                                                                  },
+                                                                                                },
+                                                                                                ts: Expr {
+                                                                                                  raw: {
+                                                                                                    now: null,
+                                                                                                  },
                                                                                                 },
                                                                                               },
-                                                                                              select: "ref",
-                                                                                            },
-                                                                                          },
-                                                                                          to: Expr {
-                                                                                            raw: {
-                                                                                              from: Expr {
-                                                                                                raw: {
-                                                                                                  var: "target",
-                                                                                                },
-                                                                                              },
-                                                                                              select: "ref",
-                                                                                            },
-                                                                                          },
-                                                                                          ts: Expr {
-                                                                                            raw: {
-                                                                                              now: null,
                                                                                             },
                                                                                           },
                                                                                         },
