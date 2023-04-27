@@ -166,7 +166,7 @@ Deno.test('topgg', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'help=3',
+              custom_id: 'help==3',
               label: '/help voting',
               style: 2,
               type: 2,

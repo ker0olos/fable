@@ -746,7 +746,7 @@ export const handler = async (r: Request) => {
           }
           case 'help': {
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![0]);
+            const index = parseInt(customValues![1]);
 
             return help.pages({ userId: member.user.id, index })
               .setType(discord.MessageType.Update)
