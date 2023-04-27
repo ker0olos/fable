@@ -516,8 +516,8 @@ export const commands = [
     aliases: ['shop'],
     options: [
       Option({
-        name: 'random',
-        description: 'Use votes to buy random pulls',
+        name: 'normal',
+        description: 'Use votes to buy normal pulls',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -634,27 +634,6 @@ export const commands = [
     aliases: ['coll', 'mm'],
     options: [
       Option({
-        name: 'list',
-        description: 'List all characters in bulks',
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: [
-          Option({
-            name: 'filter',
-            description: 'Filter by rating',
-            type: Type.INTEGER,
-            choices: spots.toReversed(),
-            optional: true,
-          }),
-          Option({
-            name: 'user',
-            description: 'The user of the collection',
-            type: Type.USER,
-            optional: true,
-          }),
-        ],
-      }),
-      Option({
         name: 'stars',
         description: 'View all stars',
         type: Type.SUB_COMMAND,
@@ -683,8 +662,8 @@ export const commands = [
           Option({
             name: 'title',
             description: 'The title of the media',
-            autocomplete: true,
             type: Type.STRING,
+            autocomplete: true,
           }),
           Option({
             name: 'user',

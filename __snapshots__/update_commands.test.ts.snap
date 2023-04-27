@@ -996,8 +996,8 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Use votes to buy random pulls",
-        name: "random",
+        description: "Use votes to buy normal pulls",
+        name: "normal",
         options: [
           {
             autocomplete: undefined,
@@ -1055,8 +1055,8 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Use votes to buy random pulls",
-        name: "random",
+        description: "Use votes to buy normal pulls",
+        name: "normal",
         options: [
           {
             autocomplete: undefined,
@@ -1679,55 +1679,6 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List all characters in bulks",
-        name: "list",
-        options: [
-          {
-            autocomplete: undefined,
-            choices: [
-              {
-                name: "5",
-                value: 5,
-              },
-              {
-                name: "4",
-                value: 4,
-              },
-              {
-                name: "3",
-                value: 3,
-              },
-              {
-                name: "2",
-                value: 2,
-              },
-              {
-                name: "1",
-                value: 1,
-              },
-            ],
-            description: "Filter by rating",
-            name: "filter",
-            options: undefined,
-            required: false,
-            type: 4,
-          },
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-      {
-        autocomplete: undefined,
-        choices: undefined,
         description: "View all stars",
         name: "stars",
         options: [
@@ -1813,55 +1764,6 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "List all characters in bulks",
-        name: "list",
-        options: [
-          {
-            autocomplete: undefined,
-            choices: [
-              {
-                name: "5",
-                value: 5,
-              },
-              {
-                name: "4",
-                value: 4,
-              },
-              {
-                name: "3",
-                value: 3,
-              },
-              {
-                name: "2",
-                value: 2,
-              },
-              {
-                name: "1",
-                value: 1,
-              },
-            ],
-            description: "Filter by rating",
-            name: "filter",
-            options: undefined,
-            required: false,
-            type: 4,
-          },
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-      {
-        autocomplete: undefined,
-        choices: undefined,
         description: "View all stars",
         name: "stars",
         options: [
@@ -1944,55 +1846,6 @@ snapshot[`commands 1`] = `
     description: "collection browsing commands",
     name: "mm",
     options: [
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "List all characters in bulks",
-        name: "list",
-        options: [
-          {
-            autocomplete: undefined,
-            choices: [
-              {
-                name: "5",
-                value: 5,
-              },
-              {
-                name: "4",
-                value: 4,
-              },
-              {
-                name: "3",
-                value: 3,
-              },
-              {
-                name: "2",
-                value: 2,
-              },
-              {
-                name: "1",
-                value: 1,
-              },
-            ],
-            description: "Filter by rating",
-            name: "filter",
-            options: undefined,
-            required: false,
-            type: 4,
-          },
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "The user of the collection",
-            name: "user",
-            options: undefined,
-            required: false,
-            type: 6,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
       {
         autocomplete: undefined,
         choices: undefined,
