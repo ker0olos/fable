@@ -516,8 +516,8 @@ export const commands = [
     aliases: ['shop'],
     options: [
       Option({
-        name: 'random',
-        description: 'Use votes to buy random pulls',
+        name: 'normal',
+        description: 'Use votes to buy normal pulls',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [

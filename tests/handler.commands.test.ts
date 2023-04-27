@@ -4533,7 +4533,7 @@ Deno.test('gacha command handlers', async (test) => {
 });
 
 Deno.test('buy command handlers', async (test) => {
-  await test.step('buy random', async () => {
+  await test.step('buy normal', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -4549,7 +4549,7 @@ Deno.test('buy command handlers', async (test) => {
         name: 'buy',
         options: [{
           type: 1,
-          name: 'random',
+          name: 'normal',
           options: [{
             name: 'amount',
             value: 4,
@@ -4565,7 +4565,7 @@ Deno.test('buy command handlers', async (test) => {
       body,
     } as any));
 
-    const shopStub = stub(shop, 'random', () => ({
+    const shopStub = stub(shop, 'normal', () => ({
       send: () => true,
     } as any));
 
@@ -4620,7 +4620,7 @@ Deno.test('buy command handlers', async (test) => {
     }
   });
 
-  await test.step('shop random', async () => {
+  await test.step('shop normal', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -4636,7 +4636,7 @@ Deno.test('buy command handlers', async (test) => {
         name: 'shop',
         options: [{
           type: 1,
-          name: 'random',
+          name: 'normal',
           options: [{
             name: 'amount',
             value: 4,
@@ -4652,7 +4652,7 @@ Deno.test('buy command handlers', async (test) => {
       body,
     } as any));
 
-    const shopStub = stub(shop, 'random', () => ({
+    const shopStub = stub(shop, 'normal', () => ({
       send: () => true,
     } as any));
 

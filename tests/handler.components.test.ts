@@ -1329,7 +1329,7 @@ Deno.test('gacha components', async (test) => {
 });
 
 Deno.test('buy components', async (test) => {
-  await test.step('random', async () => {
+  await test.step('normal', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1342,7 +1342,7 @@ Deno.test('buy components', async (test) => {
         },
       },
       data: {
-        custom_id: 'buy=random=user_id=3',
+        custom_id: 'buy=normal=user_id=3',
       },
     });
 
@@ -1357,7 +1357,7 @@ Deno.test('buy components', async (test) => {
       send: () => true,
     }));
 
-    const shopStub = stub(shop, 'confirmRandom', () =>
+    const shopStub = stub(shop, 'confirmNormal', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -1585,7 +1585,7 @@ Deno.test('buy components', async (test) => {
     }
   });
 
-  await test.step('random no permission', async () => {
+  await test.step('normal no permission', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -1598,7 +1598,7 @@ Deno.test('buy components', async (test) => {
         },
       },
       data: {
-        custom_id: 'buy=random=another_user_id=3',
+        custom_id: 'buy=normal=another_user_id=3',
       },
     });
 

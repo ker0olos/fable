@@ -514,8 +514,8 @@ export const handler = async (r: Request) => {
                   userId: member.user.id,
                   stars: options['stars'] as number,
                 }).send();
-              case 'random':
-                return shop.random({
+              case 'normal':
+                return shop.normal({
                   userId: member.user.id,
                   amount: options['amount'] as number,
                 }).send();
@@ -778,8 +778,8 @@ export const handler = async (r: Request) => {
                   }))
                     .setType(discord.MessageType.Update)
                     .send();
-                case 'random':
-                  return (await shop.confirmRandom({
+                case 'normal':
+                  return (await shop.confirmNormal({
                     guildId,
                     userId: member.user.id,
                     amount: value,

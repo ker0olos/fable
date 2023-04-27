@@ -7,8 +7,8 @@ import { stub } from 'https://deno.land/std@0.183.0/testing/mock.ts';
 import shop from '../src/shop.ts';
 
 Deno.test('/buy', async (test) => {
-  await test.step('random dialog', () => {
-    const message = shop.random({
+  await test.step('normal dialog', () => {
+    const message = shop.normal({
       userId: 'user_id',
       amount: 1,
     });
@@ -21,7 +21,7 @@ Deno.test('/buy', async (test) => {
           type: 1,
           components: [
             {
-              custom_id: 'buy=random=user_id=1',
+              custom_id: 'buy=normal=user_id=1',
               label: 'Confirm',
               style: 2,
               type: 2,
@@ -43,8 +43,8 @@ Deno.test('/buy', async (test) => {
     });
   });
 
-  await test.step('random dialog (plural)', () => {
-    const message = shop.random({
+  await test.step('normal dialog (plural)', () => {
+    const message = shop.normal({
       userId: 'user_id',
       amount: 4,
     });
@@ -57,7 +57,7 @@ Deno.test('/buy', async (test) => {
           type: 1,
           components: [
             {
-              custom_id: 'buy=random=user_id=4',
+              custom_id: 'buy=normal=user_id=4',
               label: 'Confirm',
               style: 2,
               type: 2,
@@ -79,7 +79,7 @@ Deno.test('/buy', async (test) => {
     });
   });
 
-  await test.step('random confirmed', async () => {
+  await test.step('normal confirmed', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -97,7 +97,7 @@ Deno.test('/buy', async (test) => {
     );
 
     try {
-      const message = await shop.confirmRandom({
+      const message = await shop.confirmNormal({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 1,
@@ -126,8 +126,7 @@ Deno.test('/buy', async (test) => {
           }],
           embeds: [{
             type: 'rich',
-            description:
-              'You bought **1** random pull <:add:1099004747123523644>',
+            description: 'You bought **1** pull <:add:1099004747123523644>',
           }],
         },
       });
@@ -136,7 +135,7 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('random confirmed (plural)', async () => {
+  await test.step('normal confirmed (plural)', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -154,7 +153,7 @@ Deno.test('/buy', async (test) => {
     );
 
     try {
-      const message = await shop.confirmRandom({
+      const message = await shop.confirmNormal({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 5,
@@ -183,8 +182,7 @@ Deno.test('/buy', async (test) => {
           }],
           embeds: [{
             type: 'rich',
-            description:
-              'You bought **5** random pulls <:add:1099004747123523644>',
+            description: 'You bought **5** pulls <:add:1099004747123523644>',
           }],
         },
       });
@@ -193,7 +191,7 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('random no votes', async () => {
+  await test.step('normal no votes', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -213,7 +211,7 @@ Deno.test('/buy', async (test) => {
     );
 
     try {
-      const message = await shop.confirmRandom({
+      const message = await shop.confirmNormal({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 1,
@@ -245,7 +243,7 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('random insufficient votes', async () => {
+  await test.step('normal insufficient votes', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -267,7 +265,7 @@ Deno.test('/buy', async (test) => {
     );
 
     try {
-      const message = await shop.confirmRandom({
+      const message = await shop.confirmNormal({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 10,
@@ -299,7 +297,7 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('random insufficient votes (plural)', async () => {
+  await test.step('normal insufficient votes (plural)', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -321,7 +319,7 @@ Deno.test('/buy', async (test) => {
     );
 
     try {
-      const message = await shop.confirmRandom({
+      const message = await shop.confirmNormal({
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 10,

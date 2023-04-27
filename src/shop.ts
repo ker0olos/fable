@@ -6,7 +6,7 @@ import * as discord from './discord.ts';
 
 import { Schema } from './types.ts';
 
-function random({
+function normal({
   userId,
   amount,
 }: {
@@ -25,7 +25,7 @@ function random({
   );
 
   message.addComponents([
-    new discord.Component().setId('buy', 'random', userId, `${amount}`)
+    new discord.Component().setId('buy', 'normal', userId, `${amount}`)
       .setLabel('Confirm'),
     new discord.Component().setId('cancel', userId)
       .setStyle(discord.ButtonStyle.Red)
@@ -35,7 +35,7 @@ function random({
   return message;
 }
 
-async function confirmRandom({
+async function confirmNormal({
   userId,
   guildId,
   amount,
@@ -106,7 +106,7 @@ async function confirmRandom({
 
   message
     .addEmbed(new discord.Embed().setDescription(
-      `You bought **${amount}** random ${
+      `You bought **${amount}** ${
         amount > 1 ? 'pulls' : 'pull'
       } ${discord.emotes.add}`,
     ));
@@ -225,9 +225,9 @@ async function confirmGuaranteed({
 }
 
 const shop = {
-  random,
+  normal,
   guaranteed,
-  confirmRandom,
+  confirmNormal,
   confirmGuaranteed,
 };
 

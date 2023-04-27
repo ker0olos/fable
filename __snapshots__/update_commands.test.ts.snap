@@ -996,8 +996,8 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Use votes to buy random pulls",
-        name: "random",
+        description: "Use votes to buy normal pulls",
+        name: "normal",
         options: [
           {
             autocomplete: undefined,
@@ -1055,8 +1055,8 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Use votes to buy random pulls",
-        name: "random",
+        description: "Use votes to buy normal pulls",
+        name: "normal",
         options: [
           {
             autocomplete: undefined,

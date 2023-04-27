@@ -272,7 +272,7 @@ snapshot[`/help 4`] = `
 
 __Voting on weekends__ awards **2** votes instead of **1** (_Saturday and Sunday_).
 
-\`/buy random\` gets you random pulls, they are identical to the pulls you can get each 30 minutes.
+\`/buy normal\` gets you normal pulls, they are the exact same as the ones you get each 30 minutes.
 
 \`/buy guaranteed\` however is special, while it can expansive it will guarantee that you get a character from one specific rank. Use the guaranteed pulls you bought by calling \`/pull stars:\`
 
@@ -484,7 +484,7 @@ snapshot[`/help 7`] = `
 - \`/unlike\`: _remove character from your likes_
 - \`/likeslist\`: _list user liked characters_
 
-- \`/buy random\` \`/shop random\`: _use votes to buy random pulls_
+- \`/buy normal\` \`/shop normal\`: _use votes to buy normal pulls_
 - \`/buy guaranteed\` \`/shop guaranteed\`: _use votes to buy pulls with a specific guaranteed rating_
 
 - \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
