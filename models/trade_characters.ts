@@ -3,7 +3,6 @@ import {
   fql,
   InstanceExpr,
   InventoryExpr,
-  RefExpr,
   ResponseExpr,
   StringExpr,
   UserExpr,
@@ -17,7 +16,7 @@ import {
   Inventory,
 } from './get_user_inventory.ts';
 
-import { Character, History } from './add_character_to_inventory.ts';
+import { Character } from './add_character_to_inventory.ts';
 
 export function giveCharacters(
   {
@@ -132,16 +131,6 @@ export function giveCharacters(
                     {
                       user: fql.Ref(target),
                       inventory: fql.Ref(targetInventory),
-                      history: fql.Append(
-                        {
-                          trade: {
-                            ts: fql.Now(),
-                            from: fql.Ref(user),
-                            to: fql.Ref(target),
-                          },
-                        },
-                        fql.Select(['data', 'history'], fql.Get(characterRef)),
-                      ) as unknown as History[],
                       nickname: fql.Null(),
                       image: fql.Null(),
                     },
@@ -348,16 +337,6 @@ export function tradeCharacters(
                     {
                       user: fql.Ref(target),
                       inventory: fql.Ref(targetInventory),
-                      history: fql.Append(
-                        {
-                          trade: {
-                            ts: fql.Now(),
-                            from: fql.Ref(user),
-                            to: fql.Ref(target),
-                          },
-                        },
-                        fql.Select(['data', 'history'], fql.Get(characterRef)),
-                      ) as unknown as History[],
                       nickname: fql.Null(),
                       image: fql.Null(),
                     },
@@ -371,14 +350,6 @@ export function tradeCharacters(
                     {
                       user: fql.Ref(user),
                       inventory: fql.Ref(inventory),
-                      history: fql.Append(
-                        {
-                          ts: fql.Now(),
-                          from: fql.Ref(target),
-                          to: fql.Ref(user),
-                        } as unknown as RefExpr,
-                        fql.Select(['data', 'history'], fql.Get(characterRef)),
-                      ) as unknown as History[],
                       nickname: fql.Null(),
                       image: fql.Null(),
                     },

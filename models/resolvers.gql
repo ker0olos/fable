@@ -60,12 +60,6 @@ type Mutation {
     mediaId: String!
     guaranteed: Boolean!
     rating: Int!
-    pool: Int!
-    popularityChance: Int
-    popularityGreater: Int
-    popularityLesser: Int
-    roleChance: Int
-    role: String
   ): Response! @resolver(name: "add_character_to_inventory")
 
   #

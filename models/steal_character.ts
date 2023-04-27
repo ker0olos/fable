@@ -17,7 +17,7 @@ import {
   Inventory,
 } from './get_user_inventory.ts';
 
-import { Character, History } from './add_character_to_inventory.ts';
+import { Character } from './add_character_to_inventory.ts';
 
 export function stealCharacter(
   {
@@ -48,7 +48,7 @@ export function stealCharacter(
           instance,
           user: fql.Var('target'),
         }),
-      }, ({ target, targetInventory, characterRef }) =>
+      }, ({ targetInventory, characterRef }) =>
         fql.If(
           fql.Any([
             fql.Equals(
@@ -120,16 +120,6 @@ export function stealCharacter(
               {
                 user: fql.Ref(user),
                 inventory: fql.Ref(inventory),
-                history: fql.Append(
-                  {
-                    steal: {
-                      ts: fql.Now(),
-                      from: fql.Ref(user),
-                      to: fql.Ref(target),
-                    },
-                  },
-                  fql.Select(['data', 'history'], fql.Get(characterRef)),
-                ) as unknown as History[],
                 nickname: fql.Null(),
                 image: fql.Null(),
               },

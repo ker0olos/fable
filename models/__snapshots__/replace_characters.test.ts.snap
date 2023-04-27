@@ -270,47 +270,6 @@ snapshot[`model 1`] = `
                                                               data: Expr {
                                                                 raw: {
                                                                   object: {
-                                                                    history: Expr {
-                                                                      raw: [
-                                                                        Expr {
-                                                                          raw: {
-                                                                            object: {
-                                                                              gacha: Expr {
-                                                                                raw: {
-                                                                                  object: {
-                                                                                    by: Expr {
-                                                                                      raw: {
-                                                                                        from: Expr {
-                                                                                          raw: {
-                                                                                            var: "user",
-                                                                                          },
-                                                                                        },
-                                                                                        select: "ref",
-                                                                                      },
-                                                                                    },
-                                                                                    pool: Expr {
-                                                                                      raw: {
-                                                                                        var: "pool",
-                                                                                      },
-                                                                                    },
-                                                                                    sacrifices: Expr {
-                                                                                      raw: {
-                                                                                        var: "sacrifices",
-                                                                                      },
-                                                                                    },
-                                                                                    ts: Expr {
-                                                                                      raw: {
-                                                                                        now: null,
-                                                                                      },
-                                                                                    },
-                                                                                  },
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          },
-                                                                        },
-                                                                      ],
-                                                                    },
                                                                     id: Expr {
                                                                       raw: {
                                                                         var: "characterId",
@@ -1386,7 +1345,6 @@ snapshot[`model 1`] = `
                             "characterId",
                             "mediaId",
                             "rating",
-                            "pool",
                             "sacrifices",
                           ],
                         },
@@ -1675,47 +1633,6 @@ snapshot[`model 1`] = `
                                                               data: Expr {
                                                                 raw: {
                                                                   object: {
-                                                                    history: Expr {
-                                                                      raw: [
-                                                                        Expr {
-                                                                          raw: {
-                                                                            object: {
-                                                                              gacha: Expr {
-                                                                                raw: {
-                                                                                  object: {
-                                                                                    by: Expr {
-                                                                                      raw: {
-                                                                                        from: Expr {
-                                                                                          raw: {
-                                                                                            var: "user",
-                                                                                          },
-                                                                                        },
-                                                                                        select: "ref",
-                                                                                      },
-                                                                                    },
-                                                                                    pool: Expr {
-                                                                                      raw: {
-                                                                                        var: "pool",
-                                                                                      },
-                                                                                    },
-                                                                                    sacrifices: Expr {
-                                                                                      raw: {
-                                                                                        var: "sacrifices",
-                                                                                      },
-                                                                                    },
-                                                                                    ts: Expr {
-                                                                                      raw: {
-                                                                                        now: null,
-                                                                                      },
-                                                                                    },
-                                                                                  },
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          },
-                                                                        },
-                                                                      ],
-                                                                    },
                                                                     id: Expr {
                                                                       raw: {
                                                                         var: "characterId",
@@ -2791,7 +2708,6 @@ snapshot[`model 1`] = `
                             "characterId",
                             "mediaId",
                             "rating",
-                            "pool",
                             "sacrifices",
                           ],
                         },

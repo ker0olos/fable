@@ -4,7 +4,7 @@ import Rating from './rating.ts';
 
 import utils from './utils.ts';
 
-import users from './user.ts';
+import user from './user.ts';
 
 import * as discord from './discord.ts';
 
@@ -264,7 +264,7 @@ function character(
           end: 4,
         }),
         // find if the character is owned
-        users.findCharacter({
+        user.findCharacter({
           guildId,
           characterId: `${results[0].packId}:${results[0].id}`,
         }),
@@ -603,7 +603,7 @@ async function mediaCharacters(
       end: 1,
     }),
     // find if the character is owned
-    users.findCharacter({
+    user.findCharacter({
       guildId,
       characterId: `${node.packId}:${node.id}`,
     }),

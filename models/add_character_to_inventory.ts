@@ -9,7 +9,6 @@ import {
   RefExpr,
   ResponseExpr,
   StringExpr,
-  TimeExpr,
   UserExpr,
 } from './fql.ts';
 
@@ -29,30 +28,9 @@ export interface Character {
   rating: NumberExpr;
   nickname?: string | NullExpr;
   image?: string | NullExpr;
-  history: History[];
   inventory: RefExpr;
   instance: RefExpr;
   user: RefExpr;
-}
-
-export interface History {
-  gacha?: {
-    by: RefExpr;
-    ts: TimeExpr;
-    pool: NumberExpr;
-    guaranteed?: NumberExpr;
-    sacrifices?: StringExpr[];
-    popularityChance?: NumberExpr;
-    popularityGreater?: NumberExpr;
-    popularityLesser?: NumberExpr;
-    roleChance?: NumberExpr;
-    role?: StringExpr;
-  };
-  trade?: {
-    ts: TimeExpr;
-    to: UserExpr;
-    from: UserExpr;
-  };
 }
 
 export function addCharacter(
@@ -64,12 +42,6 @@ export function addCharacter(
     inventory,
     instance,
     user,
-    pool,
-    popularityChance,
-    popularityGreater,
-    popularityLesser,
-    roleChance,
-    role,
   }: {
     rating: NumberExpr;
     mediaId: StringExpr;
@@ -78,12 +50,6 @@ export function addCharacter(
     inventory: InventoryExpr;
     instance: InstanceExpr;
     user: UserExpr;
-    pool: NumberExpr;
-    popularityChance?: NumberExpr;
-    popularityGreater?: NumberExpr;
-    popularityLesser?: NumberExpr;
-    roleChance?: NumberExpr;
-    role?: StringExpr;
   },
 ): ResponseExpr {
   return fql.Let({
@@ -120,25 +86,6 @@ export function addCharacter(
                 inventory: fql.Ref(inventory),
                 instance: fql.Ref(instance),
                 user: fql.Ref(user),
-                history: [
-                  {
-                    gacha: {
-                      ts: fql.Now(),
-                      by: fql.Ref(user),
-                      guaranteed: fql.If(
-                        fql.Equals(guaranteed, true),
-                        rating,
-                        fql.Null(),
-                      ),
-                      popularityChance,
-                      popularityGreater,
-                      popularityLesser,
-                      roleChance,
-                      role,
-                      pool,
-                    },
-                  },
-                ],
               }),
 
               // update the user
@@ -224,12 +171,6 @@ export default function (client: Client): {
           mediaId: string,
           guaranteed: boolean,
           rating: number,
-          pool: number,
-          popularityChance: number,
-          popularityGreater: number,
-          popularityLesser?: number,
-          roleChance?: number,
-          role?: string,
         ) => {
           return fql.Let(
             {
@@ -253,12 +194,6 @@ export default function (client: Client): {
                 inventory,
                 instance,
                 user,
-                pool,
-                popularityChance,
-                popularityGreater,
-                popularityLesser,
-                roleChance,
-                role,
               }),
           );
         },

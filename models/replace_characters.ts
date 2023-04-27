@@ -29,7 +29,6 @@ export function replaceCharacters(
     inventory,
     instance,
     user,
-    pool,
     sacrifices,
   }: {
     rating: NumberExpr;
@@ -38,7 +37,6 @@ export function replaceCharacters(
     inventory: InventoryExpr;
     instance: InstanceExpr;
     user: UserExpr;
-    pool: NumberExpr;
     sacrifices: StringExpr[];
   },
 ): ResponseExpr {
@@ -87,16 +85,6 @@ export function replaceCharacters(
                 inventory: fql.Ref(inventory),
                 instance: fql.Ref(instance),
                 user: fql.Ref(user),
-                history: [
-                  {
-                    gacha: {
-                      sacrifices,
-                      ts: fql.Now(),
-                      by: fql.Ref(user),
-                      pool,
-                    },
-                  },
-                ],
               }),
               updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
                 lastPull: fql.Now(),
@@ -163,9 +151,7 @@ export default function (client: Client): {
           characterId: string,
           mediaId: string,
           rating: number,
-          pool: number,
           sacrifices: string[],
-          // guarantees: number[],
         ) => {
           return fql.Let(
             {
@@ -188,9 +174,7 @@ export default function (client: Client): {
                 inventory,
                 instance,
                 user,
-                pool,
                 sacrifices,
-                // guarantees,
               }),
           );
         },

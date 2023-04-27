@@ -255,12 +255,6 @@ async function rngPull(
           $mediaId: String!
           $guaranteed: Boolean!
           $rating: Int!
-          $pool: Int!
-          $popularityChance: Int
-          $popularityGreater: Int
-          $popularityLesser: Int
-          $roleChance: Int
-          $role: String
         ) {
           addCharacterToInventory(
             userId: $userId
@@ -269,12 +263,6 @@ async function rngPull(
             mediaId: $mediaId
             guaranteed: $guaranteed,
             rating: $rating
-            pool: $pool
-            popularityChance: $popularityChance
-            popularityGreater: $popularityGreater
-            popularityLesser: $popularityLesser
-            roleChance: $roleChance
-            role: $role
           ) {
             ok
             error
@@ -305,7 +293,6 @@ async function rngPull(
           mediaId: `${edge.node.packId}:${edge.node.id}`,
           guaranteed: typeof guarantee === 'number',
           rating: rating.stars,
-          ...poolInfo,
           ...extra,
         },
       }))[mutation?.name ?? 'addCharacterToInventory'];

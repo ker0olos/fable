@@ -171,66 +171,6 @@ snapshot[`model 1`] = `
                                                               data: Expr {
                                                                 raw: {
                                                                   object: {
-                                                                    history: Expr {
-                                                                      raw: {
-                                                                        append: Expr {
-                                                                          raw: {
-                                                                            object: {
-                                                                              steal: Expr {
-                                                                                raw: {
-                                                                                  object: {
-                                                                                    from: Expr {
-                                                                                      raw: {
-                                                                                        from: Expr {
-                                                                                          raw: {
-                                                                                            var: "user",
-                                                                                          },
-                                                                                        },
-                                                                                        select: "ref",
-                                                                                      },
-                                                                                    },
-                                                                                    to: Expr {
-                                                                                      raw: {
-                                                                                        from: Expr {
-                                                                                          raw: {
-                                                                                            var: "target",
-                                                                                          },
-                                                                                        },
-                                                                                        select: "ref",
-                                                                                      },
-                                                                                    },
-                                                                                    ts: Expr {
-                                                                                      raw: {
-                                                                                        now: null,
-                                                                                      },
-                                                                                    },
-                                                                                  },
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          },
-                                                                        },
-                                                                        collection: Expr {
-                                                                          raw: {
-                                                                            from: Expr {
-                                                                              raw: {
-                                                                                get: Expr {
-                                                                                  raw: {
-                                                                                    var: "characterRef",
-                                                                                  },
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            select: Expr {
-                                                                              raw: [
-                                                                                "data",
-                                                                                "history",
-                                                                              ],
-                                                                            },
-                                                                          },
-                                                                        },
-                                                                      },
-                                                                    },
                                                                     image: null,
                                                                     inventory: Expr {
                                                                       raw: {
@@ -1509,66 +1449,6 @@ snapshot[`model 1`] = `
                                                               data: Expr {
                                                                 raw: {
                                                                   object: {
-                                                                    history: Expr {
-                                                                      raw: {
-                                                                        append: Expr {
-                                                                          raw: {
-                                                                            object: {
-                                                                              steal: Expr {
-                                                                                raw: {
-                                                                                  object: {
-                                                                                    from: Expr {
-                                                                                      raw: {
-                                                                                        from: Expr {
-                                                                                          raw: {
-                                                                                            var: "user",
-                                                                                          },
-                                                                                        },
-                                                                                        select: "ref",
-                                                                                      },
-                                                                                    },
-                                                                                    to: Expr {
-                                                                                      raw: {
-                                                                                        from: Expr {
-                                                                                          raw: {
-                                                                                            var: "target",
-                                                                                          },
-                                                                                        },
-                                                                                        select: "ref",
-                                                                                      },
-                                                                                    },
-                                                                                    ts: Expr {
-                                                                                      raw: {
-                                                                                        now: null,
-                                                                                      },
-                                                                                    },
-                                                                                  },
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          },
-                                                                        },
-                                                                        collection: Expr {
-                                                                          raw: {
-                                                                            from: Expr {
-                                                                              raw: {
-                                                                                get: Expr {
-                                                                                  raw: {
-                                                                                    var: "characterRef",
-                                                                                  },
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            select: Expr {
-                                                                              raw: [
-                                                                                "data",
-                                                                                "history",
-                                                                              ],
-                                                                            },
-                                                                          },
-                                                                        },
-                                                                      },
-                                                                    },
                                                                     image: null,
                                                                     inventory: Expr {
                                                                       raw: {

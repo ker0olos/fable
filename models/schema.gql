@@ -63,8 +63,6 @@ type Character @collection(name: "character") {
   nickname: String
   # a custom image url
   image: String
-  # all the ownership transitions of the character
-  history: [History!]!
   # the instance that contains this character
   instance: Instance!
   # the inventory where this character is currently
@@ -95,37 +93,6 @@ type Badge @collection(name: "badge") {
   emote: String! 
   # all users who own this badge
   users: [User!]!
-}
-
-type History @embedded {
-  gacha: Gacha
-  trade: Trade
-  steal: Steal
-}
-
-type Gacha @embedded {
-  by: User!
-  ts: Time!
-  pool: Int!
-  guaranteed: Int
-  sacrifices: [String!]
-  popularityChance: Int
-  popularityGreater: Int
-  popularityLesser: Int
-  roleChance: Int
-  role: String
-}
-
-type Trade @embedded {
-  ts: Time!
-  from: User!
-  to: User!
-}
-
-type Steal @embedded {
-  ts: Time!
-  from: User!
-  to: User!
 }
 
 type Party @embedded {
