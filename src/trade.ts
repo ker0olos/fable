@@ -52,6 +52,7 @@ function pre({
   }
 
   Promise.all([
+    // TODO decrease number of outgoing requests
     ...give.map((char) =>
       packs.characters(
         char.startsWith(idPrefix)
@@ -86,37 +87,35 @@ function pre({
         ),
       );
 
-      let giveCharacters = results.slice(0, give.length);
-      let takeCharacters = results.slice(give.length);
+      let [giveCharacters, takeCharacters] = [
+        results.slice(0, give.length),
+        results.slice(give.length),
+      ];
 
       let t: Record<string, (typeof giveCharacters[0])> = {};
 
       // filter repeated characters
-      giveCharacters = (
-        giveCharacters.forEach((char) => {
-          t[`${char.packId}:${char.id}`] = char;
-        }), Object.values(t)
-      );
-
-      t = {};
+      giveCharacters = (giveCharacters.forEach((char) => {
+        t[`${char.packId}:${char.id}`] = char;
+      }),
+        Object.values(t));
 
       // filter repeated character
-      takeCharacters = (
+      takeCharacters = (t = {},
         takeCharacters.forEach((char) => {
           t[`${char.packId}:${char.id}`] = char;
-        }), Object.values(t)
-      );
+        }),
+        Object.values(t));
 
-      const giveNames = giveCharacters.map((char) =>
-        packs.aliasToArray(char.name)[0]
-      ).join(', ');
+      const [giveIds, takeIds] = [
+        giveCharacters.map(({ packId, id }) => `${packId}:${id}`),
+        takeCharacters.map(({ packId, id }) => `${packId}:${id}`),
+      ];
 
-      const takeNames = takeCharacters.map((char) =>
-        packs.aliasToArray(char.name)[0]
-      ).join(', ');
-
-      const giveIds = giveCharacters.map((char) => `${char.packId}:${char.id}`);
-      const takeIds = takeCharacters.map((char) => `${char.packId}:${char.id}`);
+      const [giveNames, takeNames] = [
+        giveCharacters.map(({ name }) => packs.aliasToArray(name)[0]),
+        takeCharacters.map(({ name }) => packs.aliasToArray(name)[0]),
+      ];
 
       const [giveCollection, takeCollection] = await Promise.all([
         user.getUserCharacters({
@@ -131,29 +130,22 @@ function pre({
           : undefined,
       ]);
 
-      const giveLabels = giveCharacters.map((character) => {
-        return packs.aliasToArray(character.name)[0];
-      });
-
-      const takeLabels = takeCharacters.map((character) => {
-        return packs.aliasToArray(character.name)[0];
-      });
-
       const giveEmbeds = giveCharacters.map((character) => {
-        return search.characterEmbed(character, channelId, {
-          footer: false,
-          description: false,
-          media: { title: true },
-          mode: 'thumbnail',
-        });
-      });
+        const i = giveCollection.characters.findIndex(({ id }) =>
+          `${character.packId}:${character.id}` === id
+        );
 
-      const takeEmbeds = takeCharacters.map((character) => {
         return search.characterEmbed(character, channelId, {
           footer: false,
           description: false,
           media: { title: true },
           mode: 'thumbnail',
+          existing: i > -1
+            ? {
+              rating: giveCollection.characters[i].rating,
+              mediaId: giveCollection.characters[i].mediaId,
+            }
+            : undefined,
         });
       });
 
@@ -173,14 +165,6 @@ function pre({
           !giveCollection.characters.some((char) => char.id === id)
         );
 
-      // const giveLiked = giveIds.filter((id) =>
-      //   giveCollection.likes?.includes(id)
-      // );
-
-      const takeLiked = takeCollection
-        ? takeIds.filter((id) => takeCollection.likes?.includes(id))
-        : undefined;
-
       // not owned
       if (giveFilter.length) {
         giveFilter.forEach((characterId) => {
@@ -192,8 +176,8 @@ function pre({
             new discord.Embed()
               .setDescription(
                 giveParty.length
-                  ? `${giveLabels[i]} is in your party and can\'t be traded`
-                  : `You don't have ${giveLabels[i]}`,
+                  ? `${giveNames[i]} is in your party and can\'t be traded`
+                  : `You don't have ${giveNames[i]}`,
               ),
           ).addEmbed(giveEmbeds[i]);
         });
@@ -202,6 +186,25 @@ function pre({
       }
 
       if (takeCollection) {
+        const takeEmbeds = takeCharacters.map((character) => {
+          const i = takeCollection.characters.findIndex(({ id }) =>
+            `${character.packId}:${character.id}` === id
+          );
+
+          return search.characterEmbed(character, channelId, {
+            footer: false,
+            description: false,
+            media: { title: true },
+            mode: 'thumbnail',
+            existing: i > -1
+              ? {
+                rating: takeCollection.characters[i].rating,
+                mediaId: takeCollection.characters[i].mediaId,
+              }
+              : {},
+          });
+        });
+
         const takeParty: string[] = [
           takeCollection.party?.member1?.id,
           takeCollection.party?.member2?.id,
@@ -230,9 +233,9 @@ function pre({
                 .setDescription(
                   takeParty.length
                     ? `${
-                      takeLabels[i]
+                      takeNames[i]
                     } is in <@${targetId}>'s party and can't be traded`
-                    : `<@${targetId}> doesn't have ${takeLabels[i]}`,
+                    : `<@${targetId}> doesn't have ${takeNames[i]}`,
                 ),
             ).addEmbed(takeEmbeds[i]);
           });
@@ -254,12 +257,19 @@ function pre({
       });
 
       if (takeCollection) {
+        const takeLiked = takeIds.filter((id) =>
+          takeCollection.likes?.includes(id)
+        );
+
         await discord.Message.dialog({
           userId,
           targetId,
           message: message.setContent(`<@${targetId}>`),
-          description:
-            `<@${userId}> is offering that you lose **${takeNames}** ${discord.emotes.remove} and get **${giveNames}** ${discord.emotes.add}`,
+          description: `<@${userId}> is offering that you lose **${
+            takeNames.join(', ')
+          }** ${discord.emotes.remove} and get **${
+            giveNames.join(', ')
+          }** ${discord.emotes.add}`,
           confirm: [
             'trade',
             userId,
@@ -276,19 +286,20 @@ function pre({
         // deno-lint-ignore no-non-null-assertion
         if (takeLiked!.length) {
           followup.addEmbed(new discord.Embed().setDescription(
-            'You like some of those characters',
+            'Some of those characters are in your likeslist!',
           ));
         }
 
-        await followup
+        followup
           .setContent(`<@${targetId}> you received an offer!`)
           .followup(token);
       } else {
         await discord.Message.dialog({
           userId,
           message,
-          description:
-            `Are you sure you want to give **${giveNames}** ${discord.emotes.remove} to <@${targetId}> for free?`,
+          description: `Are you sure you want to give **${
+            giveNames.join(', ')
+          }** ${discord.emotes.remove} to <@${targetId}> for free?`,
           confirm: ['give', userId, targetId, giveIds.join('&')],
         }).patch(token);
       }

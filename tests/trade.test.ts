@@ -950,13 +950,13 @@ Deno.test('/give', async (test) => {
               id: 'id:1',
               user: { id: 'user_id' },
               mediaId: 'media_id',
-              rating: 1,
+              rating: 2,
             },
             {
               id: 'id:2',
               user: { id: 'user_id' },
               mediaId: 'media_id',
-              rating: 1,
+              rating: 2,
             },
           ],
           likes: [],
@@ -1016,7 +1016,7 @@ Deno.test('/give', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -1034,7 +1034,7 @@ Deno.test('/give', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url2?size=thumbnail',
               },
@@ -1485,7 +1485,7 @@ Deno.test('/trade', async (test) => {
             id: 'id:1',
             user: { id: 'user_id' },
             mediaId: 'media_id',
-            rating: 1,
+            rating: 2,
           }],
           likes: [],
           party: {},
@@ -1495,7 +1495,7 @@ Deno.test('/trade', async (test) => {
             id: 'id:1',
             user: { id: 'another_user_id' },
             mediaId: 'media_id',
-            rating: 1,
+            rating: 2,
           }],
           likes: [],
           party: {},
@@ -1556,7 +1556,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -1574,7 +1574,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -1843,7 +1843,7 @@ Deno.test('/trade', async (test) => {
           components: [],
           embeds: [{
             type: 'rich',
-            description: 'You like some of those characters',
+            description: 'Some of those characters are in your likeslist!',
           }],
         },
       );

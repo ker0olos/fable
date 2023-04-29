@@ -435,11 +435,11 @@ function characterEmbed(
 
     const rating = new Rating({ stars: options.existing.rating });
 
-    if (options.existing.user?.id) {
-      embed.setDescription(
-        `<@${options.existing.user.id}>\n\n${rating.emotes}`,
-      );
-    }
+    embed.setDescription(
+      options.existing.user?.id
+        ? `<@${options.existing.user.id}>\n\n${rating.emotes}`
+        : rating.emotes,
+    );
   } else if (options?.rating) {
     if (typeof options.rating === 'boolean' && options.rating) {
       options.rating = Rating.fromCharacter(character);
