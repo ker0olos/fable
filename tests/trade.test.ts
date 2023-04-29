@@ -897,22 +897,33 @@ Deno.test('trade', async (test) => {
 
 Deno.test('/give', async (test) => {
   await test.step('normal', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-    };
-
     const characterStub = stub(
       packs,
       'characters',
-      () => Promise.resolve([character]),
+      returnsNext([
+        Promise.resolve([{
+          id: '1',
+          packId: 'id',
+          description: 'long description',
+          name: {
+            english: 'full name',
+          },
+          images: [{
+            url: 'image_url',
+          }],
+        }]),
+        Promise.resolve([{
+          id: '2',
+          packId: 'id',
+          description: 'long description 2',
+          name: {
+            english: 'full name 2',
+          },
+          images: [{
+            url: 'image_url2',
+          }],
+        }]),
+      ]),
     );
 
     const timeStub = new FakeTime();
@@ -932,18 +943,25 @@ Deno.test('/give', async (test) => {
     const userStub = stub(
       user,
       'getUserCharacters',
-      returnsNext([
+      () =>
         Promise.resolve({
-          characters: [{
-            id: 'id:1',
-            user: { id: 'user_id' },
-            mediaId: 'media_id',
-            rating: 1,
-          }],
+          characters: [
+            {
+              id: 'id:1',
+              user: { id: 'user_id' },
+              mediaId: 'media_id',
+              rating: 1,
+            },
+            {
+              id: 'id:2',
+              user: { id: 'user_id' },
+              mediaId: 'media_id',
+              rating: 1,
+            },
+          ],
           likes: [],
           party: {},
         }),
-      ]),
     );
 
     config.trading = true;
@@ -957,7 +975,7 @@ Deno.test('/give', async (test) => {
         channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
-        give: ['give_character_id'],
+        give: ['give_character_id', 'give_character_id2'],
         take: [],
       });
 
@@ -1016,7 +1034,25 @@ Deno.test('/give', async (test) => {
             {
               type: 'rich',
               description:
-                'Are you sure you want to give **full name** <:remove:1099004424111792158> to <@another_user_id> for free?',
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url2?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name 2\n\u200B',
+                  value: '\u200B',
+                },
+                {
+                  name: '\u200B',
+                  value: '<:remove:1099004424111792158>',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description:
+                'Are you sure you want to give **full name, full name 2** <:remove:1099004424111792158> to <@another_user_id> for free?',
             },
           ],
           components: [
@@ -1024,7 +1060,7 @@ Deno.test('/give', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'give=user_id=another_user_id=id:1',
+                  custom_id: 'give=user_id=another_user_id=id:1&id:2',
                   label: 'Confirm',
                   style: 2,
                   type: 2,
@@ -1079,21 +1115,33 @@ Deno.test('/give', async (test) => {
   });
 
   await test.step('not owned', async () => {
-    const character: Character = {
-      id: '1',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-    };
-
     const characterStub = stub(
       packs,
       'characters',
-      () => Promise.resolve([character]),
+      returnsNext([
+        Promise.resolve([{
+          id: '1',
+          packId: 'id',
+          description: 'long description',
+          name: {
+            english: 'full name',
+          },
+          images: [{
+            url: 'image_url',
+          }],
+        }]),
+        Promise.resolve([{
+          id: '2',
+          packId: 'id',
+          description: 'long description 2',
+          name: {
+            english: 'full name 2',
+          },
+          images: [{
+            url: 'image_url2',
+          }],
+        }]),
+      ]),
     );
 
     const timeStub = new FakeTime();
@@ -1113,13 +1161,12 @@ Deno.test('/give', async (test) => {
     const userStub = stub(
       user,
       'getUserCharacters',
-      returnsNext([
+      () =>
         Promise.resolve({
           characters: [],
           likes: [],
           party: {},
         }),
-      ]),
     );
 
     config.trading = true;
@@ -1133,7 +1180,7 @@ Deno.test('/give', async (test) => {
         channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
-        give: ['give_character_id'],
+        give: ['give_character_id', 'give_character_id2'],
         take: [],
       });
 
@@ -1174,7 +1221,7 @@ Deno.test('/give', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'You don\'t have those characters',
+              description: 'You don\'t have full name',
             },
             {
               type: 'rich',
@@ -1186,6 +1233,24 @@ Deno.test('/give', async (test) => {
               fields: [
                 {
                   name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description: 'You don\'t have full name 2',
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url2?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name 2\n\u200B',
                   value: '\u200B',
                 },
               ],
@@ -1207,22 +1272,33 @@ Deno.test('/give', async (test) => {
   });
 
   await test.step('in party', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-    };
-
     const characterStub = stub(
       packs,
       'characters',
-      () => Promise.resolve([character]),
+      returnsNext([
+        Promise.resolve([{
+          id: '1',
+          packId: 'id',
+          description: 'long description',
+          name: {
+            english: 'full name',
+          },
+          images: [{
+            url: 'image_url',
+          }],
+        }]),
+        Promise.resolve([{
+          id: '2',
+          packId: 'id',
+          description: 'long description 2',
+          name: {
+            english: 'full name 2',
+          },
+          images: [{
+            url: 'image_url2',
+          }],
+        }]),
+      ]),
     );
 
     const timeStub = new FakeTime();
@@ -1242,25 +1318,25 @@ Deno.test('/give', async (test) => {
     const userStub = stub(
       user,
       'getUserCharacters',
-      returnsNext([
+      () =>
         Promise.resolve({
-          characters: [{
-            id: 'id:1',
-            user: { id: 'user_id' },
-            mediaId: 'media_id',
-            rating: 1,
-          }],
+          characters: [],
           likes: [],
           party: {
-            member5: {
+            member1: {
               id: 'id:1',
+              mediaId: 'media_id',
+              user: { id: 'user_id' },
+              rating: 1,
+            },
+            member5: {
+              id: 'id:2',
               mediaId: 'media_id',
               user: { id: 'user_id' },
               rating: 1,
             },
           },
         }),
-      ]),
     );
 
     config.trading = true;
@@ -1274,7 +1350,7 @@ Deno.test('/give', async (test) => {
         channelId: 'channel_id',
         token: 'test_token',
         targetId: 'another_user_id',
-        give: ['give_character_id'],
+        give: ['give_character_id', 'give_character_id2'],
         take: [],
       });
 
@@ -1315,8 +1391,7 @@ Deno.test('/give', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description:
-                'Those characters are in your party and can\'t be traded',
+              description: 'full name is in your party and can\'t be traded',
             },
             {
               type: 'rich',
@@ -1328,6 +1403,24 @@ Deno.test('/give', async (test) => {
               fields: [
                 {
                   name: 'full name\n\u200B',
+                  value: '\u200B',
+                },
+              ],
+            },
+            {
+              type: 'rich',
+              description: 'full name 2 is in your party and can\'t be traded',
+            },
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url2?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name 2\n\u200B',
                   value: '\u200B',
                 },
               ],
@@ -2081,7 +2174,7 @@ Deno.test('/trade', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '<@another_user_id> doesn\'t have those characters',
+              description: '<@another_user_id> doesn\'t have full name',
             },
             {
               type: 'rich',
@@ -2233,7 +2326,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                'Those characters are in <@another_user_id>\'s party and can\'t be traded',
+                'full name is in <@another_user_id>\'s party and can\'t be traded',
             },
             {
               type: 'rich',

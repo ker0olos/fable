@@ -131,6 +131,14 @@ function pre({
           : undefined,
       ]);
 
+      const giveLabels = giveCharacters.map((character) => {
+        return packs.aliasToArray(character.name)[0];
+      });
+
+      const takeLabels = takeCharacters.map((character) => {
+        return packs.aliasToArray(character.name)[0];
+      });
+
       const giveEmbeds = giveCharacters.map((character) => {
         return search.characterEmbed(character, channelId, {
           footer: false,
@@ -184,8 +192,8 @@ function pre({
             new discord.Embed()
               .setDescription(
                 giveParty.length
-                  ? 'Those characters are in your party and can\'t be traded'
-                  : 'You don\'t have those characters',
+                  ? `${giveLabels[i]} is in your party and can\'t be traded`
+                  : `You don't have ${giveLabels[i]}`,
               ),
           ).addEmbed(giveEmbeds[i]);
         });
@@ -221,8 +229,10 @@ function pre({
               new discord.Embed()
                 .setDescription(
                   takeParty.length
-                    ? `Those characters are in <@${targetId}>'s party and can't be traded`
-                    : `<@${targetId}> doesn't have those characters`,
+                    ? `${
+                      takeLabels[i]
+                    } is in <@${targetId}>'s party and can't be traded`
+                    : `<@${targetId}> doesn't have ${takeLabels[i]}`,
                 ),
             ).addEmbed(takeEmbeds[i]);
           });
