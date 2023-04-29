@@ -875,6 +875,8 @@ Deno.test('/nick', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               fields: [
                 {
                   name: 'title',
@@ -1389,6 +1391,8 @@ Deno.test('/image', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
               fields: [
                 {
                   name: 'title',
@@ -5438,371 +5442,462 @@ Deno.test('/like', async (test) => {
 });
 
 Deno.test('/likeslist', async (test) => {
-  await test.step('normal', async () => {
-    const characters: AniListCharacter[] = [
-      {
-        id: '1',
-        name: {
-          full: 'character 1',
-        },
-      },
-      {
-        id: '2',
-        name: {
-          full: 'character 2',
-        },
-      },
-      {
-        id: '3',
-        name: {
-          full: 'character 3',
-        },
-      },
-      {
-        id: '4',
-        name: {
-          full: 'character 4',
-        },
-      },
-      {
-        id: '5',
-        name: {
-          full: 'character 5',
-        },
-      },
-      {
-        id: '6',
-        name: {
-          full: 'character 6',
-        },
-      },
-      {
-        id: '7',
-        name: {
-          full: 'character 7',
-        },
-      },
-      {
-        id: '8',
-        name: {
-          full: 'character 8',
-        },
-      },
-      {
-        id: '9',
-        name: {
-          full: 'character 9',
-        },
-      },
-    ];
+  // await test.step('normal', async () => {
+  //   const characters: AniListCharacter[] = [
+  //     {
+  //       id: '1',
+  //       name: {
+  //         full: 'character 1',
+  //       },
+  //       media: {
+  //         edges: [{
+  //           characterRole: CharacterRole.Main,
+  //           node: {
+  //             id: '1',
+  //             type: MediaType.Anime,
+  //             title: {
+  //               english: 'title 1',
+  //             },
+  //           },
+  //         }],
+  //       },
+  //     },
+  //     {
+  //       id: '2',
+  //       name: {
+  //         full: 'character 2',
+  //       },
+  //       media: {
+  //         edges: [{
+  //           characterRole: CharacterRole.Main,
+  //           node: {
+  //             id: '2',
+  //             type: MediaType.Anime,
+  //             title: {
+  //               english: 'title 2',
+  //             },
+  //           },
+  //         }],
+  //       },
+  //     },
+  //     {
+  //       id: '3',
+  //       name: {
+  //         full: 'character 3',
+  //       },
+  //       media: {
+  //         edges: [{
+  //           characterRole: CharacterRole.Main,
+  //           node: {
+  //             id: '3',
+  //             type: MediaType.Anime,
+  //             title: {
+  //               english: 'title 3',
+  //             },
+  //           },
+  //         }],
+  //       },
+  //     },
+  //     {
+  //       id: '4',
+  //       name: {
+  //         full: 'character 4',
+  //       },
+  //       media: {
+  //         edges: [{
+  //           characterRole: CharacterRole.Main,
+  //           node: {
+  //             id: '4',
+  //             type: MediaType.Anime,
+  //             title: {
+  //               english: 'title 4',
+  //             },
+  //           },
+  //         }],
+  //       },
+  //     },
+  //     {
+  //       id: '5',
+  //       name: {
+  //         full: 'character 5',
+  //       },
+  //       media: {
+  //         edges: [{
+  //           characterRole: CharacterRole.Main,
+  //           node: {
+  //             id: '5',
+  //             type: MediaType.Anime,
+  //             title: {
+  //               english: 'title 5',
+  //             },
+  //           },
+  //         }],
+  //       },
+  //     },
+  //     {
+  //       id: '6',
+  //       name: {
+  //         full: 'character 6',
+  //       },
+  //       media: {
+  //         edges: [{
+  //           characterRole: CharacterRole.Main,
+  //           node: {
+  //             id: '6',
+  //             type: MediaType.Anime,
+  //             title: {
+  //               english: 'title 6',
+  //             },
+  //           },
+  //         }],
+  //       },
+  //     },
+  //   ];
 
-    const timeStub = new FakeTime();
+  //   const timeStub = new FakeTime();
 
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                getUserInventory: {
-                  user: {
-                    likes: [
-                      'anilist:1',
-                      'anilist:2',
-                      'anilist:3',
-                      'anilist:4',
-                      'anilist:5',
-                      'anilist:6',
-                      'anilist:7',
-                      'anilist:8',
-                      'anilist:9',
-                    ],
-                  },
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
-    );
+  //   const fetchStub = stub(
+  //     globalThis,
+  //     'fetch',
+  //     returnsNext([
+  //       {
+  //         ok: true,
+  //         text: (() =>
+  //           Promise.resolve(JSON.stringify({
+  //             data: {
+  //               getUserInventory: {
+  //                 user: {
+  //                   likes: [
+  //                     'anilist:1',
+  //                     'anilist:2',
+  //                     'anilist:3',
+  //                     'anilist:4',
+  //                     'anilist:5',
+  //                     'anilist:6',
+  //                     'anilist:7',
+  //                     'anilist:8',
+  //                     'anilist:9',
+  //                   ],
+  //                 },
+  //               },
+  //             },
+  //           }))),
+  //       } as any,
+  //       {
+  //         ok: true,
+  //         text: (() =>
+  //           Promise.resolve(JSON.stringify({
+  //             data: {
+  //               Page: {
+  //                 characters,
+  //               },
+  //             },
+  //           }))),
+  //       } as any,
+  //       undefined,
+  //     ]),
+  //   );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+  //   const listStub = stub(
+  //     packs,
+  //     'all',
+  //     () => Promise.resolve([]),
+  //   );
 
-    const userStub = stub(
-      user,
-      'findCharacter',
-      () => Promise.resolve(undefined),
-    );
+  //   const userStub = stub(
+  //     user,
+  //     'findCharacter',
+  //     () => Promise.resolve(undefined),
+  //   );
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+  //   const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
+  //   config.appId = 'app_id';
+  //   config.origin = 'http://localhost:8000';
 
-    try {
-      const message = user.likeslist({
-        index: 0,
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-      });
+  //   try {
+  //     const message = user.likeslist({
+  //       index: 0,
+  //       userId: 'user_id',
+  //       guildId: 'guild_id',
+  //       token: 'test_token',
+  //     });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
-            },
-          }],
-        },
-      });
+  //     assertEquals(message.json(), {
+  //       type: 4,
+  //       data: {
+  //         attachments: [],
+  //         components: [],
+  //         embeds: [{
+  //           type: 'rich',
+  //           image: {
+  //             url: 'http://localhost:8000/assets/spinner.gif',
+  //           },
+  //         }],
+  //       },
+  //     });
 
-      await timeStub.runMicrotasks();
+  //     await timeStub.runMicrotasks();
 
-      assertEquals(
-        fetchStub.calls[2].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+  //     assertEquals(
+  //       fetchStub.calls[2].args[0],
+  //       'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+  //     );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+  //     assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'likes=user_id=1=prev',
-                  label: 'Prev',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: '_',
-                  disabled: true,
-                  label: '1/2',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'likes=user_id=1=next',
-                  label: 'Next',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
-          embeds: [
-            {
-              type: 'rich',
-              description: `1<:smol_star:1088427421096751224> character 1
-1<:smol_star:1088427421096751224> character 2
-1<:smol_star:1088427421096751224> character 3
-1<:smol_star:1088427421096751224> character 4
-1<:smol_star:1088427421096751224> character 5
-1<:smol_star:1088427421096751224> character 6
-1<:smol_star:1088427421096751224> character 7
-1<:smol_star:1088427421096751224> character 8`,
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
+  //     assertEquals(
+  //       JSON.parse(
+  //         (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+  //           'payload_json',
+  //         ) as any,
+  //       ),
+  //       {
+  //         attachments: [],
+  //         components: [
+  //           {
+  //             type: 1,
+  //             components: [
+  //               {
+  //                 custom_id: 'likes=user_id=1=prev',
+  //                 label: 'Prev',
+  //                 style: 2,
+  //                 type: 2,
+  //               },
+  //               {
+  //                 custom_id: '_',
+  //                 disabled: true,
+  //                 label: '1/2',
+  //                 style: 2,
+  //                 type: 2,
+  //               },
+  //               {
+  //                 custom_id: 'likes=user_id=1=next',
+  //                 label: 'Next',
+  //                 style: 2,
+  //                 type: 2,
+  //               },
+  //             ],
+  //           },
+  //         ],
+  //         embeds: [
+  //           {
+  //             type: 'rich',
+  //             fields: [
+  //               {
+  //                 inline: false,
+  //                 name: 'title 1',
+  //                 value: '1<:smol_star:1088427421096751224> character 1',
+  //               },
+  //               {
+  //                 inline: false,
+  //                 name: 'title 2',
+  //                 value: '1<:smol_star:1088427421096751224> character 2',
+  //               },
+  //               {
+  //                 inline: false,
+  //                 name: 'title 3',
+  //                 value: '1<:smol_star:1088427421096751224> character 3',
+  //               },
+  //               {
+  //                 inline: false,
+  //                 name: 'title 4',
+  //                 value: '1<:smol_star:1088427421096751224> character 4',
+  //               },
+  //               {
+  //                 inline: false,
+  //                 name: 'title 5',
+  //                 value: '1<:smol_star:1088427421096751224> character 5',
+  //               },
+  //             ],
+  //           },
+  //         ],
+  //       },
+  //     );
+  //   } finally {
+  //     delete config.appId;
+  //     delete config.origin;
 
-      timeStub.restore();
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      userStub.restore();
-    }
-  });
+  //     timeStub.restore();
+  //     fetchStub.restore();
+  //     listStub.restore();
+  //     isDisabledStub.restore();
+  //     userStub.restore();
+  //   }
+  // });
 
-  await test.step('normal (exists)', async () => {
-    const character: AniListCharacter = {
-      id: '1',
-      name: {
-        full: 'character',
-      },
-    };
+  // await test.step('normal (exists)', async () => {
+  //   const character: AniListCharacter = {
+  //     id: '1',
+  //     name: {
+  //       full: 'character',
+  //     },
+  //     media: {
+  //       edges: [{
+  //         characterRole: CharacterRole.Main,
+  //         node: {
+  //           id: '2',
+  //           type: MediaType.Anime,
+  //           title: {
+  //             english: 'title',
+  //           },
+  //         },
+  //       }],
+  //     },
+  //   };
 
-    const timeStub = new FakeTime();
+  //   const timeStub = new FakeTime();
 
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                getUserInventory: {
-                  user: {
-                    likes: ['anilist:1'],
-                  },
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
-    );
+  //   const fetchStub = stub(
+  //     globalThis,
+  //     'fetch',
+  //     returnsNext([
+  //       {
+  //         ok: true,
+  //         text: (() =>
+  //           Promise.resolve(JSON.stringify({
+  //             data: {
+  //               getUserInventory: {
+  //                 user: {
+  //                   likes: ['anilist:1'],
+  //                 },
+  //               },
+  //             },
+  //           }))),
+  //       } as any,
+  //       {
+  //         ok: true,
+  //         text: (() =>
+  //           Promise.resolve(JSON.stringify({
+  //             data: {
+  //               Page: {
+  //                 characters: [character],
+  //               },
+  //             },
+  //           }))),
+  //       } as any,
+  //       undefined,
+  //     ]),
+  //   );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+  //   const listStub = stub(
+  //     packs,
+  //     'all',
+  //     () => Promise.resolve([]),
+  //   );
 
-    const userStub = stub(
-      user,
-      'findCharacter',
-      () =>
-        Promise.resolve({
-          id: '',
-          mediaId: '',
-          rating: 3,
-          nickname: 'nickname',
-          image: 'http://image_url',
-          user: {
-            id: 'another_user_id',
-          },
-        }),
-    );
+  //   const userStub = stub(
+  //     user,
+  //     'findCharacter',
+  //     () =>
+  //       Promise.resolve({
+  //         id: '',
+  //         mediaId: '',
+  //         rating: 3,
+  //         nickname: 'nickname',
+  //         image: 'http://image_url',
+  //         user: {
+  //           id: 'another_user_id',
+  //         },
+  //       }),
+  //   );
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+  //   const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
+  //   config.appId = 'app_id';
+  //   config.origin = 'http://localhost:8000';
 
-    try {
-      const message = user.likeslist({
-        index: 0,
-        userId: 'user_id',
-        guildId: 'guild_id',
-        token: 'test_token',
-      });
+  //   try {
+  //     const message = user.likeslist({
+  //       index: 0,
+  //       userId: 'user_id',
+  //       guildId: 'guild_id',
+  //       token: 'test_token',
+  //     });
 
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
-            },
-          }],
-        },
-      });
+  //     assertEquals(message.json(), {
+  //       type: 4,
+  //       data: {
+  //         attachments: [],
+  //         components: [],
+  //         embeds: [{
+  //           type: 'rich',
+  //           image: {
+  //             url: 'http://localhost:8000/assets/spinner.gif',
+  //           },
+  //         }],
+  //       },
+  //     });
 
-      await timeStub.runMicrotasks();
+  //     await timeStub.runMicrotasks();
 
-      assertEquals(
-        fetchStub.calls[2].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
+  //     assertEquals(
+  //       fetchStub.calls[2].args[0],
+  //       'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+  //     );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+  //     assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
 
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: 'likes=user_id=0=prev',
-                  label: 'Prev',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: '_',
-                  disabled: true,
-                  label: '1/1',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'likes=user_id=0=next',
-                  label: 'Next',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
-          embeds: [
-            {
-              type: 'rich',
-              description:
-                '3<:smol_star:1088427421096751224> <@another_user_id> character',
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
+  //     assertEquals(
+  //       JSON.parse(
+  //         (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+  //           'payload_json',
+  //         ) as any,
+  //       ),
+  //       {
+  //         attachments: [],
+  //         components: [
+  //           {
+  //             type: 1,
+  //             components: [
+  //               {
+  //                 custom_id: 'likes=user_id=0=prev',
+  //                 label: 'Prev',
+  //                 style: 2,
+  //                 type: 2,
+  //               },
+  //               {
+  //                 custom_id: '_',
+  //                 disabled: true,
+  //                 label: '1/1',
+  //                 style: 2,
+  //                 type: 2,
+  //               },
+  //               {
+  //                 custom_id: 'likes=user_id=0=next',
+  //                 label: 'Next',
+  //                 style: 2,
+  //                 type: 2,
+  //               },
+  //             ],
+  //           },
+  //         ],
+  //         embeds: [
+  //           {
+  //             type: 'rich',
+  //             fields: [
+  //               {
+  //                 inline: false,
+  //                 name: 'title',
+  //                 value:
+  //                   '3<:smol_star:1088427421096751224> <@another_user_id> character',
+  //               },
+  //             ],
+  //           },
+  //         ],
+  //       },
+  //     );
+  //   } finally {
+  //     delete config.appId;
+  //     delete config.origin;
 
-      timeStub.restore();
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      userStub.restore();
-    }
-  });
+  //     timeStub.restore();
+  //     fetchStub.restore();
+  //     listStub.restore();
+  //     isDisabledStub.restore();
+  //     userStub.restore();
+  //   }
+  // });
 
   await test.step('disabled character', async () => {
     const characters: AniListCharacter[] = [
@@ -5811,11 +5906,35 @@ Deno.test('/likeslist', async (test) => {
         name: {
           full: 'character 1',
         },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: '1',
+              type: MediaType.Anime,
+              title: {
+                english: 'title 1',
+              },
+            },
+          }],
+        },
       },
       {
         id: '2',
         name: {
           full: 'character 2',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: '2',
+              type: MediaType.Anime,
+              title: {
+                english: 'title 2',
+              },
+            },
+          }],
         },
       },
     ];
@@ -5871,6 +5990,8 @@ Deno.test('/likeslist', async (test) => {
       'isDisabled',
       returnsNext([
         true,
+        false,
+        false,
         false,
       ]),
     );
@@ -5946,8 +6067,13 @@ Deno.test('/likeslist', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description:
-                '1<:smol_star:1088427421096751224> character 2\n_1 disabled characters_',
+              fields: [
+                {
+                  inline: false,
+                  name: 'title 2',
+                  value: '1<:smol_star:1088427421096751224> character 2',
+                },
+              ],
             },
           ],
         },

@@ -871,11 +871,11 @@ function likeslist({
         return message.patch(token);
       }
 
-      const chunks = utils.chunks(Array.from(charactersIds), 8);
+      const chunks = utils.chunks(Array.from(charactersIds), 5);
 
       const results = await packs.characters({ ids: chunks[index], guildId });
 
-      const charactersNames = await Promise.all(
+      await Promise.all(
         results.map(async (character) => {
           const [char, existing] = await Promise.all([
             packs.aggregate<Character>({
@@ -891,19 +891,31 @@ function likeslist({
 
           const rating = existing?.rating ?? Rating.fromCharacter(char).stars;
 
-          return `${rating}${discord.emotes.smolStar} ${
+          const media = utils.wrap(
+            // deno-lint-ignore no-non-null-assertion
+            packs.aliasToArray(char.media!.edges[0].node.title)[0],
+          );
+
+          const name = `${rating}${discord.emotes.smolStar} ${
             existing ? `<@${existing.user.id}> ` : ''
           }${utils.wrap(packs.aliasToArray(char.name)[0])}`;
+
+          embed.addField({
+            inline: false,
+            name: media,
+            value: name,
+          });
         }),
       );
 
-      if (results.length !== chunks[index].length) {
-        charactersNames.push(
-          `_${chunks[index].length - results.length} disabled characters_`,
-        );
-      }
-
-      embed.setDescription(charactersNames.join('\n'));
+      // if (results.length !== chunks[index].length) {
+      //   embed.addField({
+      //     inline: false,
+      //     value: `_${
+      //       chunks[index].length - results.length
+      //     } disabled characters_`,
+      //   });
+      // }
 
       return discord.Message.page({
         index,

@@ -108,7 +108,7 @@ function getSacrifices(
 
   if (!possibilities[target].length) {
     throw new NonFetalError(
-      `You don't have enough sacrifices for a ${target}${discord.emotes.smolStar}`,
+      `You don't have enough sacrifices for ${target}${discord.emotes.smolStar}`,
     );
   }
 
