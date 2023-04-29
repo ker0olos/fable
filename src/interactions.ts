@@ -434,7 +434,7 @@ export const handler = async (r: Request) => {
               options['take3'] as string,
             ].filter(Boolean);
 
-            return trade.pre({
+            const message = trade.pre({
               token,
               guildId,
               channelId,
@@ -442,7 +442,13 @@ export const handler = async (r: Request) => {
               targetId: options['user'] as string,
               give: giveCharacters,
               take: takeCharacters,
-            }).send();
+            });
+
+            if (!takeCharacters?.length) {
+              message.setFlags(discord.MessageFlags.Ephemeral);
+            }
+
+            return message.send();
           }
           case 'now':
           case 'vote':
