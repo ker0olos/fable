@@ -154,7 +154,8 @@ function chunks<T>(a: Array<T>, size: number): T[][] {
 }
 
 function distance(a: string, b: string): number {
-  return 100 - 100 * _distance(a, b) / (a.length + b.length);
+  return 100 -
+    100 * _distance(a.toLowerCase(), b.toLowerCase()) / (a.length + b.length);
 }
 
 function _parseInt(query?: string): number | undefined {

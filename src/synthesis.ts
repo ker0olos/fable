@@ -140,7 +140,7 @@ function synthesize({
         .sort((a, b) => b.rating - a.rating);
 
       const occurrences = sacrifices.map(({ rating }) => rating).reduce(
-        (acc, n) => (acc[n] = (acc[n] ?? 0) + 1, acc),
+        (acc, n) => (acc[n] = (acc[n] || 0) + 1, acc),
         {} as Record<number, number>,
       );
 
