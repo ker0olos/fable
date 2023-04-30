@@ -3750,7 +3750,10 @@ Deno.test('give command handlers', async (test) => {
       body,
     } as any));
 
+    const setFlagsSpy = spy(() => undefined);
+
     const tradeStub = stub(trade, 'pre', () => ({
+      setFlags: setFlagsSpy,
       send: () => true,
     } as any));
 
@@ -3778,6 +3781,10 @@ Deno.test('give command handlers', async (test) => {
             },
           },
         ],
+      });
+
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -3850,7 +3857,10 @@ Deno.test('give command handlers', async (test) => {
       body,
     } as any));
 
+    const setFlagsSpy = spy(() => undefined);
+
     const tradeStub = stub(trade, 'pre', () => ({
+      setFlags: setFlagsSpy,
       send: () => true,
     } as any));
 
@@ -3878,6 +3888,10 @@ Deno.test('give command handlers', async (test) => {
             },
           },
         ],
+      });
+
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
       });
 
       assertSpyCall(signatureStub, 0, {

@@ -60,12 +60,6 @@ type Mutation {
     mediaId: String!
     guaranteed: Boolean!
     rating: Int!
-    pool: Int!
-    popularityChance: Int
-    popularityGreater: Int
-    popularityLesser: Int
-    roleChance: Int
-    role: String
   ): Response! @resolver(name: "add_character_to_inventory")
 
   #
@@ -78,13 +72,6 @@ type Mutation {
     pool: Int!
     sacrifices: [String!]!
   ): Response! @resolver(name: "replace_characters")
-
-  #
-  likeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
-    @resolver(name: "like_character")
-  #
-  unlikeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
-    @resolver(name: "unlike_character")
 
   #
   setCharacterToParty(userId: String!, guildId: String!, characterId: String!, spot: Int): Response!
@@ -117,4 +104,15 @@ type Mutation {
     nickname: String
     image: String
   ): Response! @resolver(name: "customize_character")
+
+  #
+  likeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
+    @resolver(name: "like_character")
+  #
+  unlikeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
+    @resolver(name: "unlike_character")
+
+  #
+  stealCharacter(userId: String!, guildId: String!, characterId: String!): Response!
+    @resolver(name: "steal_character")
 }

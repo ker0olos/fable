@@ -207,7 +207,7 @@ Deno.test('auto synthesize', async (test) => {
     assertThrows(
       () => synthesis.getSacrifices(characters, 5),
       NonFetalError,
-      'You don\'t have enough sacrifices for a 5<:smol_star:1088427421096751224>',
+      'You don\'t have enough sacrifices for 5<:smol_star:1088427421096751224>',
     );
   });
 });
@@ -450,7 +450,7 @@ Deno.test('synthesis confirmed', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'like=anilist:1=1',
+                custom_id: 'like=anilist:1',
                 label: '/like',
                 style: 2,
                 type: 2,
@@ -888,7 +888,7 @@ Deno.test('synthesis confirmed', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You don\'t have enough sacrifices for a 2<:smol_star:1088427421096751224>',
+              'You don\'t have enough sacrifices for 2<:smol_star:1088427421096751224>',
           }],
           components: [],
           attachments: [],
@@ -1189,16 +1189,20 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Sacrifice **5** characters',
+              description: 'Sacrifice **5** characters?',
+            },
+            {
+              type: 'rich',
+              description: '(**1<:smol_star:1088427421096751224>x5**)',
             },
             {
               type: 'rich',
               description:
-                `1<:smol_star:1088427421096751224> character 1 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 2 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 3 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 4 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 5 <:remove:1099004424111792158>`,
+                `**1**<:smol_star:1088427421096751224> character 1 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 2 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 3 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 4 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 5 <:remove:1099004424111792158>`,
             },
           ],
         },
@@ -1381,16 +1385,20 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Sacrifice **5** characters',
+              description: 'Sacrifice **5** characters?',
+            },
+            {
+              type: 'rich',
+              description: '(**1<:smol_star:1088427421096751224>x5**)',
             },
             {
               type: 'rich',
               description:
-                `1<:smol_star:1088427421096751224> nickname 1 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> nickname 2 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> nickname 3 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> nickname 4 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> nickname 5 <:remove:1099004424111792158>`,
+                `**1**<:smol_star:1088427421096751224> nickname 1 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> nickname 2 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> nickname 3 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> nickname 4 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> nickname 5 <:remove:1099004424111792158>`,
             },
           ],
         },
@@ -1578,15 +1586,19 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Sacrifice **5** characters',
+              description: 'Sacrifice **5** characters?',
+            },
+            {
+              type: 'rich',
+              description: '(**1<:smol_star:1088427421096751224>x5**)',
             },
             {
               type: 'rich',
               description:
-                `1<:smol_star:1088427421096751224> character 3 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 4 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 5 <:remove:1099004424111792158>
-+2 Others <:remove:1099004424111792158>`,
+                `**1**<:smol_star:1088427421096751224> character 3 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 4 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 5 <:remove:1099004424111792158>
+_+2 others... <:remove:1099004424111792158>_`,
             },
           ],
         },
@@ -1793,7 +1805,7 @@ Deno.test('/synthesis', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You don\'t have enough sacrifices for a 2<:smol_star:1088427421096751224>',
+              'You don\'t have enough sacrifices for 2<:smol_star:1088427421096751224>',
           }],
         },
       );
@@ -1889,7 +1901,7 @@ Deno.test('/synthesis', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You don\'t have enough sacrifices for a 5<:smol_star:1088427421096751224>',
+              'You don\'t have enough sacrifices for 5<:smol_star:1088427421096751224>',
           }],
         },
       );

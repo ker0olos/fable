@@ -2364,7 +2364,7 @@ Deno.test('/gacha', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'like=pack-id-2:2=1',
+                custom_id: 'like=pack-id-2:2',
                 label: '/like',
                 style: 2,
                 type: 2,
@@ -2573,7 +2573,7 @@ Deno.test('/gacha', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'like=pack-id-2:2=1',
+                custom_id: 'like=pack-id-2:2',
                 label: '/like',
                 style: 2,
                 type: 2,
@@ -2789,7 +2789,7 @@ Deno.test('/gacha', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'like=pack-id-2:2=1',
+                custom_id: 'like=pack-id-2:2',
                 label: '/like',
                 style: 2,
                 type: 2,
@@ -2938,7 +2938,7 @@ Deno.test('/gacha', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'like=pack-id-2:2=1',
+                custom_id: 'like=pack-id-2:2',
                 label: '/like',
                 style: 2,
                 type: 2,
@@ -3146,7 +3146,7 @@ Deno.test('/gacha', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'like=pack-id-2:2=1',
+                custom_id: 'like=pack-id-2:2',
                 label: '/like',
                 style: 2,
                 type: 2,
@@ -3381,7 +3381,7 @@ Deno.test('/gacha', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'like=pack-id-2:2=1',
+                custom_id: 'like=pack-id-2:2',
                 label: '/like',
                 style: 2,
                 type: 2,
@@ -3596,7 +3596,7 @@ Deno.test('/gacha', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'like=pack-id-2:2=1',
+                custom_id: 'like=pack-id-2:2',
                 label: '/like',
                 style: 2,
                 type: 2,

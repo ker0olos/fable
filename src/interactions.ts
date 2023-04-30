@@ -123,11 +123,16 @@ export const handler = async (r: Request) => {
             guildId,
             key: 'media',
             search: title,
+            threshold: 45,
           });
 
           results?.forEach((media) => {
+            const format = packs.formatToString(media.format);
+
             message.addSuggestions({
-              name: `${packs.aliasToArray(media.title)[0]}`,
+              name: `${packs.aliasToArray(media.title)[0]}${
+                format ? ` (${format})` : ''
+              }`,
               value: `${idPrefix}${media.packId}:${media.id}`,
             });
           });
@@ -162,14 +167,33 @@ export const handler = async (r: Request) => {
 
           const results = await packs.searchMany<Character>({
             guildId,
+            threshold: 65,
             key: 'characters',
             search: name,
-          });
+          }).then((characters) =>
+            Promise.all(
+              characters.map((character) =>
+                packs.aggregate<Character>({
+                  character,
+                  guildId,
+                })
+              ),
+            )
+          );
 
-          results?.forEach((character) => {
+          results?.sort((a, b) => {
+            const aP = a.popularity ?? a.media?.edges[0].node.popularity ?? 0;
+            const bP = b.popularity ?? b.media?.edges[0].node.popularity ?? 0;
+
+            return bP - aP;
+          }).forEach((char) => {
+            const media = char.media?.edges.length
+              ? ` (${packs.aliasToArray(char.media.edges[0].node.title)[0]})`
+              : '';
+
             message.addSuggestions({
-              name: `${packs.aliasToArray(character.name)[0]}`,
-              value: `${idPrefix}${character.packId}:${character.id}`,
+              name: `${packs.aliasToArray(char.name)[0]}${media}`,
+              value: `${idPrefix}${char.packId}:${char.id}`,
             });
           });
 
@@ -434,7 +458,7 @@ export const handler = async (r: Request) => {
               options['take3'] as string,
             ].filter(Boolean);
 
-            return trade.pre({
+            const message = trade.pre({
               token,
               guildId,
               channelId,
@@ -442,7 +466,13 @@ export const handler = async (r: Request) => {
               targetId: options['user'] as string,
               give: giveCharacters,
               take: takeCharacters,
-            }).send();
+            });
+
+            if (!takeCharacters?.length) {
+              message.setFlags(discord.MessageFlags.Ephemeral);
+            }
+
+            return message.send();
           }
           case 'now':
           case 'vote':
@@ -580,7 +610,7 @@ export const handler = async (r: Request) => {
           case 'start':
           case 'guide':
           case 'tuto': {
-            const index = options['page'] as number ?? 0;
+            const index = options['page'] as number || 0;
 
             return help.pages({ userId: member.user.id, index }).send();
           }
@@ -667,9 +697,6 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
-            const type = customValues![1];
-
             return user.like({
               id,
               token,
@@ -678,11 +705,6 @@ export const handler = async (r: Request) => {
               userId: member.user.id,
               undo: false,
             })
-              .setType(
-                type === '1'
-                  ? discord.MessageType.New
-                  : discord.MessageType.Update,
-              )
               .send();
           }
           case 'likes': {

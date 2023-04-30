@@ -82,7 +82,7 @@ async function confirmNormal({
   if (!exchangeVotesForPulls.ok) {
     switch (exchangeVotesForPulls.error) {
       case 'INSUFFICIENT_VOTES': {
-        const votes = exchangeVotesForPulls.user.availableVotes ?? 0;
+        const votes = exchangeVotesForPulls.user.availableVotes || 0;
 
         return new discord.Message()
           .addEmbed(new discord.Embed()
@@ -188,7 +188,7 @@ async function confirmGuaranteed({
   if (!exchangeVotesForGuarantees.ok) {
     switch (exchangeVotesForGuarantees.error) {
       case 'INSUFFICIENT_VOTES': {
-        const votes = exchangeVotesForGuarantees.user.availableVotes ?? 0;
+        const votes = exchangeVotesForGuarantees.user.availableVotes || 0;
 
         return new discord.Message()
           .addEmbed(new discord.Embed()

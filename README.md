@@ -36,22 +36,20 @@ can install community-made packs that are full of new characters with a single
 command.
 
 You can try an online demo of Fable before adding it to your server by going to
-<https://fable.deno.dev/demo>
+<https://fable.deno.dev>
 
 Fable is actively developed with new game modes and features frequently.
 
 <br clear="right"/>
-
-## Quick Start
 
 <i>
   <h6 align="right">(Rich Character Profiles)</h6>
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227323628-17674f52-bb3a-460f-965a-d316cbed7932.png" alt="Searching">
 </i>
 
-### Essential Commands
+### Get Started
 
-- **`/help`, `/tuto`**: _to learn more information and commands_
+- **`/help`, `/tuto`**: _to learn more features and commands_
 - **`/now`, `/tu`**: _check what you can do right now_
 - **`/gacha`, `/w`**: _start a new gacha pull_
 - **`/search`, `/anime`, `/manga`**: _to search for specific media_
@@ -59,9 +57,8 @@ Fable is actively developed with new game modes and features frequently.
 
 ### Get Involved
 
-- Send our links to a couple of friends
-- Tell your favorite server's admins about us
 - [Join our discord][discord]
+- Tell your favorite server's admins about us
 - [Contribute to the code][contributing]
 
 <br clear="right"/>

@@ -18,16 +18,19 @@ import getUserInventory from './models/get_user_inventory.ts';
 
 import addVoteToUser from './models/add_vote_to_user.ts';
 
-import findMedia from './models/find_media.ts';
-
 import addPackToInstance from './models/add_pack_to_instance.ts';
+
+import findMedia from './models/find_media.ts';
 
 import addCharacterToInventory from './models/add_character_to_inventory.ts';
 import setCharacterToParty from './models/set_character_to_party.ts';
-import customizeCharacters from './models/customize_character.ts';
+
 import tradeCharacters from './models/trade_characters.ts';
 import replaceCharacters from './models/replace_characters.ts';
-import likeCharacters from './models/like_character.ts';
+
+import customizeCharacter from './models/customize_character.ts';
+import stealCharacter from './models/steal_character.ts';
+import likeCharacter from './models/like_character.ts';
 
 if (import.meta.main) {
   const FAUNA_SECRET = Deno.env.get('FAUNA_SECRET');
@@ -43,14 +46,15 @@ if (import.meta.main) {
   const all = [
     getUserInventory(client),
     addVoteToUser(client),
-    findMedia(client),
     addPackToInstance(client),
+    findMedia(client),
     addCharacterToInventory(client),
     setCharacterToParty(client),
-    customizeCharacters(client),
     tradeCharacters(client),
     replaceCharacters(client),
-    likeCharacters(client),
+    customizeCharacter(client),
+    stealCharacter(client),
+    likeCharacter(client),
   ];
 
   const _indexers = all

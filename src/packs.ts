@@ -863,7 +863,7 @@ async function mediaCharacters({ id, search, guildId, index }: {
       character: (results[0] as AniListMedia).characters?.edges?.[0]?.node,
     };
   } else {
-    const total = (results[0] as DisaggregatedMedia).characters?.length ?? 0;
+    const total = (results[0] as DisaggregatedMedia).characters?.length || 0;
 
     const media = await aggregate<Media>({
       media: results[0],
