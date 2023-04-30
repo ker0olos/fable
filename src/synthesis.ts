@@ -139,6 +139,11 @@ function synthesize({
       const sacrifices: Schema.Character[] = getSacrifices(characters, target)
         .sort((a, b) => b.rating - a.rating);
 
+      const occurrences = sacrifices.map(({ rating }) => rating).reduce(
+        (acc, n) => (acc[n] = (acc[n] ?? 0) + 1, acc),
+        {} as Record<number, number>,
+      );
+
       // highlight the first 5 characters
       const highlights = sacrifices.slice(0, 5);
 
@@ -152,7 +157,7 @@ function synthesize({
           .find((char) => id === `${char.packId}:${char.id}`);
 
         if (match) {
-          return `${rating}${discord.emotes.smolStar} ${
+          return `**${rating}**${discord.emotes.smolStar} ${
             nickname ?? utils.wrap(packs.aliasToArray(match.name)[0])
           } ${discord.emotes.remove}`;
         }
@@ -160,22 +165,34 @@ function synthesize({
 
       if (sacrifices.length - highlighted.length) {
         highlighted.push(
-          `+${
+          `_+${
             sacrifices.length - highlighted.length
-          } Others ${discord.emotes.remove}`,
+          } others... ${discord.emotes.remove}_`,
         );
       }
 
+      const all = Object.entries(occurrences)
+        .toReversed()
+        .map(([rating, occurrences]) =>
+          `(**${rating}${discord.emotes.smolStar}x${occurrences}**)`
+        );
+
       message.addEmbed(
         new discord.Embed().setDescription(
-          `Sacrifice **${sacrifices.length}** characters`,
+          `Sacrifice **${sacrifices.length}** characters?`,
+        ),
+      );
+
+      message.addEmbed(
+        new discord.Embed().setDescription(
+          all.join(`${discord.empty2x}${discord.empty2x}`),
         ),
       );
 
       await discord.Message.dialog({
         userId,
         message,
-        description: `${highlighted.join('\n')}`,
+        description: highlighted.join('\n'),
         confirm: ['synthesis', userId, `${target}`],
       })
         .patch(token);

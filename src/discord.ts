@@ -11,6 +11,7 @@ enum CommandType {
 }
 
 export const empty = '\u200B';
+export const empty2x = ' \u200B ';
 
 export const colors = {
   red: '#a51727',

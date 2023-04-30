@@ -1189,16 +1189,20 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Sacrifice **5** characters',
+              description: 'Sacrifice **5** characters?',
+            },
+            {
+              type: 'rich',
+              description: '(**1<:smol_star:1088427421096751224>x5**)',
             },
             {
               type: 'rich',
               description:
-                `1<:smol_star:1088427421096751224> character 1 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 2 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 3 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 4 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 5 <:remove:1099004424111792158>`,
+                `**1**<:smol_star:1088427421096751224> character 1 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 2 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 3 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 4 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 5 <:remove:1099004424111792158>`,
             },
           ],
         },
@@ -1381,16 +1385,20 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Sacrifice **5** characters',
+              description: 'Sacrifice **5** characters?',
+            },
+            {
+              type: 'rich',
+              description: '(**1<:smol_star:1088427421096751224>x5**)',
             },
             {
               type: 'rich',
               description:
-                `1<:smol_star:1088427421096751224> nickname 1 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> nickname 2 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> nickname 3 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> nickname 4 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> nickname 5 <:remove:1099004424111792158>`,
+                `**1**<:smol_star:1088427421096751224> nickname 1 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> nickname 2 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> nickname 3 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> nickname 4 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> nickname 5 <:remove:1099004424111792158>`,
             },
           ],
         },
@@ -1578,15 +1586,19 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Sacrifice **5** characters',
+              description: 'Sacrifice **5** characters?',
+            },
+            {
+              type: 'rich',
+              description: '(**1<:smol_star:1088427421096751224>x5**)',
             },
             {
               type: 'rich',
               description:
-                `1<:smol_star:1088427421096751224> character 3 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 4 <:remove:1099004424111792158>
-1<:smol_star:1088427421096751224> character 5 <:remove:1099004424111792158>
-+2 Others <:remove:1099004424111792158>`,
+                `**1**<:smol_star:1088427421096751224> character 3 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 4 <:remove:1099004424111792158>
+**1**<:smol_star:1088427421096751224> character 5 <:remove:1099004424111792158>
+_+2 others... <:remove:1099004424111792158>_`,
             },
           ],
         },
