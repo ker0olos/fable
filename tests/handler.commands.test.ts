@@ -22,7 +22,6 @@ import gacha from '../src/gacha.ts';
 import user from '../src/user.ts';
 import packs from '../src/packs.ts';
 import trade from '../src/trade.ts';
-import steal from '../src/steal.ts';
 import shop from '../src/shop.ts';
 import help from '../src/help.ts';
 

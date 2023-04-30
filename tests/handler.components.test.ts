@@ -666,13 +666,9 @@ Deno.test('like components', async (test) => {
       body,
     } as any));
 
-    const setTypeSpy = spy(() => ({
-      send: () => true,
-    }));
-
     const userStub = stub(user, 'like', () =>
       ({
-        setType: setTypeSpy,
+        send: () => true,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -704,10 +700,6 @@ Deno.test('like components', async (test) => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         }],
-      });
-
-      assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.Update],
       });
 
       assertSpyCall(userStub, 0, {
@@ -744,7 +736,7 @@ Deno.test('like components', async (test) => {
         },
       },
       data: {
-        custom_id: 'like=character_id=1',
+        custom_id: 'like=character_id',
       },
     });
 
@@ -755,13 +747,9 @@ Deno.test('like components', async (test) => {
       body,
     } as any));
 
-    const setTypeSpy = spy(() => ({
-      send: () => true,
-    }));
-
     const userStub = stub(user, 'like', () =>
       ({
-        setType: setTypeSpy,
+        send: () => true,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -793,10 +781,6 @@ Deno.test('like components', async (test) => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         }],
-      });
-
-      assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.New],
       });
 
       assertSpyCall(userStub, 0, {

@@ -673,9 +673,6 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            // deno-lint-ignore no-non-null-assertion
-            const type = customValues![1];
-
             return user.like({
               id,
               token,
@@ -684,11 +681,6 @@ export const handler = async (r: Request) => {
               userId: member.user.id,
               undo: false,
             })
-              .setType(
-                type === '1'
-                  ? discord.MessageType.New
-                  : discord.MessageType.Update,
-              )
               .send();
           }
           case 'likes': {

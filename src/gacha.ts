@@ -434,7 +434,7 @@ async function pullAnimation(
       .setId(`character`, `${pull.character.packId}:${pull.character.id}`, '1'),
     new discord.Component()
       .setLabel('/like')
-      .setId(`like`, `${pull.character.packId}:${pull.character.id}`, '1'),
+      .setId(`like`, `${pull.character.packId}:${pull.character.id}`),
   ]);
 
   if (mention && userId) {
