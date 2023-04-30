@@ -168,16 +168,6 @@ async function now({
     );
   }
 
-  // TODO REMOVE for the next 5 days show this notice
-  if (Date.now() < 1682932098486) {
-    message.addEmbed(
-      new discord.Embed()
-        .setDescription(
-          '***`/synthesize`*** ***(new feature)***_\nmerge characters together to pull new characters_',
-        ),
-    );
-  }
-
   if (availablePulls < 5) {
     message.addEmbed(
       new discord.Embed()
