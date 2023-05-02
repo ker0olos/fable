@@ -26,17 +26,21 @@
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227321932-2ad8d36c-e56c-46e9-91da-161b79eeb029.gif" alt="Animated Pulls">
 </i>
 
-Fable is a free, open-source gacha bot — a simple, powerful Mudae alternative.
-Like Mudae, you can pull anime characters. Unlike Mudae, there are no premiums
-and no pay-to-win bullshit.
+Fable is a free, open-source gacha bot — a friendly, powerful alternative to
+bots like Mudae, Sofi, Karuta. Like those bots, you can pull anime characters,
+customize, and upgrade them.
 
 There's an intuitive system to manage and customize the characters in your
 servers, like adding extensions to chrome and installing apps on your phone, you
 can install community-made packs that are full of new characters with a single
 command.
 
-You can try an online demo of Fable before adding it to your server by going to
-<https://fable.deno.dev>
+Wanna make your own community pack? Check
+[fable-community/example](https://github.com/fable-community/fable-pack-example)
+for more information.
+
+You can try a basic online demo of Fable before inviting it to your server by
+going to <https://fable.deno.dev/demo>
 
 Fable is actively developed with new game modes and features frequently.
 
@@ -121,6 +125,23 @@ it includes most of the info you need.
 <p>
 
 Use `/packs community` or `/packs uninstall id: pack-id`.
+
+</p>
+</details>
+
+<details><summary>How are you keeping Fable free?</summary>
+<p>
+
+We use serverless since it's cheaper and easier. Right now the bills are very
+small, but if it starts getting out of hand, we plan to rate limit servers on
+how much they can call Fable each month.
+
+We been very transparent from day one, if something happens we'll let known
+instantly.
+
+But we welcome any donations people are willing to throw us, since those the the
+final decider on how much control we have over our server and database bills,
+and how much time, or how many people are working on Fable at any giving moment.
 
 </p>
 </details>
