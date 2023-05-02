@@ -69,7 +69,6 @@ type Mutation {
     characterId: String!
     mediaId: String!
     rating: Int!
-    pool: Int!
     sacrifices: [String!]!
   ): Response! @resolver(name: "replace_characters")
 
