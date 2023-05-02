@@ -243,7 +243,6 @@ function confirmed({
       $characterId: String!
       $mediaId: String!
       $rating: Int!
-      $pool: Int!
       $sacrifices: [String!]!
     ) {
       replaceCharacters(
@@ -253,7 +252,6 @@ function confirmed({
         sacrifices: $sacrifices
         mediaId: $mediaId
         rating: $rating
-        pool: $pool
       ) {
         ok
         error
