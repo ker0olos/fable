@@ -73,16 +73,8 @@ function Append<T extends ExprArg>(ref: T, items: T[]): T[] {
   return _fql.Append(ref, items) as unknown as T[];
 }
 
-function AppendAll<T extends ExprArg>(refs: T[], items: T[]): T[] {
-  return _fql.Union(items, refs) as unknown as T[];
-}
-
 function Remove<T extends ExprArg>(ref: T, items: T[]): T[] {
   return _fql.Difference(items, [ref]) as unknown as T[];
-}
-
-function RemoveAll<T extends ExprArg>(refs: T[], items: T[]): T[] {
-  return _fql.Difference(items, refs) as unknown as T[];
 }
 
 function Delete(ref: RefExpr): Expr {
@@ -327,7 +319,6 @@ export const fql = {
   And,
   Any,
   Append,
-  AppendAll,
   Concat,
   Create,
   Delete,
@@ -358,7 +349,6 @@ export const fql = {
   Paginate,
   Ref,
   Remove,
-  RemoveAll,
   Resolver,
   Reverse,
   Select,

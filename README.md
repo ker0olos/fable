@@ -2,22 +2,20 @@
   <img height="100" src="./assets/splash.png" alt="Fable Logo">
 </h1>
 
-<!-- User badges  -->
+<!-- Badges  -->
 
 <h1 align="center">
 
 [![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304/vote)
 [![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
 
-[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?style=for-the-badge&logo=discord&logoColor=white)](https://fable.deno.dev/invite)
+[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)](https://fable.deno.dev/invite)
+[![Fable Uptime Status](https://betteruptime.com/status-badges/v1/monitor/p925.svg)](https://fables.betteruptime.com)
+[![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20server&color=blue)][discord]
 
-[![Discord Support Server](https://img.shields.io/discord/992416714497212518?label=Discord%20Support%20Server&style=for-the-badge)][discord]
-
-<!-- Development badges -->
-
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&style=for-the-badge&label=tests)
-[![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?style=for-the-badge&token=3C7ZTHzGqC)](https://app.codecov.io/github/ker0olos/fable)
-![GitHub Last Commit](https://img.shields.io/github/last-commit/ker0olos/fable?style=for-the-badge&label=Last%20Update)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&label=tests)
+[![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC)](https://app.codecov.io/github/ker0olos/fable)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ker0olos/fable?color=blue&label=update%20frequency)
 
 </h1>
 
@@ -26,17 +24,21 @@
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227321932-2ad8d36c-e56c-46e9-91da-161b79eeb029.gif" alt="Animated Pulls">
 </i>
 
-Fable is a free, open-source gacha bot — a simple, powerful Mudae alternative.
-Like Mudae, you can pull anime characters. Unlike Mudae, there are no premiums
-and no pay-to-win bullshit.
+Fable is a free, open-source gacha bot — a friendly, powerful alternative to
+bots like Mudae, Sofi, Karuta. Like those bots, you can pull anime characters,
+customize, and upgrade them.
 
 There's an intuitive system to manage and customize the characters in your
 servers, like adding extensions to chrome and installing apps on your phone, you
 can install community-made packs that are full of new characters with a single
 command.
 
-You can try an online demo of Fable before adding it to your server by going to
-<https://fable.deno.dev>
+Wanna make your own community pack? Check
+[fable-community/example](https://github.com/fable-community/fable-pack-example)
+for more information.
+
+You can try a basic online demo of Fable before inviting it to your server by
+going to <https://fable.deno.dev/demo>
 
 Fable is actively developed with new game modes and features frequently.
 
@@ -60,6 +62,7 @@ Fable is actively developed with new game modes and features frequently.
 - [Join our discord][discord]
 - Tell your favorite server's admins about us
 - [Contribute to the code][contributing]
+- [Sponsor the project][sponsoring]
 
 <br clear="right"/>
 
@@ -125,5 +128,23 @@ Use `/packs community` or `/packs uninstall id: pack-id`.
 </p>
 </details>
 
+<details><summary>How are you keeping Fable free?</summary>
+<p>
+
+We use serverless since it's cheaper and easier. Right now the bills are very
+small, but if it starts getting out of hand, we plan to rate limit servers on
+how much they can call Fable each month.
+
+We been very transparent from day one, if something happens we'll let known
+instantly.
+
+But we welcome any donations people are willing to throw us, since those the the
+final decider on how much control we have over our various bills, and how much
+time, and how many people are working on Fable at any giving moment.
+
+</p>
+</details>
+
 [discord]: https://discord.gg/ceKyEfhyPQ
+[sponsoring]: https://github.com/sponsors/ker0olos
 [contributing]: https://github.com/ker0olos/fable/wiki/Contributing

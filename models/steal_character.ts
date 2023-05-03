@@ -14,7 +14,6 @@ import {
   getInstance,
   getInventory,
   getUser,
-  Inventory,
 } from './get_user_inventory.ts';
 
 import { Character } from './add_character_to_inventory.ts';
@@ -97,24 +96,6 @@ export function stealCharacter(
             error: 'CHARACTER_IN_PARTY',
           },
           fql.Let({
-            updatedInventory: fql.Update<Inventory>(
-              fql.Ref(inventory),
-              {
-                characters: fql.Append(
-                  characterRef,
-                  fql.Select(['data', 'characters'], inventory),
-                ),
-              },
-            ),
-            updatedTargetInventory: fql.Update<Inventory>(
-              fql.Ref(targetInventory),
-              {
-                characters: fql.Remove(
-                  characterRef,
-                  fql.Select(['data', 'characters'], inventory),
-                ),
-              },
-            ),
             updatedCharacter: fql.Update<Character>(
               characterRef,
               {
