@@ -1946,14 +1946,10 @@ Deno.test('give components', async (test) => {
       send: () => true,
     }));
 
-    const followupStub = spy(() => undefined);
-
     const tradeStub = stub(trade, 'give', () =>
-      [{
+      ({
         setType: setTypeSpy,
-      }, {
-        followup: followupStub,
-      }] as any);
+      }) as any);
 
     config.publicKey = 'publicKey';
 
@@ -1990,12 +1986,9 @@ Deno.test('give components', async (test) => {
         args: [discord.MessageType.Update],
       });
 
-      assertSpyCall(followupStub, 0, {
-        args: ['token'],
-      });
-
       assertSpyCall(tradeStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           targetId: 'target_id',
           giveCharactersIds: ['character_id', 'character_id2', 'character_id3'],
@@ -2135,14 +2128,10 @@ Deno.test('trade components', async (test) => {
       send: () => true,
     }));
 
-    const followupStub = spy(() => undefined);
-
     const tradeStub = stub(trade, 'accepted', () =>
-      [{
+      ({
         setType: setTypeSpy,
-      }, {
-        followup: followupStub,
-      }] as any);
+      }) as any);
 
     config.publicKey = 'publicKey';
 
@@ -2179,12 +2168,9 @@ Deno.test('trade components', async (test) => {
         args: [discord.MessageType.Update],
       });
 
-      assertSpyCall(followupStub, 0, {
-        args: ['token'],
-      });
-
       assertSpyCall(tradeStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           targetId: 'target_id',
           giveCharactersIds: [

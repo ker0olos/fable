@@ -21,11 +21,7 @@ import config, { initConfig } from './config.ts';
 
 import { Character, Media, PackType } from './types.ts';
 
-import {
-  NonFetalCancelableError,
-  NonFetalError,
-  NoPermissionError,
-} from './errors.ts';
+import { NonFetalError, NoPermissionError } from './errors.ts';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -826,17 +822,14 @@ export const handler = async (r: Request) => {
             const giveCharactersIds = customValues![2].split('&');
 
             if (userId === member.user.id) {
-              const [updateMessage, newMessage] = await trade.give({
+              return trade.give({
+                token,
                 userId,
                 guildId,
                 channelId,
                 targetId: targetId,
                 giveCharactersIds,
-              });
-
-              newMessage.followup(token);
-
-              return updateMessage
+              })
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -857,18 +850,15 @@ export const handler = async (r: Request) => {
             const takeCharactersIds = customValues![3].split('&');
 
             if (targetId === member.user.id) {
-              const [updateMessage, newMessage] = await trade.accepted({
+              return trade.accepted({
+                token,
                 guildId,
                 channelId,
                 userId,
                 targetId,
                 giveCharactersIds,
                 takeCharactersIds,
-              });
-
-              newMessage.followup(token);
-
-              return updateMessage
+              })
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -987,17 +977,11 @@ export const handler = async (r: Request) => {
         ).send();
     }
 
-    if (
-      err instanceof NonFetalCancelableError || err instanceof NonFetalError
-    ) {
+    if (err instanceof NonFetalError) {
       return new discord.Message()
         .setFlags(discord.MessageFlags.Ephemeral)
         .setContent('')
-        .setType(
-          err instanceof NonFetalCancelableError
-            ? discord.MessageType.Update
-            : discord.MessageType.New,
-        )
+        .setType(discord.MessageType.New)
         .addEmbed(new discord.Embed().setDescription(err.message))
         .send();
     }
