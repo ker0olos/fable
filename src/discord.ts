@@ -109,7 +109,10 @@ export type Member = {
 export type User = {
   id: string;
   username: string;
-  discriminator: string;
+  // deno-lint-ignore camelcase
+  display_name?: string;
+  // deno-lint-ignore camelcase
+  global_name?: string;
   avatar?: string;
 };
 
@@ -191,7 +194,12 @@ export type Emote = {
 export const getUsername = (
   member: Member | Omit<Member, 'user'>,
   user: User,
-) => encode(member.nick ?? user.username);
+) => (
+  member.nick ??
+    user.display_name ??
+    user.global_name ??
+    user.username
+);
 
 export const getAvatar = (
   member: Member | Omit<Member, 'user'>,
@@ -205,8 +213,12 @@ export const getAvatar = (
   } else if (user.avatar) {
     return `${base}/avatars/${user.id}/${user.avatar}.png`;
   } else {
+    // TODO discriminator are going away
+    // as of now we I have no idea how default avatar is going to work
+    // they depend on discriminators
     // @see https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints
-    return `${base}/embed/avatars/${Number(user.discriminator) % 5}.png`;
+    // return `${base}/embed/avatars/${Number(user.discriminator) % 5}.png`;
+    return `${base}/embed/avatars/2.png`;
   }
 };
 

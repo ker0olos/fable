@@ -1043,7 +1043,6 @@ Deno.test('get username', async (test) => {
   await test.step('member', () => {
     const user: discord.User = {
       id: 'user_id',
-      discriminator: '1337',
       username: 'test_username',
       avatar: 'avatar_hash',
     };
@@ -1060,7 +1059,6 @@ Deno.test('get username', async (test) => {
   await test.step('user', () => {
     const user: discord.User = {
       id: 'user_id',
-      discriminator: '1337',
       username: 'test_username',
       avatar: 'avatar_hash',
     };
@@ -1073,13 +1071,48 @@ Deno.test('get username', async (test) => {
 
     assertEquals(discord.getUsername(member, user), 'test_username');
   });
+
+  await test.step('display name', () => {
+    const user: discord.User = {
+      id: 'user_id',
+      username: 'test_username',
+      // deno-lint-ignore camelcase
+      display_name: 'display',
+      avatar: 'avatar_hash',
+    };
+
+    const member: discord.Member = {
+      user,
+      nick: undefined,
+      avatar: 'guild_avatar_hash',
+    };
+
+    assertEquals(discord.getUsername(member, user), 'display');
+  });
+
+  await test.step('global name', () => {
+    const user: discord.User = {
+      id: 'user_id',
+      username: 'test_username',
+      // deno-lint-ignore camelcase
+      global_name: 'global',
+      avatar: 'avatar_hash',
+    };
+
+    const member: discord.Member = {
+      user,
+      nick: undefined,
+      avatar: 'guild_avatar_hash',
+    };
+
+    assertEquals(discord.getUsername(member, user), 'global');
+  });
 });
 
 Deno.test('get avatar', async (test) => {
   await test.step('member', () => {
     const user: discord.User = {
       id: 'user_id',
-      discriminator: '1337',
       username: 'test_username',
       avatar: 'avatar_hash',
     };
@@ -1099,7 +1132,6 @@ Deno.test('get avatar', async (test) => {
   await test.step('user', () => {
     const user: discord.User = {
       id: 'user_id',
-      discriminator: '1337',
       username: 'test_username',
       avatar: 'avatar_hash',
     };
@@ -1119,7 +1151,6 @@ Deno.test('get avatar', async (test) => {
   await test.step('default', () => {
     const user: discord.User = {
       id: 'user_id',
-      discriminator: '1337',
       username: 'test_username',
       avatar: undefined,
     };
