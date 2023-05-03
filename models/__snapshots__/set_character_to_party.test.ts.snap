@@ -1255,10 +1255,6 @@ snapshot[`model 1`] = `
                                                             raw: {
                                                               object: {
                                                                 availablePulls: 5,
-                                                                characters: Expr {
-                                                                  raw: [
-                                                                  ],
-                                                                },
                                                                 instance: Expr {
                                                                   raw: {
                                                                     from: Expr {
@@ -2746,10 +2742,6 @@ snapshot[`model 1`] = `
                                                             raw: {
                                                               object: {
                                                                 availablePulls: 5,
-                                                                characters: Expr {
-                                                                  raw: [
-                                                                  ],
-                                                                },
                                                                 instance: Expr {
                                                                   raw: {
                                                                     from: Expr {
@@ -4027,10 +4019,6 @@ snapshot[`model 2`] = `
                                                             raw: {
                                                               object: {
                                                                 availablePulls: 5,
-                                                                characters: Expr {
-                                                                  raw: [
-                                                                  ],
-                                                                },
                                                                 instance: Expr {
                                                                   raw: {
                                                                     from: Expr {
@@ -5303,10 +5291,6 @@ snapshot[`model 2`] = `
                                                             raw: {
                                                               object: {
                                                                 availablePulls: 5,
-                                                                characters: Expr {
-                                                                  raw: [
-                                                                  ],
-                                                                },
                                                                 instance: Expr {
                                                                   raw: {
                                                                     from: Expr {
@@ -6191,10 +6175,6 @@ snapshot[`model 3`] = `
                                                             raw: {
                                                               object: {
                                                                 availablePulls: 5,
-                                                                characters: Expr {
-                                                                  raw: [
-                                                                  ],
-                                                                },
                                                                 instance: Expr {
                                                                   raw: {
                                                                     from: Expr {
@@ -7073,10 +7053,6 @@ snapshot[`model 3`] = `
                                                             raw: {
                                                               object: {
                                                                 availablePulls: 5,
-                                                                characters: Expr {
-                                                                  raw: [
-                                                                  ],
-                                                                },
                                                                 instance: Expr {
                                                                   raw: {
                                                                     from: Expr {

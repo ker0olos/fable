@@ -13,7 +13,6 @@ import {
   getInstance,
   getInventory,
   getUser,
-  Inventory,
 } from './get_user_inventory.ts';
 
 import { Character } from './add_character_to_inventory.ts';
@@ -108,21 +107,6 @@ export function giveCharacters(
               error: 'CHARACTER_IN_PARTY',
             },
             fql.Let({
-              updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
-                characters: fql.RemoveAll(
-                  giveCharactersRefs,
-                  fql.Select(['data', 'characters'], inventory),
-                ),
-              }),
-              updatedTargetInventory: fql.Update<Inventory>(
-                fql.Ref(targetInventory),
-                {
-                  characters: fql.AppendAll(
-                    giveCharactersRefs,
-                    fql.Select(['data', 'characters'], targetInventory),
-                  ),
-                },
-              ),
               updatedCharacters: fql.Foreach(
                 giveCharactersRefs,
                 (characterRef) =>
@@ -308,27 +292,6 @@ export function tradeCharacters(
               error: 'CHARACTER_IN_PARTY',
             },
             fql.Let({
-              updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
-                characters: fql.AppendAll(
-                  fql.RemoveAll(
-                    giveCharactersRefs,
-                    fql.Select(['data', 'characters'], inventory),
-                  ),
-                  takeCharactersRefs,
-                ),
-              }),
-              updatedTargetInventory: fql.Update<Inventory>(
-                fql.Ref(targetInventory),
-                {
-                  characters: fql.AppendAll(
-                    fql.RemoveAll(
-                      takeCharactersRefs,
-                      fql.Select(['data', 'characters'], inventory),
-                    ),
-                    giveCharactersRefs,
-                  ),
-                },
-              ),
               updatedCharacters: fql.Foreach(
                 giveCharactersRefs,
                 (characterRef) =>

@@ -39,7 +39,7 @@ export interface Inventory {
   availablePulls: NumberExpr;
   lastPull?: TimeExpr;
   rechargeTimestamp?: TimeExpr;
-  characters: RefExpr[];
+  characters?: RefExpr[];
   instance: RefExpr;
   user: RefExpr;
   party?: {
@@ -136,7 +136,6 @@ export function getInventory(
         {
           // create a new inventory
           createdInventory: fql.Create<Inventory>('inventory', {
-            characters: [],
             availablePulls: MAX_PULLS,
             instance: fql.Ref(instance),
             user: fql.Ref(user),
@@ -159,6 +158,30 @@ export function getInventory(
         ({ createdInventory }) => createdInventory,
       ),
     ));
+}
+
+export function populateCharactersArray(
+  { inventory }: { inventory: InventoryExpr },
+): InventoryExpr {
+  return fql.Let(
+    {
+      match: fql.Match(
+        fql.Index('inventory_characters'),
+        fql.Ref(inventory),
+      ),
+    },
+    ({ match }) =>
+      ({
+        data: fql.Merge(fql.Select(['data'], inventory), {
+          characters: fql.Select(
+            ['data'],
+            fql.Paginate(match, {
+              size: 9999,
+            }),
+          ),
+        }),
+      }) as unknown as InventoryExpr,
+  );
 }
 
 export function rechargePulls(
@@ -232,6 +255,13 @@ export default function (client: Client): {
         name: 'inventories_instance_user',
         terms: [{ field: ['data', 'instance'] }, { field: ['data', 'user'] }],
       }),
+      fql.Indexer({
+        client,
+        unique: false,
+        collection: 'character',
+        name: 'inventory_characters',
+        terms: [{ field: ['data', 'inventory'] }],
+      }),
     ],
     resolvers: [
       fql.Resolver({
@@ -253,12 +283,14 @@ export default function (client: Client): {
               user: getUser(userId),
               guild: getGuild(guildId),
               instance: getInstance(fql.Var('guild')),
-              inventory: getInventory({
-                user: fql.Var('user'),
-                instance: fql.Var('instance'),
+              inventory: rechargePulls({
+                inventory: getInventory({
+                  user: fql.Var('user'),
+                  instance: fql.Var('instance'),
+                }),
               }),
             },
-            rechargePulls,
+            populateCharactersArray,
           );
         },
       }),

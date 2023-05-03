@@ -111,10 +111,6 @@ export function addCharacter(
                   fql.Select(['data', 'availablePulls'], inventory),
                   1,
                 ),
-                characters: fql.Append(
-                  fql.Ref(fql.Var('createdCharacter')),
-                  fql.Select(['data', 'characters'], inventory, []),
-                ),
               }),
             },
             ({ updatedInventory, createdCharacter }) => ({
@@ -177,12 +173,11 @@ export default function (client: Client): {
               user: getUser(userId),
               guild: getGuild(guildId),
               instance: getInstance(fql.Var('guild')),
-              _inventory: getInventory({
-                user: fql.Var('user'),
-                instance: fql.Var('instance'),
-              }),
               inventory: rechargePulls({
-                inventory: fql.Var('_inventory'),
+                inventory: getInventory({
+                  user: fql.Var('user'),
+                  instance: fql.Var('instance'),
+                }),
               }),
             },
             ({ inventory, instance, user }) =>

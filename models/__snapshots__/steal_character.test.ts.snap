@@ -51,118 +51,6 @@ snapshot[`model 1`] = `
                                                 },
                                                 let: [
                                                   {
-                                                    updatedInventory: Expr {
-                                                      raw: {
-                                                        params: Expr {
-                                                          raw: {
-                                                            object: {
-                                                              data: Expr {
-                                                                raw: {
-                                                                  object: {
-                                                                    characters: Expr {
-                                                                      raw: {
-                                                                        append: Expr {
-                                                                          raw: {
-                                                                            var: "characterRef",
-                                                                          },
-                                                                        },
-                                                                        collection: Expr {
-                                                                          raw: {
-                                                                            from: Expr {
-                                                                              raw: {
-                                                                                var: "inventory",
-                                                                              },
-                                                                            },
-                                                                            select: Expr {
-                                                                              raw: [
-                                                                                "data",
-                                                                                "characters",
-                                                                              ],
-                                                                            },
-                                                                          },
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                        update: Expr {
-                                                          raw: {
-                                                            from: Expr {
-                                                              raw: {
-                                                                var: "inventory",
-                                                              },
-                                                            },
-                                                            select: "ref",
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                  {
-                                                    updatedTargetInventory: Expr {
-                                                      raw: {
-                                                        params: Expr {
-                                                          raw: {
-                                                            object: {
-                                                              data: Expr {
-                                                                raw: {
-                                                                  object: {
-                                                                    characters: Expr {
-                                                                      raw: {
-                                                                        difference: Expr {
-                                                                          raw: [
-                                                                            Expr {
-                                                                              raw: {
-                                                                                from: Expr {
-                                                                                  raw: {
-                                                                                    var: "inventory",
-                                                                                  },
-                                                                                },
-                                                                                select: Expr {
-                                                                                  raw: [
-                                                                                    "data",
-                                                                                    "characters",
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            Expr {
-                                                                              raw: [
-                                                                                Expr {
-                                                                                  raw: {
-                                                                                    var: "characterRef",
-                                                                                  },
-                                                                                },
-                                                                              ],
-                                                                            },
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                        update: Expr {
-                                                          raw: {
-                                                            from: Expr {
-                                                              raw: {
-                                                                var: "targetInventory",
-                                                              },
-                                                            },
-                                                            select: "ref",
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                  {
                                                     updatedCharacter: Expr {
                                                       raw: {
                                                         params: Expr {
@@ -448,10 +336,6 @@ snapshot[`model 1`] = `
                                                                         raw: {
                                                                           object: {
                                                                             availablePulls: 5,
-                                                                            characters: Expr {
-                                                                              raw: [
-                                                                              ],
-                                                                            },
                                                                             instance: Expr {
                                                                               raw: {
                                                                                 from: Expr {
@@ -1043,10 +927,6 @@ snapshot[`model 1`] = `
                                                             raw: {
                                                               object: {
                                                                 availablePulls: 5,
-                                                                characters: Expr {
-                                                                  raw: [
-                                                                  ],
-                                                                },
                                                                 instance: Expr {
                                                                   raw: {
                                                                     from: Expr {
@@ -1329,118 +1209,6 @@ snapshot[`model 1`] = `
                                                 },
                                                 let: [
                                                   {
-                                                    updatedInventory: Expr {
-                                                      raw: {
-                                                        params: Expr {
-                                                          raw: {
-                                                            object: {
-                                                              data: Expr {
-                                                                raw: {
-                                                                  object: {
-                                                                    characters: Expr {
-                                                                      raw: {
-                                                                        append: Expr {
-                                                                          raw: {
-                                                                            var: "characterRef",
-                                                                          },
-                                                                        },
-                                                                        collection: Expr {
-                                                                          raw: {
-                                                                            from: Expr {
-                                                                              raw: {
-                                                                                var: "inventory",
-                                                                              },
-                                                                            },
-                                                                            select: Expr {
-                                                                              raw: [
-                                                                                "data",
-                                                                                "characters",
-                                                                              ],
-                                                                            },
-                                                                          },
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                        update: Expr {
-                                                          raw: {
-                                                            from: Expr {
-                                                              raw: {
-                                                                var: "inventory",
-                                                              },
-                                                            },
-                                                            select: "ref",
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                  {
-                                                    updatedTargetInventory: Expr {
-                                                      raw: {
-                                                        params: Expr {
-                                                          raw: {
-                                                            object: {
-                                                              data: Expr {
-                                                                raw: {
-                                                                  object: {
-                                                                    characters: Expr {
-                                                                      raw: {
-                                                                        difference: Expr {
-                                                                          raw: [
-                                                                            Expr {
-                                                                              raw: {
-                                                                                from: Expr {
-                                                                                  raw: {
-                                                                                    var: "inventory",
-                                                                                  },
-                                                                                },
-                                                                                select: Expr {
-                                                                                  raw: [
-                                                                                    "data",
-                                                                                    "characters",
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            Expr {
-                                                                              raw: [
-                                                                                Expr {
-                                                                                  raw: {
-                                                                                    var: "characterRef",
-                                                                                  },
-                                                                                },
-                                                                              ],
-                                                                            },
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                        update: Expr {
-                                                          raw: {
-                                                            from: Expr {
-                                                              raw: {
-                                                                var: "targetInventory",
-                                                              },
-                                                            },
-                                                            select: "ref",
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                  {
                                                     updatedCharacter: Expr {
                                                       raw: {
                                                         params: Expr {
@@ -1726,10 +1494,6 @@ snapshot[`model 1`] = `
                                                                         raw: {
                                                                           object: {
                                                                             availablePulls: 5,
-                                                                            characters: Expr {
-                                                                              raw: [
-                                                                              ],
-                                                                            },
                                                                             instance: Expr {
                                                                               raw: {
                                                                                 from: Expr {
@@ -2321,10 +2085,6 @@ snapshot[`model 1`] = `
                                                             raw: {
                                                               object: {
                                                                 availablePulls: 5,
-                                                                characters: Expr {
-                                                                  raw: [
-                                                                  ],
-                                                                },
                                                                 instance: Expr {
                                                                   raw: {
                                                                     from: Expr {

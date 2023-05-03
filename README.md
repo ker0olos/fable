@@ -2,15 +2,15 @@
   <img height="100" src="./assets/splash.png" alt="Fable Logo">
 </h1>
 
-<!-- User badges  -->
+<!-- Badges  -->
 
 <h1 align="center">
 
 [![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304/vote)
 [![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
 
-[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20your%20server-blue?logo=discord&logoColor=white)](https://fable.deno.dev/invite)
-[![Fable Uptime](https://betteruptime.com/status-badges/v1/monitor/p925.svg)](https://fablebot.betteruptime.com)
+[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)](https://fable.deno.dev/invite)
+[![Fable Uptime Status](https://betteruptime.com/status-badges/v1/monitor/p925.svg)](https://fables.betteruptime.com)
 [![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20server&color=blue)][discord]
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&label=tests)
@@ -139,8 +139,8 @@ We been very transparent from day one, if something happens we'll let known
 instantly.
 
 But we welcome any donations people are willing to throw us, since those the the
-final decider on how much control we have over our server and database bills,
-and how much time, or how many people are working on Fable at any giving moment.
+final decider on how much control we have over our various bills, and how much
+time, and how many people are working on Fable at any giving moment.
 
 </p>
 </details>

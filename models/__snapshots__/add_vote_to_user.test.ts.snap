@@ -1285,244 +1285,6 @@ snapshot[`model 2`] = `
                                 },
                               },
                               {
-                                _inventory: Expr {
-                                  raw: {
-                                    in: Expr {
-                                      raw: {
-                                        else: Expr {
-                                          raw: {
-                                            in: Expr {
-                                              raw: {
-                                                var: "createdInventory",
-                                              },
-                                            },
-                                            let: [
-                                              {
-                                                createdInventory: Expr {
-                                                  raw: {
-                                                    create: Expr {
-                                                      raw: {
-                                                        collection: "inventory",
-                                                      },
-                                                    },
-                                                    params: Expr {
-                                                      raw: {
-                                                        object: {
-                                                          data: Expr {
-                                                            raw: {
-                                                              object: {
-                                                                availablePulls: 5,
-                                                                characters: Expr {
-                                                                  raw: [
-                                                                  ],
-                                                                },
-                                                                instance: Expr {
-                                                                  raw: {
-                                                                    from: Expr {
-                                                                      raw: {
-                                                                        var: "instance",
-                                                                      },
-                                                                    },
-                                                                    select: "ref",
-                                                                  },
-                                                                },
-                                                                user: Expr {
-                                                                  raw: {
-                                                                    from: Expr {
-                                                                      raw: {
-                                                                        var: "user",
-                                                                      },
-                                                                    },
-                                                                    select: "ref",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                              {
-                                                updatedInstance: Expr {
-                                                  raw: {
-                                                    params: Expr {
-                                                      raw: {
-                                                        object: {
-                                                          data: Expr {
-                                                            raw: {
-                                                              object: {
-                                                                inventories: Expr {
-                                                                  raw: {
-                                                                    append: Expr {
-                                                                      raw: {
-                                                                        from: Expr {
-                                                                          raw: {
-                                                                            var: "createdInventory",
-                                                                          },
-                                                                        },
-                                                                        select: "ref",
-                                                                      },
-                                                                    },
-                                                                    collection: Expr {
-                                                                      raw: {
-                                                                        from: Expr {
-                                                                          raw: {
-                                                                            var: "instance",
-                                                                          },
-                                                                        },
-                                                                        select: Expr {
-                                                                          raw: [
-                                                                            "data",
-                                                                            "inventories",
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                    update: Expr {
-                                                      raw: {
-                                                        from: Expr {
-                                                          raw: {
-                                                            var: "instance",
-                                                          },
-                                                        },
-                                                        select: "ref",
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                              {
-                                                updatedUser: Expr {
-                                                  raw: {
-                                                    params: Expr {
-                                                      raw: {
-                                                        object: {
-                                                          data: Expr {
-                                                            raw: {
-                                                              object: {
-                                                                inventories: Expr {
-                                                                  raw: {
-                                                                    append: Expr {
-                                                                      raw: {
-                                                                        from: Expr {
-                                                                          raw: {
-                                                                            var: "createdInventory",
-                                                                          },
-                                                                        },
-                                                                        select: "ref",
-                                                                      },
-                                                                    },
-                                                                    collection: Expr {
-                                                                      raw: {
-                                                                        from: Expr {
-                                                                          raw: {
-                                                                            var: "user",
-                                                                          },
-                                                                        },
-                                                                        select: Expr {
-                                                                          raw: [
-                                                                            "data",
-                                                                            "inventories",
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                    update: Expr {
-                                                      raw: {
-                                                        from: Expr {
-                                                          raw: {
-                                                            var: "user",
-                                                          },
-                                                        },
-                                                        select: "ref",
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            ],
-                                          },
-                                        },
-                                        if: Expr {
-                                          raw: {
-                                            is_nonempty: Expr {
-                                              raw: {
-                                                var: "match",
-                                              },
-                                            },
-                                          },
-                                        },
-                                        then: Expr {
-                                          raw: {
-                                            get: Expr {
-                                              raw: {
-                                                var: "match",
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                    let: [
-                                      {
-                                        match: Expr {
-                                          raw: {
-                                            match: Expr {
-                                              raw: {
-                                                index: "inventories_instance_user",
-                                              },
-                                            },
-                                            terms: Expr {
-                                              raw: [
-                                                Expr {
-                                                  raw: {
-                                                    from: Expr {
-                                                      raw: {
-                                                        var: "instance",
-                                                      },
-                                                    },
-                                                    select: "ref",
-                                                  },
-                                                },
-                                                Expr {
-                                                  raw: {
-                                                    from: Expr {
-                                                      raw: {
-                                                        var: "user",
-                                                      },
-                                                    },
-                                                    select: "ref",
-                                                  },
-                                                },
-                                              ],
-                                            },
-                                          },
-                                        },
-                                      },
-                                    ],
-                                  },
-                                },
-                              },
-                              {
                                 inventory: Expr {
                                   raw: {
                                     in: Expr {
@@ -1600,7 +1362,234 @@ snapshot[`model 2`] = `
                                           raw: {
                                             from: Expr {
                                               raw: {
-                                                var: "_inventory",
+                                                in: Expr {
+                                                  raw: {
+                                                    else: Expr {
+                                                      raw: {
+                                                        in: Expr {
+                                                          raw: {
+                                                            var: "createdInventory",
+                                                          },
+                                                        },
+                                                        let: [
+                                                          {
+                                                            createdInventory: Expr {
+                                                              raw: {
+                                                                create: Expr {
+                                                                  raw: {
+                                                                    collection: "inventory",
+                                                                  },
+                                                                },
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            availablePulls: 5,
+                                                                            instance: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "instance",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                            user: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "user",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedInstance: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "instance",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "instance",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedUser: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "user",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "user",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                    if: Expr {
+                                                      raw: {
+                                                        is_nonempty: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    then: Expr {
+                                                      raw: {
+                                                        get: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                let: [
+                                                  {
+                                                    match: Expr {
+                                                      raw: {
+                                                        match: Expr {
+                                                          raw: {
+                                                            index: "inventories_instance_user",
+                                                          },
+                                                        },
+                                                        terms: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "instance",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                ],
                                               },
                                             },
                                             select: "ref",
@@ -1619,7 +1608,234 @@ snapshot[`model 2`] = `
                                             },
                                             from: Expr {
                                               raw: {
-                                                var: "_inventory",
+                                                in: Expr {
+                                                  raw: {
+                                                    else: Expr {
+                                                      raw: {
+                                                        in: Expr {
+                                                          raw: {
+                                                            var: "createdInventory",
+                                                          },
+                                                        },
+                                                        let: [
+                                                          {
+                                                            createdInventory: Expr {
+                                                              raw: {
+                                                                create: Expr {
+                                                                  raw: {
+                                                                    collection: "inventory",
+                                                                  },
+                                                                },
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            availablePulls: 5,
+                                                                            instance: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "instance",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                            user: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "user",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedInstance: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "instance",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "instance",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedUser: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "user",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "user",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                    if: Expr {
+                                                      raw: {
+                                                        is_nonempty: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    then: Expr {
+                                                      raw: {
+                                                        get: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                let: [
+                                                  {
+                                                    match: Expr {
+                                                      raw: {
+                                                        match: Expr {
+                                                          raw: {
+                                                            index: "inventories_instance_user",
+                                                          },
+                                                        },
+                                                        terms: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "instance",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                ],
                                               },
                                             },
                                             select: Expr {
@@ -1636,7 +1852,234 @@ snapshot[`model 2`] = `
                                           raw: {
                                             from: Expr {
                                               raw: {
-                                                var: "_inventory",
+                                                in: Expr {
+                                                  raw: {
+                                                    else: Expr {
+                                                      raw: {
+                                                        in: Expr {
+                                                          raw: {
+                                                            var: "createdInventory",
+                                                          },
+                                                        },
+                                                        let: [
+                                                          {
+                                                            createdInventory: Expr {
+                                                              raw: {
+                                                                create: Expr {
+                                                                  raw: {
+                                                                    collection: "inventory",
+                                                                  },
+                                                                },
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            availablePulls: 5,
+                                                                            instance: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "instance",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                            user: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "user",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedInstance: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "instance",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "instance",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedUser: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "user",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "user",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                    if: Expr {
+                                                      raw: {
+                                                        is_nonempty: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    then: Expr {
+                                                      raw: {
+                                                        get: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                let: [
+                                                  {
+                                                    match: Expr {
+                                                      raw: {
+                                                        match: Expr {
+                                                          raw: {
+                                                            index: "inventories_instance_user",
+                                                          },
+                                                        },
+                                                        terms: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "instance",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                ],
                                               },
                                             },
                                             select: Expr {
@@ -2274,244 +2717,6 @@ snapshot[`model 2`] = `
                                 },
                               },
                               {
-                                _inventory: Expr {
-                                  raw: {
-                                    in: Expr {
-                                      raw: {
-                                        else: Expr {
-                                          raw: {
-                                            in: Expr {
-                                              raw: {
-                                                var: "createdInventory",
-                                              },
-                                            },
-                                            let: [
-                                              {
-                                                createdInventory: Expr {
-                                                  raw: {
-                                                    create: Expr {
-                                                      raw: {
-                                                        collection: "inventory",
-                                                      },
-                                                    },
-                                                    params: Expr {
-                                                      raw: {
-                                                        object: {
-                                                          data: Expr {
-                                                            raw: {
-                                                              object: {
-                                                                availablePulls: 5,
-                                                                characters: Expr {
-                                                                  raw: [
-                                                                  ],
-                                                                },
-                                                                instance: Expr {
-                                                                  raw: {
-                                                                    from: Expr {
-                                                                      raw: {
-                                                                        var: "instance",
-                                                                      },
-                                                                    },
-                                                                    select: "ref",
-                                                                  },
-                                                                },
-                                                                user: Expr {
-                                                                  raw: {
-                                                                    from: Expr {
-                                                                      raw: {
-                                                                        var: "user",
-                                                                      },
-                                                                    },
-                                                                    select: "ref",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                              {
-                                                updatedInstance: Expr {
-                                                  raw: {
-                                                    params: Expr {
-                                                      raw: {
-                                                        object: {
-                                                          data: Expr {
-                                                            raw: {
-                                                              object: {
-                                                                inventories: Expr {
-                                                                  raw: {
-                                                                    append: Expr {
-                                                                      raw: {
-                                                                        from: Expr {
-                                                                          raw: {
-                                                                            var: "createdInventory",
-                                                                          },
-                                                                        },
-                                                                        select: "ref",
-                                                                      },
-                                                                    },
-                                                                    collection: Expr {
-                                                                      raw: {
-                                                                        from: Expr {
-                                                                          raw: {
-                                                                            var: "instance",
-                                                                          },
-                                                                        },
-                                                                        select: Expr {
-                                                                          raw: [
-                                                                            "data",
-                                                                            "inventories",
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                    update: Expr {
-                                                      raw: {
-                                                        from: Expr {
-                                                          raw: {
-                                                            var: "instance",
-                                                          },
-                                                        },
-                                                        select: "ref",
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                              {
-                                                updatedUser: Expr {
-                                                  raw: {
-                                                    params: Expr {
-                                                      raw: {
-                                                        object: {
-                                                          data: Expr {
-                                                            raw: {
-                                                              object: {
-                                                                inventories: Expr {
-                                                                  raw: {
-                                                                    append: Expr {
-                                                                      raw: {
-                                                                        from: Expr {
-                                                                          raw: {
-                                                                            var: "createdInventory",
-                                                                          },
-                                                                        },
-                                                                        select: "ref",
-                                                                      },
-                                                                    },
-                                                                    collection: Expr {
-                                                                      raw: {
-                                                                        from: Expr {
-                                                                          raw: {
-                                                                            var: "user",
-                                                                          },
-                                                                        },
-                                                                        select: Expr {
-                                                                          raw: [
-                                                                            "data",
-                                                                            "inventories",
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                    update: Expr {
-                                                      raw: {
-                                                        from: Expr {
-                                                          raw: {
-                                                            var: "user",
-                                                          },
-                                                        },
-                                                        select: "ref",
-                                                      },
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            ],
-                                          },
-                                        },
-                                        if: Expr {
-                                          raw: {
-                                            is_nonempty: Expr {
-                                              raw: {
-                                                var: "match",
-                                              },
-                                            },
-                                          },
-                                        },
-                                        then: Expr {
-                                          raw: {
-                                            get: Expr {
-                                              raw: {
-                                                var: "match",
-                                              },
-                                            },
-                                          },
-                                        },
-                                      },
-                                    },
-                                    let: [
-                                      {
-                                        match: Expr {
-                                          raw: {
-                                            match: Expr {
-                                              raw: {
-                                                index: "inventories_instance_user",
-                                              },
-                                            },
-                                            terms: Expr {
-                                              raw: [
-                                                Expr {
-                                                  raw: {
-                                                    from: Expr {
-                                                      raw: {
-                                                        var: "instance",
-                                                      },
-                                                    },
-                                                    select: "ref",
-                                                  },
-                                                },
-                                                Expr {
-                                                  raw: {
-                                                    from: Expr {
-                                                      raw: {
-                                                        var: "user",
-                                                      },
-                                                    },
-                                                    select: "ref",
-                                                  },
-                                                },
-                                              ],
-                                            },
-                                          },
-                                        },
-                                      },
-                                    ],
-                                  },
-                                },
-                              },
-                              {
                                 inventory: Expr {
                                   raw: {
                                     in: Expr {
@@ -2589,7 +2794,234 @@ snapshot[`model 2`] = `
                                           raw: {
                                             from: Expr {
                                               raw: {
-                                                var: "_inventory",
+                                                in: Expr {
+                                                  raw: {
+                                                    else: Expr {
+                                                      raw: {
+                                                        in: Expr {
+                                                          raw: {
+                                                            var: "createdInventory",
+                                                          },
+                                                        },
+                                                        let: [
+                                                          {
+                                                            createdInventory: Expr {
+                                                              raw: {
+                                                                create: Expr {
+                                                                  raw: {
+                                                                    collection: "inventory",
+                                                                  },
+                                                                },
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            availablePulls: 5,
+                                                                            instance: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "instance",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                            user: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "user",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedInstance: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "instance",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "instance",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedUser: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "user",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "user",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                    if: Expr {
+                                                      raw: {
+                                                        is_nonempty: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    then: Expr {
+                                                      raw: {
+                                                        get: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                let: [
+                                                  {
+                                                    match: Expr {
+                                                      raw: {
+                                                        match: Expr {
+                                                          raw: {
+                                                            index: "inventories_instance_user",
+                                                          },
+                                                        },
+                                                        terms: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "instance",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                ],
                                               },
                                             },
                                             select: "ref",
@@ -2608,7 +3040,234 @@ snapshot[`model 2`] = `
                                             },
                                             from: Expr {
                                               raw: {
-                                                var: "_inventory",
+                                                in: Expr {
+                                                  raw: {
+                                                    else: Expr {
+                                                      raw: {
+                                                        in: Expr {
+                                                          raw: {
+                                                            var: "createdInventory",
+                                                          },
+                                                        },
+                                                        let: [
+                                                          {
+                                                            createdInventory: Expr {
+                                                              raw: {
+                                                                create: Expr {
+                                                                  raw: {
+                                                                    collection: "inventory",
+                                                                  },
+                                                                },
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            availablePulls: 5,
+                                                                            instance: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "instance",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                            user: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "user",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedInstance: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "instance",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "instance",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedUser: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "user",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "user",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                    if: Expr {
+                                                      raw: {
+                                                        is_nonempty: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    then: Expr {
+                                                      raw: {
+                                                        get: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                let: [
+                                                  {
+                                                    match: Expr {
+                                                      raw: {
+                                                        match: Expr {
+                                                          raw: {
+                                                            index: "inventories_instance_user",
+                                                          },
+                                                        },
+                                                        terms: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "instance",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                ],
                                               },
                                             },
                                             select: Expr {
@@ -2625,7 +3284,234 @@ snapshot[`model 2`] = `
                                           raw: {
                                             from: Expr {
                                               raw: {
-                                                var: "_inventory",
+                                                in: Expr {
+                                                  raw: {
+                                                    else: Expr {
+                                                      raw: {
+                                                        in: Expr {
+                                                          raw: {
+                                                            var: "createdInventory",
+                                                          },
+                                                        },
+                                                        let: [
+                                                          {
+                                                            createdInventory: Expr {
+                                                              raw: {
+                                                                create: Expr {
+                                                                  raw: {
+                                                                    collection: "inventory",
+                                                                  },
+                                                                },
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            availablePulls: 5,
+                                                                            instance: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "instance",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                            user: Expr {
+                                                                              raw: {
+                                                                                from: Expr {
+                                                                                  raw: {
+                                                                                    var: "user",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedInstance: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "instance",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "instance",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                          {
+                                                            updatedUser: Expr {
+                                                              raw: {
+                                                                params: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: Expr {
+                                                                        raw: {
+                                                                          object: {
+                                                                            inventories: Expr {
+                                                                              raw: {
+                                                                                append: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "createdInventory",
+                                                                                      },
+                                                                                    },
+                                                                                    select: "ref",
+                                                                                  },
+                                                                                },
+                                                                                collection: Expr {
+                                                                                  raw: {
+                                                                                    from: Expr {
+                                                                                      raw: {
+                                                                                        var: "user",
+                                                                                      },
+                                                                                    },
+                                                                                    select: Expr {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "inventories",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "user",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                    if: Expr {
+                                                      raw: {
+                                                        is_nonempty: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    then: Expr {
+                                                      raw: {
+                                                        get: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                let: [
+                                                  {
+                                                    match: Expr {
+                                                      raw: {
+                                                        match: Expr {
+                                                          raw: {
+                                                            index: "inventories_instance_user",
+                                                          },
+                                                        },
+                                                        terms: Expr {
+                                                          raw: [
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "instance",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                            Expr {
+                                                              raw: {
+                                                                from: Expr {
+                                                                  raw: {
+                                                                    var: "user",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                ],
                                               },
                                             },
                                             select: Expr {
