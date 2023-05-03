@@ -1917,7 +1917,7 @@ _+2 others... <:remove:1099004424111792158>_`,
     }
   });
 
-  await test.step('maintenance', () => {
+  await test.step('under maintenance', () => {
     config.synthesis = false;
 
     try {

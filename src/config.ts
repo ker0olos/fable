@@ -13,6 +13,7 @@ const config: {
   origin?: string;
   gacha?: boolean;
   trading?: boolean;
+  stealing?: boolean;
   synthesis?: boolean;
   communityPacks?: boolean;
 } = {
@@ -26,6 +27,7 @@ const config: {
   origin: undefined,
   gacha: undefined,
   trading: undefined,
+  stealing: undefined,
   synthesis: undefined,
   communityPacks: undefined,
 };
@@ -58,6 +60,9 @@ export async function initConfig(): Promise<void> {
 
     config.trading = !Deno.env.has('TRADING') ||
       Deno.env.get('TRADING') === '1';
+
+    config.stealing = !Deno.env.has('STEALING') ||
+      Deno.env.get('STEALING') === '1';
 
     config.synthesis = !Deno.env.has('SYNTHESIS') ||
       Deno.env.get('SYNTHESIS') === '1';

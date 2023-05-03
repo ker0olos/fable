@@ -638,6 +638,46 @@ Deno.test('static messages', async (test) => {
     });
   });
 
+  await test.step('dialog 2', () => {
+    const message = discord.Message.dialog({
+      confirm: ['type', 'confirm_id2'],
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+      confirmText: 'Accept',
+      cancelText: 'Decline',
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [
+          {
+            type: 'rich',
+            title: 'title',
+          },
+        ],
+        attachments: [],
+        components: [{
+          type: 1,
+          components: [
+            {
+              custom_id: 'type=confirm_id2',
+              label: 'Accept',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'cancel',
+              label: 'Decline',
+              style: 4,
+              type: 2,
+            },
+          ],
+        }],
+      },
+    });
+  });
+
   await test.step('internal error', () => {
     const message = discord.Message.internal('id');
 

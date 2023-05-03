@@ -31,6 +31,7 @@ Deno.test('init', async (test) => {
         false,
         false,
         false,
+        false,
       ]),
     );
 
@@ -61,6 +62,7 @@ Deno.test('init', async (test) => {
         topggSecret: 'topgg_secret',
         gacha: true,
         trading: true,
+        stealing: true,
         synthesis: true,
         communityPacks: true,
         origin: undefined,
@@ -95,6 +97,7 @@ Deno.test('init', async (test) => {
         true,
         true,
         true,
+        true,
       ]),
     );
 
@@ -109,6 +112,7 @@ Deno.test('init', async (test) => {
         'fauna_secret',
         '123',
         'topgg_secret',
+        '0',
         '0',
         '0',
         '0',
@@ -129,6 +133,7 @@ Deno.test('init', async (test) => {
         topggSecret: 'topgg_secret',
         gacha: false,
         trading: false,
+        stealing: false,
         synthesis: false,
         communityPacks: false,
         origin: undefined,

@@ -3,6 +3,7 @@
 import {
   assertEquals,
   assertRejects,
+  assertThrows,
 } from 'https://deno.land/std@0.183.0/testing/asserts.ts';
 
 import { FakeTime } from 'https://deno.land/std@0.183.0/testing/time.ts';
@@ -23,7 +24,7 @@ import { Character, CharacterRole, MediaType } from '../src/types.ts';
 
 import { AniListCharacter } from '../packs/anilist/types.ts';
 
-import { NonFetalCancelableError } from '../src/errors.ts';
+import { NonFetalCancelableError, NonFetalError } from '../src/errors.ts';
 
 Deno.test('give', async (test) => {
   await test.step('normal', async () => {
@@ -1108,7 +1109,7 @@ Deno.test('/give', async (test) => {
         components: [],
         embeds: [{
           type: 'rich',
-          description: 'You can\'t gift yourself.',
+          description: 'You can\'t gift yourself!',
         }],
       },
     });
@@ -2377,7 +2378,7 @@ Deno.test('/trade', async (test) => {
         components: [],
         embeds: [{
           type: 'rich',
-          description: 'You can\'t trade with yourself.',
+          description: 'You can\'t trade with yourself!',
         }],
       },
     });
@@ -2464,6 +2465,29 @@ Deno.test('/trade', async (test) => {
       timeStub.restore();
       characterStub.restore();
       fetchStub.restore();
+    }
+  });
+
+  await test.step('under maintenance', () => {
+    config.trading = false;
+
+    try {
+      assertThrows(
+        () =>
+          trade.pre({
+            userId: 'user_id',
+            guildId: 'guild_id',
+            channelId: 'channel_id',
+            token: 'test_token',
+            targetId: 'another_user_id',
+            give: ['character_id'],
+            take: [],
+          }),
+        NonFetalError,
+        'Trading is under maintenance, try again later!',
+      );
+    } finally {
+      delete config.trading;
     }
   });
 });

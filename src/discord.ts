@@ -990,7 +990,7 @@ export class Message {
       type?: string;
       userId?: string;
       targetId?: string;
-      description: string;
+      description?: string;
       confirm: string | string[];
       message: Message;
       confirmText?: string;
@@ -1019,8 +1019,12 @@ export class Message {
       cancelComponent.setId('cancel');
     }
 
+    if (description) {
+      message
+        .addEmbed(new Embed().setDescription(description));
+    }
+
     return message
-      .addEmbed(new Embed().setDescription(description))
       .insertComponents([
         confirmComponent,
         cancelComponent,

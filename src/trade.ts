@@ -40,7 +40,7 @@ function pre({
       .setFlags(discord.MessageFlags.Ephemeral)
       .addEmbed(
         new discord.Embed().setDescription(
-          `You can\'t ${take.length ? 'trade with' : 'gift'} yourself.`,
+          `You can\'t ${take.length ? 'trade with' : 'gift'} yourself!`,
         ),
       );
   }

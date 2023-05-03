@@ -180,11 +180,13 @@ export namespace Schema {
     id: string;
     rating: number;
     mediaId: string;
-    user: { id: string };
+    user: Partial<Schema.User>;
+    inventory?: Partial<Schema.Inventory>;
     nickname?: string;
     image?: string;
   };
   export type User = {
+    id: string;
     lastVote?: string;
     totalVotes?: number;
     availableVotes?: number;
