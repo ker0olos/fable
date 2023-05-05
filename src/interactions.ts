@@ -178,8 +178,8 @@ export const handler = async (r: Request) => {
           );
 
           results?.sort((a, b) => {
-            const aP = a.popularity ?? a.media?.edges[0].node.popularity ?? 0;
-            const bP = b.popularity ?? b.media?.edges[0].node.popularity ?? 0;
+            const aP = a.popularity ?? a.media?.edges[0]?.node.popularity ?? 0;
+            const bP = b.popularity ?? b.media?.edges[0]?.node.popularity ?? 0;
 
             return bP - aP;
           }).forEach((char) => {
