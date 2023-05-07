@@ -538,8 +538,7 @@ snapshot[`model 3`] = `
                                                           },
                                                         },
                                                         instances: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                         lastInstall: Expr {
                                                           raw: {
@@ -608,8 +607,7 @@ snapshot[`model 3`] = `
                                                           },
                                                         },
                                                         instances: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                       },
                                                     },
@@ -698,13 +696,11 @@ snapshot[`model 3`] = `
                                                                   },
                                                                 },
                                                                 inventories: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                                 main: true,
                                                                 packs: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                               },
                                                             },
@@ -1190,8 +1186,7 @@ snapshot[`model 3`] = `
                                                           },
                                                         },
                                                         instances: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                         lastInstall: Expr {
                                                           raw: {
@@ -1260,8 +1255,7 @@ snapshot[`model 3`] = `
                                                           },
                                                         },
                                                         instances: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                       },
                                                     },
@@ -1350,13 +1344,11 @@ snapshot[`model 3`] = `
                                                                   },
                                                                 },
                                                                 inventories: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                                 main: true,
                                                                 packs: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                               },
                                                             },
@@ -1791,8 +1783,7 @@ snapshot[`model 4`] = `
                                                           },
                                                         },
                                                         instances: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                       },
                                                     },
@@ -1881,13 +1872,11 @@ snapshot[`model 4`] = `
                                                                   },
                                                                 },
                                                                 inventories: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                                 main: true,
                                                                 packs: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                               },
                                                             },
@@ -2316,8 +2305,7 @@ snapshot[`model 4`] = `
                                                           },
                                                         },
                                                         instances: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                       },
                                                     },
@@ -2406,13 +2394,11 @@ snapshot[`model 4`] = `
                                                                   },
                                                                 },
                                                                 inventories: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                                 main: true,
                                                                 packs: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                               },
                                                             },
