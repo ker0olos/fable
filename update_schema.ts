@@ -59,14 +59,18 @@ if (import.meta.main) {
   }
 
   try {
-    await $`fauna upload-graphql-schema bundle.gql\
+    const r = await $`fauna upload-graphql-schema bundle.gql\
       --secret ${FAUNA_SECRET}\
       --scheme https\
       --mode ${mode}\
       --domain db.us.fauna.com\
       --graphqlHost graphql.us.fauna.com\
-      --graphqlPort 443`
-      .quiet();
+      --graphqlPort 443`.quiet();
+
+    if (r.stdout.includes('error')) {
+      console.error(r.stdout);
+      throw new Error();
+    }
   } catch {
     throw new Error('Error running: `fauna upload-graphql-schema bundle.gql`');
   }
