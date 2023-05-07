@@ -535,6 +535,23 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "Steal a character from another user",
+    name: "steal",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The name of the character",
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
     description: "Need more information? We got you",
     name: "help",
     options: [

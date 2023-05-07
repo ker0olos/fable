@@ -13,7 +13,8 @@ Deno.test('model', async (test) => {
 
   Model(client as any).resolvers?.forEach((q) => q());
 
-  assertSpyCalls(client.query, 1);
+  assertSpyCalls(client.query, 2);
 
   await assertSnapshot(test, client.query.calls[0].args);
+  await assertSnapshot(test, client.query.calls[1].args);
 });

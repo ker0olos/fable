@@ -8,6 +8,7 @@ import packs from './packs.ts';
 import utils from './utils.ts';
 import gacha from './gacha.ts';
 import trade from './trade.ts';
+import steal from './steal.ts';
 import shop from './shop.ts';
 import help from './help.ts';
 
@@ -147,6 +148,7 @@ export const handler = async (r: Request) => {
             'give',
             'trade',
             'offer',
+            'steal',
             'nick',
             'image',
             'custom',
@@ -469,6 +471,22 @@ export const handler = async (r: Request) => {
             }
 
             return message.send();
+          }
+          case 'steal': {
+            const search = options['name'] as string;
+
+            return steal.pre({
+              token,
+              guildId,
+              channelId,
+              userId: member.user.id,
+              search,
+              id: search.startsWith(idPrefix)
+                ? search.substring(idPrefix.length)
+                : undefined,
+            })
+              .setFlags(discord.MessageFlags.Ephemeral)
+              .send();
           }
           case 'now':
           case 'vote':
@@ -879,6 +897,31 @@ export const handler = async (r: Request) => {
                 guildId,
                 channelId,
                 userId: member.user.id,
+              })
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'steal': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const characterId = customValues![1];
+
+            // deno-lint-ignore no-non-null-assertion
+            const chance = parseInt(customValues![2]);
+
+            if (userId === member.user.id) {
+              return steal.attempt({
+                token,
+                guildId,
+                channelId,
+                userId: member.user.id,
+                characterId,
+                pre: chance,
               })
                 .setType(discord.MessageType.Update)
                 .send();

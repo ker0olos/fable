@@ -400,6 +400,12 @@ snapshot[`/help 5`] = `
 " +
           "
 " +
+          "\`/steal\`
+" +
+          "_steal a character from another user_
+" +
+          "
+" +
           "\`/synthesize\`
 " +
           "_merge characters together to pull a new character_
@@ -410,15 +416,7 @@ snapshot[`/help 5`] = `
 " +
           "
 " +
-          "**[Daily Quests](https://github.com/ker0olos/fable/issues/75)**
-" +
-          "Complete quests for rewards
-" +
-          "
-" +
-          "**[Stealing](https://github.com/ker0olos/fable/issues/49)**
-" +
-          "You will be able to steal characters from other users",
+          "_> There's a feature freeze right now to focus on QoL changes._",
         type: "rich",
       },
     ],
@@ -502,7 +500,9 @@ snapshot[`/help 6`] = `
 " +
           "- \`/trade\` \`/offer\`: _trade characters with another user_
 " +
-          "- \`/give\` \`/gift\`: _give characters to another user_",
+          "- \`/give\` \`/gift\`: _give characters to another user_
+" +
+          "- \`/steal\`: _steal a character from another user_",
         type: "rich",
       },
     ],

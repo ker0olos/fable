@@ -11,6 +11,7 @@ const config: {
   topggSecret?: string;
   sentry?: string;
   origin?: string;
+  notice?: string;
   gacha?: boolean;
   trading?: boolean;
   stealing?: boolean;
@@ -25,6 +26,7 @@ const config: {
   topggSecret: undefined,
   sentry: undefined,
   origin: undefined,
+  notice: undefined,
   gacha: undefined,
   trading: undefined,
   stealing: undefined,
@@ -53,6 +55,8 @@ export async function initConfig(): Promise<void> {
 
     config.topggCipher = Number(Deno.env.get('TOPGG_WEBHOOK_CIPHER'));
     config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');
+
+    config.notice = Deno.env.get('NOTICE');
 
     // feature flags
     config.gacha = !Deno.env.has('GACHA') ||

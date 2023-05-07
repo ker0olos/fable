@@ -39,6 +39,7 @@ export interface Inventory {
   availablePulls: NumberExpr;
   lastPull?: TimeExpr;
   rechargeTimestamp?: TimeExpr;
+  stealTimestamp?: TimeExpr;
   characters?: RefExpr[];
   instance: RefExpr;
   user: RefExpr;

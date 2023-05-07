@@ -390,6 +390,18 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'steal',
+    description: 'Steal a character from another user',
+    options: [
+      Option({
+        name: 'name',
+        description: 'The name of the character',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
     name: 'help',
     description: 'Need more information? We got you',
     aliases: ['start', 'guide', 'tuto'],

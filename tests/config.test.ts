@@ -46,6 +46,7 @@ Deno.test('init', async (test) => {
         'fauna_secret',
         '123',
         'topgg_secret',
+        'notice_message',
       ]),
     );
 
@@ -60,6 +61,7 @@ Deno.test('init', async (test) => {
         sentry: 'sentry_dsn',
         topggCipher: 123,
         topggSecret: 'topgg_secret',
+        notice: 'notice_message',
         gacha: true,
         trading: true,
         stealing: true,
@@ -112,6 +114,7 @@ Deno.test('init', async (test) => {
         'fauna_secret',
         '123',
         'topgg_secret',
+        'notice_message',
         '0',
         '0',
         '0',
@@ -131,6 +134,7 @@ Deno.test('init', async (test) => {
         sentry: 'sentry_dsn',
         topggCipher: 123,
         topggSecret: 'topgg_secret',
+        notice: 'notice_message',
         gacha: false,
         trading: false,
         stealing: false,

@@ -38,7 +38,8 @@ GACHA=1
 TRADING=1
 STEALING=1
 SYNTHESIS=1
-COMMUNITY_PACKS=1`,
+COMMUNITY_PACKS=1
+NOTICE=`,
 );
 
 await $.confirm({
@@ -51,9 +52,11 @@ Did you invite the bot to your server using the url above?`,
 let pb = $.progress('Install Developer Tools');
 
 try {
-  await $`npm i -g fauna-shell ngrok concurrently`.quiet();
+  await $`npm i -g fauna-shell ngrok concurrently node-jq`.quiet();
 } catch {
-  console.error(red('Error running: npm i -g fauna-shell ngrok concurrently'));
+  console.error(
+    red('Error running: npm i -g fauna-shell ngrok concurrently node-jq'),
+  );
   Deno.exit(1);
 } finally {
   pb.finish();

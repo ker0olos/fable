@@ -134,7 +134,7 @@ Deno.test('/now', async (test) => {
                   type: 2,
                 },
                 {
-                  label: 'Vote for Rewards',
+                  label: 'Vote',
                   style: 5,
                   type: 2,
                   url:
@@ -206,7 +206,7 @@ Deno.test('/now', async (test) => {
           components: [{
             type: 1,
             components: [{
-              label: 'Vote for Rewards',
+              label: 'Vote',
               style: 5,
               type: 2,
               url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
@@ -276,7 +276,7 @@ Deno.test('/now', async (test) => {
           components: [{
             type: 1,
             components: [{
-              label: 'Vote for Rewards',
+              label: 'Vote',
               style: 5,
               type: 2,
               url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
@@ -639,6 +639,81 @@ Deno.test('/now', async (test) => {
     } finally {
       delete config.appId;
       delete config.topggCipher;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('with notice', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                availablePulls: 0,
+                rechargeTimestamp: time.toISOString(),
+                user: {},
+              },
+            },
+          }))),
+        //
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.topggCipher = 12;
+
+    config.notice = '**test** _message_';
+
+    try {
+      const message = await user.now({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: '**0**',
+              footer: {
+                text: 'Available Pulls',
+              },
+              description: undefined,
+            },
+            {
+              description: '**test** _message_',
+              type: 'rich',
+            },
+            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
+          ],
+          components: [{
+            type: 1,
+            components: [{
+              label: 'Vote',
+              style: 5,
+              type: 2,
+              url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+            }],
+          }],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.topggCipher;
+      delete config.notice;
 
       fetchStub.restore();
     }

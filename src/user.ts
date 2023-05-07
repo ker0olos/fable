@@ -168,6 +168,13 @@ async function now({
     );
   }
 
+  if (config.notice) {
+    message.addEmbed(
+      new discord.Embed()
+        .setDescription(config.notice),
+    );
+  }
+
   if (availablePulls < 5) {
     message.addEmbed(
       new discord.Embed()
@@ -225,7 +232,7 @@ async function now({
   if (!user.lastVote || voting.canVote) {
     message.addComponents([
       new discord.Component()
-        .setLabel(!user.lastVote ? 'Vote for Rewards' : 'Vote')
+        .setLabel('Vote')
         .setUrl(
           `https://top.gg/bot/${config.appId}/vote?ref=${
             // deno-lint-ignore no-non-null-assertion
@@ -262,6 +269,16 @@ async function findCharacter({
         nickname
         mediaId
         rating
+        inventory {
+          lastPull
+          party {
+            member1 { id }
+            member2 { id }
+            member3 { id }
+            member4 { id }
+            member5 { id }
+          }
+        }
         user {
           id
         }
@@ -392,20 +409,22 @@ function customize({
         }
       }
 
+      const character = await packs.aggregate<Character>({
+        guildId,
+        character: results[0],
+        end: 1,
+      });
+
       return message
         .addEmbed(srch.characterEmbed(
-          await packs.aggregate<Character>({
-            guildId,
-            character: results[0],
-            end: 1,
-          }),
+          character,
           channelId,
           {
+            footer: true,
             rating: false,
             description: false,
             media: { title: true },
             existing: response.character,
-            footer: true,
           },
         ))
         .addComponents([
@@ -522,13 +541,15 @@ function like({
           new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked'),
         );
 
+      const character = await packs.aggregate<Character>({
+        guildId,
+        character: results[0],
+        end: 1,
+      });
+
       message
         .addEmbed(srch.characterEmbed(
-          await packs.aggregate<Character>({
-            guildId,
-            character: results[0],
-            end: 1,
-          }),
+          character,
           channelId,
           {
             footer: true,

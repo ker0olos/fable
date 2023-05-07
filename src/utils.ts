@@ -367,6 +367,15 @@ function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
   };
 }
 
+function stealTimestamp(v?: string): string {
+  const parsed = new Date(v ?? new Date());
+
+  const ts = parsed.getTime();
+
+  // discord uses seconds not milliseconds
+  return Math.floor(ts / 1000).toString();
+}
+
 function cipher(str: string, secret: number): string {
   let b = '';
 
@@ -424,6 +433,7 @@ const utils = {
   validateRequest,
   verifySignature,
   votingTimestamp,
+  stealTimestamp,
   wrap,
 };
 

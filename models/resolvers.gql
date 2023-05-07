@@ -112,6 +112,9 @@ type Mutation {
     @resolver(name: "unlike_character")
 
   #
+  failSteal(userId: String!, guildId: String!): Response!
+    @resolver(name: "fail_steal")
+
   stealCharacter(userId: String!, guildId: String!, characterId: String!): Response!
     @resolver(name: "steal_character")
 }

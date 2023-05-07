@@ -201,6 +201,7 @@ export namespace Schema {
   export type Inventory = {
     availablePulls: number;
     rechargeTimestamp?: string;
+    stealTimestamp?: string;
     lastPull?: string;
     characters: Character[];
     user: User;
@@ -257,6 +258,11 @@ export namespace Schema {
     | {
       ok: false;
       error: 'CHARACTER_IN_PARTY';
+    }
+    | {
+      ok: false;
+      error: 'ON_COOLDOWN';
+      inventory: Inventory;
     }
     | {
       ok: true;
