@@ -254,7 +254,7 @@ export const commands = [
   }),
   ...Command({
     name: 'found',
-    aliases: ['obtained', 'owned'],
+    aliases: ['owned'],
     description: 'View all characters found in a specific media',
     options: [
       Option({

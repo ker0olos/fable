@@ -498,11 +498,11 @@ snapshot[`/help 6`] = `
 " +
           "
 " +
+          "- \`/steal\`: _steal a character from another user_
+" +
           "- \`/trade\` \`/offer\`: _trade characters with another user_
 " +
-          "- \`/give\` \`/gift\`: _give characters to another user_
-" +
-          "- \`/steal\`: _steal a character from another user_",
+          "- \`/give\` \`/gift\`: _give characters to another user_",
         type: "rich",
       },
     ],
@@ -552,7 +552,7 @@ snapshot[`/help 7`] = `
 " +
           "
 " +
-          "- \`/found\` \`/obtained\` \`/owned\`: _list all characters found from a specific media_
+          "- \`/found\` \`/owned\`: _list all characters found from a specific media_
 " +
           "
 " +

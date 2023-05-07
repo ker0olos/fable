@@ -634,106 +634,164 @@ async function mediaCharacters(
   });
 }
 
-async function mediaFound(
-  { search, id, guildId, channelId, before, after }: {
+function mediaFound(
+  {
+    token,
+    index,
+    search,
+    id,
+    guildId,
+  }: {
+    token: string;
+    index: number;
     guildId: string;
-    channelId: string;
     search?: string;
     id?: string;
-    before?: string;
-    after?: string;
   },
-): Promise<discord.Message> {
-  const results: (Media | DisaggregatedMedia)[] = await packs
-    .media(id ? { ids: [id], guildId } : { search, guildId });
+): discord.Message {
+  packs
+    .media(id ? { ids: [id], guildId } : { search, guildId })
+    .then(async (results: (Media | DisaggregatedMedia)[]) => {
+      const embed = new discord.Embed();
 
-  if (!results.length) {
-    throw new Error('404');
-  }
+      const message = new discord.Message();
 
-  const media = results[0];
-  const mediaId = `${media.packId}:${media.id}`;
+      if (!results.length) {
+        throw new Error('404');
+      }
 
-  const titles = packs.aliasToArray(media.title);
+      const media = results[0];
+      const mediaId = `${media.packId}:${media.id}`;
 
-  const query = gql`
-    query ($guildId: String!, $mediaId: String!, $before: String, $after: String) {
-      findMedia(guildId: $guildId, mediaId: $mediaId, before: $before, after: $after) {
-        anchor
-        character {
+      const titles = packs.aliasToArray(media.title);
+
+      const query = gql`
+    query ($guildId: String!, $mediaId: String!) {
+      findMedia(guildId: $guildId, mediaId: $mediaId) {
+        id
+        mediaId
+        rating
+        user {
           id
-          mediaId
-          rating
-          user {
-            id
-          }
         }
       }
     }
   `;
 
-  const { character, anchor } = (await request<{
-    findMedia: {
-      character?: Schema.Inventory['characters'][0];
-      anchor?: string;
-    };
-  }>({
-    url: faunaUrl,
-    query,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      guildId,
-      mediaId,
-      before,
-      after,
-    },
-  })).findMedia;
+      const response = (await request<{
+        findMedia: Schema.Inventory['characters'];
+      }>({
+        url: faunaUrl,
+        query,
+        headers: {
+          'authorization': `Bearer ${config.faunaSecret}`,
+        },
+        variables: {
+          guildId,
+          mediaId,
+        },
+      })).findMedia;
 
-  if (!character || !anchor) {
-    const message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setDescription(`No one has found any ${titles[0]} characters`),
+      if (!response?.length) {
+        throw new NonFetalError(`No one has found any ${titles[0]} characters`);
+      }
+
+      const chunks = utils.chunks(
+        response.sort((a, b) => b.rating - a.rating),
+        5,
       );
 
-    return message;
-  }
+      const characters = await packs.characters({
+        ids: chunks[index].map(({ id }) => id),
+        guildId,
+      });
 
-  const characters = await packs.characters({ ids: [character.id], guildId });
+      const names: string[] = [];
 
-  let message: discord.Message;
+      await Promise.all(
+        characters.map((char) => {
+          // const char = await packs.aggregate<Character>({
+          //   guildId,
+          //   character,
+          //   end: 1,
+          // });
 
-  if (!characters.length) {
-    message = new discord.Message()
-      .addEmbed(
-        new discord.Embed()
-          .setDescription('This character was removed or disabled'),
+          const existing = chunks[index].find(({ id }) => id === char.id);
+
+          const rating = existing?.rating ?? Rating.fromCharacter(char).stars;
+
+          // const media = utils.wrap(
+          //   // deno-lint-ignore no-non-null-assertion
+          //   packs.aliasToArray(char.media!.edges[0].node.title)[0],
+          // );
+
+          const name = `${rating}${discord.emotes.smolStar} ${
+            existing ? `<@${existing.user.id}> ` : ''
+          }${utils.wrap(packs.aliasToArray(char.name)[0])}`;
+
+          // embed.addField({
+          //   inline: false,
+          //   // name: media,
+          //   value: name,
+          // });
+
+          names.push(name);
+        }),
       );
-  } else {
-    message = characterMessage(
-      characters[0],
-      channelId,
-      {
-        existing: character,
-        rating: new Rating({ stars: character.rating }),
-        relations: false,
-      },
-    ).addComponents([
-      new discord.Component()
-        .setId('media', `${media.packId}:${media.id}`)
-        .setLabel(`/${media.type.toLowerCase()}`),
-    ]);
-  }
 
-  return discord.Message.anchor({
-    id: '',
-    type: 'found',
-    target: mediaId,
-    anchor,
-    message,
-  });
+      if (characters.length !== chunks[index].length) {
+        names.push(
+          `_${chunks[index].length - characters.length} disabled characters_`,
+        );
+      }
+
+      embed.setDescription(names.join('\n'));
+
+      return discord.Message.page({
+        index,
+        type: 'found',
+        target: mediaId,
+        total: chunks.length,
+        message: message.addEmbed(embed),
+        next: index + 1 < chunks.length,
+      }).patch(token);
+    })
+    .catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'Found _nothing_ matching that query!',
+            ),
+          ).patch(token);
+      }
+
+      if (err instanceof NonFetalError) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(err.message),
+          )
+          .patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
 }
 
 const search = {

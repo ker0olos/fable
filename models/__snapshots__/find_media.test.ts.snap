@@ -9,7 +9,7 @@ snapshot[`model 1`] = `
           create_index: Expr {
             raw: {
               object: {
-                name: "media_instance_id",
+                name: "unsorted_media_instance_id",
                 source: Expr {
                   raw: {
                     collection: "character",
@@ -44,34 +44,7 @@ snapshot[`model 1`] = `
                   ],
                 },
                 unique: false,
-                values: Expr {
-                  raw: [
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "rating",
-                            ],
-                          },
-                          reverse: true,
-                        },
-                      },
-                    },
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "ref",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
+                values: undefined,
               },
             },
           },
@@ -81,7 +54,7 @@ snapshot[`model 1`] = `
         raw: {
           exists: Expr {
             raw: {
-              index: "media_instance_id",
+              index: "unsorted_media_instance_id",
             },
           },
         },
@@ -91,7 +64,7 @@ snapshot[`model 1`] = `
           params: Expr {
             raw: {
               object: {
-                name: "media_instance_id",
+                name: "unsorted_media_instance_id",
                 source: Expr {
                   raw: {
                     collection: "character",
@@ -126,40 +99,13 @@ snapshot[`model 1`] = `
                   ],
                 },
                 unique: false,
-                values: Expr {
-                  raw: [
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "data",
-                              "rating",
-                            ],
-                          },
-                          reverse: true,
-                        },
-                      },
-                    },
-                    Expr {
-                      raw: {
-                        object: {
-                          field: Expr {
-                            raw: [
-                              "ref",
-                            ],
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
+                values: undefined,
               },
             },
           },
           update: Expr {
             raw: {
-              index: "media_instance_id",
+              index: "unsorted_media_instance_id",
             },
           },
         },
@@ -303,26 +249,39 @@ snapshot[`model 3`] = `
                               raw: {
                                 in: Expr {
                                   raw: {
-                                    object: {
-                                      anchor: Expr {
-                                        raw: {
-                                          default: null,
-                                          from: Expr {
-                                            raw: {
-                                              var: "character",
+                                    collection: Expr {
+                                      raw: {
+                                        from: Expr {
+                                          raw: {
+                                            after: undefined,
+                                            before: undefined,
+                                            paginate: Expr {
+                                              raw: {
+                                                var: "characters",
+                                              },
                                             },
+                                            size: 1000,
                                           },
-                                          select: Expr {
-                                            raw: [
-                                              "id",
-                                            ],
-                                          },
+                                        },
+                                        select: Expr {
+                                          raw: [
+                                            "data",
+                                          ],
                                         },
                                       },
-                                      character: Expr {
-                                        raw: {
-                                          var: "character",
+                                    },
+                                    map: Expr {
+                                      raw: {
+                                        expr: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "refOrMatch",
+                                              },
+                                            },
+                                          },
                                         },
+                                        lambda: "refOrMatch",
                                       },
                                     },
                                   },
@@ -333,7 +292,7 @@ snapshot[`model 3`] = `
                                       raw: {
                                         match: Expr {
                                           raw: {
-                                            index: "media_instance_id",
+                                            index: "unsorted_media_instance_id",
                                           },
                                         },
                                         terms: Expr {
@@ -354,294 +313,6 @@ snapshot[`model 3`] = `
                                               },
                                             },
                                           ],
-                                        },
-                                      },
-                                    },
-                                  },
-                                  {
-                                    character: Expr {
-                                      raw: {
-                                        else: null,
-                                        if: Expr {
-                                          raw: {
-                                            is_nonempty: Expr {
-                                              raw: {
-                                                var: "characters",
-                                              },
-                                            },
-                                          },
-                                        },
-                                        then: Expr {
-                                          raw: {
-                                            else: Expr {
-                                              raw: {
-                                                in: Expr {
-                                                  raw: {
-                                                    default: Expr {
-                                                      raw: {
-                                                        from: Expr {
-                                                          raw: {
-                                                            get: Expr {
-                                                              raw: {
-                                                                reverse: Expr {
-                                                                  raw: {
-                                                                    var: "characters",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                        select: "ref",
-                                                      },
-                                                    },
-                                                    from: Expr {
-                                                      raw: {
-                                                        var: "match",
-                                                      },
-                                                    },
-                                                    select: Expr {
-                                                      raw: [
-                                                        "data",
-                                                        0,
-                                                        1,
-                                                      ],
-                                                    },
-                                                  },
-                                                },
-                                                let: [
-                                                  {
-                                                    match: Expr {
-                                                      raw: {
-                                                        after: undefined,
-                                                        before: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                from: Expr {
-                                                                  raw: {
-                                                                    get: Expr {
-                                                                      raw: {
-                                                                        id: Expr {
-                                                                          raw: {
-                                                                            var: "before",
-                                                                          },
-                                                                        },
-                                                                        ref: Expr {
-                                                                          raw: {
-                                                                            collection: "character",
-                                                                          },
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                                select: Expr {
-                                                                  raw: [
-                                                                    "data",
-                                                                    "rating",
-                                                                  ],
-                                                                },
-                                                              },
-                                                            },
-                                                            Expr {
-                                                              raw: {
-                                                                id: Expr {
-                                                                  raw: {
-                                                                    var: "before",
-                                                                  },
-                                                                },
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "character",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                            Expr {
-                                                              raw: {
-                                                                id: Expr {
-                                                                  raw: {
-                                                                    var: "before",
-                                                                  },
-                                                                },
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "character",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
-                                                        paginate: Expr {
-                                                          raw: {
-                                                            var: "characters",
-                                                          },
-                                                        },
-                                                        size: 1,
-                                                      },
-                                                    },
-                                                  },
-                                                ],
-                                              },
-                                            },
-                                            if: Expr {
-                                              raw: {
-                                                equals: Expr {
-                                                  raw: [
-                                                    Expr {
-                                                      raw: {
-                                                        var: "before",
-                                                      },
-                                                    },
-                                                    null,
-                                                  ],
-                                                },
-                                              },
-                                            },
-                                            then: Expr {
-                                              raw: {
-                                                else: Expr {
-                                                  raw: {
-                                                    in: Expr {
-                                                      raw: {
-                                                        default: Expr {
-                                                          raw: {
-                                                            from: Expr {
-                                                              raw: {
-                                                                get: Expr {
-                                                                  raw: {
-                                                                    var: "characters",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                            select: "ref",
-                                                          },
-                                                        },
-                                                        from: Expr {
-                                                          raw: {
-                                                            var: "match",
-                                                          },
-                                                        },
-                                                        select: Expr {
-                                                          raw: [
-                                                            "data",
-                                                            1,
-                                                            1,
-                                                          ],
-                                                        },
-                                                      },
-                                                    },
-                                                    let: [
-                                                      {
-                                                        match: Expr {
-                                                          raw: {
-                                                            after: Expr {
-                                                              raw: [
-                                                                Expr {
-                                                                  raw: {
-                                                                    from: Expr {
-                                                                      raw: {
-                                                                        get: Expr {
-                                                                          raw: {
-                                                                            id: Expr {
-                                                                              raw: {
-                                                                                var: "after",
-                                                                              },
-                                                                            },
-                                                                            ref: Expr {
-                                                                              raw: {
-                                                                                collection: "character",
-                                                                              },
-                                                                            },
-                                                                          },
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                    select: Expr {
-                                                                      raw: [
-                                                                        "data",
-                                                                        "rating",
-                                                                      ],
-                                                                    },
-                                                                  },
-                                                                },
-                                                                Expr {
-                                                                  raw: {
-                                                                    id: Expr {
-                                                                      raw: {
-                                                                        var: "after",
-                                                                      },
-                                                                    },
-                                                                    ref: Expr {
-                                                                      raw: {
-                                                                        collection: "character",
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                                Expr {
-                                                                  raw: {
-                                                                    id: Expr {
-                                                                      raw: {
-                                                                        var: "after",
-                                                                      },
-                                                                    },
-                                                                    ref: Expr {
-                                                                      raw: {
-                                                                        collection: "character",
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                              ],
-                                                            },
-                                                            before: undefined,
-                                                            paginate: Expr {
-                                                              raw: {
-                                                                var: "characters",
-                                                              },
-                                                            },
-                                                            size: 2,
-                                                          },
-                                                        },
-                                                      },
-                                                    ],
-                                                  },
-                                                },
-                                                if: Expr {
-                                                  raw: {
-                                                    equals: Expr {
-                                                      raw: [
-                                                        Expr {
-                                                          raw: {
-                                                            var: "after",
-                                                          },
-                                                        },
-                                                        null,
-                                                      ],
-                                                    },
-                                                  },
-                                                },
-                                                then: Expr {
-                                                  raw: {
-                                                    from: Expr {
-                                                      raw: {
-                                                        get: Expr {
-                                                          raw: {
-                                                            var: "characters",
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                    select: "ref",
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
                                         },
                                       },
                                     },
@@ -881,8 +552,6 @@ snapshot[`model 3`] = `
                           raw: [
                             "mediaId",
                             "guildId",
-                            "before",
-                            "after",
                           ],
                         },
                       },
@@ -919,26 +588,39 @@ snapshot[`model 3`] = `
                               raw: {
                                 in: Expr {
                                   raw: {
-                                    object: {
-                                      anchor: Expr {
-                                        raw: {
-                                          default: null,
-                                          from: Expr {
-                                            raw: {
-                                              var: "character",
+                                    collection: Expr {
+                                      raw: {
+                                        from: Expr {
+                                          raw: {
+                                            after: undefined,
+                                            before: undefined,
+                                            paginate: Expr {
+                                              raw: {
+                                                var: "characters",
+                                              },
                                             },
+                                            size: 1000,
                                           },
-                                          select: Expr {
-                                            raw: [
-                                              "id",
-                                            ],
-                                          },
+                                        },
+                                        select: Expr {
+                                          raw: [
+                                            "data",
+                                          ],
                                         },
                                       },
-                                      character: Expr {
-                                        raw: {
-                                          var: "character",
+                                    },
+                                    map: Expr {
+                                      raw: {
+                                        expr: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "refOrMatch",
+                                              },
+                                            },
+                                          },
                                         },
+                                        lambda: "refOrMatch",
                                       },
                                     },
                                   },
@@ -949,7 +631,7 @@ snapshot[`model 3`] = `
                                       raw: {
                                         match: Expr {
                                           raw: {
-                                            index: "media_instance_id",
+                                            index: "unsorted_media_instance_id",
                                           },
                                         },
                                         terms: Expr {
@@ -970,294 +652,6 @@ snapshot[`model 3`] = `
                                               },
                                             },
                                           ],
-                                        },
-                                      },
-                                    },
-                                  },
-                                  {
-                                    character: Expr {
-                                      raw: {
-                                        else: null,
-                                        if: Expr {
-                                          raw: {
-                                            is_nonempty: Expr {
-                                              raw: {
-                                                var: "characters",
-                                              },
-                                            },
-                                          },
-                                        },
-                                        then: Expr {
-                                          raw: {
-                                            else: Expr {
-                                              raw: {
-                                                in: Expr {
-                                                  raw: {
-                                                    default: Expr {
-                                                      raw: {
-                                                        from: Expr {
-                                                          raw: {
-                                                            get: Expr {
-                                                              raw: {
-                                                                reverse: Expr {
-                                                                  raw: {
-                                                                    var: "characters",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                        },
-                                                        select: "ref",
-                                                      },
-                                                    },
-                                                    from: Expr {
-                                                      raw: {
-                                                        var: "match",
-                                                      },
-                                                    },
-                                                    select: Expr {
-                                                      raw: [
-                                                        "data",
-                                                        0,
-                                                        1,
-                                                      ],
-                                                    },
-                                                  },
-                                                },
-                                                let: [
-                                                  {
-                                                    match: Expr {
-                                                      raw: {
-                                                        after: undefined,
-                                                        before: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                from: Expr {
-                                                                  raw: {
-                                                                    get: Expr {
-                                                                      raw: {
-                                                                        id: Expr {
-                                                                          raw: {
-                                                                            var: "before",
-                                                                          },
-                                                                        },
-                                                                        ref: Expr {
-                                                                          raw: {
-                                                                            collection: "character",
-                                                                          },
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                                select: Expr {
-                                                                  raw: [
-                                                                    "data",
-                                                                    "rating",
-                                                                  ],
-                                                                },
-                                                              },
-                                                            },
-                                                            Expr {
-                                                              raw: {
-                                                                id: Expr {
-                                                                  raw: {
-                                                                    var: "before",
-                                                                  },
-                                                                },
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "character",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                            Expr {
-                                                              raw: {
-                                                                id: Expr {
-                                                                  raw: {
-                                                                    var: "before",
-                                                                  },
-                                                                },
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "character",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
-                                                        paginate: Expr {
-                                                          raw: {
-                                                            var: "characters",
-                                                          },
-                                                        },
-                                                        size: 1,
-                                                      },
-                                                    },
-                                                  },
-                                                ],
-                                              },
-                                            },
-                                            if: Expr {
-                                              raw: {
-                                                equals: Expr {
-                                                  raw: [
-                                                    Expr {
-                                                      raw: {
-                                                        var: "before",
-                                                      },
-                                                    },
-                                                    null,
-                                                  ],
-                                                },
-                                              },
-                                            },
-                                            then: Expr {
-                                              raw: {
-                                                else: Expr {
-                                                  raw: {
-                                                    in: Expr {
-                                                      raw: {
-                                                        default: Expr {
-                                                          raw: {
-                                                            from: Expr {
-                                                              raw: {
-                                                                get: Expr {
-                                                                  raw: {
-                                                                    var: "characters",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                            select: "ref",
-                                                          },
-                                                        },
-                                                        from: Expr {
-                                                          raw: {
-                                                            var: "match",
-                                                          },
-                                                        },
-                                                        select: Expr {
-                                                          raw: [
-                                                            "data",
-                                                            1,
-                                                            1,
-                                                          ],
-                                                        },
-                                                      },
-                                                    },
-                                                    let: [
-                                                      {
-                                                        match: Expr {
-                                                          raw: {
-                                                            after: Expr {
-                                                              raw: [
-                                                                Expr {
-                                                                  raw: {
-                                                                    from: Expr {
-                                                                      raw: {
-                                                                        get: Expr {
-                                                                          raw: {
-                                                                            id: Expr {
-                                                                              raw: {
-                                                                                var: "after",
-                                                                              },
-                                                                            },
-                                                                            ref: Expr {
-                                                                              raw: {
-                                                                                collection: "character",
-                                                                              },
-                                                                            },
-                                                                          },
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                    select: Expr {
-                                                                      raw: [
-                                                                        "data",
-                                                                        "rating",
-                                                                      ],
-                                                                    },
-                                                                  },
-                                                                },
-                                                                Expr {
-                                                                  raw: {
-                                                                    id: Expr {
-                                                                      raw: {
-                                                                        var: "after",
-                                                                      },
-                                                                    },
-                                                                    ref: Expr {
-                                                                      raw: {
-                                                                        collection: "character",
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                                Expr {
-                                                                  raw: {
-                                                                    id: Expr {
-                                                                      raw: {
-                                                                        var: "after",
-                                                                      },
-                                                                    },
-                                                                    ref: Expr {
-                                                                      raw: {
-                                                                        collection: "character",
-                                                                      },
-                                                                    },
-                                                                  },
-                                                                },
-                                                              ],
-                                                            },
-                                                            before: undefined,
-                                                            paginate: Expr {
-                                                              raw: {
-                                                                var: "characters",
-                                                              },
-                                                            },
-                                                            size: 2,
-                                                          },
-                                                        },
-                                                      },
-                                                    ],
-                                                  },
-                                                },
-                                                if: Expr {
-                                                  raw: {
-                                                    equals: Expr {
-                                                      raw: [
-                                                        Expr {
-                                                          raw: {
-                                                            var: "after",
-                                                          },
-                                                        },
-                                                        null,
-                                                      ],
-                                                    },
-                                                  },
-                                                },
-                                                then: Expr {
-                                                  raw: {
-                                                    from: Expr {
-                                                      raw: {
-                                                        get: Expr {
-                                                          raw: {
-                                                            var: "characters",
-                                                          },
-                                                        },
-                                                      },
-                                                    },
-                                                    select: "ref",
-                                                  },
-                                                },
-                                              },
-                                            },
-                                          },
                                         },
                                       },
                                     },
@@ -1497,8 +891,6 @@ snapshot[`model 3`] = `
                           raw: [
                             "mediaId",
                             "guildId",
-                            "before",
-                            "after",
                           ],
                         },
                       },

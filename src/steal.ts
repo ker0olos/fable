@@ -436,15 +436,6 @@ function attempt({
           .patch(token);
       }
 
-      if (err instanceof NonFetalError) {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription(err.message),
-          )
-          .patch(token);
-      }
-
       if (!config.sentry) {
         throw err;
       }

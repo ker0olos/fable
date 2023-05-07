@@ -882,7 +882,7 @@ function likeslist({
         return message.patch(token);
       }
 
-      const chunks = utils.chunks(Array.from(charactersIds), 5);
+      const chunks = utils.chunks(charactersIds, 5);
 
       const results = await packs.characters({ ids: chunks[index], guildId });
 
@@ -931,7 +931,7 @@ function likeslist({
       return discord.Message.page({
         index,
         type: 'likes',
-        target: discord.join(userId),
+        target: userId,
         total: chunks.length,
         message: message.addEmbed(embed),
         next: index + 1 < chunks.length,

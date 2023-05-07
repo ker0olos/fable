@@ -214,23 +214,6 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "View all characters found in a specific media",
-    name: "obtained",
-    options: [
-      {
-        autocomplete: true,
-        choices: undefined,
-        description: "The title of the media",
-        name: "title",
-        options: undefined,
-        required: true,
-        type: 3,
-      },
-    ],
-    type: undefined,
-  },
-  {
-    default_member_permissions: undefined,
-    description: "View all characters found in a specific media",
     name: "owned",
     options: [
       {

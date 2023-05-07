@@ -905,7 +905,7 @@ Deno.test('found components', async (test) => {
       channel_id: 'channel_id',
 
       data: {
-        custom_id: 'found=media_id==anchor=prev',
+        custom_id: 'found=media_id=1=prev',
       },
     });
 
@@ -962,11 +962,10 @@ Deno.test('found components', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
+          index: 1,
+          token: 'token',
           id: 'media_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
-          before: 'anchor',
-          after: undefined,
         }],
       });
 
@@ -989,7 +988,7 @@ Deno.test('found components', async (test) => {
       channel_id: 'channel_id',
 
       data: {
-        custom_id: 'found=media_id==anchor=next',
+        custom_id: 'found=media_id=1=prev',
       },
     });
 
@@ -1046,11 +1045,10 @@ Deno.test('found components', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
+          index: 1,
+          token: 'token',
           id: 'media_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
-          before: undefined,
-          after: 'anchor',
         }],
       });
 

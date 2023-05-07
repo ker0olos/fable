@@ -101,7 +101,7 @@ export const handler = async (r: Request) => {
         // suggest media
         if (
           (
-            ['search', 'anime', 'manga', 'media', 'found', 'obtained', 'owned']
+            ['search', 'anime', 'manga', 'media', 'found', 'owned']
               .includes(name)
           ) ||
           (
@@ -426,18 +426,18 @@ export const handler = async (r: Request) => {
             }).send();
           }
           case 'found':
-          case 'obtained':
           case 'owned': {
             const title = options['title'] as string;
 
-            return (await search.mediaFound({
+            return search.mediaFound({
+              token,
               guildId,
-              channelId,
+              index: 0,
               search: title,
               id: title.startsWith(idPrefix)
                 ? title.substring(idPrefix.length)
                 : undefined,
-            }))
+            })
               .send();
           }
           case 'trade':
@@ -741,17 +741,14 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
             // deno-lint-ignore no-non-null-assertion
-            const anchor = customValues![2];
-            // deno-lint-ignore no-non-null-assertion
-            const action = customValues![3];
+            const index = parseInt(customValues![1]);
 
-            return (await search.mediaFound({
+            return search.mediaFound({
+              token,
               id,
               guildId,
-              channelId,
-              after: action === 'next' ? anchor : undefined,
-              before: action === 'prev' ? anchor : undefined,
-            }))
+              index,
+            })
               .setType(discord.MessageType.Update)
               .send();
           }
