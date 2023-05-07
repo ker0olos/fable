@@ -2031,8 +2031,10 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "A pack powered by [AniList](https://anilist.co).
-
-Contains over 100K of anime and manga characters.",
+" +
+      "
+" +
+      "Contains over 100K of anime and manga characters.",
     name: "anilist",
     options: [
       {

@@ -440,13 +440,11 @@ snapshot[`model 5`] = `
                                                               },
                                                             },
                                                             inventories: Expr {
-                                                              raw: [
-                                                              ],
+                                                              raw: [],
                                                             },
                                                             main: true,
                                                             packs: Expr {
-                                                              raw: [
-                                                              ],
+                                                              raw: [],
                                                             },
                                                           },
                                                         },
@@ -577,8 +575,7 @@ snapshot[`model 5`] = `
                                                           },
                                                         },
                                                         instances: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                       },
                                                     },
@@ -700,13 +697,11 @@ snapshot[`model 5`] = `
                                                               },
                                                             },
                                                             inventories: Expr {
-                                                              raw: [
-                                                              ],
+                                                              raw: [],
                                                             },
                                                             main: true,
                                                             packs: Expr {
-                                                              raw: [
-                                                              ],
+                                                              raw: [],
                                                             },
                                                           },
                                                         },
@@ -837,8 +832,7 @@ snapshot[`model 5`] = `
                                                           },
                                                         },
                                                         instances: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                       },
                                                     },
@@ -1045,8 +1039,7 @@ snapshot[`model 6`] = `
                                                           },
                                                         },
                                                         inventories: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                       },
                                                     },
@@ -1121,8 +1114,7 @@ snapshot[`model 6`] = `
                                                           },
                                                         },
                                                         instances: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                       },
                                                     },
@@ -1211,13 +1203,11 @@ snapshot[`model 6`] = `
                                                                   },
                                                                 },
                                                                 inventories: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                                 main: true,
                                                                 packs: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                               },
                                                             },
@@ -2368,8 +2358,7 @@ snapshot[`model 6`] = `
                                                           },
                                                         },
                                                         inventories: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                       },
                                                     },
@@ -2444,8 +2433,7 @@ snapshot[`model 6`] = `
                                                           },
                                                         },
                                                         instances: Expr {
-                                                          raw: [
-                                                          ],
+                                                          raw: [],
                                                         },
                                                       },
                                                     },
@@ -2534,13 +2522,11 @@ snapshot[`model 6`] = `
                                                                   },
                                                                 },
                                                                 inventories: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                                 main: true,
                                                                 packs: Expr {
-                                                                  raw: [
-                                                                  ],
+                                                                  raw: [],
                                                                 },
                                                               },
                                                             },
