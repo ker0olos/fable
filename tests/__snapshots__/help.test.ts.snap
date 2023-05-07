@@ -3,8 +3,7 @@ export const snapshot = {};
 snapshot[`/help 1`] = `
 {
   data: {
-    attachments: [
-    ],
+    attachments: [],
     components: [
       {
         components: [
@@ -49,17 +48,28 @@ snapshot[`/help 1`] = `
           name: "1.",
         },
         description: "Before anything: You will need characters.
-
-__You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.
-
-__Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.
-
-__Characters vary in ranks from 1<:smol_star:1088427421096751224>to 5<:smol_star:1088427421096751224>__ A character rating is based on their popularity (a character rating cannot be raised).
-
-__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5<:smol_star:1088427421096751224>appearing is equal or less than 1%.
-
-> *\`/q\` allows you to do gacha pulls with no animations*
-​",
+" +
+          "
+" +
+          "__You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.
+" +
+          "
+" +
+          "__Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.
+" +
+          "
+" +
+          "__Characters vary in ranks from 1<:smol_star:1088427421096751224>to 5<:smol_star:1088427421096751224>__ A character rating is based on their popularity (a character rating cannot be raised).
+" +
+          "
+" +
+          "__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5<:smol_star:1088427421096751224>appearing is equal or less than 1%.
+" +
+          "
+" +
+          "> *\`/q\` allows you to do gacha pulls with no animations*
+" +
+          "​",
         footer: {
           text: "aliases: /w, /q",
         },
@@ -75,8 +85,7 @@ __Gacha rates depend on multiple variables__, but generally speaking the chances
 snapshot[`/help 2`] = `
 {
   data: {
-    attachments: [
-    ],
+    attachments: [],
     components: [
       {
         components: [
@@ -108,22 +117,37 @@ snapshot[`/help 2`] = `
         author: {
           name: "2.",
         },
-        description: '~~Synthesize Merge~~ Sacrifice characters to pull a new character with a higher rating.
-
-__Be careful where you sacrifice your characters.__
-Characters are the main currency in Fable. While synthesis returns a higher-rated character its *"currency"* value will always be lower than the sum of the sacrificed characters.
-
-__Your party members and likes will never be sacrificed.__ To protect characters from synthesis, add them to your likeslist with \`/like\`
-
-__It takes 5 characters from a specific rating__ to get a new character with 1 more star than the sacrificed.
-
-__Fable will always auto-synthesize your lower-rated characters first.__
-
-Example: \`/synthesize 3\` will sacrifice __25 of your 1<:smol_star:1088427421096751224>characters__
-or __5 of your 2<:smol_star:1088427421096751224>characters__ or any other combination of both lower ratings.
-
-> *Sacrificed characters will return to being available in \`/gacha\`*
-​',
+        description: "~~Synthesize Merge~~ Sacrifice characters to pull a new character with a higher rating.
+" +
+          "
+" +
+          "__Be careful where you sacrifice your characters.__
+" +
+          'Characters are the main currency in Fable. While synthesis returns a higher-rated character its *"currency"* value will always be lower than the sum of the sacrificed characters.
+' +
+          "
+" +
+          "__Your party members and likes will never be sacrificed.__ To protect characters from synthesis, add them to your likeslist with \`/like\`
+" +
+          "
+" +
+          "__It takes 5 characters from a specific rating__ to get a new character with 1 more star than the sacrificed.
+" +
+          "
+" +
+          "__Fable will always auto-synthesize your lower-rated characters first.__
+" +
+          "
+" +
+          "Example: \`/synthesize 3\` will sacrifice __25 of your 1<:smol_star:1088427421096751224>characters__
+" +
+          "or __5 of your 2<:smol_star:1088427421096751224>characters__ or any other combination of both lower ratings.
+" +
+          "
+" +
+          "> *Sacrificed characters will return to being available in \`/gacha\`*
+" +
+          "​",
         footer: {
           text: "aliases: /merge",
         },
@@ -139,8 +163,7 @@ or __5 of your 2<:smol_star:1088427421096751224>characters__ or any other combin
 snapshot[`/help 3`] = `
 {
   data: {
-    attachments: [
-    ],
+    attachments: [],
     components: [
       {
         components: [
@@ -185,18 +208,30 @@ snapshot[`/help 3`] = `
           name: "3.",
         },
         description: "You will need a party to use combat features but all combat features are still in development, so parties are only an aesthetic right now.
-
-__You can't have more than 1 party__ or save your current party to a preset and switch between presets.
-
-__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.
-
-\`/party view\` to see your current party.
-
-\`/party assign name: spot:\` to assign a character you have to your party;
-leaving the \`spot:\` empty will assign the character to the first empty spot or override the last spot.
-
-> *\`/collection\` can be used to browse your characters and select your potential party members*
-​",
+" +
+          "
+" +
+          "__You can't have more than 1 party__ or save your current party to a preset and switch between presets.
+" +
+          "
+" +
+          "__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.
+" +
+          "
+" +
+          "\`/party view\` to see your current party.
+" +
+          "
+" +
+          "\`/party assign name: spot:\` to assign a character you have to your party;
+" +
+          "leaving the \`spot:\` empty will assign the character to the first empty spot or override the last spot.
+" +
+          "
+" +
+          "> *\`/collection\` can be used to browse your characters and select your potential party members*
+" +
+          "​",
         footer: {
           text: "aliases: /team, /p",
         },
@@ -212,8 +247,7 @@ leaving the \`spot:\` empty will assign the character to the first empty spot or
 snapshot[`/help 4`] = `
 {
   data: {
-    attachments: [
-    ],
+    attachments: [],
     components: [
       {
         components: [
@@ -269,15 +303,24 @@ snapshot[`/help 4`] = `
           name: "Voting",
         },
         description: "Voting is an additional way to acquire character with a specific guaranteed rating.
-
-__Voting on weekends__ awards **2** votes instead of **1** (_Saturday and Sunday_).
-
-\`/buy normal\` gets you normal pulls, they are the exact same as the ones you get each 30 minutes.
-
-\`/buy guaranteed\` however is special, while it can expansive it will guarantee that you get a character from one specific rank. Use the guaranteed pulls you bought by calling \`/pull stars:\`
-
-> *Example: \`/buy guaranteed 5\` will guarantee you a random 5<:smol_star:1088427421096751224>character.*
-​",
+" +
+          "
+" +
+          "__Voting on weekends__ awards **2** votes instead of **1** (_Saturday and Sunday_).
+" +
+          "
+" +
+          "\`/buy normal\` gets you normal pulls, they are the exact same as the ones you get each 30 minutes.
+" +
+          "
+" +
+          "\`/buy guaranteed\` however is special, while it can expansive it will guarantee that you get a character from one specific rank. Use the guaranteed pulls you bought by calling \`/pull stars:\`
+" +
+          "
+" +
+          "> *Example: \`/buy guaranteed 5\` will guarantee you a random 5<:smol_star:1088427421096751224>character.*
+" +
+          "​",
         footer: {
           text: "aliases: /shop",
         },
@@ -292,8 +335,7 @@ __Voting on weekends__ awards **2** votes instead of **1** (_Saturday and Sunday
 snapshot[`/help 5`] = `
 {
   data: {
-    attachments: [
-    ],
+    attachments: [],
     components: [
       {
         components: [
@@ -355,17 +397,28 @@ snapshot[`/help 5`] = `
           name: "Roadmap",
         },
         description: "__**Recently Added**__
-
-\`/synthesize\`
-_merge characters together to pull a new character_
-
-__**Releasing in the near future (5 days ~ 2 months)**__
-
-**[Daily Quests](https://github.com/ker0olos/fable/issues/75)**
-Complete quests for rewards
-
-**[Stealing](https://github.com/ker0olos/fable/issues/49)**
-You will be able to steal characters from other users",
+" +
+          "
+" +
+          "\`/synthesize\`
+" +
+          "_merge characters together to pull a new character_
+" +
+          "
+" +
+          "__**Releasing in the near future (5 days ~ 2 months)**__
+" +
+          "
+" +
+          "**[Daily Quests](https://github.com/ker0olos/fable/issues/75)**
+" +
+          "Complete quests for rewards
+" +
+          "
+" +
+          "**[Stealing](https://github.com/ker0olos/fable/issues/49)**
+" +
+          "You will be able to steal characters from other users",
         type: "rich",
       },
     ],
@@ -377,8 +430,7 @@ You will be able to steal characters from other users",
 snapshot[`/help 6`] = `
 {
   data: {
-    attachments: [
-    ],
+    attachments: [],
     components: [
       {
         components: [
@@ -411,26 +463,46 @@ snapshot[`/help 6`] = `
           name: "Essential Commands",
         },
         description: "- \`/gacha\` \`/w\`: _start a new gacha pull_
-- \`/q\`: _start a gacha pull but with no animations_
-- \`/pull\` \`/guaranteed\`: _use the guaranteed pulls you have_
-
-- \`/now\` \`/vote\` \`/daily\` \`/tu\`: _check what you can do right now_
-- \`/search\` \`/anime\` \`/manga\`: _search for specific media_
-- \`/character\` \`/char\`: _search for a specific character_
-
-- \`/synthesize\` \`/merge\`: _synthesize characters together to pull a new character_
-
-- \`/party view\` \`/team view\` \`/p view\`: _view your current party_
-- \`/party assign\` \`/team assign\` \`/p assign\`: _assign a character to your party_
-- \`/party swap\` \`/team swap\` \`/p swap\`: _swap characters spots with each others_
-- \`/party remove\` \`/team remove\` \`/p remove\`: _remove a character from your party_
-
-- \`/collection list\` \`/coll list\` \`/mm list\`: _list user characters in bulks_
-- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user your stars_
-- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters in a specific media_
-
-- \`/trade\` \`/offer\`: _trade characters with another user_
-- \`/give\` \`/gift\`: _give characters to another user_",
+" +
+          "- \`/q\`: _start a gacha pull but with no animations_
+" +
+          "- \`/pull\` \`/guaranteed\`: _use the guaranteed pulls you have_
+" +
+          "
+" +
+          "- \`/now\` \`/vote\` \`/daily\` \`/tu\`: _check what you can do right now_
+" +
+          "- \`/search\` \`/anime\` \`/manga\`: _search for specific media_
+" +
+          "- \`/character\` \`/char\`: _search for a specific character_
+" +
+          "
+" +
+          "- \`/synthesize\` \`/merge\`: _synthesize characters together to pull a new character_
+" +
+          "
+" +
+          "- \`/party view\` \`/team view\` \`/p view\`: _view your current party_
+" +
+          "- \`/party assign\` \`/team assign\` \`/p assign\`: _assign a character to your party_
+" +
+          "- \`/party swap\` \`/team swap\` \`/p swap\`: _swap characters spots with each others_
+" +
+          "- \`/party remove\` \`/team remove\` \`/p remove\`: _remove a character from your party_
+" +
+          "
+" +
+          "- \`/collection list\` \`/coll list\` \`/mm list\`: _list user characters in bulks_
+" +
+          "- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user your stars_
+" +
+          "- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters in a specific media_
+" +
+          "
+" +
+          "- \`/trade\` \`/offer\`: _trade characters with another user_
+" +
+          "- \`/give\` \`/gift\`: _give characters to another user_",
         type: "rich",
       },
     ],
@@ -442,8 +514,7 @@ snapshot[`/help 6`] = `
 snapshot[`/help 7`] = `
 {
   data: {
-    attachments: [
-    ],
+    attachments: [],
     components: [
       {
         components: [
@@ -476,18 +547,30 @@ snapshot[`/help 7`] = `
           name: "Other Commands",
         },
         description: "- \`/nick\`: _change the nickname of a character_
-- \`/image\` \`/custom\`: _change the image of a character_
-
-- \`/found\` \`/obtained\` \`/owned\`: _list all characters found from a specific media_
-
-- \`/like\`: _like a character to be notified if someone finds them_
-- \`/unlike\`: _remove character from your likes_
-- \`/likeslist\`: _list user liked characters_
-
-- \`/buy normal\` \`/shop normal\`: _use votes to buy normal pulls_
-- \`/buy guaranteed\` \`/shop guaranteed\`: _use votes to buy pulls with a specific guaranteed rating_
-
-- \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
+" +
+          "- \`/image\` \`/custom\`: _change the image of a character_
+" +
+          "
+" +
+          "- \`/found\` \`/obtained\` \`/owned\`: _list all characters found from a specific media_
+" +
+          "
+" +
+          "- \`/like\`: _like a character to be notified if someone finds them_
+" +
+          "- \`/unlike\`: _remove character from your likes_
+" +
+          "- \`/likeslist\`: _list user liked characters_
+" +
+          "
+" +
+          "- \`/buy normal\` \`/shop normal\`: _use votes to buy normal pulls_
+" +
+          "- \`/buy guaranteed\` \`/shop guaranteed\`: _use votes to buy pulls with a specific guaranteed rating_
+" +
+          "
+" +
+          "- \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
         type: "rich",
       },
     ],

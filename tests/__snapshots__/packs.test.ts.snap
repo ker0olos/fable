@@ -19,8 +19,10 @@ snapshot[`list > anilist 1`] = `
       },
     },
     description: "A pack powered by [AniList](https://anilist.co).
-
-Contains over 100K of anime and manga characters.",
+" +
+      "
+" +
+      "Contains over 100K of anime and manga characters.",
     id: "anilist",
     image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png",
     title: "AniList",
@@ -51,10 +53,14 @@ snapshot[`list > vtubers 1`] = `
         {
           age: "Between 9,000-10,000",
           description: \`A descendant of the Lost City of Atlantis, who swam to Earth while saying, "It's so boring down there LOLOLOL!"
-
-Gura bought her clothes (and her shark hat) in the human world and she really loves them. In her spare time, she enjoys talking to marine life.
-
-_Gura is currently the most subscribed Vtuber worldwide, taking the #1 spot from industry pioneer Kizuna AI in 2021. As of January 2023, Gura has over 4 million YouTube subscribers._\`,
+\` +
+            "
+" +
+            "Gura bought her clothes (and her shark hat) in the human world and she really loves them. In her spare time, she enjoys talking to marine life.
+" +
+            "
+" +
+            "_Gura is currently the most subscribed Vtuber worldwide, taking the #1 spot from industry pioneer Kizuna AI in 2021. As of January 2023, Gura has over 4 million YouTube subscribers._",
           externalLinks: [
             {
               site: "Debut Stream",
@@ -98,8 +104,10 @@ _Gura is currently the most subscribed Vtuber worldwide, taking the #1 spot from
         },
         {
           description: "The Grim Reaper's first apprentice. Because the world's medical system advanced so dramatically, she became a Vtuber to collect souls. It seems that the lost souls vaporized by the wholesome relationships of Vtubers flow through her as well.
-
-In the end, she's a gentle-hearted girl whose sweet voice contradicts the morbid things she tends to say, as well as her hardcore vocals.",
+" +
+            "
+" +
+            "In the end, she's a gentle-hearted girl whose sweet voice contradicts the morbid things she tends to say, as well as her hardcore vocals.",
           externalLinks: [
             {
               site: "Debut Stream",
@@ -141,8 +149,10 @@ In the end, she's a gentle-hearted girl whose sweet voice contradicts the morbid
         {
           age: "15 mins-4 days on average",
           description: "An idol whose dream is to become a fast food shop owner. She is a phoenix, NOT a chicken or turkey. (Very important)
-
-She works extremely hard since she will be reborn from ashes anyway.",
+" +
+            "
+" +
+            "She works extremely hard since she will be reborn from ashes anyway.",
           externalLinks: [
             {
               site: "Debut Stream",
@@ -186,8 +196,10 @@ She works extremely hard since she will be reborn from ashes anyway.",
         {
           age: "████",
           description: "Despite her looks, Ina'nis is actually a priestess of the Ancient Ones. One day, she picked up a strange book and then started to gain the power of controlling tentacles. To her, tentacles are just a part in her ordinary life; it has never been a big deal for her. However, her girly mind does want to get them dressed up and stay pretty.
-
-After gaining power, she started hearing Ancient Whispers and Revelations. Hence, she began her VTuber activities to deliver random sanity checks on humanity, as an ordinary girl.",
+" +
+            "
+" +
+            "After gaining power, she started hearing Ancient Whispers and Revelations. Hence, she began her VTuber activities to deliver random sanity checks on humanity, as an ordinary girl.",
           externalLinks: [
             {
               site: "Debut Stream",
@@ -226,9 +238,11 @@ After gaining power, she started hearing Ancient Whispers and Revelations. Hence
           popularity: 1500000,
         },
         {
-          description: \`Amelia heard strange rumors online surrounding hololive: talking foxes, magical squirrels, superhuman dogs, and more. Soon after beginning her investigation on hololive, and just out of interest, she decided to become an idol herself!
-
-She loves to pass her time training her reflexes with FPS games, and challenging herself with puzzle games. "It's elementary, right?"\`,
+          description: "Amelia heard strange rumors online surrounding hololive: talking foxes, magical squirrels, superhuman dogs, and more. Soon after beginning her investigation on hololive, and just out of interest, she decided to become an idol herself!
+" +
+            "
+" +
+            \`She loves to pass her time training her reflexes with FPS games, and challenging herself with puzzle games. "It's elementary, right?"\`,
           externalLinks: [
             {
               site: "Debut Stream",
@@ -422,8 +436,10 @@ cute...",
         },
         {
           description: "Space is near infinite, and so was Sana's misfortune. 
-
- _due to luck, horrible management, and bad choices, Sana retired after just 11 months in her carrier, with a subscriber count that even rivals holostars._",
+" +
+            "
+" +
+            " _due to luck, horrible management, and bad choices, Sana retired after just 11 months in her carrier, with a subscriber count that even rivals holostars._",
           externalLinks: [
             {
               site: "Debut Stream",
@@ -476,8 +492,10 @@ cute...",
       new: [
         {
           description: "Hololive Production is a streamer agency under COVER Corporation which encompasses the VTuber groups hololive and holostars, along with the Inonaka Music record label. The agency houses virtual talents whose activities include live streaming on platforms such as YouTube and interacting with fans on Twitter. The talents perform using intricate 2D and 3D avatars provided by the company.
-
-(Source: COVER Corporation)",
+" +
+            "
+" +
+            "(Source: COVER Corporation)",
           externalLinks: [
             {
               site: "YouTube",
@@ -532,8 +550,10 @@ cute...",
             },
           ],
           description: "The Myths hail from the worlds of legend.
-
-holoMyth was the first wave of VTubers under Hololive English.",
+" +
+            "
+" +
+            "holoMyth was the first wave of VTubers under Hololive English.",
           externalLinks: [
             {
               site: "YouTube",
@@ -588,8 +608,10 @@ holoMyth was the first wave of VTubers under Hololive English.",
             },
           ],
           description: "The Council are a group of divine beings, they are the concepts of the world itself.
-
-holoCouncil is the second wave of VTubers under Hololive English.",
+" +
+            "
+" +
+            "holoCouncil is the second wave of VTubers under Hololive English.",
           externalLinks: [
             {
               site: "YouTube",
