@@ -710,24 +710,22 @@ function mediaFound(
 
       await Promise.all(
         characters.map((char) => {
-          // const char = await packs.aggregate<Character>({
-          //   guildId,
-          //   character,
-          //   end: 1,
-          // });
-
-          const existing = chunks[index].find(({ id }) => id === char.id);
-
-          const rating = existing?.rating ?? Rating.fromCharacter(char).stars;
+          const existing = chunks[index].find(({ id }) =>
+            id === `${char.packId}:${char.id}`
+          );
 
           // const media = utils.wrap(
           //   // deno-lint-ignore no-non-null-assertion
           //   packs.aliasToArray(char.media!.edges[0].node.title)[0],
           // );
 
-          const name = `${rating}${discord.emotes.smolStar} ${
-            existing ? `<@${existing.user.id}> ` : ''
-          }${utils.wrap(packs.aliasToArray(char.name)[0])}`;
+          const name = `${
+            // deno-lint-ignore no-non-null-assertion
+            existing!.rating
+            // deno-lint-ignore no-non-null-assertion
+          }${discord.emotes.smolStar} ${`<@${existing!.user.id}>`} ${
+            utils.wrap(packs.aliasToArray(char.name)[0])
+          }`;
 
           // embed.addField({
           //   inline: false,
