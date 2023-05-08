@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { spy } from 'https://deno.land/std@0.183.0/testing/mock.ts';
+import { spy } from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
 import {
   Client,
@@ -144,11 +144,11 @@ function Max(a: NumberExpr, b: NumberExpr): NumberExpr {
   return _fql.Max(a, b);
 }
 
-function GTE(a: NumberExpr, b: NumberExpr): BooleanExpr {
+function GTE(a: NumberExpr | TimeExpr, b: NumberExpr | TimeExpr): BooleanExpr {
   return _fql.GTE(a, b);
 }
 
-function LTE(a: NumberExpr, b: NumberExpr): BooleanExpr {
+function LTE(a: NumberExpr | TimeExpr, b: NumberExpr | TimeExpr): BooleanExpr {
   return _fql.LTE(a, b);
 }
 
@@ -250,6 +250,9 @@ function TimeAddInMinutes(t: TimeExpr, offset: NumberExpr): NumberExpr {
   return _fql.TimeAdd(t, offset, 'minutes');
 }
 
+function TimeAddInDays(t: TimeExpr, offset: number): TimeExpr {
+  return _fql.TimeAdd(t, offset, 'days');
+}
 function Now(): TimeExpr {
   return _fql.Now();
 }
@@ -353,6 +356,7 @@ export const fql = {
   Reverse,
   Select,
   Subtract,
+  TimeAddInDays,
   TimeAddInMinutes,
   TimeDiffInMinutes,
   ToString,

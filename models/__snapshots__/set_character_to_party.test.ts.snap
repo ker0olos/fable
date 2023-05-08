@@ -928,20 +928,6 @@ snapshot[`model 1`] = `
                                                   data: Expr {
                                                     raw: {
                                                       object: {
-                                                        badges: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                id: "357600097731608662",
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "badge",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
@@ -2411,20 +2397,6 @@ snapshot[`model 1`] = `
                                                   data: Expr {
                                                     raw: {
                                                       object: {
-                                                        badges: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                id: "357600097731608662",
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "badge",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
@@ -3684,20 +3656,6 @@ snapshot[`model 2`] = `
                                                   data: Expr {
                                                     raw: {
                                                       object: {
-                                                        badges: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                id: "357600097731608662",
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "badge",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
@@ -4952,20 +4910,6 @@ snapshot[`model 2`] = `
                                                   data: Expr {
                                                     raw: {
                                                       object: {
-                                                        badges: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                id: "357600097731608662",
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "badge",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
@@ -5832,20 +5776,6 @@ snapshot[`model 3`] = `
                                                   data: Expr {
                                                     raw: {
                                                       object: {
-                                                        badges: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                id: "357600097731608662",
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "badge",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",
@@ -6706,20 +6636,6 @@ snapshot[`model 3`] = `
                                                   data: Expr {
                                                     raw: {
                                                       object: {
-                                                        badges: Expr {
-                                                          raw: [
-                                                            Expr {
-                                                              raw: {
-                                                                id: "357600097731608662",
-                                                                ref: Expr {
-                                                                  raw: {
-                                                                    collection: "badge",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
                                                         id: Expr {
                                                           raw: {
                                                             var: "userId",

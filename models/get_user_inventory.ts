@@ -39,6 +39,7 @@ export interface Inventory {
   availablePulls: NumberExpr;
   lastPull?: TimeExpr;
   rechargeTimestamp?: TimeExpr;
+  stealTimestamp?: TimeExpr;
   characters?: RefExpr[];
   instance: RefExpr;
   user: RefExpr;
@@ -66,10 +67,6 @@ export function getUser(id: StringExpr): UserExpr {
       fql.Create<User>('user', {
         id,
         inventories: [],
-        badges: [
-          // Early Bird Gets the Worm
-          fql.Id('badge', '357600097731608662'),
-        ],
       }),
     ));
 }

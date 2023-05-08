@@ -1,11 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from 'https://deno.land/std@0.183.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
 import {
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.183.0/testing/mock.ts';
+} from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
 import config, { clearConfig, initConfig } from '../src/config.ts';
 
@@ -31,6 +31,7 @@ Deno.test('init', async (test) => {
         false,
         false,
         false,
+        false,
       ]),
     );
 
@@ -45,6 +46,7 @@ Deno.test('init', async (test) => {
         'fauna_secret',
         '123',
         'topgg_secret',
+        'notice_message',
       ]),
     );
 
@@ -59,8 +61,10 @@ Deno.test('init', async (test) => {
         sentry: 'sentry_dsn',
         topggCipher: 123,
         topggSecret: 'topgg_secret',
+        notice: 'notice_message',
         gacha: true,
         trading: true,
+        stealing: true,
         synthesis: true,
         communityPacks: true,
         origin: undefined,
@@ -95,6 +99,7 @@ Deno.test('init', async (test) => {
         true,
         true,
         true,
+        true,
       ]),
     );
 
@@ -109,6 +114,8 @@ Deno.test('init', async (test) => {
         'fauna_secret',
         '123',
         'topgg_secret',
+        'notice_message',
+        '0',
         '0',
         '0',
         '0',
@@ -127,8 +134,10 @@ Deno.test('init', async (test) => {
         sentry: 'sentry_dsn',
         topggCipher: 123,
         topggSecret: 'topgg_secret',
+        notice: 'notice_message',
         gacha: false,
         trading: false,
+        stealing: false,
         synthesis: false,
         communityPacks: false,
         origin: undefined,

@@ -3,13 +3,13 @@
 import {
   assert,
   assertEquals,
-} from 'https://deno.land/std@0.183.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   stub,
-} from 'https://deno.land/std@0.183.0/testing/mock.ts';
+} from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
 import * as discord from '../src/discord.ts';
 import { ImageSize } from '../src/utils.ts';
@@ -638,6 +638,46 @@ Deno.test('static messages', async (test) => {
     });
   });
 
+  await test.step('dialog 2', () => {
+    const message = discord.Message.dialog({
+      confirm: ['type', 'confirm_id2'],
+      message: new discord.Message()
+        .addEmbed(new discord.Embed().setTitle('title')),
+      confirmText: 'Accept',
+      cancelText: 'Decline',
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        embeds: [
+          {
+            type: 'rich',
+            title: 'title',
+          },
+        ],
+        attachments: [],
+        components: [{
+          type: 1,
+          components: [
+            {
+              custom_id: 'type=confirm_id2',
+              label: 'Accept',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'cancel',
+              label: 'Decline',
+              style: 4,
+              type: 2,
+            },
+          ],
+        }],
+      },
+    });
+  });
+
   await test.step('internal error', () => {
     const message = discord.Message.internal('id');
 
@@ -1003,7 +1043,6 @@ Deno.test('get username', async (test) => {
   await test.step('member', () => {
     const user: discord.User = {
       id: 'user_id',
-      discriminator: '1337',
       username: 'test_username',
       avatar: 'avatar_hash',
     };
@@ -1020,7 +1059,6 @@ Deno.test('get username', async (test) => {
   await test.step('user', () => {
     const user: discord.User = {
       id: 'user_id',
-      discriminator: '1337',
       username: 'test_username',
       avatar: 'avatar_hash',
     };
@@ -1033,13 +1071,48 @@ Deno.test('get username', async (test) => {
 
     assertEquals(discord.getUsername(member, user), 'test_username');
   });
+
+  await test.step('display name', () => {
+    const user: discord.User = {
+      id: 'user_id',
+      username: 'test_username',
+      // deno-lint-ignore camelcase
+      display_name: 'display',
+      avatar: 'avatar_hash',
+    };
+
+    const member: discord.Member = {
+      user,
+      nick: undefined,
+      avatar: 'guild_avatar_hash',
+    };
+
+    assertEquals(discord.getUsername(member, user), 'display');
+  });
+
+  await test.step('global name', () => {
+    const user: discord.User = {
+      id: 'user_id',
+      username: 'test_username',
+      // deno-lint-ignore camelcase
+      global_name: 'global',
+      avatar: 'avatar_hash',
+    };
+
+    const member: discord.Member = {
+      user,
+      nick: undefined,
+      avatar: 'guild_avatar_hash',
+    };
+
+    assertEquals(discord.getUsername(member, user), 'global');
+  });
 });
 
 Deno.test('get avatar', async (test) => {
   await test.step('member', () => {
     const user: discord.User = {
       id: 'user_id',
-      discriminator: '1337',
       username: 'test_username',
       avatar: 'avatar_hash',
     };
@@ -1059,7 +1132,6 @@ Deno.test('get avatar', async (test) => {
   await test.step('user', () => {
     const user: discord.User = {
       id: 'user_id',
-      discriminator: '1337',
       username: 'test_username',
       avatar: 'avatar_hash',
     };
@@ -1079,7 +1151,6 @@ Deno.test('get avatar', async (test) => {
   await test.step('default', () => {
     const user: discord.User = {
       id: 'user_id',
-      discriminator: '1337',
       username: 'test_username',
       avatar: undefined,
     };

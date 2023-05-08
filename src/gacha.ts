@@ -411,7 +411,11 @@ async function pullAnimation(
   });
 
   if (userId) {
-    if (typeof guarantee === 'number' && pull.guarantees?.length) {
+    if (
+      typeof guarantee === 'number' &&
+      pull.guarantees?.length &&
+      pull.remaining
+    ) {
       const next = pull.guarantees?.sort((a, b) => b - a)[0];
 
       message.addComponents([
@@ -420,10 +424,16 @@ async function pullAnimation(
           .setLabel(`/pull ${next}`),
       ]);
     } else {
+      const component = new discord.Component()
+        .setId(quiet ? 'q' : 'gacha', userId)
+        .setLabel(`/${quiet ? 'q' : 'gacha'}`);
+
+      if (!pull.remaining) {
+        component.toggle();
+      }
+
       message.addComponents([
-        new discord.Component()
-          .setId(quiet ? 'q' : 'gacha', userId)
-          .setLabel(`/${quiet ? 'q' : 'gacha'}`),
+        component,
       ]);
     }
   }

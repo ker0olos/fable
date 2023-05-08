@@ -10,123 +10,25 @@ import {
 
 import { getGuild, getInstance } from './get_user_inventory.ts';
 
-export interface CharacterNode {
-  character: CharacterExpr;
-  anchor: StringExpr;
-}
-
-export const paginateCharacters = ({
-  after,
-  before,
-  afterCursor,
-  beforeCursor,
-  afterSelector,
-  beforeSelector,
-}: {
-  after?: string;
-  before?: string;
-  // deno-lint-ignore no-explicit-any
-  afterCursor: any;
-  // deno-lint-ignore no-explicit-any
-  beforeCursor: any;
-  // deno-lint-ignore no-explicit-any
-  afterSelector: any[];
-  // deno-lint-ignore no-explicit-any
-  beforeSelector: any[];
-}) => {
-  return fql.If(
-    fql.IsNonEmpty(fql.Var('characters')),
-    fql.If(
-      fql.IsNull(before),
-      fql.If(
-        fql.IsNull(after),
-        fql.Ref(fql.Get(fql.Var('characters'))),
-        fql.Let({
-          // after returns itself then a new item
-          match: fql.Paginate(fql.Var('characters'), {
-            after: afterCursor,
-            size: 2,
-          }),
-        }, ({ match }) => {
-          return fql.Select(
-            afterSelector,
-            match,
-            // or first item
-            fql.Ref(fql.Get(fql.Var('characters'))),
-          );
-        }),
-      ),
-      fql.Let({
-        // before doesn't return itself
-        match: fql.Paginate(fql.Var('characters'), {
-          before: beforeCursor,
-          size: 1,
-        }),
-      }, ({ match }) => {
-        return fql.Select(
-          beforeSelector,
-          match,
-          // or last item
-          fql.Ref(fql.Get(fql.Reverse(fql.Var('characters')))),
-        );
-      }),
-    ),
-    fql.Null(),
-  );
-};
-
 export function findMedia(
-  {
-    mediaId,
-    instance,
-    before,
-    after,
-  }: {
-    mediaId: StringExpr;
-    instance: InstanceExpr;
-    before?: string;
-    after?: string;
-  },
-): CharacterNode {
+  { mediaId, instance }: { mediaId: StringExpr; instance: InstanceExpr },
+): CharacterExpr[] {
   return fql.Let({
     characters: fql.Match(
-      fql.Index('media_instance_id'),
+      fql.Index('unsorted_media_instance_id'),
       mediaId,
       fql.Ref(instance),
     ),
-    character: paginateCharacters({
-      after,
-      before,
-      afterCursor: [
-        fql.Select(
-          ['data', 'rating'],
-          // deno-lint-ignore no-non-null-assertion
-          fql.Get(fql.Id('character', after!)),
-        ),
-        // deno-lint-ignore no-non-null-assertion
-        fql.Id('character', after!),
-        // deno-lint-ignore no-non-null-assertion
-        fql.Id('character', after!),
-      ],
-      beforeCursor: [
-        fql.Select(
-          ['data', 'rating'],
-          // deno-lint-ignore no-non-null-assertion
-          fql.Get(fql.Id('character', before!)),
-        ),
-        // deno-lint-ignore no-non-null-assertion
-        fql.Id('character', before!),
-        // deno-lint-ignore no-non-null-assertion
-        fql.Id('character', before!),
-      ],
-      afterSelector: ['data', 1, 1],
-      beforeSelector: ['data', 0, 1],
-    }),
-  }, ({ character }) => {
-    return {
-      character,
-      anchor: fql.Select(['id'], character, fql.Null()),
-    } as CharacterNode;
+  }, ({ characters }) => {
+    return fql.Map(
+      fql.Select<CharacterExpr[]>(
+        ['data'],
+        fql.Paginate(characters, {
+          size: 1000,
+        }),
+      ),
+      fql.Get,
+    );
   });
 }
 
@@ -163,14 +65,11 @@ export default function (client: Client): {
         client,
         unique: false,
         collection: 'character',
-        name: 'media_instance_id',
+        name: 'unsorted_media_instance_id',
         terms: [
           { field: ['data', 'mediaId'] },
           { field: ['data', 'instance'] },
         ],
-        values: [{ field: ['data', 'rating'], reverse: true }, {
-          field: ['ref'],
-        }],
       }),
       fql.Indexer({
         client,
@@ -184,44 +83,26 @@ export default function (client: Client): {
       fql.Resolver({
         client,
         name: 'find_media',
-        lambda: (
-          mediaId: string,
-          guildId: string,
-          before?: string,
-          after?: string,
-        ) => {
+        lambda: (mediaId: string, guildId: string) => {
           return fql.Let(
             {
               guild: getGuild(guildId),
               instance: getInstance(fql.Var('guild')),
             },
-            ({ instance }) =>
-              findMedia({
-                mediaId,
-                instance,
-                before,
-                after,
-              }),
+            ({ instance }) => findMedia({ mediaId, instance }),
           );
         },
       }),
       fql.Resolver({
         client,
         name: 'find_character',
-        lambda: (
-          characterId: string,
-          guildId: string,
-        ) => {
+        lambda: (characterId: string, guildId: string) => {
           return fql.Let(
             {
               guild: getGuild(guildId),
               instance: getInstance(fql.Var('guild')),
             },
-            ({ instance }) =>
-              findCharacter({
-                characterId,
-                instance,
-              }),
+            ({ instance }) => findCharacter({ characterId, instance }),
           );
         },
       }),

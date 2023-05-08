@@ -1,4 +1,5 @@
 import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
+import { COOLDOWN_DAYS } from '../models/steal_character.ts';
 
 import * as discord from './discord.ts';
 
@@ -91,6 +92,25 @@ function pages(
           .setFooter({ text: 'aliases: /team, /p' }),
       ),
     new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setAuthor({ name: 'Stealing' })
+          .setDescription([
+            'When all negotiation fails, it\'s fine to take what you want by force, right?',
+            '',
+            '__You can\'t steal characters assigned as party members__, meaning you can protect your most precious characters by adding them to your party.',
+            '',
+            '__Inactive users are easier to steal from.__ Stay active by using `/gacha` or `/q` once a day.',
+            '',
+            `__The higher the character's rating the harder it is to steal.__ 5${discord.emotes.smolStar}characters have a base success rate of 1%`,
+            '',
+            `__Steal has a cooldown of ${COOLDOWN_DAYS} days__ regardless of the outcome of the attempt.`,
+            '',
+            '> Staying active is the best defense against stealing',
+            '\u200B',
+          ].join('\n')),
+      ),
+    new discord.Message()
       .addComponents([
         new discord.Component()
           .setLabel('/vote')
@@ -140,15 +160,16 @@ function pages(
           .setDescription([
             '__**Recently Added**__',
             '',
+            '`/steal`\n_steal a character from another user_',
+            '',
             '`/synthesize`\n_merge characters together to pull a new character_',
             '',
             '__**Releasing in the near future (5 days ~ 2 months)**__',
             '',
-            '**[Daily Quests](https://github.com/ker0olos/fable/issues/75)**',
-            'Complete quests for rewards',
-            '',
-            '**[Stealing](https://github.com/ker0olos/fable/issues/49)**',
-            'You will be able to steal characters from other users',
+            '_> There\'s a feature freeze right now to focus on QoL changes._',
+            // '**[Daily Quests](https://github.com/ker0olos/fable/issues/75)**',
+            // 'Complete quests for rewards',
+            // '',
           ].join('\n')),
       ),
     new discord.Message()
@@ -175,6 +196,7 @@ function pages(
             '- `/collection stars` `/coll stars` `/mm stars`: _view user your stars_',
             '- `/collection media` `/coll media` `/mm media`: _view user characters in a specific media_',
             '',
+            '- `/steal`: _steal a character from another user_',
             '- `/trade` `/offer`: _trade characters with another user_',
             '- `/give` `/gift`: _give characters to another user_',
           ].join('\n')),
@@ -187,7 +209,7 @@ function pages(
             '- `/nick`: _change the nickname of a character_',
             '- `/image` `/custom`: _change the image of a character_',
             '',
-            '- `/found` `/obtained` `/owned`: _list all characters found from a specific media_',
+            '- `/found` `/owned`: _list all characters found from a specific media_',
             '',
             '- `/like`: _like a character to be notified if someone finds them_',
             '- `/unlike`: _remove character from your likes_',

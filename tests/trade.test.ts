@@ -2,16 +2,16 @@
 
 import {
   assertEquals,
-  assertRejects,
-} from 'https://deno.land/std@0.183.0/testing/asserts.ts';
+  assertThrows,
+} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
-import { FakeTime } from 'https://deno.land/std@0.183.0/testing/time.ts';
+import { FakeTime } from 'https://deno.land/std@0.186.0/testing/time.ts';
 
 import {
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.183.0/testing/mock.ts';
+} from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
 import packs from '../src/packs.ts';
 import user from '../src/user.ts';
@@ -23,7 +23,7 @@ import { Character, CharacterRole, MediaType } from '../src/types.ts';
 
 import { AniListCharacter } from '../packs/anilist/types.ts';
 
-import { NonFetalCancelableError } from '../src/errors.ts';
+import { NonFetalError } from '../src/errors.ts';
 
 Deno.test('give', async (test) => {
   await test.step('normal', async () => {
@@ -46,6 +46,8 @@ Deno.test('give', async (test) => {
         }],
       },
     };
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -73,6 +75,8 @@ Deno.test('give', async (test) => {
               },
             }))),
         } as any,
+        undefined,
+        undefined,
       ]),
     );
 
@@ -84,8 +88,12 @@ Deno.test('give', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const [newMessage, updateMessage] = await trade.give({
+      const message = trade.give({
+        token: 'test_token',
         userId: 'user_id',
         targetId: 'target_id',
         guildId: 'guild_id',
@@ -93,9 +101,38 @@ Deno.test('give', async (test) => {
         giveCharactersIds: ['anilist:1', 'anilist:1'],
       });
 
-      assertEquals(newMessage.json(), {
+      assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           attachments: [],
           components: [],
           embeds: [
@@ -105,11 +142,22 @@ Deno.test('give', async (test) => {
             },
           ],
         },
-      });
+      );
 
-      assertEquals(updateMessage.json(), {
-        type: 4,
-        data: {
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'POST');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           content: '<@target_id>',
           attachments: [],
           components: [],
@@ -133,7 +181,7 @@ Deno.test('give', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
             },
             {
@@ -151,13 +199,17 @@ Deno.test('give', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
             },
           ],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
@@ -212,6 +264,7 @@ Deno.test('give', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -221,22 +274,70 @@ Deno.test('give', async (test) => {
       () => Promise.resolve([]),
     );
 
+    const timeStub = new FakeTime();
+
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      await assertRejects(
-        async () =>
-          await trade.give({
-            userId: 'user_id',
-            targetId: 'target_id',
-            guildId: 'guild_id',
-            channelId: 'channel_id',
-            giveCharactersIds: ['anilist:1', 'anilist:1'],
-          }),
-        NonFetalCancelableError,
-        'Some of those characters were disabled or removed',
+      const message = trade.give({
+        token: 'test_token',
+        userId: 'user_id',
+        targetId: 'target_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        giveCharactersIds: ['anilist:1', 'anilist:1'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Some of those characters were disabled or removed',
+            },
+          ],
+        },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
@@ -291,6 +392,7 @@ Deno.test('give', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -300,22 +402,70 @@ Deno.test('give', async (test) => {
       () => Promise.resolve([]),
     );
 
+    const timeStub = new FakeTime();
+
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      await assertRejects(
-        async () =>
-          await trade.give({
-            userId: 'user_id',
-            targetId: 'target_id',
-            guildId: 'guild_id',
-            channelId: 'channel_id',
-            giveCharactersIds: ['anilist:1', 'anilist:1'],
-          }),
-        NonFetalCancelableError,
-        'Some of those characters changed hands',
+      const message = trade.give({
+        token: 'test_token',
+        userId: 'user_id',
+        targetId: 'target_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        giveCharactersIds: ['anilist:1', 'anilist:1'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Some of those characters changed hands',
+            },
+          ],
+        },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
@@ -370,6 +520,7 @@ Deno.test('give', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -379,22 +530,71 @@ Deno.test('give', async (test) => {
       () => Promise.resolve([]),
     );
 
+    const timeStub = new FakeTime();
+
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      await assertRejects(
-        async () =>
-          await trade.give({
-            userId: 'user_id',
-            targetId: 'target_id',
-            guildId: 'guild_id',
-            channelId: 'channel_id',
-            giveCharactersIds: ['anilist:1', 'anilist:1'],
-          }),
-        NonFetalCancelableError,
-        'Some of those characters are currently in your party',
+      const message = trade.give({
+        token: 'test_token',
+        userId: 'user_id',
+        targetId: 'target_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        giveCharactersIds: ['anilist:1', 'anilist:1'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'Some of those characters are currently in your party',
+            },
+          ],
+        },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
@@ -444,6 +644,8 @@ Deno.test('trade', async (test) => {
       },
     };
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -470,6 +672,8 @@ Deno.test('trade', async (test) => {
               },
             }))),
         } as any,
+        undefined,
+        undefined,
       ]),
     );
 
@@ -481,8 +685,12 @@ Deno.test('trade', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const [newMessage, updateMessage] = await trade.accepted({
+      const message = trade.accepted({
+        token: 'test_token',
         userId: 'user_id',
         targetId: 'target_id',
         guildId: 'guild_id',
@@ -491,9 +699,38 @@ Deno.test('trade', async (test) => {
         takeCharactersIds: ['anilist:2', 'anilist:2'],
       });
 
-      assertEquals(newMessage.json(), {
+      assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           content: '<@user_id>',
           attachments: [],
           components: [],
@@ -517,7 +754,7 @@ Deno.test('trade', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
             },
             {
@@ -535,7 +772,7 @@ Deno.test('trade', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
             },
             {
@@ -553,7 +790,7 @@ Deno.test('trade', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
             },
             {
@@ -571,23 +808,38 @@ Deno.test('trade', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
             },
           ],
         },
-      });
+      );
 
-      assertEquals(updateMessage.json(), {
-        type: 4,
-        data: {
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'POST');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           content: '<@user_id> your offer was accepted!',
           attachments: [],
           components: [],
           embeds: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
@@ -662,6 +914,7 @@ Deno.test('trade', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -671,23 +924,71 @@ Deno.test('trade', async (test) => {
       () => Promise.resolve([]),
     );
 
+    const timeStub = new FakeTime();
+
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      await assertRejects(
-        async () =>
-          await trade.accepted({
-            userId: 'user_id',
-            targetId: 'target_id',
-            guildId: 'guild_id',
-            channelId: 'channel_id',
-            giveCharactersIds: ['anilist:1', 'anilist:1'],
-            takeCharactersIds: ['anilist:2', 'anilist:2'],
-          }),
-        NonFetalCancelableError,
-        'Some of those characters were disabled or removed',
+      const message = trade.accepted({
+        token: 'test_token',
+        userId: 'user_id',
+        targetId: 'target_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        giveCharactersIds: ['anilist:1', 'anilist:1'],
+        takeCharactersIds: ['anilist:2', 'anilist:2'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Some of those characters were disabled or removed',
+            },
+          ],
+        },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
@@ -762,6 +1063,7 @@ Deno.test('trade', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -771,23 +1073,71 @@ Deno.test('trade', async (test) => {
       () => Promise.resolve([]),
     );
 
+    const timeStub = new FakeTime();
+
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      await assertRejects(
-        async () =>
-          await trade.accepted({
-            userId: 'user_id',
-            targetId: 'target_id',
-            guildId: 'guild_id',
-            channelId: 'channel_id',
-            giveCharactersIds: ['anilist:1', 'anilist:1'],
-            takeCharactersIds: ['anilist:2', 'anilist:2'],
-          }),
-        NonFetalCancelableError,
-        'Some of those characters changed hands',
+      const message = trade.accepted({
+        token: 'test_token',
+        userId: 'user_id',
+        targetId: 'target_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        giveCharactersIds: ['anilist:1', 'anilist:1'],
+        takeCharactersIds: ['anilist:2', 'anilist:2'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Some of those characters changed hands',
+            },
+          ],
+        },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
@@ -862,6 +1212,7 @@ Deno.test('trade', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -871,23 +1222,71 @@ Deno.test('trade', async (test) => {
       () => Promise.resolve([]),
     );
 
+    const timeStub = new FakeTime();
+
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      await assertRejects(
-        async () =>
-          await trade.accepted({
-            userId: 'user_id',
-            targetId: 'target_id',
-            guildId: 'guild_id',
-            channelId: 'channel_id',
-            giveCharactersIds: ['anilist:1', 'anilist:1'],
-            takeCharactersIds: ['anilist:2', 'anilist:2'],
-          }),
-        NonFetalCancelableError,
-        'Some of those characters are currently in parties',
+      const message = trade.accepted({
+        token: 'test_token',
+        userId: 'user_id',
+        targetId: 'target_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        giveCharactersIds: ['anilist:1', 'anilist:1'],
+        takeCharactersIds: ['anilist:2', 'anilist:2'],
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Some of those characters are currently in parties',
+            },
+          ],
+        },
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
@@ -1108,7 +1507,7 @@ Deno.test('/give', async (test) => {
         components: [],
         embeds: [{
           type: 'rich',
-          description: 'You can\'t gift yourself.',
+          description: 'You can\'t gift yourself!',
         }],
       },
     });
@@ -2377,7 +2776,7 @@ Deno.test('/trade', async (test) => {
         components: [],
         embeds: [{
           type: 'rich',
-          description: 'You can\'t trade with yourself.',
+          description: 'You can\'t trade with yourself!',
         }],
       },
     });
@@ -2464,6 +2863,29 @@ Deno.test('/trade', async (test) => {
       timeStub.restore();
       characterStub.restore();
       fetchStub.restore();
+    }
+  });
+
+  await test.step('under maintenance', () => {
+    config.trading = false;
+
+    try {
+      assertThrows(
+        () =>
+          trade.pre({
+            userId: 'user_id',
+            guildId: 'guild_id',
+            channelId: 'channel_id',
+            token: 'test_token',
+            targetId: 'another_user_id',
+            give: ['character_id'],
+            take: [],
+          }),
+        NonFetalError,
+        'Trading is under maintenance, try again later!',
+      );
+    } finally {
+      delete config.trading;
     }
   });
 });

@@ -3,16 +3,16 @@
 import {
   assertEquals,
   assertRejects,
-} from 'https://deno.land/std@0.183.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
-import { FakeTime } from 'https://deno.land/std@0.183.0/testing/time.ts';
+import { FakeTime } from 'https://deno.land/std@0.186.0/testing/time.ts';
 
 import {
   assertSpyCallArg,
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.183.0/testing/mock.ts';
+} from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
 import user from '../src/user.ts';
 import packs from '../src/packs.ts';
@@ -134,7 +134,7 @@ Deno.test('/now', async (test) => {
                   type: 2,
                 },
                 {
-                  label: 'Vote for Rewards',
+                  label: 'Vote',
                   style: 5,
                   type: 2,
                   url:
@@ -206,7 +206,7 @@ Deno.test('/now', async (test) => {
           components: [{
             type: 1,
             components: [{
-              label: 'Vote for Rewards',
+              label: 'Vote',
               style: 5,
               type: 2,
               url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
@@ -276,7 +276,7 @@ Deno.test('/now', async (test) => {
           components: [{
             type: 1,
             components: [{
-              label: 'Vote for Rewards',
+              label: 'Vote',
               style: 5,
               type: 2,
               url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
@@ -639,6 +639,81 @@ Deno.test('/now', async (test) => {
     } finally {
       delete config.appId;
       delete config.topggCipher;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('with notice', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                availablePulls: 0,
+                rechargeTimestamp: time.toISOString(),
+                user: {},
+              },
+            },
+          }))),
+        //
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.topggCipher = 12;
+
+    config.notice = '**test**\\n_message_';
+
+    try {
+      const message = await user.now({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: '**0**',
+              footer: {
+                text: 'Available Pulls',
+              },
+              description: undefined,
+            },
+            {
+              description: '**test**\n_message_',
+              type: 'rich',
+            },
+            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
+          ],
+          components: [{
+            type: 1,
+            components: [{
+              label: 'Vote',
+              style: 5,
+              type: 2,
+              url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+            }],
+          }],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.topggCipher;
+      delete config.notice;
 
       fetchStub.restore();
     }
@@ -6250,421 +6325,6 @@ Deno.test('/likeslist', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       userStub.restore();
-    }
-  });
-});
-
-Deno.test('/found', async (test) => {
-  await test.step('normal', async () => {
-    const media: AniListMedia = {
-      id: '2',
-      type: MediaType.Manga,
-      title: {
-        english: 'title',
-      },
-      popularity: 0,
-    };
-
-    const character: AniListCharacter = {
-      id: '1',
-      name: {
-        full: 'name',
-      },
-      media: {
-        edges: [{
-          characterRole: CharacterRole.Main,
-          node: media,
-        }],
-      },
-    };
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                  media: [media],
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                findMedia: {
-                  anchor: 'anchor',
-                  character: {
-                    id: 'anilist:1',
-                    mediaId: 'anilist:2',
-                    rating: 4,
-                    user: {
-                      id: 'another_user_id',
-                    },
-                  },
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                  media: [media],
-                },
-              },
-            }))),
-        } as any,
-      ]),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
-      const message = await search.mediaFound({
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        id: 'anilist:2',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'found=anilist:2==anchor=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'found=anilist:2==anchor=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'media=anilist:2',
-                label: '/manga',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [
-            {
-              type: 'rich',
-              description:
-                '<@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
-              fields: [
-                {
-                  name: 'name',
-                  value: '\u200B',
-                },
-              ],
-              image: {
-                url: 'undefined/external/',
-              },
-            },
-          ],
-        },
-      });
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
-  });
-
-  await test.step('media disabled', async () => {
-    const media: AniListMedia = {
-      id: '2',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'name',
-      },
-      popularity: 0,
-    };
-
-    const character: AniListCharacter = {
-      id: '1',
-      name: {
-        full: 'title',
-      },
-      media: {
-        edges: [{
-          characterRole: CharacterRole.Main,
-          node: media,
-        }],
-      },
-    };
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                  media: [media],
-                },
-              },
-            }))),
-        } as any,
-      ]),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      returnsNext([true, true]),
-    );
-
-    try {
-      await assertRejects(
-        async () =>
-          await search.mediaFound({
-            guildId: 'guild_id',
-            channelId: 'channel_id',
-            id: 'anilist:2',
-          }),
-        Error,
-        '404',
-      );
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
-  });
-
-  await test.step('character disabled', async () => {
-    const media: AniListMedia = {
-      id: '2',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'name',
-      },
-      popularity: 0,
-    };
-
-    const character: AniListCharacter = {
-      id: '1',
-      name: {
-        full: 'title',
-      },
-      media: {
-        edges: [{
-          characterRole: CharacterRole.Main,
-          node: media,
-        }],
-      },
-    };
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                  media: [media],
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                findMedia: {
-                  anchor: 'anchor',
-                  character: {
-                    id: 'anilist:1',
-                    mediaId: 'anilist:2',
-                    rating: 4,
-                    user: {
-                      id: 'another_user_id',
-                    },
-                  },
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                  media: [media],
-                },
-              },
-            }))),
-        } as any,
-      ]),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      returnsNext([false, true]),
-    );
-
-    try {
-      const message = await search.mediaFound({
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        id: 'anilist:2',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'found=anilist:2==anchor=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'found=anilist:2==anchor=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [
-            {
-              type: 'rich',
-              description: 'This character was removed or disabled',
-            },
-          ],
-        },
-      });
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
-  });
-
-  await test.step('no characters', async () => {
-    const media: AniListMedia = {
-      id: '2',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {
-        english: 'name',
-      },
-      popularity: 0,
-    };
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media: [media],
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: { findMedia: {} },
-            }))),
-        } as any,
-      ]),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
-      const message = await search.mediaFound({
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        id: 'anilist:2',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [
-            {
-              type: 'rich',
-              description: 'No one has found any name characters',
-            },
-          ],
-        },
-      });
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
     }
   });
 });

@@ -1,4 +1,4 @@
-import { assertSnapshot } from 'https://deno.land/std@0.183.0/testing/snapshot.ts';
+import { assertSnapshot } from 'https://deno.land/std@0.186.0/testing/snapshot.ts';
 
 import { commands } from './update_commands.ts';
 

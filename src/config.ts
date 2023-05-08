@@ -1,4 +1,4 @@
-import { load as Dotenv } from 'https://deno.land/std@0.183.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.186.0/dotenv/mod.ts';
 
 export const faunaUrl = 'https://graphql.us.fauna.com/graphql';
 
@@ -11,8 +11,10 @@ const config: {
   topggSecret?: string;
   sentry?: string;
   origin?: string;
+  notice?: string;
   gacha?: boolean;
   trading?: boolean;
+  stealing?: boolean;
   synthesis?: boolean;
   communityPacks?: boolean;
 } = {
@@ -24,8 +26,10 @@ const config: {
   topggSecret: undefined,
   sentry: undefined,
   origin: undefined,
+  notice: undefined,
   gacha: undefined,
   trading: undefined,
+  stealing: undefined,
   synthesis: undefined,
   communityPacks: undefined,
 };
@@ -52,12 +56,17 @@ export async function initConfig(): Promise<void> {
     config.topggCipher = Number(Deno.env.get('TOPGG_WEBHOOK_CIPHER'));
     config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');
 
+    config.notice = Deno.env.get('NOTICE');
+
     // feature flags
     config.gacha = !Deno.env.has('GACHA') ||
       Deno.env.get('GACHA') === '1';
 
     config.trading = !Deno.env.has('TRADING') ||
       Deno.env.get('TRADING') === '1';
+
+    config.stealing = !Deno.env.has('STEALING') ||
+      Deno.env.get('STEALING') === '1';
 
     config.synthesis = !Deno.env.has('SYNTHESIS') ||
       Deno.env.get('SYNTHESIS') === '1';

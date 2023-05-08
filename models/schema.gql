@@ -40,6 +40,8 @@ type Inventory @collection(name: "inventory") {
   availablePulls: Int!
   #
   rechargeTimestamp: Time
+  #
+  stealTimestamp: Time
   # the time the user last pulled a gacha
   lastPull: Time
   # the party linked to this user's inventory

@@ -14,7 +14,7 @@ import utils from './utils.ts';
 
 import { Schema } from './types.ts';
 
-import { NonFetalError, NoPullsError, PoolError } from './errors.ts';
+import { NonFetalError, PoolError } from './errors.ts';
 
 const synthesis = {
   getFilteredCharacters,
@@ -288,19 +288,6 @@ function confirmed({
       return gacha.pullAnimation({ token, pull, channelId });
     })
     .catch(async (err) => {
-      if (err instanceof NoPullsError) {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription('You don\'t have any more pulls!'),
-          )
-          .addEmbed(
-            new discord.Embed()
-              .setDescription(`_+1 pull <t:${err.rechargeTimestamp}:R>_`),
-          )
-          .patch(token);
-      }
-
       if (err instanceof PoolError) {
         return await new discord.Message()
           .addEmbed(

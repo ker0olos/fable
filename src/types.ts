@@ -180,11 +180,13 @@ export namespace Schema {
     id: string;
     rating: number;
     mediaId: string;
-    user: { id: string };
+    user: Partial<Schema.User>;
+    inventory?: Partial<Schema.Inventory>;
     nickname?: string;
     image?: string;
   };
   export type User = {
+    id: string;
     lastVote?: string;
     totalVotes?: number;
     availableVotes?: number;
@@ -199,6 +201,7 @@ export namespace Schema {
   export type Inventory = {
     availablePulls: number;
     rechargeTimestamp?: string;
+    stealTimestamp?: string;
     lastPull?: string;
     characters: Character[];
     user: User;
@@ -255,6 +258,11 @@ export namespace Schema {
     | {
       ok: false;
       error: 'CHARACTER_IN_PARTY';
+    }
+    | {
+      ok: false;
+      error: 'ON_COOLDOWN';
+      inventory: Inventory;
     }
     | {
       ok: true;

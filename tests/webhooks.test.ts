@@ -3,14 +3,14 @@
 import {
   assertEquals,
   assertRejects,
-} from 'https://deno.land/std@0.183.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   spy,
   stub,
-} from 'https://deno.land/std@0.183.0/testing/mock.ts';
+} from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
 import utils from '../src/utils.ts';
 import config from '../src/config.ts';
@@ -166,7 +166,7 @@ Deno.test('topgg', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'help==3',
+              custom_id: 'help==4',
               label: '/help voting',
               style: 2,
               type: 2,

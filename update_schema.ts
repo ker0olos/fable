@@ -1,8 +1,8 @@
-import $ from 'https://deno.land/x/dax@0.31.0/mod.ts';
+import $ from 'https://deno.land/x/dax@0.31.1/mod.ts';
 
-import { green } from 'https://deno.land/std@0.183.0/fmt/colors.ts';
+import { green } from 'https://deno.land/std@0.186.0/fmt/colors.ts';
 
-import { load as Dotenv } from 'https://deno.land/std@0.183.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.186.0/dotenv/mod.ts';
 
 try {
   await Dotenv({ export: true, allowEmptyValues: true });
@@ -59,14 +59,18 @@ if (import.meta.main) {
   }
 
   try {
-    await $`fauna upload-graphql-schema bundle.gql\
+    const r = await $`fauna upload-graphql-schema bundle.gql\
       --secret ${FAUNA_SECRET}\
       --scheme https\
       --mode ${mode}\
       --domain db.us.fauna.com\
       --graphqlHost graphql.us.fauna.com\
-      --graphqlPort 443`
-      .quiet();
+      --graphqlPort 443`.quiet();
+
+    if (r.stdout.includes('error')) {
+      console.error(r.stdout);
+      throw new Error();
+    }
   } catch {
     throw new Error('Error running: `fauna upload-graphql-schema bundle.gql`');
   }

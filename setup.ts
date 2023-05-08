@@ -1,6 +1,6 @@
-import $ from 'https://deno.land/x/dax@0.31.0/mod.ts';
+import $ from 'https://deno.land/x/dax@0.31.1/mod.ts';
 
-import { green, red } from 'https://deno.land/std@0.182.0/fmt/colors.ts';
+import { green, red } from 'https://deno.land/std@0.186.0/fmt/colors.ts';
 
 const APP_ID = await $.prompt(
   'Enter your discord application id (https://discord.com/developers/applications): ',
@@ -36,8 +36,10 @@ TOPGG_WEBHOOK_CIPHER=
 TOPGG_WEBHOOK_SECRET=
 GACHA=1
 TRADING=1
+STEALING=1
 SYNTHESIS=1
-COMMUNITY_PACKS=1`,
+COMMUNITY_PACKS=1
+NOTICE=`,
 );
 
 await $.confirm({
@@ -50,9 +52,11 @@ Did you invite the bot to your server using the url above?`,
 let pb = $.progress('Install Developer Tools');
 
 try {
-  await $`npm i -g fauna-shell ngrok concurrently`.quiet();
+  await $`npm i -g fauna-shell ngrok concurrently node-jq`.quiet();
 } catch {
-  console.error(red('Error running: npm i -g fauna-shell ngrok concurrently'));
+  console.error(
+    red('Error running: npm i -g fauna-shell ngrok concurrently node-jq'),
+  );
   Deno.exit(1);
 } finally {
   pb.finish();

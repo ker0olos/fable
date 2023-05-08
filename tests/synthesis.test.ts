@@ -3,17 +3,17 @@
 import {
   assertEquals,
   assertThrows,
-} from 'https://deno.land/std@0.183.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
 import {
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.183.0/testing/mock.ts';
+} from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
-import { assertSnapshot } from 'https://deno.land/std@0.183.0/testing/snapshot.ts';
+import { assertSnapshot } from 'https://deno.land/std@0.186.0/testing/snapshot.ts';
 
-import { FakeTime } from 'https://deno.land/std@0.183.0/testing/time.ts';
+import { FakeTime } from 'https://deno.land/std@0.186.0/testing/time.ts';
 
 import packs from '../src/packs.ts';
 import config from '../src/config.ts';
@@ -457,190 +457,6 @@ Deno.test('synthesis confirmed', async (test) => {
               },
             ],
           }],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      synthesisStub.restore();
-      gachaStub.restore();
-      timeStub.restore();
-    }
-  });
-
-  await test.step('no pulls available', async () => {
-    const media: AniListMedia = {
-      id: '2',
-      packId: 'anilist',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      popularity: 150_000,
-      title: {
-        english: 'title',
-      },
-      coverImage: {
-        extraLarge: 'media_image_url',
-      },
-    };
-
-    const character: AniListCharacter = {
-      id: '1',
-      packId: 'anilist',
-      name: {
-        full: 'name',
-      },
-      image: {
-        large: 'character_image_url',
-      },
-      media: {
-        edges: [{
-          characterRole: CharacterRole.Supporting,
-          node: media,
-        }],
-      },
-    };
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                  // media: [media],
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                replaceCharacters: {
-                  ok: false,
-                  error: 'NO_PULLS_AVAILABLE',
-                  inventory: {
-                    rechargeTimestamp: '2023-02-07T01:00:55.222Z',
-                  },
-                },
-              },
-            }))),
-        },
-        undefined,
-        undefined,
-      ] as any),
-    );
-
-    const gachaStub = stub(gacha, 'guaranteedPool', () =>
-      Promise.resolve({
-        pool: [{ id: 'anilist:1' }],
-        poolInfo: { pool: 1 },
-        validate: () => true,
-      }));
-
-    const synthesisStub = stub(
-      synthesis,
-      'getFilteredCharacters',
-      () =>
-        Promise.resolve([
-          {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
-            id: 'anilist:1',
-            rating: 1,
-          },
-          {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
-            id: 'anilist:2',
-            rating: 1,
-          },
-          {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
-            id: 'anilist:3',
-            rating: 1,
-          },
-          {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
-            id: 'anilist:4',
-            rating: 1,
-          },
-          {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
-            id: 'anilist:5',
-            rating: 1,
-          },
-        ]),
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = synthesis.confirmed({
-        token: 'test_token',
-        userId: 'user_id',
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        target: 2,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 3);
-
-      assertEquals(
-        fetchStub.calls[2].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          embeds: [
-            {
-              description: 'You don\'t have any more pulls!',
-              type: 'rich',
-            },
-            {
-              type: 'rich',
-              description: '_+1 pull <t:1675733455:R>_',
-            },
-          ],
-          components: [],
-          attachments: [],
         },
       );
     } finally {
@@ -1917,7 +1733,7 @@ _+2 others... <:remove:1099004424111792158>_`,
     }
   });
 
-  await test.step('maintenance', () => {
+  await test.step('under maintenance', () => {
     config.synthesis = false;
 
     try {

@@ -367,6 +367,24 @@ function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
   };
 }
 
+function stealTimestamp(v?: string): string {
+  const parsed = new Date(v ?? new Date());
+
+  const ts = parsed.getTime();
+
+  // discord uses seconds not milliseconds
+  return Math.floor(ts / 1000).toString();
+}
+
+function diffInDays(a: Date, b: Date): number {
+  const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+  const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+  const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+  return Math.floor((utc1 - utc2) / _MS_PER_DAY);
+}
+
 function cipher(str: string, secret: number): string {
   let b = '';
 
@@ -412,6 +430,7 @@ const utils = {
   parseInt: _parseInt,
   proxy,
   randint,
+  diffInDays,
   readJson,
   rechargeTimestamp,
   rng,
@@ -424,6 +443,7 @@ const utils = {
   validateRequest,
   verifySignature,
   votingTimestamp,
+  stealTimestamp,
   wrap,
 };
 

@@ -54,78 +54,66 @@ export function replaceCharacters(
       )),
   }, ({ match, sacrificedCharacters }) =>
     fql.If(
-      fql.LTE(fql.Select(['data', 'availablePulls'], inventory), 0),
-      {
-        ok: false,
-        error: 'NO_PULLS_AVAILABLE',
-        inventory: fql.Ref(inventory),
-      },
+      fql.All(fql.Map(sacrificedCharacters, (char) =>
+        fql.Equals(
+          fql.Select(['data', 'user'], fql.Get(char)),
+          fql.Ref(user),
+        ))),
       fql.If(
-        fql.All(fql.Map(sacrificedCharacters, (char) =>
-          fql.Equals(
-            fql.Select(['data', 'user'], fql.Get(char)),
-            fql.Ref(user),
-          ))),
-        fql.If(
-          fql.IsEmpty(match),
-          fql.Let(
-            {
-              sacrificedCharactersRefs: fql.Map(
-                sacrificedCharacters,
-                (char) => fql.Ref(fql.Get(char)),
-              ),
-              deletedCharacters: fql.Foreach(
-                fql.Var<RefExpr[]>('sacrificedCharactersRefs'),
-                fql.Delete,
-              ),
-              createdCharacter: fql.Create<Character>('character', {
-                rating,
-                mediaId,
-                id: characterId,
-                inventory: fql.Ref(inventory),
-                instance: fql.Ref(instance),
-                user: fql.Ref(user),
-              }),
-              updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
-                lastPull: fql.Now(),
-                rechargeTimestamp: fql.Select(
-                  ['data', 'rechargeTimestamp'],
-                  inventory,
-                  fql.Now(),
-                ),
-                availablePulls: fql.Subtract(
-                  fql.Select(['data', 'availablePulls'], inventory),
-                  1,
-                ),
-              }),
-            },
-            ({ updatedInventory, createdCharacter }) => ({
-              ok: true,
-              inventory: fql.Ref(updatedInventory),
-              character: fql.Ref(createdCharacter),
-              likes: fql.Select(
-                ['data'],
-                fql.Map(
-                  fql.Paginate(
-                    fql.Match(
-                      fql.Index('users_likes_character'),
-                      characterId,
-                    ),
-                    {},
-                  ),
-                  (user) => fql.Select(['data', 'id'], fql.Get(user)),
-                ),
+        fql.IsEmpty(match),
+        fql.Let(
+          {
+            sacrificedCharactersRefs: fql.Map(
+              sacrificedCharacters,
+              (char) => fql.Ref(fql.Get(char)),
+            ),
+            deletedCharacters: fql.Foreach(
+              fql.Var<RefExpr[]>('sacrificedCharactersRefs'),
+              fql.Delete,
+            ),
+            createdCharacter: fql.Create<Character>('character', {
+              rating,
+              mediaId,
+              id: characterId,
+              inventory: fql.Ref(inventory),
+              instance: fql.Ref(instance),
+              user: fql.Ref(user),
+            }),
+            updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
+              lastPull: fql.Now(),
+              rechargeTimestamp: fql.Select(
+                ['data', 'rechargeTimestamp'],
+                inventory,
+                fql.Now(),
               ),
             }),
-          ),
-          { ok: false, error: 'CHARACTER_EXISTS' },
+          },
+          ({ updatedInventory, createdCharacter }) => ({
+            ok: true,
+            inventory: fql.Ref(updatedInventory),
+            character: fql.Ref(createdCharacter),
+            likes: fql.Select(
+              ['data'],
+              fql.Map(
+                fql.Paginate(
+                  fql.Match(
+                    fql.Index('users_likes_character'),
+                    characterId,
+                  ),
+                  {},
+                ),
+                (user) => fql.Select(['data', 'id'], fql.Get(user)),
+              ),
+            ),
+          }),
         ),
-        {
-          ok: false,
-          error: 'CHARACTER_NOT_OWNED',
-          inventory: fql.Ref(inventory),
-        },
+        { ok: false, error: 'CHARACTER_EXISTS' },
       ),
+      {
+        ok: false,
+        error: 'CHARACTER_NOT_OWNED',
+        inventory: fql.Ref(inventory),
+      },
     ));
 }
 

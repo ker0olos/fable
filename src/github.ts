@@ -1,6 +1,6 @@
 // deno-lint-ignore-file camelcase
 
-import { jsonrepair } from 'https://esm.sh/jsonrepair@3.0.2';
+import { jsonrepair } from 'https://esm.sh/jsonrepair@3.1.0/';
 
 import packs from './packs.ts';
 

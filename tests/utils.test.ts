@@ -4,14 +4,14 @@ import {
   assert,
   assertEquals,
   assertThrows,
-} from 'https://deno.land/std@0.183.0/testing/asserts.ts';
+} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.183.0/testing/mock.ts';
+} from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
 import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
@@ -781,6 +781,15 @@ Deno.test('voting timestamps', async (test) => {
       true,
     );
   });
+});
+
+Deno.test('diff days', () => {
+  const a = new Date();
+  const b = new Date();
+
+  b.setDate(a.getDate() - 7);
+
+  assertEquals(utils.diffInDays(a, b), 7);
 });
 
 Deno.test('cipher', () => {
