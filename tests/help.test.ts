@@ -1,6 +1,6 @@
-import { assertEquals } from 'https://deno.land/std@0.183.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
-import { assertSnapshot } from 'https://deno.land/std@0.183.0/testing/snapshot.ts';
+import { assertSnapshot } from 'https://deno.land/std@0.186.0/testing/snapshot.ts';
 
 import help from '../src/help.ts';
 

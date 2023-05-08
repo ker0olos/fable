@@ -1,6 +1,6 @@
-import $ from 'https://deno.land/x/dax@0.31.0/mod.ts';
+import $ from 'https://deno.land/x/dax@0.31.1/mod.ts';
 
-import { green, red } from 'https://deno.land/std@0.182.0/fmt/colors.ts';
+import { green, red } from 'https://deno.land/std@0.186.0/fmt/colors.ts';
 
 const APP_ID = await $.prompt(
   'Enter your discord application id (https://discord.com/developers/applications): ',

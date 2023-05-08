@@ -1,10 +1,10 @@
 import 'https://esm.sh/@total-typescript/ts-reset@0.4.2/filter-boolean';
 
-import $ from 'https://deno.land/x/dax@0.31.0/mod.ts';
+import $ from 'https://deno.land/x/dax@0.31.1/mod.ts';
 
-import { green } from 'https://deno.land/std@0.183.0/fmt/colors.ts';
+import { green } from 'https://deno.land/std@0.186.0/fmt/colors.ts';
 
-import { load as Dotenv } from 'https://deno.land/std@0.183.0/dotenv/mod.ts';
+import { load as Dotenv } from 'https://deno.land/std@0.186.0/dotenv/mod.ts';
 
 try {
   await Dotenv({ export: true, allowEmptyValues: true });
