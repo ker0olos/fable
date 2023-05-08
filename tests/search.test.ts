@@ -5362,7 +5362,7 @@ Deno.test('/character debug', async (test) => {
 Deno.test('/found', async (test) => {
   await test.step('normal', async () => {
     const media: AniListMedia = {
-      id: '2',
+      id: '3',
       type: MediaType.Manga,
       title: {
         english: 'title',
@@ -5370,18 +5370,32 @@ Deno.test('/found', async (test) => {
       popularity: 0,
     };
 
-    const character: AniListCharacter = {
-      id: '1',
-      name: {
-        full: 'name',
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media,
+          }],
+        },
       },
-      media: {
-        edges: [{
-          characterRole: CharacterRole.Main,
-          node: media,
-        }],
+      {
+        id: '2',
+        name: {
+          full: 'name 2',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media,
+          }],
+        },
       },
-    };
+    ];
 
     const timeStub = new FakeTime();
 
@@ -5395,7 +5409,7 @@ Deno.test('/found', async (test) => {
             Promise.resolve(JSON.stringify({
               data: {
                 Page: {
-                  characters: [character],
+                  characters,
                   media: [media],
                 },
               },
@@ -5406,14 +5420,24 @@ Deno.test('/found', async (test) => {
           text: (() =>
             Promise.resolve(JSON.stringify({
               data: {
-                findMedia: [{
-                  id: 'anilist:1',
-                  mediaId: 'anilist:2',
-                  rating: 4,
-                  user: {
-                    id: 'another_user_id',
+                findMedia: [
+                  {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:3',
+                    rating: 2,
+                    user: {
+                      id: 'another_user_id',
+                    },
                   },
-                }],
+                  {
+                    id: 'anilist:2',
+                    mediaId: 'anilist:3',
+                    rating: 4,
+                    user: {
+                      id: 'another_user_id',
+                    },
+                  },
+                ],
               },
             }))),
         } as any,
@@ -5423,7 +5447,7 @@ Deno.test('/found', async (test) => {
             Promise.resolve(JSON.stringify({
               data: {
                 Page: {
-                  characters: [character],
+                  characters,
                   media: [media],
                 },
               },
@@ -5449,7 +5473,7 @@ Deno.test('/found', async (test) => {
         index: 0,
         token: 'test_token',
         guildId: 'guild_id',
-        id: 'anilist:2',
+        id: 'anilist:3',
       });
 
       assertEquals(message.json(), {
@@ -5489,7 +5513,7 @@ Deno.test('/found', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'found=anilist:2=0=prev',
+                custom_id: 'found=anilist:3=0=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
@@ -5502,7 +5526,7 @@ Deno.test('/found', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'found=anilist:2=0=next',
+                custom_id: 'found=anilist:3=0=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -5512,7 +5536,8 @@ Deno.test('/found', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '1<:smol_star:1088427421096751224> name',
+              description:
+                '4<:smol_star:1088427421096751224> <@another_user_id> name 2\n2<:smol_star:1088427421096751224> <@another_user_id> name',
             },
           ],
         },
