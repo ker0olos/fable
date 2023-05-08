@@ -96,7 +96,7 @@ function pages(
         new discord.Embed()
           .setAuthor({ name: 'Stealing' })
           .setDescription([
-            'When all negotiation fails, it\'s fine to take what you want by force, right?',
+            'When all negotiations fails, it\'s fine to take what you want by force, right?',
             '',
             '__You can\'t steal characters assigned as party members__, meaning you can protect your most precious characters by adding them to your party.',
             '',
