@@ -2216,6 +2216,7 @@ Deno.test('/gacha', async (test) => {
       popularityGreater: 0,
       popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
+      remaining: 0,
       pool: 1,
     };
 
@@ -2354,6 +2355,7 @@ Deno.test('/gacha', async (test) => {
               {
                 custom_id: 'gacha=user_id',
                 label: '/gacha',
+                disabled: true,
                 style: 2,
                 type: 2,
               },
@@ -2424,6 +2426,7 @@ Deno.test('/gacha', async (test) => {
       popularityLesser: 100,
       guarantees: [3, 4, 3],
       rating: new Rating({ popularity: 100 }),
+      remaining: 1,
       pool: 1,
     };
 
@@ -2632,6 +2635,7 @@ Deno.test('/gacha', async (test) => {
       popularityGreater: 0,
       popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
+      remaining: 1,
       pool: 1,
     };
 
@@ -2848,6 +2852,7 @@ Deno.test('/gacha', async (test) => {
       popularityGreater: 0,
       popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
+      remaining: 1,
       pool: 1,
     };
 
@@ -2998,6 +3003,7 @@ Deno.test('/gacha', async (test) => {
       popularityLesser: 100,
       likes: ['another_user_id'],
       rating: new Rating({ popularity: 100 }),
+      remaining: 1,
       pool: 1,
     };
 
@@ -3232,6 +3238,7 @@ Deno.test('/gacha', async (test) => {
       popularityGreater: 0,
       popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
+      remaining: 1,
       pool: 1,
     };
 
@@ -3442,6 +3449,7 @@ Deno.test('/gacha', async (test) => {
       popularityGreater: 0,
       popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
+      remaining: 1,
       pool: 1,
     };
 
