@@ -26,6 +26,368 @@ import { Character, CharacterRole, MediaType } from '../src/types.ts';
 
 import { NonFetalError } from '../src/errors.ts';
 
+Deno.test('chances', async (test) => {
+  await test.step('5*', async (test) => {
+    const rating = 5;
+
+    await test.step('no inactive time', () => {
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: undefined,
+        },
+      });
+
+      assertEquals(1, chance);
+    });
+
+    await test.step('1 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 1);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(6, chance);
+    });
+
+    await test.step('7 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 7);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(26, chance);
+    });
+
+    await test.step('14 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 14);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(51, chance);
+    });
+  });
+
+  await test.step('4*', async (test) => {
+    const rating = 4;
+
+    await test.step('no inactive time', () => {
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: undefined,
+        },
+      });
+
+      assertEquals(4, chance);
+    });
+
+    await test.step('1 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 1);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(9, chance);
+    });
+
+    await test.step('7 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 7);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(29, chance);
+    });
+
+    await test.step('14 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 14);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(54, chance);
+    });
+  });
+
+  await test.step('3*', async (test) => {
+    const rating = 3;
+
+    await test.step('no inactive time', () => {
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: undefined,
+        },
+      });
+
+      assertEquals(14, chance);
+    });
+
+    await test.step('1 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 1);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(19, chance);
+    });
+
+    await test.step('7 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 7);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(39, chance);
+    });
+
+    await test.step('14 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 14);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(64, chance);
+    });
+  });
+
+  await test.step('2*', async (test) => {
+    const rating = 2;
+
+    await test.step('no inactive time', () => {
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: undefined,
+        },
+      });
+
+      assertEquals(24, chance);
+    });
+
+    await test.step('1 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 1);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(29, chance);
+    });
+
+    await test.step('7 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 7);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(49, chance);
+    });
+
+    await test.step('14 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 14);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(74, chance);
+    });
+  });
+
+  await test.step('1*', async (test) => {
+    const rating = 1;
+
+    await test.step('no inactive time', () => {
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: undefined,
+        },
+      });
+
+      assertEquals(49, chance);
+    });
+
+    await test.step('1 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 1);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(54, chance);
+    });
+
+    await test.step('7 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 7);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(74, chance);
+    });
+
+    await test.step('14 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 14);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(99, chance);
+    });
+  });
+});
+
 Deno.test('attempt', async (test) => {
   await test.step('success', async () => {
     const character: Character = {
@@ -1323,13 +1685,13 @@ Deno.test('/steal', async (test) => {
             },
             {
               type: 'rich',
-              description: 'Your chance to succeed is: **49%**',
+              description: 'Your chance to succeed is: **24%**',
             },
           ],
           components: [{
             components: [
               {
-                custom_id: 'steal=user_id=id:1=49',
+                custom_id: 'steal=user_id=id:1=24',
                 label: 'Attempt',
                 style: 2,
                 type: 2,

@@ -16,12 +16,44 @@ import { Character, DisaggregatedCharacter, Schema } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
 
-function getChances(_character: Schema.Character): number {
-  // TODO
-  // const rating = character.rating;
-  // const lastPull = character.inventory?.lastPull;
+function getChances(character: Schema.Character): number {
+  let chance = 0;
 
-  return 49;
+  switch (character.rating) {
+    case 5:
+      chance = 1;
+      break;
+    case 4:
+      chance = 4;
+      break;
+    case 3:
+      chance = 14;
+      break;
+    case 2:
+      chance = 24;
+      break;
+    case 1:
+      chance = 49;
+      break;
+    default:
+      break;
+  }
+
+  const lastPull = character.inventory?.lastPull
+    ? new Date(character.inventory.lastPull)
+    : new Date();
+
+  const inactiveDays = utils.diffInDays(new Date(), lastPull);
+
+  if (inactiveDays >= 14) {
+    chance += 50;
+  } else if (inactiveDays >= 7) {
+    chance += 25;
+  } else if (inactiveDays >= 1) {
+    chance += 5;
+  }
+
+  return chance;
 }
 
 async function getCooldown({ userId, guildId }: {
@@ -458,6 +490,7 @@ function attempt({
 const steal = {
   pre,
   attempt,
+  getChances,
 };
 
 export default steal;

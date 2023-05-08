@@ -783,6 +783,15 @@ Deno.test('voting timestamps', async (test) => {
   });
 });
 
+Deno.test('diff days', () => {
+  const a = new Date();
+  const b = new Date();
+
+  b.setDate(a.getDate() - 7);
+
+  assertEquals(utils.diffInDays(a, b), 7);
+});
+
 Deno.test('cipher', () => {
   const token =
     'aW50ZXJhY3Rpb246MTA4NTI3MDUzMTA1OTc2NTI5ODowZGgxelpMVVBOZmxFcGFDOE9xc3V5RDdaQmdTUzlZT3Q1dzk0c250cVpoNDlheXJUSHFacjEzNjV2a28xMVFvbG9qOGRMRVVFWWtuQTNGaWVzbVY3ZGR0aTJIQ3plYUQ5em0xa2p3Sm5CU0w4cWNmWjlndlc4RWdsamJ0dFl2TQ';
