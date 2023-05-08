@@ -1,4 +1,5 @@
 import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
+import { COOLDOWN_DAYS } from '../models/steal_character.ts';
 
 import * as discord from './discord.ts';
 
@@ -89,6 +90,25 @@ function pages(
             '\u200B',
           ].join('\n'))
           .setFooter({ text: 'aliases: /team, /p' }),
+      ),
+    new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setAuthor({ name: 'Stealing' })
+          .setDescription([
+            'When all negotiation fails, it\'s fine to take what you want by force, right?',
+            '',
+            '__You can\'t steal characters assigned as party members__, meaning you can protect your most precious characters by adding them to your party.',
+            '',
+            '__Inactive users are easier to steal from.__ Stay active by using `/gacha` or `/q` once a day.',
+            '',
+            `__The higher the character's rating the harder it is to steal.__ 5${discord.emotes.smolStar}characters have a base success rate of 1%`,
+            '',
+            `__Steal has a cooldown of ${COOLDOWN_DAYS} days__ regardless of the outcome of the attempt.`,
+            '',
+            '> Staying active is the best defense against stealing',
+            '\u200B',
+          ].join('\n')),
       ),
     new discord.Message()
       .addComponents([

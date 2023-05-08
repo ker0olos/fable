@@ -19,7 +19,7 @@ import {
 
 import { Character } from './add_character_to_inventory.ts';
 
-const COOLDOWN_DAYS = 3;
+export const COOLDOWN_DAYS = 3;
 
 export function failSteal({ inventory }: {
   inventory: InventoryExpr;

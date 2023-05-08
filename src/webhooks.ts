@@ -110,7 +110,7 @@ async function topgg(r: Request): Promise<Response> {
         .setContent(`Thanks for voting, <@${data.user}>.`)
         .addComponents([
           new discord.Component()
-            .setId('help', '', '3')
+            .setId('help', '', '4')
             .setLabel('/help voting'),
         ])
         .followup(token);

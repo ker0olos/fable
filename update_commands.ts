@@ -425,24 +425,28 @@ export const commands = [
             value: 2,
           },
           {
-            name: 'Voting',
+            name: 'Stealing',
             value: 3,
           },
           {
-            name: 'Roadmap',
+            name: 'Voting',
             value: 4,
           },
           {
-            name: 'Essential Commands',
+            name: 'Roadmap',
             value: 5,
           },
           {
-            name: 'Other Commands',
+            name: 'Essential Commands',
             value: 6,
           },
           {
+            name: 'Other Commands',
+            value: 7,
+          },
+          {
             name: 'Admin Commands',
-            value: 6,
+            value: 8,
           },
         ],
       }),

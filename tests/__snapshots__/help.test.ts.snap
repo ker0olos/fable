@@ -8,7 +8,7 @@ snapshot[`/help 1`] = `
       {
         components: [
           {
-            custom_id: "help==7=prev",
+            custom_id: "help==8=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -16,7 +16,7 @@ snapshot[`/help 1`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "1/8",
+            label: "1/9",
             style: 2,
             type: 2,
           },
@@ -98,7 +98,7 @@ snapshot[`/help 2`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "2/8",
+            label: "2/9",
             style: 2,
             type: 2,
           },
@@ -176,7 +176,7 @@ snapshot[`/help 3`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "3/8",
+            label: "3/9",
             style: 2,
             type: 2,
           },
@@ -260,12 +260,78 @@ snapshot[`/help 4`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "4/8",
+            label: "4/9",
             style: 2,
             type: 2,
           },
           {
             custom_id: "help==4=next",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "Stealing",
+        },
+        description: "When all negotiation fails, it's fine to take what you want by force, right?
+" +
+          "
+" +
+          "__You can't steal characters assigned as party members__, meaning you can protect your most precious characters by adding them to your party.
+" +
+          "
+" +
+          "__Inactive users are easier to steal from.__ Stay active by using \`/gacha\` or \`/q\` once a day.
+" +
+          "
+" +
+          "__The higher the character's rating the harder it is to steal.__ 5<:smol_star:1088427421096751224>characters have a base success rate of 1%
+" +
+          "
+" +
+          "__Steal has a cooldown of 3 days__ regardless of the outcome of the attempt.
+" +
+          "
+" +
+          "> Staying active is the best defense against stealing
+" +
+          "​",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;
+
+snapshot[`/help 5`] = `
+{
+  data: {
+    attachments: [],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==3=prev",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "5/9",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==5=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -332,7 +398,7 @@ snapshot[`/help 4`] = `
 }
 `;
 
-snapshot[`/help 5`] = `
+snapshot[`/help 6`] = `
 {
   data: {
     attachments: [],
@@ -340,7 +406,7 @@ snapshot[`/help 5`] = `
       {
         components: [
           {
-            custom_id: "help==3=prev",
+            custom_id: "help==4=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -348,12 +414,12 @@ snapshot[`/help 5`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "5/8",
+            label: "6/9",
             style: 2,
             type: 2,
           },
           {
-            custom_id: "help==5=next",
+            custom_id: "help==6=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -425,7 +491,7 @@ snapshot[`/help 5`] = `
 }
 `;
 
-snapshot[`/help 6`] = `
+snapshot[`/help 7`] = `
 {
   data: {
     attachments: [],
@@ -433,7 +499,7 @@ snapshot[`/help 6`] = `
       {
         components: [
           {
-            custom_id: "help==4=prev",
+            custom_id: "help==5=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -441,12 +507,12 @@ snapshot[`/help 6`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "6/8",
+            label: "7/9",
             style: 2,
             type: 2,
           },
           {
-            custom_id: "help==6=next",
+            custom_id: "help==7=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -511,7 +577,7 @@ snapshot[`/help 6`] = `
 }
 `;
 
-snapshot[`/help 7`] = `
+snapshot[`/help 8`] = `
 {
   data: {
     attachments: [],
@@ -519,7 +585,7 @@ snapshot[`/help 7`] = `
       {
         components: [
           {
-            custom_id: "help==5=prev",
+            custom_id: "help==6=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -527,12 +593,12 @@ snapshot[`/help 7`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "7/8",
+            label: "8/9",
             style: 2,
             type: 2,
           },
           {
-            custom_id: "help==7=next",
+            custom_id: "help==8=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -571,6 +637,66 @@ snapshot[`/help 7`] = `
           "
 " +
           "- \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;
+
+snapshot[`/help 9`] = `
+{
+  data: {
+    attachments: [],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==7=prev",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "9/9",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==0=next",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "Admin Commands",
+        },
+        description: "_> \`/packs\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we don't recommend that._
+" +
+          "- \`/packs builtin\`: _list all the builtin packs_
+" +
+          "- \`/packs community\`: _list all installed community packs_
+" +
+          "
+" +
+          "- \`/packs install\`: _install a community pack_
+" +
+          "- \`/packs update\`: _update a community pack_
+" +
+          "- \`/packs uninstall\`: _uninstall a pack_
+" +
+          "
+" +
+          "- \`/packs validate\`: _find errors in a pack's \\"manifest.json\\"_",
         type: "rich",
       },
     ],
