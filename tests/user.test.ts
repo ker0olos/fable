@@ -669,7 +669,7 @@ Deno.test('/now', async (test) => {
     config.appId = 'app_id';
     config.topggCipher = 12;
 
-    config.notice = '**test** _message_';
+    config.notice = '**test**\\n_message_';
 
     try {
       const message = await user.now({
@@ -694,7 +694,7 @@ Deno.test('/now', async (test) => {
               description: undefined,
             },
             {
-              description: '**test** _message_',
+              description: '**test**\n_message_',
               type: 'rich',
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },

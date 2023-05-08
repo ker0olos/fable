@@ -171,7 +171,7 @@ async function now({
   if (config.notice) {
     message.addEmbed(
       new discord.Embed()
-        .setDescription(config.notice),
+        .setDescription(config.notice.replaceAll('\\n', '\n')),
     );
   }
 
