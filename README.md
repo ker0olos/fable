@@ -56,11 +56,13 @@ for more information.
 ### Get Involved
 
 - [Join our discord][discord]
-- Tell your favorite server's admins about us
 - [Contribute to the code][contributing]
 - [Sponsor the project][sponsoring]
 
----
+<br clear="right"/>
+<br clear="right"/>
+
+### FAQ
 
 <details><summary>How can I limit Fable to 1 channel?</summary>
 <p>

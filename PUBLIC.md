@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/9vtvWpK.png" alt="120K+ characters">
+<img src="https://i.imgur.com/GRYuWD2.png" alt="120K+ characters">
 
 <br/>
 
@@ -41,13 +41,13 @@
 <br clear="left"/>
 <br clear="left"/>
 
-<img src="https://i.imgur.com/leaT1Xh.png" alt="Fable compared to other bots">
+<img src="https://i.imgur.com/hnjdR0g.png" alt="Fable compared to other bots">
 
 <br/>
 <br/>
 
 <a href="/bot/1041970851559522304/invite">
-  <img src="https://i.imgur.com/oFNP7yZ.png" alt="Get Started">
+  <img src="https://i.imgur.com/ef1LT9G.png" alt="Get Started">
 </a>
 
 <br/>
