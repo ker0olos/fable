@@ -41,17 +41,7 @@
 <br clear="left"/>
 <br clear="left"/>
 
-<!-- <p>
-  <img align="left" src="https://i.imgur.com/XErnGE8.png" alt="More Information">
-  <h4>More Information</h4>
-  Fable offers descriptions about characters and anime, so you can learn more
-  about that character you just pulled.
-</p>
-
-<br clear="left"/>
-<br clear="left"/> -->
-
-<img src="https://i.imgur.com/NGDvZKb.png" alt="Fable compared to other bots">
+<img src="https://i.imgur.com/leaT1Xh.png" alt="Fable compared to other bots">
 
 <br/>
 <br/>
@@ -62,6 +52,10 @@
 
 <br/>
 <br/>
+
+#### **Frequently Asked Questions**
+
+</br>
 
 ---
 
