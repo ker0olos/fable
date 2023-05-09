@@ -279,7 +279,7 @@ snapshot[`/help 4`] = `
         author: {
           name: "Stealing",
         },
-        description: "When all negotiation fails, it's fine to take what you want by force, right?
+        description: "When all negotiations fails, it's fine to take what you want by force, right?
 " +
           "
 " +

@@ -745,8 +745,6 @@ function mediaFound(
 
       embed.setDescription(names.join('\n'));
 
-      console.log(names.join('\n'));
-
       return discord.Message.page({
         index,
         type: 'found',

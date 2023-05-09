@@ -37,17 +37,13 @@ Wanna make your own community pack? Check
 [fable-community/example](https://github.com/fable-community/fable-pack-example)
 for more information.
 
-You can try a basic online demo of Fable before inviting it to your server by
-going to <https://fable.deno.dev/demo>
-
-Fable is actively developed with new game modes and features frequently.
-
+<br clear="right"/>
 <br clear="right"/>
 
-<i>
-  <h6 align="right">(Rich Character Profiles)</h6>
+<p>
+  <h6 align="right">(Character Descriptions)</h6>
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227323628-17674f52-bb3a-460f-965a-d316cbed7932.png" alt="Searching">
-</i>
+</p>
 
 ### Get Started
 
@@ -60,20 +56,13 @@ Fable is actively developed with new game modes and features frequently.
 ### Get Involved
 
 - [Join our discord][discord]
-- Tell your favorite server's admins about us
 - [Contribute to the code][contributing]
 - [Sponsor the project][sponsoring]
 
 <br clear="right"/>
+<br clear="right"/>
 
-<h6 align="center">(Search for any anime or manga you want to know more about)</h6>
-<h6 align="center">
-  <img  width="500" src="https://user-images.githubusercontent.com/52022280/227324461-079c4bca-ae1d-4df9-bea5-99f02eba68d5.png" alt="Searching">
-</h6>
-
----
-
-## FAQ
+### FAQ
 
 <details><summary>How can I limit Fable to 1 channel?</summary>
 <p>
@@ -84,7 +73,7 @@ From there you can control the permissions globally or even per command.
 </p>
 </details>
 
-<details><summary>Can I use prefixes like `$`?</summary>
+<details><summary>Can I use prefixes like $ or @Fable?</summary>
 <p>
 
 **No**. Fable was built from the ground up to only support slash commands,
