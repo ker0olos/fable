@@ -51,7 +51,14 @@
 <br clear="left"/>
 <br clear="left"/> -->
 
-<img src="https://i.imgur.com/snZTEB4.png" alt="Fable compared to other bots">
+<img src="https://i.imgur.com/NGDvZKb.png" alt="Fable compared to other bots">
+
+<br/>
+<br/>
+
+<a href="/bot/1041970851559522304/invite">
+  <img src="https://i.imgur.com/oFNP7yZ.png" alt="Get Started">
+</a>
 
 <br/>
 <br/>
@@ -87,9 +94,6 @@ Some people think I plan to bait and switch after gaining enough popularity, but
 Fable is 100% open-source and under MIT license, so even if I suddenly switch to
 the dark side, people can take the code, make everything free again and
 re-release Fable.
-
-We make our money through "actual" donations and through freelancing and other
-projects.
 
 </p>
 </details>
