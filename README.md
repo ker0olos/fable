@@ -38,7 +38,6 @@ Wanna make your own community pack? Check
 for more information.
 
 <br clear="right"/>
-<br clear="right"/>
 
 <p>
   <h6 align="right">(Character Descriptions)</h6>
@@ -50,17 +49,16 @@ for more information.
 - **`/help`, `/tuto`**: _to learn more features and commands_
 - **`/now`, `/tu`**: _check what you can do right now_
 - **`/gacha`, `/w`**: _start a new gacha pull_
-- **`/search`, `/anime`, `/manga`**: _to search for specific media_
-- **`/character`, `/char`**: _to search for a specific character_
 
-### Get Involved
+### Useful Links
 
-- [Join our discord][discord]
-- [Contribute to the code][contributing]
-- [Sponsor the project][sponsoring]
+- [How to Contribute][contributing]
+- [How to Self-host][self-hosting]
+- [How to Create Packs][community-packs]
+- [Discord Support Server][discord]
+- [Sponsor (Donate)][sponsoring]
 
-<br clear="right"/>
-<br clear="right"/>
+<br/>
 
 ### FAQ
 
@@ -135,5 +133,8 @@ time, and how many people are working on Fable at any giving moment.
 </details>
 
 [discord]: https://discord.gg/ceKyEfhyPQ
+[topgg]: https://top.gg/bot/1041970851559522304
 [sponsoring]: https://github.com/sponsors/ker0olos
-[contributing]: https://github.com/ker0olos/fable/wiki/Contributing
+[community-packs]: https://github.com/fable-community/fable-pack-example
+[contributing]: https://github.com/ker0olos/fable/wiki
+[self-hosting]: https://github.com/ker0olos/fable/wiki/Self-hosting
