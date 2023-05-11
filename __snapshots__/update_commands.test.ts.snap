@@ -5,6 +5,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Search for a specific media",
+    dm_permission: false,
     name: "search",
     options: [
       {
@@ -40,6 +41,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Search for a specific media",
+    dm_permission: false,
     name: "anime",
     options: [
       {
@@ -75,6 +77,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Search for a specific media",
+    dm_permission: false,
     name: "manga",
     options: [
       {
@@ -110,6 +113,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Search for a specific media",
+    dm_permission: false,
     name: "media",
     options: [
       {
@@ -145,6 +149,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Search for a specific character",
+    dm_permission: false,
     name: "character",
     options: [
       {
@@ -171,6 +176,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Search for a specific character",
+    dm_permission: false,
     name: "char",
     options: [
       {
@@ -197,6 +203,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "View all characters found in a specific media",
+    dm_permission: false,
     name: "found",
     options: [
       {
@@ -214,6 +221,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "View all characters found in a specific media",
+    dm_permission: false,
     name: "owned",
     options: [
       {
@@ -231,6 +239,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Like a character to be notified if someone finds them",
+    dm_permission: false,
     name: "like",
     options: [
       {
@@ -248,6 +257,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Remove a character from your likes list",
+    dm_permission: false,
     name: "unlike",
     options: [
       {
@@ -265,6 +275,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "List all characters liked",
+    dm_permission: false,
     name: "likeslist",
     options: [
       {
@@ -282,6 +293,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Give characters to another user",
+    dm_permission: false,
     name: "give",
     options: [
       {
@@ -326,6 +338,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Give characters to another user",
+    dm_permission: false,
     name: "gift",
     options: [
       {
@@ -370,6 +383,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Trade characters with another user",
+    dm_permission: false,
     name: "trade",
     options: [
       {
@@ -441,6 +455,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Trade characters with another user",
+    dm_permission: false,
     name: "offer",
     options: [
       {
@@ -512,6 +527,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Steal a character from another user",
+    dm_permission: false,
     name: "steal",
     options: [
       {
@@ -529,6 +545,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Need more information? We got you",
+    dm_permission: false,
     name: "help",
     options: [
       {
@@ -583,6 +600,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Need more information? We got you",
+    dm_permission: false,
     name: "start",
     options: [
       {
@@ -637,6 +655,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Need more information? We got you",
+    dm_permission: false,
     name: "guide",
     options: [
       {
@@ -691,6 +710,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Need more information? We got you",
+    dm_permission: false,
     name: "tuto",
     options: [
       {
@@ -745,6 +765,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Check what you can do right now",
+    dm_permission: false,
     name: "now",
     options: undefined,
     type: undefined,
@@ -752,6 +773,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Check what you can do right now",
+    dm_permission: false,
     name: "vote",
     options: undefined,
     type: undefined,
@@ -759,6 +781,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Check what you can do right now",
+    dm_permission: false,
     name: "daily",
     options: undefined,
     type: undefined,
@@ -766,6 +789,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Check what you can do right now",
+    dm_permission: false,
     name: "tu",
     options: undefined,
     type: undefined,
@@ -773,6 +797,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Start a quiet gacha pull with no animations",
+    dm_permission: false,
     name: "q",
     options: undefined,
     type: undefined,
@@ -780,6 +805,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Start a gacha pull",
+    dm_permission: false,
     name: "gacha",
     options: undefined,
     type: undefined,
@@ -787,6 +813,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Start a gacha pull",
+    dm_permission: false,
     name: "w",
     options: undefined,
     type: undefined,
@@ -794,6 +821,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Pull a character with a guaranteed rating",
+    dm_permission: false,
     name: "pull",
     options: [
       {
@@ -824,6 +852,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Pull a character with a guaranteed rating",
+    dm_permission: false,
     name: "guaranteed",
     options: [
       {
@@ -854,6 +883,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Change the image of a character",
+    dm_permission: false,
     name: "image",
     options: [
       {
@@ -880,6 +910,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Change the image of a character",
+    dm_permission: false,
     name: "custom",
     options: [
       {
@@ -906,6 +937,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "Change the nickname of a character",
+    dm_permission: false,
     name: "nick",
     options: [
       {
@@ -932,6 +964,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "synthesize characters together to pull a new character",
+    dm_permission: false,
     name: "synthesize",
     options: [
       {
@@ -966,6 +999,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "synthesize characters together to pull a new character",
+    dm_permission: false,
     name: "merge",
     options: [
       {
@@ -1000,6 +1034,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "vote shop commands",
+    dm_permission: false,
     name: "buy",
     options: [
       {
@@ -1059,6 +1094,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "vote shop commands",
+    dm_permission: false,
     name: "shop",
     options: [
       {
@@ -1118,6 +1154,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: undefined,
+    dm_permission: false,
     name: "Party",
     options: undefined,
     type: 2,
@@ -1125,6 +1162,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "party management commands",
+    dm_permission: false,
     name: "party",
     options: [
       {
@@ -1311,6 +1349,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "party management commands",
+    dm_permission: false,
     name: "team",
     options: [
       {
@@ -1497,6 +1536,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "party management commands",
+    dm_permission: false,
     name: "p",
     options: [
       {
@@ -1683,6 +1723,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "collection browsing commands",
+    dm_permission: false,
     name: "collection",
     options: [
       {
@@ -1768,6 +1809,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "collection browsing commands",
+    dm_permission: false,
     name: "coll",
     options: [
       {
@@ -1853,6 +1895,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "collection browsing commands",
+    dm_permission: false,
     name: "mm",
     options: [
       {
@@ -1938,6 +1981,7 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: 32,
     description: "pack management commands",
+    dm_permission: false,
     name: "packs",
     options: [
       {
@@ -2044,6 +2088,7 @@ snapshot[`commands 1`] = `
       "
 " +
       "Contains over 100K of anime and manga characters.",
+    dm_permission: false,
     name: "anilist",
     options: [
       {

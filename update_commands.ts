@@ -106,7 +106,8 @@ const Command = ({
     name,
     type,
     description,
-    'default_member_permissions': defaultPermission,
+    dm_permission: false,
+    default_member_permissions: defaultPermission,
     options: options?.map((option) => transformOption(option)),
   }];
 
