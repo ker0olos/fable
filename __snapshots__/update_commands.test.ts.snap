@@ -264,13 +264,6 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: undefined,
-    name: "Likes",
-    options: undefined,
-    type: 2,
-  },
-  {
-    default_member_permissions: undefined,
     description: "List all characters liked",
     name: "likeslist",
     options: [

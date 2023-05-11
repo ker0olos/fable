@@ -290,10 +290,6 @@ export const commands = [
     ],
   }),
   ...Command({
-    name: 'Likes',
-    type: CommandType.USER,
-  }),
-  ...Command({
     name: 'likeslist',
     description: 'List all characters liked',
     options: [
