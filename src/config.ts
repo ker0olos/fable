@@ -10,6 +10,7 @@ const config: {
   topggCipher?: number;
   topggSecret?: string;
   sentry?: string;
+  instatus?: string;
   origin?: string;
   notice?: string;
   gacha?: boolean;
@@ -25,6 +26,7 @@ const config: {
   topggCipher: undefined,
   topggSecret: undefined,
   sentry: undefined,
+  instatus: undefined,
   origin: undefined,
   notice: undefined,
   gacha: undefined,
@@ -46,6 +48,7 @@ export async function initConfig(): Promise<void> {
     }
 
     config.sentry = Deno.env.get('SENTRY_DSN');
+    config.instatus = Deno.env.get('INSTATUS_WEBHOOK');
 
     config.appId = Deno.env.get('APP_ID');
 

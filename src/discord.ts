@@ -870,11 +870,13 @@ export class Message {
         },
       };
 
-      console.error(extra);
-
       utils.captureException(new Error('429: Too Many Requests'), {
         extra,
       });
+
+      if (config.instatus) {
+        await utils.captureOutage(config.instatus);
+      }
     }
 
     return response;

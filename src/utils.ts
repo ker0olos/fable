@@ -415,9 +415,22 @@ function decipher(a: string, secret: number): string {
   return str;
 }
 
+function captureOutage(id: string): Promise<Response> {
+  return fetch(
+    `https://api.instatus.com/v3/integrations/webhook/${id}`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        'trigger': 'down',
+      }),
+    },
+  );
+}
+
 const utils = {
   capitalize,
   captureException,
+  captureOutage,
   chunks,
   cipher,
   comma,
