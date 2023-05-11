@@ -2,20 +2,20 @@
   <img height="100" src="./assets/splash.png" alt="Fable Logo">
 </h1>
 
-<!-- Badges  -->
-
 <h1 align="center">
 
 [![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304/vote)
-[![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304)
+[![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)][topgg]
 
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)](https://fable.deno.dev/invite)
-[![Fable Status](https://api.checklyhq.com/v1/badges/checks/68acae41-252d-4684-89bf-face9a8b71bd?style=flat&theme=default&responseTime=true)](https://fable.instatus.com)
-[![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20server&color=blue)][discord]
+[![Demo](https://img.shields.io/badge/try-demo-blue)](https://fable.deno.dev/demo)
+[![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20support%20server&color=blue)][discord]
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&label=tests)
 [![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC)](https://app.codecov.io/github/ker0olos/fable)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ker0olos/fable?color=blue&label=update%20frequency)
+[![Fable Status](https://api.checklyhq.com/v1/badges/checks/68acae41-252d-4684-89bf-face9a8b71bd?style=flat&theme=default&responseTime=true)](https://fable.instatus.com)
+
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ker0olos/fable?color=blue&label=updates%20frequency)
 
 </h1>
 
@@ -28,10 +28,9 @@ Fable is a free, open-source gacha bot — a friendly, powerful alternative to
 bots like Mudae, Sofi, Karuta. Like those bots, you can pull anime characters,
 customize, and upgrade them.
 
-There's an intuitive system to manage and customize the characters in your
-servers, like adding extensions to chrome and installing apps on your phone, you
-can install community-made packs that are full of new characters with a single
-command.
+There's an intuitive system to manage the characters in your servers, like
+installing apps on your phone, you can install community-made packs that are
+full of new characters with a single command.
 
 Wanna make your own community pack? Check
 [fable-community/example](https://github.com/fable-community/fable-pack-example)
@@ -52,11 +51,11 @@ for more information.
 
 ### Useful Links
 
-- [How to Contribute][contributing]
-- [How to Self-host][self-hosting]
-- [How to Create Packs][community-packs]
+- [Roadmap](https://github.com/ker0olos/fable/issues/1)
+- [How to Contribute](https://github.com/ker0olos/fable/wiki)
+- [How to Create Packs](https://github.com/fable-community/fable-pack-example)
+- [How to Self-host](https://github.com/ker0olos/fable/wiki/Self-hosting)
 - [Discord Support Server][discord]
-- [Sponsor (Donate)][sponsoring]
 
 <br/>
 
@@ -134,7 +133,3 @@ time, and how many people are working on Fable at any giving moment.
 
 [discord]: https://discord.gg/ceKyEfhyPQ
 [topgg]: https://top.gg/bot/1041970851559522304
-[sponsoring]: https://github.com/sponsors/ker0olos
-[community-packs]: https://github.com/fable-community/fable-pack-example
-[contributing]: https://github.com/ker0olos/fable/wiki
-[self-hosting]: https://github.com/ker0olos/fable/wiki/Self-hosting
