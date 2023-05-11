@@ -29,9 +29,10 @@ import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts'
 import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
 
 export enum ImageSize {
-  Large = 'large', // 450x635,
-  Medium = 'medium', // 230x325
+  Preview = 'preview', // 64x64
   Thumbnail = 'thumbnail', // 110x155
+  Medium = 'medium', // 230x325
+  Large = 'large', // 450x635,
 }
 
 const TEN_MIB = 1024 * 1024 * 10;
@@ -278,6 +279,9 @@ async function proxy(r: Request): Promise<Response> {
 
     if (transformed instanceof imagescript.Image) {
       switch (size) {
+        case ImageSize.Preview:
+          transformed.cover(32, 32);
+          break;
         case ImageSize.Thumbnail:
           transformed.cover(110, 155);
           break;
@@ -415,9 +419,22 @@ function decipher(a: string, secret: number): string {
   return str;
 }
 
+function captureOutage(id: string): Promise<Response> {
+  return fetch(
+    `https://api.instatus.com/v3/integrations/webhook/${id}`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        'trigger': 'down',
+      }),
+    },
+  );
+}
+
 const utils = {
   capitalize,
   captureException,
+  captureOutage,
   chunks,
   cipher,
   comma,

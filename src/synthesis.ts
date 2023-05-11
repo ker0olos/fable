@@ -5,9 +5,8 @@ import config from './config.ts';
 import * as discord from './discord.ts';
 
 import packs from './packs.ts';
-
+import search from './search.ts';
 import user from './user.ts';
-
 import gacha from './gacha.ts';
 
 import utils from './utils.ts';
@@ -108,7 +107,9 @@ function getSacrifices(
 
   if (!possibilities[target].length) {
     throw new NonFetalError(
-      `You don't have enough sacrifices for ${target}${discord.emotes.smolStar}`,
+      `You only have have **${
+        possibilities[target - 1].length
+      } out the 5** sacrifices needed for ${target}${discord.emotes.smolStar}`,
     );
   }
 
@@ -119,11 +120,13 @@ function synthesize({
   token,
   userId,
   guildId,
+  channelId,
   target,
 }: {
   token: string;
   userId: string;
   guildId: string;
+  channelId: string;
   target: number;
 }): discord.Message {
   if (!config.synthesis) {
@@ -139,12 +142,19 @@ function synthesize({
       const sacrifices: Schema.Character[] = getSacrifices(characters, target)
         .sort((a, b) => b.rating - a.rating);
 
-      const occurrences = sacrifices.map(({ rating }) => rating).reduce(
-        (acc, n) => (acc[n] = (acc[n] || 0) + 1, acc),
-        {} as Record<number, number>,
-      );
+      const occurrences = sacrifices.map(({ rating }) => rating)
+        .reduce(
+          (acc, n) => (acc[n] = (acc[n] || 0) + 1, acc),
+          {} as Record<number, number>,
+        );
 
-      // highlight the first 5 characters
+      const all = Object.entries(occurrences)
+        .toReversed()
+        .map(([rating, occurrences]) =>
+          `${discord.empty2x}(**${rating}${discord.emotes.smolStar}x${occurrences}**)${discord.empty2x}`
+        );
+
+      // highlight the top characters
       const highlights = sacrifices.slice(0, 5);
 
       const highlightedCharacters = await packs.characters({
@@ -152,47 +162,34 @@ function synthesize({
         guildId,
       });
 
-      const highlighted = highlights.map(({ rating, nickname, id }) => {
+      message.addEmbed(
+        new discord.Embed().setDescription(
+          `Sacrifice${all.join('')}characters? ${discord.emotes.remove}`,
+        ),
+      );
+
+      highlights.map((existing) => {
         const match = highlightedCharacters
-          .find((char) => id === `${char.packId}:${char.id}`);
+          .find((char) => existing.id === `${char.packId}:${char.id}`);
 
         if (match) {
-          return `**${rating}**${discord.emotes.smolStar} ${
-            nickname ?? utils.wrap(packs.aliasToArray(match.name)[0])
-          } ${discord.emotes.remove}`;
+          message.addEmbed(
+            search.characterPreview(match, existing, channelId),
+          );
         }
-      }).filter(Boolean);
+      });
 
-      if (sacrifices.length - highlighted.length) {
-        highlighted.push(
-          `_+${
-            sacrifices.length - highlighted.length
-          } others... ${discord.emotes.remove}_`,
+      if (sacrifices.length - highlightedCharacters.length) {
+        message.addEmbed(
+          new discord.Embed().setDescription(
+            `_+${sacrifices.length - highlightedCharacters.length} others..._`,
+          ),
         );
       }
-
-      const all = Object.entries(occurrences)
-        .toReversed()
-        .map(([rating, occurrences]) =>
-          `(**${rating}${discord.emotes.smolStar}x${occurrences}**)`
-        );
-
-      message.addEmbed(
-        new discord.Embed().setDescription(
-          `Sacrifice **${sacrifices.length}** characters?`,
-        ),
-      );
-
-      message.addEmbed(
-        new discord.Embed().setDescription(
-          all.join(`${discord.empty2x}${discord.empty2x}`),
-        ),
-      );
 
       await discord.Message.dialog({
         userId,
         message,
-        description: highlighted.join('\n'),
         confirm: ['synthesis', userId, `${target}`],
       })
         .patch(token);

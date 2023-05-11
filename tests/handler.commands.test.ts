@@ -6300,6 +6300,7 @@ Deno.test('synthesize command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           target: 4,
         }],
       });
@@ -6389,6 +6390,7 @@ Deno.test('synthesize command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          channelId: 'channel_id',
           target: 5,
         }],
       });

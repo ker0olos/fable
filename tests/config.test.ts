@@ -41,6 +41,7 @@ Deno.test('init', async (test) => {
       returnsNext([
         '',
         'sentry_dsn',
+        'instatus_hook',
         'app_id',
         'public_key',
         'fauna_secret',
@@ -59,6 +60,7 @@ Deno.test('init', async (test) => {
         publicKey: 'public_key',
         faunaSecret: 'fauna_secret',
         sentry: 'sentry_dsn',
+        instatus: 'instatus_hook',
         topggCipher: 123,
         topggSecret: 'topgg_secret',
         notice: 'notice_message',
@@ -109,6 +111,7 @@ Deno.test('init', async (test) => {
       returnsNext([
         '1',
         'sentry_dsn',
+        'instatus_hook',
         'app_id',
         'public_key',
         'fauna_secret',
@@ -132,6 +135,7 @@ Deno.test('init', async (test) => {
         publicKey: 'public_key',
         faunaSecret: 'fauna_secret',
         sentry: 'sentry_dsn',
+        instatus: 'instatus_hook',
         topggCipher: 123,
         topggSecret: 'topgg_secret',
         notice: 'notice_message',

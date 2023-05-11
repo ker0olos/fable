@@ -11,6 +11,7 @@ const fql = query as typeof _query;
 
 if (import.meta.main) {
   const APP_ID = Deno.env.get('APP_ID');
+
   const TOPGG_TOKEN = Deno.env.get('TOPGG_TOKEN');
   const FAUNA_SECRET = Deno.env.get('FAUNA_SECRET');
 

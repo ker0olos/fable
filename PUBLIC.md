@@ -1,12 +1,12 @@
-<img src="https://i.imgur.com/GRYuWD2.png" alt="120K+ characters">
-
-<br/>
+<img src="https://i.imgur.com/7ZI6dhj.png" alt="120K+ characters">
 
 <p>
   <img align="left" src="https://i.imgur.com/IO91qt1.png" alt="100% FREE">
   <h4>100% FREE</h4>
-  No more users paying to get ahead of you. Fable has no in-app purchases, no
-  premiums, no bullshit.
+  No more users paying to get ahead of you.
+
+Fable has no in-app purchases, no premiums, and no bullshit.
+
 </p>
 
 <br clear="left"/>
@@ -34,21 +34,13 @@
 <p>
   <img align="left" src="https://i.imgur.com/RVMP2wO.png" alt="Stealing">
   <h4>Stealing</h4>
-  When all negotiations fails, it's fine to take what you want by force, right?
-  Steal characters from that one annoying server member that refuses to trade.
+  When all negotiations fails, it's fine to take what you want by force, right? Steal characters from that one annoying server member that refuses to trade.
 </p>
 
 <br clear="left"/>
 <br clear="left"/>
 
 <img src="https://i.imgur.com/hnjdR0g.png" alt="Fable compared to other bots">
-
-<br/>
-<br/>
-
-<a href="/bot/1041970851559522304/invite">
-  <img src="https://i.imgur.com/ef1LT9G.png" alt="Get Started">
-</a>
 
 <br/>
 <br/>

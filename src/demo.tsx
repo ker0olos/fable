@@ -252,7 +252,7 @@ export const App = ({ children }: React.PropsWithChildren) => {
       <body
         style={{
           display: 'flex',
-          backgroundColor: colors.background,
+          backgroundColor: '#121212',
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
@@ -260,6 +260,17 @@ export const App = ({ children }: React.PropsWithChildren) => {
           margin: 0,
         }}
       >
+        <iframe
+          src='https://fable.instatus.com/embed-status/4ea6edab/dark-md'
+          width='260'
+          height='61'
+          style={{
+            border: 'none',
+            position: 'absolute',
+            bottom: '5px',
+            right: '5px',
+          }}
+        />
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <Embed>
             <Suspense fallback={<Image src={`${origin}/assets/spinner.gif`} />}>
