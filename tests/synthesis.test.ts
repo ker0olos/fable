@@ -851,11 +851,17 @@ Deno.test('/synthesis', async (test) => {
         name: {
           full: 'character 1',
         },
+        image: {
+          large: 'image_url',
+        },
       },
       {
         id: '2',
         name: {
           full: 'character 2',
+        },
+        image: {
+          large: 'image_url',
         },
       },
       {
@@ -863,17 +869,26 @@ Deno.test('/synthesis', async (test) => {
         name: {
           full: 'character 3',
         },
+        image: {
+          large: 'image_url',
+        },
       },
       {
         id: '4',
         name: {
           full: 'character 4',
         },
+        image: {
+          large: 'image_url',
+        },
       },
       {
         id: '5',
         name: {
           full: 'character 5',
+        },
+        image: {
+          large: 'image_url',
         },
       },
     ];
@@ -949,6 +964,7 @@ Deno.test('/synthesis', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         target: 2,
       });
 
@@ -1005,20 +1021,48 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Sacrifice **5** characters?',
-            },
-            {
-              type: 'rich',
-              description: '(**1<:smol_star:1088427421096751224>x5**)',
-            },
-            {
-              type: 'rich',
               description:
-                `**1**<:smol_star:1088427421096751224> character 1 <:remove:1099004424111792158>
-**1**<:smol_star:1088427421096751224> character 2 <:remove:1099004424111792158>
-**1**<:smol_star:1088427421096751224> character 3 <:remove:1099004424111792158>
-**1**<:smol_star:1088427421096751224> character 4 <:remove:1099004424111792158>
-**1**<:smol_star:1088427421096751224> character 5 <:remove:1099004424111792158>`,
+                'Sacrifice \u200B (**1<:smol_star:1088427421096751224>x5**) \u200B characters? <:remove:1099004424111792158>',
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'character 1',
+                icon_url:
+                  'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'character 2',
+                icon_url:
+                  'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'character 3',
+                icon_url:
+                  'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'character 4',
+                icon_url:
+                  'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'character 5',
+                icon_url:
+                  'http://localhost:8000/external/image_url?size=preview',
+              },
             },
           ],
         },
@@ -1035,12 +1079,15 @@ Deno.test('/synthesis', async (test) => {
     }
   });
 
-  await test.step('nicknames', async () => {
+  await test.step('custom', async () => {
     const characters: AniListCharacter[] = [
       {
         id: '1',
         name: {
           full: 'character 1',
+        },
+        image: {
+          large: 'image_url',
         },
       },
       {
@@ -1048,11 +1095,17 @@ Deno.test('/synthesis', async (test) => {
         name: {
           full: 'character 2',
         },
+        image: {
+          large: 'image_url',
+        },
       },
       {
         id: '3',
         name: {
           full: 'character 3',
+        },
+        image: {
+          large: 'image_url',
         },
       },
       {
@@ -1060,11 +1113,17 @@ Deno.test('/synthesis', async (test) => {
         name: {
           full: 'character 4',
         },
+        image: {
+          large: 'image_url',
+        },
       },
       {
         id: '5',
         name: {
           full: 'character 5',
+        },
+        image: {
+          large: 'image_url',
         },
       },
     ];
@@ -1084,26 +1143,31 @@ Deno.test('/synthesis', async (test) => {
                   user: {},
                   characters: [
                     {
+                      image: 'custom_image_url',
                       nickname: 'nickname 1',
                       id: 'anilist:1',
                       rating: 1,
                     },
                     {
+                      image: 'custom_image_url',
                       nickname: 'nickname 2',
                       id: 'anilist:2',
                       rating: 1,
                     },
                     {
+                      image: 'custom_image_url',
                       nickname: 'nickname 3',
                       id: 'anilist:3',
                       rating: 1,
                     },
                     {
+                      image: 'custom_image_url',
                       nickname: 'nickname 4',
                       id: 'anilist:4',
                       rating: 1,
                     },
                     {
+                      image: 'custom_image_url',
                       nickname: 'nickname 5',
                       id: 'anilist:5',
                       rating: 1,
@@ -1145,6 +1209,7 @@ Deno.test('/synthesis', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         target: 2,
       });
 
@@ -1201,20 +1266,48 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Sacrifice **5** characters?',
-            },
-            {
-              type: 'rich',
-              description: '(**1<:smol_star:1088427421096751224>x5**)',
-            },
-            {
-              type: 'rich',
               description:
-                `**1**<:smol_star:1088427421096751224> nickname 1 <:remove:1099004424111792158>
-**1**<:smol_star:1088427421096751224> nickname 2 <:remove:1099004424111792158>
-**1**<:smol_star:1088427421096751224> nickname 3 <:remove:1099004424111792158>
-**1**<:smol_star:1088427421096751224> nickname 4 <:remove:1099004424111792158>
-**1**<:smol_star:1088427421096751224> nickname 5 <:remove:1099004424111792158>`,
+                'Sacrifice \u200B (**1<:smol_star:1088427421096751224>x5**) \u200B characters? <:remove:1099004424111792158>',
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'nickname 1',
+                icon_url:
+                  'http://localhost:8000/external/custom_image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'nickname 2',
+                icon_url:
+                  'http://localhost:8000/external/custom_image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'nickname 3',
+                icon_url:
+                  'http://localhost:8000/external/custom_image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'nickname 4',
+                icon_url:
+                  'http://localhost:8000/external/custom_image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'nickname 5',
+                icon_url:
+                  'http://localhost:8000/external/custom_image_url?size=preview',
+              },
             },
           ],
         },
@@ -1238,11 +1331,17 @@ Deno.test('/synthesis', async (test) => {
         name: {
           full: 'character 1',
         },
+        image: {
+          large: 'image_url',
+        },
       },
       {
         id: '2',
         name: {
           full: 'character 2',
+        },
+        image: {
+          large: 'image_url',
         },
       },
       {
@@ -1250,17 +1349,26 @@ Deno.test('/synthesis', async (test) => {
         name: {
           full: 'character 3',
         },
+        image: {
+          large: 'image_url',
+        },
       },
       {
         id: '4',
         name: {
           full: 'character 4',
         },
+        image: {
+          large: 'image_url',
+        },
       },
       {
         id: '5',
         name: {
           full: 'character 5',
+        },
+        image: {
+          large: 'image_url',
         },
       },
     ];
@@ -1346,6 +1454,7 @@ Deno.test('/synthesis', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         target: 2,
       });
 
@@ -1402,19 +1511,36 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Sacrifice **5** characters?',
-            },
-            {
-              type: 'rich',
-              description: '(**1<:smol_star:1088427421096751224>x5**)',
-            },
-            {
-              type: 'rich',
               description:
-                `**1**<:smol_star:1088427421096751224> character 3 <:remove:1099004424111792158>
-**1**<:smol_star:1088427421096751224> character 4 <:remove:1099004424111792158>
-**1**<:smol_star:1088427421096751224> character 5 <:remove:1099004424111792158>
-_+2 others... <:remove:1099004424111792158>_`,
+                'Sacrifice \u200B (**1<:smol_star:1088427421096751224>x5**) \u200B characters? <:remove:1099004424111792158>',
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'character 3',
+                icon_url:
+                  'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'character 4',
+                icon_url:
+                  'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              author: {
+                name: 'character 5',
+                icon_url:
+                  'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              description: '_+2 others..._',
             },
           ],
         },
@@ -1581,6 +1707,7 @@ _+2 others... <:remove:1099004424111792158>_`,
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         target: 2,
       });
 
@@ -1677,6 +1804,7 @@ _+2 others... <:remove:1099004424111792158>_`,
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        channelId: 'channel_id',
         target: 5,
       });
 
@@ -1743,6 +1871,7 @@ _+2 others... <:remove:1099004424111792158>_`,
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
+            channelId: 'channel_id',
             target: 2,
           }),
         NonFetalError,

@@ -394,6 +394,56 @@ Deno.test('external images', async (test) => {
     }
   });
 
+  await test.step('image/jpeg (preview)', async () => {
+    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'image/jpeg',
+        }),
+        arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
+      } as any),
+    );
+
+    try {
+      const response = await utils.proxy({
+        url: `http://localhost:8000/external/${
+          encodeURIComponent('https://example.com/image.jpg')
+        }?size=preview`,
+      } as any);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: [new URL('https://example.com/image.jpg'), {
+          signal: 'timeout' as any,
+        }],
+      });
+
+      assertEquals(response.status, 200);
+
+      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
+
+      assertEquals(
+        response.headers.get('Cache-Control'),
+        'public, max-age=604800',
+      );
+
+      const image = await imagescript.decode(await response.arrayBuffer());
+
+      assert(image instanceof imagescript.Image);
+
+      assertEquals(`${image}`, 'Image<32x32>');
+    } finally {
+      abortStub.restore();
+      fetchStub.restore();
+    }
+  });
+
   await test.step('image/jpeg (thumbnail)', async () => {
     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
 

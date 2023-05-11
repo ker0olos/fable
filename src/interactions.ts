@@ -546,6 +546,7 @@ export const handler = async (r: Request) => {
               token,
               target,
               guildId,
+              channelId,
               userId: member.user.id,
             }).send();
           }
