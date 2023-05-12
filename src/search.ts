@@ -682,23 +682,38 @@ function mediaFound(
         throw new Error('404');
       }
 
-      const media = results[0];
-      const mediaId = `${media.packId}:${media.id}`;
+      const parent = await packs.aggregate<Media>({
+        media: results[0],
+        guildId,
+      });
 
-      const titles = packs.aliasToArray(media.title);
+      const media = [
+        parent,
+        ...parent.relations?.edges?.filter(({ relation }) =>
+          [
+            MediaRelation.Parent,
+            MediaRelation.Contains,
+            MediaRelation.Prequel,
+            MediaRelation.Sequel,
+            MediaRelation.SideStory,
+            MediaRelation.SpinOff,
+            // deno-lint-ignore no-non-null-assertion
+          ].includes(relation!)
+        ).map(({ node }) => node) ?? [],
+      ];
 
       const query = gql`
-    query ($guildId: String!, $mediaId: String!) {
-      findMedia(guildId: $guildId, mediaId: $mediaId) {
-        id
-        mediaId
-        rating
-        user {
-          id
+        query ($guildId: String!, $mediaIds: [String!]) {
+          findMedia(guildId: $guildId, mediaIds: $mediaIds) {
+            id
+            mediaId
+            rating
+            user {
+              id
+            }
+          }
         }
-      }
-    }
-  `;
+      `;
 
       const response = (await request<{
         findMedia: Schema.Inventory['characters'];
@@ -710,16 +725,30 @@ function mediaFound(
         },
         variables: {
           guildId,
-          mediaId,
+          mediaIds: media.map(({ packId, id }) => `${packId}:${id}`),
         },
       })).findMedia;
 
       if (!response?.length) {
-        throw new NonFetalError(`No one has found any ${titles[0]} characters`);
+        throw new NonFetalError(
+          `No one has found any ${
+            packs.aliasToArray(parent.title)[0]
+          } characters`,
+        );
       }
 
       const chunks = utils.chunks(
-        response.sort((a, b) => b.rating - a.rating),
+        response.sort((a, b) => {
+          if (a.mediaId < b.mediaId) {
+            return -1;
+          }
+
+          if (a.mediaId > b.mediaId) {
+            return 1;
+          }
+
+          return b.rating - a.rating;
+        }),
         5,
       );
 
@@ -728,49 +757,60 @@ function mediaFound(
         guildId,
       });
 
-      const names: string[] = [];
+      let mediaId = '';
+
+      const fields: Parameters<typeof embed.addField>[0][] = [];
 
       await Promise.all(
         characters.map((char) => {
+          // deno-lint-ignore no-non-null-assertion
           const existing = chunks[index].find(({ id }) =>
             id === `${char.packId}:${char.id}`
-          );
+          )!;
 
-          // const media = utils.wrap(
-          //   // deno-lint-ignore no-non-null-assertion
-          //   packs.aliasToArray(char.media!.edges[0].node.title)[0],
-          // );
+          if (mediaId !== existing.mediaId) {
+            const title = utils.wrap(
+              packs.aliasToArray(
+                // deno-lint-ignore no-non-null-assertion
+                media.find(({ packId, id }) =>
+                  `${packId}:${id}` === existing.mediaId
+                )!.title,
+              )[0],
+            );
 
-          const name = `${
-            // deno-lint-ignore no-non-null-assertion
-            existing!.rating
-            // deno-lint-ignore no-non-null-assertion
-          }${discord.emotes.smolStar} ${`<@${existing!.user.id}>`} ${
-            utils.wrap(packs.aliasToArray(char.name)[0])
-          }`;
+            mediaId = existing.mediaId;
 
-          // embed.addField({
-          //   inline: false,
-          //   // name: media,
-          //   value: name,
-          // });
+            fields.push({
+              inline: false,
+              name: title,
+              value: '',
+            });
+          }
 
-          names.push(name);
+          const name =
+            `${existing.rating}${discord.emotes.smolStar} ${`<@${existing.user.id}>`} ${
+              utils.wrap(packs.aliasToArray(char.name)[0])
+            }`;
+
+          // deno-lint-ignore no-non-null-assertion
+          fields.slice(-1)[0]!.value += `\n${name}`;
         }),
       );
 
-      if (characters.length !== chunks[index].length) {
-        names.push(
-          `_${chunks[index].length - characters.length} disabled characters_`,
-        );
-      }
+      fields.forEach((field) => embed.addField(field));
 
-      embed.setDescription(names.join('\n'));
+      if (characters.length !== chunks[index].length) {
+        embed.addField({
+          name: `_${
+            chunks[index].length - characters.length
+          } disabled characters_`,
+        });
+      }
 
       return discord.Message.page({
         index,
         type: 'found',
-        target: mediaId,
+        target: `${parent.packId}:${parent.id}`,
         total: chunks.length,
         message: message.addEmbed(embed),
         next: index + 1 < chunks.length,

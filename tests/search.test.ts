@@ -5634,14 +5634,16 @@ Deno.test('/character debug', async (test) => {
 
 Deno.test('/found', async (test) => {
   await test.step('normal', async () => {
-    const media: AniListMedia = {
-      id: '3',
-      type: MediaType.Manga,
-      title: {
-        english: 'title',
+    const media: AniListMedia[] = [
+      {
+        id: '3',
+        type: MediaType.Manga,
+        title: {
+          english: 'title',
+        },
+        popularity: 0,
       },
-      popularity: 0,
-    };
+    ];
 
     const characters: AniListCharacter[] = [
       {
@@ -5649,23 +5651,11 @@ Deno.test('/found', async (test) => {
         name: {
           full: 'name',
         },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: media,
-          }],
-        },
       },
       {
         id: '2',
         name: {
           full: 'name 2',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: media,
-          }],
         },
       },
     ];
@@ -5683,7 +5673,7 @@ Deno.test('/found', async (test) => {
               data: {
                 Page: {
                   characters,
-                  media: [media],
+                  media,
                 },
               },
             }))),
@@ -5721,7 +5711,7 @@ Deno.test('/found', async (test) => {
               data: {
                 Page: {
                   characters,
-                  media: [media],
+                  media,
                 },
               },
             }))),
@@ -5809,8 +5799,236 @@ Deno.test('/found', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description:
-                '4<:smol_star:1088427421096751224> <@another_user_id> name 2\n2<:smol_star:1088427421096751224> <@another_user_id> name',
+              fields: [
+                {
+                  inline: false,
+                  name: 'title',
+                  value:
+                    '\n4<:smol_star:1088427421096751224> <@another_user_id> name 2\n2<:smol_star:1088427421096751224> <@another_user_id> name',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('relation groups', async () => {
+    const media: AniListMedia[] = [
+      {
+        id: '4',
+        type: MediaType.Manga,
+        title: {
+          english: 'title',
+        },
+        popularity: 100,
+        relations: {
+          edges: [{
+            relationType: MediaRelation.Contains,
+            node: {
+              id: '5',
+              type: MediaType.Manga,
+              title: {
+                english: 'title 2',
+              },
+              popularity: 0,
+            },
+          }],
+        },
+      },
+    ];
+
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name',
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'name 2',
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'name 3',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                  media,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                findMedia: [
+                  {
+                    id: 'anilist:1',
+                    mediaId: 'anilist:4',
+                    rating: 1,
+                    user: {
+                      id: 'another_user_id',
+                    },
+                  },
+                  {
+                    id: 'anilist:2',
+                    mediaId: 'anilist:5',
+                    rating: 2,
+                    user: {
+                      id: 'another_user_id',
+                    },
+                  },
+                  {
+                    id: 'anilist:3',
+                    mediaId: 'anilist:4',
+                    rating: 4,
+                    user: {
+                      id: 'another_user_id',
+                    },
+                  },
+                ],
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                  media,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = search.mediaFound({
+        index: 0,
+        token: 'test_token',
+        guildId: 'guild_id',
+        id: 'anilist:4',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'found=anilist:4=0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'found=anilist:4=0=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  inline: false,
+                  name: 'title',
+                  value:
+                    '\n4<:smol_star:1088427421096751224> <@another_user_id> name 3\n1<:smol_star:1088427421096751224> <@another_user_id> name',
+                },
+                {
+                  inline: false,
+                  name: 'title 2',
+                  value:
+                    '\n2<:smol_star:1088427421096751224> <@another_user_id> name 2',
+                },
+              ],
             },
           ],
         },
@@ -6040,7 +6258,12 @@ Deno.test('/found', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '_1 disabled characters_',
+              fields: [
+                {
+                  name: '_1 disabled characters_',
+                  value: '\u200B',
+                },
+              ],
             },
           ],
         },

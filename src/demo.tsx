@@ -9,7 +9,6 @@ import gacha, { Pull } from './gacha.ts';
 import packs from './packs.ts';
 
 import utils from './utils.ts';
-import config from './config.ts';
 
 let origin = '';
 
@@ -245,14 +244,14 @@ export const App = ({ children }: React.PropsWithChildren) => {
           href='https://fonts.gstatic.com'
         />
         <link
-          href='https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap'
           rel='stylesheet'
+          href='https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap'
         />
       </head>
       <body
         style={{
           display: 'flex',
-          backgroundColor: '#121212',
+          backgroundColor: colors.background,
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
@@ -260,17 +259,6 @@ export const App = ({ children }: React.PropsWithChildren) => {
           margin: 0,
         }}
       >
-        <iframe
-          src='https://fable.instatus.com/embed-status/4ea6edab/dark-md'
-          width='260'
-          height='61'
-          style={{
-            border: 'none',
-            position: 'absolute',
-            bottom: '5px',
-            right: '5px',
-          }}
-        />
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <Embed>
             <Suspense fallback={<Image src={`${origin}/assets/spinner.gif`} />}>
@@ -286,14 +274,9 @@ export const App = ({ children }: React.PropsWithChildren) => {
             <Button
               color={colors.grey}
               url={`${origin}/demo`}
-              label='Again'
+              label='Reroll'
             />
           </div>
-          <Button
-            color={colors.grey}
-            url={'https://github.com/ker0olos/fable'}
-            label='GitHub'
-          />
         </div>
       </body>
     </html>
