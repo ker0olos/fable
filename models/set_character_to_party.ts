@@ -4,6 +4,7 @@ import {
   InstanceExpr,
   InventoryExpr,
   NumberExpr,
+  RefExpr,
   ResponseExpr,
   StringExpr,
   UserExpr,
@@ -59,7 +60,7 @@ export function setCharacterToParty(
       initial?: Inventory['party'];
     }) => {
       return fql.Merge(
-        opts?.initial ?? fql.Var(`member${n - 1}`),
+        opts?.initial ?? fql.Var<{ [key: string]: RefExpr }>(`member${n - 1}`),
         fql.If(
           fql.Equals(fql.Var('spot'), n),
           { [`member${n}`]: fql.Ref(character) },

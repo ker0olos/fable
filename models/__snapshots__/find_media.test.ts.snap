@@ -251,68 +251,127 @@ snapshot[`model 3`] = `
                                   raw: {
                                     collection: Expr {
                                       raw: {
-                                        from: Expr {
+                                        collection: Expr {
                                           raw: {
-                                            after: undefined,
-                                            before: undefined,
-                                            paginate: Expr {
-                                              raw: {
-                                                var: "characters",
-                                              },
-                                            },
-                                            size: 1000,
+                                            var: "matches",
                                           },
                                         },
-                                        select: Expr {
-                                          raw: [
-                                            "data",
-                                          ],
+                                        map: Expr {
+                                          raw: {
+                                            expr: Expr {
+                                              raw: {
+                                                collection: Expr {
+                                                  raw: {
+                                                    from: Expr {
+                                                      raw: {
+                                                        after: undefined,
+                                                        before: undefined,
+                                                        paginate: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                        size: 1000,
+                                                      },
+                                                    },
+                                                    select: Expr {
+                                                      raw: [
+                                                        "data",
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                                map: Expr {
+                                                  raw: {
+                                                    expr: Expr {
+                                                      raw: {
+                                                        get: Expr {
+                                                          raw: {
+                                                            var: "refOrMatch",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    lambda: "refOrMatch",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            lambda: "match",
+                                          },
                                         },
                                       },
                                     },
-                                    map: Expr {
+                                    initial: Expr {
+                                      raw: [],
+                                    },
+                                    reduce: Expr {
                                       raw: {
                                         expr: Expr {
                                           raw: {
-                                            get: Expr {
+                                            collection: Expr {
                                               raw: {
-                                                var: "refOrMatch",
+                                                var: "b",
+                                              },
+                                            },
+                                            prepend: Expr {
+                                              raw: {
+                                                var: "a",
                                               },
                                             },
                                           },
                                         },
-                                        lambda: "refOrMatch",
+                                        lambda: Expr {
+                                          raw: [
+                                            "a",
+                                            "b",
+                                          ],
+                                        },
                                       },
                                     },
                                   },
                                 },
                                 let: [
                                   {
-                                    characters: Expr {
+                                    matches: Expr {
                                       raw: {
-                                        match: Expr {
+                                        collection: Expr {
                                           raw: {
-                                            index: "unsorted_media_instance_id",
+                                            var: "mediaIds",
                                           },
                                         },
-                                        terms: Expr {
-                                          raw: [
-                                            Expr {
+                                        map: Expr {
+                                          raw: {
+                                            expr: Expr {
                                               raw: {
-                                                var: "mediaId",
-                                              },
-                                            },
-                                            Expr {
-                                              raw: {
-                                                from: Expr {
+                                                match: Expr {
                                                   raw: {
-                                                    var: "instance",
+                                                    index: "unsorted_media_instance_id",
                                                   },
                                                 },
-                                                select: "ref",
+                                                terms: Expr {
+                                                  raw: [
+                                                    Expr {
+                                                      raw: {
+                                                        var: "mediaId",
+                                                      },
+                                                    },
+                                                    Expr {
+                                                      raw: {
+                                                        from: Expr {
+                                                          raw: {
+                                                            var: "instance",
+                                                          },
+                                                        },
+                                                        select: "ref",
+                                                      },
+                                                    },
+                                                  ],
+                                                },
                                               },
                                             },
-                                          ],
+                                            lambda: "mediaId",
+                                          },
                                         },
                                       },
                                     },
@@ -550,7 +609,7 @@ snapshot[`model 3`] = `
                         },
                         lambda: Expr {
                           raw: [
-                            "mediaId",
+                            "mediaIds",
                             "guildId",
                           ],
                         },
@@ -590,68 +649,127 @@ snapshot[`model 3`] = `
                                   raw: {
                                     collection: Expr {
                                       raw: {
-                                        from: Expr {
+                                        collection: Expr {
                                           raw: {
-                                            after: undefined,
-                                            before: undefined,
-                                            paginate: Expr {
-                                              raw: {
-                                                var: "characters",
-                                              },
-                                            },
-                                            size: 1000,
+                                            var: "matches",
                                           },
                                         },
-                                        select: Expr {
-                                          raw: [
-                                            "data",
-                                          ],
+                                        map: Expr {
+                                          raw: {
+                                            expr: Expr {
+                                              raw: {
+                                                collection: Expr {
+                                                  raw: {
+                                                    from: Expr {
+                                                      raw: {
+                                                        after: undefined,
+                                                        before: undefined,
+                                                        paginate: Expr {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                        size: 1000,
+                                                      },
+                                                    },
+                                                    select: Expr {
+                                                      raw: [
+                                                        "data",
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                                map: Expr {
+                                                  raw: {
+                                                    expr: Expr {
+                                                      raw: {
+                                                        get: Expr {
+                                                          raw: {
+                                                            var: "refOrMatch",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    lambda: "refOrMatch",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            lambda: "match",
+                                          },
                                         },
                                       },
                                     },
-                                    map: Expr {
+                                    initial: Expr {
+                                      raw: [],
+                                    },
+                                    reduce: Expr {
                                       raw: {
                                         expr: Expr {
                                           raw: {
-                                            get: Expr {
+                                            collection: Expr {
                                               raw: {
-                                                var: "refOrMatch",
+                                                var: "b",
+                                              },
+                                            },
+                                            prepend: Expr {
+                                              raw: {
+                                                var: "a",
                                               },
                                             },
                                           },
                                         },
-                                        lambda: "refOrMatch",
+                                        lambda: Expr {
+                                          raw: [
+                                            "a",
+                                            "b",
+                                          ],
+                                        },
                                       },
                                     },
                                   },
                                 },
                                 let: [
                                   {
-                                    characters: Expr {
+                                    matches: Expr {
                                       raw: {
-                                        match: Expr {
+                                        collection: Expr {
                                           raw: {
-                                            index: "unsorted_media_instance_id",
+                                            var: "mediaIds",
                                           },
                                         },
-                                        terms: Expr {
-                                          raw: [
-                                            Expr {
+                                        map: Expr {
+                                          raw: {
+                                            expr: Expr {
                                               raw: {
-                                                var: "mediaId",
-                                              },
-                                            },
-                                            Expr {
-                                              raw: {
-                                                from: Expr {
+                                                match: Expr {
                                                   raw: {
-                                                    var: "instance",
+                                                    index: "unsorted_media_instance_id",
                                                   },
                                                 },
-                                                select: "ref",
+                                                terms: Expr {
+                                                  raw: [
+                                                    Expr {
+                                                      raw: {
+                                                        var: "mediaId",
+                                                      },
+                                                    },
+                                                    Expr {
+                                                      raw: {
+                                                        from: Expr {
+                                                          raw: {
+                                                            var: "instance",
+                                                          },
+                                                        },
+                                                        select: "ref",
+                                                      },
+                                                    },
+                                                  ],
+                                                },
                                               },
                                             },
-                                          ],
+                                            lambda: "mediaId",
+                                          },
                                         },
                                       },
                                     },
@@ -889,7 +1007,7 @@ snapshot[`model 3`] = `
                         },
                         lambda: Expr {
                           raw: [
-                            "mediaId",
+                            "mediaIds",
                             "guildId",
                           ],
                         },

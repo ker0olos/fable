@@ -65,8 +65,8 @@ function Match(index: IndexExpr, ...terms: ExprArg[]): MatchExpr {
   return _fql.Match(index, ...terms);
 }
 
-function Get(refOrMatch: Expr | ExprArg): Expr {
-  return _fql.Get(refOrMatch);
+function Get<T extends ExprArg>(refOrMatch: T): T {
+  return _fql.Get(refOrMatch) as unknown as T;
 }
 
 function Append<T extends ExprArg>(ref: T, items: T[]): T[] {
@@ -223,11 +223,25 @@ function Select<T extends ExprArg>(
   return _fql.Select(path, from, _default) as unknown as T;
 }
 
-function Merge(
-  obj1: Record<string, any>,
-  obj2: Record<string, any>,
-): Expr {
-  return _fql.Merge(obj1, obj2);
+function Merge<T>(
+  obj1: Record<string, T>,
+  obj2: Record<string, T>,
+): Record<string, T> {
+  return _fql.Merge(obj1, obj2) as unknown as Record<string, T>;
+}
+
+function Prepend<T>(
+  array1: T[],
+  array2: T[],
+): T[] {
+  return _fql.Prepend(array1, array2) as unknown as T[];
+}
+
+function Reduce<A, B>(
+  array: A[],
+  reducer: (acc: A, value: A) => B,
+): B {
+  return _fql.Reduce(reducer, [], array) as B;
 }
 
 function Reverse(expr: Expr): Expr {
@@ -362,6 +376,8 @@ export const fql = {
   ToString,
   Update,
   Var,
+  Prepend,
+  Reduce,
 };
 
 export const FakeClient = () => ({

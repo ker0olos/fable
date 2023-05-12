@@ -207,7 +207,7 @@ Deno.test('auto synthesize', async (test) => {
     assertThrows(
       () => synthesis.getSacrifices(characters, 5),
       NonFetalError,
-      'You only have have **0 out the 5** sacrifices needed for 5<:smol_star:1088427421096751224>',
+      'You only have **0 out the 5** sacrifices needed for 5<:smol_star:1088427421096751224>',
     );
   });
 });
@@ -730,7 +730,7 @@ Deno.test('synthesis confirmed', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You only have have **4 out the 5** sacrifices needed for 2<:smol_star:1088427421096751224>',
+              'You only have **4 out the 5** sacrifices needed for 2<:smol_star:1088427421096751224>',
           }],
           components: [],
           attachments: [],
@@ -1774,7 +1774,7 @@ Deno.test('/synthesis', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You only have have **0 out the 5** sacrifices needed for 2<:smol_star:1088427421096751224>',
+              'You only have **0 out the 5** sacrifices needed for 2<:smol_star:1088427421096751224>',
           }],
         },
       );
@@ -1871,7 +1871,7 @@ Deno.test('/synthesis', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You only have have **0 out the 5** sacrifices needed for 5<:smol_star:1088427421096751224>',
+              'You only have **0 out the 5** sacrifices needed for 5<:smol_star:1088427421096751224>',
           }],
         },
       );

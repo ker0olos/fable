@@ -11,23 +11,29 @@ import {
 import { getGuild, getInstance } from './get_user_inventory.ts';
 
 export function findMedia(
-  { mediaId, instance }: { mediaId: StringExpr; instance: InstanceExpr },
+  { mediaIds, instance }: { mediaIds: StringExpr[]; instance: InstanceExpr },
 ): CharacterExpr[] {
   return fql.Let({
-    characters: fql.Match(
-      fql.Index('unsorted_media_instance_id'),
-      mediaId,
-      fql.Ref(instance),
-    ),
-  }, ({ characters }) => {
-    return fql.Map(
-      fql.Select<CharacterExpr[]>(
-        ['data'],
-        fql.Paginate(characters, {
-          size: 1000,
-        }),
+    matches: fql.Map(mediaIds, (mediaId) =>
+      fql.Match(
+        fql.Index('unsorted_media_instance_id'),
+        mediaId,
+        fql.Ref(instance),
+      )),
+  }, ({ matches }) => {
+    return fql.Reduce(
+      fql.Map(
+        matches,
+        (match) =>
+          fql.Map(
+            fql.Select<CharacterExpr[]>(
+              ['data'],
+              fql.Paginate(match, { size: 1000 }),
+            ),
+            fql.Get,
+          ),
       ),
-      fql.Get,
+      (a, b) => fql.Prepend(a, b),
     );
   });
 }
@@ -83,13 +89,13 @@ export default function (client: Client): {
       fql.Resolver({
         client,
         name: 'find_media',
-        lambda: (mediaId: string, guildId: string) => {
+        lambda: (mediaIds: string[], guildId: string) => {
           return fql.Let(
             {
               guild: getGuild(guildId),
               instance: getInstance(fql.Var('guild')),
             },
-            ({ instance }) => findMedia({ mediaId, instance }),
+            ({ instance }) => findMedia({ mediaIds, instance }),
           );
         },
       }),

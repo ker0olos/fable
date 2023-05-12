@@ -19,7 +19,7 @@ type Query {
     @resolver(name: "get_user_inventory")
   
   #
-  findMedia(mediaId: String!, guildId: String!): [Character!]
+  findMedia(mediaIds: [String!], guildId: String!): [Character!]
     @resolver(name: "find_media") 
 
   #

@@ -102,7 +102,7 @@ export function replaceCharacters(
                   ),
                   {},
                 ),
-                (user) => fql.Select(['data', 'id'], fql.Get(user)),
+                (user) => fql.Select(['data', 'id'], fql.Get(user as UserExpr)),
               ),
             ),
           }),
