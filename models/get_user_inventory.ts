@@ -169,14 +169,17 @@ export function populateCharactersArray(
     },
     ({ match }) =>
       ({
-        data: fql.Merge(fql.Select(['data'], inventory), {
-          characters: fql.Select(
-            ['data'],
-            fql.Paginate(match, {
-              size: 9999,
-            }),
-          ),
-        }),
+        data: fql.Merge<{ [key: string]: unknown }>(
+          fql.Select(['data'], inventory),
+          {
+            characters: fql.Select(
+              ['data'],
+              fql.Paginate(match, {
+                size: 9999,
+              }),
+            ),
+          },
+        ),
       }) as unknown as InventoryExpr,
   );
 }
