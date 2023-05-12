@@ -107,7 +107,7 @@ function getSacrifices(
 
   if (!possibilities[target].length) {
     throw new NonFetalError(
-      `You only have have **${
+      `You only have **${
         possibilities[target - 1].length
       } out the 5** sacrifices needed for ${target}${discord.emotes.smolStar}`,
     );
