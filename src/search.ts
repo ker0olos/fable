@@ -757,50 +757,56 @@ function mediaFound(
         guildId,
       });
 
-      let mediaId = '';
+      const fields: Record<string, {
+        title: string;
+        names: string[];
+      }> = {};
 
-      const fields: Parameters<typeof embed.addField>[0][] = [];
+      for (let i = 0; i < characters.length; i++) {
+        const char = characters[i];
 
-      await Promise.all(
-        characters.map((char) => {
-          // deno-lint-ignore no-non-null-assertion
-          const existing = chunks[index].find(({ id }) =>
-            id === `${char.packId}:${char.id}`
-          )!;
+        // deno-lint-ignore no-non-null-assertion
+        const existing = chunks[index].find(({ id }) =>
+          id === `${char.packId}:${char.id}`
+        )!;
 
-          if (mediaId !== existing.mediaId) {
-            const title = utils.wrap(
-              packs.aliasToArray(
-                // deno-lint-ignore no-non-null-assertion
-                media.find(({ packId, id }) =>
-                  `${packId}:${id}` === existing.mediaId
-                )!.title,
-              )[0],
-            );
+        if (!fields[existing.mediaId]) {
+          const title = utils.wrap(
+            packs.aliasToArray(
+              // deno-lint-ignore no-non-null-assertion
+              media.find(({ packId, id }) =>
+                `${packId}:${id}` === existing.mediaId
+              )!.title,
+            )[0],
+          );
 
-            mediaId = existing.mediaId;
+          fields[existing.mediaId] = {
+            title,
+            names: [],
+          };
+        }
 
-            fields.push({
-              inline: false,
-              name: title,
-              value: '',
-            });
-          }
+        const field = fields[existing.mediaId];
 
-          const name =
-            `${existing.rating}${discord.emotes.smolStar} ${`<@${existing.user.id}>`} ${
-              utils.wrap(packs.aliasToArray(char.name)[0])
-            }`;
+        const name =
+          `${existing.rating}${discord.emotes.smolStar} ${`<@${existing.user.id}>`} ${
+            utils.wrap(packs.aliasToArray(char.name)[0])
+          }`;
 
-          // deno-lint-ignore no-non-null-assertion
-          fields.slice(-1)[0]!.value += `\n${name}`;
-        }),
+        field.names.push(name);
+      }
+
+      Object.values(fields).forEach(({ title, names }) =>
+        embed.addField({
+          inline: false,
+          name: title,
+          value: names.join('\n'),
+        })
       );
-
-      fields.forEach((field) => embed.addField(field));
 
       if (characters.length !== chunks[index].length) {
         embed.addField({
+          inline: false,
           name: `_${
             chunks[index].length - characters.length
           } disabled characters_`,

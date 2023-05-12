@@ -15,8 +15,8 @@ import * as discord from './discord.ts';
 import {
   Character,
   DisaggregatedCharacter,
-  DisaggregatedMedia,
   Media,
+  MediaRelation,
   Schema,
 } from './types.ts';
 
@@ -654,7 +654,7 @@ function list({
 
       let characters = getUserInventory.characters;
 
-      let media: Media | DisaggregatedMedia | undefined;
+      let media: Media[] = [];
 
       if (rating) {
         characters = characters.filter((char) => char.rating === rating);
@@ -668,15 +668,45 @@ function list({
           throw new Error('404');
         }
 
-        media = results[0];
+        const parent = await packs.aggregate<Media>({
+          media: results[0],
+          guildId,
+        });
 
-        characters = characters.filter((char) =>
-          // deno-lint-ignore no-non-null-assertion
-          char.mediaId === `${media!.packId}:${media!.id}`
-        );
+        media = [
+          parent,
+          ...parent.relations?.edges?.filter(({ relation }) =>
+            [
+              MediaRelation.Parent,
+              MediaRelation.Contains,
+              MediaRelation.Prequel,
+              MediaRelation.Sequel,
+              MediaRelation.SideStory,
+              MediaRelation.SpinOff,
+              // deno-lint-ignore no-non-null-assertion
+            ].includes(relation!)
+          ).map(({ node }) => node) ?? [],
+        ];
+
+        const relationsIds = media.map(({ packId, id }) => `${packId}:${id}`);
+
+        characters = characters
+          .filter((char) => relationsIds.includes(char.mediaId))
+          .sort((a, b) => {
+            if (a.mediaId < b.mediaId) {
+              return -1;
+            }
+
+            if (a.mediaId > b.mediaId) {
+              return 1;
+            }
+
+            return b.rating - a.rating;
+          });
+      } else {
+        characters = characters
+          .sort((a, b) => b.rating - a.rating);
       }
-
-      characters = characters.sort((a, b) => b.rating - a.rating);
 
       if (!characters?.length) {
         const message = new discord.Message()
@@ -688,8 +718,8 @@ function list({
                 } have any ${
                   rating ? `${rating}${discord.emotes.smolStar}characters` : ''
                 }${
-                  media
-                    ? `characters from ${packs.aliasToArray(media.title)[0]}`
+                  media.length
+                    ? `characters from ${packs.aliasToArray(media[0].title)[0]}`
                     : ''
                 }`,
               ),
@@ -707,88 +737,77 @@ function list({
         return message.patch(token);
       }
 
-      const mediaIds = new Set(characters.map(({ mediaId }) => mediaId));
+      const chunks = utils.chunks(characters, 5);
 
-      // split media into chunks of 5
-      const chunks = utils.chunks(Array.from(mediaIds), 5);
+      const _characters = await packs.characters({
+        ids: chunks[index].map(({ id }) => id),
+        guildId,
+      });
 
-      // group characters under their media
+      const fields: Record<string, {
+        title: string;
+        names: string[];
+      }> = {};
 
-      const charactersByMediaId: Record<string, Schema.Character[]> = {};
-
-      chunks[index].forEach((mediaId) => charactersByMediaId[mediaId] = []);
-
-      characters.forEach((char) =>
-        charactersByMediaId[char.mediaId]?.push(char)
-      );
-
-      const charactersIds = Object.values(charactersByMediaId)
-        .map((char) => char.map(({ id }) => id))
-        .reduce((a, b) => a.concat(b));
-
-      // find characters by their ids
-
-      const results: [
-        (Media | DisaggregatedMedia)[],
-        (Character | DisaggregatedCharacter)[],
-      ] = await Promise.all([
-        media ? [media] : packs.media({ ids: chunks[index], guildId }),
-        packs.characters({ ids: charactersIds, guildId }),
-      ]);
-
-      chunks[index].forEach((mediaId) => {
-        const media = results[0].find(({ packId, id }) =>
-          mediaId === `${packId}:${id}`
-        );
-
-        if (!media) {
-          return embed.addField({
-            inline: false,
-            name: 'Media disabled or removed',
-          });
-        }
+      for (let i = 0; i < _characters.length; i++) {
+        const char = _characters[i];
 
         // deno-lint-ignore no-non-null-assertion
-        const mediaTitle = utils.wrap(packs.aliasToArray(media!.title)[0]);
+        const existing = chunks[index].find(({ id }) =>
+          id === `${char.packId}:${char.id}`
+        )!;
 
-        const characters = charactersByMediaId[mediaId].map((char) => char.id);
+        if (!fields[existing.mediaId]) {
+          const media = (await packs.aggregate<Character>({
+            character: char,
+            guildId,
+          })).media?.edges[0].node;
 
-        const charactersResult = results[1].filter(({ packId, id }) =>
-          characters.includes(`${packId}:${id}`)
-        );
-
-        const charactersNames = charactersResult.map((char) => {
-          // deno-lint-ignore no-non-null-assertion
-          const { rating, nickname } = charactersByMediaId[mediaId].find((
-            { id },
-          ) => `${char.packId}:${char.id}` === id)!;
-
-          return `${rating}${discord.emotes.smolStar} ${
-            utils.wrap(nickname ?? packs.aliasToArray(char.name)[0])
-          }`;
-        });
-
-        if (charactersResult.length !== characters.length) {
-          charactersNames.push(
-            `_${
-              characters.length - charactersResult.length
-            } disabled characters_`,
+          const title = utils.wrap(
+            packs.aliasToArray(
+              // deno-lint-ignore no-non-null-assertion
+              media!.title,
+            )[0],
           );
+
+          fields[existing.mediaId] = {
+            title,
+            names: [],
+          };
         }
 
+        const field = fields[existing.mediaId];
+
+        const name = `${existing.rating}${discord.emotes.smolStar} ${
+          existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
+        }`;
+
+        field.names.push(name);
+      }
+
+      Object.values(fields).forEach(({ title, names }) =>
         embed.addField({
           inline: false,
-          name: mediaTitle,
-          value: charactersNames.join('\n'),
+          name: title,
+          value: names.join('\n'),
+        })
+      );
+
+      if (_characters.length !== chunks[index].length) {
+        embed.addField({
+          inline: false,
+          name: `_${
+            chunks[index].length - _characters.length
+          } disabled characters_`,
         });
-      });
+      }
 
       return discord.Message.page({
         index,
         type: 'list',
         target: discord.join(
           userId,
-          media ? `${media.packId}:${media.id}` : '',
+          media.length ? `${media[0].packId}:${media[0].id}` : '',
           `${rating ?? ''}`,
         ),
         total: chunks.length,

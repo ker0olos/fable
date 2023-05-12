@@ -5651,11 +5651,23 @@ Deno.test('/found', async (test) => {
         name: {
           full: 'name',
         },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[0],
+          }],
+        },
       },
       {
         id: '2',
         name: {
           full: 'name 2',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[0],
+          }],
         },
       },
     ];
@@ -5804,7 +5816,7 @@ Deno.test('/found', async (test) => {
                   inline: false,
                   name: 'title',
                   value:
-                    '\n4<:smol_star:1088427421096751224> <@another_user_id> name 2\n2<:smol_star:1088427421096751224> <@another_user_id> name',
+                    '4<:smol_star:1088427421096751224> <@another_user_id> name 2\n2<:smol_star:1088427421096751224> <@another_user_id> name',
                 },
               ],
             },
@@ -5853,17 +5865,36 @@ Deno.test('/found', async (test) => {
         name: {
           full: 'name',
         },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[0],
+          }],
+        },
       },
       {
         id: '2',
         name: {
           full: 'name 2',
         },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            // deno-lint-ignore no-non-null-assertion
+            node: media[0].relations!.edges[0].node,
+          }],
+        },
       },
       {
         id: '3',
         name: {
           full: 'name 3',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[0],
+          }],
         },
       },
     ];
@@ -6020,13 +6051,13 @@ Deno.test('/found', async (test) => {
                   inline: false,
                   name: 'title',
                   value:
-                    '\n4<:smol_star:1088427421096751224> <@another_user_id> name 3\n1<:smol_star:1088427421096751224> <@another_user_id> name',
+                    '4<:smol_star:1088427421096751224> <@another_user_id> name 3\n1<:smol_star:1088427421096751224> <@another_user_id> name',
                 },
                 {
                   inline: false,
                   name: 'title 2',
                   value:
-                    '\n2<:smol_star:1088427421096751224> <@another_user_id> name 2',
+                    '2<:smol_star:1088427421096751224> <@another_user_id> name 2',
                 },
               ],
             },
@@ -6260,6 +6291,7 @@ Deno.test('/found', async (test) => {
               type: 'rich',
               fields: [
                 {
+                  inline: false,
                   name: '_1 disabled characters_',
                   value: '\u200B',
                 },
