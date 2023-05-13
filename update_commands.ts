@@ -524,6 +524,18 @@ export const commands = [
       }),
     ],
   }),
+  ...Command({
+    name: 'logs',
+    description: 'List user last few found characters',
+    options: [
+      Option({
+        name: 'user',
+        description: 'The user of logs',
+        type: Type.USER,
+        optional: true,
+      }),
+    ],
+  }),
   // shop
   ...Command({
     name: 'buy',

@@ -7206,3 +7206,604 @@ Deno.test('/likeslist', async (test) => {
     }
   });
 });
+
+Deno.test('/logs', async (test) => {
+  await test.step('normal', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character 1',
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'character 2',
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'character 3',
+        },
+      },
+      {
+        id: '4',
+        name: {
+          full: 'character 4',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'character 5',
+        },
+      },
+      {
+        id: '6',
+        name: {
+          full: 'character 6',
+        },
+      },
+      {
+        id: '7',
+        name: {
+          full: 'character 7',
+        },
+      },
+      {
+        id: '8',
+        name: {
+          full: 'character 8',
+        },
+      },
+      {
+        id: '9',
+        name: {
+          full: 'character 9',
+        },
+      },
+      {
+        id: '10',
+        name: {
+          full: 'character 10',
+        },
+      },
+      {
+        id: '11',
+        name: {
+          full: 'character 11',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  characters: [
+                    { id: 'anilist:1', rating: 4 },
+                    { id: 'anilist:2', rating: 4 },
+                    { id: 'anilist:3', rating: 4 },
+                    { id: 'anilist:4', rating: 4 },
+                    { id: 'anilist:5', rating: 4 },
+                    { id: 'anilist:6', rating: 4 },
+                    { id: 'anilist:7', rating: 4 },
+                    { id: 'anilist:8', rating: 4 },
+                    { id: 'anilist:9', rating: 4 },
+                    { id: 'anilist:10', rating: 4 },
+                    { id: 'anilist:11', rating: 4 },
+                  ],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () => Promise.resolve(undefined),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.logs({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: [
+                '4<:smol_star:1088427421096751224> character 11',
+                '4<:smol_star:1088427421096751224> character 10',
+                '4<:smol_star:1088427421096751224> character 9',
+                '4<:smol_star:1088427421096751224> character 8',
+                '4<:smol_star:1088427421096751224> character 7',
+                '4<:smol_star:1088427421096751224> character 6',
+                '4<:smol_star:1088427421096751224> character 5',
+                '4<:smol_star:1088427421096751224> character 4',
+                '4<:smol_star:1088427421096751224> character 3',
+                '4<:smol_star:1088427421096751224> character 2',
+              ].join('\n'),
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      userStub.restore();
+    }
+  });
+
+  await test.step('with nicknames', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character 1',
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'character 2',
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'character 3',
+        },
+      },
+      {
+        id: '4',
+        name: {
+          full: 'character 4',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'character 5',
+        },
+      },
+      {
+        id: '6',
+        name: {
+          full: 'character 6',
+        },
+      },
+      {
+        id: '7',
+        name: {
+          full: 'character 7',
+        },
+      },
+      {
+        id: '8',
+        name: {
+          full: 'character 8',
+        },
+      },
+      {
+        id: '9',
+        name: {
+          full: 'character 9',
+        },
+      },
+      {
+        id: '10',
+        name: {
+          full: 'character 10',
+        },
+      },
+      {
+        id: '11',
+        name: {
+          full: 'character 11',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  characters: [
+                    { id: 'anilist:1', nickname: 'nickname 1', rating: 4 },
+                    { id: 'anilist:2', nickname: 'nickname 2', rating: 4 },
+                    { id: 'anilist:3', nickname: 'nickname 3', rating: 4 },
+                    { id: 'anilist:4', nickname: 'nickname 4', rating: 4 },
+                    { id: 'anilist:5', nickname: 'nickname 5', rating: 4 },
+                    { id: 'anilist:6', nickname: 'nickname 6', rating: 4 },
+                    { id: 'anilist:7', nickname: 'nickname 7', rating: 4 },
+                    { id: 'anilist:8', nickname: 'nickname 8', rating: 4 },
+                    { id: 'anilist:9', nickname: 'nickname 9', rating: 4 },
+                    { id: 'anilist:10', nickname: 'nickname 10', rating: 4 },
+                    { id: 'anilist:11', nickname: 'nickname 11', rating: 4 },
+                  ],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () => Promise.resolve(undefined),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.logs({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: [
+                '4<:smol_star:1088427421096751224> nickname 11',
+                '4<:smol_star:1088427421096751224> nickname 10',
+                '4<:smol_star:1088427421096751224> nickname 9',
+                '4<:smol_star:1088427421096751224> nickname 8',
+                '4<:smol_star:1088427421096751224> nickname 7',
+                '4<:smol_star:1088427421096751224> nickname 6',
+                '4<:smol_star:1088427421096751224> nickname 5',
+                '4<:smol_star:1088427421096751224> nickname 4',
+                '4<:smol_star:1088427421096751224> nickname 3',
+                '4<:smol_star:1088427421096751224> nickname 2',
+              ].join('\n'),
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      userStub.restore();
+    }
+  });
+
+  await test.step('no logs (Self)', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  characters: [],
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () => Promise.resolve(undefined),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.logs({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You don\'t have any characters',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      userStub.restore();
+    }
+  });
+
+  await test.step('no logs (Dave)', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  characters: [],
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () => Promise.resolve(undefined),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.logs({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        nick: 'Dave',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Dave doesn\'t have any characters',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      userStub.restore();
+    }
+  });
+});

@@ -1033,6 +1033,24 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "List user last few found characters",
+    dm_permission: false,
+    name: "logs",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "The user of logs",
+        name: "user",
+        options: undefined,
+        required: false,
+        type: 6,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
     description: "vote shop commands",
     dm_permission: false,
     name: "buy",
