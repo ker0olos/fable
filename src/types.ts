@@ -192,7 +192,10 @@ export namespace Schema {
     totalVotes?: number;
     availableVotes?: number;
     guarantees?: number[];
-    likes?: { characterId?: string }[];
+    likes?: {
+      mediaId?: string;
+      characterId?: string;
+    }[];
     badges?: {
       name: string;
       description: string;

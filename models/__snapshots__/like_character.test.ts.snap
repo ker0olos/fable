@@ -2329,3 +2329,1129 @@ snapshot[`model 2`] = `
   },
 ]
 `;
+
+snapshot[`model 3`] = `
+[
+  Expr {
+    raw: {
+      else: Expr {
+        raw: {
+          create_function: Expr {
+            raw: {
+              object: {
+                body: Expr {
+                  raw: {
+                    query: Expr {
+                      raw: {
+                        expr: Expr {
+                          raw: {
+                            in: Expr {
+                              raw: {
+                                in: Expr {
+                                  raw: {
+                                    else: Expr {
+                                      raw: {
+                                        in: Expr {
+                                          raw: {
+                                            object: {
+                                              ok: true,
+                                              user: Expr {
+                                                raw: {
+                                                  from: Expr {
+                                                    raw: {
+                                                      var: "updatedUser",
+                                                    },
+                                                  },
+                                                  select: "ref",
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        let: [
+                                          {
+                                            updatedUser: Expr {
+                                              raw: {
+                                                params: Expr {
+                                                  raw: {
+                                                    object: {
+                                                      data: Expr {
+                                                        raw: {
+                                                          object: {
+                                                            likes: Expr {
+                                                              raw: {
+                                                                append: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      mediaId: Expr {
+                                                                        raw: {
+                                                                          var: "mediaId",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                collection: Expr {
+                                                                  raw: {
+                                                                    default: Expr {
+                                                                      raw: [],
+                                                                    },
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "user",
+                                                                      },
+                                                                    },
+                                                                    select: Expr {
+                                                                      raw: [
+                                                                        "data",
+                                                                        "likes",
+                                                                      ],
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                update: Expr {
+                                                  raw: {
+                                                    from: Expr {
+                                                      raw: {
+                                                        var: "user",
+                                                      },
+                                                    },
+                                                    select: "ref",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        ],
+                                      },
+                                    },
+                                    if: Expr {
+                                      raw: {
+                                        equals: Expr {
+                                          raw: [
+                                            Expr {
+                                              raw: {
+                                                var: "exists",
+                                              },
+                                            },
+                                            true,
+                                          ],
+                                        },
+                                      },
+                                    },
+                                    then: Expr {
+                                      raw: {
+                                        object: {
+                                          ok: true,
+                                          user: Expr {
+                                            raw: {
+                                              from: Expr {
+                                                raw: {
+                                                  var: "user",
+                                                },
+                                              },
+                                              select: "ref",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    exists: Expr {
+                                      raw: {
+                                        contains_value: Expr {
+                                          raw: {
+                                            object: {
+                                              mediaId: Expr {
+                                                raw: {
+                                                  var: "mediaId",
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        in: Expr {
+                                          raw: {
+                                            default: Expr {
+                                              raw: [],
+                                            },
+                                            from: Expr {
+                                              raw: {
+                                                var: "user",
+                                              },
+                                            },
+                                            select: Expr {
+                                              raw: [
+                                                "data",
+                                                "likes",
+                                              ],
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                user: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            create: Expr {
+                                              raw: {
+                                                collection: "user",
+                                              },
+                                            },
+                                            params: Expr {
+                                              raw: {
+                                                object: {
+                                                  data: Expr {
+                                                    raw: {
+                                                      object: {
+                                                        id: Expr {
+                                                          raw: {
+                                                            var: "userId",
+                                                          },
+                                                        },
+                                                        inventories: Expr {
+                                                          raw: [],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            match: Expr {
+                                              raw: {
+                                                index: "users_discord_id",
+                                              },
+                                            },
+                                            terms: Expr {
+                                              raw: {
+                                                var: "userId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: Expr {
+                          raw: [
+                            "userId",
+                            "mediaId",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "like_media",
+              },
+            },
+          },
+        },
+      },
+      if: Expr {
+        raw: {
+          exists: Expr {
+            raw: {
+              function: "like_media",
+            },
+          },
+        },
+      },
+      then: Expr {
+        raw: {
+          params: Expr {
+            raw: {
+              object: {
+                body: Expr {
+                  raw: {
+                    query: Expr {
+                      raw: {
+                        expr: Expr {
+                          raw: {
+                            in: Expr {
+                              raw: {
+                                in: Expr {
+                                  raw: {
+                                    else: Expr {
+                                      raw: {
+                                        in: Expr {
+                                          raw: {
+                                            object: {
+                                              ok: true,
+                                              user: Expr {
+                                                raw: {
+                                                  from: Expr {
+                                                    raw: {
+                                                      var: "updatedUser",
+                                                    },
+                                                  },
+                                                  select: "ref",
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        let: [
+                                          {
+                                            updatedUser: Expr {
+                                              raw: {
+                                                params: Expr {
+                                                  raw: {
+                                                    object: {
+                                                      data: Expr {
+                                                        raw: {
+                                                          object: {
+                                                            likes: Expr {
+                                                              raw: {
+                                                                append: Expr {
+                                                                  raw: {
+                                                                    object: {
+                                                                      mediaId: Expr {
+                                                                        raw: {
+                                                                          var: "mediaId",
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                collection: Expr {
+                                                                  raw: {
+                                                                    default: Expr {
+                                                                      raw: [],
+                                                                    },
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "user",
+                                                                      },
+                                                                    },
+                                                                    select: Expr {
+                                                                      raw: [
+                                                                        "data",
+                                                                        "likes",
+                                                                      ],
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                update: Expr {
+                                                  raw: {
+                                                    from: Expr {
+                                                      raw: {
+                                                        var: "user",
+                                                      },
+                                                    },
+                                                    select: "ref",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        ],
+                                      },
+                                    },
+                                    if: Expr {
+                                      raw: {
+                                        equals: Expr {
+                                          raw: [
+                                            Expr {
+                                              raw: {
+                                                var: "exists",
+                                              },
+                                            },
+                                            true,
+                                          ],
+                                        },
+                                      },
+                                    },
+                                    then: Expr {
+                                      raw: {
+                                        object: {
+                                          ok: true,
+                                          user: Expr {
+                                            raw: {
+                                              from: Expr {
+                                                raw: {
+                                                  var: "user",
+                                                },
+                                              },
+                                              select: "ref",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    exists: Expr {
+                                      raw: {
+                                        contains_value: Expr {
+                                          raw: {
+                                            object: {
+                                              mediaId: Expr {
+                                                raw: {
+                                                  var: "mediaId",
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        in: Expr {
+                                          raw: {
+                                            default: Expr {
+                                              raw: [],
+                                            },
+                                            from: Expr {
+                                              raw: {
+                                                var: "user",
+                                              },
+                                            },
+                                            select: Expr {
+                                              raw: [
+                                                "data",
+                                                "likes",
+                                              ],
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                user: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            create: Expr {
+                                              raw: {
+                                                collection: "user",
+                                              },
+                                            },
+                                            params: Expr {
+                                              raw: {
+                                                object: {
+                                                  data: Expr {
+                                                    raw: {
+                                                      object: {
+                                                        id: Expr {
+                                                          raw: {
+                                                            var: "userId",
+                                                          },
+                                                        },
+                                                        inventories: Expr {
+                                                          raw: [],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            match: Expr {
+                                              raw: {
+                                                index: "users_discord_id",
+                                              },
+                                            },
+                                            terms: Expr {
+                                              raw: {
+                                                var: "userId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: Expr {
+                          raw: [
+                            "userId",
+                            "mediaId",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "like_media",
+              },
+            },
+          },
+          update: Expr {
+            raw: {
+              function: "like_media",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;
+
+snapshot[`model 4`] = `
+[
+  Expr {
+    raw: {
+      else: Expr {
+        raw: {
+          create_function: Expr {
+            raw: {
+              object: {
+                body: Expr {
+                  raw: {
+                    query: Expr {
+                      raw: {
+                        expr: Expr {
+                          raw: {
+                            in: Expr {
+                              raw: {
+                                in: Expr {
+                                  raw: {
+                                    else: Expr {
+                                      raw: {
+                                        object: {
+                                          ok: true,
+                                          user: Expr {
+                                            raw: {
+                                              from: Expr {
+                                                raw: {
+                                                  var: "user",
+                                                },
+                                              },
+                                              select: "ref",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    if: Expr {
+                                      raw: {
+                                        equals: Expr {
+                                          raw: [
+                                            Expr {
+                                              raw: {
+                                                var: "exists",
+                                              },
+                                            },
+                                            true,
+                                          ],
+                                        },
+                                      },
+                                    },
+                                    then: Expr {
+                                      raw: {
+                                        in: Expr {
+                                          raw: {
+                                            object: {
+                                              ok: true,
+                                              user: Expr {
+                                                raw: {
+                                                  from: Expr {
+                                                    raw: {
+                                                      var: "updatedUser",
+                                                    },
+                                                  },
+                                                  select: "ref",
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        let: [
+                                          {
+                                            updatedUser: Expr {
+                                              raw: {
+                                                params: Expr {
+                                                  raw: {
+                                                    object: {
+                                                      data: Expr {
+                                                        raw: {
+                                                          object: {
+                                                            likes: Expr {
+                                                              raw: {
+                                                                difference: Expr {
+                                                                  raw: [
+                                                                    Expr {
+                                                                      raw: {
+                                                                        default: Expr {
+                                                                          raw: [],
+                                                                        },
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "user",
+                                                                          },
+                                                                        },
+                                                                        select: Expr {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "likes",
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    Expr {
+                                                                      raw: [
+                                                                        Expr {
+                                                                          raw: {
+                                                                            object: {
+                                                                              mediaId: Expr {
+                                                                                raw: {
+                                                                                  var: "mediaId",
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      ],
+                                                                    },
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                update: Expr {
+                                                  raw: {
+                                                    from: Expr {
+                                                      raw: {
+                                                        var: "user",
+                                                      },
+                                                    },
+                                                    select: "ref",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        ],
+                                      },
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    exists: Expr {
+                                      raw: {
+                                        contains_value: Expr {
+                                          raw: {
+                                            object: {
+                                              mediaId: Expr {
+                                                raw: {
+                                                  var: "mediaId",
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        in: Expr {
+                                          raw: {
+                                            default: Expr {
+                                              raw: [],
+                                            },
+                                            from: Expr {
+                                              raw: {
+                                                var: "user",
+                                              },
+                                            },
+                                            select: Expr {
+                                              raw: [
+                                                "data",
+                                                "likes",
+                                              ],
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                user: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            create: Expr {
+                                              raw: {
+                                                collection: "user",
+                                              },
+                                            },
+                                            params: Expr {
+                                              raw: {
+                                                object: {
+                                                  data: Expr {
+                                                    raw: {
+                                                      object: {
+                                                        id: Expr {
+                                                          raw: {
+                                                            var: "userId",
+                                                          },
+                                                        },
+                                                        inventories: Expr {
+                                                          raw: [],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            match: Expr {
+                                              raw: {
+                                                index: "users_discord_id",
+                                              },
+                                            },
+                                            terms: Expr {
+                                              raw: {
+                                                var: "userId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: Expr {
+                          raw: [
+                            "userId",
+                            "mediaId",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "unlike_media",
+              },
+            },
+          },
+        },
+      },
+      if: Expr {
+        raw: {
+          exists: Expr {
+            raw: {
+              function: "unlike_media",
+            },
+          },
+        },
+      },
+      then: Expr {
+        raw: {
+          params: Expr {
+            raw: {
+              object: {
+                body: Expr {
+                  raw: {
+                    query: Expr {
+                      raw: {
+                        expr: Expr {
+                          raw: {
+                            in: Expr {
+                              raw: {
+                                in: Expr {
+                                  raw: {
+                                    else: Expr {
+                                      raw: {
+                                        object: {
+                                          ok: true,
+                                          user: Expr {
+                                            raw: {
+                                              from: Expr {
+                                                raw: {
+                                                  var: "user",
+                                                },
+                                              },
+                                              select: "ref",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    if: Expr {
+                                      raw: {
+                                        equals: Expr {
+                                          raw: [
+                                            Expr {
+                                              raw: {
+                                                var: "exists",
+                                              },
+                                            },
+                                            true,
+                                          ],
+                                        },
+                                      },
+                                    },
+                                    then: Expr {
+                                      raw: {
+                                        in: Expr {
+                                          raw: {
+                                            object: {
+                                              ok: true,
+                                              user: Expr {
+                                                raw: {
+                                                  from: Expr {
+                                                    raw: {
+                                                      var: "updatedUser",
+                                                    },
+                                                  },
+                                                  select: "ref",
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        let: [
+                                          {
+                                            updatedUser: Expr {
+                                              raw: {
+                                                params: Expr {
+                                                  raw: {
+                                                    object: {
+                                                      data: Expr {
+                                                        raw: {
+                                                          object: {
+                                                            likes: Expr {
+                                                              raw: {
+                                                                difference: Expr {
+                                                                  raw: [
+                                                                    Expr {
+                                                                      raw: {
+                                                                        default: Expr {
+                                                                          raw: [],
+                                                                        },
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "user",
+                                                                          },
+                                                                        },
+                                                                        select: Expr {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "likes",
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    Expr {
+                                                                      raw: [
+                                                                        Expr {
+                                                                          raw: {
+                                                                            object: {
+                                                                              mediaId: Expr {
+                                                                                raw: {
+                                                                                  var: "mediaId",
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      ],
+                                                                    },
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                update: Expr {
+                                                  raw: {
+                                                    from: Expr {
+                                                      raw: {
+                                                        var: "user",
+                                                      },
+                                                    },
+                                                    select: "ref",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        ],
+                                      },
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    exists: Expr {
+                                      raw: {
+                                        contains_value: Expr {
+                                          raw: {
+                                            object: {
+                                              mediaId: Expr {
+                                                raw: {
+                                                  var: "mediaId",
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        in: Expr {
+                                          raw: {
+                                            default: Expr {
+                                              raw: [],
+                                            },
+                                            from: Expr {
+                                              raw: {
+                                                var: "user",
+                                              },
+                                            },
+                                            select: Expr {
+                                              raw: [
+                                                "data",
+                                                "likes",
+                                              ],
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                user: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            create: Expr {
+                                              raw: {
+                                                collection: "user",
+                                              },
+                                            },
+                                            params: Expr {
+                                              raw: {
+                                                object: {
+                                                  data: Expr {
+                                                    raw: {
+                                                      object: {
+                                                        id: Expr {
+                                                          raw: {
+                                                            var: "userId",
+                                                          },
+                                                        },
+                                                        inventories: Expr {
+                                                          raw: [],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            match: Expr {
+                                              raw: {
+                                                index: "users_discord_id",
+                                              },
+                                            },
+                                            terms: Expr {
+                                              raw: {
+                                                var: "userId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: Expr {
+                          raw: [
+                            "userId",
+                            "mediaId",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "unlike_media",
+              },
+            },
+          },
+          update: Expr {
+            raw: {
+              function: "unlike_media",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;

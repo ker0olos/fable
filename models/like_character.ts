@@ -109,6 +109,78 @@ export function unlikeCharacter(
   });
 }
 
+export function likeMedia(
+  {
+    user,
+    mediaId,
+  }: {
+    user: UserExpr;
+    mediaId: StringExpr;
+  },
+): unknown {
+  return fql.Let({
+    exists: fql.Includes(
+      { mediaId },
+      fql.Select(['data', 'likes'], user, []),
+    ),
+  }, ({ exists }) => {
+    return fql.If(
+      fql.Equals(exists, true),
+      {
+        ok: true,
+        user: fql.Ref(user),
+      },
+      fql.Let({
+        updatedUser: fql.Update<User>(fql.Ref(user), {
+          likes: fql.Append(
+            { mediaId },
+            fql.Select(['data', 'likes'], user, []),
+          ),
+        }),
+      }, ({ updatedUser }) => ({
+        ok: true,
+        user: fql.Ref(updatedUser),
+      })),
+    );
+  });
+}
+
+export function unlikeMedia(
+  {
+    user,
+    mediaId,
+  }: {
+    user: UserExpr;
+    mediaId: StringExpr;
+  },
+): unknown {
+  return fql.Let({
+    exists: fql.Includes(
+      { mediaId },
+      fql.Select(['data', 'likes'], user, []),
+    ),
+  }, ({ exists }) => {
+    return fql.If(
+      fql.Equals(exists, true),
+      fql.Let({
+        updatedUser: fql.Update<User>(fql.Ref(user), {
+          likes: fql.Remove(
+            { mediaId },
+            fql.Select(['data', 'likes'], user, []),
+          ),
+        }),
+      }, ({ updatedUser }) => ({
+        ok: true,
+        user: fql.Ref(updatedUser),
+      })),
+      {
+        ok: true,
+        user: fql.Ref(user),
+      },
+    );
+  });
+}
+
 export default function (client: Client): {
   indexers?: (() => Promise<void>)[];
   resolvers?: (() => Promise<void>)[];
@@ -142,6 +214,26 @@ export default function (client: Client): {
             },
             ({ user, instance }) =>
               unlikeCharacter({ user, instance, characterId }) as ResponseExpr,
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
+        name: 'like_media',
+        lambda: (userId: string, mediaId: string) => {
+          return fql.Let(
+            { user: getUser(userId) },
+            ({ user }) => likeMedia({ user, mediaId }) as ResponseExpr,
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
+        name: 'unlike_media',
+        lambda: (userId: string, mediaId: string) => {
+          return fql.Let(
+            { user: getUser(userId) },
+            ({ user }) => unlikeMedia({ user, mediaId }) as ResponseExpr,
           );
         },
       }),

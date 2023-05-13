@@ -114,6 +114,13 @@ type Mutation {
     @resolver(name: "unlike_character")
 
   #
+  likeMedia(userId: String!, mediaId: String!): Response!
+    @resolver(name: "like_media")
+  #
+  unlikeMedia(userId: String!, mediaId: String!): Response!
+    @resolver(name: "unlike_media")
+
+  #
   failSteal(userId: String!, guildId: String!): Response!
     @resolver(name: "fail_steal")
 

@@ -19,7 +19,10 @@ export interface User {
   totalVotes?: NumberExpr;
   availableVotes?: NumberExpr;
   guarantees?: NumberExpr[];
-  likes?: { characterId?: StringExpr }[];
+  likes?: {
+    mediaId?: StringExpr;
+    characterId?: StringExpr;
+  }[];
   badges?: RefExpr[];
 }
 

@@ -1,4 +1,5 @@
 type Like @embedded {
+  mediaId: String
   characterId: String
 }
 
