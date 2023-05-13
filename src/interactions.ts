@@ -629,6 +629,25 @@ export const handler = async (r: Request) => {
 
             return help.pages({ userId: member.user.id, index }).send();
           }
+          case 'logs': {
+            const userId = options['user'] as string ?? member.user.id;
+
+            const nick = userId !== member.user.id
+              ? discord.getUsername(
+                // deno-lint-ignore no-non-null-assertion
+                resolved!.members![userId],
+                // deno-lint-ignore no-non-null-assertion
+                resolved!.users![userId],
+              )
+              : undefined;
+
+            return user.logs({
+              token,
+              guildId,
+              userId,
+              nick,
+            }).send();
+          }
           case 'anilist': {
             // deno-lint-ignore no-non-null-assertion
             return (await packs.anilist(subcommand!, interaction))!
