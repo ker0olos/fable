@@ -70,7 +70,9 @@ async function getUserCharacters(
           }
         }
         user {
-          likes
+          likes {
+            characterId
+          }
         }
         characters {
           id
