@@ -258,7 +258,9 @@ function pre({
 
       if (takeCollection) {
         const takeLiked = takeIds.filter((id) =>
-          takeCollection.likes?.includes(id)
+          takeCollection.likes
+            ?.map(({ characterId }) => characterId)
+            .includes(id)
         );
 
         await discord.Message.dialog({

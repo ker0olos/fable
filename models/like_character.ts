@@ -22,12 +22,12 @@ export function likeCharacter(
 ): unknown {
   return fql.Let({
     exists: fql.Includes(
-      characterId,
+      { characterId },
       fql.Select(['data', 'likes'], user, []),
     ),
     match: fql.Match(
       fql.Index('characters_instance_id'),
-      characterId,
+      { characterId },
       fql.Ref(instance),
     ),
     character: fql.If(
@@ -46,7 +46,7 @@ export function likeCharacter(
       fql.Let({
         updatedUser: fql.Update<User>(fql.Ref(user), {
           likes: fql.Append(
-            characterId,
+            { characterId },
             fql.Select(['data', 'likes'], user, []),
           ),
         }),
@@ -72,12 +72,12 @@ export function unlikeCharacter(
 ): unknown {
   return fql.Let({
     exists: fql.Includes(
-      characterId,
+      { characterId },
       fql.Select(['data', 'likes'], user, []),
     ),
     match: fql.Match(
       fql.Index('characters_instance_id'),
-      characterId,
+      { characterId },
       fql.Ref(instance),
     ),
     character: fql.If(
@@ -91,7 +91,7 @@ export function unlikeCharacter(
       fql.Let({
         updatedUser: fql.Update<User>(fql.Ref(user), {
           likes: fql.Remove(
-            characterId,
+            { characterId },
             fql.Select(['data', 'likes'], user, []),
           ),
         }),

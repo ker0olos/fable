@@ -33,7 +33,9 @@ async function getFilteredCharacters(
   characters = characters
     .filter(({ id }) =>
       // filter liked characters
-      !likes?.includes(id) &&
+      !likes
+        ?.map(({ characterId }) => characterId)
+        .includes(id) &&
       // filter party members
       ![
         party?.member1?.id,
@@ -252,7 +254,9 @@ function confirmed({
       ) {
         ok
         error
-        likes
+        likes {
+          characterId
+        }
         inventory {
           availablePulls
           rechargeTimestamp

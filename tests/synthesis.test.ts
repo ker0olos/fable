@@ -1648,11 +1648,11 @@ Deno.test('/synthesis', async (test) => {
                   },
                   user: {
                     likes: [
-                      'anilist:6',
-                      'anilist:7',
-                      'anilist:8',
-                      'anilist:9',
-                      'anilist:10',
+                      { characterId: 'anilist:6' },
+                      { characterId: 'anilist:7' },
+                      { characterId: 'anilist:8' },
+                      { characterId: 'anilist:9' },
+                      { characterId: 'anilist:10' },
                     ],
                   },
                   characters: [

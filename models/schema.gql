@@ -1,10 +1,14 @@
+type Like @embedded {
+  characterId: String
+}
+
 type User @collection(name: "user") {
   # discord user id
   id: String!
   # all the inventories this user owns
   inventories: [Inventory!]!
   # all the badges this user owns
-  badges: [Badge!]!
+  badges: [Badge!]
   # 
   lastVote: Time,
   # the amount of votes the user has voted
@@ -12,9 +16,9 @@ type User @collection(name: "user") {
   # the amount of votes available to be exchanged for rewards
   availableVotes: Int
   # guaranteed pulls
-  guarantees: [Int!]!
-  # liked (protected) characters ids
-  likes: [String!]!
+  guarantees: [Int!]
+  # liked (protected) characters
+  likes: [Like!]
 }
 
 type Guild @collection(name: "guild") {

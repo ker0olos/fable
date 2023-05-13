@@ -1,3 +1,5 @@
+import 'https://esm.sh/@total-typescript/ts-reset@0.4.2/filter-boolean';
+
 import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
@@ -861,7 +863,9 @@ function likeslist({
     query ($userId: String!, $guildId: String!) {
       getUserInventory(userId: $userId, guildId: $guildId) {
         user {
-          likes
+          likes {
+            characterId
+          }
         }
       }
     }
@@ -885,7 +889,9 @@ function likeslist({
 
       const message = new discord.Message();
 
-      const charactersIds = getUserInventory.user.likes;
+      const charactersIds = getUserInventory.user.likes
+        ?.map(({ characterId }) => characterId)
+        .filter(Boolean);
 
       if (!charactersIds?.length) {
         const message = new discord.Message()

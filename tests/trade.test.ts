@@ -2103,7 +2103,7 @@ Deno.test('/trade', async (test) => {
             mediaId: 'media_id',
             rating: 1,
           }],
-          likes: ['id:1'],
+          likes: [{ characterId: 'id:1' }],
           party: {},
         }),
       ]),

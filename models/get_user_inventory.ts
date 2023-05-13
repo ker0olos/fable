@@ -14,12 +14,12 @@ import {
 
 export interface User {
   id: StringExpr;
+  inventories: RefExpr[];
   lastVote?: TimeExpr;
   totalVotes?: NumberExpr;
   availableVotes?: NumberExpr;
-  inventories: RefExpr[];
   guarantees?: NumberExpr[];
-  likes?: StringExpr[];
+  likes?: { characterId?: StringExpr }[];
   badges?: RefExpr[];
 }
 

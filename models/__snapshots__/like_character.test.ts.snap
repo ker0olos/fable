@@ -57,7 +57,13 @@ snapshot[`model 1`] = `
                                                               raw: {
                                                                 append: Expr {
                                                                   raw: {
-                                                                    var: "characterId",
+                                                                    object: {
+                                                                      characterId: Expr {
+                                                                        raw: {
+                                                                          var: "characterId",
+                                                                        },
+                                                                      },
+                                                                    },
                                                                   },
                                                                 },
                                                                 collection: Expr {
@@ -146,7 +152,13 @@ snapshot[`model 1`] = `
                                       raw: {
                                         contains_value: Expr {
                                           raw: {
-                                            var: "characterId",
+                                            object: {
+                                              characterId: Expr {
+                                                raw: {
+                                                  var: "characterId",
+                                                },
+                                              },
+                                            },
                                           },
                                         },
                                         in: Expr {
@@ -182,7 +194,13 @@ snapshot[`model 1`] = `
                                           raw: [
                                             Expr {
                                               raw: {
-                                                var: "characterId",
+                                                object: {
+                                                  characterId: Expr {
+                                                    raw: {
+                                                      var: "characterId",
+                                                    },
+                                                  },
+                                                },
                                               },
                                             },
                                             Expr {
@@ -615,7 +633,13 @@ snapshot[`model 1`] = `
                                                               raw: {
                                                                 append: Expr {
                                                                   raw: {
-                                                                    var: "characterId",
+                                                                    object: {
+                                                                      characterId: Expr {
+                                                                        raw: {
+                                                                          var: "characterId",
+                                                                        },
+                                                                      },
+                                                                    },
                                                                   },
                                                                 },
                                                                 collection: Expr {
@@ -704,7 +728,13 @@ snapshot[`model 1`] = `
                                       raw: {
                                         contains_value: Expr {
                                           raw: {
-                                            var: "characterId",
+                                            object: {
+                                              characterId: Expr {
+                                                raw: {
+                                                  var: "characterId",
+                                                },
+                                              },
+                                            },
                                           },
                                         },
                                         in: Expr {
@@ -740,7 +770,13 @@ snapshot[`model 1`] = `
                                           raw: [
                                             Expr {
                                               raw: {
-                                                var: "characterId",
+                                                object: {
+                                                  characterId: Expr {
+                                                    raw: {
+                                                      var: "characterId",
+                                                    },
+                                                  },
+                                                },
                                               },
                                             },
                                             Expr {
@@ -1236,7 +1272,13 @@ snapshot[`model 2`] = `
                                                                       raw: [
                                                                         Expr {
                                                                           raw: {
-                                                                            var: "characterId",
+                                                                            object: {
+                                                                              characterId: Expr {
+                                                                                raw: {
+                                                                                  var: "characterId",
+                                                                                },
+                                                                              },
+                                                                            },
                                                                           },
                                                                         },
                                                                       ],
@@ -1275,7 +1317,13 @@ snapshot[`model 2`] = `
                                       raw: {
                                         contains_value: Expr {
                                           raw: {
-                                            var: "characterId",
+                                            object: {
+                                              characterId: Expr {
+                                                raw: {
+                                                  var: "characterId",
+                                                },
+                                              },
+                                            },
                                           },
                                         },
                                         in: Expr {
@@ -1311,7 +1359,13 @@ snapshot[`model 2`] = `
                                           raw: [
                                             Expr {
                                               raw: {
-                                                var: "characterId",
+                                                object: {
+                                                  characterId: Expr {
+                                                    raw: {
+                                                      var: "characterId",
+                                                    },
+                                                  },
+                                                },
                                               },
                                             },
                                             Expr {
@@ -1802,7 +1856,13 @@ snapshot[`model 2`] = `
                                                                       raw: [
                                                                         Expr {
                                                                           raw: {
-                                                                            var: "characterId",
+                                                                            object: {
+                                                                              characterId: Expr {
+                                                                                raw: {
+                                                                                  var: "characterId",
+                                                                                },
+                                                                              },
+                                                                            },
                                                                           },
                                                                         },
                                                                       ],
@@ -1841,7 +1901,13 @@ snapshot[`model 2`] = `
                                       raw: {
                                         contains_value: Expr {
                                           raw: {
-                                            var: "characterId",
+                                            object: {
+                                              characterId: Expr {
+                                                raw: {
+                                                  var: "characterId",
+                                                },
+                                              },
+                                            },
                                           },
                                         },
                                         in: Expr {
@@ -1877,7 +1943,13 @@ snapshot[`model 2`] = `
                                           raw: [
                                             Expr {
                                               raw: {
-                                                var: "characterId",
+                                                object: {
+                                                  characterId: Expr {
+                                                    raw: {
+                                                      var: "characterId",
+                                                    },
+                                                  },
+                                                },
                                               },
                                             },
                                             Expr {
