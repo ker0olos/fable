@@ -517,16 +517,30 @@ export const handler = async (r: Request) => {
               })
               .send();
           }
-          case 'nick':
-          case 'image':
-          case 'custom': {
-            const name = options['name'] as string;
+          case 'nick': {
+            const name = options['character'] as string;
 
             const nick = options['new_nick'] as string | undefined;
+
+            return user.nick({
+              nick,
+              token,
+              guildId,
+              channelId,
+              search: name,
+              userId: member.user.id,
+              id: name.startsWith(idPrefix)
+                ? name.substring(idPrefix.length)
+                : undefined,
+            }).send();
+          }
+          case 'image':
+          case 'custom': {
+            const name = options['character'] as string;
+
             const image = options['new_image'] as string | undefined;
 
-            return user.customize({
-              nick,
+            return user.image({
               image,
               token,
               guildId,

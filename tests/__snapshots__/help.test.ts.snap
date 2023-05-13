@@ -479,10 +479,7 @@ snapshot[`/help 6`] = `
           "
 " +
           "__**Releasing in the near future (5 days ~ 2 months)**__
-" +
-          "
-" +
-          "_> There's a feature freeze right now to focus on QoL changes._",
+",
         type: "rich",
       },
     ],

@@ -311,13 +311,12 @@ async function findCharacter({
   return result;
 }
 
-function customize({
+function nick({
   token,
   userId,
   guildId,
   channelId,
   nick,
-  image,
   search,
   id,
 }: {
@@ -326,13 +325,12 @@ function customize({
   guildId: string;
   channelId: string;
   nick?: string;
-  image?: string;
   search?: string;
   id?: string;
 }): discord.Message {
   const mutation = gql`
-    mutation ($userId: String!, $guildId: String!, $characterId: String!, $image: String, $nick: String) {
-      customizeCharacter(userId: $userId, guildId: $guildId, characterId: $characterId, image: $image, nickname: $nick) {
+    mutation ($userId: String!, $guildId: String!, $characterId: String!, $nick: String) {
+      setCharacterNickname(userId: $userId, guildId: $guildId, characterId: $characterId, nickname: $nick) {
         ok
         error
         character {
@@ -361,7 +359,7 @@ function customize({
       const characterId = `${results[0].packId}:${results[0].id}`;
 
       const response = (await request<{
-        customizeCharacter: Schema.Mutation;
+        setCharacterNickname: Schema.Mutation;
       }>({
         url: faunaUrl,
         query: mutation,
@@ -372,10 +370,9 @@ function customize({
           userId,
           guildId,
           characterId,
-          image,
           nick,
         },
-      })).customizeCharacter;
+      })).setCharacterNickname;
 
       if (!response.ok) {
         const names = packs.aliasToArray(results[0].name);
@@ -419,7 +416,172 @@ function customize({
         end: 1,
       });
 
-      return message
+      const name = packs.aliasToArray(character.name)[0];
+
+      message
+        .addEmbed(srch.characterEmbed(
+          character,
+          channelId,
+          {
+            footer: true,
+            rating: false,
+            mode: 'thumbnail',
+            description: false,
+            media: { title: true },
+            existing: {
+              ...response.character,
+              rating: undefined,
+              user: undefined,
+            },
+          },
+        ))
+        .addEmbed(
+          new discord.Embed().setDescription(
+            !nick
+              ? `${name}'s nickname has been reset`
+              : `${name}'s nickname has been changed to **${response.character.nickname}**`,
+          ),
+        );
+
+      return message.patch(token);
+    })
+    .catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'Found _nothing_ matching that query!',
+            ),
+          ).patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
+}
+
+function image({
+  token,
+  userId,
+  guildId,
+  channelId,
+  image,
+  search,
+  id,
+}: {
+  token: string;
+  userId: string;
+  guildId: string;
+  channelId: string;
+  image?: string;
+  search?: string;
+  id?: string;
+}): discord.Message {
+  const mutation = gql`
+    mutation ($userId: String!, $guildId: String!, $characterId: String!, $image: String) {
+      setCharacterImage(userId: $userId, guildId: $guildId, characterId: $characterId, image: $image) {
+        ok
+        error
+        character {
+          id
+          image
+          nickname
+          mediaId
+          rating
+          user {
+            id
+          }
+        }
+      }
+    }
+  `;
+
+  packs
+    .characters(id ? { ids: [id], guildId } : { search, guildId })
+    .then(async (results: (Character | DisaggregatedCharacter)[]) => {
+      if (!results.length) {
+        throw new Error('404');
+      }
+
+      const message = new discord.Message();
+
+      const characterId = `${results[0].packId}:${results[0].id}`;
+
+      const response = (await request<{
+        setCharacterImage: Schema.Mutation;
+      }>({
+        url: faunaUrl,
+        query: mutation,
+        headers: {
+          'authorization': `Bearer ${config.faunaSecret}`,
+        },
+        variables: {
+          userId,
+          guildId,
+          characterId,
+          image,
+        },
+      })).setCharacterImage;
+
+      if (!response.ok) {
+        const names = packs.aliasToArray(results[0].name);
+
+        switch (response.error) {
+          case 'CHARACTER_NOT_FOUND': {
+            return message
+              .addEmbed(
+                new discord.Embed().setDescription(
+                  `${names[0]} hasn't been found by anyone yet.`,
+                ),
+              ).addComponents([
+                new discord.Component()
+                  .setId(`character`, characterId)
+                  .setLabel('/character'),
+              ])
+              .patch(token);
+          }
+          case 'CHARACTER_NOT_OWNED':
+            return message
+              .addEmbed(
+                new discord.Embed().setDescription(
+                  `${
+                    names[0]
+                  } is owned by <@${response.character.user.id}> and cannot be customized by you.`,
+                ),
+              ).addComponents([
+                new discord.Component()
+                  .setId(`character`, response.character.id)
+                  .setLabel('/character'),
+              ])
+              .patch(token);
+          default:
+            throw new Error(response.error);
+        }
+      }
+
+      const character = await packs.aggregate<Character>({
+        guildId,
+        character: results[0],
+        end: 1,
+      });
+
+      const name = packs.aliasToArray(character.name)[0];
+
+      message
         .addEmbed(srch.characterEmbed(
           character,
           channelId,
@@ -428,15 +590,22 @@ function customize({
             rating: false,
             description: false,
             media: { title: true },
-            existing: response.character,
+            existing: {
+              ...response.character,
+              rating: undefined,
+              user: undefined,
+            },
           },
         ))
-        .addComponents([
-          new discord.Component()
-            .setId(`character`, response.character.id)
-            .setLabel('/character'),
-        ])
-        .patch(token);
+        .addEmbed(
+          new discord.Embed().setDescription(
+            !image
+              ? `${name}'s image has been reset`
+              : `${name}'s image has been **changed**`,
+          ),
+        );
+
+      return message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
@@ -988,7 +1157,8 @@ const user = {
   now,
   getUserCharacters,
   findCharacter,
-  customize,
+  nick,
+  image,
   likeslist,
   list,
   like,

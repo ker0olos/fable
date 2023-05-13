@@ -482,7 +482,7 @@ export const commands = [
     aliases: ['custom'],
     options: [
       Option({
-        name: 'name',
+        name: 'character',
         description: 'The name of the character',
         type: Type.STRING,
       }),
@@ -490,6 +490,7 @@ export const commands = [
         name: 'new_image',
         description: 'New image url',
         type: Type.STRING,
+        optional: true,
       }),
     ],
   }),
@@ -498,7 +499,7 @@ export const commands = [
     description: 'Change the nickname of a character',
     options: [
       Option({
-        name: 'name',
+        name: 'character',
         description: 'The name of the character',
         type: Type.STRING,
       }),
@@ -506,6 +507,7 @@ export const commands = [
         name: 'new_nick',
         description: 'New nickname',
         type: Type.STRING,
+        optional: true,
       }),
     ],
   }),

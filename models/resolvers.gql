@@ -91,13 +91,20 @@ type Mutation {
   ): Response! @resolver(name: "trade_characters")
 
   #
-  customizeCharacter(
+  setCharacterNickname(
     userId: String!
     guildId: String!
     characterId: String!
     nickname: String
+  ): Response! @resolver(name: "set_character_nick")
+
+  # 
+  setCharacterImage(
+    userId: String!
+    guildId: String!
+    characterId: String!
     image: String
-  ): Response! @resolver(name: "customize_character")
+  ): Response! @resolver(name: "set_character_image")
 
   #
   likeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
