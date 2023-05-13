@@ -185,19 +185,21 @@ export namespace Schema {
     nickname?: string;
     image?: string;
   };
+
   export type User = {
     id: string;
     lastVote?: string;
     totalVotes?: number;
     availableVotes?: number;
     guarantees?: number[];
-    likes?: string[];
+    likes?: { characterId?: string }[];
     badges?: {
       name: string;
       description: string;
       emote: string;
     }[];
   };
+
   export type Inventory = {
     availablePulls: number;
     rechargeTimestamp?: string;
@@ -213,6 +215,7 @@ export namespace Schema {
       member5?: Character;
     };
   };
+
   export type Mutation =
     | {
       ok: false;
