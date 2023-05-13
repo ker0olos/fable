@@ -97,7 +97,7 @@ export function replaceCharacters(
               fql.Map(
                 fql.Paginate(
                   fql.Match(
-                    fql.Index('users_likes_character'),
+                    fql.Index('users_likes_character_id'),
                     characterId,
                   ),
                   {},
