@@ -254,9 +254,7 @@ function confirmed({
       ) {
         ok
         error
-        likes {
-          characterId
-        }
+        likes
         inventory {
           availablePulls
           rechargeTimestamp
