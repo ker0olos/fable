@@ -9,7 +9,7 @@ snapshot[`model 1`] = `
           create_index: Expr {
             raw: {
               object: {
-                name: "users_likes_character",
+                name: "users_likes_character_id",
                 source: Expr {
                   raw: {
                     collection: "user",
@@ -24,6 +24,7 @@ snapshot[`model 1`] = `
                             raw: [
                               "data",
                               "likes",
+                              "characterId",
                             ],
                           },
                         },
@@ -42,7 +43,7 @@ snapshot[`model 1`] = `
         raw: {
           exists: Expr {
             raw: {
-              index: "users_likes_character",
+              index: "users_likes_character_id",
             },
           },
         },
@@ -52,7 +53,7 @@ snapshot[`model 1`] = `
           params: Expr {
             raw: {
               object: {
-                name: "users_likes_character",
+                name: "users_likes_character_id",
                 source: Expr {
                   raw: {
                     collection: "user",
@@ -67,6 +68,7 @@ snapshot[`model 1`] = `
                             raw: [
                               "data",
                               "likes",
+                              "characterId",
                             ],
                           },
                         },
@@ -81,7 +83,7 @@ snapshot[`model 1`] = `
           },
           update: Expr {
             raw: {
-              index: "users_likes_character",
+              index: "users_likes_character_id",
             },
           },
         },
@@ -218,7 +220,7 @@ snapshot[`model 2`] = `
                                                                     raw: {
                                                                       match: Expr {
                                                                         raw: {
-                                                                          index: "users_likes_character",
+                                                                          index: "users_likes_character_id",
                                                                         },
                                                                       },
                                                                       terms: Expr {
@@ -1942,7 +1944,7 @@ snapshot[`model 2`] = `
                                                                     raw: {
                                                                       match: Expr {
                                                                         raw: {
-                                                                          index: "users_likes_character",
+                                                                          index: "users_likes_character_id",
                                                                         },
                                                                       },
                                                                       terms: Expr {

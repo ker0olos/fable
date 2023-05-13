@@ -122,7 +122,7 @@ export function addCharacter(
                 fql.Map(
                   fql.Paginate(
                     fql.Match(
-                      fql.Index('users_likes_character'),
+                      fql.Index('users_likes_character_id'),
                       characterId,
                     ),
                     {},
@@ -153,8 +153,8 @@ export default function (client: Client): {
         client,
         unique: false,
         collection: 'user',
-        name: 'users_likes_character',
-        terms: [{ field: ['data', 'likes'] }],
+        name: 'users_likes_character_id',
+        terms: [{ field: ['data', 'likes', 'characterId'] }],
       }),
     ],
     resolvers: [
