@@ -218,6 +218,8 @@ function pages(
             '- `/buy normal` `/shop normal`: _use votes to buy normal pulls_',
             '- `/buy guaranteed` `/shop guaranteed`: _use votes to buy pulls with a specific guaranteed rating_',
             '',
+            '- `/logs`: _list user last few found characters_',
+            '',
             '- `/anilist next_episode`: _find when the next episode of an anime is airing_',
           ].join('\n')),
       ),
