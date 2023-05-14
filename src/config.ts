@@ -58,7 +58,9 @@ function parse(rawDotenv: string): Record<string, string> {
 
 export async function initConfig(env: Record<string, string>): Promise<void> {
   try {
-    const response = await fetch(`${import.meta.url}/../../.env?import=text`);
+    const fileUrl = new URL('../.env', import.meta.url);
+
+    const response = await fetch(`${fileUrl.toString()}?import=text`);
 
     env = parse(await response.text());
   } catch {

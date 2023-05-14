@@ -14,26 +14,21 @@ import help from './help.ts';
 
 import synthesis from './synthesis.ts';
 
-import demo from './demo.tsx';
-
-import webhooks from './webhooks.ts';
-
 import config, { initConfig } from './config.ts';
 
 import { Character, Media, PackType } from './types.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
 
-export const handler = async (r: Request) => {
+async function main(
+  r: Request,
+  env: Record<string, string>,
+): Promise<Response> {
   const { origin } = new URL(r.url);
 
-  // redirect to /demo on browsers
-  if (
-    r.method === 'GET' &&
-    r.headers.get('accept')?.includes('text/html')
-  ) {
-    return Response.redirect(`${origin}/demo`);
-  }
+  await initConfig(env);
+
+  utils.initSentry({ dsn: config.sentry });
 
   const { error } = await utils.validateRequest(r, {
     POST: {
@@ -1071,42 +1066,11 @@ export const handler = async (r: Request) => {
   return new discord.Message().setContent(`Unimplemented or removed.`)
     .setFlags(discord.MessageFlags.Ephemeral)
     .send();
-};
-
-function override(
-  age: number,
-  type?: string,
-): (req: Request, res: Response) => Response {
-  return (_: Request, response: Response): Response => {
-    if (type) {
-      response.headers.set('Content-Type', type);
-    }
-    response.headers.set('Cache-Control', `public, max-age=${age}`);
-    return response;
-  };
 }
 
-if (import.meta.main) {
-  await initConfig();
+const serve = utils.serve({
+  '/': main,
+  '/assets/:filename+': utils.serveStatic('../assets/public'),
+});
 
-  utils.initSentry({ dsn: config.sentry });
-
-  utils.serve({
-    '/': handler,
-    '/demo': demo,
-    '/external/*': utils.proxy,
-    '/webhooks/topgg': webhooks.topgg,
-    '/invite': () =>
-      Response.redirect(
-        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`,
-      ),
-    '/assets/:filename+': utils.serveStatic('../assets/public', {
-      intervene: override(604800),
-      baseUrl: import.meta.url,
-    }),
-    '/:filename+': utils.serveStatic('../json', {
-      intervene: override(86400, 'application/schema+json'),
-      baseUrl: import.meta.url,
-    }),
-  });
-}
+export default serve;

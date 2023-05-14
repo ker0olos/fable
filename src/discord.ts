@@ -790,8 +790,6 @@ export class Message {
   }
 
   async #http(url: string, method: 'PATCH' | 'POST'): Promise<Response> {
-    console.log(this.json().data);
-
     const response = await fetch(url, {
       method,
       body: JSON.stringify(this.json().data),

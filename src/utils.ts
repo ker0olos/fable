@@ -3,8 +3,6 @@ import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.4.3
 
 import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 
-// import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
-
 import {
   decode as base64Decode,
   encode as base64Encode,
@@ -15,24 +13,119 @@ import {
   init as initSentry,
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
 
+import {
+  contentType as getContentType,
+  lookup,
+} from 'https://deno.land/x/media_types@v2.11.1/mod.ts';
+
 import { json, validateRequest } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
 import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
 
-// import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
-
 import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
 
 export enum ImageSize {
-  Preview = 'preview', // 64x64
+  Preview = 'preview', // 32x32
   Thumbnail = 'thumbnail', // 110x155
   Medium = 'medium', // 230x325
   Large = 'large', // 450x635,
 }
 
-// const TEN_MIB = 1024 * 1024 * 10;
+type PathParams = Record<string, string | undefined> | undefined;
 
-// const globalCache = inMemoryCache(20);
+type Handler = (
+  request: Request,
+  env: Record<string, string>,
+  params: PathParams,
+) => Promise<Response> | Response;
+
+export interface Routes {
+  [path: string]: Handler;
+}
+
+// deno-lint-ignore no-explicit-any
+function serve(routes: Routes): any {
+  return {
+    async fetch(
+      request: Request,
+      env: Record<string, string>,
+    ): Promise<Response> {
+      let response: Response | undefined;
+
+      const { pathname } = new URL(request.url);
+
+      for (const route of Object.keys(routes)) {
+        const pattern = new URLPattern({ pathname: route });
+
+        if (pattern.test({ pathname })) {
+          const params = pattern.exec({ pathname })?.pathname.groups;
+
+          try {
+            response = await routes[route](request, env, params);
+          } catch (error) {
+            response = json(
+              { error: error.message },
+              { status: 500 },
+            );
+          }
+
+          break;
+        }
+      }
+
+      if (response === undefined) {
+        response = new Response(undefined, {
+          statusText: 'Not Found',
+          status: 404,
+        });
+      }
+
+      return response;
+    },
+  };
+}
+
+export function serveStatic(relativePath: string): Handler {
+  return async (
+    _: Request,
+    __: Record<string, string>,
+    params: PathParams,
+  ): Promise<Response> => {
+    let filePath = relativePath;
+
+    const filename = params?.filename;
+
+    if (filename) {
+      filePath = relativePath.endsWith('/')
+        ? `${relativePath}${filename}`
+        : `${relativePath}/${filename}`;
+    }
+
+    const fileUrl = new URL(filePath, import.meta.url);
+
+    // TODO serve cache if cache match
+    // cache.match(new Request(fileUrl));
+
+    try {
+      const response = await fetch(`${fileUrl.toString()}?import=binary`);
+
+      const contentType = getContentType(String(lookup(filePath)));
+
+      if (contentType) {
+        response.headers.set('content-type', contentType);
+      }
+
+      return response;
+    } catch {
+      //
+    }
+
+    return new Response(undefined, {
+      statusText: 'Not Found',
+      status: 404,
+    });
+  };
+}
 
 function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -330,9 +423,9 @@ function verifySignature(
 
 async function readJson<T>(filePath: string): Promise<T> {
   try {
-    const response = await fetch(
-      `${import.meta.url}/../../${filePath}?import=text`,
-    );
+    const fileUrl = new URL(`${filePath}`, `${import.meta.url}/../../`);
+
+    const response = await fetch(`${fileUrl.toString()}?import=text`);
 
     return await response.json();
   } catch (err) {
@@ -440,7 +533,6 @@ const utils = {
   initSentry,
   json,
   parseInt: _parseInt,
-  // proxy,
   randint,
   diffInDays,
   readJson,
@@ -455,6 +547,8 @@ const utils = {
   votingTimestamp,
   stealTimestamp,
   wrap,
+  serve,
+  serveStatic,
 };
 
 export default utils;
