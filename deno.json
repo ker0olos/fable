@@ -19,7 +19,7 @@
     "discord": "deno run -A update_commands.ts",
     "fauna": "deno run -A update_schema.ts && deno run -A update_models.ts",
     "update": "deno run -A https://deno.land/x/udd/main.ts *.ts **/*.ts",
-    "start": "deno run --watch --allow-net --allow-read --allow-env src/interactions.ts",
+    "start": "deno run --unstable -A https://raw.githubusercontent.com/skymethod/denoflare/v0.5.11/cli/cli.ts serve src/interactions.ts --port 8000",
     "tunnel": "concurrently \"deno task start\" \"ngrok http 127.0.0.1:8000\" \"sleep 1 && deno task tunnel_url\"",
     "tunnel_url": "curl -Ss http://localhost:4040/api/tunnels | jq -C \".tunnels[0].public_url\""
   },

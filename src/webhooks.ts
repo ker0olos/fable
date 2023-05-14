@@ -1,6 +1,6 @@
 import { gql, request } from './graphql.ts';
 
-import config, { faunaUrl } from './config.ts';
+import config, { faunaUrl, initConfig } from './config.ts';
 
 import user from './user.ts';
 
@@ -10,41 +10,44 @@ import * as discord from './discord.ts';
 
 import { Schema } from './types.ts';
 
-async function topgg(r: Request): Promise<Response> {
-  const { error } = await utils.validateRequest(r, {
-    POST: {
-      headers: ['Authorization'],
-    },
-  });
+export default {
+  async fetch(r: Request, env: Record<string, string>): Promise<Response> {
+    await initConfig(env);
 
-  if (error) {
-    return utils.json(
-      { error: error.message },
-      { status: error.status },
-    );
-  }
+    const { error } = await utils.validateRequest(r, {
+      POST: {
+        headers: ['Authorization'],
+      },
+    });
 
-  const authorization = r.headers.get('Authorization');
+    if (error) {
+      return utils.json(
+        { error: error.message },
+        { status: error.status },
+      );
+    }
 
-  if (
-    typeof config.topggSecret !== 'string' ||
-    config.topggSecret.length < 32 ||
-    authorization !== config.topggSecret
-  ) {
-    return utils.json(
-      { error: 'Forbidden' },
-      { status: 403 },
-    );
-  }
+    const authorization = r.headers.get('Authorization');
 
-  const data: {
-    user: string;
-    type: 'upvote' | 'test';
-    isWeekend: boolean;
-    query: string;
-  } = await r.json();
+    if (
+      typeof config.topggSecret !== 'string' ||
+      config.topggSecret.length < 32 ||
+      authorization !== config.topggSecret
+    ) {
+      return utils.json(
+        { error: 'Forbidden' },
+        { status: 403 },
+      );
+    }
 
-  const query = gql`
+    const data: {
+      user: string;
+      type: 'upvote' | 'test';
+      isWeekend: boolean;
+      query: string;
+    } = await r.json();
+
+    const query = gql`
     mutation ($userId: String!, $weekend: Boolean!) {
       addVoteToUser(userId: $userId, weekend: $weekend) {
         ok
@@ -52,81 +55,76 @@ async function topgg(r: Request): Promise<Response> {
     }
   `;
 
-  const response = (await request<{
-    addVoteToUser: Schema.Mutation;
-  }>({
-    query,
-    url: faunaUrl,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId: data.user,
-      weekend: data.isWeekend || false,
-    },
-  })).addVoteToUser;
+    const response = (await request<{
+      addVoteToUser: Schema.Mutation;
+    }>({
+      query,
+      url: faunaUrl,
+      headers: {
+        'authorization': `Bearer ${config.faunaSecret}`,
+      },
+      variables: {
+        userId: data.user,
+        weekend: data.isWeekend || false,
+      },
+    })).addVoteToUser;
 
-  if (!response.ok) {
-    const err = new Error('failed to reward user');
+    if (!response.ok) {
+      const err = new Error('failed to reward user');
 
-    if (!config.sentry) {
-      throw err;
+      if (!config.sentry) {
+        throw err;
+      }
+
+      utils.captureException(err, {
+        extra: { ...data },
+      });
+
+      return utils.json(
+        { error: 'Internal Server Error' },
+        { status: 500 },
+      );
     }
 
-    utils.captureException(err, {
-      extra: { ...data },
+    const searchParams = new URLSearchParams(data.query);
+
+    // patch /now to confirm vote
+    if (searchParams.has('ref') && searchParams.has('gid')) {
+      (async () => {
+        // deno-lint-ignore no-non-null-assertion
+        const guildId = searchParams.get('gid')!;
+
+        // decipher the interaction token
+        const token = utils.decipher(
+          // deno-lint-ignore no-non-null-assertion
+          searchParams.get('ref')!,
+          // deno-lint-ignore no-non-null-assertion
+          config.topggCipher!,
+        );
+
+        // update the /now used to vote
+        const message = (await user.now({
+          guildId,
+          userId: data.user,
+          token,
+        })).setContent(`<@${data.user}>`);
+
+        new discord.Message()
+          .setContent(`Thanks for voting, <@${data.user}>.`)
+          .addComponents([
+            new discord.Component()
+              .setId('help', '', '4')
+              .setLabel('/help voting'),
+          ])
+          .followup(token);
+
+        await message.patch(token);
+      })()
+        .catch(console.error);
+    }
+
+    return utils.json({
+      message: 'OK',
     });
-
-    return utils.json(
-      { error: 'Internal Server Error' },
-      { status: 500 },
-    );
-  }
-
-  const searchParams = new URLSearchParams(data.query);
-
-  // patch /now to confirm vote
-  if (searchParams.has('ref') && searchParams.has('gid')) {
-    (async () => {
-      // deno-lint-ignore no-non-null-assertion
-      const guildId = searchParams.get('gid')!;
-
-      // decipher the interaction token
-      const token = utils.decipher(
-        // deno-lint-ignore no-non-null-assertion
-        searchParams.get('ref')!,
-        // deno-lint-ignore no-non-null-assertion
-        config.topggCipher!,
-      );
-
-      // update the /now used to vote
-      const message = (await user.now({
-        guildId,
-        userId: data.user,
-        token,
-      })).setContent(`<@${data.user}>`);
-
-      new discord.Message()
-        .setContent(`Thanks for voting, <@${data.user}>.`)
-        .addComponents([
-          new discord.Component()
-            .setId('help', '', '4')
-            .setLabel('/help voting'),
-        ])
-        .followup(token);
-
-      await message.patch(token);
-    })()
-      .catch(console.error);
-  }
-
-  return utils.json({
-    message: 'OK',
-  });
-}
-
-const webhooks = {
-  topgg,
+  },
 };
-
-export default webhooks;

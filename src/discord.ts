@@ -626,8 +626,6 @@ export class Embed {
 export class Message {
   #type?: MessageType;
 
-  #files: File[];
-
   #suggestions: { [name: string]: Suggestion };
 
   #data: {
@@ -635,8 +633,6 @@ export class Message {
     custom_id?: string;
     flags?: number;
     content?: string;
-    // deno-lint-ignore no-explicit-any
-    attachments: any[];
     embeds: unknown[];
     components: unknown[];
     // title?: string;
@@ -646,11 +642,9 @@ export class Message {
 
   constructor(type: MessageType = MessageType.New) {
     this.#type = type;
-    this.#files = [];
     this.#suggestions = {};
     this.#data = {
       embeds: [],
-      attachments: [],
       components: [],
     };
   }
@@ -683,31 +677,6 @@ export class Message {
   setTitle(title: string): Message {
     this.#type = MessageType.Modal;
     this.#data.title = title;
-    return this;
-  }
-
-  addAttachment(
-    { arrayBuffer, filename, type }: {
-      arrayBuffer: ArrayBuffer;
-      filename: string;
-      type: string;
-    },
-  ): Message {
-    if (!this.#data.attachments) {
-      this.#data.attachments = [];
-    }
-
-    this.#data.attachments.push({
-      id: `${this.#data.attachments.length}`,
-      filename,
-    });
-
-    this.#files.push(
-      new File([arrayBuffer], filename, {
-        type,
-      }),
-    );
-
     return this;
   }
 
@@ -817,41 +786,21 @@ export class Message {
   }
 
   send(): Response {
-    const formData = new FormData();
-
-    formData.append('payload_json', JSON.stringify(this.json()));
-
-    // NOTE discord timeouts responds after 3 seconds
-    // if an upload will take longer than 3 seconds
-    // respond first with a loading message
-    // then add the attachments the follow-up message
-    this.#files.forEach((file, index) => {
-      formData.append(`files[${index}]`, file, file.name);
-    });
-
-    return new Response(formData, {
-      status: 200,
-      statusText: 'OK',
-    });
+    return json(this.json());
   }
 
-  async #http(
-    url: string,
-    method: 'PATCH' | 'POST',
-  ): Promise<Response> {
-    const formData = new FormData();
+  async #http(url: string, method: 'PATCH' | 'POST'): Promise<Response> {
+    console.log(this.json().data);
 
-    formData.append('payload_json', JSON.stringify(this.json().data));
-
-    Object.entries(this.#files).forEach(([name, blob], index) => {
-      formData.append(`files[${index}]`, blob, name);
+    const response = await fetch(url, {
+      method,
+      body: JSON.stringify(this.json().data),
+      headers: {
+        'content-type': 'application/json',
+      },
     });
 
-    const response = await fetch(url, { method, body: formData });
-
-    if (config.deploy) {
-      console.log(method, response?.status, response?.statusText);
-    }
+    console.log(method, response?.status, response?.statusText);
 
     if (response?.status === 429) {
       const extra = {
@@ -893,9 +842,7 @@ export class Message {
     // delaying patches means our users are the ones to suffer
     // and it won't work if the initial message doesn't apply in those 35ms
     // but it's the only workaround I can think of
-    if (config.deploy) {
-      await utils.sleep(35 / 1000);
-    }
+    await utils.sleep(35 / 1000);
 
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}/messages/@original`,
@@ -904,9 +851,7 @@ export class Message {
   }
 
   async followup(token: string): Promise<Response> {
-    if (config.deploy) {
-      await utils.sleep(50 / 1000);
-    }
+    await utils.sleep(50 / 1000);
 
     return this.#http(
       `https://discord.com/api/v10/webhooks/${config.appId}/${token}`,

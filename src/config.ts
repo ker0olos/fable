@@ -1,9 +1,6 @@
-import { load as Dotenv } from 'https://deno.land/std@0.186.0/dotenv/mod.ts';
-
 export const faunaUrl = 'https://graphql.us.fauna.com/graphql';
 
 const config: {
-  deploy: boolean;
   appId?: string;
   publicKey?: string;
   faunaSecret?: string;
@@ -19,7 +16,6 @@ const config: {
   synthesis?: boolean;
   communityPacks?: boolean;
 } = {
-  deploy: false,
   appId: undefined,
   publicKey: undefined,
   faunaSecret: undefined,
@@ -36,49 +32,66 @@ const config: {
   communityPacks: undefined,
 };
 
-export async function initConfig(): Promise<void> {
-  const query = await Deno.permissions.query({ name: 'env' });
+/**
+ * @source 'https://deno.land/std@0.186.0/dotenv/mod.ts'
+ */
+function parse(rawDotenv: string): Record<string, string> {
+  const REGEX =
+    /^\s*(?:export\s+)?(?<key>[a-zA-Z_]+[a-zA-Z0-9_]*?)\s*=[\ \t]*('\n?(?<notInterpolated>(.|\n)*?)\n?'|"\n?(?<interpolated>(.|\n)*?)\n?"|(?<unquoted>[^\n#]*)) *#*.*$/gm;
 
-  if (query?.state === 'granted') {
-    config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
+  const env: Record<string, string> = {};
 
-    // load .env file
-    if (!config.deploy) {
-      await Dotenv({ export: true, allowEmptyValues: true });
-    }
+  let match;
 
-    config.sentry = Deno.env.get('SENTRY_DSN');
-    config.instatus = Deno.env.get('INSTATUS_WEBHOOK');
+  while ((match = REGEX.exec(rawDotenv)) !== null) {
+    const { key, unquoted } = match
+      ?.groups as {
+        key: string;
+        unquoted: string;
+      };
 
-    config.appId = Deno.env.get('APP_ID');
-
-    config.publicKey = Deno.env.get('PUBLIC_KEY');
-
-    config.faunaSecret = Deno.env.get('FAUNA_SECRET');
-
-    config.topggCipher = Number(Deno.env.get('TOPGG_WEBHOOK_CIPHER'));
-    config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');
-
-    config.notice = Deno.env.get('NOTICE');
-
-    // feature flags
-    config.gacha = !Deno.env.has('GACHA') ||
-      Deno.env.get('GACHA') === '1';
-
-    config.trading = !Deno.env.has('TRADING') ||
-      Deno.env.get('TRADING') === '1';
-
-    config.stealing = !Deno.env.has('STEALING') ||
-      Deno.env.get('STEALING') === '1';
-
-    config.synthesis = !Deno.env.has('SYNTHESIS') ||
-      Deno.env.get('SYNTHESIS') === '1';
-
-    config.communityPacks = !Deno.env.has('COMMUNITY_PACKS') ||
-      Deno.env.get('COMMUNITY_PACKS') === '1';
-
-    config.origin = undefined;
+    env[key] = unquoted.trim();
   }
+
+  return env;
+}
+
+export async function initConfig(env: Record<string, string>): Promise<void> {
+  try {
+    const response = await fetch(`${import.meta.url}/../../.env?import=text`);
+
+    env = parse(await response.text());
+  } catch {
+    //
+  }
+
+  config.sentry = env['SENTRY_DSN'];
+  config.instatus = env['INSTATUS_WEBHOOK'];
+
+  config.appId = env['APP_ID'];
+
+  config.publicKey = env['PUBLIC_KEY'];
+
+  config.faunaSecret = env['FAUNA_SECRET'];
+
+  config.topggCipher = Number(env['TOPGG_WEBHOOK_CIPHER']);
+  config.topggSecret = env['TOPGG_WEBHOOK_SECRET'];
+
+  config.notice = env['NOTICE'];
+
+  // feature flags
+  config.gacha = !('GACHA' in env) || env['GACHA'] === '1';
+
+  config.trading = !('TRADING' in env) || env['TRADING'] === '1';
+
+  config.stealing = !('STEALING' in env) || env['STEALING'] === '1';
+
+  config.synthesis = !('SYNTHESIS' in env) || env['SYNTHESIS'] === '1';
+
+  config.communityPacks = !('COMMUNITY_PACKS' in env) ||
+    env['COMMUNITY_PACKS'] === '1';
+
+  config.origin = undefined;
 }
 
 export function clearConfig(): void {

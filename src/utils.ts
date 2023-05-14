@@ -3,7 +3,7 @@ import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.4.3
 
 import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 
-import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
+// import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
 import {
   decode as base64Decode,
@@ -15,16 +15,11 @@ import {
   init as initSentry,
 } from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
 
-import {
-  json,
-  serve,
-  serveStatic,
-  validateRequest,
-} from 'https://deno.land/x/sift@0.6.0/mod.ts';
+import { json, validateRequest } from 'https://deno.land/x/sift@0.6.0/mod.ts';
 
 import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
 
-import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
+// import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
 
 import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
 
@@ -35,9 +30,9 @@ export enum ImageSize {
   Large = 'large', // 450x635,
 }
 
-const TEN_MIB = 1024 * 1024 * 10;
+// const TEN_MIB = 1024 * 1024 * 10;
 
-const globalCache = inMemoryCache(20);
+// const globalCache = inMemoryCache(20);
 
 function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -233,113 +228,113 @@ function verifySignature(
   return { valid, body };
 }
 
-async function proxy(r: Request): Promise<Response> {
-  const { pathname, searchParams } = new URL(r.url);
+// async function proxy(r: Request): Promise<Response> {
+//   const { pathname, searchParams } = new URL(r.url);
 
-  try {
-    let cached = true;
+//   try {
+//     // let cached = true;
 
-    const url = new URL(
-      decodeURIComponent(pathname.substring('/external/'.length)),
-    );
+//     const url = decodeURIComponent(pathname.substring('/external/'.length));
 
-    const response = await globalCache.match(url as unknown as Request) ??
-      (cached = false, await fetch(url, { signal: AbortSignal.timeout(3000) }));
+//     const response = await fetch(url, { signal: AbortSignal.timeout(3000) });
 
-    const type = response?.headers.get('content-type');
+//     return response;
 
-    const size = searchParams.get('size') as ImageSize || ImageSize.Large;
+//     // const type = response?.headers.get('content-type');
 
-    if (Number(response.headers.get('content-length')) > TEN_MIB) {
-      throw new Error();
-    }
+//     // const size = searchParams.get('size') as ImageSize || ImageSize.Large;
 
-    // if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
-    if (type === 'image/gif') {
-      throw new Error();
-    }
+//     // if (Number(response.headers.get('content-length')) > TEN_MIB) {
+//     //   throw new Error();
+//     // }
 
-    if (response?.status !== 200 || !type?.startsWith('image/')) {
-      throw new Error();
-    }
+//     // // if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
+//     // if (type === 'image/gif') {
+//     //   throw new Error();
+//     // }
 
-    if (searchParams.has('blur')) {
-      throw new Error();
-    }
+//     // if (response?.status !== 200 || !type?.startsWith('image/')) {
+//     //   throw new Error();
+//     // }
 
-    const original = await response.arrayBuffer();
+//     // if (searchParams.has('blur')) {
+//     //   throw new Error();
+//     // }
 
-    if (!cached) {
-      await globalCache.put(url as unknown as Request, new Response(original));
-    }
+//     // const original = await response.arrayBuffer();
 
-    const transformed = await imagescript.decode(original);
+//     // if (!cached) {
+//     //   await globalCache.put(url as unknown as Request, new Response(original));
+//     // }
 
-    let proxy: Response | undefined = undefined;
+//     // const transformed = await imagescript.decode(original);
 
-    if (transformed instanceof imagescript.Image) {
-      switch (size) {
-        case ImageSize.Preview:
-          transformed.cover(32, 32);
-          break;
-        case ImageSize.Thumbnail:
-          transformed.cover(110, 155);
-          break;
-        case ImageSize.Medium:
-          transformed.cover(230, 325);
-          break;
-        default:
-          transformed.cover(450, 635);
-          break;
-      }
+//     // let proxy: Response | undefined = undefined;
 
-      if (type === 'image/png') {
-        const t = await transformed.encode(2);
+//     // if (transformed instanceof imagescript.Image) {
+//     //   switch (size) {
+//     //     case ImageSize.Preview:
+//     //       transformed.cover(32, 32);
+//     //       break;
+//     //     case ImageSize.Thumbnail:
+//     //       transformed.cover(110, 155);
+//     //       break;
+//     //     case ImageSize.Medium:
+//     //       transformed.cover(230, 325);
+//     //       break;
+//     //     default:
+//     //       transformed.cover(450, 635);
+//     //       break;
+//     //   }
 
-        proxy = new Response(t);
+//     //   if (type === 'image/png') {
+//     //     const t = await transformed.encode(2);
 
-        proxy.headers.set('content-type', 'image/png');
-        proxy.headers.set('content-length', `${t.byteLength}`);
-      } else {
-        const t = await transformed.encodeJPEG(70);
+//     //     proxy = new Response(t);
 
-        proxy = new Response(t);
+//     //     proxy.headers.set('content-type', 'image/png');
+//     //     proxy.headers.set('content-length', `${t.byteLength}`);
+//     //   } else {
+//     //     const t = await transformed.encodeJPEG(70);
 
-        proxy.headers.set('content-type', 'image/jpeg');
-        proxy.headers.set('content-length', `${t.byteLength}`);
-      }
-    }
+//     //     proxy = new Response(t);
 
-    if (!proxy) {
-      throw new Error();
-    }
+//     //     proxy.headers.set('content-type', 'image/jpeg');
+//     //     proxy.headers.set('content-length', `${t.byteLength}`);
+//     //   }
+//     // }
 
-    proxy.headers.set('cache-control', 'public, max-age=604800');
+//     // if (!proxy) {
+//     //   throw new Error();
+//     // }
 
-    return proxy;
-  } catch {
-    let fileUrl = new URL('../assets/medium.png', import.meta.url);
+//     // proxy.headers.set('cache-control', 'public, max-age=604800');
+//   } catch {
+//     let fileUrl = new URL('../assets/medium.png', import.meta.url);
 
-    if (r.url?.includes('?size=thumbnail')) {
-      fileUrl = new URL('../assets/thumbnail.png', import.meta.url);
-    }
+//     if (r.url?.includes('?size=thumbnail')) {
+//       fileUrl = new URL('../assets/thumbnail.png', import.meta.url);
+//     }
 
-    const body = await Deno.readFile(fileUrl);
+//     const body = await Deno.readFile(fileUrl);
 
-    const response = new Response(body);
+//     const response = new Response(body);
 
-    response.headers.set('content-type', 'image/png');
-    response.headers.set('cache-control', 'public, max-age=604800');
-    response.headers.set('content-length', `${body.byteLength}`);
+//     response.headers.set('content-type', 'image/png');
+//     response.headers.set('cache-control', 'public, max-age=604800');
+//     response.headers.set('content-length', `${body.byteLength}`);
 
-    return response;
-  }
-}
+//     return response;
+//   }
+// }
 
 async function readJson<T>(filePath: string): Promise<T> {
   try {
-    const jsonString = await Deno.readTextFile(filePath);
-    return JSON.parse(jsonString);
+    const response = await fetch(
+      `${import.meta.url}/../../${filePath}?import=text`,
+    );
+
+    return await response.json();
   } catch (err) {
     err.message = `${filePath}: ${err.message}`;
     throw err;
@@ -445,14 +440,12 @@ const utils = {
   initSentry,
   json,
   parseInt: _parseInt,
-  proxy,
+  // proxy,
   randint,
   diffInDays,
   readJson,
   rechargeTimestamp,
   rng,
-  serve,
-  serveStatic,
   shuffle,
   sleep,
   truncate,
