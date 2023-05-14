@@ -256,6 +256,42 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "Like a character to be notified if someone finds them",
+    dm_permission: false,
+    name: "protect",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The name of the character",
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Like a character to be notified if someone finds them",
+    dm_permission: false,
+    name: "wish",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The name of the character",
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
     description: "Remove a character from your likes list",
     dm_permission: false,
     name: "unlike",

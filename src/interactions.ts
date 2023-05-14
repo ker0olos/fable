@@ -397,6 +397,8 @@ export const handler = async (r: Request) => {
             break;
           }
           case 'like':
+          case 'protect':
+          case 'wish':
           case 'unlike': {
             const search = options['name'] as string;
 

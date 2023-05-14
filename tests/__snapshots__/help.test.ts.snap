@@ -623,7 +623,7 @@ snapshot[`/help 8`] = `
 " +
           "
 " +
-          "- \`/like\`: _like a character to be notified if someone finds them_
+          "- \`/like\` \`/protect\` \`/wish\`: _like a character to be notified if someone finds them_
 " +
           "- \`/unlike\`: _remove character from your likes_
 " +

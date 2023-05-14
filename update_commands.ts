@@ -269,6 +269,7 @@ export const commands = [
   ...Command({
     name: 'like',
     description: 'Like a character to be notified if someone finds them',
+    aliases: ['protect', 'wish'],
     options: [
       Option({
         name: 'name',

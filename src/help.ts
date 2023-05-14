@@ -215,7 +215,7 @@ function pages(
             '',
             '- `/likeslist`: _list user likes_',
             '',
-            '- `/like`: _like a character to be notified if someone finds them_',
+            '- `/like` `/protect` `/wish`: _like a character to be notified if someone finds them_',
             '- `/unlike`: _remove character from your likes_',
             '- `/likeall`: _like a media to be notified if someone finds any character from it_',
             '- `/unlikeall`: _remove media from your likes_',
