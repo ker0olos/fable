@@ -291,6 +291,31 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'likeall',
+    description:
+      'Like a media to be notified if someone finds any character from it',
+    options: [
+      Option({
+        name: 'title',
+        description: 'The title of the media',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'unlikeall',
+    description: 'Remove a media from your likes list',
+    options: [
+      Option({
+        name: 'title',
+        description: 'The title of the media',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
     name: 'likeslist',
     description: 'List all characters liked',
     options: [

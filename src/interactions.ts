@@ -101,7 +101,16 @@ export const handler = async (r: Request) => {
         // suggest media
         if (
           (
-            ['search', 'anime', 'manga', 'media', 'found', 'owned']
+            [
+              'search',
+              'anime',
+              'manga',
+              'media',
+              'found',
+              'owned',
+              'likeall',
+              'unlikeall',
+            ]
               .includes(name)
           ) ||
           (
@@ -398,6 +407,23 @@ export const handler = async (r: Request) => {
               channelId,
               userId: member.user.id,
               undo: name === 'unlike',
+              id: search.startsWith(idPrefix)
+                ? search.substring(idPrefix.length)
+                : undefined,
+            })
+              .send();
+          }
+          case 'likeall':
+          case 'unlikeall': {
+            const search = options['title'] as string;
+
+            return user.likeall({
+              token,
+              search,
+              guildId,
+              channelId,
+              userId: member.user.id,
+              undo: name === 'unlikeall',
               id: search.startsWith(idPrefix)
                 ? search.substring(idPrefix.length)
                 : undefined,

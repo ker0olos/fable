@@ -17,6 +17,7 @@ import * as discord from './discord.ts';
 import {
   Character,
   DisaggregatedCharacter,
+  DisaggregatedMedia,
   Media,
   MediaRelation,
   Schema,
@@ -775,6 +776,117 @@ function like({
   return loading;
 }
 
+function likeall({
+  token,
+  userId,
+  guildId,
+  channelId,
+  search,
+  undo,
+  id,
+}: {
+  token: string;
+  userId: string;
+  guildId: string;
+  channelId: string;
+  undo: boolean;
+  search?: string;
+  id?: string;
+}): discord.Message {
+  const mutation = gql`
+    mutation ($userId: String!, $mediaId: String!) {
+  ${undo ? 'unlikeMedia' : 'likeMedia'}(userId: $userId, mediaId: $mediaId) {
+        ok
+      }
+    }
+  `;
+
+  packs
+    .media(id ? { ids: [id], guildId } : { search, guildId })
+    .then(async (results: (Media | DisaggregatedMedia)[]) => {
+      if (!results.length) {
+        throw new Error('404');
+      }
+
+      const message = new discord.Message();
+
+      const mediaId = `${results[0].packId}:${results[0].id}`;
+
+      const response = (await request<{
+        likeMedia: Schema.Mutation;
+        unlikeMedia: Schema.Mutation;
+      }>({
+        url: faunaUrl,
+        query: mutation,
+        headers: {
+          'authorization': `Bearer ${config.faunaSecret}`,
+        },
+        variables: {
+          userId,
+          mediaId,
+        },
+      }))[undo ? 'unlikeMedia' : 'likeMedia'];
+
+      if (!response.ok) {
+        throw new Error(response.error);
+      }
+
+      message
+        .addEmbed(
+          new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked'),
+        );
+
+      const media = await packs.aggregate<Media>({
+        guildId,
+        media: results[0],
+      });
+
+      message
+        .addEmbed(srch.mediaEmbed(
+          media,
+          channelId,
+          packs.aliasToArray(media.title),
+        ));
+
+      if (!undo) {
+        message.addComponents([
+          new discord.Component()
+            .setId(`media`, mediaId)
+            .setLabel(`/${media.type.toString().toLowerCase()}`),
+        ]);
+      }
+
+      return message.patch(token);
+    })
+    .catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'Found _nothing_ matching that query!',
+            ),
+          ).patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
+}
+
 function list({
   token,
   userId,
@@ -1264,6 +1376,7 @@ const user = {
   likeslist,
   list,
   like,
+  likeall,
   logs,
 };
 

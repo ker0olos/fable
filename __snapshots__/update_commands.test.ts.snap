@@ -274,6 +274,42 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "Like a media to be notified if someone finds any character from it",
+    dm_permission: false,
+    name: "likeall",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The title of the media",
+        name: "title",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Remove a media from your likes list",
+    dm_permission: false,
+    name: "unlikeall",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "The title of the media",
+        name: "title",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
     description: "List all characters liked",
     dm_permission: false,
     name: "likeslist",
