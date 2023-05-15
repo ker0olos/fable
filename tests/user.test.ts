@@ -599,7 +599,7 @@ Deno.test('/now', async (test) => {
                 text: 'Available Pulls',
               },
               description:
-                '5<:smol_star:1088427421096751224>4<:smol_star:1088427421096751224>3<:smol_star:1088427421096751224>',
+                '5<:smolstar:1107503653956374638>4<:smolstar:1107503653956374638>3<:smolstar:1107503653956374638>',
             },
             {
               type: 'rich',
@@ -2398,12 +2398,12 @@ Deno.test('/collection stars', async (test) => {
                 {
                   inline: false,
                   name: 'title 1',
-                  value: '1<:smol_star:1088427421096751224> character 1',
+                  value: '1<:smolstar:1107503653956374638> character 1',
                 },
                 {
                   inline: false,
                   name: 'title 6',
-                  value: '1<:smol_star:1088427421096751224> character 6',
+                  value: '1<:smolstar:1107503653956374638> character 6',
                 },
               ],
             },
@@ -2708,12 +2708,12 @@ Deno.test('/collection stars', async (test) => {
                 {
                   inline: false,
                   name: 'title 1',
-                  value: '1<:smol_star:1088427421096751224> nickname 1',
+                  value: '1<:smolstar:1107503653956374638> nickname 1',
                 },
                 {
                   inline: false,
                   name: 'title 6',
-                  value: '1<:smol_star:1088427421096751224> nickname 6',
+                  value: '1<:smolstar:1107503653956374638> nickname 6',
                 },
               ],
             },
@@ -2910,7 +2910,7 @@ Deno.test('/collection stars', async (test) => {
                   inline: false,
                   name: 'title',
                   value:
-                    '1<:smol_star:1088427421096751224> character 1\n1<:smol_star:1088427421096751224> character 2',
+                    '1<:smolstar:1107503653956374638> character 1\n1<:smolstar:1107503653956374638> character 2',
                 },
               ],
             },
@@ -3121,7 +3121,7 @@ Deno.test('/collection stars', async (test) => {
                 {
                   inline: false,
                   name: 'title 2',
-                  value: '2<:smol_star:1088427421096751224> character 2',
+                  value: '2<:smolstar:1107503653956374638> character 2',
                 },
                 {
                   inline: false,
@@ -3337,7 +3337,7 @@ Deno.test('/collection stars', async (test) => {
                 {
                   inline: false,
                   name: 'title 2',
-                  value: '2<:smol_star:1088427421096751224> character 2',
+                  value: '2<:smolstar:1107503653956374638> character 2',
                 },
                 {
                   inline: false,
@@ -3438,7 +3438,7 @@ Deno.test('/collection stars', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              '<@another_user_id> doesn\'t have any 5<:smol_star:1088427421096751224>characters',
+              '<@another_user_id> doesn\'t have any 5<:smolstar:1107503653956374638>characters',
           }],
         },
       );
@@ -3538,7 +3538,7 @@ Deno.test('/collection stars', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You don\'t have any 5<:smol_star:1088427421096751224>characters',
+              'You don\'t have any 5<:smolstar:1107503653956374638>characters',
           }],
         },
       );
@@ -3740,7 +3740,7 @@ Deno.test('/collection media', async (test) => {
                 {
                   inline: false,
                   name: 'title 1',
-                  value: '1<:smol_star:1088427421096751224> character 1',
+                  value: '1<:smolstar:1107503653956374638> character 1',
                 },
               ],
             },
@@ -3945,7 +3945,7 @@ Deno.test('/collection media', async (test) => {
                 {
                   inline: false,
                   name: 'title 1',
-                  value: '1<:smol_star:1088427421096751224> nickname 1',
+                  value: '1<:smolstar:1107503653956374638> nickname 1',
                 },
               ],
             },
@@ -4174,12 +4174,12 @@ Deno.test('/collection media', async (test) => {
                   inline: false,
                   name: 'title',
                   value:
-                    '4<:smol_star:1088427421096751224> character 3\n1<:smol_star:1088427421096751224> character 1',
+                    '4<:smolstar:1107503653956374638> character 3\n1<:smolstar:1107503653956374638> character 1',
                 },
                 {
                   inline: false,
                   name: 'title 2',
-                  value: '2<:smol_star:1088427421096751224> character 2',
+                  value: '2<:smolstar:1107503653956374638> character 2',
                 },
               ],
             },
@@ -6557,27 +6557,27 @@ Deno.test('/likeslist', async (test) => {
                 {
                   inline: false,
                   name: 'title 1',
-                  value: '1<:smol_star:1088427421096751224> character 1',
+                  value: '1<:smolstar:1107503653956374638> character 1',
                 },
                 {
                   inline: false,
                   name: 'title 2',
-                  value: '1<:smol_star:1088427421096751224> character 2',
+                  value: '1<:smolstar:1107503653956374638> character 2',
                 },
                 {
                   inline: false,
                   name: 'title 3',
-                  value: '1<:smol_star:1088427421096751224> character 3',
+                  value: '1<:smolstar:1107503653956374638> character 3',
                 },
                 {
                   inline: false,
                   name: 'title 4',
-                  value: '1<:smol_star:1088427421096751224> character 4',
+                  value: '1<:smolstar:1107503653956374638> character 4',
                 },
                 {
                   inline: false,
                   name: 'title 5',
-                  value: '1<:smol_star:1088427421096751224> character 5',
+                  value: '1<:smolstar:1107503653956374638> character 5',
                 },
               ],
             },
@@ -6750,7 +6750,7 @@ Deno.test('/likeslist', async (test) => {
                   inline: false,
                   name: 'title',
                   value:
-                    '3<:smol_star:1088427421096751224> <@another_user_id> character',
+                    '3<:smolstar:1107503653956374638> <@another_user_id> character',
                 },
               ],
             },
@@ -6944,7 +6944,7 @@ Deno.test('/likeslist', async (test) => {
                 {
                   inline: false,
                   name: 'title 2',
-                  value: '1<:smol_star:1088427421096751224> character 2',
+                  value: '1<:smolstar:1107503653956374638> character 2',
                 },
               ],
             },
@@ -7342,16 +7342,16 @@ Deno.test('/logs', async (test) => {
             {
               type: 'rich',
               description: [
-                '4<:smol_star:1088427421096751224> character 11',
-                '4<:smol_star:1088427421096751224> character 10',
-                '4<:smol_star:1088427421096751224> character 9',
-                '4<:smol_star:1088427421096751224> character 8',
-                '4<:smol_star:1088427421096751224> character 7',
-                '4<:smol_star:1088427421096751224> character 6',
-                '4<:smol_star:1088427421096751224> character 5',
-                '4<:smol_star:1088427421096751224> character 4',
-                '4<:smol_star:1088427421096751224> character 3',
-                '4<:smol_star:1088427421096751224> character 2',
+                '4<:smolstar:1107503653956374638> character 11',
+                '4<:smolstar:1107503653956374638> character 10',
+                '4<:smolstar:1107503653956374638> character 9',
+                '4<:smolstar:1107503653956374638> character 8',
+                '4<:smolstar:1107503653956374638> character 7',
+                '4<:smolstar:1107503653956374638> character 6',
+                '4<:smolstar:1107503653956374638> character 5',
+                '4<:smolstar:1107503653956374638> character 4',
+                '4<:smolstar:1107503653956374638> character 3',
+                '4<:smolstar:1107503653956374638> character 2',
               ].join('\n'),
             },
           ],
@@ -7543,16 +7543,16 @@ Deno.test('/logs', async (test) => {
             {
               type: 'rich',
               description: [
-                '4<:smol_star:1088427421096751224> nickname 11',
-                '4<:smol_star:1088427421096751224> nickname 10',
-                '4<:smol_star:1088427421096751224> nickname 9',
-                '4<:smol_star:1088427421096751224> nickname 8',
-                '4<:smol_star:1088427421096751224> nickname 7',
-                '4<:smol_star:1088427421096751224> nickname 6',
-                '4<:smol_star:1088427421096751224> nickname 5',
-                '4<:smol_star:1088427421096751224> nickname 4',
-                '4<:smol_star:1088427421096751224> nickname 3',
-                '4<:smol_star:1088427421096751224> nickname 2',
+                '4<:smolstar:1107503653956374638> nickname 11',
+                '4<:smolstar:1107503653956374638> nickname 10',
+                '4<:smolstar:1107503653956374638> nickname 9',
+                '4<:smolstar:1107503653956374638> nickname 8',
+                '4<:smolstar:1107503653956374638> nickname 7',
+                '4<:smolstar:1107503653956374638> nickname 6',
+                '4<:smolstar:1107503653956374638> nickname 5',
+                '4<:smolstar:1107503653956374638> nickname 4',
+                '4<:smolstar:1107503653956374638> nickname 3',
+                '4<:smolstar:1107503653956374638> nickname 2',
               ].join('\n'),
             },
           ],

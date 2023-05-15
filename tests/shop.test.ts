@@ -500,7 +500,7 @@ Deno.test('/buy', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You bought a **3**<:smol_star:1088427421096751224>pull <:add:1099004747123523644>',
+              'You bought a **3**<:smolstar:1107503653956374638>pull <:add:1099004747123523644>',
           }],
         },
       });
@@ -550,7 +550,7 @@ Deno.test('/buy', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You bought a **4**<:smol_star:1088427421096751224>pull <:add:1099004747123523644>',
+              'You bought a **4**<:smolstar:1107503653956374638>pull <:add:1099004747123523644>',
           }],
         },
       });
@@ -600,7 +600,7 @@ Deno.test('/buy', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You bought a **5**<:smol_star:1088427421096751224>pull <:add:1099004747123523644>',
+              'You bought a **5**<:smolstar:1107503653956374638>pull <:add:1099004747123523644>',
           }],
         },
       });

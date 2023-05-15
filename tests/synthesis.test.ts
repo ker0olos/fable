@@ -207,7 +207,7 @@ Deno.test('auto synthesize', async (test) => {
     assertThrows(
       () => synthesis.getSacrifices(characters, 5),
       NonFetalError,
-      'You only have **0 out the 5** sacrifices needed for 5<:smol_star:1088427421096751224>',
+      'You only have **0 out the 5** sacrifices needed for 5<:smolstar:1107503653956374638>',
     );
   });
 });
@@ -730,7 +730,7 @@ Deno.test('synthesis confirmed', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You only have **4 out the 5** sacrifices needed for 2<:smol_star:1088427421096751224>',
+              'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
           }],
           components: [],
           attachments: [],
@@ -851,7 +851,7 @@ Deno.test('synthesis confirmed', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'There are no more 2<:smol_star:1088427421096751224>characters left',
+              'There are no more 2<:smolstar:1107503653956374638>characters left',
           }],
           components: [],
           attachments: [],
@@ -1048,7 +1048,7 @@ Deno.test('/synthesis', async (test) => {
             {
               type: 'rich',
               description:
-                'Sacrifice \u200B (**1<:smol_star:1088427421096751224>x5**) \u200B characters? <:remove:1099004424111792158>',
+                'Sacrifice \u200B (**1<:smolstar:1107503653956374638>x5**) \u200B characters? <:remove:1099004424111792158>',
             },
             {
               type: 'rich',
@@ -1293,7 +1293,7 @@ Deno.test('/synthesis', async (test) => {
             {
               type: 'rich',
               description:
-                'Sacrifice \u200B (**1<:smol_star:1088427421096751224>x5**) \u200B characters? <:remove:1099004424111792158>',
+                'Sacrifice \u200B (**1<:smolstar:1107503653956374638>x5**) \u200B characters? <:remove:1099004424111792158>',
             },
             {
               type: 'rich',
@@ -1538,7 +1538,7 @@ Deno.test('/synthesis', async (test) => {
             {
               type: 'rich',
               description:
-                'Sacrifice \u200B (**1<:smol_star:1088427421096751224>x5**) \u200B characters? <:remove:1099004424111792158>',
+                'Sacrifice \u200B (**1<:smolstar:1107503653956374638>x5**) \u200B characters? <:remove:1099004424111792158>',
             },
             {
               type: 'rich',
@@ -1774,7 +1774,7 @@ Deno.test('/synthesis', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You only have **0 out the 5** sacrifices needed for 2<:smol_star:1088427421096751224>',
+              'You only have **0 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
           }],
         },
       );
@@ -1871,7 +1871,7 @@ Deno.test('/synthesis', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'You only have **0 out the 5** sacrifices needed for 5<:smol_star:1088427421096751224>',
+              'You only have **0 out the 5** sacrifices needed for 5<:smolstar:1107503653956374638>',
           }],
         },
       );

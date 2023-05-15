@@ -59,11 +59,11 @@ snapshot[`/help 1`] = `
 " +
           "
 " +
-          "__Characters vary in ranks from 1<:smol_star:1088427421096751224>to 5<:smol_star:1088427421096751224>__ A character rating is based on their popularity (a character rating cannot be raised).
+          "__Characters vary in ranks from 1<:smolstar:1107503653956374638>to 5<:smolstar:1107503653956374638>__ A character rating is based on their popularity (a character rating cannot be raised).
 " +
           "
 " +
-          "__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5<:smol_star:1088427421096751224>appearing is equal or less than 1%.
+          "__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5<:smolstar:1107503653956374638>appearing is equal or less than 1%.
 " +
           "
 " +
@@ -139,9 +139,9 @@ snapshot[`/help 2`] = `
 " +
           "
 " +
-          "Example: \`/synthesize 3\` will sacrifice __25 of your 1<:smol_star:1088427421096751224>characters__
+          "Example: \`/synthesize 3\` will sacrifice __25 of your 1<:smolstar:1107503653956374638>characters__
 " +
-          "or __5 of your 2<:smol_star:1088427421096751224>characters__ or any other combination of both lower ratings.
+          "or __5 of your 2<:smolstar:1107503653956374638>characters__ or any other combination of both lower ratings.
 " +
           "
 " +
@@ -291,7 +291,7 @@ snapshot[`/help 4`] = `
 " +
           "
 " +
-          "__The higher the character's rating the harder it is to steal.__ 5<:smol_star:1088427421096751224>characters have a base success rate of 1%
+          "__The higher the character's rating the harder it is to steal.__ 5<:smolstar:1107503653956374638>characters have a base success rate of 1%
 " +
           "
 " +
@@ -384,7 +384,7 @@ snapshot[`/help 5`] = `
 " +
           "
 " +
-          "> *Example: \`/buy guaranteed 5\` will guarantee you a random 5<:smol_star:1088427421096751224>character.*
+          "> *Example: \`/buy guaranteed 5\` will guarantee you a random 5<:smolstar:1107503653956374638>character.*
 " +
           "​",
         footer: {

@@ -6217,7 +6217,7 @@ Deno.test('/found', async (test) => {
                   inline: false,
                   name: 'title',
                   value:
-                    '4<:smol_star:1088427421096751224> <@another_user_id> name 2\n2<:smol_star:1088427421096751224> <@another_user_id> name',
+                    '4<:smolstar:1107503653956374638> <@another_user_id> name 2\n2<:smolstar:1107503653956374638> <@another_user_id> name',
                 },
               ],
             },
@@ -6452,13 +6452,13 @@ Deno.test('/found', async (test) => {
                   inline: false,
                   name: 'title',
                   value:
-                    '4<:smol_star:1088427421096751224> <@another_user_id> name 3\n1<:smol_star:1088427421096751224> <@another_user_id> name',
+                    '4<:smolstar:1107503653956374638> <@another_user_id> name 3\n1<:smolstar:1107503653956374638> <@another_user_id> name',
                 },
                 {
                   inline: false,
                   name: 'title 2',
                   value:
-                    '2<:smol_star:1088427421096751224> <@another_user_id> name 2',
+                    '2<:smolstar:1107503653956374638> <@another_user_id> name 2',
                 },
               ],
             },

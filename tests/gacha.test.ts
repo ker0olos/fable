@@ -3783,7 +3783,7 @@ Deno.test('/gacha', async (test) => {
             {
               type: 'rich',
               description:
-                'You don`t have any 5<:smol_star:1088427421096751224>pulls',
+                'You don`t have any 5<:smolstar:1107503653956374638>pulls',
             },
           ],
         },
@@ -3943,7 +3943,7 @@ Deno.test('/gacha', async (test) => {
             {
               type: 'rich',
               description:
-                'There are no more 5<:smol_star:1088427421096751224>characters left',
+                'There are no more 5<:smolstar:1107503653956374638>characters left',
             },
           ],
           components: [],
