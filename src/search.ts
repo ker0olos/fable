@@ -382,6 +382,7 @@ function characterMessage(
 
   return message.addComponents(group);
 }
+
 function characterPreview(
   character: Character | DisaggregatedCharacter,
   existing: Partial<Schema.Character>,
@@ -464,10 +465,12 @@ function characterEmbed(
     );
   } else if (options?.rating) {
     if (typeof options.rating === 'boolean' && options.rating) {
-      options.rating = Rating.fromCharacter(character);
+      options.rating = Rating.fromCharacter(character as Character);
     }
 
-    embed.setDescription(options.rating.emotes);
+    if (options.rating instanceof Rating) {
+      embed.setDescription(options.rating.emotes);
+    }
   }
 
   const description = options.mode === 'thumbnail'
@@ -592,12 +595,13 @@ async function mediaCharacters(
 ): Promise<discord.Message> {
   const list = await packs.all({ guildId });
 
-  const { character: node, media, next, total } = await packs.mediaCharacters({
-    id,
-    search,
-    guildId,
-    index,
-  });
+  const { character: node, role, media, next, total } = await packs
+    .mediaCharacters({
+      id,
+      search,
+      guildId,
+      index,
+    });
 
   if (!media) {
     throw new Error('404');
@@ -633,6 +637,10 @@ async function mediaCharacters(
 
   const message = characterMessage(character, channelId, {
     existing,
+    rating: new Rating({
+      role,
+      popularity: character.popularity ?? media.popularity,
+    }),
     relations: false,
   }).addComponents([
     new discord.Component()
@@ -689,7 +697,7 @@ function mediaFound(
 
       const media = [
         parent,
-        ...parent.relations?.edges?.filter(({ relation }) =>
+        ...(parent.relations?.edges?.filter(({ relation }) =>
           [
             MediaRelation.Parent,
             MediaRelation.Contains,
@@ -699,7 +707,7 @@ function mediaFound(
             MediaRelation.SpinOff,
             // deno-lint-ignore no-non-null-assertion
           ].includes(relation!)
-        ).map(({ node }) => node) ?? [],
+        ).map(({ node }) => node) ?? []),
       ];
 
       const query = gql`

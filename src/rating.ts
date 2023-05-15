@@ -63,22 +63,18 @@ export default class Rating {
     }`;
   }
 
-  static fromCharacter(
-    character: Character | DisaggregatedCharacter | AniListCharacter,
-  ): Rating {
+  static fromCharacter(character: Character | AniListCharacter): Rating {
     if (character.popularity) {
       return new Rating({ popularity: character.popularity });
     }
 
-    if (character.media && 'edges' in character.media) {
+    if (character.media?.edges?.length) {
       const edge = character.media.edges[0];
 
-      if (edge) {
-        return new Rating({
-          popularity: edge.node.popularity,
-          role: 'characterRole' in edge ? edge.characterRole : edge.role,
-        });
-      }
+      return new Rating({
+        popularity: edge.node.popularity,
+        role: 'characterRole' in edge ? edge.characterRole : edge.role,
+      });
     }
 
     return new Rating({ popularity: 0 });
