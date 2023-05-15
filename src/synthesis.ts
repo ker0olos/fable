@@ -254,7 +254,6 @@ function confirmed({
       ) {
         ok
         error
-        likes
         inventory {
           availablePulls
           rechargeTimestamp
@@ -284,7 +283,13 @@ function confirmed({
         },
       });
 
-      return gacha.pullAnimation({ token, pull, channelId });
+      return gacha.pullAnimation({
+        token,
+        ping: true,
+        channelId,
+        guildId,
+        pull,
+      });
     })
     .catch(async (err) => {
       if (err instanceof PoolError) {

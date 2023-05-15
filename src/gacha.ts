@@ -6,6 +6,7 @@ import Rating from './rating.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import user from './user.ts';
 import search from './search.ts';
 
 import packs from './packs.ts';
@@ -17,6 +18,7 @@ import {
   CharacterRole,
   DisaggregatedCharacter,
   Media,
+  MediaRelation,
   PoolInfo,
   Schema,
 } from './types.ts';
@@ -33,6 +35,15 @@ export type Pull = {
 } & PoolInfo;
 
 const lowest = 1000;
+
+const relationFilter = [
+  MediaRelation.Parent,
+  // MediaRelation.Contains,
+  // MediaRelation.Prequel,
+  // MediaRelation.Sequel,
+  // MediaRelation.SideStory,
+  // MediaRelation.SpinOff,
+];
 
 const variables = {
   roles: {
@@ -264,7 +275,6 @@ async function rngPull(
           ) {
             ok
             error
-            likes
             inventory {
               availablePulls
               rechargeTimestamp
@@ -325,31 +335,42 @@ async function rngPull(
   }
 
   return {
-    media,
     rating,
     character,
     remaining: inventory?.availablePulls,
     guarantees: inventory?.user?.guarantees,
+    media: await packs.aggregate<Media>({ media, guildId }),
     ...poolInfo,
   };
 }
 
 async function pullAnimation(
-  { token, pull, userId, channelId, quiet, mention, guarantee }: {
-    token: string;
-    pull: Pull;
-    channelId: string;
-    userId?: string;
-    quiet?: boolean;
-    mention?: boolean;
-    guarantee?: number;
-  },
+  { token, ping, userId, guildId, channelId, quiet, mention, guarantee, pull }:
+    {
+      token: string;
+      pull: Pull;
+      channelId: string;
+      userId?: string;
+      guildId?: string;
+      quiet?: boolean;
+      mention?: boolean;
+      guarantee?: number;
+      ping?: boolean;
+    },
 ): Promise<void> {
-  const media = pull.media;
+  const characterId = `${pull.character.packId}:${pull.character.id}`;
 
-  const mediaTitles = packs.aliasToArray(media.title);
+  const mediaIds = [
+    pull.media,
+    ...pull.media.relations?.edges?.filter(({ relation }) =>
+      // deno-lint-ignore no-non-null-assertion
+      relationFilter.includes(relation!)
+    ).map(({ node }) => node) ?? [],
+  ].map(({ packId, id }) => `${packId}:${id}`);
 
-  const mediaImage = media.images?.[0];
+  const mediaTitles = packs.aliasToArray(pull.media.title);
+
+  const mediaImage = pull.media.images?.[0];
 
   let message = new discord.Message()
     .addEmbed(
@@ -435,10 +456,10 @@ async function pullAnimation(
   message.addComponents([
     new discord.Component()
       .setLabel('/character')
-      .setId(`character`, `${pull.character.packId}:${pull.character.id}`, '1'),
+      .setId(`character`, characterId, '1'),
     new discord.Component()
       .setLabel('/like')
-      .setId(`like`, `${pull.character.packId}:${pull.character.id}`),
+      .setId(`like`, characterId),
   ]);
 
   if (mention && userId) {
@@ -449,12 +470,31 @@ async function pullAnimation(
 
   await message.patch(token);
 
-  // TODO
-  // if (pull.likes?.length && userId) {
-  //   await new discord.Message()
-  //     .setContent(pull.likes.map((id) => `<@${id}>`).join(''))
-  //     .followup(token);
-  // }
+  if (ping && guildId) {
+    const pings: string[] = [];
+
+    const inventories = await user.getActiveInventories(guildId);
+
+    inventories.forEach(({ user }) => {
+      if (
+        user.id !== userId &&
+        (
+          user.likes?.map(({ characterId }) => characterId).filter(Boolean)
+            .includes(characterId) ||
+          user.likes?.map(({ mediaId }) => mediaId).filter(Boolean)
+            .some((id) => mediaIds.includes(id))
+        )
+      ) {
+        pings.push(`<@${user.id}>`);
+      }
+    });
+
+    if (pings.length) {
+      await new discord.Message()
+        .setContent(pings.join(''))
+        .followup(token);
+    }
+  }
 }
 
 /**
@@ -480,13 +520,15 @@ function start(
   gacha.rngPull({ userId, guildId, guarantee })
     .then((pull) =>
       pullAnimation({
-        pull,
         token,
+        ping: true,
         channelId,
         userId,
+        guildId,
         guarantee,
         mention,
         quiet,
+        pull,
       })
     )
     .catch(async (err) => {

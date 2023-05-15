@@ -15,6 +15,7 @@ import { assertSnapshot } from 'https://deno.land/std@0.186.0/testing/snapshot.t
 
 import { FakeTime } from 'https://deno.land/std@0.186.0/testing/time.ts';
 
+import user from '../src/user.ts';
 import packs from '../src/packs.ts';
 import config from '../src/config.ts';
 import gacha from '../src/gacha.ts';
@@ -280,6 +281,12 @@ Deno.test('synthesis confirmed', async (test) => {
       ] as any),
     );
 
+    const userStub = stub(
+      user,
+      'getActiveInventories',
+      () => Promise.resolve([]),
+    );
+
     const gachaStub = stub(gacha, 'guaranteedPool', () =>
       Promise.resolve({
         pool: [{ id: 'anilist:1' }],
@@ -459,12 +466,15 @@ Deno.test('synthesis confirmed', async (test) => {
           }],
         },
       );
+
+      await timeStub.runMicrotasks();
     } finally {
       delete config.appId;
       delete config.origin;
 
       fetchStub.restore();
       synthesisStub.restore();
+      userStub.restore();
       gachaStub.restore();
       timeStub.restore();
     }

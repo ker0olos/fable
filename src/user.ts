@@ -107,6 +107,39 @@ async function getUserCharacters(
   };
 }
 
+async function getActiveInventories(
+  guildId: string,
+): Promise<Schema.Inventory[]> {
+  const query = gql`
+    query ($guildId: String!) {
+      getActiveInventories(guildId: $guildId) {
+        user {
+          id
+          likes {
+            mediaId
+            characterId
+          }
+        }
+      }
+    }
+  `;
+
+  const response = (await request<{
+    getActiveInventories: Schema.Inventory[];
+  }>({
+    query,
+    url: faunaUrl,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      guildId,
+    },
+  })).getActiveInventories;
+
+  return response;
+}
+
 async function now({
   token,
   userId,
@@ -1370,16 +1403,17 @@ function logs({
 }
 
 const user = {
-  now,
-  getUserCharacters,
   findCharacter,
-  nick,
+  getActiveInventories,
+  getUserCharacters,
   image,
-  likeslist,
-  list,
   like,
   likeall,
+  likeslist,
+  list,
   logs,
+  nick,
+  now,
 };
 
 export default user;

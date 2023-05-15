@@ -394,6 +394,149 @@ snapshot[`model 5`] = `
     raw: {
       else: Expr {
         raw: {
+          create_index: Expr {
+            raw: {
+              object: {
+                name: "inventories_last_pull",
+                source: Expr {
+                  raw: {
+                    collection: "inventory",
+                  },
+                },
+                terms: Expr {
+                  raw: [
+                    Expr {
+                      raw: {
+                        object: {
+                          field: Expr {
+                            raw: [
+                              "data",
+                              "instance",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+                unique: false,
+                values: Expr {
+                  raw: [
+                    Expr {
+                      raw: {
+                        object: {
+                          field: Expr {
+                            raw: [
+                              "data",
+                              "lastPull",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                    Expr {
+                      raw: {
+                        object: {
+                          field: Expr {
+                            raw: [
+                              "ref",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      if: Expr {
+        raw: {
+          exists: Expr {
+            raw: {
+              index: "inventories_last_pull",
+            },
+          },
+        },
+      },
+      then: Expr {
+        raw: {
+          params: Expr {
+            raw: {
+              object: {
+                name: "inventories_last_pull",
+                source: Expr {
+                  raw: {
+                    collection: "inventory",
+                  },
+                },
+                terms: Expr {
+                  raw: [
+                    Expr {
+                      raw: {
+                        object: {
+                          field: Expr {
+                            raw: [
+                              "data",
+                              "instance",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+                unique: false,
+                values: Expr {
+                  raw: [
+                    Expr {
+                      raw: {
+                        object: {
+                          field: Expr {
+                            raw: [
+                              "data",
+                              "lastPull",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                    Expr {
+                      raw: {
+                        object: {
+                          field: Expr {
+                            raw: [
+                              "ref",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          update: Expr {
+            raw: {
+              index: "inventories_last_pull",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;
+
+snapshot[`model 6`] = `
+[
+  Expr {
+    raw: {
+      else: Expr {
+        raw: {
           create_function: Expr {
             raw: {
               object: {
@@ -907,7 +1050,7 @@ snapshot[`model 5`] = `
 ]
 `;
 
-snapshot[`model 6`] = `
+snapshot[`model 7`] = `
 [
   Expr {
     raw: {
@@ -3513,6 +3656,711 @@ snapshot[`model 6`] = `
           update: Expr {
             raw: {
               function: "get_user_inventory",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;
+
+snapshot[`model 8`] = `
+[
+  Expr {
+    raw: {
+      else: Expr {
+        raw: {
+          create_function: Expr {
+            raw: {
+              object: {
+                body: Expr {
+                  raw: {
+                    query: Expr {
+                      raw: {
+                        expr: Expr {
+                          raw: {
+                            in: Expr {
+                              raw: {
+                                in: Expr {
+                                  raw: {
+                                    from: Expr {
+                                      raw: {
+                                        collection: Expr {
+                                          raw: {
+                                            var: "matches",
+                                          },
+                                        },
+                                        map: Expr {
+                                          raw: {
+                                            expr: Expr {
+                                              raw: {
+                                                get: Expr {
+                                                  raw: {
+                                                    var: "ref",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            lambda: Expr {
+                                              raw: [
+                                                "_",
+                                                "ref",
+                                              ],
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    select: Expr {
+                                      raw: [
+                                        "data",
+                                      ],
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    matches: Expr {
+                                      raw: {
+                                        after: undefined,
+                                        before: undefined,
+                                        paginate: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                offset: 14,
+                                                time_subtract: Expr {
+                                                  raw: {
+                                                    now: null,
+                                                  },
+                                                },
+                                                unit: "days",
+                                              },
+                                            },
+                                            range: Expr {
+                                              raw: {
+                                                match: Expr {
+                                                  raw: {
+                                                    index: "inventories_last_pull",
+                                                  },
+                                                },
+                                                terms: Expr {
+                                                  raw: {
+                                                    from: Expr {
+                                                      raw: {
+                                                        var: "instance",
+                                                      },
+                                                    },
+                                                    select: "ref",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            to: Expr {
+                                              raw: {
+                                                now: null,
+                                              },
+                                            },
+                                          },
+                                        },
+                                        size: 30,
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                guild: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            create: Expr {
+                                              raw: {
+                                                collection: "guild",
+                                              },
+                                            },
+                                            params: Expr {
+                                              raw: {
+                                                object: {
+                                                  data: Expr {
+                                                    raw: {
+                                                      object: {
+                                                        id: Expr {
+                                                          raw: {
+                                                            var: "guildId",
+                                                          },
+                                                        },
+                                                        instances: Expr {
+                                                          raw: [],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            match: Expr {
+                                              raw: {
+                                                index: "guilds_discord_id",
+                                              },
+                                            },
+                                            terms: Expr {
+                                              raw: {
+                                                var: "guildId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                              {
+                                instance: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            in: Expr {
+                                              raw: {
+                                                var: "createdInstance",
+                                              },
+                                            },
+                                            let: [
+                                              {
+                                                createdInstance: Expr {
+                                                  raw: {
+                                                    create: Expr {
+                                                      raw: {
+                                                        collection: "instance",
+                                                      },
+                                                    },
+                                                    params: Expr {
+                                                      raw: {
+                                                        object: {
+                                                          data: Expr {
+                                                            raw: {
+                                                              object: {
+                                                                guild: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "guild",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                                inventories: Expr {
+                                                                  raw: [],
+                                                                },
+                                                                main: true,
+                                                                packs: Expr {
+                                                                  raw: [],
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                              {
+                                                updatedGuild: Expr {
+                                                  raw: {
+                                                    params: Expr {
+                                                      raw: {
+                                                        object: {
+                                                          data: Expr {
+                                                            raw: {
+                                                              object: {
+                                                                instances: Expr {
+                                                                  raw: [
+                                                                    Expr {
+                                                                      raw: {
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "createdInstance",
+                                                                          },
+                                                                        },
+                                                                        select: "ref",
+                                                                      },
+                                                                    },
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    update: Expr {
+                                                      raw: {
+                                                        from: Expr {
+                                                          raw: {
+                                                            var: "guild",
+                                                          },
+                                                        },
+                                                        select: "ref",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                from: Expr {
+                                                  raw: {
+                                                    var: "match",
+                                                  },
+                                                },
+                                                select: Expr {
+                                                  raw: [
+                                                    0,
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                var: "guild",
+                                              },
+                                            },
+                                            select: Expr {
+                                              raw: [
+                                                "data",
+                                                "instances",
+                                              ],
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: "guildId",
+                      },
+                    },
+                  },
+                },
+                name: "get_active_inventories",
+              },
+            },
+          },
+        },
+      },
+      if: Expr {
+        raw: {
+          exists: Expr {
+            raw: {
+              function: "get_active_inventories",
+            },
+          },
+        },
+      },
+      then: Expr {
+        raw: {
+          params: Expr {
+            raw: {
+              object: {
+                body: Expr {
+                  raw: {
+                    query: Expr {
+                      raw: {
+                        expr: Expr {
+                          raw: {
+                            in: Expr {
+                              raw: {
+                                in: Expr {
+                                  raw: {
+                                    from: Expr {
+                                      raw: {
+                                        collection: Expr {
+                                          raw: {
+                                            var: "matches",
+                                          },
+                                        },
+                                        map: Expr {
+                                          raw: {
+                                            expr: Expr {
+                                              raw: {
+                                                get: Expr {
+                                                  raw: {
+                                                    var: "ref",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            lambda: Expr {
+                                              raw: [
+                                                "_",
+                                                "ref",
+                                              ],
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    select: Expr {
+                                      raw: [
+                                        "data",
+                                      ],
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    matches: Expr {
+                                      raw: {
+                                        after: undefined,
+                                        before: undefined,
+                                        paginate: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                offset: 14,
+                                                time_subtract: Expr {
+                                                  raw: {
+                                                    now: null,
+                                                  },
+                                                },
+                                                unit: "days",
+                                              },
+                                            },
+                                            range: Expr {
+                                              raw: {
+                                                match: Expr {
+                                                  raw: {
+                                                    index: "inventories_last_pull",
+                                                  },
+                                                },
+                                                terms: Expr {
+                                                  raw: {
+                                                    from: Expr {
+                                                      raw: {
+                                                        var: "instance",
+                                                      },
+                                                    },
+                                                    select: "ref",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            to: Expr {
+                                              raw: {
+                                                now: null,
+                                              },
+                                            },
+                                          },
+                                        },
+                                        size: 30,
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                guild: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            create: Expr {
+                                              raw: {
+                                                collection: "guild",
+                                              },
+                                            },
+                                            params: Expr {
+                                              raw: {
+                                                object: {
+                                                  data: Expr {
+                                                    raw: {
+                                                      object: {
+                                                        id: Expr {
+                                                          raw: {
+                                                            var: "guildId",
+                                                          },
+                                                        },
+                                                        instances: Expr {
+                                                          raw: [],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            match: Expr {
+                                              raw: {
+                                                index: "guilds_discord_id",
+                                              },
+                                            },
+                                            terms: Expr {
+                                              raw: {
+                                                var: "guildId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                              {
+                                instance: Expr {
+                                  raw: {
+                                    in: Expr {
+                                      raw: {
+                                        else: Expr {
+                                          raw: {
+                                            in: Expr {
+                                              raw: {
+                                                var: "createdInstance",
+                                              },
+                                            },
+                                            let: [
+                                              {
+                                                createdInstance: Expr {
+                                                  raw: {
+                                                    create: Expr {
+                                                      raw: {
+                                                        collection: "instance",
+                                                      },
+                                                    },
+                                                    params: Expr {
+                                                      raw: {
+                                                        object: {
+                                                          data: Expr {
+                                                            raw: {
+                                                              object: {
+                                                                guild: Expr {
+                                                                  raw: {
+                                                                    from: Expr {
+                                                                      raw: {
+                                                                        var: "guild",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                                inventories: Expr {
+                                                                  raw: [],
+                                                                },
+                                                                main: true,
+                                                                packs: Expr {
+                                                                  raw: [],
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                              {
+                                                updatedGuild: Expr {
+                                                  raw: {
+                                                    params: Expr {
+                                                      raw: {
+                                                        object: {
+                                                          data: Expr {
+                                                            raw: {
+                                                              object: {
+                                                                instances: Expr {
+                                                                  raw: [
+                                                                    Expr {
+                                                                      raw: {
+                                                                        from: Expr {
+                                                                          raw: {
+                                                                            var: "createdInstance",
+                                                                          },
+                                                                        },
+                                                                        select: "ref",
+                                                                      },
+                                                                    },
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    update: Expr {
+                                                      raw: {
+                                                        from: Expr {
+                                                          raw: {
+                                                            var: "guild",
+                                                          },
+                                                        },
+                                                        select: "ref",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                        if: Expr {
+                                          raw: {
+                                            is_nonempty: Expr {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: Expr {
+                                          raw: {
+                                            get: Expr {
+                                              raw: {
+                                                from: Expr {
+                                                  raw: {
+                                                    var: "match",
+                                                  },
+                                                },
+                                                select: Expr {
+                                                  raw: [
+                                                    0,
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: Expr {
+                                          raw: {
+                                            from: Expr {
+                                              raw: {
+                                                var: "guild",
+                                              },
+                                            },
+                                            select: Expr {
+                                              raw: [
+                                                "data",
+                                                "instances",
+                                              ],
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: "guildId",
+                      },
+                    },
+                  },
+                },
+                name: "get_active_inventories",
+              },
+            },
+          },
+          update: Expr {
+            raw: {
+              function: "get_active_inventories",
             },
           },
         },

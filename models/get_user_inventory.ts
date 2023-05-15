@@ -160,6 +160,32 @@ export function getInventory(
     ));
 }
 
+function getActiveInventories(
+  { instance }: { instance: InstanceExpr },
+): InventoryExpr[] {
+  return fql.Let(
+    {
+      matches: fql.Paginate<[TimeExpr, RefExpr]>(
+        fql.Range(
+          fql.Match(fql.Index('inventories_last_pull'), fql.Ref(instance)),
+          fql.TimeSubtractInDays(fql.Now(), 14),
+          fql.Now(),
+        ),
+        { size: 30 },
+      ),
+    },
+    ({ matches }) =>
+      fql.Select(
+        ['data'],
+        fql.Map(
+          // deno-lint-ignore no-explicit-any
+          matches as any,
+          (_, ref) => fql.Get<InventoryExpr>(ref as RefExpr),
+        ),
+      ),
+  );
+}
+
 export function populateCharactersArray(
   { inventory }: { inventory: InventoryExpr },
 ): InventoryExpr {
@@ -265,6 +291,14 @@ export default function (client: Client): {
         name: 'inventory_characters',
         terms: [{ field: ['data', 'inventory'] }],
       }),
+      fql.Indexer({
+        client,
+        unique: false,
+        collection: 'inventory',
+        name: 'inventories_last_pull',
+        terms: [{ field: ['data', 'instance'] }],
+        values: [{ field: ['data', 'lastPull'] }, { field: ['ref'] }],
+      }),
     ],
     resolvers: [
       fql.Resolver({
@@ -294,6 +328,19 @@ export default function (client: Client): {
               }),
             },
             populateCharactersArray,
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
+        name: 'get_active_inventories',
+        lambda: (guildId: string) => {
+          return fql.Let(
+            {
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+            },
+            getActiveInventories,
           );
         },
       }),

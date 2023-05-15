@@ -23,6 +23,10 @@ type Query {
   #
   findCharacter(characterId: String!, guildId: String!): Character
     @resolver(name: "find_character")
+
+  #
+  getActiveInventories(guildId: String!): [Inventory!]
+    @resolver(name: "get_active_inventories")
 }
 
 type Mutation {

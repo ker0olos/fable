@@ -76,6 +76,47 @@ Deno.test('find character', async () => {
   }
 });
 
+Deno.test('get active inventories', async () => {
+  const fetchStub = stub(
+    globalThis,
+    'fetch',
+    () => ({
+      ok: true,
+      text: (() =>
+        Promise.resolve(JSON.stringify({
+          data: {
+            getActiveInventories: [{
+              user: {
+                id: 'user_id',
+              },
+            }],
+          },
+        }))),
+    } as any),
+  );
+
+  try {
+    const inventories = await user.getActiveInventories('guild_id');
+
+    assertSpyCalls(fetchStub, 1);
+
+    assertSpyCallArg(
+      fetchStub,
+      0,
+      0,
+      'https://graphql.us.fauna.com/graphql',
+    );
+
+    assertEquals(inventories, [{
+      user: {
+        id: 'user_id',
+      },
+    }] as any);
+  } finally {
+    fetchStub.restore();
+  }
+});
+
 Deno.test('/now', async (test) => {
   await test.step('with pulls', async () => {
     const fetchStub = stub(

@@ -65,7 +65,7 @@ function Match(index: IndexExpr, ...terms: ExprArg[]): MatchExpr {
   return _fql.Match(index, ...terms);
 }
 
-function Get<T extends ExprArg>(refOrMatch: T): T {
+function Get<T extends ExprArg>(refOrMatch: RefExpr | MatchExpr): T {
   return _fql.Get(refOrMatch) as unknown as T;
 }
 
@@ -88,8 +88,16 @@ function Includes<T extends ExprArg>(
   return _fql.ContainsValue(value, documentOrArray) as unknown as BooleanExpr;
 }
 
+function Range<T extends ExprArg>(
+  matchOrSet: MatchExpr,
+  from: TimeExpr,
+  to: TimeExpr,
+): T[] {
+  return _fql.Range(matchOrSet, from, to) as unknown as T[];
+}
+
 function Paginate<T extends ExprArg>(
-  expr: Expr,
+  expr: Expr | ExprArg,
   { size, before, after }: { size?: number; before?: any; after?: any },
 ): T[] {
   return _fql.Paginate(expr, {
@@ -267,6 +275,11 @@ function TimeAddInMinutes(t: TimeExpr, offset: NumberExpr): NumberExpr {
 function TimeAddInDays(t: TimeExpr, offset: number): TimeExpr {
   return _fql.TimeAdd(t, offset, 'days');
 }
+
+function TimeSubtractInDays(t: TimeExpr, offset: number): TimeExpr {
+  return _fql.TimeSubtract(t, offset, 'days');
+}
+
 function Now(): TimeExpr {
   return _fql.Now();
 }
@@ -364,6 +377,9 @@ export const fql = {
   Null,
   Or,
   Paginate,
+  Prepend,
+  Range,
+  Reduce,
   Ref,
   Remove,
   Resolver,
@@ -373,11 +389,10 @@ export const fql = {
   TimeAddInDays,
   TimeAddInMinutes,
   TimeDiffInMinutes,
+  TimeSubtractInDays,
   ToString,
   Update,
   Var,
-  Prepend,
-  Reduce,
 };
 
 export const FakeClient = () => ({
