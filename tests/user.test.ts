@@ -6769,6 +6769,238 @@ Deno.test('/likeslist', async (test) => {
     }
   });
 
+  await test.step('with media', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character 1',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: '1',
+              type: MediaType.Anime,
+              title: {
+                english: 'title 1',
+              },
+            },
+          }],
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'character 2',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: '2',
+              type: MediaType.Anime,
+              title: {
+                english: 'title 2',
+              },
+            },
+          }],
+        },
+      },
+    ];
+
+    const media: AniListMedia[] = [
+      {
+        id: '3',
+        title: {
+          english: 'all 1',
+        },
+        type: MediaType.Anime,
+      },
+      {
+        id: '4',
+        title: {
+          english: 'all 2',
+        },
+        type: MediaType.Manga,
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  user: {
+                    likes: [
+                      { characterId: 'anilist:1' },
+                      { characterId: 'anilist:2' },
+                      { mediaId: 'anilist:3' },
+                      { mediaId: 'anilist:4' },
+                    ],
+                  },
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () => Promise.resolve(undefined),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.likeslist({
+        index: 0,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'likes=user_id=0=prev',
+                  label: 'Prev',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: '_',
+                  disabled: true,
+                  label: '1/1',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'likes=user_id=0=next',
+                  label: 'Next',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  inline: false,
+                  name: 'all 1',
+                  value: '<:all:1107511909999181824>',
+                },
+                {
+                  inline: false,
+                  name: 'all 2',
+                  value: '<:all:1107511909999181824>',
+                },
+                {
+                  inline: false,
+                  name: 'title 1',
+                  value: '1<:smolstar:1107503653956374638> character 1',
+                },
+                {
+                  inline: false,
+                  name: 'title 2',
+                  value: '1<:smolstar:1107503653956374638> character 2',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      userStub.restore();
+    }
+  });
+
   await test.step('disabled character', async () => {
     const characters: AniListCharacter[] = [
       {

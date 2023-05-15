@@ -72,6 +72,7 @@ async function getUserCharacters(
         }
         user {
           likes {
+            mediaId
             characterId
           }
         }
@@ -1145,6 +1146,7 @@ function likeslist({
       getUserInventory(userId: $userId, guildId: $guildId) {
         user {
           likes {
+            mediaId
             characterId
           }
         }
@@ -1170,11 +1172,9 @@ function likeslist({
 
       const message = new discord.Message();
 
-      const charactersIds = getUserInventory.user.likes
-        ?.map(({ characterId }) => characterId)
-        .filter(Boolean);
+      const { likes } = getUserInventory.user;
 
-      if (!charactersIds?.length) {
+      if (!likes?.length) {
         const message = new discord.Message()
           .addEmbed(
             new discord.Embed()
@@ -1188,12 +1188,33 @@ function likeslist({
         return message.patch(token);
       }
 
-      const chunks = utils.chunks(charactersIds, 5);
+      const chunks = utils.chunks(likes, 5);
 
-      const results = await packs.characters({ ids: chunks[index], guildId });
+      const [characters, media] = await Promise.all([
+        await packs.characters({
+          guildId,
+          ids: chunks[index].map(({ characterId }) => characterId)
+            .filter(Boolean),
+        }),
+        await packs.media({
+          guildId,
+          ids: chunks[index].map(({ mediaId }) => mediaId)
+            .filter(Boolean),
+        }),
+      ]);
+
+      media.forEach((media) => {
+        const title = utils.wrap(packs.aliasToArray(media.title)[0]);
+
+        embed.addField({
+          inline: false,
+          name: title,
+          value: discord.emotes.all,
+        });
+      });
 
       await Promise.all(
-        results.map(async (character) => {
+        characters.map(async (character) => {
           const [char, existing] = await Promise.all([
             packs.aggregate<Character>({
               guildId,
@@ -1224,15 +1245,6 @@ function likeslist({
           });
         }),
       );
-
-      // if (results.length !== chunks[index].length) {
-      //   embed.addField({
-      //     inline: false,
-      //     value: `_${
-      //       chunks[index].length - results.length
-      //     } disabled characters_`,
-      //   });
-      // }
 
       return discord.Message.page({
         index,

@@ -24,6 +24,7 @@ export const emotes = {
   smolStar: '<:smolstar:1107503653956374638>',
   remove: '<:remove:1099004424111792158>',
   add: '<:add:1099004747123523644>',
+  all: '<:all:1107511909999181824>',
 };
 
 export const join = (...args: string[]): string => {
