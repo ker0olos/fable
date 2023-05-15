@@ -758,6 +758,7 @@ async function searchOne<
     guildId,
     anilistOptions,
   });
+
   return possibilities?.[0];
 }
 

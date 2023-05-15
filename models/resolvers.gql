@@ -2,7 +2,6 @@ type Response @embedded {
   ok: Boolean!
   error: String
   user: User
-  likes: [String]
   inventory: Inventory
   character: Character
   manifest: Manifest
@@ -24,6 +23,10 @@ type Query {
   #
   findCharacter(characterId: String!, guildId: String!): Character
     @resolver(name: "find_character")
+
+  #
+  getActiveInventories(guildId: String!): [Inventory!]
+    @resolver(name: "get_active_inventories")
 }
 
 type Mutation {
@@ -91,13 +94,20 @@ type Mutation {
   ): Response! @resolver(name: "trade_characters")
 
   #
-  customizeCharacter(
+  setCharacterNickname(
     userId: String!
     guildId: String!
     characterId: String!
     nickname: String
+  ): Response! @resolver(name: "set_character_nick")
+
+  # 
+  setCharacterImage(
+    userId: String!
+    guildId: String!
+    characterId: String!
     image: String
-  ): Response! @resolver(name: "customize_character")
+  ): Response! @resolver(name: "set_character_image")
 
   #
   likeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
@@ -105,6 +115,13 @@ type Mutation {
   #
   unlikeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
     @resolver(name: "unlike_character")
+
+  #
+  likeMedia(userId: String!, mediaId: String!): Response!
+    @resolver(name: "like_media")
+  #
+  unlikeMedia(userId: String!, mediaId: String!): Response!
+    @resolver(name: "unlike_media")
 
   #
   failSteal(userId: String!, guildId: String!): Response!

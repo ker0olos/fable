@@ -26,6 +26,15 @@ import { NonFetalError } from './errors.ts';
 
 export const idPrefix = 'id=';
 
+export const relationFilter = [
+  MediaRelation.Parent,
+  MediaRelation.Contains,
+  MediaRelation.Prequel,
+  MediaRelation.Sequel,
+  MediaRelation.SideStory,
+  MediaRelation.SpinOff,
+];
+
 const musicUrlRegex = /youtube|spotify/;
 
 const externalUrlRegex =
@@ -698,15 +707,8 @@ function mediaFound(
       const media = [
         parent,
         ...(parent.relations?.edges?.filter(({ relation }) =>
-          [
-            MediaRelation.Parent,
-            MediaRelation.Contains,
-            MediaRelation.Prequel,
-            MediaRelation.Sequel,
-            MediaRelation.SideStory,
-            MediaRelation.SpinOff,
-            // deno-lint-ignore no-non-null-assertion
-          ].includes(relation!)
+          // deno-lint-ignore no-non-null-assertion
+          relationFilter.includes(relation!)
         ).map(({ node }) => node) ?? []),
       ];
 

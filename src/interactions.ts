@@ -74,7 +74,6 @@ export const handler = async (r: Request) => {
     channelId,
     guildId,
     focused,
-    resolved,
     member,
     channel,
     options,
@@ -101,7 +100,16 @@ export const handler = async (r: Request) => {
         // suggest media
         if (
           (
-            ['search', 'anime', 'manga', 'media', 'found', 'owned']
+            [
+              'search',
+              'anime',
+              'manga',
+              'media',
+              'found',
+              'owned',
+              'likeall',
+              'unlikeall',
+            ]
               .includes(name)
           ) ||
           (
@@ -344,34 +352,24 @@ export const handler = async (r: Request) => {
           case 'mm': {
             const userId = options['user'] as string ?? member.user.id;
 
-            const nick = userId !== member.user.id
-              ? discord.getUsername(
-                // deno-lint-ignore no-non-null-assertion
-                resolved!.members![userId],
-                // deno-lint-ignore no-non-null-assertion
-                resolved!.users![userId],
-              )
-              : undefined;
-
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'stars': {
                 const rating = options['rating'] as number;
 
                 return user.list({
-                  nick,
                   token,
                   userId,
                   guildId,
-                  index: 0,
                   rating,
+                  index: 0,
+                  nick: userId !== member.user.id,
                 }).send();
               }
               case 'media': {
                 const title = options['title'] as string;
 
                 return user.list({
-                  nick,
                   token,
                   userId,
                   guildId,
@@ -380,6 +378,7 @@ export const handler = async (r: Request) => {
                   id: title.startsWith(idPrefix)
                     ? title.substring(idPrefix.length)
                     : undefined,
+                  nick: userId !== member.user.id,
                 }).send();
               }
               default:
@@ -388,6 +387,8 @@ export const handler = async (r: Request) => {
             break;
           }
           case 'like':
+          case 'protect':
+          case 'wish':
           case 'unlike': {
             const search = options['name'] as string;
 
@@ -404,25 +405,33 @@ export const handler = async (r: Request) => {
             })
               .send();
           }
+          case 'likeall':
+          case 'unlikeall': {
+            const search = options['title'] as string;
+
+            return user.likeall({
+              token,
+              search,
+              guildId,
+              channelId,
+              userId: member.user.id,
+              undo: name === 'unlikeall',
+              id: search.startsWith(idPrefix)
+                ? search.substring(idPrefix.length)
+                : undefined,
+            })
+              .send();
+          }
           case 'likes':
           case 'likeslist': {
             const userId = options['user'] as string ?? member.user.id;
 
-            const nick = userId !== member.user.id
-              ? discord.getUsername(
-                // deno-lint-ignore no-non-null-assertion
-                resolved!.members![userId],
-                // deno-lint-ignore no-non-null-assertion
-                resolved!.users![userId],
-              )
-              : undefined;
-
             return user.likeslist({
-              nick,
               token,
               guildId,
               userId,
               index: 0,
+              nick: userId !== member.user.id,
             }).send();
           }
           case 'found':
@@ -517,16 +526,30 @@ export const handler = async (r: Request) => {
               })
               .send();
           }
-          case 'nick':
-          case 'image':
-          case 'custom': {
-            const name = options['name'] as string;
+          case 'nick': {
+            const name = options['character'] as string;
 
             const nick = options['new_nick'] as string | undefined;
+
+            return user.nick({
+              nick,
+              token,
+              guildId,
+              channelId,
+              search: name,
+              userId: member.user.id,
+              id: name.startsWith(idPrefix)
+                ? name.substring(idPrefix.length)
+                : undefined,
+            }).send();
+          }
+          case 'image':
+          case 'custom': {
+            const name = options['character'] as string;
+
             const image = options['new_image'] as string | undefined;
 
-            return user.customize({
-              nick,
+            return user.image({
               image,
               token,
               guildId,
@@ -632,20 +655,11 @@ export const handler = async (r: Request) => {
           case 'logs': {
             const userId = options['user'] as string ?? member.user.id;
 
-            const nick = userId !== member.user.id
-              ? discord.getUsername(
-                // deno-lint-ignore no-non-null-assertion
-                resolved!.members![userId],
-                // deno-lint-ignore no-non-null-assertion
-                resolved!.users![userId],
-              )
-              : undefined;
-
             return user.logs({
               token,
               guildId,
               userId,
-              nick,
+              nick: userId !== member.user.id,
             }).send();
           }
           case 'anilist': {

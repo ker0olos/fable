@@ -15,11 +15,9 @@ jobs:
         with:
           deno-version: v1.x
 
-      - name: Set environment variables
-        run: >
-          echo "APP_ID=${{ secrets.APP_ID }}" >> "$GITHUB_ENV" |
-          echo "FAUNA_SECRET=${{ secrets.FAUNA_SECRET }}" >> "$GITHUB_ENV" |
-          echo "TOPGG_TOKEN=${{ secrets.TOPGG_TOKEN }}" >> "$GITHUB_ENV"
-
       - name: Update top.gg stats
         run: deno run -A update_topgg_stats.ts
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          FAUNA_SECRET: ${{ secrets.FAUNA_SECRET }}
+          TOPGG_TOKEN: ${{ secrets.TOPGG_TOKEN }}

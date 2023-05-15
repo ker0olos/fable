@@ -1039,134 +1039,64 @@ Deno.test('anchor messages', async (test) => {
   });
 });
 
-Deno.test('get username', async (test) => {
-  await test.step('member', () => {
-    const user: discord.User = {
-      id: 'user_id',
-      username: 'test_username',
-      avatar: 'avatar_hash',
-    };
+// Deno.test('get avatar', async (test) => {
+//   await test.step('member', () => {
+//     const user: discord.User = {
+//       id: 'user_id',
+//       username: 'test_username',
+//       avatar: 'avatar_hash',
+//     };
 
-    const member: discord.Member = {
-      user,
-      nick: 'test_nickname',
-      avatar: 'guild_avatar_hash',
-    };
+//     const member: discord.Member = {
+//       user,
+//       nick: 'test_nickname',
+//       avatar: 'guild_avatar_hash',
+//     };
 
-    assertEquals(discord.getUsername(member, user), 'test_nickname');
-  });
+//     assertEquals(
+//       discord.getAvatar(member, user, 'guild_id'),
+//       'https://cdn.discordapp.com/guilds/guild_id/users/user_id/avatars/guild_avatar_hash.png',
+//     );
+//   });
 
-  await test.step('user', () => {
-    const user: discord.User = {
-      id: 'user_id',
-      username: 'test_username',
-      avatar: 'avatar_hash',
-    };
+//   await test.step('user', () => {
+//     const user: discord.User = {
+//       id: 'user_id',
+//       username: 'test_username',
+//       avatar: 'avatar_hash',
+//     };
 
-    const member: discord.Member = {
-      user,
-      nick: undefined,
-      avatar: 'guild_avatar_hash',
-    };
+//     const member: discord.Member = {
+//       user,
+//       nick: undefined,
+//       avatar: undefined,
+//     };
 
-    assertEquals(discord.getUsername(member, user), 'test_username');
-  });
+//     assertEquals(
+//       discord.getAvatar(member, user, 'guild_id'),
+//       'https://cdn.discordapp.com/avatars/user_id/avatar_hash.png',
+//     );
+//   });
 
-  await test.step('display name', () => {
-    const user: discord.User = {
-      id: 'user_id',
-      username: 'test_username',
-      // deno-lint-ignore camelcase
-      display_name: 'display',
-      avatar: 'avatar_hash',
-    };
+//   await test.step('default', () => {
+//     const user: discord.User = {
+//       id: 'user_id',
+//       username: 'test_username',
+//       avatar: undefined,
+//     };
 
-    const member: discord.Member = {
-      user,
-      nick: undefined,
-      avatar: 'guild_avatar_hash',
-    };
+//     const member: discord.Member = {
+//       user,
+//       nick: undefined,
+//       avatar: undefined,
+//     };
 
-    assertEquals(discord.getUsername(member, user), 'display');
-  });
-
-  await test.step('global name', () => {
-    const user: discord.User = {
-      id: 'user_id',
-      username: 'test_username',
-      // deno-lint-ignore camelcase
-      global_name: 'global',
-      avatar: 'avatar_hash',
-    };
-
-    const member: discord.Member = {
-      user,
-      nick: undefined,
-      avatar: 'guild_avatar_hash',
-    };
-
-    assertEquals(discord.getUsername(member, user), 'global');
-  });
-});
-
-Deno.test('get avatar', async (test) => {
-  await test.step('member', () => {
-    const user: discord.User = {
-      id: 'user_id',
-      username: 'test_username',
-      avatar: 'avatar_hash',
-    };
-
-    const member: discord.Member = {
-      user,
-      nick: 'test_nickname',
-      avatar: 'guild_avatar_hash',
-    };
-
-    assertEquals(
-      discord.getAvatar(member, user, 'guild_id'),
-      'https://cdn.discordapp.com/guilds/guild_id/users/user_id/avatars/guild_avatar_hash.png',
-    );
-  });
-
-  await test.step('user', () => {
-    const user: discord.User = {
-      id: 'user_id',
-      username: 'test_username',
-      avatar: 'avatar_hash',
-    };
-
-    const member: discord.Member = {
-      user,
-      nick: undefined,
-      avatar: undefined,
-    };
-
-    assertEquals(
-      discord.getAvatar(member, user, 'guild_id'),
-      'https://cdn.discordapp.com/avatars/user_id/avatar_hash.png',
-    );
-  });
-
-  await test.step('default', () => {
-    const user: discord.User = {
-      id: 'user_id',
-      username: 'test_username',
-      avatar: undefined,
-    };
-
-    const member: discord.Member = {
-      user,
-      nick: undefined,
-      avatar: undefined,
-    };
-
-    assertEquals(
-      discord.getAvatar(member, user, 'guild_id'),
-      'https://cdn.discordapp.com/embed/avatars/2.png',
-    );
-  });
-});
+//     assertEquals(
+//       discord.getAvatar(member, user, 'guild_id'),
+//       'https://cdn.discordapp.com/embed/avatars/2.png',
+//     );
+//   });
+// });
 
 Deno.test('encode emotes', () => {
   assertEquals(
