@@ -2,7 +2,7 @@ import utils from './utils.ts';
 
 import { emotes } from './discord.ts';
 
-import { Character, CharacterRole, DisaggregatedCharacter } from './types.ts';
+import { Character, CharacterRole } from './types.ts';
 
 import { AniListCharacter } from '../packs/anilist/types.ts';
 

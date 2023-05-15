@@ -1,9 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import {
-  assertEquals,
-  assertRejects,
-} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
+import { assertEquals } from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
 import { FakeTime } from 'https://deno.land/std@0.186.0/testing/time.ts';
 
@@ -16,7 +13,6 @@ import {
 
 import user from '../src/user.ts';
 import packs from '../src/packs.ts';
-import search from '../src/search.ts';
 
 import config from '../src/config.ts';
 
@@ -28,8 +24,6 @@ import {
 } from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
-
-import { NonFetalError } from '../src/errors.ts';
 
 Deno.test('find character', async () => {
   const fetchStub = stub(
