@@ -92,19 +92,6 @@ export function replaceCharacters(
             ok: true,
             inventory: fql.Ref(updatedInventory),
             character: fql.Ref(createdCharacter),
-            likes: fql.Select(
-              ['data'],
-              fql.Map(
-                fql.Paginate(
-                  fql.Match(
-                    fql.Index('users_likes_character_id'),
-                    characterId,
-                  ),
-                  {},
-                ),
-                (user) => fql.Select(['data', 'id'], fql.Get(user as UserExpr)),
-              ),
-            ),
           }),
         ),
         { ok: false, error: 'CHARACTER_EXISTS' },

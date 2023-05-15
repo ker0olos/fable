@@ -273,7 +273,6 @@ export namespace Schema {
     | {
       ok: true;
       user: User;
-      likes: string[];
       inventory: Inventory;
       character: Character;
       manifest: Manifest;

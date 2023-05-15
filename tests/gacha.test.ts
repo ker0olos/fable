@@ -950,7 +950,6 @@ Deno.test('valid pool', async (test) => {
           popularityLesser: 3000,
           remaining: undefined,
           guarantees: undefined,
-          likes: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 75 }),
           roleChance: 0,
           role: CharacterRole.Main,
@@ -1065,7 +1064,6 @@ Deno.test('valid pool', async (test) => {
           popularityLesser: 3000,
           remaining: undefined,
           guarantees: undefined,
-          likes: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 100 }),
           roleChance: 0,
           role: CharacterRole.Main,
@@ -1182,7 +1180,6 @@ Deno.test('valid pool', async (test) => {
           popularityLesser: 500_000,
           remaining: undefined,
           guarantees: undefined,
-          likes: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 500_000 }),
           roleChance: 0,
           role: CharacterRole.Main,
@@ -1306,7 +1303,6 @@ Deno.test('valid pool', async (test) => {
           popularityLesser: 3000,
           remaining: undefined,
           guarantees: undefined,
-          likes: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 2500 }),
           roleChance: 0,
           role: CharacterRole.Main,
@@ -1431,7 +1427,6 @@ Deno.test('valid pool', async (test) => {
           pool: 2,
           remaining: undefined,
           guarantees: undefined,
-          likes: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 1000 }),
         },
       );
@@ -1562,7 +1557,6 @@ Deno.test('valid pool', async (test) => {
           pool: 1,
           remaining: undefined,
           guarantees: undefined,
-          likes: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 400_000 }),
         },
       );
@@ -1643,7 +1637,6 @@ Deno.test('adding character to inventory', async (test) => {
             data: {
               addCharacterToInventory: {
                 ok: true,
-                likes: ['user_id', 'another_user_id'],
                 character: {
                   _id: 'anchor',
                 },
@@ -1669,7 +1662,6 @@ Deno.test('adding character to inventory', async (test) => {
         }),
         {
           remaining: 2,
-          likes: ['another_user_id'],
           character: {
             id: '1',
             packId: 'anilist',
@@ -3002,7 +2994,7 @@ Deno.test('/gacha', async (test) => {
       popularityChance: 0,
       popularityGreater: 0,
       popularityLesser: 100,
-      likes: ['another_user_id'],
+      // likes: ['another_user_id'],
       rating: new Rating({ popularity: 100 }),
       remaining: 1,
       pool: 1,

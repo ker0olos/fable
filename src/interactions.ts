@@ -74,7 +74,6 @@ export const handler = async (r: Request) => {
     channelId,
     guildId,
     focused,
-    resolved,
     member,
     channel,
     options,

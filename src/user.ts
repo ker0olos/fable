@@ -8,7 +8,7 @@ import Rating from './rating.ts';
 
 import packs from './packs.ts';
 
-import { default as srch } from './search.ts';
+import { default as srch, relationFilter } from './search.ts';
 
 import utils from './utils.ts';
 
@@ -19,7 +19,6 @@ import {
   DisaggregatedCharacter,
   DisaggregatedMedia,
   Media,
-  MediaRelation,
   Schema,
 } from './types.ts';
 
@@ -962,15 +961,8 @@ function list({
         media = [
           parent,
           ...parent.relations?.edges?.filter(({ relation }) =>
-            [
-              MediaRelation.Parent,
-              MediaRelation.Contains,
-              MediaRelation.Prequel,
-              MediaRelation.Sequel,
-              MediaRelation.SideStory,
-              MediaRelation.SpinOff,
-              // deno-lint-ignore no-non-null-assertion
-            ].includes(relation!)
+            // deno-lint-ignore no-non-null-assertion
+            relationFilter.includes(relation!)
           ).map(({ node }) => node) ?? [],
         ];
 

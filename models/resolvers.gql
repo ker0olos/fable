@@ -2,7 +2,6 @@ type Response @embedded {
   ok: Boolean!
   error: String
   user: User
-  likes: [String]
   inventory: Inventory
   character: Character
   manifest: Manifest

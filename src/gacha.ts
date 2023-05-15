@@ -26,7 +26,6 @@ import { NonFetalError, NoPullsError, PoolError } from './errors.ts';
 export type Pull = {
   index?: number;
   remaining?: number;
-  likes?: string[];
   guarantees?: number[];
   character: Character;
   media: Media;
@@ -198,7 +197,6 @@ async function rngPull(
       guildId,
     });
 
-  let likes: string[] | undefined = undefined;
   let inventory: Schema.Inventory | undefined = undefined;
 
   let rating: Rating | undefined = undefined;
@@ -298,9 +296,6 @@ async function rngPull(
       }))[mutation?.name ?? 'addCharacterToInventory'];
 
       if (response.ok) {
-        likes = response.likes
-          ?.filter((id) => id !== userId);
-
         inventory = response.inventory;
       } else {
         switch (response.error) {
@@ -331,7 +326,6 @@ async function rngPull(
 
   return {
     media,
-    likes,
     rating,
     character,
     remaining: inventory?.availablePulls,
@@ -455,11 +449,12 @@ async function pullAnimation(
 
   await message.patch(token);
 
-  if (pull.likes?.length && userId) {
-    await new discord.Message()
-      .setContent(pull.likes.map((id) => `<@${id}>`).join(''))
-      .followup(token);
-  }
+  // TODO
+  // if (pull.likes?.length && userId) {
+  //   await new discord.Message()
+  //     .setContent(pull.likes.map((id) => `<@${id}>`).join(''))
+  //     .followup(token);
+  // }
 }
 
 /**
