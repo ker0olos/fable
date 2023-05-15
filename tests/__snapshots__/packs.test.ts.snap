@@ -90,6 +90,10 @@ snapshot[`list > vtubers 1`] = `
               mediaId: "holomyth",
               role: "MAIN",
             },
+            {
+              mediaId: "hololive",
+              role: "MAIN",
+            },
           ],
           name: {
             alternative: [
@@ -132,6 +136,10 @@ snapshot[`list > vtubers 1`] = `
           media: [
             {
               mediaId: "holomyth",
+              role: "MAIN",
+            },
+            {
+              mediaId: "hololive",
               role: "MAIN",
             },
           ],
@@ -177,6 +185,10 @@ snapshot[`list > vtubers 1`] = `
           media: [
             {
               mediaId: "holomyth",
+              role: "MAIN",
+            },
+            {
+              mediaId: "hololive",
               role: "MAIN",
             },
           ],
@@ -226,6 +238,10 @@ snapshot[`list > vtubers 1`] = `
               mediaId: "holomyth",
               role: "MAIN",
             },
+            {
+              mediaId: "hololive",
+              role: "MAIN",
+            },
           ],
           name: {
             alternative: [
@@ -269,6 +285,10 @@ snapshot[`list > vtubers 1`] = `
               mediaId: "holomyth",
               role: "MAIN",
             },
+            {
+              mediaId: "hololive",
+              role: "MAIN",
+            },
           ],
           name: {
             alternative: [
@@ -309,6 +329,10 @@ snapshot[`list > vtubers 1`] = `
               mediaId: "holocouncil",
               role: "MAIN",
             },
+            {
+              mediaId: "hololive",
+              role: "MAIN",
+            },
           ],
           name: {
             alternative: [
@@ -347,6 +371,10 @@ snapshot[`list > vtubers 1`] = `
               mediaId: "holocouncil",
               role: "MAIN",
             },
+            {
+              mediaId: "hololive",
+              role: "MAIN",
+            },
           ],
           name: {
             alternative: [
@@ -379,6 +407,10 @@ snapshot[`list > vtubers 1`] = `
           media: [
             {
               mediaId: "holocouncil",
+              role: "MAIN",
+            },
+            {
+              mediaId: "hololive",
               role: "MAIN",
             },
           ],
@@ -423,6 +455,10 @@ cute...",
               mediaId: "holocouncil",
               role: "MAIN",
             },
+            {
+              mediaId: "hololive",
+              role: "MAIN",
+            },
           ],
           name: {
             alternative: [
@@ -460,6 +496,10 @@ cute...",
           media: [
             {
               mediaId: "holocouncil",
+              role: "MAIN",
+            },
+            {
+              mediaId: "hololive",
               role: "MAIN",
             },
           ],
@@ -568,6 +608,10 @@ cute...",
           ],
           relations: [
             {
+              mediaId: "hololive",
+              relation: "PARENT",
+            },
+            {
               mediaId: "holocouncil",
               relation: "SEQUEL",
             },
@@ -625,6 +669,10 @@ cute...",
             },
           ],
           relations: [
+            {
+              mediaId: "hololive",
+              relation: "PARENT",
+            },
             {
               mediaId: "holomyth",
               relation: "PREQUEL",

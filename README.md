@@ -2,12 +2,12 @@
   <img height="100" src="./assets/splash.png" alt="Fable Logo">
 </h1>
 
-<h1 align="center">
+<i align="center">
 
-[![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)](https://top.gg/bot/1041970851559522304/vote)
+[![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)][invite]
 [![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)][topgg]
 
-[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)](https://top.gg/bot/1041970851559522304/invite)
+[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot)
 [![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20support%20server&color=blue)][discord]
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&label=tests)
@@ -16,18 +16,21 @@
 
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ker0olos/fable?color=blue&label=updates%20frequency)
 
-</h1>
+</i>
 
 <i>
   <h6 align="right">(Animated Pulls)</h6>
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227321932-2ad8d36c-e56c-46e9-91da-161b79eeb029.gif" alt="Animated Pulls">
 </i>
 
+_<p align="center"> Check [this page](./PUBLIC.md) for a list of key features
+and how Fable compares to other bots</p>_
+
 Fable is a free, open-source gacha bot — a friendly, powerful alternative to
 bots like Mudae, Sofi, Karuta. Like those bots, you can pull anime characters,
 customize, and upgrade them.
 
-There's an intuitive system to manage the characters in your servers, like
+Fable has intuitive system to manage the characters in your servers, like
 installing apps on your phone, you can install community-made packs that are
 full of new characters with a single command.
 
@@ -35,18 +38,22 @@ Wanna make your own community pack? Check
 [fable-community/example](https://github.com/fable-community/fable-pack-example)
 for more information.
 
+#### [Add Fable to Your Server][invite]
+
 <br clear="right"/>
 
-<p>
+<i>
   <h6 align="right">(Character Descriptions)</h6>
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227323628-17674f52-bb3a-460f-965a-d316cbed7932.png" alt="Searching">
-</p>
+</i>
 
 ### Get Started
 
-- **`/help`, `/tuto`**: _to learn more features and commands_
 - **`/now`, `/tu`**: _check what you can do right now_
 - **`/gacha`, `/w`**: _start a new gacha pull_
+- **`/character`, `/char`**: _search for a character_
+- **`/search`, `/anime`**: _search for an anime or manga_
+- **`/help`, `/tuto`**: _to learn about features and commands_
 
 ### Useful Links
 
@@ -132,3 +139,4 @@ time, and how many people are working on Fable at any giving moment.
 
 [discord]: https://discord.gg/ceKyEfhyPQ
 [topgg]: https://top.gg/bot/1041970851559522304
+[invite]: https://discord.com/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot

@@ -269,6 +269,7 @@ export const commands = [
   ...Command({
     name: 'like',
     description: 'Like a character to be notified if someone finds them',
+    aliases: ['protect', 'wish'],
     options: [
       Option({
         name: 'name',
@@ -285,6 +286,31 @@ export const commands = [
       Option({
         name: 'name',
         description: 'The name of the character',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'likeall',
+    description:
+      'Like a media to be notified if someone finds any character from it',
+    options: [
+      Option({
+        name: 'title',
+        description: 'The title of the media',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'unlikeall',
+    description: 'Remove a media from your likes list',
+    options: [
+      Option({
+        name: 'title',
+        description: 'The title of the media',
         autocomplete: true,
         type: Type.STRING,
       }),
@@ -482,7 +508,7 @@ export const commands = [
     aliases: ['custom'],
     options: [
       Option({
-        name: 'name',
+        name: 'character',
         description: 'The name of the character',
         type: Type.STRING,
       }),
@@ -490,6 +516,7 @@ export const commands = [
         name: 'new_image',
         description: 'New image url',
         type: Type.STRING,
+        optional: true,
       }),
     ],
   }),
@@ -498,7 +525,7 @@ export const commands = [
     description: 'Change the nickname of a character',
     options: [
       Option({
-        name: 'name',
+        name: 'character',
         description: 'The name of the character',
         type: Type.STRING,
       }),
@@ -506,6 +533,7 @@ export const commands = [
         name: 'new_nick',
         description: 'New nickname',
         type: Type.STRING,
+        optional: true,
       }),
     ],
   }),

@@ -21,9 +21,10 @@ export const colors = {
 export const emotes = {
   star: '<:star:1061016362832642098>',
   noStar: '<:no_star:1061016360190222466>',
-  smolStar: '<:smol_star:1088427421096751224>',
+  smolStar: '<:smolstar:1107503653956374638>',
   remove: '<:remove:1099004424111792158>',
   add: '<:add:1099004747123523644>',
+  all: '<:all:1107511909999181824>',
 };
 
 export const join = (...args: string[]): string => {
@@ -191,36 +192,26 @@ export type Emote = {
   animated?: boolean;
 };
 
-export const getUsername = (
-  member: Member | Omit<Member, 'user'>,
-  user: User,
-) => (
-  member.nick ??
-    user.display_name ??
-    user.global_name ??
-    user.username
-);
+// export const getAvatar = (
+//   member: Member | Omit<Member, 'user'>,
+//   user: User,
+//   guildId: string,
+// ) => {
+//   const base = 'https://cdn.discordapp.com';
 
-export const getAvatar = (
-  member: Member | Omit<Member, 'user'>,
-  user: User,
-  guildId: string,
-) => {
-  const base = 'https://cdn.discordapp.com';
-
-  if (member.avatar) {
-    return `${base}/guilds/${guildId}/users/${user.id}/avatars/${member.avatar}.png`;
-  } else if (user.avatar) {
-    return `${base}/avatars/${user.id}/${user.avatar}.png`;
-  } else {
-    // TODO discriminator are going away
-    // as of now we I have no idea how default avatar is going to work
-    // they depend on discriminators
-    // @see https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints
-    // return `${base}/embed/avatars/${Number(user.discriminator) % 5}.png`;
-    return `${base}/embed/avatars/2.png`;
-  }
-};
+//   if (member.avatar) {
+//     return `${base}/guilds/${guildId}/users/${user.id}/avatars/${member.avatar}.png`;
+//   } else if (user.avatar) {
+//     return `${base}/avatars/${user.id}/${user.avatar}.png`;
+//   } else {
+//     // TODO discriminator are going away
+//     // as of now we I have no idea how default avatar is going to work
+//     // they depend on discriminators
+//     // @see https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints
+//     // return `${base}/embed/avatars/${Number(user.discriminator) % 5}.png`;
+//     return `${base}/embed/avatars/2.png`;
+//   }
+// };
 
 export class Interaction<Options> {
   id: string;

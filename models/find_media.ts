@@ -5,6 +5,7 @@ import {
   InstanceExpr,
   MatchExpr,
   NullExpr,
+  RefExpr,
   StringExpr,
 } from './fql.ts';
 
@@ -25,8 +26,8 @@ export function findMedia(
       fql.Map(
         matches,
         (match) =>
-          fql.Map(
-            fql.Select<CharacterExpr[]>(
+          fql.Map<RefExpr, CharacterExpr>(
+            fql.Select(
               ['data'],
               fql.Paginate(match, { size: 1000 }),
             ),
