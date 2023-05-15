@@ -904,7 +904,7 @@ function list({
   rating?: number;
   search?: string;
   id?: string;
-  nick?: string;
+  nick?: boolean;
 }): discord.Message {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -998,9 +998,7 @@ function list({
           .addEmbed(
             new discord.Embed()
               .setDescription(
-                `${
-                  nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
-                } have any ${
+                `${nick ? `<@${userId}> doesn't` : 'You don\'t'} have any ${
                   rating ? `${rating}${discord.emotes.smolStar}characters` : ''
                 }${
                   media.length
@@ -1140,7 +1138,7 @@ function likeslist({
   index: number;
   userId: string;
   guildId: string;
-  nick?: string;
+  nick?: boolean;
 }): discord.Message {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -1182,7 +1180,7 @@ function likeslist({
             new discord.Embed()
               .setDescription(
                 `${
-                  nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
+                  nick ? `<@${userId}> doesn't` : 'You don\'t'
                 } have any likes`,
               ),
           );
@@ -1274,7 +1272,7 @@ function logs({
   token: string;
   userId: string;
   guildId: string;
-  nick?: string;
+  nick?: boolean;
 }): discord.Message {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -1313,7 +1311,7 @@ function logs({
             new discord.Embed()
               .setDescription(
                 `${
-                  nick ? `${utils.capitalize(nick)} doesn't` : 'You don\'t'
+                  nick ? `<@${userId}> doesn't` : 'You don\'t'
                 } have any characters`,
               ),
           );

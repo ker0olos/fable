@@ -191,36 +191,26 @@ export type Emote = {
   animated?: boolean;
 };
 
-export const getUsername = (
-  member: Member | Omit<Member, 'user'>,
-  user: User,
-) => (
-  member.nick ??
-    user.display_name ??
-    user.global_name ??
-    user.username
-);
+// export const getAvatar = (
+//   member: Member | Omit<Member, 'user'>,
+//   user: User,
+//   guildId: string,
+// ) => {
+//   const base = 'https://cdn.discordapp.com';
 
-export const getAvatar = (
-  member: Member | Omit<Member, 'user'>,
-  user: User,
-  guildId: string,
-) => {
-  const base = 'https://cdn.discordapp.com';
-
-  if (member.avatar) {
-    return `${base}/guilds/${guildId}/users/${user.id}/avatars/${member.avatar}.png`;
-  } else if (user.avatar) {
-    return `${base}/avatars/${user.id}/${user.avatar}.png`;
-  } else {
-    // TODO discriminator are going away
-    // as of now we I have no idea how default avatar is going to work
-    // they depend on discriminators
-    // @see https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints
-    // return `${base}/embed/avatars/${Number(user.discriminator) % 5}.png`;
-    return `${base}/embed/avatars/2.png`;
-  }
-};
+//   if (member.avatar) {
+//     return `${base}/guilds/${guildId}/users/${user.id}/avatars/${member.avatar}.png`;
+//   } else if (user.avatar) {
+//     return `${base}/avatars/${user.id}/${user.avatar}.png`;
+//   } else {
+//     // TODO discriminator are going away
+//     // as of now we I have no idea how default avatar is going to work
+//     // they depend on discriminators
+//     // @see https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints
+//     // return `${base}/embed/avatars/${Number(user.discriminator) % 5}.png`;
+//     return `${base}/embed/avatars/2.png`;
+//   }
+// };
 
 export class Interaction<Options> {
   id: string;

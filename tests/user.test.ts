@@ -3396,7 +3396,7 @@ Deno.test('/collection stars', async (test) => {
     try {
       const message = user.list({
         index: 0,
-        nick: 'Dave',
+        nick: true,
         userId: 'another_user_id',
         guildId: 'guild_id',
         token: 'test_token',
@@ -3438,7 +3438,7 @@ Deno.test('/collection stars', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'Dave doesn\'t have any 5<:smol_star:1088427421096751224>characters',
+              '<@another_user_id> doesn\'t have any 5<:smol_star:1088427421096751224>characters',
           }],
         },
       );
@@ -4675,11 +4675,11 @@ Deno.test('/collection media', async (test) => {
     try {
       const message = user.list({
         index: 0,
-        userId: 'user_id',
+        userId: 'another_user_id',
         guildId: 'guild_id',
         token: 'test_token',
         id: 'anilist:2',
-        nick: 'Dave',
+        nick: true,
       });
 
       assertEquals(message.json(), {
@@ -4717,7 +4717,8 @@ Deno.test('/collection media', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Dave doesn\'t have any characters from title 1',
+              description:
+                '<@another_user_id> doesn\'t have any characters from title 1',
             },
           ],
         },
@@ -7107,10 +7108,10 @@ Deno.test('/likeslist', async (test) => {
     try {
       const message = user.likeslist({
         index: 0,
-        userId: 'user_id',
+        userId: 'another_user_id',
         guildId: 'guild_id',
         token: 'test_token',
-        nick: 'Dave',
+        nick: true,
       });
 
       assertEquals(message.json(), {
@@ -7148,7 +7149,7 @@ Deno.test('/likeslist', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Dave doesn\'t have any likes',
+              description: '<@another_user_id> doesn\'t have any likes',
             },
           ],
         },
@@ -7708,10 +7709,10 @@ Deno.test('/logs', async (test) => {
 
     try {
       const message = user.logs({
-        userId: 'user_id',
+        userId: 'another_user_id',
         guildId: 'guild_id',
         token: 'test_token',
-        nick: 'Dave',
+        nick: true,
       });
 
       assertEquals(message.json(), {
@@ -7749,7 +7750,7 @@ Deno.test('/logs', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Dave doesn\'t have any characters',
+              description: '<@another_user_id> doesn\'t have any characters',
             },
           ],
         },
