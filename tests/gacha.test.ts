@@ -72,7 +72,8 @@ function fakePool(
     return Promise.resolve({
       [JSON.stringify(variables.range)]: {
         [variables.role || 'ALL']: nodes.map((node) => ({
-          rating: rating ?? Rating.fromCharacter(node).stars,
+          rating: rating ??
+            Rating.fromCharacter(node as AniListCharacter).stars,
           id: `${node.packId}:${node.id}`,
         })),
       },
