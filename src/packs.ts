@@ -825,7 +825,8 @@ async function mediaCharacters({ id, search, guildId, index }: {
 }): Promise<
   {
     media?: Media | DisaggregatedMedia;
-    character?: Character | DisaggregatedCharacter;
+    role?: CharacterRole;
+    character?: DisaggregatedCharacter;
     total?: number;
     next: boolean;
   }
@@ -861,7 +862,9 @@ async function mediaCharacters({ id, search, guildId, index }: {
         (results[0] as AniListMedia).characters?.pageInfo.hasNextPage,
       ),
       media: results[0] as AniListMedia,
-      character: (results[0] as AniListMedia).characters?.edges?.[0]?.node,
+      role: (results[0] as AniListMedia).characters?.edges?.[0].role,
+      character: (results[0] as AniListMedia).characters?.edges?.[0]
+        ?.node as DisaggregatedCharacter,
     };
   } else {
     const total = (results[0] as DisaggregatedMedia).characters?.length || 0;
@@ -876,7 +879,8 @@ async function mediaCharacters({ id, search, guildId, index }: {
     return {
       total,
       media,
-      character: media.characters?.edges?.[0]?.node,
+      role: media.characters?.edges?.[0]?.role,
+      character: media.characters?.edges?.[0]?.node as DisaggregatedCharacter,
       next: index + 1 < total,
     };
   }
@@ -1051,20 +1055,27 @@ async function pool({ guildId, range, role, stars }: {
     pool = anilist[JSON.stringify(range)][role ?? 'ALL'];
   }
 
-  list.forEach(({ manifest }) => {
+  await Promise.all(list.map(async ({ manifest }) => {
     if (manifest.characters && Array.isArray(manifest.characters.new)) {
-      const characters = manifest.characters.new.map((character) => {
-        const rating = Rating.fromCharacter(character).stars;
+      const characters = await Promise.all(
+        manifest.characters.new.map(async (char) => {
+          const character = await packs.aggregate<Character>({
+            guildId,
+            character: char,
+          });
 
-        return {
-          id: `${manifest.id}:${character.id}`,
-          rating,
-        };
-      });
+          const rating = Rating.fromCharacter(character).stars;
+
+          return {
+            id: `${manifest.id}:${character.id}`,
+            rating,
+          };
+        }),
+      );
 
       pool = pool.concat(characters);
     }
-  });
+  }));
 
   return pool;
 }

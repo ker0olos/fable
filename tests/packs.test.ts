@@ -1889,6 +1889,7 @@ Deno.test('media character', async (test) => {
             ],
           } as any,
         },
+        role: CharacterRole.Main,
         character: {
           id: '2',
           packId: 'anilist',
@@ -1987,6 +1988,7 @@ Deno.test('media character', async (test) => {
             ],
           } as any,
         },
+        role: CharacterRole.Main,
         character: {
           id: '2',
           packId: 'anilist',
@@ -2081,6 +2083,7 @@ Deno.test('media character', async (test) => {
             ],
           } as any,
         },
+        role: CharacterRole.Main,
         character: {
           id: '2',
           packId: 'pack-id',
@@ -2138,6 +2141,7 @@ Deno.test('media character', async (test) => {
       assertEquals(result, {
         total: 0,
         next: false,
+        role: undefined,
         character: undefined,
         media: {
           id: '1',
