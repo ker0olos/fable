@@ -30,20 +30,23 @@ async function getFilteredCharacters(
     guildId,
   });
 
+  const partyIds = [
+    party?.member1?.id,
+    party?.member2?.id,
+    party?.member3?.id,
+    party?.member4?.id,
+    party?.member5?.id,
+  ];
+
+  const likesIds = likes
+    ?.map(({ characterId, mediaId }) => characterId ?? mediaId);
+
   characters = characters
-    .filter(({ id }) =>
-      // filter liked characters
-      !likes
-        ?.map(({ characterId }) => characterId)
-        .includes(id) &&
+    .filter(({ id, mediaId }) =>
       // filter party members
-      ![
-        party?.member1?.id,
-        party?.member2?.id,
-        party?.member3?.id,
-        party?.member4?.id,
-        party?.member5?.id,
-      ].includes(id)
+      !partyIds.includes(id) &&
+      // filter liked characters
+      !likesIds?.some((likeId) => likeId === id || likeId === mediaId)
     );
 
   return characters;

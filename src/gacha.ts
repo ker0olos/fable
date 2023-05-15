@@ -36,11 +36,11 @@ export type Pull = {
 
 const lowest = 1000;
 
-const relationFilter = [
+export const relationFilter = [
   MediaRelation.Parent,
-  // MediaRelation.Contains,
-  // MediaRelation.Prequel,
-  // MediaRelation.Sequel,
+  MediaRelation.Contains,
+  MediaRelation.Prequel,
+  MediaRelation.Sequel,
   // MediaRelation.SideStory,
   // MediaRelation.SpinOff,
 ];
