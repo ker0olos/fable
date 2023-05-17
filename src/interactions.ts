@@ -1095,7 +1095,9 @@ function override(
     if (type) {
       response.headers.set('Content-Type', type);
     }
+
     response.headers.set('Cache-Control', `public, max-age=${age}`);
+
     return response;
   };
 }
@@ -1108,14 +1110,22 @@ if (import.meta.main) {
   utils.serve({
     '/': handler,
     '/demo': demo,
-    // '/external/*': utils.proxy,
     '/webhooks/topgg': webhooks.topgg,
     '/invite': () =>
       Response.redirect(
         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`,
       ),
+    '/external/*': (r) => {
+      const { pathname, search } = new URL(r.url);
+
+      return Response.redirect(
+        `${config.imageProxyUrl}/${
+          pathname.substring('/external/'.length)
+        }${search}`,
+      );
+    },
     '/assets/:filename+': utils.serveStatic('../assets/public', {
-      intervene: override(604800),
+      intervene: override(86400),
       baseUrl: import.meta.url,
     }),
     '/:filename+': utils.serveStatic('../json', {

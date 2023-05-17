@@ -7,7 +7,7 @@
 [![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)][invite]
 [![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)][topgg]
 
-[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot)
+[![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)][invite]
 [![Demo](https://img.shields.io/badge/try-demo-blue)](https://fable.deno.dev/demo)
 [![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20support%20server&color=blue)][discord]
 
@@ -140,4 +140,4 @@ time, and how many people are working on Fable at any giving moment.
 
 [discord]: https://discord.gg/ceKyEfhyPQ
 [topgg]: https://top.gg/bot/1041970851559522304
-[invite]: https://discord.com/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot
+[invite]: https://fable.deno.dev/invite
