@@ -3,7 +3,7 @@ import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.4.3
 
 import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
 
-import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
+// import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
 import {
   decode as base64Decode,
@@ -233,108 +233,108 @@ function verifySignature(
   return { valid, body };
 }
 
-async function proxy(r: Request): Promise<Response> {
-  const { pathname, searchParams } = new URL(r.url);
+// async function proxy(r: Request): Promise<Response> {
+//   const { pathname, searchParams } = new URL(r.url);
 
-  try {
-    let cached = true;
+//   try {
+//     let cached = true;
 
-    const url = new URL(
-      decodeURIComponent(pathname.substring('/external/'.length)),
-    );
+//     const url = new URL(
+//       decodeURIComponent(pathname.substring('/external/'.length)),
+//     );
 
-    const response = await globalCache.match(url as unknown as Request) ??
-      (cached = false, await fetch(url, { signal: AbortSignal.timeout(3000) }));
+//     const response = await globalCache.match(url as unknown as Request) ??
+//       (cached = false, await fetch(url, { signal: AbortSignal.timeout(3000) }));
 
-    const type = response?.headers.get('content-type');
+//     const type = response?.headers.get('content-type');
 
-    const size = searchParams.get('size') as ImageSize || ImageSize.Large;
+//     const size = searchParams.get('size') as ImageSize || ImageSize.Large;
 
-    if (Number(response.headers.get('content-length')) > TEN_MIB) {
-      throw new Error();
-    }
+//     if (Number(response.headers.get('content-length')) > TEN_MIB) {
+//       throw new Error();
+//     }
 
-    // if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
-    if (type === 'image/gif') {
-      throw new Error();
-    }
+//     // if (type === 'image/gif' && !url.pathname.endsWith('.gif')) {
+//     if (type === 'image/gif') {
+//       throw new Error();
+//     }
 
-    if (response?.status !== 200 || !type?.startsWith('image/')) {
-      throw new Error();
-    }
+//     if (response?.status !== 200 || !type?.startsWith('image/')) {
+//       throw new Error();
+//     }
 
-    if (searchParams.has('blur')) {
-      throw new Error();
-    }
+//     if (searchParams.has('blur')) {
+//       throw new Error();
+//     }
 
-    const original = await response.arrayBuffer();
+//     const original = await response.arrayBuffer();
 
-    if (!cached) {
-      await globalCache.put(url as unknown as Request, new Response(original));
-    }
+//     if (!cached) {
+//       await globalCache.put(url as unknown as Request, new Response(original));
+//     }
 
-    const transformed = await imagescript.decode(original);
+//     const transformed = await imagescript.decode(original);
 
-    let proxy: Response | undefined = undefined;
+//     let proxy: Response | undefined = undefined;
 
-    if (transformed instanceof imagescript.Image) {
-      switch (size) {
-        case ImageSize.Preview:
-          transformed.cover(32, 32);
-          break;
-        case ImageSize.Thumbnail:
-          transformed.cover(110, 155);
-          break;
-        case ImageSize.Medium:
-          transformed.cover(230, 325);
-          break;
-        default:
-          transformed.cover(450, 635);
-          break;
-      }
+//     if (transformed instanceof imagescript.Image) {
+//       switch (size) {
+//         case ImageSize.Preview:
+//           transformed.cover(32, 32);
+//           break;
+//         case ImageSize.Thumbnail:
+//           transformed.cover(110, 155);
+//           break;
+//         case ImageSize.Medium:
+//           transformed.cover(230, 325);
+//           break;
+//         default:
+//           transformed.cover(450, 635);
+//           break;
+//       }
 
-      if (type === 'image/png') {
-        const t = await transformed.encode(2);
+//       if (type === 'image/png') {
+//         const t = await transformed.encode(2);
 
-        proxy = new Response(t);
+//         proxy = new Response(t);
 
-        proxy.headers.set('content-type', 'image/png');
-        proxy.headers.set('content-length', `${t.byteLength}`);
-      } else {
-        const t = await transformed.encodeJPEG(70);
+//         proxy.headers.set('content-type', 'image/png');
+//         proxy.headers.set('content-length', `${t.byteLength}`);
+//       } else {
+//         const t = await transformed.encodeJPEG(70);
 
-        proxy = new Response(t);
+//         proxy = new Response(t);
 
-        proxy.headers.set('content-type', 'image/jpeg');
-        proxy.headers.set('content-length', `${t.byteLength}`);
-      }
-    }
+//         proxy.headers.set('content-type', 'image/jpeg');
+//         proxy.headers.set('content-length', `${t.byteLength}`);
+//       }
+//     }
 
-    if (!proxy) {
-      throw new Error();
-    }
+//     if (!proxy) {
+//       throw new Error();
+//     }
 
-    proxy.headers.set('cache-control', 'public, max-age=604800');
+//     proxy.headers.set('cache-control', 'public, max-age=604800');
 
-    return proxy;
-  } catch {
-    let fileUrl = new URL('../assets/medium.png', import.meta.url);
+//     return proxy;
+//   } catch {
+//     let fileUrl = new URL('../assets/medium.png', import.meta.url);
 
-    if (r.url?.includes('?size=thumbnail')) {
-      fileUrl = new URL('../assets/thumbnail.png', import.meta.url);
-    }
+//     if (r.url?.includes('?size=thumbnail')) {
+//       fileUrl = new URL('../assets/thumbnail.png', import.meta.url);
+//     }
 
-    const body = await Deno.readFile(fileUrl);
+//     const body = await Deno.readFile(fileUrl);
 
-    const response = new Response(body);
+//     const response = new Response(body);
 
-    response.headers.set('content-type', 'image/png');
-    response.headers.set('cache-control', 'public, max-age=604800');
-    response.headers.set('content-length', `${body.byteLength}`);
+//     response.headers.set('content-type', 'image/png');
+//     response.headers.set('cache-control', 'public, max-age=604800');
+//     response.headers.set('content-length', `${body.byteLength}`);
 
-    return response;
-  }
-}
+//     return response;
+//   }
+// }
 
 async function readJson<T>(filePath: string): Promise<T> {
   try {
@@ -445,7 +445,7 @@ const utils = {
   initSentry,
   json,
   parseInt: _parseInt,
-  proxy,
+  // proxy,
   randint,
   diffInDays,
   readJson,
