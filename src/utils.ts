@@ -1,9 +1,9 @@
 // @deno-types="https://raw.githubusercontent.com/greggman/unzipit/v1.4.3/dist/unzipit.module.d.ts"
 import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.4.3/dist/unzipit.module.js';
 
-import ed25519 from 'https://esm.sh/@evan/wasm@0.0.95/target/ed25519/deno.js';
-
 // import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
+
+import nacl from 'https://esm.sh/tweetnacl@1.0.3';
 
 import {
   decode as base64Decode,
@@ -24,7 +24,7 @@ import {
 
 import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
 
-import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
+// import { inMemoryCache } from 'https://deno.land/x/httpcache@0.1.2/in_memory.ts';
 
 import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
 
@@ -35,9 +35,9 @@ export enum ImageSize {
   Large = 'large', // 450x635,
 }
 
-const TEN_MIB = 1024 * 1024 * 10;
+// const TEN_MIB = 1024 * 1024 * 10;
 
-const globalCache = inMemoryCache(20);
+// const globalCache = inMemoryCache(20);
 
 function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -222,12 +222,12 @@ function verifySignature(
     return { valid: false, body };
   }
 
-  const valid = ed25519.verify(
-    // deno-lint-ignore no-non-null-assertion
-    hexToUint8Array(publicKey)!,
+  const valid = nacl.sign.detached.verify(
+    new TextEncoder().encode(timestamp + body),
     // deno-lint-ignore no-non-null-assertion
     hexToUint8Array(signature)!,
-    new TextEncoder().encode(timestamp + body),
+    // deno-lint-ignore no-non-null-assertion
+    hexToUint8Array(publicKey)!,
   );
 
   return { valid, body };

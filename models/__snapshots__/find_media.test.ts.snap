@@ -2,25 +2,25 @@ export const snapshot = {};
 
 snapshot[`model 1`] = `
 [
-  Expr {
+  U {
     raw: {
-      else: Expr {
+      else: U {
         raw: {
-          create_index: Expr {
+          create_index: U {
             raw: {
               object: {
                 name: "unsorted_media_instance_id",
-                source: Expr {
+                source: U {
                   raw: {
                     collection: "character",
                   },
                 },
-                terms: Expr {
+                terms: U {
                   raw: [
-                    Expr {
+                    U {
                       raw: {
                         object: {
-                          field: Expr {
+                          field: U {
                             raw: [
                               "data",
                               "mediaId",
@@ -29,10 +29,10 @@ snapshot[`model 1`] = `
                         },
                       },
                     },
-                    Expr {
+                    U {
                       raw: {
                         object: {
-                          field: Expr {
+                          field: U {
                             raw: [
                               "data",
                               "instance",
@@ -50,32 +50,32 @@ snapshot[`model 1`] = `
           },
         },
       },
-      if: Expr {
+      if: U {
         raw: {
-          exists: Expr {
+          exists: U {
             raw: {
               index: "unsorted_media_instance_id",
             },
           },
         },
       },
-      then: Expr {
+      then: U {
         raw: {
-          params: Expr {
+          params: U {
             raw: {
               object: {
                 name: "unsorted_media_instance_id",
-                source: Expr {
+                source: U {
                   raw: {
                     collection: "character",
                   },
                 },
-                terms: Expr {
+                terms: U {
                   raw: [
-                    Expr {
+                    U {
                       raw: {
                         object: {
-                          field: Expr {
+                          field: U {
                             raw: [
                               "data",
                               "mediaId",
@@ -84,10 +84,10 @@ snapshot[`model 1`] = `
                         },
                       },
                     },
-                    Expr {
+                    U {
                       raw: {
                         object: {
-                          field: Expr {
+                          field: U {
                             raw: [
                               "data",
                               "instance",
@@ -103,7 +103,7 @@ snapshot[`model 1`] = `
               },
             },
           },
-          update: Expr {
+          update: U {
             raw: {
               index: "unsorted_media_instance_id",
             },
@@ -117,25 +117,25 @@ snapshot[`model 1`] = `
 
 snapshot[`model 2`] = `
 [
-  Expr {
+  U {
     raw: {
-      else: Expr {
+      else: U {
         raw: {
-          create_index: Expr {
+          create_index: U {
             raw: {
               object: {
                 name: "characters_instance_id",
-                source: Expr {
+                source: U {
                   raw: {
                     collection: "character",
                   },
                 },
-                terms: Expr {
+                terms: U {
                   raw: [
-                    Expr {
+                    U {
                       raw: {
                         object: {
-                          field: Expr {
+                          field: U {
                             raw: [
                               "data",
                               "id",
@@ -144,10 +144,10 @@ snapshot[`model 2`] = `
                         },
                       },
                     },
-                    Expr {
+                    U {
                       raw: {
                         object: {
-                          field: Expr {
+                          field: U {
                             raw: [
                               "data",
                               "instance",
@@ -165,32 +165,32 @@ snapshot[`model 2`] = `
           },
         },
       },
-      if: Expr {
+      if: U {
         raw: {
-          exists: Expr {
+          exists: U {
             raw: {
               index: "characters_instance_id",
             },
           },
         },
       },
-      then: Expr {
+      then: U {
         raw: {
-          params: Expr {
+          params: U {
             raw: {
               object: {
                 name: "characters_instance_id",
-                source: Expr {
+                source: U {
                   raw: {
                     collection: "character",
                   },
                 },
-                terms: Expr {
+                terms: U {
                   raw: [
-                    Expr {
+                    U {
                       raw: {
                         object: {
-                          field: Expr {
+                          field: U {
                             raw: [
                               "data",
                               "id",
@@ -199,10 +199,10 @@ snapshot[`model 2`] = `
                         },
                       },
                     },
-                    Expr {
+                    U {
                       raw: {
                         object: {
-                          field: Expr {
+                          field: U {
                             raw: [
                               "data",
                               "instance",
@@ -218,7 +218,7 @@ snapshot[`model 2`] = `
               },
             },
           },
-          update: Expr {
+          update: U {
             raw: {
               index: "characters_instance_id",
             },
@@ -232,41 +232,41 @@ snapshot[`model 2`] = `
 
 snapshot[`model 3`] = `
 [
-  Expr {
+  U {
     raw: {
-      else: Expr {
+      else: U {
         raw: {
-          create_function: Expr {
+          create_function: U {
             raw: {
               object: {
-                body: Expr {
+                body: U {
                   raw: {
-                    query: Expr {
+                    query: U {
                       raw: {
-                        expr: Expr {
+                        expr: U {
                           raw: {
-                            in: Expr {
+                            in: U {
                               raw: {
-                                in: Expr {
+                                in: U {
                                   raw: {
-                                    collection: Expr {
+                                    collection: U {
                                       raw: {
-                                        collection: Expr {
+                                        collection: U {
                                           raw: {
                                             var: "matches",
                                           },
                                         },
-                                        map: Expr {
+                                        map: U {
                                           raw: {
-                                            expr: Expr {
+                                            expr: U {
                                               raw: {
-                                                collection: Expr {
+                                                collection: U {
                                                   raw: {
-                                                    from: Expr {
+                                                    from: U {
                                                       raw: {
                                                         after: undefined,
                                                         before: undefined,
-                                                        paginate: Expr {
+                                                        paginate: U {
                                                           raw: {
                                                             var: "match",
                                                           },
@@ -274,18 +274,18 @@ snapshot[`model 3`] = `
                                                         size: 1000,
                                                       },
                                                     },
-                                                    select: Expr {
+                                                    select: U {
                                                       raw: [
                                                         "data",
                                                       ],
                                                     },
                                                   },
                                                 },
-                                                map: Expr {
+                                                map: U {
                                                   raw: {
-                                                    expr: Expr {
+                                                    expr: U {
                                                       raw: {
-                                                        get: Expr {
+                                                        get: U {
                                                           raw: {
                                                             var: "refOrMatch",
                                                           },
@@ -302,26 +302,26 @@ snapshot[`model 3`] = `
                                         },
                                       },
                                     },
-                                    initial: Expr {
+                                    initial: U {
                                       raw: [],
                                     },
-                                    reduce: Expr {
+                                    reduce: U {
                                       raw: {
-                                        expr: Expr {
+                                        expr: U {
                                           raw: {
-                                            collection: Expr {
+                                            collection: U {
                                               raw: {
                                                 var: "b",
                                               },
                                             },
-                                            prepend: Expr {
+                                            prepend: U {
                                               raw: {
                                                 var: "a",
                                               },
                                             },
                                           },
                                         },
-                                        lambda: Expr {
+                                        lambda: U {
                                           raw: [
                                             "a",
                                             "b",
@@ -333,32 +333,32 @@ snapshot[`model 3`] = `
                                 },
                                 let: [
                                   {
-                                    matches: Expr {
+                                    matches: U {
                                       raw: {
-                                        collection: Expr {
+                                        collection: U {
                                           raw: {
                                             var: "mediaIds",
                                           },
                                         },
-                                        map: Expr {
+                                        map: U {
                                           raw: {
-                                            expr: Expr {
+                                            expr: U {
                                               raw: {
-                                                match: Expr {
+                                                match: U {
                                                   raw: {
                                                     index: "unsorted_media_instance_id",
                                                   },
                                                 },
-                                                terms: Expr {
+                                                terms: U {
                                                   raw: [
-                                                    Expr {
+                                                    U {
                                                       raw: {
                                                         var: "mediaId",
                                                       },
                                                     },
-                                                    Expr {
+                                                    U {
                                                       raw: {
-                                                        from: Expr {
+                                                        from: U {
                                                           raw: {
                                                             var: "instance",
                                                           },
@@ -381,29 +381,29 @@ snapshot[`model 3`] = `
                             },
                             let: [
                               {
-                                guild: Expr {
+                                guild: U {
                                   raw: {
-                                    in: Expr {
+                                    in: U {
                                       raw: {
-                                        else: Expr {
+                                        else: U {
                                           raw: {
-                                            create: Expr {
+                                            create: U {
                                               raw: {
                                                 collection: "guild",
                                               },
                                             },
-                                            params: Expr {
+                                            params: U {
                                               raw: {
                                                 object: {
-                                                  data: Expr {
+                                                  data: U {
                                                     raw: {
                                                       object: {
-                                                        id: Expr {
+                                                        id: U {
                                                           raw: {
                                                             var: "guildId",
                                                           },
                                                         },
-                                                        instances: Expr {
+                                                        instances: U {
                                                           raw: [],
                                                         },
                                                       },
@@ -414,18 +414,18 @@ snapshot[`model 3`] = `
                                             },
                                           },
                                         },
-                                        if: Expr {
+                                        if: U {
                                           raw: {
-                                            is_nonempty: Expr {
+                                            is_nonempty: U {
                                               raw: {
                                                 var: "match",
                                               },
                                             },
                                           },
                                         },
-                                        then: Expr {
+                                        then: U {
                                           raw: {
-                                            get: Expr {
+                                            get: U {
                                               raw: {
                                                 var: "match",
                                               },
@@ -436,14 +436,14 @@ snapshot[`model 3`] = `
                                     },
                                     let: [
                                       {
-                                        match: Expr {
+                                        match: U {
                                           raw: {
-                                            match: Expr {
+                                            match: U {
                                               raw: {
                                                 index: "guilds_discord_id",
                                               },
                                             },
-                                            terms: Expr {
+                                            terms: U {
                                               raw: {
                                                 var: "guildId",
                                               },
@@ -456,35 +456,35 @@ snapshot[`model 3`] = `
                                 },
                               },
                               {
-                                instance: Expr {
+                                instance: U {
                                   raw: {
-                                    in: Expr {
+                                    in: U {
                                       raw: {
-                                        else: Expr {
+                                        else: U {
                                           raw: {
-                                            in: Expr {
+                                            in: U {
                                               raw: {
                                                 var: "createdInstance",
                                               },
                                             },
                                             let: [
                                               {
-                                                createdInstance: Expr {
+                                                createdInstance: U {
                                                   raw: {
-                                                    create: Expr {
+                                                    create: U {
                                                       raw: {
                                                         collection: "instance",
                                                       },
                                                     },
-                                                    params: Expr {
+                                                    params: U {
                                                       raw: {
                                                         object: {
-                                                          data: Expr {
+                                                          data: U {
                                                             raw: {
                                                               object: {
-                                                                guild: Expr {
+                                                                guild: U {
                                                                   raw: {
-                                                                    from: Expr {
+                                                                    from: U {
                                                                       raw: {
                                                                         var: "guild",
                                                                       },
@@ -492,11 +492,11 @@ snapshot[`model 3`] = `
                                                                     select: "ref",
                                                                   },
                                                                 },
-                                                                inventories: Expr {
+                                                                inventories: U {
                                                                   raw: [],
                                                                 },
                                                                 main: true,
-                                                                packs: Expr {
+                                                                packs: U {
                                                                   raw: [],
                                                                 },
                                                               },
@@ -509,19 +509,19 @@ snapshot[`model 3`] = `
                                                 },
                                               },
                                               {
-                                                updatedGuild: Expr {
+                                                updatedGuild: U {
                                                   raw: {
-                                                    params: Expr {
+                                                    params: U {
                                                       raw: {
                                                         object: {
-                                                          data: Expr {
+                                                          data: U {
                                                             raw: {
                                                               object: {
-                                                                instances: Expr {
+                                                                instances: U {
                                                                   raw: [
-                                                                    Expr {
+                                                                    U {
                                                                       raw: {
-                                                                        from: Expr {
+                                                                        from: U {
                                                                           raw: {
                                                                             var: "createdInstance",
                                                                           },
@@ -537,9 +537,9 @@ snapshot[`model 3`] = `
                                                         },
                                                       },
                                                     },
-                                                    update: Expr {
+                                                    update: U {
                                                       raw: {
-                                                        from: Expr {
+                                                        from: U {
                                                           raw: {
                                                             var: "guild",
                                                           },
@@ -553,25 +553,25 @@ snapshot[`model 3`] = `
                                             ],
                                           },
                                         },
-                                        if: Expr {
+                                        if: U {
                                           raw: {
-                                            is_nonempty: Expr {
+                                            is_nonempty: U {
                                               raw: {
                                                 var: "match",
                                               },
                                             },
                                           },
                                         },
-                                        then: Expr {
+                                        then: U {
                                           raw: {
-                                            get: Expr {
+                                            get: U {
                                               raw: {
-                                                from: Expr {
+                                                from: U {
                                                   raw: {
                                                     var: "match",
                                                   },
                                                 },
-                                                select: Expr {
+                                                select: U {
                                                   raw: [
                                                     0,
                                                   ],
@@ -584,14 +584,14 @@ snapshot[`model 3`] = `
                                     },
                                     let: [
                                       {
-                                        match: Expr {
+                                        match: U {
                                           raw: {
-                                            from: Expr {
+                                            from: U {
                                               raw: {
                                                 var: "guild",
                                               },
                                             },
-                                            select: Expr {
+                                            select: U {
                                               raw: [
                                                 "data",
                                                 "instances",
@@ -607,7 +607,7 @@ snapshot[`model 3`] = `
                             ],
                           },
                         },
-                        lambda: Expr {
+                        lambda: U {
                           raw: [
                             "mediaIds",
                             "guildId",
@@ -623,48 +623,48 @@ snapshot[`model 3`] = `
           },
         },
       },
-      if: Expr {
+      if: U {
         raw: {
-          exists: Expr {
+          exists: U {
             raw: {
               function: "find_media",
             },
           },
         },
       },
-      then: Expr {
+      then: U {
         raw: {
-          params: Expr {
+          params: U {
             raw: {
               object: {
-                body: Expr {
+                body: U {
                   raw: {
-                    query: Expr {
+                    query: U {
                       raw: {
-                        expr: Expr {
+                        expr: U {
                           raw: {
-                            in: Expr {
+                            in: U {
                               raw: {
-                                in: Expr {
+                                in: U {
                                   raw: {
-                                    collection: Expr {
+                                    collection: U {
                                       raw: {
-                                        collection: Expr {
+                                        collection: U {
                                           raw: {
                                             var: "matches",
                                           },
                                         },
-                                        map: Expr {
+                                        map: U {
                                           raw: {
-                                            expr: Expr {
+                                            expr: U {
                                               raw: {
-                                                collection: Expr {
+                                                collection: U {
                                                   raw: {
-                                                    from: Expr {
+                                                    from: U {
                                                       raw: {
                                                         after: undefined,
                                                         before: undefined,
-                                                        paginate: Expr {
+                                                        paginate: U {
                                                           raw: {
                                                             var: "match",
                                                           },
@@ -672,18 +672,18 @@ snapshot[`model 3`] = `
                                                         size: 1000,
                                                       },
                                                     },
-                                                    select: Expr {
+                                                    select: U {
                                                       raw: [
                                                         "data",
                                                       ],
                                                     },
                                                   },
                                                 },
-                                                map: Expr {
+                                                map: U {
                                                   raw: {
-                                                    expr: Expr {
+                                                    expr: U {
                                                       raw: {
-                                                        get: Expr {
+                                                        get: U {
                                                           raw: {
                                                             var: "refOrMatch",
                                                           },
@@ -700,26 +700,26 @@ snapshot[`model 3`] = `
                                         },
                                       },
                                     },
-                                    initial: Expr {
+                                    initial: U {
                                       raw: [],
                                     },
-                                    reduce: Expr {
+                                    reduce: U {
                                       raw: {
-                                        expr: Expr {
+                                        expr: U {
                                           raw: {
-                                            collection: Expr {
+                                            collection: U {
                                               raw: {
                                                 var: "b",
                                               },
                                             },
-                                            prepend: Expr {
+                                            prepend: U {
                                               raw: {
                                                 var: "a",
                                               },
                                             },
                                           },
                                         },
-                                        lambda: Expr {
+                                        lambda: U {
                                           raw: [
                                             "a",
                                             "b",
@@ -731,32 +731,32 @@ snapshot[`model 3`] = `
                                 },
                                 let: [
                                   {
-                                    matches: Expr {
+                                    matches: U {
                                       raw: {
-                                        collection: Expr {
+                                        collection: U {
                                           raw: {
                                             var: "mediaIds",
                                           },
                                         },
-                                        map: Expr {
+                                        map: U {
                                           raw: {
-                                            expr: Expr {
+                                            expr: U {
                                               raw: {
-                                                match: Expr {
+                                                match: U {
                                                   raw: {
                                                     index: "unsorted_media_instance_id",
                                                   },
                                                 },
-                                                terms: Expr {
+                                                terms: U {
                                                   raw: [
-                                                    Expr {
+                                                    U {
                                                       raw: {
                                                         var: "mediaId",
                                                       },
                                                     },
-                                                    Expr {
+                                                    U {
                                                       raw: {
-                                                        from: Expr {
+                                                        from: U {
                                                           raw: {
                                                             var: "instance",
                                                           },
@@ -779,29 +779,29 @@ snapshot[`model 3`] = `
                             },
                             let: [
                               {
-                                guild: Expr {
+                                guild: U {
                                   raw: {
-                                    in: Expr {
+                                    in: U {
                                       raw: {
-                                        else: Expr {
+                                        else: U {
                                           raw: {
-                                            create: Expr {
+                                            create: U {
                                               raw: {
                                                 collection: "guild",
                                               },
                                             },
-                                            params: Expr {
+                                            params: U {
                                               raw: {
                                                 object: {
-                                                  data: Expr {
+                                                  data: U {
                                                     raw: {
                                                       object: {
-                                                        id: Expr {
+                                                        id: U {
                                                           raw: {
                                                             var: "guildId",
                                                           },
                                                         },
-                                                        instances: Expr {
+                                                        instances: U {
                                                           raw: [],
                                                         },
                                                       },
@@ -812,18 +812,18 @@ snapshot[`model 3`] = `
                                             },
                                           },
                                         },
-                                        if: Expr {
+                                        if: U {
                                           raw: {
-                                            is_nonempty: Expr {
+                                            is_nonempty: U {
                                               raw: {
                                                 var: "match",
                                               },
                                             },
                                           },
                                         },
-                                        then: Expr {
+                                        then: U {
                                           raw: {
-                                            get: Expr {
+                                            get: U {
                                               raw: {
                                                 var: "match",
                                               },
@@ -834,14 +834,14 @@ snapshot[`model 3`] = `
                                     },
                                     let: [
                                       {
-                                        match: Expr {
+                                        match: U {
                                           raw: {
-                                            match: Expr {
+                                            match: U {
                                               raw: {
                                                 index: "guilds_discord_id",
                                               },
                                             },
-                                            terms: Expr {
+                                            terms: U {
                                               raw: {
                                                 var: "guildId",
                                               },
@@ -854,35 +854,35 @@ snapshot[`model 3`] = `
                                 },
                               },
                               {
-                                instance: Expr {
+                                instance: U {
                                   raw: {
-                                    in: Expr {
+                                    in: U {
                                       raw: {
-                                        else: Expr {
+                                        else: U {
                                           raw: {
-                                            in: Expr {
+                                            in: U {
                                               raw: {
                                                 var: "createdInstance",
                                               },
                                             },
                                             let: [
                                               {
-                                                createdInstance: Expr {
+                                                createdInstance: U {
                                                   raw: {
-                                                    create: Expr {
+                                                    create: U {
                                                       raw: {
                                                         collection: "instance",
                                                       },
                                                     },
-                                                    params: Expr {
+                                                    params: U {
                                                       raw: {
                                                         object: {
-                                                          data: Expr {
+                                                          data: U {
                                                             raw: {
                                                               object: {
-                                                                guild: Expr {
+                                                                guild: U {
                                                                   raw: {
-                                                                    from: Expr {
+                                                                    from: U {
                                                                       raw: {
                                                                         var: "guild",
                                                                       },
@@ -890,11 +890,11 @@ snapshot[`model 3`] = `
                                                                     select: "ref",
                                                                   },
                                                                 },
-                                                                inventories: Expr {
+                                                                inventories: U {
                                                                   raw: [],
                                                                 },
                                                                 main: true,
-                                                                packs: Expr {
+                                                                packs: U {
                                                                   raw: [],
                                                                 },
                                                               },
@@ -907,19 +907,19 @@ snapshot[`model 3`] = `
                                                 },
                                               },
                                               {
-                                                updatedGuild: Expr {
+                                                updatedGuild: U {
                                                   raw: {
-                                                    params: Expr {
+                                                    params: U {
                                                       raw: {
                                                         object: {
-                                                          data: Expr {
+                                                          data: U {
                                                             raw: {
                                                               object: {
-                                                                instances: Expr {
+                                                                instances: U {
                                                                   raw: [
-                                                                    Expr {
+                                                                    U {
                                                                       raw: {
-                                                                        from: Expr {
+                                                                        from: U {
                                                                           raw: {
                                                                             var: "createdInstance",
                                                                           },
@@ -935,9 +935,9 @@ snapshot[`model 3`] = `
                                                         },
                                                       },
                                                     },
-                                                    update: Expr {
+                                                    update: U {
                                                       raw: {
-                                                        from: Expr {
+                                                        from: U {
                                                           raw: {
                                                             var: "guild",
                                                           },
@@ -951,25 +951,25 @@ snapshot[`model 3`] = `
                                             ],
                                           },
                                         },
-                                        if: Expr {
+                                        if: U {
                                           raw: {
-                                            is_nonempty: Expr {
+                                            is_nonempty: U {
                                               raw: {
                                                 var: "match",
                                               },
                                             },
                                           },
                                         },
-                                        then: Expr {
+                                        then: U {
                                           raw: {
-                                            get: Expr {
+                                            get: U {
                                               raw: {
-                                                from: Expr {
+                                                from: U {
                                                   raw: {
                                                     var: "match",
                                                   },
                                                 },
-                                                select: Expr {
+                                                select: U {
                                                   raw: [
                                                     0,
                                                   ],
@@ -982,14 +982,14 @@ snapshot[`model 3`] = `
                                     },
                                     let: [
                                       {
-                                        match: Expr {
+                                        match: U {
                                           raw: {
-                                            from: Expr {
+                                            from: U {
                                               raw: {
                                                 var: "guild",
                                               },
                                             },
-                                            select: Expr {
+                                            select: U {
                                               raw: [
                                                 "data",
                                                 "instances",
@@ -1005,7 +1005,7 @@ snapshot[`model 3`] = `
                             ],
                           },
                         },
-                        lambda: Expr {
+                        lambda: U {
                           raw: [
                             "mediaIds",
                             "guildId",
@@ -1019,7 +1019,7 @@ snapshot[`model 3`] = `
               },
             },
           },
-          update: Expr {
+          update: U {
             raw: {
               function: "find_media",
             },
@@ -1033,36 +1033,36 @@ snapshot[`model 3`] = `
 
 snapshot[`model 4`] = `
 [
-  Expr {
+  U {
     raw: {
-      else: Expr {
+      else: U {
         raw: {
-          create_function: Expr {
+          create_function: U {
             raw: {
               object: {
-                body: Expr {
+                body: U {
                   raw: {
-                    query: Expr {
+                    query: U {
                       raw: {
-                        expr: Expr {
+                        expr: U {
                           raw: {
-                            in: Expr {
+                            in: U {
                               raw: {
-                                in: Expr {
+                                in: U {
                                   raw: {
                                     else: null,
-                                    if: Expr {
+                                    if: U {
                                       raw: {
-                                        is_nonempty: Expr {
+                                        is_nonempty: U {
                                           raw: {
                                             var: "match",
                                           },
                                         },
                                       },
                                     },
-                                    then: Expr {
+                                    then: U {
                                       raw: {
-                                        get: Expr {
+                                        get: U {
                                           raw: {
                                             var: "match",
                                           },
@@ -1073,23 +1073,23 @@ snapshot[`model 4`] = `
                                 },
                                 let: [
                                   {
-                                    match: Expr {
+                                    match: U {
                                       raw: {
-                                        match: Expr {
+                                        match: U {
                                           raw: {
                                             index: "characters_instance_id",
                                           },
                                         },
-                                        terms: Expr {
+                                        terms: U {
                                           raw: [
-                                            Expr {
+                                            U {
                                               raw: {
                                                 var: "characterId",
                                               },
                                             },
-                                            Expr {
+                                            U {
                                               raw: {
-                                                from: Expr {
+                                                from: U {
                                                   raw: {
                                                     var: "instance",
                                                   },
@@ -1107,29 +1107,29 @@ snapshot[`model 4`] = `
                             },
                             let: [
                               {
-                                guild: Expr {
+                                guild: U {
                                   raw: {
-                                    in: Expr {
+                                    in: U {
                                       raw: {
-                                        else: Expr {
+                                        else: U {
                                           raw: {
-                                            create: Expr {
+                                            create: U {
                                               raw: {
                                                 collection: "guild",
                                               },
                                             },
-                                            params: Expr {
+                                            params: U {
                                               raw: {
                                                 object: {
-                                                  data: Expr {
+                                                  data: U {
                                                     raw: {
                                                       object: {
-                                                        id: Expr {
+                                                        id: U {
                                                           raw: {
                                                             var: "guildId",
                                                           },
                                                         },
-                                                        instances: Expr {
+                                                        instances: U {
                                                           raw: [],
                                                         },
                                                       },
@@ -1140,18 +1140,18 @@ snapshot[`model 4`] = `
                                             },
                                           },
                                         },
-                                        if: Expr {
+                                        if: U {
                                           raw: {
-                                            is_nonempty: Expr {
+                                            is_nonempty: U {
                                               raw: {
                                                 var: "match",
                                               },
                                             },
                                           },
                                         },
-                                        then: Expr {
+                                        then: U {
                                           raw: {
-                                            get: Expr {
+                                            get: U {
                                               raw: {
                                                 var: "match",
                                               },
@@ -1162,14 +1162,14 @@ snapshot[`model 4`] = `
                                     },
                                     let: [
                                       {
-                                        match: Expr {
+                                        match: U {
                                           raw: {
-                                            match: Expr {
+                                            match: U {
                                               raw: {
                                                 index: "guilds_discord_id",
                                               },
                                             },
-                                            terms: Expr {
+                                            terms: U {
                                               raw: {
                                                 var: "guildId",
                                               },
@@ -1182,35 +1182,35 @@ snapshot[`model 4`] = `
                                 },
                               },
                               {
-                                instance: Expr {
+                                instance: U {
                                   raw: {
-                                    in: Expr {
+                                    in: U {
                                       raw: {
-                                        else: Expr {
+                                        else: U {
                                           raw: {
-                                            in: Expr {
+                                            in: U {
                                               raw: {
                                                 var: "createdInstance",
                                               },
                                             },
                                             let: [
                                               {
-                                                createdInstance: Expr {
+                                                createdInstance: U {
                                                   raw: {
-                                                    create: Expr {
+                                                    create: U {
                                                       raw: {
                                                         collection: "instance",
                                                       },
                                                     },
-                                                    params: Expr {
+                                                    params: U {
                                                       raw: {
                                                         object: {
-                                                          data: Expr {
+                                                          data: U {
                                                             raw: {
                                                               object: {
-                                                                guild: Expr {
+                                                                guild: U {
                                                                   raw: {
-                                                                    from: Expr {
+                                                                    from: U {
                                                                       raw: {
                                                                         var: "guild",
                                                                       },
@@ -1218,11 +1218,11 @@ snapshot[`model 4`] = `
                                                                     select: "ref",
                                                                   },
                                                                 },
-                                                                inventories: Expr {
+                                                                inventories: U {
                                                                   raw: [],
                                                                 },
                                                                 main: true,
-                                                                packs: Expr {
+                                                                packs: U {
                                                                   raw: [],
                                                                 },
                                                               },
@@ -1235,19 +1235,19 @@ snapshot[`model 4`] = `
                                                 },
                                               },
                                               {
-                                                updatedGuild: Expr {
+                                                updatedGuild: U {
                                                   raw: {
-                                                    params: Expr {
+                                                    params: U {
                                                       raw: {
                                                         object: {
-                                                          data: Expr {
+                                                          data: U {
                                                             raw: {
                                                               object: {
-                                                                instances: Expr {
+                                                                instances: U {
                                                                   raw: [
-                                                                    Expr {
+                                                                    U {
                                                                       raw: {
-                                                                        from: Expr {
+                                                                        from: U {
                                                                           raw: {
                                                                             var: "createdInstance",
                                                                           },
@@ -1263,9 +1263,9 @@ snapshot[`model 4`] = `
                                                         },
                                                       },
                                                     },
-                                                    update: Expr {
+                                                    update: U {
                                                       raw: {
-                                                        from: Expr {
+                                                        from: U {
                                                           raw: {
                                                             var: "guild",
                                                           },
@@ -1279,25 +1279,25 @@ snapshot[`model 4`] = `
                                             ],
                                           },
                                         },
-                                        if: Expr {
+                                        if: U {
                                           raw: {
-                                            is_nonempty: Expr {
+                                            is_nonempty: U {
                                               raw: {
                                                 var: "match",
                                               },
                                             },
                                           },
                                         },
-                                        then: Expr {
+                                        then: U {
                                           raw: {
-                                            get: Expr {
+                                            get: U {
                                               raw: {
-                                                from: Expr {
+                                                from: U {
                                                   raw: {
                                                     var: "match",
                                                   },
                                                 },
-                                                select: Expr {
+                                                select: U {
                                                   raw: [
                                                     0,
                                                   ],
@@ -1310,14 +1310,14 @@ snapshot[`model 4`] = `
                                     },
                                     let: [
                                       {
-                                        match: Expr {
+                                        match: U {
                                           raw: {
-                                            from: Expr {
+                                            from: U {
                                               raw: {
                                                 var: "guild",
                                               },
                                             },
-                                            select: Expr {
+                                            select: U {
                                               raw: [
                                                 "data",
                                                 "instances",
@@ -1333,7 +1333,7 @@ snapshot[`model 4`] = `
                             ],
                           },
                         },
-                        lambda: Expr {
+                        lambda: U {
                           raw: [
                             "characterId",
                             "guildId",
@@ -1349,43 +1349,43 @@ snapshot[`model 4`] = `
           },
         },
       },
-      if: Expr {
+      if: U {
         raw: {
-          exists: Expr {
+          exists: U {
             raw: {
               function: "find_character",
             },
           },
         },
       },
-      then: Expr {
+      then: U {
         raw: {
-          params: Expr {
+          params: U {
             raw: {
               object: {
-                body: Expr {
+                body: U {
                   raw: {
-                    query: Expr {
+                    query: U {
                       raw: {
-                        expr: Expr {
+                        expr: U {
                           raw: {
-                            in: Expr {
+                            in: U {
                               raw: {
-                                in: Expr {
+                                in: U {
                                   raw: {
                                     else: null,
-                                    if: Expr {
+                                    if: U {
                                       raw: {
-                                        is_nonempty: Expr {
+                                        is_nonempty: U {
                                           raw: {
                                             var: "match",
                                           },
                                         },
                                       },
                                     },
-                                    then: Expr {
+                                    then: U {
                                       raw: {
-                                        get: Expr {
+                                        get: U {
                                           raw: {
                                             var: "match",
                                           },
@@ -1396,23 +1396,23 @@ snapshot[`model 4`] = `
                                 },
                                 let: [
                                   {
-                                    match: Expr {
+                                    match: U {
                                       raw: {
-                                        match: Expr {
+                                        match: U {
                                           raw: {
                                             index: "characters_instance_id",
                                           },
                                         },
-                                        terms: Expr {
+                                        terms: U {
                                           raw: [
-                                            Expr {
+                                            U {
                                               raw: {
                                                 var: "characterId",
                                               },
                                             },
-                                            Expr {
+                                            U {
                                               raw: {
-                                                from: Expr {
+                                                from: U {
                                                   raw: {
                                                     var: "instance",
                                                   },
@@ -1430,29 +1430,29 @@ snapshot[`model 4`] = `
                             },
                             let: [
                               {
-                                guild: Expr {
+                                guild: U {
                                   raw: {
-                                    in: Expr {
+                                    in: U {
                                       raw: {
-                                        else: Expr {
+                                        else: U {
                                           raw: {
-                                            create: Expr {
+                                            create: U {
                                               raw: {
                                                 collection: "guild",
                                               },
                                             },
-                                            params: Expr {
+                                            params: U {
                                               raw: {
                                                 object: {
-                                                  data: Expr {
+                                                  data: U {
                                                     raw: {
                                                       object: {
-                                                        id: Expr {
+                                                        id: U {
                                                           raw: {
                                                             var: "guildId",
                                                           },
                                                         },
-                                                        instances: Expr {
+                                                        instances: U {
                                                           raw: [],
                                                         },
                                                       },
@@ -1463,18 +1463,18 @@ snapshot[`model 4`] = `
                                             },
                                           },
                                         },
-                                        if: Expr {
+                                        if: U {
                                           raw: {
-                                            is_nonempty: Expr {
+                                            is_nonempty: U {
                                               raw: {
                                                 var: "match",
                                               },
                                             },
                                           },
                                         },
-                                        then: Expr {
+                                        then: U {
                                           raw: {
-                                            get: Expr {
+                                            get: U {
                                               raw: {
                                                 var: "match",
                                               },
@@ -1485,14 +1485,14 @@ snapshot[`model 4`] = `
                                     },
                                     let: [
                                       {
-                                        match: Expr {
+                                        match: U {
                                           raw: {
-                                            match: Expr {
+                                            match: U {
                                               raw: {
                                                 index: "guilds_discord_id",
                                               },
                                             },
-                                            terms: Expr {
+                                            terms: U {
                                               raw: {
                                                 var: "guildId",
                                               },
@@ -1505,35 +1505,35 @@ snapshot[`model 4`] = `
                                 },
                               },
                               {
-                                instance: Expr {
+                                instance: U {
                                   raw: {
-                                    in: Expr {
+                                    in: U {
                                       raw: {
-                                        else: Expr {
+                                        else: U {
                                           raw: {
-                                            in: Expr {
+                                            in: U {
                                               raw: {
                                                 var: "createdInstance",
                                               },
                                             },
                                             let: [
                                               {
-                                                createdInstance: Expr {
+                                                createdInstance: U {
                                                   raw: {
-                                                    create: Expr {
+                                                    create: U {
                                                       raw: {
                                                         collection: "instance",
                                                       },
                                                     },
-                                                    params: Expr {
+                                                    params: U {
                                                       raw: {
                                                         object: {
-                                                          data: Expr {
+                                                          data: U {
                                                             raw: {
                                                               object: {
-                                                                guild: Expr {
+                                                                guild: U {
                                                                   raw: {
-                                                                    from: Expr {
+                                                                    from: U {
                                                                       raw: {
                                                                         var: "guild",
                                                                       },
@@ -1541,11 +1541,11 @@ snapshot[`model 4`] = `
                                                                     select: "ref",
                                                                   },
                                                                 },
-                                                                inventories: Expr {
+                                                                inventories: U {
                                                                   raw: [],
                                                                 },
                                                                 main: true,
-                                                                packs: Expr {
+                                                                packs: U {
                                                                   raw: [],
                                                                 },
                                                               },
@@ -1558,19 +1558,19 @@ snapshot[`model 4`] = `
                                                 },
                                               },
                                               {
-                                                updatedGuild: Expr {
+                                                updatedGuild: U {
                                                   raw: {
-                                                    params: Expr {
+                                                    params: U {
                                                       raw: {
                                                         object: {
-                                                          data: Expr {
+                                                          data: U {
                                                             raw: {
                                                               object: {
-                                                                instances: Expr {
+                                                                instances: U {
                                                                   raw: [
-                                                                    Expr {
+                                                                    U {
                                                                       raw: {
-                                                                        from: Expr {
+                                                                        from: U {
                                                                           raw: {
                                                                             var: "createdInstance",
                                                                           },
@@ -1586,9 +1586,9 @@ snapshot[`model 4`] = `
                                                         },
                                                       },
                                                     },
-                                                    update: Expr {
+                                                    update: U {
                                                       raw: {
-                                                        from: Expr {
+                                                        from: U {
                                                           raw: {
                                                             var: "guild",
                                                           },
@@ -1602,25 +1602,25 @@ snapshot[`model 4`] = `
                                             ],
                                           },
                                         },
-                                        if: Expr {
+                                        if: U {
                                           raw: {
-                                            is_nonempty: Expr {
+                                            is_nonempty: U {
                                               raw: {
                                                 var: "match",
                                               },
                                             },
                                           },
                                         },
-                                        then: Expr {
+                                        then: U {
                                           raw: {
-                                            get: Expr {
+                                            get: U {
                                               raw: {
-                                                from: Expr {
+                                                from: U {
                                                   raw: {
                                                     var: "match",
                                                   },
                                                 },
-                                                select: Expr {
+                                                select: U {
                                                   raw: [
                                                     0,
                                                   ],
@@ -1633,14 +1633,14 @@ snapshot[`model 4`] = `
                                     },
                                     let: [
                                       {
-                                        match: Expr {
+                                        match: U {
                                           raw: {
-                                            from: Expr {
+                                            from: U {
                                               raw: {
                                                 var: "guild",
                                               },
                                             },
-                                            select: Expr {
+                                            select: U {
                                               raw: [
                                                 "data",
                                                 "instances",
@@ -1656,7 +1656,7 @@ snapshot[`model 4`] = `
                             ],
                           },
                         },
-                        lambda: Expr {
+                        lambda: U {
                           raw: [
                             "characterId",
                             "guildId",
@@ -1670,7 +1670,7 @@ snapshot[`model 4`] = `
               },
             },
           },
-          update: Expr {
+          update: U {
             raw: {
               function: "find_character",
             },

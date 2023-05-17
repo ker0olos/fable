@@ -1,5 +1,3 @@
-const ts = Date.now();
-
 import * as discord from './discord.ts';
 
 import search, { idPrefix } from './search.ts';
@@ -28,8 +26,6 @@ import { NonFetalError, NoPermissionError } from './errors.ts';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
-
-  console.log(`request ready to handle - ${Date.now() - ts}ms`);
 
   // redirect to /demo on browsers
   if (

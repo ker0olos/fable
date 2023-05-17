@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-non-null-assertion no-explicit-any
+// deno-lint-ignore-file no-non-null-assertion
 
 import {
   assert,
@@ -7,16 +7,16 @@ import {
 } from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
 import {
-  assertSpyCall,
+  // assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
 } from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
-import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
+// import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
 import utils from '../src/utils.ts';
-import config from '../src/config.ts';
+// import config from '../src/config.ts';
 
 Deno.test('random int in range', () => {
   const randomStub = stub(Math, 'random', returnsNext([0, 0.55, 0.999]));
