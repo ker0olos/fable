@@ -2,18 +2,9 @@
 
 import { spy } from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
-import {
-  Client,
-  query,
-} from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.js';
+import _fql from 'https://esm.sh/faunadb@4.7.1';
 
-import {
-  Expr,
-  ExprArg,
-  type query as _query,
-} from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.d.ts';
-
-const _fql = query as typeof _query;
+import type { Client, Expr, ExprArg } from 'https://esm.sh/faunadb@4.7.1';
 
 type TypedExpr<T> = Expr & { type?: T };
 
@@ -58,7 +49,7 @@ function Update<T = Expr>(ref: RefExpr, data: Partial<T>): Expr {
 }
 
 function Index(name: string): IndexExpr {
-  return _fql.FaunaIndex(name);
+  return _fql.Index(name);
 }
 
 function Match(index: IndexExpr, ...terms: ExprArg[]): MatchExpr {
@@ -314,8 +305,8 @@ function Indexer(
   return () =>
     client.query(
       _fql.If(
-        _fql.Exists(_fql.FaunaIndex(name)),
-        _fql.Update(_fql.FaunaIndex(name), params),
+        _fql.Exists(_fql.Index(name)),
+        _fql.Update(_fql.Index(name), params),
         _fql.CreateIndex(params),
       ),
     );
@@ -336,8 +327,8 @@ function Resolver(
   return () =>
     client.query(
       _fql.If(
-        _fql.Exists(_fql.FaunaFunction(name)),
-        _fql.Update(_fql.FaunaFunction(name), params),
+        _fql.Exists(_fql.Function(name)),
+        _fql.Update(_fql.Function(name), params),
         _fql.CreateFunction(params),
       ),
     );
