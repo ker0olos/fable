@@ -100,7 +100,24 @@ export function addCharacter(
                     fql.Select(['data', 'guarantees'], user),
                   ),
                 }),
-                user,
+                fql.If(
+                  fql.GTE(
+                    fql.Now(),
+                    fql.Select(
+                      ['data', 'dailyTimestamp'],
+                      user,
+                      fql.Now(),
+                    ),
+                  ),
+                  fql.Update<User>(fql.Ref(user), {
+                    dailyTimestamp: fql.TimeAddInDays(fql.Now(), 1),
+                    availableVotes: fql.Add(
+                      fql.Select(['data', 'availableVotes'], user, 0),
+                      1,
+                    ),
+                  }),
+                  user,
+                ),
               ),
               // update the inventory
               updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {

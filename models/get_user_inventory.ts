@@ -17,6 +17,7 @@ export interface User {
   inventories: RefExpr[];
   lastVote?: TimeExpr;
   availableVotes?: NumberExpr;
+  dailyTimestamp?: TimeExpr;
   guarantees?: NumberExpr[];
   likes?: {
     mediaId?: StringExpr;
