@@ -494,7 +494,6 @@ export const handler = async (r: Request) => {
                 ? search.substring(idPrefix.length)
                 : undefined,
             })
-              .setFlags(discord.MessageFlags.Ephemeral)
               .send();
           }
           case 'now':
