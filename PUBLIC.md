@@ -46,7 +46,7 @@ Fable has no in-app purchases, no premiums, and no bullshit.
 <br/>
 
 <h4 align="center">
-  <a href="https://discord.com/oauth2/authorize?client_id=1041970851559522304&scope=applications.commands%20bot"><img align="center" src="https://img.shields.io/badge/-ADD%20FABLE%20TO%20YOUR%20SERVER-blue?style=for-the-badge&logo=discord&logoColor=white"/>
+  <a href="https://fable.deno.dev/invite"><img align="center" src="https://img.shields.io/badge/-ADD%20FABLE%20TO%20YOUR%20SERVER-blue?style=for-the-badge&logo=discord&logoColor=white"/>
   </a>
 </h4>
 

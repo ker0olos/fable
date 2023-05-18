@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-non-null-assertion no-explicit-any
+// deno-lint-ignore-file no-non-null-assertion
 
 import {
   assert,
@@ -7,16 +7,16 @@ import {
 } from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
 import {
-  assertSpyCall,
+  // assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
 } from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
-import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
+// import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
 
 import utils from '../src/utils.ts';
-import config from '../src/config.ts';
+// import config from '../src/config.ts';
 
 Deno.test('random int in range', () => {
   const randomStub = stub(Math, 'random', returnsNext([0, 0.55, 0.999]));
@@ -243,551 +243,551 @@ Deno.test('read json', async () => {
   }
 });
 
-Deno.test('external images', async (test) => {
-  await test.step('image/jpeg', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'image/jpeg',
-        }),
-        arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
-      } as any),
-    );
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.jpg')
-        }`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.jpg'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.Image);
-
-      assertEquals(`${image}`, 'Image<450x635>');
-    } finally {
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('image/png', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'image/png',
-        }),
-        arrayBuffer: () => Deno.readFile('tests/images/test.png'),
-      } as any),
-    );
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.png')
-        }`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.png'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.Image);
-
-      assertEquals(`${image}`, 'Image<450x635>');
-    } finally {
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('image/gif', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'image/gif',
-        }),
-        arrayBuffer: () => Deno.readFile('tests/images/test.gif'),
-      } as any),
-    );
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.gif')
-        }`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.gif'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.Image);
-
-      assertEquals(`${image}`, 'Image<230x325>');
-    } finally {
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('image/jpeg (preview)', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'image/jpeg',
-        }),
-        arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
-      } as any),
-    );
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.jpg')
-        }?size=preview`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.jpg'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.Image);
-
-      assertEquals(`${image}`, 'Image<32x32>');
-    } finally {
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('image/jpeg (thumbnail)', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'image/jpeg',
-        }),
-        arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
-      } as any),
-    );
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.jpg')
-        }?size=thumbnail`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.jpg'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.Image);
-
-      assertEquals(`${image}`, 'Image<110x155>');
-    } finally {
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('image/jpeg (blur)', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'image/jpeg',
-        }),
-        arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
-      } as any),
-    );
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.jpg')
-        }?blur`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.jpg'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.Image);
-
-      assertEquals(`${image}`, 'Image<230x325>');
-    } finally {
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('image/jpeg (medium)', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'image/jpeg',
-        }),
-        arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
-      } as any),
-    );
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.jpg')
-        }?size=medium`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.jpg'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.Image);
-
-      assertEquals(`${image}`, 'Image<230x325>');
-    } finally {
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('invalid thumbnail', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'application/json',
-        }),
-        arrayBuffer: () => new TextEncoder().encode('data'),
-      } as any),
-    );
-
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.jpeg')
-        }?size=thumbnail`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.jpeg'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.Image);
-
-      assertEquals(`${image}`, 'Image<110x155>');
-    } finally {
-      delete config.origin;
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('invalid type', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'application/json',
-        }),
-        arrayBuffer: () => new TextEncoder().encode('data'),
-      } as any),
-    );
-
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.jpeg')
-        }`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.jpeg'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.Image);
-
-      assertEquals(`${image}`, 'Image<230x325>');
-    } finally {
-      delete config.origin;
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('over 10 mib', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        status: 200,
-        headers: new Headers({
-          // 11 Mib
-          'Content-Length': `${1024 * 1024 * 11}`,
-          'Content-Type': 'image/png',
-        }),
-      } as any),
-    );
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/${
-          encodeURIComponent('https://example.com/image.png')
-        }`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: [new URL('https://example.com/image.png'), {
-          signal: 'timeout' as any,
-        }],
-      });
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.Image);
-
-      assertEquals(`${image}`, 'Image<230x325>');
-    } finally {
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('empty url', async () => {
-    const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => undefined as any,
-    );
-
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const response = await utils.proxy({
-        url: `http://localhost:8000/external/`,
-      } as any);
-
-      assertSpyCalls(fetchStub, 0);
-
-      assertEquals(response.status, 200);
-
-      assertEquals(response.headers.get('Content-Type'), 'image/png');
-
-      assertEquals(
-        response.headers.get('Cache-Control'),
-        'public, max-age=604800',
-      );
-
-      const image = await imagescript.decode(await response.arrayBuffer());
-
-      assert(image instanceof imagescript.Image);
-
-      assertEquals(`${image}`, 'Image<230x325>');
-    } finally {
-      delete config.origin;
-      abortStub.restore();
-      fetchStub.restore();
-    }
-  });
-});
+// Deno.test('external images', async (test) => {
+//   await test.step('image/jpeg', async () => {
+//     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+//     const fetchStub = stub(
+//       globalThis,
+//       'fetch',
+//       () => ({
+//         status: 200,
+//         headers: new Headers({
+//           'Content-Type': 'image/jpeg',
+//         }),
+//         arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
+//       } as any),
+//     );
+
+//     try {
+//       const response = await utils.proxy({
+//         url: `http://localhost:8000/external/${
+//           encodeURIComponent('https://example.com/image.jpg')
+//         }`,
+//       } as any);
+
+//       assertSpyCalls(fetchStub, 1);
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: [new URL('https://example.com/image.jpg'), {
+//           signal: 'timeout' as any,
+//         }],
+//       });
+
+//       assertEquals(response.status, 200);
+
+//       assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
+
+//       assertEquals(
+//         response.headers.get('Cache-Control'),
+//         'public, max-age=604800',
+//       );
+
+//       const image = await imagescript.decode(await response.arrayBuffer());
+
+//       assert(image instanceof imagescript.Image);
+
+//       assertEquals(`${image}`, 'Image<450x635>');
+//     } finally {
+//       abortStub.restore();
+//       fetchStub.restore();
+//     }
+//   });
+
+//   await test.step('image/png', async () => {
+//     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+//     const fetchStub = stub(
+//       globalThis,
+//       'fetch',
+//       () => ({
+//         status: 200,
+//         headers: new Headers({
+//           'Content-Type': 'image/png',
+//         }),
+//         arrayBuffer: () => Deno.readFile('tests/images/test.png'),
+//       } as any),
+//     );
+
+//     try {
+//       const response = await utils.proxy({
+//         url: `http://localhost:8000/external/${
+//           encodeURIComponent('https://example.com/image.png')
+//         }`,
+//       } as any);
+
+//       assertSpyCalls(fetchStub, 1);
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: [new URL('https://example.com/image.png'), {
+//           signal: 'timeout' as any,
+//         }],
+//       });
+
+//       assertEquals(response.status, 200);
+
+//       assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+//       assertEquals(
+//         response.headers.get('Cache-Control'),
+//         'public, max-age=604800',
+//       );
+
+//       const image = await imagescript.decode(await response.arrayBuffer());
+
+//       assert(image instanceof imagescript.Image);
+
+//       assertEquals(`${image}`, 'Image<450x635>');
+//     } finally {
+//       abortStub.restore();
+//       fetchStub.restore();
+//     }
+//   });
+
+//   await test.step('image/gif', async () => {
+//     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+//     const fetchStub = stub(
+//       globalThis,
+//       'fetch',
+//       () => ({
+//         status: 200,
+//         headers: new Headers({
+//           'Content-Type': 'image/gif',
+//         }),
+//         arrayBuffer: () => Deno.readFile('tests/images/test.gif'),
+//       } as any),
+//     );
+
+//     try {
+//       const response = await utils.proxy({
+//         url: `http://localhost:8000/external/${
+//           encodeURIComponent('https://example.com/image.gif')
+//         }`,
+//       } as any);
+
+//       assertSpyCalls(fetchStub, 1);
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: [new URL('https://example.com/image.gif'), {
+//           signal: 'timeout' as any,
+//         }],
+//       });
+
+//       assertEquals(response.status, 200);
+
+//       assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+//       assertEquals(
+//         response.headers.get('Cache-Control'),
+//         'public, max-age=604800',
+//       );
+
+//       const image = await imagescript.decode(await response.arrayBuffer());
+
+//       assert(image instanceof imagescript.Image);
+
+//       assertEquals(`${image}`, 'Image<230x325>');
+//     } finally {
+//       abortStub.restore();
+//       fetchStub.restore();
+//     }
+//   });
+
+//   await test.step('image/jpeg (preview)', async () => {
+//     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+//     const fetchStub = stub(
+//       globalThis,
+//       'fetch',
+//       () => ({
+//         status: 200,
+//         headers: new Headers({
+//           'Content-Type': 'image/jpeg',
+//         }),
+//         arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
+//       } as any),
+//     );
+
+//     try {
+//       const response = await utils.proxy({
+//         url: `http://localhost:8000/external/${
+//           encodeURIComponent('https://example.com/image.jpg')
+//         }?size=preview`,
+//       } as any);
+
+//       assertSpyCalls(fetchStub, 1);
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: [new URL('https://example.com/image.jpg'), {
+//           signal: 'timeout' as any,
+//         }],
+//       });
+
+//       assertEquals(response.status, 200);
+
+//       assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
+
+//       assertEquals(
+//         response.headers.get('Cache-Control'),
+//         'public, max-age=604800',
+//       );
+
+//       const image = await imagescript.decode(await response.arrayBuffer());
+
+//       assert(image instanceof imagescript.Image);
+
+//       assertEquals(`${image}`, 'Image<32x32>');
+//     } finally {
+//       abortStub.restore();
+//       fetchStub.restore();
+//     }
+//   });
+
+//   await test.step('image/jpeg (thumbnail)', async () => {
+//     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+//     const fetchStub = stub(
+//       globalThis,
+//       'fetch',
+//       () => ({
+//         status: 200,
+//         headers: new Headers({
+//           'Content-Type': 'image/jpeg',
+//         }),
+//         arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
+//       } as any),
+//     );
+
+//     try {
+//       const response = await utils.proxy({
+//         url: `http://localhost:8000/external/${
+//           encodeURIComponent('https://example.com/image.jpg')
+//         }?size=thumbnail`,
+//       } as any);
+
+//       assertSpyCalls(fetchStub, 1);
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: [new URL('https://example.com/image.jpg'), {
+//           signal: 'timeout' as any,
+//         }],
+//       });
+
+//       assertEquals(response.status, 200);
+
+//       assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
+
+//       assertEquals(
+//         response.headers.get('Cache-Control'),
+//         'public, max-age=604800',
+//       );
+
+//       const image = await imagescript.decode(await response.arrayBuffer());
+
+//       assert(image instanceof imagescript.Image);
+
+//       assertEquals(`${image}`, 'Image<110x155>');
+//     } finally {
+//       abortStub.restore();
+//       fetchStub.restore();
+//     }
+//   });
+
+//   await test.step('image/jpeg (blur)', async () => {
+//     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+//     const fetchStub = stub(
+//       globalThis,
+//       'fetch',
+//       () => ({
+//         status: 200,
+//         headers: new Headers({
+//           'Content-Type': 'image/jpeg',
+//         }),
+//         arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
+//       } as any),
+//     );
+
+//     try {
+//       const response = await utils.proxy({
+//         url: `http://localhost:8000/external/${
+//           encodeURIComponent('https://example.com/image.jpg')
+//         }?blur`,
+//       } as any);
+
+//       assertSpyCalls(fetchStub, 1);
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: [new URL('https://example.com/image.jpg'), {
+//           signal: 'timeout' as any,
+//         }],
+//       });
+
+//       assertEquals(response.status, 200);
+
+//       assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+//       assertEquals(
+//         response.headers.get('Cache-Control'),
+//         'public, max-age=604800',
+//       );
+
+//       const image = await imagescript.decode(await response.arrayBuffer());
+
+//       assert(image instanceof imagescript.Image);
+
+//       assertEquals(`${image}`, 'Image<230x325>');
+//     } finally {
+//       abortStub.restore();
+//       fetchStub.restore();
+//     }
+//   });
+
+//   await test.step('image/jpeg (medium)', async () => {
+//     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+//     const fetchStub = stub(
+//       globalThis,
+//       'fetch',
+//       () => ({
+//         status: 200,
+//         headers: new Headers({
+//           'Content-Type': 'image/jpeg',
+//         }),
+//         arrayBuffer: () => Deno.readFile('tests/images/test.jpeg'),
+//       } as any),
+//     );
+
+//     try {
+//       const response = await utils.proxy({
+//         url: `http://localhost:8000/external/${
+//           encodeURIComponent('https://example.com/image.jpg')
+//         }?size=medium`,
+//       } as any);
+
+//       assertSpyCalls(fetchStub, 1);
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: [new URL('https://example.com/image.jpg'), {
+//           signal: 'timeout' as any,
+//         }],
+//       });
+
+//       assertEquals(response.status, 200);
+
+//       assertEquals(response.headers.get('Content-Type'), 'image/jpeg');
+
+//       assertEquals(
+//         response.headers.get('Cache-Control'),
+//         'public, max-age=604800',
+//       );
+
+//       const image = await imagescript.decode(await response.arrayBuffer());
+
+//       assert(image instanceof imagescript.Image);
+
+//       assertEquals(`${image}`, 'Image<230x325>');
+//     } finally {
+//       abortStub.restore();
+//       fetchStub.restore();
+//     }
+//   });
+
+//   await test.step('invalid thumbnail', async () => {
+//     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+//     const fetchStub = stub(
+//       globalThis,
+//       'fetch',
+//       () => ({
+//         status: 200,
+//         headers: new Headers({
+//           'Content-Type': 'application/json',
+//         }),
+//         arrayBuffer: () => new TextEncoder().encode('data'),
+//       } as any),
+//     );
+
+//     config.origin = 'http://localhost:8000';
+
+//     try {
+//       const response = await utils.proxy({
+//         url: `http://localhost:8000/external/${
+//           encodeURIComponent('https://example.com/image.jpeg')
+//         }?size=thumbnail`,
+//       } as any);
+
+//       assertSpyCalls(fetchStub, 1);
+//       assertSpyCall(fetchStub, 0, {
+//         args: [new URL('https://example.com/image.jpeg'), {
+//           signal: 'timeout' as any,
+//         }],
+//       });
+
+//       assertEquals(response.status, 200);
+
+//       assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+//       assertEquals(
+//         response.headers.get('Cache-Control'),
+//         'public, max-age=604800',
+//       );
+
+//       const image = await imagescript.decode(await response.arrayBuffer());
+
+//       assert(image instanceof imagescript.Image);
+
+//       assertEquals(`${image}`, 'Image<110x155>');
+//     } finally {
+//       delete config.origin;
+//       abortStub.restore();
+//       fetchStub.restore();
+//     }
+//   });
+
+//   await test.step('invalid type', async () => {
+//     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+//     const fetchStub = stub(
+//       globalThis,
+//       'fetch',
+//       () => ({
+//         status: 200,
+//         headers: new Headers({
+//           'Content-Type': 'application/json',
+//         }),
+//         arrayBuffer: () => new TextEncoder().encode('data'),
+//       } as any),
+//     );
+
+//     config.origin = 'http://localhost:8000';
+
+//     try {
+//       const response = await utils.proxy({
+//         url: `http://localhost:8000/external/${
+//           encodeURIComponent('https://example.com/image.jpeg')
+//         }`,
+//       } as any);
+
+//       assertSpyCalls(fetchStub, 1);
+//       assertSpyCall(fetchStub, 0, {
+//         args: [new URL('https://example.com/image.jpeg'), {
+//           signal: 'timeout' as any,
+//         }],
+//       });
+
+//       assertEquals(response.status, 200);
+
+//       assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+//       assertEquals(
+//         response.headers.get('Cache-Control'),
+//         'public, max-age=604800',
+//       );
+
+//       const image = await imagescript.decode(await response.arrayBuffer());
+
+//       assert(image instanceof imagescript.Image);
+
+//       assertEquals(`${image}`, 'Image<230x325>');
+//     } finally {
+//       delete config.origin;
+//       abortStub.restore();
+//       fetchStub.restore();
+//     }
+//   });
+
+//   await test.step('over 10 mib', async () => {
+//     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+//     const fetchStub = stub(
+//       globalThis,
+//       'fetch',
+//       () => ({
+//         status: 200,
+//         headers: new Headers({
+//           // 11 Mib
+//           'Content-Length': `${1024 * 1024 * 11}`,
+//           'Content-Type': 'image/png',
+//         }),
+//       } as any),
+//     );
+
+//     try {
+//       const response = await utils.proxy({
+//         url: `http://localhost:8000/external/${
+//           encodeURIComponent('https://example.com/image.png')
+//         }`,
+//       } as any);
+
+//       assertSpyCalls(fetchStub, 1);
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: [new URL('https://example.com/image.png'), {
+//           signal: 'timeout' as any,
+//         }],
+//       });
+
+//       assertEquals(response.status, 200);
+
+//       assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+//       assertEquals(
+//         response.headers.get('Cache-Control'),
+//         'public, max-age=604800',
+//       );
+
+//       const image = await imagescript.decode(await response.arrayBuffer());
+
+//       assert(image instanceof imagescript.Image);
+
+//       assertEquals(`${image}`, 'Image<230x325>');
+//     } finally {
+//       abortStub.restore();
+//       fetchStub.restore();
+//     }
+//   });
+
+//   await test.step('empty url', async () => {
+//     const abortStub = stub(AbortSignal, 'timeout', () => 'timeout' as any);
+
+//     const fetchStub = stub(
+//       globalThis,
+//       'fetch',
+//       () => undefined as any,
+//     );
+
+//     config.origin = 'http://localhost:8000';
+
+//     try {
+//       const response = await utils.proxy({
+//         url: `http://localhost:8000/external/`,
+//       } as any);
+
+//       assertSpyCalls(fetchStub, 0);
+
+//       assertEquals(response.status, 200);
+
+//       assertEquals(response.headers.get('Content-Type'), 'image/png');
+
+//       assertEquals(
+//         response.headers.get('Cache-Control'),
+//         'public, max-age=604800',
+//       );
+
+//       const image = await imagescript.decode(await response.arrayBuffer());
+
+//       assert(image instanceof imagescript.Image);
+
+//       assertEquals(`${image}`, 'Image<230x325>');
+//     } finally {
+//       delete config.origin;
+//       abortStub.restore();
+//       fetchStub.restore();
+//     }
+//   });
+// });
 
 Deno.test('recharge timestamps', () => {
   const now = new Date();

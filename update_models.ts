@@ -12,7 +12,7 @@ try {
   //
 }
 
-import { Client } from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.js';
+import fauna from 'https://esm.sh/faunadb@4.7.1';
 
 import getUserInventory from './models/get_user_inventory.ts';
 
@@ -39,7 +39,7 @@ if (import.meta.main) {
     throw new Error('FAUNA_SECRET is not defined');
   }
 
-  const client = new Client({
+  const client = new fauna.Client({
     secret: FAUNA_SECRET,
   });
 

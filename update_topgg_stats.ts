@@ -1,13 +1,4 @@
-import {
-  Client,
-  query,
-} from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.js';
-
-import {
-  type query as _query,
-} from 'https://deno.land/x/fauna@5.0.0-deno-alpha9/mod.d.ts';
-
-const fql = query as typeof _query;
+import fql from 'https://esm.sh/faunadb@4.7.1';
 
 if (import.meta.main) {
   const APP_ID = Deno.env.get('APP_ID');
@@ -27,7 +18,7 @@ if (import.meta.main) {
     throw new Error('FAUNA_SECRET is not defined');
   }
 
-  const client = new Client({ secret: FAUNA_SECRET });
+  const client = new fql.Client({ secret: FAUNA_SECRET });
 
   const serverCount = await client.query(
     fql.Count(fql.Documents(fql.Collection('guild'))),
