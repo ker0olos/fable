@@ -452,7 +452,7 @@ export const commands = [
             value: 3,
           },
           {
-            name: 'Voting',
+            name: 'Shop',
             value: 4,
           },
           {

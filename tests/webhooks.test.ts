@@ -162,12 +162,12 @@ Deno.test('topgg', async (test) => {
           ) as any,
         ),
         {
-          content: 'Thanks for voting, <@user_id>.',
+          content: 'Thanks for voting, <@user_id>, you gained 1 token.',
           components: [{
             type: 1,
             components: [{
               custom_id: 'help==4',
-              label: '/help voting',
+              label: '/help shop',
               style: 2,
               type: 2,
             }],

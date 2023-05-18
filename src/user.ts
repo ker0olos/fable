@@ -199,7 +199,7 @@ async function now({
           .join('')
       }`)
       .setFooter({
-        text: availablePulls === 1 ? 'Available Pull' : 'Available Pulls',
+        text: `Available ${availablePulls === 1 ? 'Pull' : 'Pulls'}`,
       }),
   );
 
@@ -208,7 +208,7 @@ async function now({
       new discord.Embed()
         .setTitle(`**${user.availableVotes}**`)
         .setFooter({
-          text: user.availableVotes === 1 ? `Daily Token` : `Daily Tokens`,
+          text: `Daily ${user.availableVotes === 1 ? 'Token' : 'Tokens'}`,
         }),
     );
   }
@@ -997,10 +997,10 @@ function list({
 
         media = [
           parent,
-          ...parent.relations?.edges?.filter(({ relation }) =>
+          ...(parent.relations?.edges?.filter(({ relation }) =>
             // deno-lint-ignore no-non-null-assertion
             relationFilter.includes(relation!)
-          ).map(({ node }) => node) ?? [],
+          ).map(({ node }) => node) ?? []),
         ];
 
         const relationsIds = media.map(({ packId, id }) => `${packId}:${id}`);

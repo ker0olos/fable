@@ -640,7 +640,7 @@ snapshot[`commands 1`] = `
             value: 3,
           },
           {
-            name: "Voting",
+            name: "Shop",
             value: 4,
           },
           {
@@ -695,7 +695,7 @@ snapshot[`commands 1`] = `
             value: 3,
           },
           {
-            name: "Voting",
+            name: "Shop",
             value: 4,
           },
           {
@@ -750,7 +750,7 @@ snapshot[`commands 1`] = `
             value: 3,
           },
           {
-            name: "Voting",
+            name: "Shop",
             value: 4,
           },
           {
@@ -805,7 +805,7 @@ snapshot[`commands 1`] = `
             value: 3,
           },
           {
-            name: "Voting",
+            name: "Shop",
             value: 4,
           },
           {
