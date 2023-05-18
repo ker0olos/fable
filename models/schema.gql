@@ -12,8 +12,6 @@ type User @collection(name: "user") {
   badges: [Badge!]
   # 
   lastVote: Time,
-  # the amount of votes the user has voted
-  totalVotes: Int
   # the amount of votes available to be exchanged for rewards
   availableVotes: Int
   # guaranteed pulls

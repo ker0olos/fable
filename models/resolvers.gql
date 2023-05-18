@@ -39,16 +39,16 @@ type Mutation {
     @resolver(name: "remove_pack_from_instance")
 
   #
-  addVoteToUser(userId: String!, weekend: Boolean!): Response!
-    @resolver(name: "add_vote_to_user")
+  addTokensToUser(userId: String!, amount: Int!): Response!
+    @resolver(name: "add_tokens_to_user")
 
-  #
-  exchangeVotesForGuarantees(userId: String!, guarantee: Int!): Response!
-    @resolver(name: "exchange_votes_for_guarantees")
-  
   # 
-  exchangeVotesForPulls(userId: String!, guildId: String!, votes: Int!): Response!
-    @resolver(name: "exchange_votes_for_pulls")
+  exchangeTokensForPulls(userId: String!, guildId: String!, amount: Int!): Response!
+    @resolver(name: "exchange_tokens_for_pulls")
+  
+  #
+  exchangeTokensForGuarantees(userId: String!, guarantee: Int!): Response!
+    @resolver(name: "exchange_tokens_for_guarantees")
 
   #
   addCharacterToInventory(

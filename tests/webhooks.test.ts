@@ -28,7 +28,7 @@ Deno.test('topgg', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              addVoteToUser: {
+              addTokensToUser: {
                 ok: true,
               },
             },
@@ -78,7 +78,7 @@ Deno.test('topgg', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              addVoteToUser: {
+              addTokensToUser: {
                 ok: true,
               },
             },
@@ -378,7 +378,7 @@ Deno.test('topgg', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              addVoteToUser: {
+              addTokensToUser: {
                 ok: false,
               },
             },

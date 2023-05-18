@@ -189,7 +189,6 @@ export namespace Schema {
   export type User = {
     id: string;
     lastVote?: string;
-    totalVotes?: number;
     availableVotes?: number;
     guarantees?: number[];
     likes?: {
@@ -239,7 +238,7 @@ export namespace Schema {
     }
     | {
       ok: false;
-      error: 'INSUFFICIENT_VOTES';
+      error: 'INSUFFICIENT_TOKENS';
       user: User;
     }
     | {

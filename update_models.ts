@@ -16,7 +16,7 @@ import fauna from 'https://esm.sh/faunadb@4.7.1';
 
 import getUserInventory from './models/get_user_inventory.ts';
 
-import addVoteToUser from './models/add_vote_to_user.ts';
+import addTokensToUser from './models/add_tokens_to_user.ts';
 
 import addPackToInstance from './models/add_pack_to_instance.ts';
 
@@ -45,7 +45,7 @@ if (import.meta.main) {
 
   const all = [
     getUserInventory(client),
-    addVoteToUser(client),
+    addTokensToUser(client),
     addPackToInstance(client),
     findMedia(client),
     addCharacterToInventory(client),

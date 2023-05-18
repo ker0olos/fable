@@ -1115,14 +1115,14 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "vote shop commands",
+    description: "token shop commands",
     dm_permission: false,
     name: "buy",
     options: [
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Use votes to buy normal pulls",
+        description: "Use tokens to buy normal pulls",
         name: "normal",
         options: [
           {
@@ -1141,7 +1141,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Use votes to buy pulls with a specific rating",
+        description: "Use tokens to buy pulls with a guaranteed rating",
         name: "guaranteed",
         options: [
           {
@@ -1175,14 +1175,14 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "vote shop commands",
+    description: "token shop commands",
     dm_permission: false,
     name: "shop",
     options: [
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Use votes to buy normal pulls",
+        description: "Use tokens to buy normal pulls",
         name: "normal",
         options: [
           {
@@ -1201,7 +1201,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Use votes to buy pulls with a specific rating",
+        description: "Use tokens to buy pulls with a guaranteed rating",
         name: "guaranteed",
         options: [
           {

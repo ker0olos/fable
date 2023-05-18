@@ -49,7 +49,7 @@ function pages(
             '',
             '__Your party members and likes will never be sacrificed.__ To protect characters from synthesis, add them to your likeslist with `/like`',
             '',
-            '__It takes 5 characters from a specific rating__ to get a new character with 1 more star than the sacrificed.',
+            '__It takes 5 characters from a guaranteed rating__ to get a new character with 1 more star than the sacrificed.',
             '',
             '__Fable will always auto-synthesize your lower-rated characters first.__',
             '',

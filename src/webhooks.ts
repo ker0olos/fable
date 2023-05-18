@@ -45,15 +45,15 @@ async function topgg(r: Request): Promise<Response> {
   } = await r.json();
 
   const query = gql`
-    mutation ($userId: String!, $weekend: Boolean!) {
-      addVoteToUser(userId: $userId, weekend: $weekend) {
+    mutation ($userId: String!, $amount: Int!) {
+      addTokensToUser(userId: $userId, amount: $amount) {
         ok
       }
     }
   `;
 
   const response = (await request<{
-    addVoteToUser: Schema.Mutation;
+    addTokensToUser: Schema.Mutation;
   }>({
     query,
     url: faunaUrl,
@@ -62,9 +62,9 @@ async function topgg(r: Request): Promise<Response> {
     },
     variables: {
       userId: data.user,
-      weekend: data.isWeekend || false,
+      amount: data.isWeekend ? 2 : 1,
     },
-  })).addVoteToUser;
+  })).addTokensToUser;
 
   if (!response.ok) {
     const err = new Error('failed to reward user');

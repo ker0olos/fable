@@ -16,7 +16,6 @@ export interface User {
   id: StringExpr;
   inventories: RefExpr[];
   lastVote?: TimeExpr;
-  totalVotes?: NumberExpr;
   availableVotes?: NumberExpr;
   guarantees?: NumberExpr[];
   likes?: {

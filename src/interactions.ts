@@ -839,6 +839,8 @@ export const handler = async (r: Request) => {
                     .send();
                 case 'guaranteed':
                   return (await shop.confirmGuaranteed({
+                    token,
+                    guildId,
                     userId: member.user.id,
                     stars: value,
                   }))
@@ -846,6 +848,7 @@ export const handler = async (r: Request) => {
                     .send();
                 case 'normal':
                   return (await shop.confirmNormal({
+                    token,
                     guildId,
                     userId: member.user.id,
                     amount: value,
