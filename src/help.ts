@@ -183,7 +183,7 @@ function pages(
             '- `/q`: _start a gacha pull but with no animations_',
             '- `/pull` `/guaranteed`: _use the guaranteed pulls you have_',
             '',
-            '- `/now` `/vote` `/daily` `/tu`: _check what you can do right now_',
+            '- `/now` `/vote` `/tu`: _check what you can do right now_',
             '- `/search` `/anime` `/manga`: _search for specific media_',
             '- `/character` `/char`: _search for a specific character_',
             '',

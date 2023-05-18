@@ -499,7 +499,6 @@ export const handler = async (r: Request) => {
           }
           case 'now':
           case 'vote':
-          case 'daily':
           case 'tu': {
             return (await user.now({
               userId: member.user.id,

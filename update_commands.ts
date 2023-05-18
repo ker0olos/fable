@@ -478,7 +478,7 @@ export const commands = [
   ...Command({
     name: 'now',
     description: 'Check what you can do right now',
-    aliases: ['vote', 'daily', 'tu'],
+    aliases: ['vote', 'tu'],
   }),
   ...Command({
     name: 'q',
