@@ -4,18 +4,18 @@
 
 <i align="center">
 
-[![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)][invite]
-[![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)][topgg]
+[![top.gg votes](https://top.gg/api/widget/upvotes/1041970851559522304.svg?noavatar=true)][topgg]
+[![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)][topgg2]
 
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)][invite]
 [![Demo](https://img.shields.io/badge/try-demo-blue)](https://fable.deno.dev/demo)
 [![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20support%20server&color=blue)][discord]
 
+[![Fable Status](https://api.checklyhq.com/v1/badges/checks/68acae41-252d-4684-89bf-face9a8b71bd?style=flat&theme=default&responseTime=true)](https://fable.instatus.com)
+[![Fable Status 2](https://api.checklyhq.com/v1/badges/checks/086d07ba-30e7-475d-b26d-309e87e2d2bd?style=flat&theme=default&responseTime=true)](https://fable.instatus.com)
+
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&label=tests)
 [![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC)](https://app.codecov.io/github/ker0olos/fable)
-[![Fable Status](https://api.checklyhq.com/v1/badges/checks/68acae41-252d-4684-89bf-face9a8b71bd?style=flat&theme=default&responseTime=true)](https://fable.instatus.com)
-
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ker0olos/fable?color=blue&label=updates%20frequency)
 
 </i>
 
@@ -139,5 +139,6 @@ time, and how many people are working on Fable at any giving moment.
 </details>
 
 [discord]: https://discord.gg/ceKyEfhyPQ
-[topgg]: https://top.gg/bot/1041970851559522304
+[topgg]: https://top.gg/bot/1041970851559522304/vote
+[topgg2]: https://top.gg/bot/1041970851559522304
 [invite]: https://fable.deno.dev/invite

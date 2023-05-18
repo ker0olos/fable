@@ -3,11 +3,8 @@
   "features": {
     "ghcr.io/devcontainers-contrib/features/deno:1": {}
   },
-  "hostRequirements": {
-    "cpus": 4
-  },
   "waitFor": "onCreateCommand",
-  "postCreateCommand": "npm i -g fauna-shell ngrok concurrently",
+  "postCreateCommand": "npm i -g fauna-shell ngrok concurrently node-jq",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -25,7 +22,6 @@
       "label": "discord"
     }
   },
-  "forwardPorts": [8000],
   "secrets": {
     "APP_ID": {
       "description": "Your discord app's id"
@@ -43,6 +39,10 @@
     "FAUNA_SECRET": {
       "description": "A fauna database auth key",
       "documentationUrl": "https://github.com/ker0olos/fable/wiki/FaunaDB"
+    },
+    "IMAGE_PROXY_URL": {
+      "description": "An image proxy service",
+      "documentationUrl": "https://github.com/fable-community/images-proxy"
     }
   }
 }
