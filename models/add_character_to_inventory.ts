@@ -60,7 +60,10 @@ export function addCharacter(
     ),
   }, ({ match }) =>
     fql.If(
-      fql.LTE(fql.Select(['data', 'availablePulls'], inventory), 0),
+      fql.And(
+        fql.Equals(guaranteed, false),
+        fql.LTE(fql.Select(['data', 'availablePulls'], inventory), 0),
+      ),
       {
         ok: false,
         error: 'NO_PULLS_AVAILABLE',
@@ -109,7 +112,11 @@ export function addCharacter(
                 ),
                 availablePulls: fql.Subtract(
                   fql.Select(['data', 'availablePulls'], inventory),
-                  1,
+                  fql.If(
+                    fql.Equals(guaranteed, false),
+                    1,
+                    0,
+                  ),
                 ),
               }),
             },

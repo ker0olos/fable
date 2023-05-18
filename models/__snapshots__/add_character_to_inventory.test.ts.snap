@@ -299,7 +299,26 @@ snapshot[`model 1`] = `
                                                                                 },
                                                                               },
                                                                             },
-                                                                            1,
+                                                                            U {
+                                                                              raw: {
+                                                                                else: 0,
+                                                                                if: U {
+                                                                                  raw: {
+                                                                                    equals: U {
+                                                                                      raw: [
+                                                                                        U {
+                                                                                          raw: {
+                                                                                            var: "guaranteed",
+                                                                                          },
+                                                                                        },
+                                                                                        false,
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                then: 1,
+                                                                              },
+                                                                            },
                                                                           ],
                                                                         },
                                                                       },
@@ -374,24 +393,46 @@ snapshot[`model 1`] = `
                                     },
                                     if: U {
                                       raw: {
-                                        lte: U {
+                                        and: U {
                                           raw: [
                                             U {
                                               raw: {
-                                                from: U {
-                                                  raw: {
-                                                    var: "inventory",
-                                                  },
-                                                },
-                                                select: U {
+                                                equals: U {
                                                   raw: [
-                                                    "data",
-                                                    "availablePulls",
+                                                    U {
+                                                      raw: {
+                                                        var: "guaranteed",
+                                                      },
+                                                    },
+                                                    false,
                                                   ],
                                                 },
                                               },
                                             },
-                                            0,
+                                            U {
+                                              raw: {
+                                                lte: U {
+                                                  raw: [
+                                                    U {
+                                                      raw: {
+                                                        from: U {
+                                                          raw: {
+                                                            var: "inventory",
+                                                          },
+                                                        },
+                                                        select: U {
+                                                          raw: [
+                                                            "data",
+                                                            "availablePulls",
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    0,
+                                                  ],
+                                                },
+                                              },
+                                            },
                                           ],
                                         },
                                       },
@@ -1965,7 +2006,26 @@ snapshot[`model 1`] = `
                                                                                 },
                                                                               },
                                                                             },
-                                                                            1,
+                                                                            U {
+                                                                              raw: {
+                                                                                else: 0,
+                                                                                if: U {
+                                                                                  raw: {
+                                                                                    equals: U {
+                                                                                      raw: [
+                                                                                        U {
+                                                                                          raw: {
+                                                                                            var: "guaranteed",
+                                                                                          },
+                                                                                        },
+                                                                                        false,
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                then: 1,
+                                                                              },
+                                                                            },
                                                                           ],
                                                                         },
                                                                       },
@@ -2040,24 +2100,46 @@ snapshot[`model 1`] = `
                                     },
                                     if: U {
                                       raw: {
-                                        lte: U {
+                                        and: U {
                                           raw: [
                                             U {
                                               raw: {
-                                                from: U {
-                                                  raw: {
-                                                    var: "inventory",
-                                                  },
-                                                },
-                                                select: U {
+                                                equals: U {
                                                   raw: [
-                                                    "data",
-                                                    "availablePulls",
+                                                    U {
+                                                      raw: {
+                                                        var: "guaranteed",
+                                                      },
+                                                    },
+                                                    false,
                                                   ],
                                                 },
                                               },
                                             },
-                                            0,
+                                            U {
+                                              raw: {
+                                                lte: U {
+                                                  raw: [
+                                                    U {
+                                                      raw: {
+                                                        from: U {
+                                                          raw: {
+                                                            var: "inventory",
+                                                          },
+                                                        },
+                                                        select: U {
+                                                          raw: [
+                                                            "data",
+                                                            "availablePulls",
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    0,
+                                                  ],
+                                                },
+                                              },
+                                            },
                                           ],
                                         },
                                       },
