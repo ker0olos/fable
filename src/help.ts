@@ -49,7 +49,7 @@ function pages(
             '',
             '__Your party members and likes will never be sacrificed.__ To protect characters from synthesis, add them to your likeslist with `/like`',
             '',
-            '__It takes 5 characters from a specific rating__ to get a new character with 1 more star than the sacrificed.',
+            '__It takes 5 characters from a guaranteed rating__ to get a new character with 1 more star than the sacrificed.',
             '',
             '__Fable will always auto-synthesize your lower-rated characters first.__',
             '',
@@ -106,7 +106,7 @@ function pages(
             '',
             `__Steal has a cooldown of ${COOLDOWN_DAYS} days__ regardless of the outcome of the attempt.`,
             '',
-            '> Staying active is the best defense against stealing',
+            'Staying active is the best defense against stealing',
             '\u200B',
           ].join('\n')),
       ),
@@ -116,25 +116,28 @@ function pages(
           .setLabel('/vote')
           .setId('now', userId),
         new discord.Component()
-          .setId('buy', 'bguaranteed', userId, '4')
-          .setLabel(`/buy guaranteed 4`),
-        new discord.Component()
           .setId('buy', 'bguaranteed', userId, '5')
           .setLabel(`/buy guaranteed 5`),
       ])
       .addEmbed(
         new discord.Embed()
-          .setAuthor({ name: 'Voting' })
+          .setAuthor({ name: 'Shop' })
           .setDescription([
-            'Voting is an additional way to acquire character with a specific guaranteed rating.',
+            'The shop is a way to purchase extra pulls and guaranteed pulls.',
             '',
-            '__Voting on weekends__ awards **2** votes instead of **1** (_Saturday and Sunday_).',
+            '__You get 1 Daily Token every day__, automatically added after your first `/gacha` of the day.',
             '',
-            `\`/buy normal\` gets you normal pulls, they are the exact same as the ones you get each ${RECHARGE_MINS} minutes.`,
+            '__Voting for Fable on Top.gg awards 1 daily token__, you can vote once every 12 hours.',
             '',
-            '`/buy guaranteed` however is special, while it can expansive it will guarantee that you get a character from one specific rank. Use the guaranteed pulls you bought by calling `/pull stars:`',
+            '__Voting on weekends awards 2 tokens__ (_Saturdays and Sundays_).',
             '',
-            `> *Example: \`/buy guaranteed 5\` will guarantee you a random 5${discord.emotes.smolStar}character.*`,
+            `\`/buy normal\` gets you extra pulls, they are the exact same as the ones you get every ${RECHARGE_MINS} minutes.`,
+            '',
+            '`/buy guaranteed` guarantees you get a character from one specific star rating.',
+            '',
+            `Example: \`/buy guaranteed 5\` will guarantee you get one random 5${discord.emotes.smolStar}character.`,
+            '',
+            'Use the guaranteed pulls you bought by calling `/pull stars:`',
             '\u200B',
           ].join('\n'))
           .setFooter({ text: 'aliases: /shop' }),
@@ -162,8 +165,6 @@ function pages(
             '',
             '`/steal`\n_steal a character from another user_',
             '',
-            '`/synthesize`\n_merge characters together to pull a new character_',
-            '',
             '__**Releasing in the near future (5 days ~ 2 months)**__',
             '',
             // '**Battles**',
@@ -183,7 +184,7 @@ function pages(
             '- `/q`: _start a gacha pull but with no animations_',
             '- `/pull` `/guaranteed`: _use the guaranteed pulls you have_',
             '',
-            '- `/now` `/vote` `/daily` `/tu`: _check what you can do right now_',
+            '- `/now` `/vote` `/tu`: _check what you can do right now_',
             '- `/search` `/anime` `/manga`: _search for specific media_',
             '- `/character` `/char`: _search for a specific character_',
             '',

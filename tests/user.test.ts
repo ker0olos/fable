@@ -332,7 +332,7 @@ Deno.test('/now', async (test) => {
     }
   });
 
-  await test.step('with 5 votes', async () => {
+  await test.step('with 1 token', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
@@ -347,7 +347,7 @@ Deno.test('/now', async (test) => {
                 availablePulls: 0,
                 rechargeTimestamp: time.toISOString(),
                 user: {
-                  availableVotes: 5,
+                  availableVotes: 1,
                   lastVote: time.toISOString(),
                 },
               },
@@ -383,9 +383,9 @@ Deno.test('/now', async (test) => {
             },
             {
               type: 'rich',
-              title: '**5**',
+              title: '**1**',
               footer: {
-                text: 'Available Votes',
+                text: 'Daily Token',
               },
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
@@ -409,7 +409,84 @@ Deno.test('/now', async (test) => {
     }
   });
 
-  await test.step('with 36 votes', async () => {
+  await test.step('with 4 tokens', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                availablePulls: 0,
+                rechargeTimestamp: time.toISOString(),
+                user: {
+                  availableVotes: 4,
+                  lastVote: time.toISOString(),
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.topggCipher = 12;
+
+    try {
+      const message = await user.now({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: '**0**',
+              footer: {
+                text: 'Available Pulls',
+              },
+              description: undefined,
+            },
+            {
+              type: 'rich',
+              title: '**4**',
+              footer: {
+                text: 'Daily Tokens',
+              },
+            },
+            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
+          ],
+          components: [{
+            type: 1,
+            components: [{
+              label: 'Vote',
+              style: 5,
+              type: 2,
+              url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+            }],
+          }],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.topggCipher;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('with 36 tokens', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
@@ -462,7 +539,7 @@ Deno.test('/now', async (test) => {
               type: 'rich',
               title: '**36**',
               footer: {
-                text: 'Available Votes',
+                text: 'Daily Tokens',
               },
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
@@ -500,7 +577,7 @@ Deno.test('/now', async (test) => {
     }
   });
 
-  await test.step('with 35 votes', async () => {
+  await test.step('with 35 tokens', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
@@ -553,7 +630,7 @@ Deno.test('/now', async (test) => {
               type: 'rich',
               title: '**35**',
               footer: {
-                text: 'Available Votes',
+                text: 'Daily Tokens',
               },
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
@@ -646,7 +723,7 @@ Deno.test('/now', async (test) => {
               type: 'rich',
               title: '**5**',
               footer: {
-                text: 'Available Votes',
+                text: 'Daily Tokens',
               },
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
@@ -811,7 +888,7 @@ Deno.test('/now', async (test) => {
               type: 'rich',
               title: '**5**',
               footer: {
-                text: 'Available Votes',
+                text: 'Daily Tokens',
               },
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },

@@ -1,26 +1,37 @@
 import { gql, request } from './graphql.ts';
 
+import utils from './utils.ts';
+
 import config, { faunaUrl } from './config.ts';
 
 import * as discord from './discord.ts';
 
 import { Schema } from './types.ts';
 
-function normal({
-  userId,
-  amount,
-}: {
-  userId: string;
-  amount: number;
-}): discord.Message {
+import { COSTS } from '../models/add_tokens_to_user.ts';
+
+export const voteComponent = (
+  { token, guildId, label }: { token: string; guildId: string; label?: string },
+) =>
+  new discord.Component()
+    .setLabel(label ?? 'Vote')
+    .setUrl(
+      `https://top.gg/bot/${config.appId}/vote?ref=${
+        // deno-lint-ignore no-non-null-assertion
+        utils.cipher(token, config.topggCipher!)}&gid=${guildId}`,
+    );
+
+function normal(
+  { userId, amount }: { userId: string; amount: number },
+): discord.Message {
   const message = new discord.Message();
 
   message.addEmbed(
     new discord.Embed()
       .setDescription(
-        `Are you sure you want to spent **${amount}** ${
-          amount > 1 ? 'votes' : 'vote'
-        } ${discord.emotes.remove}`,
+        `You want to spent **${amount} ${
+          amount > 1 ? 'tokens' : 'token'
+        }** ${discord.emotes.remove}?`,
       ),
   );
 
@@ -35,25 +46,18 @@ function normal({
   return message;
 }
 
-async function confirmNormal({
-  userId,
-  guildId,
-  amount,
-}: {
+async function confirmNormal({ token, userId, guildId, amount }: {
+  token: string;
   userId: string;
   guildId: string;
   amount: number;
 }): Promise<discord.Message> {
   const mutation = gql`
-    mutation (
-      $userId: String!
-      $guildId: String!
-      $amount: Int!
-    ) {
-      exchangeVotesForPulls(
+    mutation ($userId: String!, $guildId: String!, $amount: Int!) {
+      exchangeTokensForPulls(
         userId: $userId
         guildId: $guildId
-        votes: $amount
+        amount: $amount
       ) {
         ok
         error
@@ -64,8 +68,8 @@ async function confirmNormal({
     }
   `;
 
-  const { exchangeVotesForPulls } = await request<{
-    exchangeVotesForPulls: Schema.Mutation;
+  const { exchangeTokensForPulls } = await request<{
+    exchangeTokensForPulls: Schema.Mutation;
   }>({
     url: faunaUrl,
     query: mutation,
@@ -79,26 +83,29 @@ async function confirmNormal({
     },
   });
 
-  if (!exchangeVotesForPulls.ok) {
-    switch (exchangeVotesForPulls.error) {
-      case 'INSUFFICIENT_VOTES': {
-        const votes = exchangeVotesForPulls.user.availableVotes || 0;
+  if (!exchangeTokensForPulls.ok) {
+    switch (exchangeTokensForPulls.error) {
+      case 'INSUFFICIENT_TOKENS': {
+        const tokens = exchangeTokensForPulls.user.availableVotes || 0;
+
+        const diff = amount - tokens;
 
         return new discord.Message()
           .addEmbed(new discord.Embed()
             .setDescription(
-              votes > 0
-                ? `You only have **${votes}** ${votes > 1 ? 'votes' : 'vote'}`
-                : `You don't have any votes`,
+              `You need **${diff} more ${
+                diff > 1 ? 'tokens' : 'token'
+              }** before you can do this.`,
             ))
           .addComponents([
-            new discord.Component()
-              .setId('now', userId)
-              .setLabel('/vote'),
+            voteComponent({
+              token,
+              guildId,
+            }),
           ]);
       }
       default:
-        throw new Error(exchangeVotesForPulls.error);
+        throw new Error(exchangeTokensForPulls.error);
     }
   }
 
@@ -132,12 +139,16 @@ function guaranteed({
 }): discord.Message {
   const message = new discord.Message();
 
-  const cost = stars === 5 ? 36 : stars === 4 ? 12 : 4;
+  const cost = stars === 5
+    ? COSTS.FIVE
+    : stars === 4
+    ? COSTS.FOUR
+    : COSTS.THREE;
 
   message.addEmbed(
     new discord.Embed()
       .setDescription(
-        `Are you sure you want to spent **${cost}** votes ${discord.emotes.remove}`,
+        `You want to spent **${cost} tokens** ${discord.emotes.remove} for a **${stars}${discord.emotes.smolStar}**${discord.emotes.add}?`,
       ),
   );
 
@@ -153,15 +164,19 @@ function guaranteed({
 }
 
 async function confirmGuaranteed({
+  token,
   userId,
+  guildId,
   stars,
 }: {
+  token: string;
   userId: string;
+  guildId: string;
   stars: number;
 }): Promise<discord.Message> {
   const mutation = gql`
     mutation ($userId: String!, $stars: Int!) {
-      exchangeVotesForGuarantees(userId: $userId, guarantee: $stars) {
+      exchangeTokensForGuarantees(userId: $userId, guarantee: $stars) {
         ok
         error
         user {
@@ -171,8 +186,8 @@ async function confirmGuaranteed({
     }
   `;
 
-  const { exchangeVotesForGuarantees } = await request<{
-    exchangeVotesForGuarantees: Schema.Mutation;
+  const { exchangeTokensForGuarantees } = await request<{
+    exchangeTokensForGuarantees: Schema.Mutation;
   }>({
     url: faunaUrl,
     query: mutation,
@@ -185,26 +200,35 @@ async function confirmGuaranteed({
     },
   });
 
-  if (!exchangeVotesForGuarantees.ok) {
-    switch (exchangeVotesForGuarantees.error) {
-      case 'INSUFFICIENT_VOTES': {
-        const votes = exchangeVotesForGuarantees.user.availableVotes || 0;
+  if (!exchangeTokensForGuarantees.ok) {
+    switch (exchangeTokensForGuarantees.error) {
+      case 'INSUFFICIENT_TOKENS': {
+        const cost = stars === 5
+          ? COSTS.FIVE
+          : stars === 4
+          ? COSTS.FOUR
+          : COSTS.THREE;
+
+        const tokens = exchangeTokensForGuarantees.user.availableVotes || 0;
+
+        const diff = cost - tokens;
 
         return new discord.Message()
           .addEmbed(new discord.Embed()
             .setDescription(
-              votes > 0
-                ? `You only have **${votes}** ${votes > 1 ? 'votes' : 'vote'}`
-                : `You don't have any votes`,
+              `You need **${diff} more ${
+                diff > 1 ? 'tokens' : 'token'
+              }** before you can do this.`,
             ))
           .addComponents([
-            new discord.Component()
-              .setId('now', userId)
-              .setLabel('/vote'),
+            voteComponent({
+              token,
+              guildId,
+            }),
           ]);
       }
       default:
-        throw new Error(exchangeVotesForGuarantees.error);
+        throw new Error(exchangeTokensForGuarantees.error);
     }
   }
 

@@ -5,6 +5,7 @@ import { assertEquals } from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 import { stub } from 'https://deno.land/std@0.186.0/testing/mock.ts';
 
 import shop from '../src/shop.ts';
+import config from '../src/config.ts';
 
 Deno.test('/buy', async (test) => {
   await test.step('normal dialog', () => {
@@ -37,7 +38,7 @@ Deno.test('/buy', async (test) => {
         embeds: [{
           type: 'rich',
           description:
-            'Are you sure you want to spent **1** vote <:remove:1099004424111792158>',
+            'You want to spent **1 token** <:remove:1099004424111792158>?',
         }],
       },
     });
@@ -73,7 +74,7 @@ Deno.test('/buy', async (test) => {
         embeds: [{
           type: 'rich',
           description:
-            'Are you sure you want to spent **4** votes <:remove:1099004424111792158>',
+            'You want to spent **4 tokens** <:remove:1099004424111792158>?',
         }],
       },
     });
@@ -88,7 +89,7 @@ Deno.test('/buy', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              exchangeVotesForPulls: {
+              exchangeTokensForPulls: {
                 ok: true,
               },
             },
@@ -98,6 +99,7 @@ Deno.test('/buy', async (test) => {
 
     try {
       const message = await shop.confirmNormal({
+        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 1,
@@ -144,7 +146,7 @@ Deno.test('/buy', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              exchangeVotesForPulls: {
+              exchangeTokensForPulls: {
                 ok: true,
               },
             },
@@ -154,6 +156,7 @@ Deno.test('/buy', async (test) => {
 
     try {
       const message = await shop.confirmNormal({
+        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 5,
@@ -191,58 +194,6 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('normal no votes', async () => {
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              exchangeVotesForPulls: {
-                ok: false,
-                error: 'INSUFFICIENT_VOTES',
-                user: {},
-              },
-            },
-          }))),
-      } as any),
-    );
-
-    try {
-      const message = await shop.confirmNormal({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        amount: 1,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'now=user_id',
-                label: '/vote',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description: 'You don\'t have any votes',
-          }],
-        },
-      });
-    } finally {
-      fetchStub.restore();
-    }
-  });
-
   await test.step('normal insufficient votes', async () => {
     const fetchStub = stub(
       globalThis,
@@ -252,11 +203,11 @@ Deno.test('/buy', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              exchangeVotesForPulls: {
+              exchangeTokensForPulls: {
                 ok: false,
-                error: 'INSUFFICIENT_VOTES',
+                error: 'INSUFFICIENT_TOKENS',
                 user: {
-                  availableVotes: 1,
+                  availableVotes: 9,
                 },
               },
             },
@@ -264,8 +215,12 @@ Deno.test('/buy', async (test) => {
       } as any),
     );
 
+    config.appId = 'app_id';
+    config.topggCipher = 123;
+
     try {
       const message = await shop.confirmNormal({
+        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 10,
@@ -279,20 +234,23 @@ Deno.test('/buy', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'now=user_id',
-                label: '/vote',
-                style: 2,
+                label: 'Vote',
                 type: 2,
+                style: 5,
+                url: 'https://top.gg/bot/app_id/vote?ref=7-rm4Ok=&gid=guild_id',
               },
             ],
           }],
           embeds: [{
             type: 'rich',
-            description: 'You only have **1** vote',
+            description: 'You need **1 more token** before you can do this.',
           }],
         },
       });
     } finally {
+      delete config.appId;
+      delete config.topggCipher;
+
       fetchStub.restore();
     }
   });
@@ -306,9 +264,9 @@ Deno.test('/buy', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              exchangeVotesForPulls: {
+              exchangeTokensForPulls: {
                 ok: false,
-                error: 'INSUFFICIENT_VOTES',
+                error: 'INSUFFICIENT_TOKENS',
                 user: {
                   availableVotes: 5,
                 },
@@ -318,8 +276,12 @@ Deno.test('/buy', async (test) => {
       } as any),
     );
 
+    config.appId = 'app_id';
+    config.topggCipher = 123;
+
     try {
       const message = await shop.confirmNormal({
+        token: 'token',
         userId: 'user_id',
         guildId: 'guild_id',
         amount: 10,
@@ -333,20 +295,23 @@ Deno.test('/buy', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'now=user_id',
-                label: '/vote',
-                style: 2,
+                label: 'Vote',
                 type: 2,
+                style: 5,
+                url: 'https://top.gg/bot/app_id/vote?ref=7-rm4Ok=&gid=guild_id',
               },
             ],
           }],
           embeds: [{
             type: 'rich',
-            description: 'You only have **5** votes',
+            description: 'You need **5 more tokens** before you can do this.',
           }],
         },
       });
     } finally {
+      delete config.appId;
+      delete config.topggCipher;
+
       fetchStub.restore();
     }
   });
@@ -381,7 +346,7 @@ Deno.test('/buy', async (test) => {
         embeds: [{
           type: 'rich',
           description:
-            'Are you sure you want to spent **4** votes <:remove:1099004424111792158>',
+            'You want to spent **4 tokens** <:remove:1099004424111792158> for a **3<:smolstar:1107503653956374638>**<:add:1099004747123523644>?',
         }],
       },
     });
@@ -417,7 +382,7 @@ Deno.test('/buy', async (test) => {
         embeds: [{
           type: 'rich',
           description:
-            'Are you sure you want to spent **12** votes <:remove:1099004424111792158>',
+            'You want to spent **12 tokens** <:remove:1099004424111792158> for a **4<:smolstar:1107503653956374638>**<:add:1099004747123523644>?',
         }],
       },
     });
@@ -453,7 +418,7 @@ Deno.test('/buy', async (test) => {
         embeds: [{
           type: 'rich',
           description:
-            'Are you sure you want to spent **36** votes <:remove:1099004424111792158>',
+            'You want to spent **36 tokens** <:remove:1099004424111792158> for a **5<:smolstar:1107503653956374638>**<:add:1099004747123523644>?',
         }],
       },
     });
@@ -468,7 +433,7 @@ Deno.test('/buy', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              exchangeVotesForGuarantees: {
+              exchangeTokensForGuarantees: {
                 ok: true,
               },
             },
@@ -478,7 +443,9 @@ Deno.test('/buy', async (test) => {
 
     try {
       const message = await shop.confirmGuaranteed({
+        token: 'token',
         userId: 'user_id',
+        guildId: 'guild_id',
         stars: 3,
       });
 
@@ -518,7 +485,7 @@ Deno.test('/buy', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              exchangeVotesForGuarantees: {
+              exchangeTokensForGuarantees: {
                 ok: true,
               },
             },
@@ -528,7 +495,9 @@ Deno.test('/buy', async (test) => {
 
     try {
       const message = await shop.confirmGuaranteed({
+        token: 'token',
         userId: 'user_id',
+        guildId: 'guild_id',
         stars: 4,
       });
 
@@ -568,7 +537,7 @@ Deno.test('/buy', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              exchangeVotesForGuarantees: {
+              exchangeTokensForGuarantees: {
                 ok: true,
               },
             },
@@ -578,7 +547,9 @@ Deno.test('/buy', async (test) => {
 
     try {
       const message = await shop.confirmGuaranteed({
+        token: 'token',
         userId: 'user_id',
+        guildId: 'guild_id',
         stars: 5,
       });
 
@@ -609,57 +580,6 @@ Deno.test('/buy', async (test) => {
     }
   });
 
-  await test.step('guaranteed no votes', async () => {
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              exchangeVotesForGuarantees: {
-                ok: false,
-                error: 'INSUFFICIENT_VOTES',
-                user: {},
-              },
-            },
-          }))),
-      } as any),
-    );
-
-    try {
-      const message = await shop.confirmGuaranteed({
-        userId: 'user_id',
-        stars: 4,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'now=user_id',
-                label: '/vote',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description: 'You don\'t have any votes',
-          }],
-        },
-      });
-    } finally {
-      fetchStub.restore();
-    }
-  });
-
   await test.step('guaranteed insufficient votes', async () => {
     const fetchStub = stub(
       globalThis,
@@ -669,11 +589,11 @@ Deno.test('/buy', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              exchangeVotesForGuarantees: {
+              exchangeTokensForGuarantees: {
                 ok: false,
-                error: 'INSUFFICIENT_VOTES',
+                error: 'INSUFFICIENT_TOKENS',
                 user: {
-                  availableVotes: 1,
+                  availableVotes: 11,
                 },
               },
             },
@@ -681,9 +601,14 @@ Deno.test('/buy', async (test) => {
       } as any),
     );
 
+    config.appId = 'app_id';
+    config.topggCipher = 123;
+
     try {
       const message = await shop.confirmGuaranteed({
+        token: 'token',
         userId: 'user_id',
+        guildId: 'guild_id',
         stars: 4,
       });
 
@@ -695,25 +620,28 @@ Deno.test('/buy', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'now=user_id',
-                label: '/vote',
-                style: 2,
+                label: 'Vote',
                 type: 2,
+                style: 5,
+                url: 'https://top.gg/bot/app_id/vote?ref=7-rm4Ok=&gid=guild_id',
               },
             ],
           }],
           embeds: [{
             type: 'rich',
-            description: 'You only have **1** vote',
+            description: 'You need **1 more token** before you can do this.',
           }],
         },
       });
     } finally {
+      delete config.appId;
+      delete config.topggCipher;
+
       fetchStub.restore();
     }
   });
 
-  await test.step('guaranteed insufficient votes (plural', async () => {
+  await test.step('guaranteed insufficient votes (plural)', async () => {
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -722,9 +650,9 @@ Deno.test('/buy', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              exchangeVotesForGuarantees: {
+              exchangeTokensForGuarantees: {
                 ok: false,
-                error: 'INSUFFICIENT_VOTES',
+                error: 'INSUFFICIENT_TOKENS',
                 user: {
                   availableVotes: 5,
                 },
@@ -734,9 +662,14 @@ Deno.test('/buy', async (test) => {
       } as any),
     );
 
+    config.appId = 'app_id';
+    config.topggCipher = 123;
+
     try {
       const message = await shop.confirmGuaranteed({
+        token: 'token',
         userId: 'user_id',
+        guildId: 'guild_id',
         stars: 4,
       });
 
@@ -748,20 +681,23 @@ Deno.test('/buy', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'now=user_id',
-                label: '/vote',
-                style: 2,
+                label: 'Vote',
                 type: 2,
+                style: 5,
+                url: 'https://top.gg/bot/app_id/vote?ref=7-rm4Ok=&gid=guild_id',
               },
             ],
           }],
           embeds: [{
             type: 'rich',
-            description: 'You only have **5** votes',
+            description: 'You need **7 more tokens** before you can do this.',
           }],
         },
       });
     } finally {
+      delete config.appId;
+      delete config.topggCipher;
+
       fetchStub.restore();
     }
   });

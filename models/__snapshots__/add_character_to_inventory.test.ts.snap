@@ -193,7 +193,106 @@ snapshot[`model 1`] = `
                                                       raw: {
                                                         else: U {
                                                           raw: {
-                                                            var: "user",
+                                                            else: U {
+                                                              raw: {
+                                                                var: "user",
+                                                              },
+                                                            },
+                                                            if: U {
+                                                              raw: {
+                                                                gte: U {
+                                                                  raw: [
+                                                                    U {
+                                                                      raw: {
+                                                                        now: null,
+                                                                      },
+                                                                    },
+                                                                    U {
+                                                                      raw: {
+                                                                        default: U {
+                                                                          raw: {
+                                                                            now: null,
+                                                                          },
+                                                                        },
+                                                                        from: U {
+                                                                          raw: {
+                                                                            var: "user",
+                                                                          },
+                                                                        },
+                                                                        select: U {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "dailyTimestamp",
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                            then: U {
+                                                              raw: {
+                                                                params: U {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: U {
+                                                                        raw: {
+                                                                          object: {
+                                                                            availableVotes: U {
+                                                                              raw: {
+                                                                                add: U {
+                                                                                  raw: [
+                                                                                    U {
+                                                                                      raw: {
+                                                                                        default: 0,
+                                                                                        from: U {
+                                                                                          raw: {
+                                                                                            var: "user",
+                                                                                          },
+                                                                                        },
+                                                                                        select: U {
+                                                                                          raw: [
+                                                                                            "data",
+                                                                                            "availableVotes",
+                                                                                          ],
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    1,
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                            dailyTimestamp: U {
+                                                                              raw: {
+                                                                                offset: 1,
+                                                                                time_add: U {
+                                                                                  raw: {
+                                                                                    now: null,
+                                                                                  },
+                                                                                },
+                                                                                unit: "days",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: U {
+                                                                  raw: {
+                                                                    from: U {
+                                                                      raw: {
+                                                                        var: "user",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
                                                           },
                                                         },
                                                         if: U {
@@ -299,7 +398,26 @@ snapshot[`model 1`] = `
                                                                                 },
                                                                               },
                                                                             },
-                                                                            1,
+                                                                            U {
+                                                                              raw: {
+                                                                                else: 0,
+                                                                                if: U {
+                                                                                  raw: {
+                                                                                    equals: U {
+                                                                                      raw: [
+                                                                                        U {
+                                                                                          raw: {
+                                                                                            var: "guaranteed",
+                                                                                          },
+                                                                                        },
+                                                                                        false,
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                then: 1,
+                                                                              },
+                                                                            },
                                                                           ],
                                                                         },
                                                                       },
@@ -374,24 +492,46 @@ snapshot[`model 1`] = `
                                     },
                                     if: U {
                                       raw: {
-                                        lte: U {
+                                        and: U {
                                           raw: [
                                             U {
                                               raw: {
-                                                from: U {
-                                                  raw: {
-                                                    var: "inventory",
-                                                  },
-                                                },
-                                                select: U {
+                                                equals: U {
                                                   raw: [
-                                                    "data",
-                                                    "availablePulls",
+                                                    U {
+                                                      raw: {
+                                                        var: "guaranteed",
+                                                      },
+                                                    },
+                                                    false,
                                                   ],
                                                 },
                                               },
                                             },
-                                            0,
+                                            U {
+                                              raw: {
+                                                lte: U {
+                                                  raw: [
+                                                    U {
+                                                      raw: {
+                                                        from: U {
+                                                          raw: {
+                                                            var: "inventory",
+                                                          },
+                                                        },
+                                                        select: U {
+                                                          raw: [
+                                                            "data",
+                                                            "availablePulls",
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    0,
+                                                  ],
+                                                },
+                                              },
+                                            },
                                           ],
                                         },
                                       },
@@ -1859,7 +1999,106 @@ snapshot[`model 1`] = `
                                                       raw: {
                                                         else: U {
                                                           raw: {
-                                                            var: "user",
+                                                            else: U {
+                                                              raw: {
+                                                                var: "user",
+                                                              },
+                                                            },
+                                                            if: U {
+                                                              raw: {
+                                                                gte: U {
+                                                                  raw: [
+                                                                    U {
+                                                                      raw: {
+                                                                        now: null,
+                                                                      },
+                                                                    },
+                                                                    U {
+                                                                      raw: {
+                                                                        default: U {
+                                                                          raw: {
+                                                                            now: null,
+                                                                          },
+                                                                        },
+                                                                        from: U {
+                                                                          raw: {
+                                                                            var: "user",
+                                                                          },
+                                                                        },
+                                                                        select: U {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "dailyTimestamp",
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                            then: U {
+                                                              raw: {
+                                                                params: U {
+                                                                  raw: {
+                                                                    object: {
+                                                                      data: U {
+                                                                        raw: {
+                                                                          object: {
+                                                                            availableVotes: U {
+                                                                              raw: {
+                                                                                add: U {
+                                                                                  raw: [
+                                                                                    U {
+                                                                                      raw: {
+                                                                                        default: 0,
+                                                                                        from: U {
+                                                                                          raw: {
+                                                                                            var: "user",
+                                                                                          },
+                                                                                        },
+                                                                                        select: U {
+                                                                                          raw: [
+                                                                                            "data",
+                                                                                            "availableVotes",
+                                                                                          ],
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    1,
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                            dailyTimestamp: U {
+                                                                              raw: {
+                                                                                offset: 1,
+                                                                                time_add: U {
+                                                                                  raw: {
+                                                                                    now: null,
+                                                                                  },
+                                                                                },
+                                                                                unit: "days",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                update: U {
+                                                                  raw: {
+                                                                    from: U {
+                                                                      raw: {
+                                                                        var: "user",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
                                                           },
                                                         },
                                                         if: U {
@@ -1965,7 +2204,26 @@ snapshot[`model 1`] = `
                                                                                 },
                                                                               },
                                                                             },
-                                                                            1,
+                                                                            U {
+                                                                              raw: {
+                                                                                else: 0,
+                                                                                if: U {
+                                                                                  raw: {
+                                                                                    equals: U {
+                                                                                      raw: [
+                                                                                        U {
+                                                                                          raw: {
+                                                                                            var: "guaranteed",
+                                                                                          },
+                                                                                        },
+                                                                                        false,
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                then: 1,
+                                                                              },
+                                                                            },
                                                                           ],
                                                                         },
                                                                       },
@@ -2040,24 +2298,46 @@ snapshot[`model 1`] = `
                                     },
                                     if: U {
                                       raw: {
-                                        lte: U {
+                                        and: U {
                                           raw: [
                                             U {
                                               raw: {
-                                                from: U {
-                                                  raw: {
-                                                    var: "inventory",
-                                                  },
-                                                },
-                                                select: U {
+                                                equals: U {
                                                   raw: [
-                                                    "data",
-                                                    "availablePulls",
+                                                    U {
+                                                      raw: {
+                                                        var: "guaranteed",
+                                                      },
+                                                    },
+                                                    false,
                                                   ],
                                                 },
                                               },
                                             },
-                                            0,
+                                            U {
+                                              raw: {
+                                                lte: U {
+                                                  raw: [
+                                                    U {
+                                                      raw: {
+                                                        from: U {
+                                                          raw: {
+                                                            var: "inventory",
+                                                          },
+                                                        },
+                                                        select: U {
+                                                          raw: [
+                                                            "data",
+                                                            "availablePulls",
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    0,
+                                                  ],
+                                                },
+                                              },
+                                            },
                                           ],
                                         },
                                       },

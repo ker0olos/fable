@@ -60,7 +60,10 @@ export function addCharacter(
     ),
   }, ({ match }) =>
     fql.If(
-      fql.LTE(fql.Select(['data', 'availablePulls'], inventory), 0),
+      fql.And(
+        fql.Equals(guaranteed, false),
+        fql.LTE(fql.Select(['data', 'availablePulls'], inventory), 0),
+      ),
       {
         ok: false,
         error: 'NO_PULLS_AVAILABLE',
@@ -97,7 +100,24 @@ export function addCharacter(
                     fql.Select(['data', 'guarantees'], user),
                   ),
                 }),
-                user,
+                fql.If(
+                  fql.GTE(
+                    fql.Now(),
+                    fql.Select(
+                      ['data', 'dailyTimestamp'],
+                      user,
+                      fql.Now(),
+                    ),
+                  ),
+                  fql.Update<User>(fql.Ref(user), {
+                    dailyTimestamp: fql.TimeAddInDays(fql.Now(), 1),
+                    availableVotes: fql.Add(
+                      fql.Select(['data', 'availableVotes'], user, 0),
+                      1,
+                    ),
+                  }),
+                  user,
+                ),
               ),
               // update the inventory
               updatedInventory: fql.Update<Inventory>(fql.Ref(inventory), {
@@ -109,7 +129,11 @@ export function addCharacter(
                 ),
                 availablePulls: fql.Subtract(
                   fql.Select(['data', 'availablePulls'], inventory),
-                  1,
+                  fql.If(
+                    fql.Equals(guaranteed, false),
+                    1,
+                    0,
+                  ),
                 ),
               }),
             },

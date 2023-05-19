@@ -4,13 +4,14 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import Rating from './rating.ts';
-
+import utils from './utils.ts';
 import packs from './packs.ts';
 
-import { default as srch, relationFilter } from './search.ts';
+import Rating from './rating.ts';
 
-import utils from './utils.ts';
+import { voteComponent } from './shop.ts';
+
+import { default as srch, relationFilter } from './search.ts';
 
 import * as discord from './discord.ts';
 
@@ -21,6 +22,8 @@ import {
   Media,
   Schema,
 } from './types.ts';
+
+import { COSTS } from '../models/add_tokens_to_user.ts';
 
 async function getUserCharacters(
   { userId, guildId }: { userId: string; guildId: string },
@@ -195,14 +198,18 @@ async function now({
           .map((r) => `${r}${discord.emotes.smolStar}`)
           .join('')
       }`)
-      .setFooter({ text: 'Available Pulls' }),
+      .setFooter({
+        text: `Available ${availablePulls === 1 ? 'Pull' : 'Pulls'}`,
+      }),
   );
 
   if (user.availableVotes) {
     message.addEmbed(
       new discord.Embed()
         .setTitle(`**${user.availableVotes}**`)
-        .setFooter({ text: `Available Votes` }),
+        .setFooter({
+          text: `Daily ${user.availableVotes === 1 ? 'Token' : 'Tokens'}`,
+        }),
     );
   }
 
@@ -242,14 +249,14 @@ async function now({
     ]);
   }
 
-  if (user.availableVotes && user.availableVotes >= 36) {
+  if (user.availableVotes && user.availableVotes >= COSTS.FIVE) {
     // `/buy guaranteed` 5 shortcut
     message.addComponents([
       new discord.Component()
         .setId('buy', 'bguaranteed', userId, '5')
         .setLabel(`/buy guaranteed 5`),
     ]);
-  } else if (user.availableVotes && user.availableVotes >= 12) {
+  } else if (user.availableVotes && user.availableVotes >= COSTS.FOUR) {
     // `/buy guaranteed 4` shortcut
     message.addComponents([
       new discord.Component()
@@ -269,13 +276,10 @@ async function now({
 
   if (!user.lastVote || voting.canVote) {
     message.addComponents([
-      new discord.Component()
-        .setLabel('Vote')
-        .setUrl(
-          `https://top.gg/bot/${config.appId}/vote?ref=${
-            // deno-lint-ignore no-non-null-assertion
-            utils.cipher(token, config.topggCipher!)}&gid=${guildId}`,
-        ),
+      voteComponent({
+        token,
+        guildId,
+      }),
     ]);
   }
 
@@ -993,10 +997,10 @@ function list({
 
         media = [
           parent,
-          ...parent.relations?.edges?.filter(({ relation }) =>
+          ...(parent.relations?.edges?.filter(({ relation }) =>
             // deno-lint-ignore no-non-null-assertion
             relationFilter.includes(relation!)
-          ).map(({ node }) => node) ?? [],
+          ).map(({ node }) => node) ?? []),
         ];
 
         const relationsIds = media.map(({ packId, id }) => `${packId}:${id}`);

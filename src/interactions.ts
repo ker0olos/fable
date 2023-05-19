@@ -494,12 +494,10 @@ export const handler = async (r: Request) => {
                 ? search.substring(idPrefix.length)
                 : undefined,
             })
-              .setFlags(discord.MessageFlags.Ephemeral)
               .send();
           }
           case 'now':
           case 'vote':
-          case 'daily':
           case 'tu': {
             return (await user.now({
               userId: member.user.id,
@@ -840,6 +838,8 @@ export const handler = async (r: Request) => {
                     .send();
                 case 'guaranteed':
                   return (await shop.confirmGuaranteed({
+                    token,
+                    guildId,
                     userId: member.user.id,
                     stars: value,
                   }))
@@ -847,6 +847,7 @@ export const handler = async (r: Request) => {
                     .send();
                 case 'normal':
                   return (await shop.confirmNormal({
+                    token,
                     guildId,
                     userId: member.user.id,
                     amount: value,

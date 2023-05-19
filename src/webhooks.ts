@@ -44,16 +44,18 @@ async function topgg(r: Request): Promise<Response> {
     query: string;
   } = await r.json();
 
+  const amount = data.isWeekend ? 2 : 1;
+
   const query = gql`
-    mutation ($userId: String!, $weekend: Boolean!) {
-      addVoteToUser(userId: $userId, weekend: $weekend) {
+    mutation ($userId: String!, $amount: Int!) {
+      addTokensToUser(userId: $userId, amount: $amount) {
         ok
       }
     }
   `;
 
   const response = (await request<{
-    addVoteToUser: Schema.Mutation;
+    addTokensToUser: Schema.Mutation;
   }>({
     query,
     url: faunaUrl,
@@ -62,9 +64,9 @@ async function topgg(r: Request): Promise<Response> {
     },
     variables: {
       userId: data.user,
-      weekend: data.isWeekend || false,
+      amount,
     },
-  })).addVoteToUser;
+  })).addTokensToUser;
 
   if (!response.ok) {
     const err = new Error('failed to reward user');
@@ -107,11 +109,15 @@ async function topgg(r: Request): Promise<Response> {
       })).setContent(`<@${data.user}>`);
 
       new discord.Message()
-        .setContent(`Thanks for voting, <@${data.user}>.`)
+        .setContent(
+          `Thanks for voting, <@${data.user}>, you gained ${amount} ${
+            amount === 1 ? 'token' : 'tokens'
+          }.`,
+        )
         .addComponents([
           new discord.Component()
             .setId('help', '', '4')
-            .setLabel('/help voting'),
+            .setLabel('/help shop'),
         ])
         .followup(token);
 

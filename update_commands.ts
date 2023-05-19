@@ -452,7 +452,7 @@ export const commands = [
             value: 3,
           },
           {
-            name: 'Voting',
+            name: 'Shop',
             value: 4,
           },
           {
@@ -478,7 +478,7 @@ export const commands = [
   ...Command({
     name: 'now',
     description: 'Check what you can do right now',
-    aliases: ['vote', 'daily', 'tu'],
+    aliases: ['vote', 'tu'],
   }),
   ...Command({
     name: 'q',
@@ -565,12 +565,12 @@ export const commands = [
   // shop
   ...Command({
     name: 'buy',
-    description: 'vote shop commands',
+    description: 'token shop commands',
     aliases: ['shop'],
     options: [
       Option({
         name: 'normal',
-        description: 'Use votes to buy normal pulls',
+        description: 'Use tokens to buy normal pulls',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -585,7 +585,7 @@ export const commands = [
       }),
       Option({
         name: 'guaranteed',
-        description: 'Use votes to buy pulls with a specific rating',
+        description: 'Use tokens to buy pulls with a guaranteed rating',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [

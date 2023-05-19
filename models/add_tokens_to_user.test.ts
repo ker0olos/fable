@@ -6,7 +6,7 @@ import { assertSnapshot } from 'https://deno.land/std@0.186.0/testing/snapshot.t
 
 import { FakeClient } from './fql.ts';
 
-import { default as Model } from './add_vote_to_user.ts';
+import { default as Model } from './add_tokens_to_user.ts';
 
 Deno.test('model', async (test) => {
   const client = FakeClient();
