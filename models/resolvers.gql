@@ -124,9 +124,15 @@ type Mutation {
     @resolver(name: "unlike_media")
 
   #
-  failSteal(userId: String!, guildId: String!): Response!
+  failSteal(userId: String!, guildId: String!, sacrifices: [String!]!): Response!
     @resolver(name: "fail_steal")
 
-  stealCharacter(userId: String!, guildId: String!, characterId: String!): Response!
+  #
+  stealCharacter(
+    userId: String!
+    guildId: String!
+    characterId: String!
+    sacrifices: [String!]!
+  ): Response!
     @resolver(name: "steal_character")
 }
