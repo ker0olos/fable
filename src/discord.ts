@@ -31,10 +31,6 @@ export const join = (...args: string[]): string => {
   return args.join(splitter);
 };
 
-export const encode = (text: string): string => {
-  return text.replaceAll(/(^[^\\]?<.*?:.*:.*>)/g, '\\$1');
-};
-
 export enum MessageFlags {
   Ephemeral = 1 << 6,
   SuppressEmbeds = 1 << 2,
