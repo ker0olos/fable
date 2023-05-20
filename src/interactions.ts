@@ -88,7 +88,9 @@ export const handler = async (r: Request) => {
   const ts = Date.now() - parseInt(timestamp) * 1000;
 
   // the delay between user sending a command and Fable processing it
-  console.error(`request received after ${ts}ms`);
+  if (config.deploy) {
+    console.error(`request received after ${ts}ms`);
+  }
 
   // exceeded time limit set by discord (3 seconds)
   if (ts >= 2800) {

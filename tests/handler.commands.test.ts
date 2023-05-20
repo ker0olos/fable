@@ -7609,8 +7609,8 @@ Deno.test('invalid request', async (test) => {
       assertSpyCall(signatureStub, 0, {
         args: [{
           body: 'body',
-          signature: undefined,
-          timestamp: undefined,
+          signature: null,
+          timestamp: null,
           publicKey: 'publicKey',
         }],
       });
