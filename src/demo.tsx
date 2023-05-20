@@ -27,7 +27,7 @@ const emotes = {
   star:
     'https://cdn.discordapp.com/emojis/1061016362832642098.webp?size=44&quality=lossless',
   noStar:
-    'https://cdn.discordapp.com/emojis/1061016360190222466.webp?size=44&quality=lossless',
+    'https://cdn.discordapp.com/emojis/1109377526662434906.webp?size=44&quality=lossless',
 };
 
 function suspense<T = unknown>(promise: () => Promise<T>): { read(): T } {

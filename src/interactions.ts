@@ -48,8 +48,11 @@ export const handler = async (r: Request) => {
     );
   }
 
-  const signature = r.headers.get('X-Signature-Ed25519') || undefined;
-  const timestamp = r.headers.get('X-Signature-Timestamp') || undefined;
+  // deno-lint-ignore no-non-null-assertion
+  const signature = r.headers.get('X-Signature-Ed25519')!;
+
+  // deno-lint-ignore no-non-null-assertion
+  const timestamp = r.headers.get('X-Signature-Timestamp')!;
 
   const { valid, body } = utils.verifySignature({
     publicKey: config.publicKey,
@@ -81,6 +84,18 @@ export const handler = async (r: Request) => {
     customType,
     customValues,
   } = interaction;
+
+  const ts = Date.now() - parseInt(timestamp) * 1000;
+
+  // the delay between user sending a command and Fable processing it
+  if (config.deploy) {
+    console.error(`request received after ${ts}ms`);
+  }
+
+  // exceeded time limit set by discord (3 seconds)
+  if (ts >= 2800) {
+    return Response.error();
+  }
 
   if (type === discord.InteractionType.Ping) {
     return discord.Message.pong();
@@ -484,7 +499,7 @@ export const handler = async (r: Request) => {
           case 'steal': {
             const search = options['name'] as string;
 
-            return steal.pre({
+            return (await steal.pre({
               token,
               guildId,
               channelId,
@@ -493,7 +508,7 @@ export const handler = async (r: Request) => {
               id: search.startsWith(idPrefix)
                 ? search.substring(idPrefix.length)
                 : undefined,
-            })
+            }))
               .send();
           }
           case 'now':
