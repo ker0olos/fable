@@ -78,6 +78,9 @@ function fakePool(
           rating: rating ??
             Rating.fromCharacter(node as AniListCharacter).stars,
           id: `${node.packId}:${node.id}`,
+          mediaId: `${
+            (node as AniListCharacter).media?.edges[0]?.node.packId
+          }:${(node as AniListCharacter).media?.edges[0]?.node.id}`,
         })),
       },
     });
@@ -949,15 +952,9 @@ Deno.test('valid pool', async (test) => {
             relations: { edges: [] },
             characters: { edges: [] },
           },
-          pool: 25,
-          popularityChance: 0,
-          popularityGreater: 2000,
-          popularityLesser: 3000,
           remaining: undefined,
           guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 75 }),
-          roleChance: 0,
-          role: CharacterRole.Main,
         },
       );
 
@@ -1065,15 +1062,9 @@ Deno.test('valid pool', async (test) => {
             relations: { edges: [] },
             characters: { edges: [] },
           },
-          pool: 25,
-          popularityChance: 0,
-          popularityGreater: 2000,
-          popularityLesser: 3000,
           remaining: undefined,
           guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 100 }),
-          roleChance: 0,
-          role: CharacterRole.Main,
         },
       );
 
@@ -1183,15 +1174,9 @@ Deno.test('valid pool', async (test) => {
             relations: { edges: [] },
             characters: { edges: [] },
           },
-          pool: 25,
-          popularityChance: 0,
-          popularityGreater: 100_000,
-          popularityLesser: 500_000,
           remaining: undefined,
           guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 500_000 }),
-          roleChance: 0,
-          role: CharacterRole.Main,
         },
       );
 
@@ -1274,6 +1259,7 @@ Deno.test('valid pool', async (test) => {
         {
           character: {
             id: '1',
+            packId: 'pack-id',
             media: {
               edges: [
                 {
@@ -1294,29 +1280,22 @@ Deno.test('valid pool', async (test) => {
             name: {
               english: 'name',
             },
-            packId: 'pack-id',
           },
           media: {
-            format: MediaFormat.TV,
             id: '2',
             packId: 'pack-id',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
             popularity: 2500,
             title: {
               english: 'title',
             },
-            type: MediaType.Anime,
             relations: { edges: [] },
             characters: { edges: [] },
           },
-          pool: 1,
-          popularityChance: 0,
-          popularityGreater: 2000,
-          popularityLesser: 3000,
           remaining: undefined,
           guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 2500 }),
-          roleChance: 0,
-          role: CharacterRole.Main,
         },
       );
 
@@ -1363,21 +1342,21 @@ Deno.test('valid pool', async (test) => {
             },
           },
           {
-            id: '1',
+            id: '3',
             packId: 'anilist',
             name: {
-              full: 'name 1',
+              full: 'name 2',
             },
             media: {
               edges: [{
                 characterRole: CharacterRole.Main,
                 node: {
-                  id: '2',
+                  id: '4',
                   popularity: 1000,
                   type: MediaType.Anime,
                   format: MediaFormat.TV,
                   title: {
-                    english: 'title 1',
+                    english: 'title 2',
                   },
                 },
               }],
@@ -1437,7 +1416,6 @@ Deno.test('valid pool', async (test) => {
             relations: { edges: [] },
             characters: { edges: [] },
           },
-          pool: 2,
           remaining: undefined,
           guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 1000 }),
@@ -1569,7 +1547,6 @@ Deno.test('valid pool', async (test) => {
             relations: { edges: [] },
             characters: { edges: [] },
           },
-          pool: 1,
           remaining: undefined,
           guarantees: undefined,
           rating: new Rating({ role: CharacterRole.Main, popularity: 400_000 }),
@@ -1588,6 +1565,363 @@ Deno.test('valid pool', async (test) => {
   });
 });
 
+Deno.test('valid rng pools', async (test) => {
+  await test.step('normal', async () => {
+    const variables = {
+      range: [2000, 3000],
+      role: CharacterRole.Main,
+    };
+
+    const { readJsonStub, fetchStub } = fakePool(
+      {
+        fill: {
+          id: '',
+          packId: 'anilist',
+          name: {
+            full: 'name',
+          },
+          media: {
+            edges: [{
+              characterRole: CharacterRole.Main,
+              node: {
+                id: 'anime',
+                packId: 'anilist',
+                popularity: 2500,
+                type: MediaType.Anime,
+                format: MediaFormat.TV,
+                title: {
+                  english: 'title',
+                },
+              },
+            }],
+          },
+        },
+        variables,
+        length: 5,
+      },
+    );
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([
+        { value: variables.range, chance: 0 },
+        { value: variables.role, chance: 0 },
+      ]),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    try {
+      assertEquals(
+        (await gacha.rangePool({
+          guildId: 'guild_id',
+        })).pool,
+        [
+          {
+            id: 'anilist:1',
+            mediaId: 'anilist:anime',
+            rating: 1,
+          },
+          {
+            id: 'anilist:2',
+            mediaId: 'anilist:anime',
+            rating: 1,
+          },
+          {
+            id: 'anilist:3',
+            mediaId: 'anilist:anime',
+            rating: 1,
+          },
+          {
+            id: 'anilist:4',
+            mediaId: 'anilist:anime',
+            rating: 1,
+          },
+          {
+            id: 'anilist:5',
+            mediaId: 'anilist:anime',
+            rating: 1,
+          },
+        ],
+      );
+
+      assertSpyCalls(fetchStub, 0);
+      assertSpyCalls(rngStub, 2);
+    } finally {
+      rngStub.restore();
+      randomStub.restore();
+      readJsonStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('from pack', async () => {
+    const variables = {
+      range: [2000, 3000],
+      role: CharacterRole.Main,
+    };
+
+    const { fetchStub, readJsonStub } = fakePool({
+      fill: {} as any,
+      variables,
+      length: 0,
+    });
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [{
+          id: '1',
+          name: {
+            english: 'name',
+          },
+          media: [{
+            role: CharacterRole.Main,
+            mediaId: '2',
+          }],
+        }],
+      },
+      media: {
+        new: [{
+          id: '2',
+          popularity: 2500,
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+        }],
+      },
+    };
+
+    const rngStub = stub(
+      utils,
+      'rng',
+      returnsNext([
+        { value: variables.range, chance: 0 },
+        { value: variables.role, chance: 0 },
+      ]),
+    );
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+    );
+
+    packs.cachedGuilds = {
+      'guild_id': [{ manifest, type: PackType.Community }],
+    };
+
+    try {
+      assertEquals(
+        (await gacha.rangePool({
+          guildId: 'guild_id',
+        })).pool,
+        [{
+          id: 'pack-id:1',
+          mediaId: 'pack-id:2',
+          rating: 1,
+        }],
+      );
+
+      assertSpyCalls(fetchStub, 0);
+      assertSpyCalls(rngStub, 2);
+    } finally {
+      packs.cachedGuilds = {};
+
+      rngStub.restore();
+      randomStub.restore();
+      readJsonStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+});
+
+Deno.test('valid guaranteed pools', async (test) => {
+  await test.step('guaranteed 1-star', async () => {
+    const variables = {
+      range: [1000, 50_000],
+    };
+
+    const { readJsonStub, fetchStub } = fakePool(
+      {
+        fill: [
+          {
+            id: '1',
+            packId: 'anilist',
+            name: {
+              full: 'name 1',
+            },
+            media: {
+              edges: [{
+                characterRole: CharacterRole.Main,
+                node: {
+                  id: '2',
+                  packId: 'anilist',
+                  popularity: 1000,
+                  type: MediaType.Anime,
+                  format: MediaFormat.TV,
+                  title: {
+                    english: 'title 1',
+                  },
+                },
+              }],
+            },
+          },
+          {
+            id: '3',
+            packId: 'anilist',
+            name: {
+              full: 'name 2',
+            },
+            media: {
+              edges: [{
+                characterRole: CharacterRole.Main,
+                node: {
+                  id: '4',
+                  packId: 'anilist',
+                  popularity: 1000,
+                  type: MediaType.Anime,
+                  format: MediaFormat.TV,
+                  title: {
+                    english: 'title 2',
+                  },
+                },
+              }],
+            },
+          },
+        ],
+        variables,
+      },
+    );
+
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    try {
+      assertEquals(
+        (await gacha.guaranteedPool({
+          guildId: 'guild_id',
+          guarantee: 1,
+        })).pool,
+        [
+          {
+            id: 'anilist:1',
+            mediaId: 'anilist:2',
+            rating: 1,
+          },
+          {
+            id: 'anilist:3',
+            mediaId: 'anilist:4',
+            rating: 1,
+          },
+        ],
+      );
+
+      assertSpyCalls(fetchStub, 0);
+    } finally {
+      readJsonStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('guaranteed 5-star', async () => {
+    const variables = {
+      range: [400_000, NaN],
+    };
+
+    const { readJsonStub, fetchStub } = fakePool(
+      {
+        fill: [
+          {
+            id: '1',
+            packId: 'anilist',
+            name: {
+              full: 'name 1',
+            },
+            media: {
+              edges: [{
+                characterRole: CharacterRole.Main,
+                node: {
+                  id: '2',
+                  packId: 'anilist',
+                  popularity: 1000,
+                  type: MediaType.Anime,
+                  format: MediaFormat.TV,
+                  title: {
+                    english: 'title 1',
+                  },
+                },
+              }],
+            },
+          },
+          {
+            id: '3',
+            packId: 'anilist',
+            name: {
+              full: 'name 2',
+            },
+            media: {
+              edges: [{
+                characterRole: CharacterRole.Main,
+                node: {
+                  id: '4',
+                  packId: 'anilist',
+                  popularity: 400000,
+                  type: MediaType.Anime,
+                  format: MediaFormat.TV,
+                  title: {
+                    english: 'title 2',
+                  },
+                },
+              }],
+            },
+          },
+        ],
+        variables,
+      },
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    try {
+      assertEquals(
+        (await gacha.guaranteedPool({
+          guildId: 'guild_id',
+          guarantee: 5,
+        })).pool,
+        [{
+          id: 'anilist:3',
+          mediaId: 'anilist:4',
+          rating: 5,
+        }],
+      );
+
+      assertSpyCalls(fetchStub, 0);
+    } finally {
+      readJsonStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+});
+
 Deno.test('adding character to inventory', async (test) => {
   await test.step('normal', async () => {
     const variables = {
@@ -1598,8 +1932,9 @@ Deno.test('adding character to inventory', async (test) => {
     const poolStub = stub(packs, 'pool', () =>
       Promise.resolve([
         {
-          rating: 1,
           id: 'anilist:1',
+          mediaId: 'anilist:2',
+          rating: 1,
         },
       ]));
 
@@ -1723,8 +2058,9 @@ Deno.test('adding character to inventory', async (test) => {
     const poolStub = stub(packs, 'pool', () =>
       Promise.resolve([
         {
-          rating: 1,
           id: 'anilist:1',
+          mediaId: 'anilist:2',
+          rating: 1,
         },
       ]));
 
@@ -1820,8 +2156,9 @@ Deno.test('adding character to inventory', async (test) => {
     const poolStub = stub(packs, 'pool', () =>
       Promise.resolve([
         {
-          rating: 1,
           id: 'anilist:1',
+          mediaId: 'anilist:2',
+          rating: 1,
         },
       ]));
 
@@ -1920,8 +2257,9 @@ Deno.test('adding character to inventory', async (test) => {
     const poolStub = stub(packs, 'pool', () =>
       Promise.resolve([
         {
-          rating: 1,
           id: 'anilist:1',
+          mediaId: 'anilist:2',
+          rating: 1,
         },
       ]));
 
@@ -2220,12 +2558,8 @@ Deno.test('/gacha', async (test) => {
     const pull: Pull = {
       media,
       character,
-      popularityChance: 0,
-      popularityGreater: 0,
-      popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
       remaining: 0,
-      pool: 1,
     };
 
     const timeStub = new FakeTime();
@@ -2438,13 +2772,9 @@ Deno.test('/gacha', async (test) => {
     const pull: Pull = {
       media,
       character,
-      popularityChance: 0,
-      popularityGreater: 0,
-      popularityLesser: 100,
       guarantees: [3, 4, 3],
       rating: new Rating({ popularity: 100 }),
       remaining: 1,
-      pool: 1,
     };
 
     const timeStub = new FakeTime();
@@ -2657,12 +2987,8 @@ Deno.test('/gacha', async (test) => {
     const pull: Pull = {
       media,
       character,
-      popularityChance: 0,
-      popularityGreater: 0,
-      popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
       remaining: 1,
-      pool: 1,
     };
 
     const timeStub = new FakeTime();
@@ -2883,12 +3209,8 @@ Deno.test('/gacha', async (test) => {
     const pull: Pull = {
       media,
       character,
-      popularityChance: 0,
-      popularityGreater: 0,
-      popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
       remaining: 1,
-      pool: 1,
     };
 
     const timeStub = new FakeTime();
@@ -3042,12 +3364,8 @@ Deno.test('/gacha', async (test) => {
     const pull: Pull = {
       media,
       character,
-      popularityChance: 0,
-      popularityGreater: 0,
-      popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
       remaining: 1,
-      pool: 1,
     };
 
     const timeStub = new FakeTime();
@@ -3288,12 +3606,8 @@ Deno.test('/gacha', async (test) => {
     const pull: Pull = {
       media,
       character,
-      popularityChance: 0,
-      popularityGreater: 0,
-      popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
       remaining: 1,
-      pool: 1,
     };
 
     const timeStub = new FakeTime();
@@ -3547,12 +3861,8 @@ Deno.test('/gacha', async (test) => {
     const pull: Pull = {
       media,
       character,
-      popularityChance: 0,
-      popularityGreater: 0,
-      popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
       remaining: 1,
-      pool: 1,
     };
 
     const timeStub = new FakeTime();
@@ -3795,12 +4105,8 @@ Deno.test('/gacha', async (test) => {
     const pull: Pull = {
       media,
       character,
-      popularityChance: 0,
-      popularityGreater: 0,
-      popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
       remaining: 1,
-      pool: 1,
     };
 
     const timeStub = new FakeTime();
@@ -4015,12 +4321,8 @@ Deno.test('/gacha', async (test) => {
     const pull: Pull = {
       media,
       character,
-      popularityChance: 0,
-      popularityGreater: 0,
-      popularityLesser: 100,
       rating: new Rating({ popularity: 100 }),
       remaining: 1,
-      pool: 1,
     };
 
     const timeStub = new FakeTime();
@@ -4391,7 +4693,7 @@ Deno.test('/gacha', async (test) => {
       'rngPull',
       // deno-lint-ignore require-await
       async () => {
-        throw new PoolError({} as any);
+        throw new PoolError();
       },
     );
 
@@ -4471,7 +4773,7 @@ Deno.test('/gacha', async (test) => {
       'rngPull',
       // deno-lint-ignore require-await
       async () => {
-        throw new PoolError({} as any);
+        throw new PoolError();
       },
     );
 

@@ -123,20 +123,19 @@ export type DisaggregatedCharacter = Modify<Character, {
 
 export type Pool = {
   [key: string]: {
-    'ALL': { id: string; rating: number }[];
-    [CharacterRole.Main]: { id: string; rating: number }[];
-    [CharacterRole.Supporting]: { id: string; rating: number }[];
-    [CharacterRole.Background]: { id: string; rating: number }[];
+    'ALL': { id: string; mediaId: string; rating: number }[];
+    [CharacterRole.Main]: { id: string; mediaId: string; rating: number }[];
+    [CharacterRole.Supporting]: {
+      id: string;
+      mediaId: string;
+      rating: number;
+    }[];
+    [CharacterRole.Background]: {
+      id: string;
+      mediaId: string;
+      rating: number;
+    }[];
   };
-};
-
-export type PoolInfo = {
-  pool: number;
-  popularityChance?: number;
-  popularityGreater?: number;
-  popularityLesser?: number;
-  roleChance?: number;
-  role?: CharacterRole;
 };
 
 export enum PackType {

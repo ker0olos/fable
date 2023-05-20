@@ -180,10 +180,6 @@ for (const range of ranges) {
       };
 
       for (const { id, characters: firstPage } of media) {
-        // exclude specific media from the pool
-        if (excludeList.includes(`${id}`)) {
-          continue;
-        }
         let charactersPage = 1;
 
         while (true) {
@@ -197,38 +193,25 @@ for (const range of ranges) {
               });
 
             nodes.forEach((character) => {
-              const id = `anilist:${character.id}`;
+              const media = character.media?.edges[0];
+              const mediaId = `anilist:${media?.node.id}`;
 
-              let primely = character.media?.edges[0];
+              if (media) {
+                const id = `anilist:${character.id}`;
 
-              // check if a primary media swap is required
-              character.media?.edges.forEach((e) => {
+                const rating = new Rating({
+                  role: media.characterRole,
+                  popularity: media?.node.popularity,
+                }).stars;
+
                 if (
-                  // ignore background roles
-                  (primely?.characterRole === CharacterRole.Background) ||
-                  // sort by popularity
-                  (
-                    e.characterRole !== CharacterRole.Background &&
-                    // deno-lint-ignore no-non-null-assertion
-                    e.node.popularity! > primely!.node.popularity!
-                  )
+                  media.node.popularity &&
+                  media.node.popularity >= range[0] &&
+                  (isNaN(range[1]) || media.node.popularity <= range[1])
                 ) {
-                  primely = e;
+                  characters.ALL.push({ id, mediaId, rating });
+                  characters[media.characterRole].push({ id, mediaId, rating });
                 }
-              });
-
-              const rating = new Rating({
-                role: primely?.characterRole,
-                popularity: primely?.node.popularity,
-              }).stars;
-
-              if (
-                primely?.node.popularity &&
-                primely.node.popularity >= range[0] &&
-                (isNaN(range[1]) || primely.node.popularity <= range[1])
-              ) {
-                characters.ALL.push({ id, rating });
-                characters[primely.characterRole].push({ id, rating });
               }
             });
 
@@ -288,7 +271,7 @@ for (const range of ranges) {
 
 await Deno.writeTextFile(
   join(dirname, filepath),
-  JSON.stringify(cache, null, 2),
+  JSON.stringify(cache),
 );
 
 let totalCharacters = 0;

@@ -1059,21 +1059,28 @@ async function pool({ guildId, range, role, stars }: {
     if (manifest.characters && Array.isArray(manifest.characters.new)) {
       const characters = await Promise.all(
         manifest.characters.new.map(async (char) => {
+          char.packId = manifest.id;
+
           const character = await packs.aggregate<Character>({
             guildId,
             character: char,
           });
 
-          const rating = Rating.fromCharacter(character).stars;
+          const media = character.media?.edges?.[0]?.node;
 
-          return {
-            id: `${manifest.id}:${character.id}`,
-            rating,
-          };
+          if (media) {
+            const rating = Rating.fromCharacter(character).stars;
+
+            return {
+              id: `${manifest.id}:${character.id}`,
+              mediaId: `${media.packId}:${media.id}`,
+              rating,
+            };
+          }
         }),
       );
 
-      pool = pool.concat(characters);
+      pool = pool.concat(characters.filter(Boolean));
     }
   }));
 
