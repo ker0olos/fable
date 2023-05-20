@@ -484,7 +484,7 @@ export const handler = async (r: Request) => {
           case 'steal': {
             const search = options['name'] as string;
 
-            return steal.pre({
+            return (await steal.pre({
               token,
               guildId,
               channelId,
@@ -493,7 +493,7 @@ export const handler = async (r: Request) => {
               id: search.startsWith(idPrefix)
                 ? search.substring(idPrefix.length)
                 : undefined,
-            })
+            }))
               .send();
           }
           case 'now':
