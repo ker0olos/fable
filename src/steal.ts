@@ -87,7 +87,7 @@ async function getCooldown({ userId, guildId }: {
   return parsed.getTime();
 }
 
-function pre({
+async function pre({
   token,
   userId,
   guildId,
@@ -101,9 +101,22 @@ function pre({
   channelId: string;
   search?: string;
   id?: string;
-}): discord.Message {
+}): Promise<discord.Message> {
   if (!config.stealing) {
     throw new NonFetalError('Stealing is under maintenance, try again later!');
+  }
+
+  const cooldown = await getCooldown({
+    userId,
+    guildId,
+  });
+
+  if (cooldown > Date.now()) {
+    throw new NonFetalError(
+      `Steal is on cooldown, try again <t:${
+        Math.floor(cooldown / 1000).toString()
+      }:R>`,
+    );
   }
 
   packs
@@ -114,10 +127,6 @@ function pre({
       }
 
       return Promise.all([
-        getCooldown({
-          userId,
-          guildId,
-        }),
         packs.aggregate<Character>({
           guildId,
           character: results[0],
@@ -129,20 +138,12 @@ function pre({
         }),
       ]);
     })
-    .then(([cooldown, character, existing]) => {
+    .then(([character, existing]) => {
       const message = new discord.Message();
 
       const characterId = `${character.packId}:${character.id}`;
 
       const characterName = packs.aliasToArray(character.name)[0];
-
-      if (cooldown > Date.now()) {
-        throw new NonFetalError(
-          `Steal is on cooldown, try again <t:${
-            Math.floor(cooldown / 1000).toString()
-          }:R>`,
-        );
-      }
 
       if (!existing) {
         message.addEmbed(
