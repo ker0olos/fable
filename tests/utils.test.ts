@@ -833,13 +833,42 @@ Deno.test('voting timestamps', async (test) => {
   });
 });
 
-Deno.test('diff days', () => {
-  const a = new Date();
-  const b = new Date();
+Deno.test('diff days', async (test) => {
+  await test.step('23 hours', () => {
+    const a = new Date();
+    const b = new Date();
 
-  b.setDate(a.getDate() - 7);
+    b.setHours(b.getHours() - 23);
 
-  assertEquals(utils.diffInDays(a, b), 7);
+    assertEquals(utils.diffInDays(a, b), 0);
+  });
+
+  await test.step('24 hours', () => {
+    const a = new Date();
+    const b = new Date();
+
+    b.setHours(b.getHours() - 24);
+
+    assertEquals(utils.diffInDays(a, b), 1);
+  });
+
+  await test.step('47 hours', () => {
+    const a = new Date();
+    const b = new Date();
+
+    b.setHours(b.getHours() - 47);
+
+    assertEquals(utils.diffInDays(a, b), 1);
+  });
+
+  await test.step('48 hours', () => {
+    const a = new Date();
+    const b = new Date();
+
+    b.setHours(b.getHours() - 48);
+
+    assertEquals(utils.diffInDays(a, b), 2);
+  });
 });
 
 Deno.test('cipher', () => {
