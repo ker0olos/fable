@@ -19,7 +19,6 @@ import {
   DisaggregatedCharacter,
   Media,
   MediaRelation,
-  PoolInfo,
   Schema,
 } from './types.ts';
 
@@ -32,7 +31,7 @@ export type Pull = {
   character: Character;
   media: Media;
   rating: Rating;
-} & PoolInfo;
+};
 
 const lowest = 1000;
 
@@ -53,7 +52,7 @@ const variables = {
   },
   ranges: {
     // whether you get from the far end or the near end
-    // of those ranges is up to total RNG
+    // of those ranges is random
     65: [lowest, 50_000], // 65% for 1K -> 50K
     22: [50_000, 100_000], // 22% for 50K -> 100K
     9: [100_000, 200_000], // 9% for 100K -> 200K
@@ -63,17 +62,16 @@ const variables = {
 };
 
 async function rangePool({ guildId }: { guildId: string }): Promise<{
-  pool: { id: string }[];
-  poolInfo: PoolInfo;
+  pool: Awaited<ReturnType<typeof packs.pool>>;
   validate: (character: Character | DisaggregatedCharacter) => boolean;
 }> {
-  const { value: range, chance: rangeChance } = utils.rng(
+  const { value: range } = utils.rng(
     gacha.variables.ranges,
   );
 
-  const { value: role, chance: roleChance } = range[0] <= lowest
+  const { value: role } = range[0] <= lowest
     // include all roles in the pool
-    ? { value: undefined, chance: undefined }
+    ? { value: undefined }
     // one specific role for the whole pool
     : utils.rng(gacha.variables.roles);
 
@@ -121,18 +119,8 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
     return true;
   };
 
-  const poolInfo: PoolInfo = {
-    pool: pool.length,
-    popularityChance: rangeChance,
-    popularityGreater: range[0],
-    popularityLesser: range[1],
-    roleChance,
-    role,
-  };
-
   return {
     pool,
-    poolInfo,
     validate,
   };
 }
@@ -140,15 +128,13 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
 async function guaranteedPool(
   { guildId, guarantee }: { guildId: string; guarantee: number },
 ): Promise<{
-  pool: { id: string }[];
-  poolInfo: PoolInfo;
+  pool: Awaited<ReturnType<typeof packs.pool>>;
   validate: (character: Character | DisaggregatedCharacter) => boolean;
 }> {
-  const pool = (await packs.pool({
+  const pool = await packs.pool({
     stars: guarantee,
     guildId,
-  }))
-    .filter(({ rating }) => rating === guarantee);
+  });
 
   const validate = (character: Character | DisaggregatedCharacter): boolean => {
     if (
@@ -173,13 +159,8 @@ async function guaranteedPool(
     return true;
   };
 
-  const poolInfo: PoolInfo = {
-    pool: pool.length,
-  };
-
   return {
     pool,
-    poolInfo,
     validate,
   };
 }
@@ -199,7 +180,7 @@ async function rngPull(
     };
   },
 ): Promise<Pull> {
-  const { pool, poolInfo, validate } = typeof guarantee === 'number'
+  const { pool, validate } = typeof guarantee === 'number'
     ? await gacha.guaranteedPool({
       guildId,
       guarantee,
@@ -331,7 +312,7 @@ async function rngPull(
   }
 
   if (!character || !media || !rating) {
-    throw new PoolError(poolInfo);
+    throw new PoolError();
   }
 
   return {
@@ -340,7 +321,6 @@ async function rngPull(
     remaining: inventory?.availablePulls,
     guarantees: inventory?.user?.guarantees,
     media: await packs.aggregate<Media>({ media, guildId }),
-    ...poolInfo,
   };
 }
 

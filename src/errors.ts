@@ -1,7 +1,5 @@
 import utils from './utils.ts';
 
-import { PoolInfo } from './types.ts';
-
 export class GraphQLError extends Error {
   url: string;
   query: string;
@@ -54,15 +52,12 @@ export class NoPullsError extends Error {
 }
 
 export class PoolError extends Error {
-  info: PoolInfo;
-
-  constructor(info: PoolInfo) {
+  constructor() {
     const message =
       'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables';
 
     super(message);
 
     this.name = 'PoolError';
-    this.info = info;
   }
 }
