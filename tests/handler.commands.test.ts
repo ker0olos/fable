@@ -3730,9 +3730,13 @@ Deno.test('steal command handlers', async (test) => {
       body,
     } as any));
 
+    const setFlagsSpy = spy(() => ({
+      send: () => true,
+    }));
+
     const stealStub = stub(steal, 'pre', () =>
       ({
-        send: () => true,
+        setFlags: setFlagsSpy,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -3767,6 +3771,10 @@ Deno.test('steal command handlers', async (test) => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         }],
+      });
+
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
       });
 
       assertSpyCall(stealStub, 0, {
@@ -3818,9 +3826,13 @@ Deno.test('steal command handlers', async (test) => {
       body,
     } as any));
 
+    const setFlagsSpy = spy(() => ({
+      send: () => true,
+    }));
+
     const stealStub = stub(steal, 'pre', () =>
       ({
-        send: () => true,
+        setFlags: setFlagsSpy,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -3855,6 +3867,10 @@ Deno.test('steal command handlers', async (test) => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         }],
+      });
+
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
       });
 
       assertSpyCall(stealStub, 0, {

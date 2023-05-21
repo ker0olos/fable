@@ -2,7 +2,7 @@
 
 import {
   assertEquals,
-  assertRejects,
+  assertThrows,
 } from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
 import { FakeTime } from 'https://deno.land/std@0.186.0/testing/time.ts';
@@ -1624,7 +1624,7 @@ Deno.test('/steal', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await steal.pre({
+      const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
@@ -1722,6 +1722,31 @@ Deno.test('/steal', async (test) => {
   });
 
   await test.step('on cooldown', async () => {
+    const character: Character = {
+      id: '1',
+      packId: 'id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+      media: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: 'media',
+            packId: 'id',
+            type: MediaType.Anime,
+            title: {
+              english: 'media title',
+            },
+          },
+        }],
+      },
+    };
+
     const timeStub = new FakeTime('2011/1/25 00:00 UTC');
 
     const fetchStub = stub(
@@ -1739,29 +1764,100 @@ Deno.test('/steal', async (test) => {
               },
             }))),
         } as any,
+        undefined,
+        undefined,
       ]),
     );
 
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const packsStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () =>
+        Promise.resolve({
+          id: 'id:1',
+          mediaId: 'id:2',
+          rating: 2,
+          user: {
+            id: 'another_user_id',
+          },
+        }),
+    );
+
     config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
 
     try {
-      await assertRejects(
-        () =>
-          steal.pre({
-            userId: 'user_id',
-            guildId: 'guild_id',
-            channelId: 'channel_id',
-            token: 'test_token',
-            id: 'character_id',
-          }),
-        NonFetalError,
-        'Steal is on cooldown, try again <t:1295913601:R>',
+      const message = steal.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        token: 'test_token',
+        id: 'character_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            description: 'Steal is on cooldown, try again <t:1295913601:R>',
+          }],
+          components: [],
+          attachments: [],
+        },
       );
     } finally {
       delete config.stealing;
+      delete config.appId;
+      delete config.origin;
 
-      timeStub.restore();
       fetchStub.restore();
+      listStub.restore();
+      packsStub.restore();
+      userStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1856,7 +1952,7 @@ Deno.test('/steal', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await steal.pre({
+      const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
@@ -2016,7 +2112,7 @@ Deno.test('/steal', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await steal.pre({
+      const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
@@ -2117,7 +2213,7 @@ Deno.test('/steal', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await steal.pre({
+      const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
@@ -2141,18 +2237,18 @@ Deno.test('/steal', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 2);
+      assertSpyCalls(fetchStub, 1);
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -2248,7 +2344,7 @@ Deno.test('/steal', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await steal.pre({
+      const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
@@ -2325,11 +2421,11 @@ Deno.test('/steal', async (test) => {
     }
   });
 
-  await test.step('under maintenance', async () => {
+  await test.step('under maintenance', () => {
     config.stealing = false;
 
     try {
-      await assertRejects(
+      assertThrows(
         () =>
           steal.pre({
             userId: 'user_id',

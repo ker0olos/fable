@@ -499,7 +499,7 @@ export const handler = async (r: Request) => {
           case 'steal': {
             const search = options['name'] as string;
 
-            return (await steal.pre({
+            return steal.pre({
               token,
               guildId,
               channelId,
@@ -508,7 +508,8 @@ export const handler = async (r: Request) => {
               id: search.startsWith(idPrefix)
                 ? search.substring(idPrefix.length)
                 : undefined,
-            }))
+            })
+              .setFlags(discord.MessageFlags.Ephemeral)
               .send();
           }
           case 'now':
