@@ -19,13 +19,13 @@
 
 </i>
 
+_<p align="center"> Check [our top.gg][topgg2] for a list of features and see
+how Fable compares to other bots</p>_
+
 <i>
   <h6 align="right">(Animated Pulls)</h6>
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227321932-2ad8d36c-e56c-46e9-91da-161b79eeb029.gif" alt="Animated Pulls">
 </i>
-
-_<p align="center"> Check [this page](./PUBLIC.md) for a list of key features
-and how Fable compares to other bots</p>_
 
 Fable is a free, open-source gacha bot — a friendly, powerful alternative to
 bots like Mudae, Sofi, Karuta. Like those bots, you can pull anime characters,

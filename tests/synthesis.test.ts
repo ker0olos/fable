@@ -289,8 +289,7 @@ Deno.test('synthesis confirmed', async (test) => {
 
     const gachaStub = stub(gacha, 'guaranteedPool', () =>
       Promise.resolve({
-        pool: [{ id: 'anilist:1' }],
-        poolInfo: { pool: 1 },
+        pool: [{ id: 'anilist:1', mediaId: 'anilist:2', rating: 1 }],
         validate: () => true,
       }));
 
@@ -548,8 +547,7 @@ Deno.test('synthesis confirmed', async (test) => {
 
     const gachaStub = stub(gacha, 'guaranteedPool', () =>
       Promise.resolve({
-        pool: [{ id: 'anilist:1' }],
-        poolInfo: { pool: 1 },
+        pool: [{ id: 'anilist:1', mediaId: 'anilist:2', rating: 1 }],
         validate: () => true,
       }));
 
@@ -770,9 +768,7 @@ Deno.test('synthesis confirmed', async (test) => {
       'rngPull',
       () =>
         Promise.reject(
-          new PoolError({
-            pool: 0,
-          }),
+          new PoolError(),
         ),
     );
 
