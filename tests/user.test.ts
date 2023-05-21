@@ -761,6 +761,91 @@ Deno.test('/now', async (test) => {
     }
   });
 
+  await test.step('with steal cooldown', async () => {
+    const timestamp = new Date('2023-02-05T03:21:46.253Z');
+
+    const timeStub = new FakeTime(timestamp);
+
+    timestamp.setDate(timestamp.getDate() + 2);
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getUserInventory: {
+                availablePulls: 5,
+                stealTimestamp: timestamp,
+                user: {},
+              },
+            },
+          }))),
+        //
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.topggCipher = 12;
+
+    try {
+      const message = await user.now({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: '**5**',
+              footer: {
+                text: 'Available Pulls',
+              },
+              description: undefined,
+            },
+
+            {
+              type: 'rich',
+              description: '_Steal cooldown ends <t:1675740106:R>_',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                type: 2,
+                style: 2,
+                custom_id: 'gacha=user_id',
+                label: '/gacha',
+              },
+              {
+                label: 'Vote',
+                style: 5,
+                type: 2,
+                url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+              },
+            ],
+          }],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.topggCipher;
+
+      timeStub.restore();
+      fetchStub.restore();
+    }
+  });
+
   await test.step('with notice', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
@@ -5157,7 +5242,7 @@ Deno.test('/like', async (test) => {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
           ],
         },
@@ -5323,7 +5408,7 @@ Deno.test('/like', async (test) => {
                   'http://localhost:8000/external/http%3A%2F%2Fimage_url?size=thumbnail',
               },
               description:
-                '<@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
           ],
         },
@@ -5489,7 +5574,7 @@ Deno.test('/like', async (test) => {
                   'http://localhost:8000/external/http%3A%2F%2Fimage_url?size=thumbnail',
               },
               description:
-                '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
           ],
         },
@@ -5636,7 +5721,7 @@ Deno.test('/like', async (test) => {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
           ],
         },
@@ -5791,7 +5876,7 @@ Deno.test('/like', async (test) => {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
           ],
         },
@@ -5946,7 +6031,7 @@ Deno.test('/like', async (test) => {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
           ],
         },

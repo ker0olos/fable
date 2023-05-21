@@ -169,7 +169,7 @@ Deno.test('give', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               fields: [
                 {
                   name: 'media',
@@ -187,7 +187,7 @@ Deno.test('give', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               fields: [
                 {
                   name: 'media',
@@ -742,7 +742,7 @@ Deno.test('trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               fields: [
                 {
                   name: 'media 2',
@@ -760,7 +760,7 @@ Deno.test('trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               fields: [
                 {
                   name: 'media 2',
@@ -778,7 +778,7 @@ Deno.test('trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               fields: [
                 {
                   name: 'media',
@@ -796,7 +796,7 @@ Deno.test('trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               fields: [
                 {
                   name: 'media',
@@ -1415,7 +1415,7 @@ Deno.test('/give', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -1433,7 +1433,7 @@ Deno.test('/give', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url2?size=thumbnail',
               },
@@ -1625,7 +1625,7 @@ Deno.test('/give', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -1643,7 +1643,7 @@ Deno.test('/give', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url2?size=thumbnail',
               },
@@ -1795,7 +1795,7 @@ Deno.test('/give', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -1813,7 +1813,7 @@ Deno.test('/give', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url2?size=thumbnail',
               },
@@ -1955,7 +1955,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -1973,7 +1973,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -2162,7 +2162,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -2180,7 +2180,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -2372,7 +2372,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -2390,7 +2390,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -2578,7 +2578,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
@@ -2730,7 +2730,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },

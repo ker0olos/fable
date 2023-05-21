@@ -159,6 +159,7 @@ async function now({
       getUserInventory(userId: $userId, guildId: $guildId) {
         availablePulls
         rechargeTimestamp
+        stealTimestamp
         user {
           lastVote
           availableVotes
@@ -170,19 +171,20 @@ async function now({
 
   const message = new discord.Message();
 
-  const { user, availablePulls, rechargeTimestamp } = (await request<{
-    getUserInventory: Schema.Inventory;
-  }>({
-    url: faunaUrl,
-    query,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-    },
-  })).getUserInventory;
+  const { user, availablePulls, stealTimestamp, rechargeTimestamp } =
+    (await request<{
+      getUserInventory: Schema.Inventory;
+    }>({
+      url: faunaUrl,
+      query,
+      headers: {
+        'authorization': `Bearer ${config.faunaSecret}`,
+      },
+      variables: {
+        userId,
+        guildId,
+      },
+    })).getUserInventory;
 
   const recharge = utils.rechargeTimestamp(rechargeTimestamp);
   const voting = utils.votingTimestamp(user.lastVote);
@@ -234,6 +236,15 @@ async function now({
           `_Can vote again <t:${
             utils.votingTimestamp(user.lastVote).timeLeft
           }:R>_`,
+        ),
+    );
+  }
+
+  if (new Date(stealTimestamp ?? new Date()).getTime() > Date.now()) {
+    message.addEmbed(
+      new discord.Embed()
+        .setDescription(
+          `_Steal cooldown ends <t:${utils.stealTimestamp(stealTimestamp)}:R>_`,
         ),
     );
   }

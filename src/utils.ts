@@ -205,8 +205,8 @@ function hexToUint8Array(hex: string): Uint8Array | undefined {
 function verifySignature(
   { publicKey, signature, timestamp, body }: {
     publicKey?: string;
-    signature?: string;
-    timestamp?: string;
+    signature?: string | null;
+    timestamp?: string | null;
     body: string;
   },
 ): { valid: boolean; body: string } {

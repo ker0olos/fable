@@ -2570,7 +2570,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 1);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
     );
 
     rating = new Rating({ role: CharacterRole.Main, popularity: 0 });
@@ -2578,7 +2578,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 1);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
     );
 
     rating = new Rating({ popularity: 0 });
@@ -2586,7 +2586,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 1);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
     );
   });
 
@@ -2599,7 +2599,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 2);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
     );
 
     rating = new Rating({
@@ -2609,7 +2609,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 2);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
     );
   });
 
@@ -2619,7 +2619,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 3);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
     );
 
     rating = new Rating({ role: CharacterRole.Supporting, popularity: 250000 });
@@ -2627,7 +2627,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 3);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
     );
 
     rating = new Rating({ popularity: 250000 });
@@ -2635,7 +2635,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 3);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
     );
   });
 
@@ -2645,7 +2645,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 4);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
     );
 
     rating = new Rating({ role: CharacterRole.Supporting, popularity: 500000 });
@@ -2653,7 +2653,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 4);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
     );
 
     rating = new Rating({ popularity: 500000 });
@@ -2661,7 +2661,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 4);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
     );
   });
 
@@ -2691,7 +2691,7 @@ Deno.test('rating', async (test) => {
     assertEquals(rating.stars, 1);
     assertEquals(
       rating.emotes,
-      '<:star:1061016362832642098><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466><:no_star:1061016360190222466>',
+      '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
     );
   });
 
