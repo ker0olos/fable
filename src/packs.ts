@@ -1084,7 +1084,22 @@ async function pool({ guildId, range, role, stars }: {
     }
   }));
 
-  return pool;
+  const occurrences: Record<string, boolean> = {};
+
+  // shuffle here is to ensure that occurrences are randomly ordered
+  utils.shuffle(pool);
+
+  return pool.filter(({ mediaId, rating }) => {
+    if (typeof stars === 'number' && rating !== stars) {
+      return false;
+    }
+
+    if (occurrences[mediaId]) {
+      return false;
+    }
+
+    return (occurrences[mediaId] = true);
+  });
 }
 
 function aliasToArray(

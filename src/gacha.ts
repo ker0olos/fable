@@ -131,11 +131,10 @@ async function guaranteedPool(
   pool: Awaited<ReturnType<typeof packs.pool>>;
   validate: (character: Character | DisaggregatedCharacter) => boolean;
 }> {
-  const pool = (await packs.pool({
+  const pool = await packs.pool({
     stars: guarantee,
     guildId,
-  }))
-    .filter(({ rating }) => rating === guarantee);
+  });
 
   const validate = (character: Character | DisaggregatedCharacter): boolean => {
     if (
