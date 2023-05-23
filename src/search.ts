@@ -448,6 +448,12 @@ function characterEmbed(
   const alias = options.existing?.nickname ??
     packs.aliasToArray(character.name)[0];
 
+  const wrapWidth = ['preview', 'thumbnail'].includes(options.mode ?? '')
+    ? 25
+    : 32;
+
+  const aliasWrapped = utils.wrap(alias, wrapWidth);
+
   if (options.mode === 'full') {
     embed.setImage({
       url: image?.url,
@@ -501,8 +507,8 @@ function characterEmbed(
 
   if (mediaTitle) {
     embed.addField({
-      name: utils.wrap(mediaTitle),
-      value: `**${utils.wrap(alias)}**`,
+      name: utils.wrap(mediaTitle, wrapWidth),
+      value: `**${aliasWrapped}**`,
     });
 
     if (options.description && description) {
@@ -510,9 +516,10 @@ function characterEmbed(
     }
   } else {
     embed.addField({
-      name: options.description && options.mode === 'thumbnail' || !description
-        ? `${utils.wrap(alias)}`
-        : `${utils.wrap(alias)}\n${discord.empty}`,
+      name:
+        !description || (options.description && options.mode === 'thumbnail')
+          ? `${aliasWrapped}`
+          : `${aliasWrapped}\n${discord.empty}`,
       value: options.description ? description : undefined,
     });
   }
