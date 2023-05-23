@@ -106,7 +106,7 @@ async function getUserCharacters(
   return {
     party,
     characters,
-    likes: user.likes,
+    likes: user?.likes,
   };
 }
 
@@ -954,38 +954,11 @@ function list({
   id?: string;
   nick?: boolean;
 }): discord.Message {
-  const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        characters {
-          id
-          nickname
-          mediaId
-          rating
-        }
-      }
-    }
-  `;
-
-  request<{
-    getUserInventory: Schema.Inventory;
-  }>({
-    url: faunaUrl,
-    query,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-    },
-  })
-    .then(async ({ getUserInventory }) => {
+  user.getUserCharacters({ userId, guildId })
+    .then(async ({ characters, likes }) => {
       const embed = new discord.Embed();
 
       const message = new discord.Message();
-
-      let characters = getUserInventory.characters;
 
       let media: Media[] = [];
 
@@ -1102,9 +1075,14 @@ function list({
 
         const field = fields[existing.mediaId];
 
-        const name = `${existing.rating}${discord.emotes.smolStar} ${
-          existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
-        }`;
+        const name = `${existing.rating}${discord.emotes.smolStar}${
+          likes?.some((like) =>
+              like.characterId === existing.id ||
+              like.mediaId === existing.mediaId
+            )
+            ? `${discord.emotes.liked}`
+            : ''
+        } ${existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])}`;
 
         field.names.push(name);
       }

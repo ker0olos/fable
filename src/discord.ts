@@ -25,6 +25,7 @@ export const emotes = {
   remove: '<:remove:1099004424111792158>',
   add: '<:add:1099004747123523644>',
   all: '<:all:1107511909999181824>',
+  liked: '<:liked:1110491720375873567>',
 };
 
 export const join = (...args: string[]): string => {
