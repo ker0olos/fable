@@ -24,7 +24,15 @@ import Rating from '../src/rating.ts';
 
 import synthesis from '../src/synthesis.ts';
 
-import { CharacterRole, MediaFormat, MediaType, Schema } from '../src/types.ts';
+import {
+  CharacterRole,
+  DisaggregatedCharacter,
+  Manifest,
+  MediaFormat,
+  MediaType,
+  PackType,
+  Schema,
+} from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
@@ -886,6 +894,18 @@ Deno.test('/synthesis', async (test) => {
         image: {
           large: 'image_url',
         },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: 'anime',
+              type: MediaType.Anime,
+              title: {
+                english: 'media title',
+              },
+            },
+          }],
+        },
       },
       {
         id: '2',
@@ -895,6 +915,18 @@ Deno.test('/synthesis', async (test) => {
         image: {
           large: 'image_url',
         },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: 'anime',
+              type: MediaType.Anime,
+              title: {
+                english: 'media title',
+              },
+            },
+          }],
+        },
       },
       {
         id: '3',
@@ -903,6 +935,18 @@ Deno.test('/synthesis', async (test) => {
         },
         image: {
           large: 'image_url',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: 'anime',
+              type: MediaType.Anime,
+              title: {
+                english: 'media title',
+              },
+            },
+          }],
         },
       },
       {
@@ -1058,42 +1102,52 @@ Deno.test('/synthesis', async (test) => {
             },
             {
               type: 'rich',
-              author: {
-                name: 'character 1',
-                icon_url:
-                  'http://localhost:8000/external/image_url?size=preview',
+              fields: [
+                {
+                  name: 'media title',
+                  value: 'character 1',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              author: {
-                name: 'character 2',
-                icon_url:
-                  'http://localhost:8000/external/image_url?size=preview',
+              fields: [
+                {
+                  name: 'media title',
+                  value: 'character 2',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              author: {
-                name: 'character 3',
-                icon_url:
-                  'http://localhost:8000/external/image_url?size=preview',
+              fields: [
+                {
+                  name: 'media title',
+                  value: 'character 3',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              author: {
-                name: 'character 4',
-                icon_url:
-                  'http://localhost:8000/external/image_url?size=preview',
+              description: 'character 4',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              author: {
-                name: 'character 5',
-                icon_url:
-                  'http://localhost:8000/external/image_url?size=preview',
+              description: 'character 5',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
           ],
@@ -1111,7 +1165,7 @@ Deno.test('/synthesis', async (test) => {
     }
   });
 
-  await test.step('custom', async () => {
+  await test.step('with nicknames', async () => {
     const characters: AniListCharacter[] = [
       {
         id: '1',
@@ -1303,42 +1357,292 @@ Deno.test('/synthesis', async (test) => {
             },
             {
               type: 'rich',
-              author: {
-                name: 'nickname 1',
-                icon_url:
+              description: 'nickname 1',
+              thumbnail: {
+                url:
                   'http://localhost:8000/external/custom_image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              author: {
-                name: 'nickname 2',
-                icon_url:
+              description: 'nickname 2',
+              thumbnail: {
+                url:
                   'http://localhost:8000/external/custom_image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              author: {
-                name: 'nickname 3',
-                icon_url:
+              description: 'nickname 3',
+              thumbnail: {
+                url:
                   'http://localhost:8000/external/custom_image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              author: {
-                name: 'nickname 4',
-                icon_url:
+              description: 'nickname 4',
+              thumbnail: {
+                url:
                   'http://localhost:8000/external/custom_image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              author: {
-                name: 'nickname 5',
-                icon_url:
+              description: 'nickname 5',
+              thumbnail: {
+                url:
                   'http://localhost:8000/external/custom_image_url?size=preview',
+              },
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.synthesis;
+
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('with blur', async () => {
+    const characters: DisaggregatedCharacter[] = [
+      {
+        id: '1',
+        packId: 'pack-id',
+        name: {
+          english: 'character 1',
+        },
+        images: [{
+          nsfw: true,
+          url: 'image_url',
+        }],
+      },
+      {
+        id: '2',
+        packId: 'pack-id',
+        name: {
+          english: 'character 2',
+        },
+        images: [{
+          nsfw: true,
+          url: 'image_url',
+        }],
+      },
+      {
+        id: '3',
+        packId: 'pack-id',
+        name: {
+          english: 'character 3',
+        },
+        images: [{
+          nsfw: true,
+          url: 'image_url',
+        }],
+      },
+      {
+        id: '4',
+        packId: 'pack-id',
+        name: {
+          english: 'character 4',
+        },
+        images: [{
+          nsfw: false,
+          url: 'image_url',
+        }],
+      },
+      {
+        id: '5',
+        packId: 'pack-id',
+        name: {
+          english: 'character 5',
+        },
+        images: [{
+          nsfw: false,
+          url: 'image_url',
+        }],
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  user: {},
+                  characters: [
+                    {
+                      id: 'pack-id:1',
+                      rating: 1,
+                    },
+                    {
+                      id: 'pack-id:2',
+                      rating: 1,
+                    },
+                    {
+                      id: 'pack-id:3',
+                      rating: 1,
+                    },
+                    {
+                      id: 'pack-id:4',
+                      rating: 1,
+                    },
+                    {
+                      id: 'pack-id:5',
+                      rating: 1,
+                    },
+                  ],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters: [],
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: characters,
+      },
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.synthesis = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = synthesis.synthesize({
+        token: 'test_token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        target: 2,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'synthesis=user_id=2',
+                label: 'Confirm',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'cancel=user_id',
+                label: 'Cancel',
+                style: 4,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'Sacrifice \u200B (**1<:smolstar:1107503653956374638>x5**) \u200B characters? <:remove:1099004424111792158>',
+            },
+            {
+              type: 'rich',
+              description: 'character 1',
+              thumbnail: {
+                url:
+                  'http://localhost:8000/external/image_url?size=preview&blur',
+              },
+            },
+            {
+              type: 'rich',
+              description: 'character 2',
+              thumbnail: {
+                url:
+                  'http://localhost:8000/external/image_url?size=preview&blur',
+              },
+            },
+            {
+              type: 'rich',
+              description: 'character 3',
+              thumbnail: {
+                url:
+                  'http://localhost:8000/external/image_url?size=preview&blur',
+              },
+            },
+            {
+              type: 'rich',
+              description: 'character 4',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              description: 'character 5',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
           ],
@@ -1548,26 +1852,23 @@ Deno.test('/synthesis', async (test) => {
             },
             {
               type: 'rich',
-              author: {
-                name: 'character 3',
-                icon_url:
-                  'http://localhost:8000/external/image_url?size=preview',
+              description: 'character 3',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              author: {
-                name: 'character 4',
-                icon_url:
-                  'http://localhost:8000/external/image_url?size=preview',
+              description: 'character 4',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              author: {
-                name: 'character 5',
-                icon_url:
-                  'http://localhost:8000/external/image_url?size=preview',
+              description: 'character 5',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
             {

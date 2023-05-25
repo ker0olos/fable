@@ -392,29 +392,6 @@ function characterMessage(
   return message.addComponents(group);
 }
 
-function characterPreview(
-  character: Character | DisaggregatedCharacter,
-  existing: Partial<Schema.Character>,
-  channelId: string,
-): discord.Embed {
-  const image = existing?.image
-    ? { url: existing?.image }
-    : character.images?.[0];
-
-  const alias = existing?.nickname ??
-    packs.aliasToArray(character.name)[0];
-
-  const blur = image?.nsfw && !packs.cachedChannels[channelId]?.nsfw;
-
-  return new discord.Embed()
-    .setAuthor({
-      icon_url: `${config.origin}/external/${
-        encodeURIComponent(image?.url ?? '')
-      }?size=preview${blur ? '&blur' : ''}`,
-      name: alias,
-    });
-}
-
 function characterEmbed(
   character: Character | DisaggregatedCharacter,
   channelId: string,
@@ -885,7 +862,6 @@ const search = {
   character,
   characterMessage,
   characterEmbed,
-  characterPreview,
   characterDebugMessage,
   mediaCharacters,
   mediaFound,

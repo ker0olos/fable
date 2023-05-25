@@ -563,6 +563,7 @@ export class Embed {
   setThumbnail(
     thumbnail: {
       url?: string;
+      preview?: boolean;
       default?: boolean;
       proxy?: boolean;
       blur?: boolean;
@@ -587,7 +588,7 @@ export class Embed {
         this.#data.thumbnail = {
           url: `${config.origin}/external/${
             encodeURIComponent(thumbnail.url ?? '')
-          }?size=thumbnail${blur}`,
+          }?size=${thumbnail.preview ? 'preview' : 'thumbnail'}${blur}`,
         };
       }
     }

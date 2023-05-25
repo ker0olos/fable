@@ -5,22 +5,14 @@ import config from './config.ts';
 import * as discord from './discord.ts';
 
 import packs from './packs.ts';
-import search from './search.ts';
 import user from './user.ts';
 import gacha from './gacha.ts';
 
 import utils from './utils.ts';
 
-import { Schema } from './types.ts';
+import { Character, Schema } from './types.ts';
 
 import { NonFetalError, PoolError } from './errors.ts';
-
-const synthesis = {
-  getFilteredCharacters,
-  getSacrifices,
-  synthesize,
-  confirmed,
-};
 
 async function getFilteredCharacters(
   { userId, guildId }: { userId: string; guildId: string },
@@ -121,6 +113,41 @@ function getSacrifices(
   return possibilities[target][0];
 }
 
+function characterPreview(
+  character: Character,
+  existing: Partial<Schema.Character>,
+  channelId: string,
+): discord.Embed {
+  const image = existing?.image
+    ? { url: existing?.image }
+    : character.images?.[0];
+
+  const blur = image?.nsfw && !packs.cachedChannels[channelId]?.nsfw;
+
+  const media = character.media?.edges?.[0]?.node;
+
+  const name = existing?.nickname ??
+    packs.aliasToArray(character.name)[0];
+
+  const embed = new discord.Embed()
+    .setThumbnail({
+      blur,
+      preview: true,
+      url: image?.url,
+    });
+
+  if (media) {
+    embed.addField({
+      name: packs.aliasToArray(media.title)[0],
+      value: name,
+    });
+  } else {
+    embed.setDescription(name);
+  }
+
+  return embed;
+}
+
 function synthesize({
   token,
   userId,
@@ -173,16 +200,21 @@ function synthesize({
         ),
       );
 
-      highlights.map((existing) => {
+      await Promise.all(highlights.map(async (existing) => {
         const match = highlightedCharacters
           .find((char) => existing.id === `${char.packId}:${char.id}`);
 
         if (match) {
+          const character = await packs.aggregate<Character>({
+            character: match,
+            guildId,
+          });
+
           message.addEmbed(
-            search.characterPreview(match, existing, channelId),
+            synthesis.characterPreview(character, existing, channelId),
           );
         }
-      });
+      }));
 
       if (sacrifices.length - highlightedCharacters.length) {
         message.addEmbed(
@@ -328,5 +360,13 @@ function confirmed({
 
   return spinner;
 }
+
+const synthesis = {
+  getFilteredCharacters,
+  getSacrifices,
+  characterPreview,
+  synthesize,
+  confirmed,
+};
 
 export default synthesis;
