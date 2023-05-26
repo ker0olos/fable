@@ -499,7 +499,10 @@ export const handler = async (r: Request) => {
           case 'steal': {
             const search = options['name'] as string;
 
+            const stars = options['sacrifices'] as number ?? 0;
+
             return steal.pre({
+              stars,
               token,
               guildId,
               channelId,
@@ -952,6 +955,7 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
+          case 'bsteal':
           case 'steal': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
@@ -962,14 +966,18 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const chance = parseInt(customValues![2]);
 
+            // deno-lint-ignore no-non-null-assertion
+            const stars = Number(customValues![3]);
+
             if (userId === member.user.id) {
-              return steal.attempt({
+              return steal[customType === 'bsteal' ? 'sacrifices' : 'attempt']({
                 token,
                 guildId,
                 channelId,
                 userId: member.user.id,
                 characterId,
                 pre: chance,
+                stars,
               })
                 .setType(discord.MessageType.Update)
                 .send();

@@ -99,6 +99,8 @@ const Command = ({
     type: option.type.valueOf(),
     choices: option.choices,
     required: !option.optional,
+    min_value: option.min_value,
+    max_value: option.max_value,
     options: option.options?.map((option) => transformOption(option)),
   });
 
@@ -421,6 +423,12 @@ export const commands = [
         description: 'The name of the character',
         autocomplete: true,
         type: Type.STRING,
+      }),
+      Option({
+        name: 'sacrifices',
+        description: 'The amount of stars to sacrifice for a boost',
+        type: Type.INTEGER,
+        optional: true,
       }),
     ],
   }),

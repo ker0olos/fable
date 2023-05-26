@@ -112,6 +112,11 @@ function truncate(
   return str;
 }
 
+function getRandomFloat(): number {
+  const randomInt = window.crypto.getRandomValues(new Uint32Array(1))[0];
+  return randomInt / 2 ** 32;
+}
+
 function wrap(text: string, width = 32): string {
   return text.replace(
     new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'),
@@ -345,6 +350,7 @@ const utils = {
   verifySignature,
   votingTimestamp,
   stealTimestamp,
+  getRandomFloat,
   wrap,
 };
 

@@ -7,6 +7,7 @@ import packs from './packs.ts';
 import { default as srch } from './search.ts';
 
 import user from './user.ts';
+import synthesis from './synthesis.ts';
 
 import utils from './utils.ts';
 
@@ -16,6 +17,8 @@ import { Character, DisaggregatedCharacter, Schema } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
 
+const BOOST_FACTOR = 0.02;
+
 function getChances(character: Schema.Character): number {
   let chance = 0;
 
@@ -24,16 +27,16 @@ function getChances(character: Schema.Character): number {
       chance = 1;
       break;
     case 4:
-      chance = 4;
+      chance = 5;
       break;
     case 3:
-      chance = 14;
+      chance = 15;
       break;
     case 2:
-      chance = 24;
+      chance = 25;
       break;
     case 1:
-      chance = 49;
+      chance = 50;
       break;
     default:
       break;
@@ -87,11 +90,78 @@ async function getCooldown({ userId, guildId }: {
   return parsed.getTime();
 }
 
+function getSacrifices(characters: Schema.Character[], target: number): {
+  sum: number;
+  sacrifices: Schema.Character[];
+} {
+  if (characters.length === 0) {
+    return {
+      sum: 0,
+      sacrifices: [],
+    };
+  }
+
+  // create all possible ways to reach the exact target
+
+  const hashMap: Record<number, Schema.Character> = {};
+
+  const results = [];
+
+  for (let i = 0; i < characters.length; i++) {
+    const { rating } = characters[i];
+
+    if (hashMap[rating]) {
+      results.push([hashMap[rating], characters[i]]);
+    } else {
+      hashMap[target - rating] = characters[i];
+    }
+  }
+
+  // if there are possibilities
+  if (results.length > 0) {
+    return {
+      sum: 0,
+      // pick the largest possibility
+      sacrifices: results.reduce((prev, next) =>
+        prev.length > next.length ? prev : next
+      ).sort((a, b) => b.rating - a.rating),
+    };
+  }
+
+  // fallback return the a mix of character from lowest to highest
+  // until you reach the closest you can to target
+
+  let curr = 0;
+
+  const sacrifices: Schema.Character[] = [];
+
+  for (
+    // 1 -> 5
+    const char of characters
+      .toSorted((a, b) => a.rating - b.rating)
+  ) {
+    if (curr + char.rating > target) {
+      break;
+    }
+
+    curr += char.rating;
+
+    sacrifices.push(char);
+  }
+
+  return {
+    sum: curr,
+    sacrifices: sacrifices
+      .sort((a, b) => b.rating - a.rating),
+  };
+}
+
 function pre({
   token,
   userId,
   guildId,
   channelId,
+  stars,
   search,
   id,
 }: {
@@ -99,6 +169,7 @@ function pre({
   userId: string;
   guildId: string;
   channelId: string;
+  stars: number;
   search?: string;
   id?: string;
 }): discord.Message {
@@ -161,8 +232,6 @@ function pre({
         return message.patch(token);
       }
 
-      const chance = getChances(existing);
-
       const party = [
         existing.inventory?.party?.member1?.id,
         existing.inventory?.party?.member2?.id,
@@ -193,25 +262,41 @@ function pre({
         return message.setPing().patch(token);
       }
 
-      message.addEmbed(srch.characterEmbed(character, channelId, {
-        footer: true,
-        mode: 'thumbnail',
-        description: true,
-        media: { title: true },
-        existing,
-      }));
+      message.addEmbed(
+        srch.characterEmbed(character, channelId, {
+          footer: true,
+          rating: false,
+          mode: 'thumbnail',
+          description: false,
+          media: { title: true },
+          existing: {
+            mediaId: existing?.mediaId,
+          },
+        })
+          .setDescription(`<@${existing?.user.id}>`),
+      );
+
+      const chance = getChances(existing);
 
       message.addEmbed(
         new discord.Embed().setDescription(
-          `Your chance to succeed is: **${chance}%**`,
+          stars > 0
+            ? '_Continue to see your chance of success_'
+            : `Your chance of success is **${chance.toFixed(2)}%**`,
         ),
       );
 
       return discord.Message.dialog({
         userId,
         message,
-        confirmText: 'Attempt',
-        confirm: ['steal', userId, characterId, `${chance}`],
+        confirmText: stars > 0 ? 'Continue' : 'Attempt',
+        confirm: [
+          stars > 0 ? 'bsteal' : 'steal',
+          userId,
+          characterId,
+          `${chance}`,
+          `${stars}`,
+        ],
       }).patch(token);
     })
     .catch(async (err) => {
@@ -252,12 +337,134 @@ function pre({
   return loading;
 }
 
+function sacrifices({
+  token,
+  userId,
+  guildId,
+  characterId,
+  channelId,
+  stars,
+  pre,
+}: {
+  token: string;
+  userId: string;
+  guildId: string;
+  channelId: string;
+  stars: number;
+  characterId: string;
+  pre: number;
+}): discord.Message {
+  synthesis.getFilteredCharacters({ userId, guildId })
+    .then(async (characters) => {
+      const missing = 100 - pre;
+
+      const message = new discord.Message();
+
+      // makes sure that we don't sacrifice more characters than needed to get a 100% chance
+      stars = Math.min(Math.round(missing / BOOST_FACTOR), stars);
+
+      const { sacrifices, sum } = getSacrifices(characters, stars);
+
+      const boost = sum * BOOST_FACTOR;
+
+      // highlight the top characters
+      const highlights = sacrifices.slice(0, 5);
+
+      const highlightedCharacters = await packs.characters({
+        ids: highlights.map(({ id }) => id),
+        guildId,
+      });
+
+      if (!sacrifices.length) {
+        throw new NonFetalError('You don\'t have any characters to sacrifice');
+      }
+
+      message.addEmbed(
+        new discord.Embed().setDescription(
+          `Sacrifice **${sacrifices.length}** characters?`,
+        ),
+      );
+
+      await Promise.all(highlights.map(async (existing) => {
+        const match = highlightedCharacters
+          .find((char) => existing.id === `${char.packId}:${char.id}`);
+
+        if (match) {
+          const character = await packs.aggregate<Character>({
+            character: match,
+            guildId,
+          });
+
+          message.addEmbed(
+            synthesis.characterPreview(character, existing, channelId),
+          );
+        }
+      }));
+
+      if (sacrifices.length - highlightedCharacters.length) {
+        message.addEmbed(
+          new discord.Embed().setDescription(
+            `_+${sacrifices.length - highlightedCharacters.length} others..._`,
+          ),
+        );
+      }
+
+      message.addEmbed(
+        new discord.Embed().setDescription(
+          `Your chance of success is **${(pre + boost).toFixed(2)}%**`,
+        ),
+      );
+
+      await discord.Message.dialog({
+        userId,
+        message,
+        confirmText: 'Attempt',
+        confirm: [
+          'steal',
+          userId,
+          characterId,
+          `${pre}`,
+          `${sum}`,
+        ],
+      })
+        .patch(token);
+    })
+    .catch(async (err) => {
+      if (err instanceof NonFetalError) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed()
+              .setDescription(err.message),
+          )
+          .patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner3.gif` },
+      ),
+    );
+
+  return loading;
+}
+
 function attempt({
   token,
   userId,
   guildId,
   characterId,
   channelId,
+  stars,
   pre,
 }: {
   token: string;
@@ -265,6 +472,7 @@ function attempt({
   guildId: string;
   characterId: string;
   channelId: string;
+  stars: number;
   pre: number;
 }): discord.Message {
   const mutation = gql`
@@ -300,8 +508,11 @@ function attempt({
       guildId,
       characterId,
     }),
+    stars > 0
+      ? synthesis.getFilteredCharacters({ userId, guildId })
+      : Promise.resolve([]),
   ])
-    .then(async ([results, existing]) => {
+    .then(async ([results, existing, characters]) => {
       const message = new discord.Message();
 
       const character = await packs.aggregate<Character>({
@@ -324,23 +535,27 @@ function attempt({
 
       const chance = getChances(existing);
 
+      const { sacrifices, sum } = getSacrifices(characters, stars);
+
+      const boost = sum * BOOST_FACTOR;
+
+      const final = chance + boost;
+
       // make sure that the chance the user confirmed to attempt
       // was not altered since the initial steal dialog
-      if (pre > chance) {
+      if (pre > final) {
         throw new NonFetalError(
           `Something happened and affected your chances of stealing **${characterName}**, try again to get up-to-date data!`,
         );
       }
 
-      const { value } = utils.rng(
-        { [100 - chance]: false, [chance]: true },
-      );
+      const success = utils.getRandomFloat() <= (final / 100);
 
       // delay to build up anticipation
       await utils.sleep(8);
 
       // failed
-      if (!value) {
+      if (!success) {
         const mutation = gql`
           mutation ($userId: String!, $guildId: String!, $sacrifices: [String!]!) {
             failSteal(userId: $userId, guildId: $guildId, sacrifices: $sacrifices) {
@@ -363,8 +578,7 @@ function attempt({
           variables: {
             userId,
             guildId,
-            // TODO
-            sacrifices: [],
+            sacrifices: sacrifices.map(({ id }) => id),
           },
         });
 
@@ -401,8 +615,7 @@ function attempt({
           userId,
           characterId,
           guildId,
-          // TODO
-          sacrifices: [],
+          sacrifices: sacrifices.map(({ id }) => id),
         },
       });
 
@@ -431,16 +644,20 @@ function attempt({
 
       message.addEmbed(new discord.Embed().setDescription('**You Succeed!**'));
 
-      message.addEmbed(srch.characterEmbed(character, channelId, {
-        footer: true,
-        mode: 'thumbnail',
-        description: true,
-        media: { title: true },
-        existing: {
-          rating: existing?.rating,
-          mediaId: existing?.mediaId,
-        },
-      }));
+      message.addEmbed(
+        srch.characterEmbed(character, channelId, {
+          footer: false,
+          mode: 'thumbnail',
+          description: false,
+          media: { title: true },
+          existing: {
+            rating: existing?.rating,
+            mediaId: existing?.mediaId,
+          },
+        }).addField({
+          value: `${discord.emotes.add}`,
+        }),
+      );
 
       message.patch(token);
 
@@ -499,6 +716,7 @@ function attempt({
 const steal = {
   pre,
   attempt,
+  sacrifices,
   getChances,
 };
 

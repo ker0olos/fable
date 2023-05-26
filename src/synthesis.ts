@@ -126,8 +126,9 @@ function characterPreview(
 
   const media = character.media?.edges?.[0]?.node;
 
-  const name = existing?.nickname ??
-    packs.aliasToArray(character.name)[0];
+  const name = `${existing.rating}${discord.emotes.smolStar}${
+    existing?.nickname ?? packs.aliasToArray(character.name)[0]
+  }`;
 
   const embed = new discord.Embed()
     .setThumbnail({
@@ -174,17 +175,17 @@ function synthesize({
       const sacrifices: Schema.Character[] = getSacrifices(characters, target)
         .sort((a, b) => b.rating - a.rating);
 
-      const occurrences = sacrifices.map(({ rating }) => rating)
-        .reduce(
-          (acc, n) => (acc[n] = (acc[n] || 0) + 1, acc),
-          {} as Record<number, number>,
-        );
+      // const occurrences = sacrifices.map(({ rating }) => rating)
+      //   .reduce(
+      //     (acc, n) => (acc[n] = (acc[n] || 0) + 1, acc),
+      //     {} as Record<number, number>,
+      //   );
 
-      const all = Object.entries(occurrences)
-        .toReversed()
-        .map(([rating, occurrences]) =>
-          `${discord.empty2x}(**${rating}${discord.emotes.smolStar}x${occurrences}**)${discord.empty2x}`
-        );
+      // const all = Object.entries(occurrences)
+      //   .toReversed()
+      //   .map(([rating, occurrences]) =>
+      //     `${discord.empty}(**${rating}${discord.emotes.smolStar}x${occurrences}**)${discord.empty}`
+      //   );
 
       // highlight the top characters
       const highlights = sacrifices.slice(0, 5);
@@ -196,7 +197,8 @@ function synthesize({
 
       message.addEmbed(
         new discord.Embed().setDescription(
-          `Sacrifice${all.join('')}characters? ${discord.emotes.remove}`,
+          // `Sacrifice${all.join('')}characters? ${discord.emotes.remove}`,
+          `Sacrifice **${sacrifices.length}** characters?`,
         ),
       );
 
