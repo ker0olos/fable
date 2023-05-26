@@ -480,6 +480,18 @@ snapshot[`/help 6`] = `
           "
 " +
           "__**Releasing in the near future (5 days ~ 2 months)**__
+" +
+          "
+" +
+          "**[Battles](https://github.com/ker0olos/fable/issues/74)**
+" +
+          "
+" +
+          "**[Leveling Up Characters](https://github.com/ker0olos/fable/issues/64)**
+" +
+          "
+" +
+          "**[Player vs. Environment](https://github.com/ker0olos/fable/issues/58)**
 ",
         type: "rich",
       },
