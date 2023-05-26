@@ -291,15 +291,21 @@ snapshot[`/help 4`] = `
 " +
           "
 " +
-          "__The higher the character's rating the harder it is to steal.__ 5<:smolstar:1107503653956374638>characters have a base success rate of 1%
+          "__The higher the character's rating the harder it is to steal.__ 5<:smolstar:1107503653956374638>characters have a base success rate of 1%.
 " +
           "
 " +
-          "__Steal has a cooldown of 3 days__ regardless of the outcome of the attempt.
+          "Steal has a cooldown of 3 days regardless of the outcome of the attempt.
 " +
           "
 " +
-          "Staying active is the best defense against stealing
+          "You can sacrifice your own characters to boost your chance of success,
+" +
+          "You lose those characters regardless of the outcome of the attempt.
+" +
+          "
+" +
+          "Staying active is the best defense against stealing.
 " +
           "​",
         type: "rich",
@@ -369,7 +375,7 @@ snapshot[`/help 5`] = `
 " +
           "
 " +
-          "__Voting on weekends awards 2 tokens__ (_Saturdays and Sundays_).
+          "__Voting on weekends awards 2 tokens__ (_Fridays, Saturdays and Sundays_).
 " +
           "
 " +
@@ -474,6 +480,18 @@ snapshot[`/help 6`] = `
           "
 " +
           "__**Releasing in the near future (5 days ~ 2 months)**__
+" +
+          "
+" +
+          "**[Battles](https://github.com/ker0olos/fable/issues/74)**
+" +
+          "
+" +
+          "**[Leveling Up Characters](https://github.com/ker0olos/fable/issues/64)**
+" +
+          "
+" +
+          "**[Player vs. Environment](https://github.com/ker0olos/fable/issues/58)**
 ",
         type: "rich",
       },

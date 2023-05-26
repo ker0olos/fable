@@ -1098,26 +1098,24 @@ Deno.test('anchor messages', async (test) => {
 //   });
 // });
 
-Deno.test('encode emotes', () => {
-  assertEquals(
-    discord.encode('<a:zThisIsFine:1014025464769171456>'),
-    '\\<a:zThisIsFine:1014025464769171456>',
-  );
+Deno.test('emotes', async (test) => {
+  for (const [name, tag] of Object.entries(discord.emotes)) {
+    await test.step(name, async () => {
+      const id = /<.*:.*:(.*)>/.exec(tag);
 
-  assertEquals(
-    discord.encode('<:smol_star_2:1088587854382379118>'),
-    '\\<:smol_star_2:1088587854382379118>',
-  );
+      const response = await fetch(
+        `https://cdn.discordapp.com/emojis/${id
+          ?.[1]}.webp?size=44&quality=lossless`,
+      );
 
-  assertEquals(
-    discord.encode('\\<:smol_star_2:1088587854382379118>'),
-    '\\<:smol_star_2:1088587854382379118>',
-  );
+      assertEquals(response.status, 200);
 
-  assertEquals(
-    discord.encode('<:star:1061016362832642098><:no_star:1109377526662434906>'),
-    '\\<:star:1061016362832642098>\<:no_star:1109377526662434906>',
-  );
+      assertEquals(response.headers.get('content-type'), 'image/webp');
+
+      // needs to close request body or test will fail
+      await response.body?.cancel();
+    });
+  }
 });
 
 Deno.test('images', async (test) => {

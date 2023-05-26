@@ -35,6 +35,11 @@ function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+function getRandomFloat(): number {
+  const randomInt = crypto.getRandomValues(new Uint32Array(1))[0];
+  return randomInt / 2 ** 32;
+}
+
 function hexToInt(hex?: string): number | undefined {
   if (!hex) {
     return;
@@ -270,12 +275,7 @@ function stealTimestamp(v?: string): string {
 }
 
 function diffInDays(a: Date, b: Date): number {
-  const _MS_PER_DAY = 1000 * 60 * 60 * 24;
-
-  const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
-  const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-
-  return Math.floor((utc1 - utc2) / _MS_PER_DAY);
+  return Math.floor(Math.abs(a.getTime() - b.getTime()) / 3600000 / 24);
 }
 
 function cipher(str: string, secret: number): string {
@@ -334,7 +334,6 @@ const utils = {
   initSentry,
   json,
   parseInt: _parseInt,
-  // proxy,
   randint,
   diffInDays,
   readJson,
@@ -350,6 +349,7 @@ const utils = {
   verifySignature,
   votingTimestamp,
   stealTimestamp,
+  getRandomFloat,
   wrap,
 };
 

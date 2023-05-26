@@ -5,22 +5,14 @@ import config from './config.ts';
 import * as discord from './discord.ts';
 
 import packs from './packs.ts';
-import search from './search.ts';
 import user from './user.ts';
 import gacha from './gacha.ts';
 
 import utils from './utils.ts';
 
-import { Schema } from './types.ts';
+import { Character, Schema } from './types.ts';
 
 import { NonFetalError, PoolError } from './errors.ts';
-
-const synthesis = {
-  getFilteredCharacters,
-  getSacrifices,
-  synthesize,
-  confirmed,
-};
 
 async function getFilteredCharacters(
   { userId, guildId }: { userId: string; guildId: string },
@@ -121,7 +113,43 @@ function getSacrifices(
   return possibilities[target][0];
 }
 
-function synthesize({
+function characterPreview(
+  character: Character,
+  existing: Partial<Schema.Character>,
+  channelId: string,
+): discord.Embed {
+  const image = existing?.image
+    ? { url: existing?.image }
+    : character.images?.[0];
+
+  const blur = image?.nsfw && !packs.cachedChannels[channelId]?.nsfw;
+
+  const media = character.media?.edges?.[0]?.node;
+
+  const name = `${existing.rating}${discord.emotes.smolStar}${
+    existing?.nickname ?? packs.aliasToArray(character.name)[0]
+  }`;
+
+  const embed = new discord.Embed()
+    .setThumbnail({
+      blur,
+      preview: true,
+      url: image?.url,
+    });
+
+  if (media) {
+    embed.addField({
+      name: packs.aliasToArray(media.title)[0],
+      value: name,
+    });
+  } else {
+    embed.setDescription(name);
+  }
+
+  return embed;
+}
+
+async function synthesize({
   token,
   userId,
   guildId,
@@ -133,56 +161,62 @@ function synthesize({
   guildId: string;
   channelId: string;
   target: number;
-}): discord.Message {
+}): Promise<discord.Message> {
   if (!config.synthesis) {
     throw new NonFetalError(
       'Synthesis is under maintenance, try again later!',
     );
   }
 
-  synthesis.getFilteredCharacters({ userId, guildId })
-    .then(async (characters) => {
-      const message = new discord.Message();
+  const message = new discord.Message();
 
-      const sacrifices: Schema.Character[] = getSacrifices(characters, target)
-        .sort((a, b) => b.rating - a.rating);
+  const characters = await synthesis.getFilteredCharacters({ userId, guildId });
 
-      const occurrences = sacrifices.map(({ rating }) => rating)
-        .reduce(
-          (acc, n) => (acc[n] = (acc[n] || 0) + 1, acc),
-          {} as Record<number, number>,
-        );
+  // const occurrences = sacrifices.map(({ rating }) => rating)
+  //   .reduce(
+  //     (acc, n) => (acc[n] = (acc[n] || 0) + 1, acc),
+  //     {} as Record<number, number>,
+  //   );
 
-      const all = Object.entries(occurrences)
-        .toReversed()
-        .map(([rating, occurrences]) =>
-          `${discord.empty2x}(**${rating}${discord.emotes.smolStar}x${occurrences}**)${discord.empty2x}`
-        );
+  // const all = Object.entries(occurrences)
+  //   .toReversed()
+  //   .map(([rating, occurrences]) =>
+  //     `${discord.empty}(**${rating}${discord.emotes.smolStar}x${occurrences}**)${discord.empty}`
+  //   );
 
-      // highlight the top characters
-      const highlights = sacrifices.slice(0, 5);
+  const sacrifices: Schema.Character[] = getSacrifices(characters, target)
+    .sort((a, b) => b.rating - a.rating);
 
-      const highlightedCharacters = await packs.characters({
-        ids: highlights.map(({ id }) => id),
-        guildId,
-      });
+  // highlight the top characters
+  const highlights = sacrifices.slice(0, 5);
 
+  packs.characters({
+    ids: highlights.map(({ id }) => id),
+    guildId,
+  })
+    .then(async (highlightedCharacters) => {
       message.addEmbed(
         new discord.Embed().setDescription(
-          `Sacrifice${all.join('')}characters? ${discord.emotes.remove}`,
+          // `Sacrifice${all.join('')}characters? ${discord.emotes.remove}`,
+          `Sacrifice **${sacrifices.length}** characters?`,
         ),
       );
 
-      highlights.map((existing) => {
+      await Promise.all(highlights.map(async (existing) => {
         const match = highlightedCharacters
           .find((char) => existing.id === `${char.packId}:${char.id}`);
 
         if (match) {
+          const character = await packs.aggregate<Character>({
+            character: match,
+            guildId,
+          });
+
           message.addEmbed(
-            search.characterPreview(match, existing, channelId),
+            synthesis.characterPreview(character, existing, channelId),
           );
         }
-      });
+      }));
 
       if (sacrifices.length - highlightedCharacters.length) {
         message.addEmbed(
@@ -328,5 +362,13 @@ function confirmed({
 
   return spinner;
 }
+
+const synthesis = {
+  getFilteredCharacters,
+  getSacrifices,
+  characterPreview,
+  synthesize,
+  confirmed,
+};
 
 export default synthesis;

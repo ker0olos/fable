@@ -11,7 +11,6 @@ enum CommandType {
 }
 
 export const empty = '\u200B';
-export const empty2x = ' \u200B ';
 
 export const colors = {
   red: '#a51727',
@@ -25,14 +24,11 @@ export const emotes = {
   remove: '<:remove:1099004424111792158>',
   add: '<:add:1099004747123523644>',
   all: '<:all:1107511909999181824>',
+  liked: '<:liked:1110491720375873567>',
 };
 
 export const join = (...args: string[]): string => {
   return args.join(splitter);
-};
-
-export const encode = (text: string): string => {
-  return text.replaceAll(/(^[^\\]?<.*?:.*:.*>)/g, '\\$1');
 };
 
 export enum MessageFlags {
@@ -566,6 +562,7 @@ export class Embed {
   setThumbnail(
     thumbnail: {
       url?: string;
+      preview?: boolean;
       default?: boolean;
       proxy?: boolean;
       blur?: boolean;
@@ -590,7 +587,7 @@ export class Embed {
         this.#data.thumbnail = {
           url: `${config.origin}/external/${
             encodeURIComponent(thumbnail.url ?? '')
-          }?size=thumbnail${blur}`,
+          }?size=${thumbnail.preview ? 'preview' : 'thumbnail'}${blur}`,
         };
       }
     }

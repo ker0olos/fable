@@ -3730,9 +3730,13 @@ Deno.test('steal command handlers', async (test) => {
       body,
     } as any));
 
+    const setFlagsSpy = spy(() => ({
+      send: () => true,
+    }));
+
     const stealStub = stub(steal, 'pre', () =>
       ({
-        send: () => true,
+        setFlags: setFlagsSpy,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -3769,6 +3773,10 @@ Deno.test('steal command handlers', async (test) => {
         }],
       });
 
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
+      });
+
       assertSpyCall(stealStub, 0, {
         args: [{
           token: 'token',
@@ -3777,6 +3785,7 @@ Deno.test('steal command handlers', async (test) => {
           channelId: 'channel_id',
           search: 'character',
           id: undefined,
+          stars: 0,
         }],
       });
 
@@ -3818,9 +3827,13 @@ Deno.test('steal command handlers', async (test) => {
       body,
     } as any));
 
+    const setFlagsSpy = spy(() => ({
+      send: () => true,
+    }));
+
     const stealStub = stub(steal, 'pre', () =>
       ({
-        send: () => true,
+        setFlags: setFlagsSpy,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -3857,6 +3870,10 @@ Deno.test('steal command handlers', async (test) => {
         }],
       });
 
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
+      });
+
       assertSpyCall(stealStub, 0, {
         args: [{
           token: 'token',
@@ -3865,6 +3882,7 @@ Deno.test('steal command handlers', async (test) => {
           channelId: 'channel_id',
           search: 'id=character_id',
           id: 'character_id',
+          stars: 0,
         }],
       });
 
