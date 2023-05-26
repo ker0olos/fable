@@ -582,13 +582,13 @@ export const handler = async (r: Request) => {
           case 'merge': {
             const target = options['target'] as number;
 
-            return synthesis.synthesize({
+            return (await synthesis.synthesize({
               token,
               target,
               guildId,
               channelId,
               userId: member.user.id,
-            }).send();
+            })).send();
           }
           case 'shop':
           case 'buy': {

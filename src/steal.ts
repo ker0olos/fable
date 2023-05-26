@@ -120,7 +120,7 @@ function getSacrifices(characters: Schema.Character[], target: number): {
   // if there are possibilities
   if (results.length > 0) {
     return {
-      sum: 0,
+      sum: target,
       // pick the largest possibility
       sacrifices: results.reduce((prev, next) =>
         prev.length > next.length ? prev : next

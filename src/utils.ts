@@ -35,6 +35,11 @@ function randint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+function getRandomFloat(): number {
+  const randomInt = crypto.getRandomValues(new Uint32Array(1))[0];
+  return randomInt / 2 ** 32;
+}
+
 function hexToInt(hex?: string): number | undefined {
   if (!hex) {
     return;
@@ -110,11 +115,6 @@ function truncate(
   }
 
   return str;
-}
-
-function getRandomFloat(): number {
-  const randomInt = window.crypto.getRandomValues(new Uint32Array(1))[0];
-  return randomInt / 2 ** 32;
 }
 
 function wrap(text: string, width = 32): string {
@@ -334,7 +334,6 @@ const utils = {
   initSentry,
   json,
   parseInt: _parseInt,
-  // proxy,
   randint,
   diffInDays,
   readJson,

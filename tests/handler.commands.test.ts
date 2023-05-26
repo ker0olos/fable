@@ -3785,6 +3785,7 @@ Deno.test('steal command handlers', async (test) => {
           channelId: 'channel_id',
           search: 'character',
           id: undefined,
+          stars: 0,
         }],
       });
 
@@ -3881,6 +3882,7 @@ Deno.test('steal command handlers', async (test) => {
           channelId: 'channel_id',
           search: 'id=character_id',
           id: 'character_id',
+          stars: 0,
         }],
       });
 
