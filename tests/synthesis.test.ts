@@ -2,6 +2,7 @@
 
 import {
   assertEquals,
+  assertRejects,
   assertThrows,
 } from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
@@ -1036,7 +1037,7 @@ Deno.test('/synthesis', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.synthesize({
+      const message = await synthesis.synthesize({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1097,15 +1098,14 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description:
-                'Sacrifice \u200B (**1<:smolstar:1107503653956374638>x5**) \u200B characters? <:remove:1099004424111792158>',
+              description: 'Sacrifice **5** characters?',
             },
             {
               type: 'rich',
               fields: [
                 {
                   name: 'media title',
-                  value: 'character 1',
+                  value: '1<:smolstar:1107503653956374638>character 1',
                 },
               ],
               thumbnail: {
@@ -1117,7 +1117,7 @@ Deno.test('/synthesis', async (test) => {
               fields: [
                 {
                   name: 'media title',
-                  value: 'character 2',
+                  value: '1<:smolstar:1107503653956374638>character 2',
                 },
               ],
               thumbnail: {
@@ -1129,7 +1129,7 @@ Deno.test('/synthesis', async (test) => {
               fields: [
                 {
                   name: 'media title',
-                  value: 'character 3',
+                  value: '1<:smolstar:1107503653956374638>character 3',
                 },
               ],
               thumbnail: {
@@ -1138,14 +1138,14 @@ Deno.test('/synthesis', async (test) => {
             },
             {
               type: 'rich',
-              description: 'character 4',
+              description: '1<:smolstar:1107503653956374638>character 4',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              description: 'character 5',
+              description: '1<:smolstar:1107503653956374638>character 5',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=preview',
               },
@@ -1291,7 +1291,7 @@ Deno.test('/synthesis', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.synthesize({
+      const message = await synthesis.synthesize({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1352,12 +1352,11 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description:
-                'Sacrifice \u200B (**1<:smolstar:1107503653956374638>x5**) \u200B characters? <:remove:1099004424111792158>',
+              description: 'Sacrifice **5** characters?',
             },
             {
               type: 'rich',
-              description: 'nickname 1',
+              description: '1<:smolstar:1107503653956374638>nickname 1',
               thumbnail: {
                 url:
                   'http://localhost:8000/external/custom_image_url?size=preview',
@@ -1365,7 +1364,7 @@ Deno.test('/synthesis', async (test) => {
             },
             {
               type: 'rich',
-              description: 'nickname 2',
+              description: '1<:smolstar:1107503653956374638>nickname 2',
               thumbnail: {
                 url:
                   'http://localhost:8000/external/custom_image_url?size=preview',
@@ -1373,7 +1372,7 @@ Deno.test('/synthesis', async (test) => {
             },
             {
               type: 'rich',
-              description: 'nickname 3',
+              description: '1<:smolstar:1107503653956374638>nickname 3',
               thumbnail: {
                 url:
                   'http://localhost:8000/external/custom_image_url?size=preview',
@@ -1381,7 +1380,7 @@ Deno.test('/synthesis', async (test) => {
             },
             {
               type: 'rich',
-              description: 'nickname 4',
+              description: '1<:smolstar:1107503653956374638>nickname 4',
               thumbnail: {
                 url:
                   'http://localhost:8000/external/custom_image_url?size=preview',
@@ -1389,7 +1388,7 @@ Deno.test('/synthesis', async (test) => {
             },
             {
               type: 'rich',
-              description: 'nickname 5',
+              description: '1<:smolstar:1107503653956374638>nickname 5',
               thumbnail: {
                 url:
                   'http://localhost:8000/external/custom_image_url?size=preview',
@@ -1543,7 +1542,7 @@ Deno.test('/synthesis', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.synthesize({
+      const message = await synthesis.synthesize({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1604,12 +1603,11 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description:
-                'Sacrifice \u200B (**1<:smolstar:1107503653956374638>x5**) \u200B characters? <:remove:1099004424111792158>',
+              description: 'Sacrifice **5** characters?',
             },
             {
               type: 'rich',
-              description: 'character 1',
+              description: '1<:smolstar:1107503653956374638>character 1',
               thumbnail: {
                 url:
                   'http://localhost:8000/external/image_url?size=preview&blur',
@@ -1617,7 +1615,7 @@ Deno.test('/synthesis', async (test) => {
             },
             {
               type: 'rich',
-              description: 'character 2',
+              description: '1<:smolstar:1107503653956374638>character 2',
               thumbnail: {
                 url:
                   'http://localhost:8000/external/image_url?size=preview&blur',
@@ -1625,7 +1623,7 @@ Deno.test('/synthesis', async (test) => {
             },
             {
               type: 'rich',
-              description: 'character 3',
+              description: '1<:smolstar:1107503653956374638>character 3',
               thumbnail: {
                 url:
                   'http://localhost:8000/external/image_url?size=preview&blur',
@@ -1633,14 +1631,14 @@ Deno.test('/synthesis', async (test) => {
             },
             {
               type: 'rich',
-              description: 'character 4',
+              description: '1<:smolstar:1107503653956374638>character 4',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              description: 'character 5',
+              description: '1<:smolstar:1107503653956374638>character 5',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=preview',
               },
@@ -1786,7 +1784,7 @@ Deno.test('/synthesis', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.synthesize({
+      const message = await synthesis.synthesize({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1847,26 +1845,25 @@ Deno.test('/synthesis', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description:
-                'Sacrifice \u200B (**1<:smolstar:1107503653956374638>x5**) \u200B characters? <:remove:1099004424111792158>',
+              description: 'Sacrifice **5** characters?',
             },
             {
               type: 'rich',
-              description: 'character 3',
+              description: '1<:smolstar:1107503653956374638>character 3',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              description: 'character 4',
+              description: '1<:smolstar:1107503653956374638>character 4',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
             {
               type: 'rich',
-              description: 'character 5',
+              description: '1<:smolstar:1107503653956374638>character 5',
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=preview',
               },
@@ -1891,8 +1888,6 @@ Deno.test('/synthesis', async (test) => {
   });
 
   await test.step('filter (party)', async () => {
-    const timeStub = new FakeTime();
-
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -1972,17 +1967,6 @@ Deno.test('/synthesis', async (test) => {
               },
             }))),
         } as any,
-        // {
-        //   ok: true,
-        //   text: (() =>
-        //     Promise.resolve(JSON.stringify({
-        //       data: {
-        //         Page: {
-        //           characters,
-        //         },
-        //       },
-        //     }))),
-        // } as any,
         undefined,
       ]),
     );
@@ -1993,77 +1977,30 @@ Deno.test('/synthesis', async (test) => {
       () => Promise.resolve([]),
     );
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     config.synthesis = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.synthesize({
-        token: 'test_token',
-        userId: 'user_id',
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        target: 2,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
-          }],
-        },
+      await assertRejects(
+        () =>
+          synthesis.synthesize({
+            token: 'test_token',
+            userId: 'user_id',
+            guildId: 'guild_id',
+            channelId: 'channel_id',
+            target: 2,
+          }),
+        NonFetalError,
+        'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
       );
     } finally {
-      delete config.appId;
-      delete config.origin;
       delete config.synthesis;
 
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
     }
   });
 
   await test.step('filter (characters)', async () => {
-    const timeStub = new FakeTime();
-
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -2144,77 +2081,30 @@ Deno.test('/synthesis', async (test) => {
       () => Promise.resolve([]),
     );
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     config.synthesis = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.synthesize({
-        token: 'test_token',
-        userId: 'user_id',
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        target: 2,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
-          }],
-        },
+      await assertRejects(
+        () =>
+          synthesis.synthesize({
+            token: 'test_token',
+            userId: 'user_id',
+            guildId: 'guild_id',
+            channelId: 'channel_id',
+            target: 2,
+          }),
+        NonFetalError,
+        'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
       );
     } finally {
-      delete config.appId;
-      delete config.origin;
       delete config.synthesis;
 
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
     }
   });
 
   await test.step('filter (media)', async () => {
-    const timeStub = new FakeTime();
-
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -2291,77 +2181,30 @@ Deno.test('/synthesis', async (test) => {
       () => Promise.resolve([]),
     );
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     config.synthesis = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.synthesize({
-        token: 'test_token',
-        userId: 'user_id',
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        target: 2,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
-          }],
-        },
+      await assertRejects(
+        () =>
+          synthesis.synthesize({
+            token: 'test_token',
+            userId: 'user_id',
+            guildId: 'guild_id',
+            channelId: 'channel_id',
+            target: 2,
+          }),
+        NonFetalError,
+        'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
       );
     } finally {
       delete config.appId;
-      delete config.origin;
-      delete config.synthesis;
 
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
     }
   });
 
   await test.step('not enough', async () => {
-    const timeStub = new FakeTime();
-
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -2388,79 +2231,34 @@ Deno.test('/synthesis', async (test) => {
       () => Promise.resolve([]),
     );
 
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
     config.synthesis = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.synthesize({
-        token: 'test_token',
-        userId: 'user_id',
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        target: 5,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            description:
-              'You only have **0 out the 5** sacrifices needed for 5<:smolstar:1107503653956374638>',
-          }],
-        },
+      await assertRejects(
+        () =>
+          synthesis.synthesize({
+            token: 'test_token',
+            userId: 'user_id',
+            guildId: 'guild_id',
+            channelId: 'channel_id',
+            target: 5,
+          }),
+        NonFetalError,
+        'You only have **0 out the 5** sacrifices needed for 5<:smolstar:1107503653956374638>',
       );
     } finally {
-      delete config.appId;
-      delete config.origin;
       delete config.synthesis;
 
       fetchStub.restore();
       listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
     }
   });
 
-  await test.step('under maintenance', () => {
+  await test.step('under maintenance', async () => {
     config.synthesis = false;
 
     try {
-      assertThrows(
+      await assertRejects(
         () =>
           synthesis.synthesize({
             token: 'test_token',

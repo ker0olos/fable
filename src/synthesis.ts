@@ -149,7 +149,7 @@ function characterPreview(
   return embed;
 }
 
-function synthesize({
+async function synthesize({
   token,
   userId,
   guildId,
@@ -161,40 +161,40 @@ function synthesize({
   guildId: string;
   channelId: string;
   target: number;
-}): discord.Message {
+}): Promise<discord.Message> {
   if (!config.synthesis) {
     throw new NonFetalError(
       'Synthesis is under maintenance, try again later!',
     );
   }
 
-  synthesis.getFilteredCharacters({ userId, guildId })
-    .then(async (characters) => {
-      const message = new discord.Message();
+  const message = new discord.Message();
 
-      const sacrifices: Schema.Character[] = getSacrifices(characters, target)
-        .sort((a, b) => b.rating - a.rating);
+  const characters = await synthesis.getFilteredCharacters({ userId, guildId });
 
-      // const occurrences = sacrifices.map(({ rating }) => rating)
-      //   .reduce(
-      //     (acc, n) => (acc[n] = (acc[n] || 0) + 1, acc),
-      //     {} as Record<number, number>,
-      //   );
+  // const occurrences = sacrifices.map(({ rating }) => rating)
+  //   .reduce(
+  //     (acc, n) => (acc[n] = (acc[n] || 0) + 1, acc),
+  //     {} as Record<number, number>,
+  //   );
 
-      // const all = Object.entries(occurrences)
-      //   .toReversed()
-      //   .map(([rating, occurrences]) =>
-      //     `${discord.empty}(**${rating}${discord.emotes.smolStar}x${occurrences}**)${discord.empty}`
-      //   );
+  // const all = Object.entries(occurrences)
+  //   .toReversed()
+  //   .map(([rating, occurrences]) =>
+  //     `${discord.empty}(**${rating}${discord.emotes.smolStar}x${occurrences}**)${discord.empty}`
+  //   );
 
-      // highlight the top characters
-      const highlights = sacrifices.slice(0, 5);
+  const sacrifices: Schema.Character[] = getSacrifices(characters, target)
+    .sort((a, b) => b.rating - a.rating);
 
-      const highlightedCharacters = await packs.characters({
-        ids: highlights.map(({ id }) => id),
-        guildId,
-      });
+  // highlight the top characters
+  const highlights = sacrifices.slice(0, 5);
 
+  packs.characters({
+    ids: highlights.map(({ id }) => id),
+    guildId,
+  })
+    .then(async (highlightedCharacters) => {
       message.addEmbed(
         new discord.Embed().setDescription(
           // `Sacrifice${all.join('')}characters? ${discord.emotes.remove}`,
