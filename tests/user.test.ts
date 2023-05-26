@@ -2934,6 +2934,318 @@ Deno.test('/collection stars', async (test) => {
     }
   });
 
+  await test.step('with likes', async () => {
+    const media: AniListMedia[] = [
+      {
+        id: '2',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 1',
+        },
+      },
+      {
+        id: '4',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 2',
+        },
+      },
+      {
+        id: '6',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 3',
+        },
+      },
+      {
+        id: '8',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 4',
+        },
+      },
+      {
+        id: '10',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 5',
+        },
+      },
+      {
+        id: '12',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 6',
+        },
+      },
+    ];
+
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character 1',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[0],
+          }],
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'character 2',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[1],
+          }],
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'character 3',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[2],
+          }],
+        },
+      },
+      {
+        id: '7',
+        name: {
+          full: 'character 4',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[3],
+          }],
+        },
+      },
+      {
+        id: '9',
+        name: {
+          full: 'character 5',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[4],
+          }],
+        },
+      },
+      {
+        id: '11',
+        name: {
+          full: 'character 6',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[5],
+          }],
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  user: {
+                    likes: [
+                      { characterId: 'anilist:1' },
+                      { mediaId: 'anilist:12' },
+                    ],
+                  },
+                  characters: [
+                    {
+                      id: 'anilist:1',
+                      mediaId: 'anilist:2',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:3',
+                      mediaId: 'anilist:4',
+                      rating: 2,
+                    },
+                    {
+                      id: 'anilist:5',
+                      mediaId: 'anilist:6',
+                      rating: 3,
+                    },
+                    {
+                      id: 'anilist:7',
+                      mediaId: 'anilist:8',
+                      rating: 4,
+                    },
+                    {
+                      id: 'anilist:9',
+                      mediaId: 'anilist:10',
+                      rating: 5,
+                    },
+                    {
+                      id: 'anilist:11',
+                      mediaId: 'anilist:12',
+                      rating: 1,
+                    },
+                  ],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.list({
+        index: 0,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        rating: 1,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'list=user_id==1=0=prev',
+                  label: 'Prev',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: '_',
+                  disabled: true,
+                  label: '1/1',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'list=user_id==1=0=next',
+                  label: 'Next',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  inline: false,
+                  name: 'title 1',
+                  value:
+                    '1<:smolstar:1107503653956374638><:liked:1110491720375873567> character 1',
+                },
+                {
+                  inline: false,
+                  name: 'title 6',
+                  value:
+                    '1<:smolstar:1107503653956374638><:liked:1110491720375873567> character 6',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+    }
+  });
+
   await test.step('with media groups', async () => {
     const media: AniListMedia[] = [
       {
@@ -4149,6 +4461,215 @@ Deno.test('/collection media', async (test) => {
                   inline: false,
                   name: 'title 1',
                   value: '1<:smolstar:1107503653956374638> nickname 1',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+    }
+  });
+
+  await test.step('with likes', async () => {
+    const media: AniListMedia[] = [
+      {
+        id: '2',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 1',
+        },
+      },
+      {
+        id: '4',
+        type: MediaType.Anime,
+        title: {
+          english: 'title 2',
+        },
+      },
+    ];
+
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character 1',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[0],
+          }],
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'character 2',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: media[1],
+          }],
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  user: {
+                    likes: [
+                      { mediaId: 'anilist:2' },
+                    ],
+                  },
+                  characters: [
+                    {
+                      id: 'anilist:1',
+                      mediaId: 'anilist:2',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:3',
+                      mediaId: 'anilist:4',
+                      rating: 2,
+                    },
+                  ],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.list({
+        index: 0,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        id: 'anilist:2',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'list=user_id=anilist:2==0=prev',
+                  label: 'Prev',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: '_',
+                  disabled: true,
+                  label: '1/1',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'list=user_id=anilist:2==0=next',
+                  label: 'Next',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  inline: false,
+                  name: 'title 1',
+                  value:
+                    '1<:smolstar:1107503653956374638><:liked:1110491720375873567> character 1',
                 },
               ],
             },

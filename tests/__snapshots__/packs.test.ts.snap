@@ -75,6 +75,9 @@ snapshot[`list > vtubers 1`] = `
           id: "gura",
           images: [
             {
+              url: "https://i.imgur.com/rRTI374.jpeg",
+            },
+            {
               url: "https://i.imgur.com/3cxxJV7.jpeg",
             },
             {
@@ -225,6 +228,13 @@ snapshot[`list > vtubers 1`] = `
           gender: "Female",
           id: "ina",
           images: [
+            {
+              artist: {
+                url: "www.patreon.com/HongBsWs",
+                username: "hongbsws",
+              },
+              url: "https://i.imgur.com/6u78uMl.jpeg",
+            },
             {
               artist: {
                 url: "https://www.pixiv.net/en/users/1104770",

@@ -2,7 +2,7 @@
 
 import {
   assertEquals,
-  assertRejects,
+  assertThrows,
 } from 'https://deno.land/std@0.186.0/testing/asserts.ts';
 
 import { FakeTime } from 'https://deno.land/std@0.186.0/testing/time.ts';
@@ -25,6 +25,8 @@ import config from '../src/config.ts';
 import { Character, CharacterRole, MediaType } from '../src/types.ts';
 
 import { NonFetalError } from '../src/errors.ts';
+
+import { AniListCharacter } from '../packs/anilist/types.ts';
 
 Deno.test('chances', async (test) => {
   await test.step('5*', async (test) => {
@@ -113,7 +115,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(4, chance);
+      assertEquals(5, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -131,7 +133,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(9, chance);
+      assertEquals(10, chance);
     });
 
     await test.step('7 inactive day', () => {
@@ -149,7 +151,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(29, chance);
+      assertEquals(30, chance);
     });
 
     await test.step('14 inactive day', () => {
@@ -167,7 +169,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(54, chance);
+      assertEquals(55, chance);
     });
   });
 
@@ -185,7 +187,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(14, chance);
+      assertEquals(15, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -203,7 +205,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(19, chance);
+      assertEquals(20, chance);
     });
 
     await test.step('7 inactive day', () => {
@@ -221,7 +223,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(39, chance);
+      assertEquals(40, chance);
     });
 
     await test.step('14 inactive day', () => {
@@ -239,7 +241,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(64, chance);
+      assertEquals(65, chance);
     });
   });
 
@@ -257,7 +259,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(24, chance);
+      assertEquals(25, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -275,7 +277,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(29, chance);
+      assertEquals(30, chance);
     });
 
     await test.step('7 inactive day', () => {
@@ -293,7 +295,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(49, chance);
+      assertEquals(50, chance);
     });
 
     await test.step('14 inactive day', () => {
@@ -311,7 +313,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(74, chance);
+      assertEquals(75, chance);
     });
   });
 
@@ -329,7 +331,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(49, chance);
+      assertEquals(50, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -347,7 +349,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(54, chance);
+      assertEquals(55, chance);
     });
 
     await test.step('7 inactive day', () => {
@@ -365,7 +367,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(74, chance);
+      assertEquals(75, chance);
     });
 
     await test.step('14 inactive day', () => {
@@ -383,7 +385,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(99, chance);
+      assertEquals(100, chance);
     });
   });
 });
@@ -419,10 +421,7 @@ Deno.test('attempt', async (test) => {
 
     const sleepStub = stub(utils, 'sleep', () => Promise.resolve());
 
-    const rngStub = stub(utils, 'rng', () => ({
-      value: true,
-      chance: 100,
-    }));
+    const rngStub = stub(utils, 'getRandomFloat', () => 0);
 
     const fetchStub = stub(
       globalThis,
@@ -486,6 +485,7 @@ Deno.test('attempt', async (test) => {
         token: 'test_token',
         characterId: 'character_id',
         pre: 0,
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -544,7 +544,7 @@ Deno.test('attempt', async (test) => {
                 },
                 {
                   name: '\u200B',
-                  value: 'long description',
+                  value: '<:add:1099004747123523644>',
                 },
               ],
               thumbnail: {
@@ -643,10 +643,7 @@ Deno.test('attempt', async (test) => {
 
     const sleepStub = stub(utils, 'sleep', () => Promise.resolve());
 
-    const rngStub = stub(utils, 'rng', () => ({
-      value: false,
-      chance: 100,
-    }));
+    const rngStub = stub(utils, 'getRandomFloat', () => 1);
 
     const fetchStub = stub(
       globalThis,
@@ -709,6 +706,7 @@ Deno.test('attempt', async (test) => {
         token: 'test_token',
         characterId: 'character_id',
         pre: 0,
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -808,10 +806,7 @@ Deno.test('attempt', async (test) => {
 
     const sleepStub = stub(utils, 'sleep', () => Promise.resolve());
 
-    const rngStub = stub(utils, 'rng', () => ({
-      value: true,
-      chance: 100,
-    }));
+    const rngStub = stub(utils, 'getRandomFloat', () => 0);
 
     const fetchStub = stub(
       globalThis,
@@ -876,6 +871,7 @@ Deno.test('attempt', async (test) => {
         token: 'test_token',
         characterId: 'character_id',
         pre: 0,
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -967,10 +963,7 @@ Deno.test('attempt', async (test) => {
 
     const timeStub = new FakeTime();
 
-    const rngStub = stub(utils, 'rng', () => ({
-      value: true,
-      chance: 0,
-    }));
+    const rngStub = stub(utils, 'getRandomFloat', () => 0);
 
     const fetchStub = stub(
       globalThis,
@@ -1034,6 +1027,7 @@ Deno.test('attempt', async (test) => {
         token: 'test_token',
         characterId: 'character_id',
         pre: 100,
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -1123,10 +1117,7 @@ Deno.test('attempt', async (test) => {
 
     const timeStub = new FakeTime();
 
-    const rngStub = stub(utils, 'rng', () => ({
-      value: true,
-      chance: 100,
-    }));
+    const rngStub = stub(utils, 'getRandomFloat', () => 0);
 
     const sleepStub = stub(utils, 'sleep', () => Promise.resolve());
 
@@ -1189,6 +1180,7 @@ Deno.test('attempt', async (test) => {
         token: 'test_token',
         characterId: 'character_id',
         pre: 0,
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -1278,10 +1270,7 @@ Deno.test('attempt', async (test) => {
 
     const timeStub = new FakeTime();
 
-    const rngStub = stub(utils, 'rng', () => ({
-      value: true,
-      chance: 100,
-    }));
+    const rngStub = stub(utils, 'getRandomFloat', () => 0);
 
     const sleepStub = stub(utils, 'sleep', () => Promise.resolve());
 
@@ -1344,6 +1333,7 @@ Deno.test('attempt', async (test) => {
         token: 'test_token',
         characterId: 'character_id',
         pre: 0,
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -1486,6 +1476,7 @@ Deno.test('attempt', async (test) => {
         token: 'test_token',
         characterId: 'character_id',
         pre: 0,
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -1539,6 +1530,632 @@ Deno.test('attempt', async (test) => {
       listStub.restore();
       packsStub.restore();
       userStub.restore();
+      timeStub.restore();
+    }
+  });
+});
+
+Deno.test('sacrifices', async (test) => {
+  await test.step('normal', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character 1',
+        },
+        image: {
+          large: 'image_url',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: 'anime',
+              type: MediaType.Anime,
+              title: {
+                english: 'media title',
+              },
+            },
+          }],
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'character 2',
+        },
+        image: {
+          large: 'image_url',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: 'anime',
+              type: MediaType.Anime,
+              title: {
+                english: 'media title',
+              },
+            },
+          }],
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'character 3',
+        },
+        image: {
+          large: 'image_url',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: 'anime',
+              type: MediaType.Anime,
+              title: {
+                english: 'media title',
+              },
+            },
+          }],
+        },
+      },
+      {
+        id: '4',
+        name: {
+          full: 'character 4',
+        },
+        image: {
+          large: 'image_url',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'character 5',
+        },
+        image: {
+          large: 'image_url',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  user: {},
+                  characters: [
+                    {
+                      id: 'anilist:1',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:2',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:3',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:4',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:5',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:6',
+                      rating: 1,
+                    },
+                    {
+                      id: 'anilist:7',
+                      rating: 1,
+                    },
+                  ],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = steal.sacrifices({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        token: 'test_token',
+        characterId: 'character_id',
+        pre: 5,
+        stars: 100,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              description: 'Sacrifice **7** characters?',
+              type: 'rich',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'media title',
+                  value: '1<:smolstar:1107503653956374638>character 1',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'media title',
+                  value: '1<:smolstar:1107503653956374638>character 2',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'media title',
+                  value: '1<:smolstar:1107503653956374638>character 3',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              description: '1<:smolstar:1107503653956374638>character 4',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              description: '1<:smolstar:1107503653956374638>character 5',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              description: '_+2 others..._',
+            },
+            {
+              type: 'rich',
+              description: 'Your chance of success is **5.14%**',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'steal=user_id=character_id=5=7',
+                label: 'Attempt',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'cancel=user_id',
+                label: 'Cancel',
+                style: 4,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.stealing;
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('complicated', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character 1',
+        },
+        image: {
+          large: 'image_url',
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'character 2',
+        },
+        image: {
+          large: 'image_url',
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'character 3',
+        },
+        image: {
+          large: 'image_url',
+        },
+      },
+      {
+        id: '4',
+        name: {
+          full: 'character 4',
+        },
+        image: {
+          large: 'image_url',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'character 5',
+        },
+        image: {
+          large: 'image_url',
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  user: {},
+                  characters: [
+                    {
+                      id: 'anilist:1',
+                      rating: 5,
+                    },
+                    {
+                      id: 'anilist:2',
+                      rating: 5,
+                    },
+                    {
+                      id: 'anilist:3',
+                      rating: 4,
+                    },
+                    {
+                      id: 'anilist:4',
+                      rating: 2,
+                    },
+                    {
+                      id: 'anilist:5',
+                      rating: 3,
+                    },
+                  ],
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = steal.sacrifices({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        token: 'test_token',
+        characterId: 'character_id',
+        pre: 5,
+        stars: 7,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              description: 'Sacrifice **2** characters?',
+              type: 'rich',
+            },
+            {
+              type: 'rich',
+              description: '4<:smolstar:1107503653956374638>character 3',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              description: '3<:smolstar:1107503653956374638>character 5',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=preview',
+              },
+            },
+            {
+              type: 'rich',
+              description: 'Your chance of success is **5.14%**',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'steal=user_id=character_id=5=7',
+                label: 'Attempt',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'cancel=user_id',
+                label: 'Cancel',
+                style: 4,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.stealing;
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('no characters', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  user: {},
+                  characters: [],
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = steal.sacrifices({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        token: 'test_token',
+        characterId: 'character_id',
+        pre: 5,
+        stars: 100,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: '**You don\'t have any characters to sacrifice**',
+            },
+            {
+              type: 'rich',
+              description: 'Your chance of success is **5.00%**',
+            },
+          ],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'steal=user_id=character_id=5=0',
+                label: 'Attempt',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'cancel=user_id',
+                label: 'Cancel',
+                style: 4,
+                type: 2,
+              },
+            ],
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.stealing;
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
       timeStub.restore();
     }
   });
@@ -1624,12 +2241,13 @@ Deno.test('/steal', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await steal.pre({
+      const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
         token: 'test_token',
         id: 'character_id',
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -1667,16 +2285,11 @@ Deno.test('/steal', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description:
-                '<@another_user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              description: '<@another_user_id>',
               fields: [
                 {
                   name: 'media title',
                   value: '**full name**',
-                },
-                {
-                  name: '\u200B',
-                  value: 'long description',
                 },
               ],
               thumbnail: {
@@ -1685,13 +2298,13 @@ Deno.test('/steal', async (test) => {
             },
             {
               type: 'rich',
-              description: 'Your chance to succeed is: **24%**',
+              description: 'Your chance of success is **25.00%**',
             },
           ],
           components: [{
             components: [
               {
-                custom_id: 'steal=user_id=id:1=24',
+                custom_id: 'steal=user_id=id:1=25=0',
                 label: 'Attempt',
                 style: 2,
                 type: 2,
@@ -1721,7 +2334,204 @@ Deno.test('/steal', async (test) => {
     }
   });
 
+  await test.step('with stars', async () => {
+    const character: Character = {
+      id: '1',
+      packId: 'id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+      media: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: 'media',
+            packId: 'id',
+            type: MediaType.Anime,
+            title: {
+              english: 'media title',
+            },
+          },
+        }],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  stealTimestamp: undefined,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const packsStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () =>
+        Promise.resolve({
+          id: 'id:1',
+          mediaId: 'id:2',
+          rating: 2,
+          user: {
+            id: 'another_user_id',
+          },
+        }),
+    );
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = steal.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        token: 'test_token',
+        id: 'character_id',
+        stars: 5,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [
+            {
+              type: 'rich',
+              description: '<@another_user_id>',
+              fields: [
+                {
+                  name: 'media title',
+                  value: '**full name**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+            },
+            {
+              type: 'rich',
+              description: '_Continue to see your chance of success_',
+            },
+          ],
+          components: [{
+            components: [
+              {
+                custom_id: 'bsteal=user_id=id:1=25=5',
+                label: 'Continue',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'cancel=user_id',
+                label: 'Cancel',
+                style: 4,
+                type: 2,
+              },
+            ],
+            type: 1,
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.stealing;
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      packsStub.restore();
+      userStub.restore();
+      timeStub.restore();
+    }
+  });
+
   await test.step('on cooldown', async () => {
+    const character: Character = {
+      id: '1',
+      packId: 'id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+      media: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: 'media',
+            packId: 'id',
+            type: MediaType.Anime,
+            title: {
+              english: 'media title',
+            },
+          },
+        }],
+      },
+    };
+
     const timeStub = new FakeTime('2011/1/25 00:00 UTC');
 
     const fetchStub = stub(
@@ -1739,29 +2549,101 @@ Deno.test('/steal', async (test) => {
               },
             }))),
         } as any,
+        undefined,
+        undefined,
       ]),
     );
 
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const packsStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () =>
+        Promise.resolve({
+          id: 'id:1',
+          mediaId: 'id:2',
+          rating: 2,
+          user: {
+            id: 'another_user_id',
+          },
+        }),
+    );
+
     config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
 
     try {
-      await assertRejects(
-        () =>
-          steal.pre({
-            userId: 'user_id',
-            guildId: 'guild_id',
-            channelId: 'channel_id',
-            token: 'test_token',
-            id: 'character_id',
-          }),
-        NonFetalError,
-        'Steal is on cooldown, try again <t:1295913601:R>',
+      const message = steal.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        token: 'test_token',
+        id: 'character_id',
+        stars: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          embeds: [{
+            type: 'rich',
+            description: 'Steal is on cooldown, try again <t:1295913601:R>',
+          }],
+          components: [],
+          attachments: [],
+        },
       );
     } finally {
       delete config.stealing;
+      delete config.appId;
+      delete config.origin;
 
-      timeStub.restore();
       fetchStub.restore();
+      listStub.restore();
+      packsStub.restore();
+      userStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1856,12 +2738,13 @@ Deno.test('/steal', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await steal.pre({
+      const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
         token: 'test_token',
         id: 'character_id',
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -2016,12 +2899,13 @@ Deno.test('/steal', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await steal.pre({
+      const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
         token: 'test_token',
         id: 'character_id',
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -2117,12 +3001,13 @@ Deno.test('/steal', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await steal.pre({
+      const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
         token: 'test_token',
         id: 'character_id',
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -2141,18 +3026,18 @@ Deno.test('/steal', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 2);
+      assertSpyCalls(fetchStub, 1);
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -2248,12 +3133,13 @@ Deno.test('/steal', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await steal.pre({
+      const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
         channelId: 'channel_id',
         token: 'test_token',
         id: 'character_id',
+        stars: 0,
       });
 
       assertEquals(message.json(), {
@@ -2325,11 +3211,11 @@ Deno.test('/steal', async (test) => {
     }
   });
 
-  await test.step('under maintenance', async () => {
+  await test.step('under maintenance', () => {
     config.stealing = false;
 
     try {
-      await assertRejects(
+      assertThrows(
         () =>
           steal.pre({
             userId: 'user_id',
@@ -2337,6 +3223,7 @@ Deno.test('/steal', async (test) => {
             channelId: 'channel_id',
             token: 'test_token',
             id: 'character_id',
+            stars: 0,
           }),
         NonFetalError,
         'Stealing is under maintenance, try again later!',

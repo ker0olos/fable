@@ -20,6 +20,7 @@ import config from '../src/config.ts';
 import search from '../src/search.ts';
 
 import {
+  Character,
   CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
@@ -4310,6 +4311,115 @@ Deno.test('character embed', async (test) => {
 
     try {
       const embed = search.characterEmbed(character, 'channel_id', {
+        mode: 'full',
+        description: true,
+        footer: true,
+        rating: false,
+      });
+
+      assertEquals(embed.json(), {
+        type: 'rich',
+        fields: [
+          {
+            name: 'full name\n\u200B',
+            value: 'long description',
+          },
+        ],
+        image: {
+          url: 'http://localhost:8000/external/image_url',
+        },
+        footer: {
+          text: 'Male, 420',
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+    }
+  });
+
+  await test.step('media title', () => {
+    const character: Character = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+      popularity: 1_000_000,
+      age: '420',
+      gender: 'male',
+      media: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: 'media_id',
+            title: { english: 'media title' },
+            type: MediaType.Anime,
+          },
+        }],
+      },
+    };
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const embed = search.characterEmbed(character, 'channel_id', {
+        mode: 'thumbnail',
+        description: true,
+        media: { title: true },
+        footer: true,
+        rating: false,
+      });
+
+      assertEquals(embed.json(), {
+        type: 'rich',
+        fields: [
+          {
+            name: 'media title',
+            value: '**full name**',
+          },
+          {
+            name: '\u200B',
+            value: 'long description',
+          },
+        ],
+        thumbnail: {
+          url: 'http://localhost:8000/external/image_url?size=thumbnail',
+        },
+        footer: {
+          text: 'Male, 420',
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+    }
+  });
+
+  await test.step('minimized', () => {
+    const character: DisaggregatedCharacter = {
+      id: '1',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+      popularity: 1_000_000,
+      age: '420',
+      gender: 'male',
+    };
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const embed = search.characterEmbed(character, 'channel_id', {
         mode: 'thumbnail',
         description: false,
         footer: false,
@@ -4512,190 +4622,6 @@ Deno.test('character embed', async (test) => {
           url: 'http://localhost:8000/external/image_url?size=thumbnail',
         },
         type: 'rich',
-      });
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      delete packs.cachedChannels['channel_id'];
-    }
-  });
-});
-
-Deno.test('character preview', async (test) => {
-  await test.step('normal', () => {
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      popularity: 1_000_000,
-      age: '420',
-      gender: 'male',
-    };
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const embed = search.characterPreview(character, {}, 'channel_id');
-
-      assertEquals(embed.json(), {
-        type: 'rich',
-        author: {
-          name: 'full name',
-          icon_url: 'http://localhost:8000/external/image_url?size=preview',
-        },
-      });
-    } finally {
-      delete config.appId;
-      delete config.origin;
-    }
-  });
-
-  await test.step('custom', () => {
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      popularity: 1_000_000,
-      age: '420',
-      gender: 'male',
-    };
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const embed = search.characterPreview(character, {
-        nickname: 'nickname',
-        image: 'custom_image_url',
-      }, 'channel_id');
-
-      assertEquals(embed.json(), {
-        type: 'rich',
-        author: {
-          name: 'nickname',
-          icon_url:
-            'http://localhost:8000/external/custom_image_url?size=preview',
-        },
-      });
-    } finally {
-      delete config.appId;
-      delete config.origin;
-    }
-  });
-
-  await test.step('default image', () => {
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      popularity: 1_000_000,
-      age: '420',
-      gender: 'male',
-    };
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const embed = search.characterPreview(character, {}, 'channel_id');
-
-      assertEquals(embed.json(), {
-        type: 'rich',
-        author: {
-          name: 'full name',
-          icon_url: 'http://localhost:8000/external/?size=preview',
-        },
-      });
-    } finally {
-      delete config.appId;
-      delete config.origin;
-    }
-  });
-
-  await test.step('nsfw image', () => {
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        nsfw: true,
-        url: 'image_url',
-      }],
-      popularity: 1_000_000,
-      age: '420',
-      gender: 'male',
-    };
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const embed = search.characterPreview(character, {}, 'channel_id');
-
-      assertEquals(embed.json(), {
-        type: 'rich',
-        author: {
-          name: 'full name',
-          icon_url:
-            'http://localhost:8000/external/image_url?size=preview&blur',
-        },
-      });
-    } finally {
-      delete config.appId;
-      delete config.origin;
-    }
-  });
-
-  await test.step('nsfw image 2', () => {
-    const character: DisaggregatedCharacter = {
-      id: '1',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        nsfw: true,
-        url: 'image_url',
-      }],
-      popularity: 1_000_000,
-      age: '420',
-      gender: 'male',
-    };
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    packs.cachedChannels['channel_id'] = {
-      nsfw: true,
-      name: 'channel',
-      id: 'channel_id',
-    };
-
-    try {
-      const embed = search.characterPreview(character, {}, 'channel_id');
-
-      assertEquals(embed.json(), {
-        type: 'rich',
-        author: {
-          name: 'full name',
-          icon_url: 'http://localhost:8000/external/image_url?size=preview',
-        },
       });
     } finally {
       delete config.appId;

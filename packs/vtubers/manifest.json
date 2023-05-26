@@ -159,6 +159,9 @@
       },
       "images": [
         {
+          "url": "https://i.imgur.com/rRTI374.jpeg"
+        },
+        {
           "url": "https://i.imgur.com/3cxxJV7.jpeg"
         },
         {
@@ -275,6 +278,13 @@
         ]
       },
       "images": [
+        {
+          "url": "https://i.imgur.com/6u78uMl.jpeg",
+          "artist": {
+            "username": "hongbsws",
+            "url": "www.patreon.com/HongBsWs"
+          }
+        },
         {
           "url": "https://i.imgur.com/g1D5Gka.jpeg",
           "artist": {

@@ -392,29 +392,6 @@ function characterMessage(
   return message.addComponents(group);
 }
 
-function characterPreview(
-  character: Character | DisaggregatedCharacter,
-  existing: Partial<Schema.Character>,
-  channelId: string,
-): discord.Embed {
-  const image = existing?.image
-    ? { url: existing?.image }
-    : character.images?.[0];
-
-  const alias = existing?.nickname ??
-    packs.aliasToArray(character.name)[0];
-
-  const blur = image?.nsfw && !packs.cachedChannels[channelId]?.nsfw;
-
-  return new discord.Embed()
-    .setAuthor({
-      icon_url: `${config.origin}/external/${
-        encodeURIComponent(image?.url ?? '')
-      }?size=preview${blur ? '&blur' : ''}`,
-      name: alias,
-    });
-}
-
 function characterEmbed(
   character: Character | DisaggregatedCharacter,
   channelId: string,
@@ -447,6 +424,12 @@ function characterEmbed(
 
   const alias = options.existing?.nickname ??
     packs.aliasToArray(character.name)[0];
+
+  const wrapWidth = ['preview', 'thumbnail'].includes(options.mode ?? '')
+    ? 25
+    : 32;
+
+  const aliasWrapped = utils.wrap(alias, wrapWidth);
 
   if (options.mode === 'full') {
     embed.setImage({
@@ -501,8 +484,8 @@ function characterEmbed(
 
   if (mediaTitle) {
     embed.addField({
-      name: utils.wrap(mediaTitle),
-      value: `**${utils.wrap(alias)}**`,
+      name: utils.wrap(mediaTitle, wrapWidth),
+      value: `**${aliasWrapped}**`,
     });
 
     if (options.description && description) {
@@ -510,9 +493,10 @@ function characterEmbed(
     }
   } else {
     embed.addField({
-      name: options.description && options.mode === 'thumbnail' || !description
-        ? `${utils.wrap(alias)}`
-        : `${utils.wrap(alias)}\n${discord.empty}`,
+      name:
+        !description || (options.description && options.mode === 'thumbnail')
+          ? `${aliasWrapped}`
+          : `${aliasWrapped}\n${discord.empty}`,
       value: options.description ? description : undefined,
     });
   }
@@ -878,7 +862,6 @@ const search = {
   character,
   characterMessage,
   characterEmbed,
-  characterPreview,
   characterDebugMessage,
   mediaCharacters,
   mediaFound,
