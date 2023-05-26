@@ -19,8 +19,55 @@
 
 </i>
 
-_<p align="center"> Check [our top.gg][topgg2] for a list of features and see
-how Fable compares to other bots</p>_
+<i align="center">
+<details><summary>List of features and
+how Fable compares to other bots</summary>
+<img src="https://i.imgur.com/7ZI6dhj.png" alt="120K+ characters">
+
+<p>
+  <img align="left" src="https://i.imgur.com/IO91qt1.png" alt="100% FREE">
+  <h4>100% FREE</h4>
+  No more users paying to get ahead of you.
+
+Fable has no in-app purchases, no premiums, and no bullshit.
+
+</p>
+
+<br clear="left"/>
+<br clear="left"/>
+
+<p>
+  <img align="left" src="https://i.imgur.com/kUVI9s1.gif" alt="Animated Pulls">
+  <h4>Animated Pulls</h4>
+  Build anticipation and excitement with animated gacha pulls.
+</p>
+
+<br clear="left"/>
+<br clear="left"/>
+
+<p>
+  <img align="left" src="https://i.imgur.com/B897tj4.png" alt="Synthesis">
+  <h4>Synthesis</h4>
+  Synthesis those 2000 characters you have sitting in your inventory doing nothing
+  to get 2 characters that you might actually like.
+</p>
+
+<br clear="left"/>
+<br clear="left"/>
+
+<p>
+  <img align="left" src="https://i.imgur.com/y0PQpOj.png" alt="Stealing">
+  <h4>Stealing</h4>
+  When all negotiations fails, it's fine to take what you want by force, right? Steal characters from that one annoying server member that refuses to trade.
+</p>
+
+<br clear="left"/>
+<br clear="left"/>
+
+<img src="https://i.imgur.com/478NYxi.png" alt="Fable compared to other bots">
+
+</details>
+</i>
 
 <i>
   <h6 align="right">(Animated Pulls)</h6>
@@ -31,9 +78,11 @@ Fable is a free, open-source gacha bot — a friendly, powerful alternative to
 bots like Mudae, Sofi, Karuta. Like those bots, you can pull anime characters,
 customize, and upgrade them.
 
-Fable has intuitive system to manage the characters in your servers, like
-installing apps on your phone, you can install community-made packs that are
-full of new characters with a single command.
+Unlike those bots, Fable is not a cash-grab scam, everything in Fable is free,
+no players can pay to get ahead.
+
+Fable also has a powerful system to manage the characters in your server, people
+can make community packs that are full of new characters and anime.
 
 Wanna make your own community pack? Check
 [fable-community/example](https://github.com/fable-community/fable-pack-example)
