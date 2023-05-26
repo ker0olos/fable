@@ -2576,7 +2576,7 @@ Deno.test('steal components', async (test) => {
         },
       },
       data: {
-        custom_id: 'steal=user_id=character_id=40=5',
+        custom_id: 'bsteal=user_id=character_id=40=5',
       },
     });
 
@@ -2591,7 +2591,7 @@ Deno.test('steal components', async (test) => {
       send: () => true,
     }));
 
-    const tradeStub = stub(steal, 'attempt', () =>
+    const stealStub = stub(steal, 'sacrifices', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -2631,7 +2631,7 @@ Deno.test('steal components', async (test) => {
         args: [discord.MessageType.Update],
       });
 
-      assertSpyCall(tradeStub, 0, {
+      assertSpyCall(stealStub, 0, {
         args: [{
           token: 'token',
           userId: 'user_id',
@@ -2647,7 +2647,7 @@ Deno.test('steal components', async (test) => {
     } finally {
       delete config.publicKey;
 
-      tradeStub.restore();
+      stealStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }

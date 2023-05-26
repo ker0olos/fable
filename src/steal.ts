@@ -376,37 +376,43 @@ function sacrifices({
       });
 
       if (!sacrifices.length) {
-        throw new NonFetalError('You don\'t have any characters to sacrifice');
-      }
-
-      message.addEmbed(
-        new discord.Embed().setDescription(
-          `Sacrifice **${sacrifices.length}** characters?`,
-        ),
-      );
-
-      await Promise.all(highlights.map(async (existing) => {
-        const match = highlightedCharacters
-          .find((char) => existing.id === `${char.packId}:${char.id}`);
-
-        if (match) {
-          const character = await packs.aggregate<Character>({
-            character: match,
-            guildId,
-          });
-
-          message.addEmbed(
-            synthesis.characterPreview(character, existing, channelId),
-          );
-        }
-      }));
-
-      if (sacrifices.length - highlightedCharacters.length) {
         message.addEmbed(
           new discord.Embed().setDescription(
-            `_+${sacrifices.length - highlightedCharacters.length} others..._`,
+            '**You don\'t have any characters to sacrifice**',
           ),
         );
+      } else {
+        message.addEmbed(
+          new discord.Embed().setDescription(
+            `Sacrifice **${sacrifices.length}** characters?`,
+          ),
+        );
+
+        await Promise.all(highlights.map(async (existing) => {
+          const match = highlightedCharacters
+            .find((char) => existing.id === `${char.packId}:${char.id}`);
+
+          if (match) {
+            const character = await packs.aggregate<Character>({
+              character: match,
+              guildId,
+            });
+
+            message.addEmbed(
+              synthesis.characterPreview(character, existing, channelId),
+            );
+          }
+        }));
+
+        if (sacrifices.length - highlightedCharacters.length) {
+          message.addEmbed(
+            new discord.Embed().setDescription(
+              `_+${
+                sacrifices.length - highlightedCharacters.length
+              } others..._`,
+            ),
+          );
+        }
       }
 
       message.addEmbed(
@@ -430,15 +436,6 @@ function sacrifices({
         .patch(token);
     })
     .catch(async (err) => {
-      if (err instanceof NonFetalError) {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription(err.message),
-          )
-          .patch(token);
-      }
-
       if (!config.sentry) {
         throw err;
       }
