@@ -4,7 +4,10 @@
     "ghcr.io/devcontainers-contrib/features/deno:1": {}
   },
   "waitFor": "onCreateCommand",
-  "postCreateCommand": "npm i -g fauna-shell ngrok concurrently node-jq",
+  "postCreateCommand": {
+    "dev_deps": "npm i -g fauna-shell ngrok concurrently node-jq",
+    "app_deps": "deno cache --reload src/interactions.ts"
+  },
   "customizations": {
     "vscode": {
       "extensions": [

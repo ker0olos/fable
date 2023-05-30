@@ -292,6 +292,12 @@ async function pages(
     guildId: string;
   },
 ): Promise<discord.Message> {
+  if (!config.communityPacks && type === PackType.Community) {
+    throw new NonFetalError(
+      'Community Packs are under maintenance, try again later!',
+    );
+  }
+
   const list = await packs.all({ type, guildId });
 
   if (!list.length) {
@@ -356,6 +362,12 @@ function install({
   guildId: string;
   shallow?: boolean;
 }): discord.Message {
+  if (!config.communityPacks) {
+    throw new NonFetalError(
+      'Community Packs are under maintenance, try again later!',
+    );
+  }
+
   github.manifest({ id, url })
     .then(async ({ id, manifest }) => {
       const message = new discord.Message();
@@ -536,6 +548,12 @@ async function uninstall({
   guildId: string;
   manifestId: string;
 }): Promise<discord.Message> {
+  if (!config.communityPacks) {
+    throw new NonFetalError(
+      'Community Packs are under maintenance, try again later!',
+    );
+  }
+
   const message = new discord.Message();
 
   const mutation = gql`
