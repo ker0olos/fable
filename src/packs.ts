@@ -1,3 +1,5 @@
+import 'https://esm.sh/@total-typescript/ts-reset@0.4.2/filter-boolean';
+
 import _anilistManifest from '../packs/anilist/manifest.json' assert {
   type: 'json',
 };
@@ -14,10 +16,7 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import validate, { purgeReservedProps } from './validate.ts';
-
 import utils from './utils.ts';
-import github from './github.ts';
 
 import Rating from './rating.ts';
 
@@ -349,196 +348,10 @@ async function pages(
   });
 }
 
-function install({
-  id,
-  url,
-  token,
-  shallow,
-  guildId,
-}: {
-  id?: number;
-  url?: string;
-  token: string;
-  guildId: string;
-  shallow?: boolean;
-}): discord.Message {
-  if (!config.communityPacks) {
-    throw new NonFetalError(
-      'Community Packs are under maintenance, try again later!',
-    );
-  }
-
-  github.manifest({ id, url })
-    .then(async ({ id, manifest }) => {
-      const message = new discord.Message();
-
-      // validate against json schema
-      const valid = validate(manifest);
-
-      if (valid.error && shallow) {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setColor(discord.colors.red)
-              .setDescription(`\`\`\`json\n${valid.error}\n\`\`\``),
-          )
-          .patch(token);
-      } else if (valid.error) {
-        throw new NonFetalError('Pack is invalid and cannot be installed.');
-      }
-
-      // shallow install is only meant as validation test
-      if (shallow) {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setColor(discord.colors.green)
-              .setDescription('Valid'),
-          )
-          .patch(token);
-      }
-
-      // check installed packs for dependencies and conflicts
-
-      const list = await packs.all({ guildId });
-
-      const dict = list.reduce<Record<string, Pack>>(
-        (dict, pack) => (dict[pack.manifest.id] = pack, dict),
-        {},
-      );
-
-      if (manifest.id in dict && dict[manifest.id].id !== id) {
-        throw new NonFetalError(
-          'A pack with the same id is already installed.',
-        );
-      }
-
-      // if this pack conflicts existing
-      const conflicts = (manifest.conflicts ?? []).filter((conflictId) =>
-        conflictId in dict
-      ).concat(
-        // if existing conflicts this pack
-        list
-          .filter((pack) => pack.manifest.conflicts?.includes(manifest.id))
-          .map(({ manifest }) => manifest.id),
-      );
-
-      const missing = manifest.depends?.filter((dependId) =>
-        !(dependId in dict)
-      );
-
-      if (
-        (conflicts && conflicts?.length > 0) ||
-        (missing && missing?.length > 0)
-      ) {
-        const message = new discord.Message();
-
-        if (conflicts && conflicts?.length) {
-          message.addEmbed(
-            new discord.Embed()
-              .setDescription(
-                '__Conflicts must be removed before you can install this pack__.',
-              ),
-          );
-
-          conflicts.forEach((conflict) => {
-            message.addEmbed(
-              new discord.Embed().setDescription(
-                `This pack conflicts with ${conflict}`,
-              ),
-            );
-          });
-        }
-
-        if (missing && missing?.length) {
-          message.addEmbed(
-            new discord.Embed()
-              .setDescription(
-                '__Dependencies must be installed before you can install this pack__.',
-              ),
-          );
-
-          missing.forEach((dependency) => {
-            message.addEmbed(
-              new discord.Embed().setDescription(
-                `This pack requires ${dependency}`,
-              ),
-            );
-          });
-        }
-
-        return await message.patch(token);
-      }
-
-      const mutation = gql`
-        mutation ($guildId: String!, $githubId: Int!,$manifest: ManifestInput!) {
-          addPackToInstance(guildId: $guildId, githubId: $githubId, manifest: $manifest) {
-            ok
-            error
-            manifest {
-              id
-              title
-              description
-              author
-              image
-              url
-            }
-          }
-        }
-      `;
-
-      const response = (await request<{ addPackToInstance: Schema.Mutation }>({
-        url: faunaUrl,
-        query: mutation,
-        headers: { 'authorization': `Bearer ${config.faunaSecret}` },
-        variables: {
-          guildId,
-          githubId: id,
-          manifest: purgeReservedProps(manifest),
-        },
-      })).addPackToInstance;
-
-      if (response.ok) {
-        // clear guild cache after install
-        delete cachedGuilds[guildId];
-
-        message
-          .addEmbed(new discord.Embed().setDescription('Installed'))
-          .addEmbed(packEmbed({ manifest: response.manifest }));
-
-        return message.patch(token);
-      } else {
-        switch (response.error) {
-          case 'PACK_ID_CHANGED':
-            throw new NonFetalError(
-              `Pack id changed. Found \`${manifest.id}\` but it should ne \`${response.manifest.id}\``,
-            );
-          default:
-            throw new Error(response.error);
-        }
-      }
-    })
-    .catch(async (err) => {
-      if (err instanceof NonFetalError) {
-        return await new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription(err.message),
-          )
-          .patch(token);
-      }
-
-      if (!config.sentry) {
-        throw err;
-      }
-
-      const refId = utils.captureException(err);
-
-      await discord.Message.internal(refId).patch(token);
-    });
-
-  return new discord.Message()
-    .setType(discord.MessageType.Loading);
+function install(): discord.Message {
+  throw new NonFetalError(
+    'Community Packs are under maintenance, try again later!',
+  );
 }
 
 async function uninstall({

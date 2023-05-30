@@ -1,6 +1,3 @@
-// @deno-types="https://raw.githubusercontent.com/greggman/unzipit/v1.4.3/dist/unzipit.module.d.ts"
-import { unzip } from 'https://raw.githubusercontent.com/greggman/unzipit/v1.4.3/dist/unzipit.module.js';
-
 import nacl from 'https://esm.sh/tweetnacl@1.0.3';
 
 import {
@@ -344,7 +341,6 @@ const utils = {
   shuffle,
   sleep,
   truncate,
-  unzip,
   validateRequest,
   verifySignature,
   votingTimestamp,

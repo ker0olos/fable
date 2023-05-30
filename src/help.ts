@@ -198,7 +198,6 @@ function pages(
             '- `/party swap` `/team swap` `/p swap`: _swap characters spots with each others_',
             '- `/party remove` `/team remove` `/p remove`: _remove a character from your party_',
             '',
-            '- `/collection list` `/coll list` `/mm list`: _list user characters in bulks_',
             '- `/collection stars` `/coll stars` `/mm stars`: _view user your stars_',
             '- `/collection media` `/coll media` `/mm media`: _view user characters in a specific media_',
             '',
@@ -241,10 +240,7 @@ function pages(
             '- `/packs community`: _list all installed community packs_',
             '',
             '- `/packs install`: _install a community pack_',
-            '- `/packs update`: _update a community pack_',
             '- `/packs uninstall`: _uninstall a pack_',
-            '',
-            '- `/packs validate`: _find errors in a pack\'s "manifest.json"_',
           ].join('\n')),
       ),
   ];

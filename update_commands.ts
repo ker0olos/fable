@@ -758,10 +758,6 @@ export const commands = [
         name: 'install',
         description: 'Install a community pack',
         type: Type.SUB_COMMAND,
-        aliases: [{
-          name: 'validate',
-          desc: 'find errors in a pack\'s manifest.json',
-        }],
         optional: true,
         options: [
           Option({
@@ -775,10 +771,6 @@ export const commands = [
         name: 'uninstall',
         description: 'Uninstall a pack',
         type: Type.SUB_COMMAND,
-        aliases: [{
-          name: 'update',
-          desc: 'Pull the latest changes made to a community pack',
-        }],
         optional: true,
         options: [
           Option({

@@ -566,8 +566,6 @@ snapshot[`/help 7`] = `
 " +
           "
 " +
-          "- \`/collection list\` \`/coll list\` \`/mm list\`: _list user characters in bulks_
-" +
           "- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user your stars_
 " +
           "- \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters in a specific media_
@@ -710,13 +708,7 @@ snapshot[`/help 9`] = `
 " +
           "- \`/packs install\`: _install a community pack_
 " +
-          "- \`/packs update\`: _update a community pack_
-" +
-          "- \`/packs uninstall\`: _uninstall a pack_
-" +
-          "
-" +
-          "- \`/packs validate\`: _find errors in a pack's \\"manifest.json\\"_",
+          "- \`/packs uninstall\`: _uninstall a pack_",
         type: "rich",
       },
     ],
