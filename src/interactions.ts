@@ -620,18 +620,11 @@ export const handler = async (r: Request) => {
                   guildId,
                 })).setFlags(discord.MessageFlags.Ephemeral).send();
               }
-              case 'install':
-              case 'validate': {
-                return packs.install({
-                  token,
-                  guildId,
-                  shallow: subcommand === 'validate',
-                  url: options['github'] as string,
-                })
+              case 'install': {
+                return packs.install()
                   .setFlags(discord.MessageFlags.Ephemeral)
                   .send();
               }
-              case 'update':
               case 'uninstall': {
                 const list = await packs.all({
                   type: PackType.Community,
@@ -644,12 +637,6 @@ export const handler = async (r: Request) => {
 
                 if (!pack) {
                   throw new Error('404');
-                }
-
-                if (subcommand === 'update') {
-                  return packs.install({ token, guildId, id: pack.id })
-                    .setFlags(discord.MessageFlags.Ephemeral)
-                    .send();
                 }
 
                 return packs.uninstallDialog(pack)
