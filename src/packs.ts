@@ -97,83 +97,84 @@ async function all(
     query ($guildId: String!) {
       getGuildInstance(guildId: $guildId) {
         packs {
-          id
-          manifest {
-            id
-            title
-            description
-            author
-            image
-            url
-            media {
-              conflicts
-              new {
-                id
-                type
-                title {
-                  english
-                  romaji
-                  native
-                  alternative
-                }
-                format
-                description
-                popularity
-                images {
-                  url
-                  nsfw
-                  artist {
-                    username
-                    url
-                  }
-                }
-                externalLinks {
-                  url
-                  site
-                }
-                trailer {
+          ref {
+            manifest {
+              id
+              title
+              description
+              author
+              image
+              url
+              media {
+                conflicts
+                new {
                   id
-                  site
-                }
-                relations {
-                  relation
-                  mediaId
-                }
-                characters {
-                  role
-                  characterId
+                  type
+                  title {
+                    english
+                    romaji
+                    native
+                    alternative
+                  }
+                  format
+                  description
+                  popularity
+                  images {
+                    url
+                    nsfw
+                    artist {
+                      username
+                      url
+                    }
+                  }
+                  externalLinks {
+                    url
+                    site
+                  }
+                  trailer {
+                    id
+                    site
+                  }
+                  relations {
+                    relation
+                    mediaId
+                  }
+                  characters {
+                    role
+                    characterId
+                  }
                 }
               }
-            }
-            characters {
-              conflicts
-              new {
-                id
-                name {
-                  english
-                  romaji
-                  native
-                  alternative
-                }
-                description
-                popularity
-                gender
-                age
-                images {
-                  url
-                  nsfw
-                  artist {
-                    username
-                    url
+              characters {
+                conflicts
+                new {
+                  id
+                  name {
+                    english
+                    romaji
+                    native
+                    alternative
                   }
-                }
-                externalLinks {
-                  url
-                  site
-                }
-                media {
-                  role
-                  mediaId
+                  description
+                  popularity
+                  gender
+                  age
+                  images {
+                    url
+                    nsfw
+                    artist {
+                      username
+                      url
+                    }
+                  }
+                  externalLinks {
+                    url
+                    site
+                  }
+                  media {
+                    role
+                    mediaId
+                  }
                 }
               }
             }
@@ -199,7 +200,7 @@ async function all(
       }
 
       const response = (await request<{
-        getGuildInstance: { packs: Pack[] };
+        getGuildInstance: { packs: { ref: Pack }[] };
       }>({
         query,
         url: faunaUrl,
@@ -207,12 +208,12 @@ async function all(
         variables: { guildId },
       })).getGuildInstance;
 
-      response.packs
-        .forEach((pack) => pack.type = PackType.Community);
+      const _packs = response.packs
+        .map((pack) => (pack.ref.type = PackType.Community, pack.ref));
 
-      packs.cachedGuilds[guildId] = response.packs;
+      packs.cachedGuilds[guildId] = _packs;
 
-      return response.packs;
+      return _packs;
     }
     default: {
       const builtins = [

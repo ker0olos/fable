@@ -81,7 +81,7 @@ Deno.test('reserved ids', async () => {
 
   list.forEach(({ manifest }) => {
     assertEquals(validate(manifest), {
-      error: `${manifest.id} is a reserved id`,
+      errors: [`${manifest.id} is a reserved id`],
     });
   });
 });
