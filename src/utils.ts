@@ -22,14 +22,10 @@ import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weih
 import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
 
 export enum ImageSize {
-  Preview = 'preview', // 64x64
-  Thumbnail = 'thumbnail', // 110x155
-  Medium = 'medium', // 230x325
-  Large = 'large', // 450x635,
-}
-
-function randint(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+  Preview = 'preview',
+  Thumbnail = 'thumbnail',
+  Medium = 'medium',
+  Large = 'large',
 }
 
 function getRandomFloat(): number {
@@ -331,7 +327,6 @@ const utils = {
   initSentry,
   json,
   parseInt: _parseInt,
-  randint,
   diffInDays,
   readJson,
   rechargeTimestamp,

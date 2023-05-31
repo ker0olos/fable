@@ -2897,7 +2897,6 @@ Deno.test('/gacha', async (test) => {
               {
                 custom_id: 'gacha=user_id',
                 label: '/gacha',
-                disabled: true,
                 style: 2,
                 type: 2,
               },

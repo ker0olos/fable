@@ -14,8 +14,6 @@ import help from './help.ts';
 
 import synthesis from './synthesis.ts';
 
-import demo from './demo.tsx';
-
 import webhooks from './webhooks.ts';
 
 import config, { initConfig } from './config.ts';
@@ -26,14 +24,6 @@ import { NonFetalError, NoPermissionError } from './errors.ts';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
-
-  // redirect to /demo on browsers
-  if (
-    r.method === 'GET' &&
-    r.headers.get('accept')?.includes('text/html')
-  ) {
-    return Response.redirect(`${origin}/demo`);
-  }
 
   const { error } = await utils.validateRequest(r, {
     POST: {
@@ -1121,7 +1111,6 @@ if (import.meta.main) {
 
   utils.serve({
     '/': handler,
-    '/demo': demo,
     '/webhooks/topgg': webhooks.topgg,
     '/invite': () =>
       Response.redirect(

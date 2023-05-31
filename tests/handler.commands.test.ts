@@ -32,26 +32,6 @@ import { NonFetalError, NoPermissionError } from '../src/errors.ts';
 
 import { Manifest, PackType } from '../src/types.ts';
 
-Deno.test('redirect to /demo', async () => {
-  const request = new Request('http://localhost:8000', {
-    method: 'GET',
-    headers: {
-      'Accept': 'text/html',
-    },
-  });
-
-  const response = await handler(request);
-
-  assertEquals(response?.ok, false);
-  assertEquals(response?.redirected, false);
-
-  assertEquals(response?.status, 302);
-  assertEquals(
-    response?.headers.get('location'),
-    'http://localhost:8000/demo',
-  );
-});
-
 Deno.test('search command handlers', async (test) => {
   await test.step('search', async () => {
     const body = JSON.stringify({
