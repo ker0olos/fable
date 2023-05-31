@@ -152,7 +152,8 @@ async function publish(req: Request): Promise<Response> {
     );
   }
 
-  const { accessToken, manifest } = body as {
+  const { accessToken, tokenType, manifest } = body as {
+    tokenType?: string;
     accessToken: string;
     manifest: Manifest;
   };
@@ -172,7 +173,9 @@ async function publish(req: Request): Promise<Response> {
     method: 'GET',
     headers: {
       'content-type': 'application/json',
-      'authorization': `Bearer ${accessToken}`,
+      'authorization': `${
+        tokenType === 'Bot' ? tokenType : 'Bearer'
+      } ${accessToken}`,
     },
   });
 
