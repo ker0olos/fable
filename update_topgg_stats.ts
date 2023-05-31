@@ -1,4 +1,4 @@
-import fql from 'https://esm.sh/faunadb@4.7.1';
+import fql from '$fauna';
 
 if (import.meta.main) {
   const APP_ID = Deno.env.get('APP_ID');

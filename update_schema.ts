@@ -1,8 +1,8 @@
-import $ from 'https://deno.land/x/dax@0.31.1/mod.ts';
+import $ from 'dax';
 
-import { green } from 'https://deno.land/std@0.186.0/fmt/colors.ts';
+import { green } from '$std/fmt/colors.ts';
 
-import { load as Dotenv } from 'https://deno.land/std@0.186.0/dotenv/mod.ts';
+import { load as Dotenv } from '$std/dotenv/mod.ts';
 
 try {
   await Dotenv({ export: true, allowEmptyValues: true });
@@ -67,7 +67,7 @@ if (import.meta.main) {
       --graphqlHost graphql.us.fauna.com\
       --graphqlPort 443`.quiet();
 
-    if (r.stdout.includes('error')) {
+    if (!r.stdout.includes('Schema imported successfully')) {
       console.error(r.stdout);
       throw new Error();
     }

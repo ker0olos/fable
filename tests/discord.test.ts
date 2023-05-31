@@ -1,15 +1,8 @@
 // deno-lint-ignore-file no-non-null-assertion no-explicit-any
 
-import {
-  assert,
-  assertEquals,
-} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
+import { assert, assertEquals } from '$std/testing/asserts.ts';
 
-import {
-  assertSpyCall,
-  assertSpyCalls,
-  stub,
-} from 'https://deno.land/std@0.186.0/testing/mock.ts';
+import { assertSpyCall, assertSpyCalls, stub } from '$std/testing/mock.ts';
 
 import * as discord from '../src/discord.ts';
 import { ImageSize } from '../src/utils.ts';

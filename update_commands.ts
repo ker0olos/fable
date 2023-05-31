@@ -1,8 +1,8 @@
 // deno-lint-ignore-file camelcase
 
-import { load as Dotenv } from 'https://deno.land/std@0.186.0/dotenv/mod.ts';
+import { load as Dotenv } from '$std/dotenv/mod.ts';
 
-import { green } from 'https://deno.land/std@0.186.0/fmt/colors.ts';
+import { green } from '$std/fmt/colors.ts';
 
 import { Manifest } from './src/types.ts';
 
@@ -743,12 +743,6 @@ export const commands = [
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
       Option({
-        name: 'builtin',
-        description: 'View all the builtin packs',
-        type: Type.SUB_COMMAND,
-        optional: true,
-      }),
-      Option({
         name: 'community',
         description: 'View all instated community packs',
         type: Type.SUB_COMMAND,
@@ -761,8 +755,8 @@ export const commands = [
         optional: true,
         options: [
           Option({
-            name: 'github',
-            description: 'A github repository url',
+            name: 'id',
+            description: 'The id of the pack',
             type: Type.STRING,
           }),
         ],

@@ -1,13 +1,13 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from 'https://deno.land/std@0.186.0/testing/asserts.ts';
+import { assertEquals } from '$std/testing/asserts.ts';
 
 import {
   assertSpyCall,
   assertSpyCallArg,
   spy,
   stub,
-} from 'https://deno.land/std@0.186.0/testing/mock.ts';
+} from '$std/testing/mock.ts';
 
 import * as discord from '../src/discord.ts';
 
@@ -31,26 +31,6 @@ import synthesis from '../src/synthesis.ts';
 import { NonFetalError, NoPermissionError } from '../src/errors.ts';
 
 import { Manifest, PackType } from '../src/types.ts';
-
-Deno.test('redirect to /demo', async () => {
-  const request = new Request('http://localhost:8000', {
-    method: 'GET',
-    headers: {
-      'Accept': 'text/html',
-    },
-  });
-
-  const response = await handler(request);
-
-  assertEquals(response?.ok, false);
-  assertEquals(response?.redirected, false);
-
-  assertEquals(response?.status, 302);
-  assertEquals(
-    response?.headers.get('location'),
-    'http://localhost:8000/demo',
-  );
-});
 
 Deno.test('search command handlers', async (test) => {
   await test.step('search', async () => {
@@ -6878,95 +6858,6 @@ Deno.test('synthesize command handlers', async (test) => {
 });
 
 Deno.test('packs command handlers', async (test) => {
-  await test.step('packs builtin', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      channel_id: 'channel_id',
-      data: {
-        name: 'packs',
-        options: [{
-          type: 1,
-          name: 'builtin',
-          options: [],
-        }],
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const setFlagsSpy = spy(() => ({
-      send: () => true,
-    }));
-
-    const packsStub = stub(packs, 'pages', () =>
-      ({
-        setFlags: setFlagsSpy,
-      }) as any);
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [
-          request,
-          {
-            POST: {
-              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-            },
-          },
-        ],
-      });
-
-      assertSpyCall(setFlagsSpy, 0, {
-        args: [64],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(packsStub, 0, {
-        args: [{
-          guildId: 'guild_id',
-          type: PackType.Builtin,
-          index: 0,
-        }],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      packsStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-
   await test.step('packs community', async () => {
     const body = JSON.stringify({
       id: 'id',
@@ -7041,7 +6932,6 @@ Deno.test('packs command handlers', async (test) => {
       assertSpyCall(packsStub, 0, {
         args: [{
           guildId: 'guild_id',
-          type: PackType.Community,
           index: 0,
         }],
       });
@@ -7074,11 +6964,8 @@ Deno.test('packs command handlers', async (test) => {
           type: 1,
           name: `install`,
           options: [{
-            name: 'github',
-            value: 'github',
-          }, {
-            name: 'ref',
-            value: 'ref',
+            name: 'id',
+            value: 'pack_id',
           }],
         }],
       },
@@ -7139,7 +7026,11 @@ Deno.test('packs command handlers', async (test) => {
       });
 
       assertSpyCall(packsStub, 0, {
-        args: [],
+        args: [{
+          guildId: 'guild_id',
+          userId: 'user_id',
+          id: 'pack_id',
+        }],
       });
 
       assertEquals(response, true as any);
@@ -7166,7 +7057,7 @@ Deno.test('packs command handlers', async (test) => {
           name: `uninstall`,
           options: [{
             name: 'id',
-            value: 'manifest_id',
+            value: 'pack_id',
           }],
         }],
       },
@@ -7180,7 +7071,7 @@ Deno.test('packs command handlers', async (test) => {
     } as any));
 
     const manifest: Manifest = {
-      id: 'manifest_id',
+      id: 'pack_id',
     };
 
     const listStub = stub(
@@ -7244,7 +7135,7 @@ Deno.test('packs command handlers', async (test) => {
           embeds: [
             {
               type: 'rich',
-              title: 'manifest_id',
+              title: 'pack_id',
             },
             {
               type: 'rich',
@@ -7256,7 +7147,7 @@ Deno.test('packs command handlers', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'uninstall=manifest_id',
+              custom_id: 'uninstall=pack_id',
               label: 'Confirm',
               style: 2,
               type: 2,
@@ -7292,7 +7183,7 @@ Deno.test('packs command handlers', async (test) => {
           name: `uninstall`,
           options: [{
             name: 'id',
-            value: 'manifest_id',
+            value: 'pack_id',
           }],
         }],
       },

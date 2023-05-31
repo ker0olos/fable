@@ -1,36 +1,15 @@
 // deno-lint-ignore-file no-non-null-assertion
 
-import {
-  assert,
-  assertEquals,
-  assertThrows,
-} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
+import { assert, assertEquals, assertThrows } from '$std/testing/asserts.ts';
 
 import {
   // assertSpyCall,
   assertSpyCalls,
   returnsNext,
   stub,
-} from 'https://deno.land/std@0.186.0/testing/mock.ts';
-
-// import * as imagescript from 'https://deno.land/x/imagescript@1.2.15/mod.ts';
+} from '$std/testing/mock.ts';
 
 import utils from '../src/utils.ts';
-// import config from '../src/config.ts';
-
-Deno.test('random int in range', () => {
-  const randomStub = stub(Math, 'random', returnsNext([0, 0.55, 0.999]));
-
-  try {
-    assertEquals(utils.randint(1, 5), 1);
-    assertEquals(utils.randint(1, 5), 3);
-    assertEquals(utils.randint(1, 5), 5);
-
-    assertSpyCalls(randomStub, 3);
-  } finally {
-    randomStub.restore();
-  }
-});
 
 Deno.test('color hex to color int', () => {
   assertEquals(utils.hexToInt('#3E5F8A'), 4087690);

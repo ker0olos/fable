@@ -68,7 +68,6 @@ const packs = {
   packEmbed,
   pages,
   pool,
-  populateRelations,
   searchMany,
   uninstall,
   uninstallDialog,
@@ -98,83 +97,84 @@ async function all(
     query ($guildId: String!) {
       getGuildInstance(guildId: $guildId) {
         packs {
-          id
-          manifest {
-            id
-            title
-            description
-            author
-            image
-            url
-            media {
-              conflicts
-              new {
-                id
-                type
-                title {
-                  english
-                  romaji
-                  native
-                  alternative
-                }
-                format
-                description
-                popularity
-                images {
-                  url
-                  nsfw
-                  artist {
-                    username
-                    url
-                  }
-                }
-                externalLinks {
-                  url
-                  site
-                }
-                trailer {
+          ref {
+            manifest {
+              id
+              title
+              description
+              author
+              image
+              url
+              media {
+                conflicts
+                new {
                   id
-                  site
-                }
-                relations {
-                  relation
-                  mediaId
-                }
-                characters {
-                  role
-                  characterId
+                  type
+                  title {
+                    english
+                    romaji
+                    native
+                    alternative
+                  }
+                  format
+                  description
+                  popularity
+                  images {
+                    url
+                    nsfw
+                    artist {
+                      username
+                      url
+                    }
+                  }
+                  externalLinks {
+                    url
+                    site
+                  }
+                  trailer {
+                    id
+                    site
+                  }
+                  relations {
+                    relation
+                    mediaId
+                  }
+                  characters {
+                    role
+                    characterId
+                  }
                 }
               }
-            }
-            characters {
-              conflicts
-              new {
-                id
-                name {
-                  english
-                  romaji
-                  native
-                  alternative
-                }
-                description
-                popularity
-                gender
-                age
-                images {
-                  url
-                  nsfw
-                  artist {
-                    username
-                    url
+              characters {
+                conflicts
+                new {
+                  id
+                  name {
+                    english
+                    romaji
+                    native
+                    alternative
                   }
-                }
-                externalLinks {
-                  url
-                  site
-                }
-                media {
-                  role
-                  mediaId
+                  description
+                  popularity
+                  gender
+                  age
+                  images {
+                    url
+                    nsfw
+                    artist {
+                      username
+                      url
+                    }
+                  }
+                  externalLinks {
+                    url
+                    site
+                  }
+                  media {
+                    role
+                    mediaId
+                  }
                 }
               }
             }
@@ -200,7 +200,7 @@ async function all(
       }
 
       const response = (await request<{
-        getGuildInstance: { packs: Pack[] };
+        getGuildInstance: { packs: { ref: Pack }[] };
       }>({
         query,
         url: faunaUrl,
@@ -208,12 +208,12 @@ async function all(
         variables: { guildId },
       })).getGuildInstance;
 
-      response.packs
-        .forEach((pack) => pack.type = PackType.Community);
+      const _packs = response.packs
+        .map((pack) => (pack.ref.type = PackType.Community, pack.ref));
 
-      packs.cachedGuilds[guildId] = response.packs;
+      packs.cachedGuilds[guildId] = _packs;
 
-      return response.packs;
+      return _packs;
     }
     default: {
       const builtins = [
@@ -285,19 +285,18 @@ function uninstallDialog(pack: Pack): discord.Message {
 }
 
 async function pages(
-  { type, index, guildId }: {
+  { index, guildId }: {
     index: number;
-    type: PackType;
     guildId: string;
   },
 ): Promise<discord.Message> {
-  if (!config.communityPacks && type === PackType.Community) {
+  if (!config.communityPacks) {
     throw new NonFetalError(
       'Community Packs are under maintenance, try again later!',
     );
   }
 
-  const list = await packs.all({ type, guildId });
+  const list = await packs.all({ type: PackType.Community, guildId });
 
   if (!list.length) {
     const embed = new discord.Embed().setDescription(
@@ -311,9 +310,7 @@ async function pages(
   const pack = list[index];
 
   const disclaimer = new discord.Embed().setDescription(
-    pack.type === PackType.Builtin
-      ? 'Builtin packs are developed and maintained directly by Fable'
-      : 'The following third-party packs were manually installed by your server members',
+    'The following third-party packs were manually installed by your server members',
   );
 
   const embed = packEmbed({ manifest: pack.manifest });
@@ -330,37 +327,87 @@ async function pages(
     ]);
   }
 
-  if (pack.type === PackType.Community) {
-    message.addComponents([
-      new discord.Component()
-        .setId('puninstall', pack.manifest.id)
-        .setStyle(discord.ButtonStyle.Red)
-        .setLabel('Uninstall'),
-    ]);
-  }
+  message.addComponents([
+    new discord.Component()
+      .setId('puninstall', pack.manifest.id)
+      .setStyle(discord.ButtonStyle.Red)
+      .setLabel('Uninstall'),
+  ]);
 
   return discord.Message.page({
     index,
     total: list.length,
     next: list.length > index + 1,
     message,
-    type,
+    type: 'community',
   });
 }
 
-function install(): discord.Message {
-  throw new NonFetalError(
-    'Community Packs are under maintenance, try again later!',
-  );
+async function install(
+  { id, guildId, userId }: { id: string; guildId: string; userId: string },
+): Promise<discord.Message> {
+  if (!config.communityPacks) {
+    throw new NonFetalError(
+      'Community Packs are under maintenance, try again later!',
+    );
+  }
+
+  const mutation = gql`
+    mutation ($userId: String!, $guildId: String!, $packId: String!) {
+      addPackToInstance(userId: $userId, guildId: $guildId, packId: $packId) {
+        ok
+        error
+        pack {
+          manifest {
+            id
+            title
+            description
+            author
+            image
+            url
+          }
+        }
+      }
+    }
+  `;
+
+  const response = (await request<{
+    addPackToInstance: Schema.Mutation;
+  }>({
+    url: faunaUrl,
+    query: mutation,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+      packId: id,
+    },
+  })).addPackToInstance;
+
+  if (response.ok) {
+    // clear guild cache after uninstall
+    delete cachedGuilds[guildId];
+
+    const message = new discord.Message()
+      .addEmbed(new discord.Embed().setDescription('Installed'))
+      .addEmbed(packEmbed({ manifest: response.pack.manifest }));
+
+    return message;
+  } else {
+    switch (response.error) {
+      case 'PACK_NOT_FOUND':
+        throw new Error('404');
+      default:
+        throw new Error(response.error);
+    }
+  }
 }
 
-async function uninstall({
-  guildId,
-  manifestId,
-}: {
-  guildId: string;
-  manifestId: string;
-}): Promise<discord.Message> {
+async function uninstall(
+  { guildId, id }: { guildId: string; id: string },
+): Promise<discord.Message> {
   if (!config.communityPacks) {
     throw new NonFetalError(
       'Community Packs are under maintenance, try again later!',
@@ -370,20 +417,19 @@ async function uninstall({
   const message = new discord.Message();
 
   const mutation = gql`
-    mutation ($guildId: String!, $manifestId: String!) {
-      removePackFromInstance(
-        guildId: $guildId
-        manifestId: $manifestId
-      ) {
+    mutation ($guildId: String!, $packId: String!) {
+      removePackFromInstance(guildId: $guildId, packId: $packId) {
         ok
         error
-        manifest {
-          id
-          title
-          description
-          author
-          image
-          url
+        pack {
+          manifest {
+            id
+            title
+            description
+            author
+            image
+            url
+          }
         }
       }
     }
@@ -399,7 +445,7 @@ async function uninstall({
     },
     variables: {
       guildId,
-      manifestId,
+      packId: id,
     },
   })).removePackFromInstance;
 
@@ -409,7 +455,7 @@ async function uninstall({
 
     return message
       .addEmbed(new discord.Embed().setDescription('Uninstalled'))
-      .addEmbed(packEmbed({ manifest: response.manifest }));
+      .addEmbed(packEmbed({ manifest: response.pack.manifest }));
   } else {
     switch (response.error) {
       case 'PACK_NOT_FOUND':
@@ -987,99 +1033,6 @@ function mediaToString(
       return [title, `(${format})`].join(' ');
     }
   }
-}
-
-function populateRelations(data: Manifest): Manifest {
-  data.characters?.new?.forEach((character) => {
-    character.media?.forEach(({ role, mediaId }) => {
-      const i = data.media?.new?.findIndex((media) => media.id === mediaId);
-
-      if (typeof i === 'number' && i > -1) {
-        // deno-lint-ignore no-non-null-assertion
-        if (!data.media!.new![i].characters) {
-          // deno-lint-ignore no-non-null-assertion
-          data.media!.new![i].characters = [];
-        }
-
-        if (
-          // deno-lint-ignore no-non-null-assertion
-          data.media!.new![i].characters?.find(({ characterId }) =>
-            characterId === character.id
-          )
-        ) {
-          return;
-        }
-
-        // deno-lint-ignore no-non-null-assertion
-        data.media!.new![i].characters?.push({
-          characterId: character.id,
-          role,
-        });
-      }
-    });
-  });
-
-  data.media?.new?.forEach((media) => {
-    media.characters?.forEach(({ role, characterId }) => {
-      const i = data.characters?.new?.findIndex((character) =>
-        character.id === characterId
-      );
-
-      if (typeof i === 'number' && i > -1) {
-        // deno-lint-ignore no-non-null-assertion
-        if (!data.characters!.new![i].media) {
-          // deno-lint-ignore no-non-null-assertion
-          data.characters!.new![i].media = [];
-        }
-
-        if (
-          // deno-lint-ignore no-non-null-assertion
-          data.characters!.new![i].media?.find(({ mediaId }) =>
-            mediaId === media.id
-          )
-        ) {
-          return;
-        }
-
-        // deno-lint-ignore no-non-null-assertion
-        data.characters!.new![i].media?.push({
-          mediaId: media.id,
-          role,
-        });
-      }
-    });
-  });
-
-  data.media?.new?.forEach((media) => {
-    media.relations?.forEach(({ relation, mediaId }) => {
-      const i = data.media?.new?.findIndex((media) => media.id === mediaId);
-
-      if (typeof i === 'number' && i > -1) {
-        // deno-lint-ignore no-non-null-assertion
-        if (!data.media!.new![i].relations) {
-          // deno-lint-ignore no-non-null-assertion
-          data.media!.new![i].relations = [];
-        }
-
-        if (
-          // deno-lint-ignore no-non-null-assertion
-          data.media!.new![i].relations?.find(({ mediaId }) =>
-            mediaId === media.id
-          )
-        ) {
-          return;
-        }
-
-        // deno-lint-ignore no-non-null-assertion
-        data.media!.new![i].relations?.push({
-          mediaId: media.id,
-          relation,
-        });
-      }
-    });
-  });
-
-  return data;
 }
 
 export default packs;

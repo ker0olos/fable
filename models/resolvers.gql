@@ -4,7 +4,7 @@ type Response @embedded {
   user: User
   inventory: Inventory
   character: Character
-  manifest: Manifest
+  pack: Pack
 }
 
 type Query {
@@ -15,10 +15,10 @@ type Query {
   #
   getUserInventory(userId: String!, guildId: String!): Inventory!
     @resolver(name: "get_user_inventory")
-  
+
   #
   findMedia(mediaIds: [String!], guildId: String!): [Character!]
-    @resolver(name: "find_media") 
+    @resolver(name: "find_media")
 
   #
   findCharacter(characterId: String!, guildId: String!): Character
@@ -27,25 +27,39 @@ type Query {
   #
   getActiveInventories(guildId: String!): [Inventory!]
     @resolver(name: "get_active_inventories")
+
+  #
+  getPacksByUserId(userId: String!): [Pack!]
+    @resolver(name: "get_packs_by_user_id")
 }
 
 type Mutation {
   #
-  addPackToInstance(guildId: String!, githubId: Int!, manifest: ManifestInput!): Response!
-    @resolver(name: "add_pack_to_instance")
-  
+  publishPack(userId: String!, manifest: ManifestInput!): Response!
+    @resolver(name: "publish_pack")
+
   #
-  removePackFromInstance(guildId: String!, manifestId: String!): Response!
+  addPackToInstance(
+    guildId: String!
+    userId: String!
+    packId: String!
+  ): Response! @resolver(name: "add_pack_to_instance")
+
+  #
+  removePackFromInstance(guildId: String!, packId: String!): Response!
     @resolver(name: "remove_pack_from_instance")
 
   #
   addTokensToUser(userId: String!, amount: Int!): Response!
     @resolver(name: "add_tokens_to_user")
 
-  # 
-  exchangeTokensForPulls(userId: String!, guildId: String!, amount: Int!): Response!
-    @resolver(name: "exchange_tokens_for_pulls")
-  
+  #
+  exchangeTokensForPulls(
+    userId: String!
+    guildId: String!
+    amount: Int!
+  ): Response! @resolver(name: "exchange_tokens_for_pulls")
+
   #
   exchangeTokensForGuarantees(userId: String!, guarantee: Int!): Response!
     @resolver(name: "exchange_tokens_for_guarantees")
@@ -71,19 +85,34 @@ type Mutation {
   ): Response! @resolver(name: "replace_characters")
 
   #
-  setCharacterToParty(userId: String!, guildId: String!, characterId: String!, spot: Int): Response!
-    @resolver(name: "set_character_to_party")
+  setCharacterToParty(
+    userId: String!
+    guildId: String!
+    characterId: String!
+    spot: Int
+  ): Response! @resolver(name: "set_character_to_party")
   #
-  swapCharactersInParty(userId: String!, guildId: String!, a: Int!, b: Int!): Response!
-    @resolver(name: "swap_characters_in_party")
+  swapCharactersInParty(
+    userId: String!
+    guildId: String!
+    a: Int!
+    b: Int!
+  ): Response! @resolver(name: "swap_characters_in_party")
   #
-  removeCharacterFromParty(userId: String!, guildId: String!, spot: Int!): Response!
-    @resolver(name: "remove_character_from_party")
+  removeCharacterFromParty(
+    userId: String!
+    guildId: String!
+    spot: Int!
+  ): Response! @resolver(name: "remove_character_from_party")
 
   #
-  giveCharacters(userId: String!, targetId: String!, guildId: String!, charactersIds: [String!]!): Response!
-    @resolver(name: "give_characters")
-  
+  giveCharacters(
+    userId: String!
+    targetId: String!
+    guildId: String!
+    charactersIds: [String!]!
+  ): Response! @resolver(name: "give_characters")
+
   #
   tradeCharacters(
     userId: String!
@@ -101,7 +130,7 @@ type Mutation {
     nickname: String
   ): Response! @resolver(name: "set_character_nick")
 
-  # 
+  #
   setCharacterImage(
     userId: String!
     guildId: String!
@@ -110,11 +139,17 @@ type Mutation {
   ): Response! @resolver(name: "set_character_image")
 
   #
-  likeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
-    @resolver(name: "like_character")
+  likeCharacter(
+    userId: String!
+    guildId: String!
+    characterId: String!
+  ): Response! @resolver(name: "like_character")
   #
-  unlikeCharacter(userId: String!, guildId: String!, characterId: String!): Response!
-    @resolver(name: "unlike_character")
+  unlikeCharacter(
+    userId: String!
+    guildId: String!
+    characterId: String!
+  ): Response! @resolver(name: "unlike_character")
 
   #
   likeMedia(userId: String!, mediaId: String!): Response!
@@ -124,8 +159,11 @@ type Mutation {
     @resolver(name: "unlike_media")
 
   #
-  failSteal(userId: String!, guildId: String!, sacrifices: [String!]!): Response!
-    @resolver(name: "fail_steal")
+  failSteal(
+    userId: String!
+    guildId: String!
+    sacrifices: [String!]!
+  ): Response! @resolver(name: "fail_steal")
 
   #
   stealCharacter(
@@ -133,6 +171,5 @@ type Mutation {
     guildId: String!
     characterId: String!
     sacrifices: [String!]!
-  ): Response!
-    @resolver(name: "steal_character")
+  ): Response! @resolver(name: "steal_character")
 }

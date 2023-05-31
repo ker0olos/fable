@@ -8,7 +8,6 @@
 [![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)][topgg2]
 
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)][invite]
-[![Demo](https://img.shields.io/badge/try-demo-blue)](https://fable.deno.dev/demo)
 [![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20support%20server&color=blue)][discord]
 
 [![Fable Status](https://api.checklyhq.com/v1/badges/checks/68acae41-252d-4684-89bf-face9a8b71bd?style=flat&theme=default&responseTime=true)](https://fable.instatus.com)

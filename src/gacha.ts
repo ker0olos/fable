@@ -423,10 +423,6 @@ async function pullAnimation(
         .setId(quiet ? 'q' : 'gacha', userId)
         .setLabel(`/${quiet ? 'q' : 'gacha'}`);
 
-      if (!pull.remaining) {
-        component.toggle();
-      }
-
       message.addComponents([
         component,
       ]);

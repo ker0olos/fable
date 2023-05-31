@@ -1,10 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { spy } from 'https://deno.land/std@0.186.0/testing/mock.ts';
+import { spy } from '$std/testing/mock.ts';
 
-import _fql from 'https://esm.sh/faunadb@4.7.1';
+import _fql from '$fauna';
 
-import type { Client, Expr, ExprArg } from 'https://esm.sh/faunadb@4.7.1';
+import type { Client, Expr, ExprArg } from '$fauna';
 
 type TypedExpr<T> = Expr & { type?: T };
 
@@ -98,6 +98,13 @@ function Paginate<T extends ExprArg>(
   }) as unknown as T[];
 }
 
+function Filter<T = ExprArg>(
+  setOrArray: T[],
+  func: (...args: T[]) => BooleanExpr,
+): T[] {
+  return _fql.Filter(setOrArray, func) as unknown as T[];
+}
+
 function Foreach<T = ExprArg>(
   setOrArray: T[],
   func: (...args: T[]) => any,
@@ -173,6 +180,10 @@ function If<A = Expr, B = Expr>(
   _else: Expr | ExprArg,
 ): A | B {
   return _fql.If(cond, _then, _else) as A | B;
+}
+
+function Not(b: BooleanExpr): BooleanExpr {
+  return _fql.Not(b);
 }
 
 function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
@@ -345,6 +356,7 @@ export const fql = {
   Delete,
   Divide,
   Equals,
+  Filter,
   Foreach,
   Get,
   GTE,
@@ -364,6 +376,7 @@ export const fql = {
   Merge,
   Min,
   Multiply,
+  Not,
   Now,
   Null,
   Or,

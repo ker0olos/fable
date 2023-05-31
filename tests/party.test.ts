@@ -1,17 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
 
-import {
-  assertEquals,
-  assertRejects,
-} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
+import { assertEquals, assertRejects } from '$std/testing/asserts.ts';
 
-import { FakeTime } from 'https://deno.land/std@0.186.0/testing/time.ts';
+import { FakeTime } from '$std/testing/time.ts';
 
-import {
-  assertSpyCalls,
-  returnsNext,
-  stub,
-} from 'https://deno.land/std@0.186.0/testing/mock.ts';
+import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
 
 import packs from '../src/packs.ts';
 import party from '../src/party.ts';

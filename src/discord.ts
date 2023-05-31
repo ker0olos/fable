@@ -1,4 +1,4 @@
-import { json } from 'https://deno.land/x/sift@0.6.0/mod.ts';
+import { json } from 'sift';
 
 import utils, { ImageSize } from './utils.ts';
 import config from './config.ts';
