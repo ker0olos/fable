@@ -15,6 +15,7 @@ import help from './help.ts';
 import synthesis from './synthesis.ts';
 
 import webhooks from './webhooks.ts';
+import marketplace from './marketplace.ts';
 
 import config, { initConfig } from './config.ts';
 
@@ -1108,6 +1109,7 @@ if (import.meta.main) {
   utils.serve({
     '/': handler,
     '/webhooks/topgg': webhooks.topgg,
+    '/marketplace/publish': marketplace.publish,
     '/invite': () =>
       Response.redirect(
         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`,
