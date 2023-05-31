@@ -98,6 +98,13 @@ function Paginate<T extends ExprArg>(
   }) as unknown as T[];
 }
 
+function Filter<T = ExprArg>(
+  setOrArray: T[],
+  func: (...args: T[]) => BooleanExpr,
+): T[] {
+  return _fql.Filter(setOrArray, func) as unknown as T[];
+}
+
 function Foreach<T = ExprArg>(
   setOrArray: T[],
   func: (...args: T[]) => any,
@@ -173,6 +180,10 @@ function If<A = Expr, B = Expr>(
   _else: Expr | ExprArg,
 ): A | B {
   return _fql.If(cond, _then, _else) as A | B;
+}
+
+function Not(b: BooleanExpr): BooleanExpr {
+  return _fql.Not(b);
 }
 
 function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
@@ -345,6 +356,7 @@ export const fql = {
   Delete,
   Divide,
   Equals,
+  Filter,
   Foreach,
   Get,
   GTE,
@@ -364,6 +376,7 @@ export const fql = {
   Merge,
   Min,
   Multiply,
+  Not,
   Now,
   Null,
   Or,

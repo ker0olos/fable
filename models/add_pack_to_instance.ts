@@ -4,107 +4,128 @@ import {
   InstanceExpr,
   ManifestExpr,
   NumberExpr,
-  RefExpr,
+  PackExpr,
   ResponseExpr,
   StringExpr,
   TimeExpr,
 } from './fql.ts';
 
-import { getGuild, getInstance, Instance } from './get_user_inventory.ts';
+import {
+  getGuild,
+  getInstance,
+  Instance,
+  PackInstall,
+} from './get_user_inventory.ts';
 
 export interface Manifest {
   id: StringExpr;
 }
 
 export interface Pack {
-  id: NumberExpr;
-  instances: RefExpr[];
   manifest: ManifestExpr;
-  firstInstall: TimeExpr;
-  lastInstall: TimeExpr;
+  added: TimeExpr;
+  updated: TimeExpr;
+  version: NumberExpr;
+  maintainers: StringExpr[];
+}
+
+export function publishPack(
+  { manifest, userId }: { manifest: ManifestExpr; userId: StringExpr },
+): ResponseExpr {
+  return fql.Let({
+    match: fql.Match(
+      fql.Index('pack_manifest_id'),
+      fql.Select(['id'], manifest),
+    ),
+  }, ({ match }) =>
+    fql.If(
+      fql.IsNonEmpty(match),
+      fql.Let({
+        pack: fql.Get<PackExpr>(match),
+      }, ({ pack }) =>
+        fql.If(
+          fql.Includes(userId, fql.Select(['data', 'maintainers'], pack)),
+          fql.Let({
+            updatedPack: fql.Update<Pack>(fql.Ref(pack), {
+              version: fql.Add(fql.Select(['data', 'version'], pack), 1),
+              updated: fql.Now(),
+              manifest,
+            }),
+          }, ({ updatedPack }) => ({
+            ok: true,
+            pack: fql.Ref(updatedPack),
+          })),
+          { ok: false, error: 'PERMISSION_DENIED' },
+        )),
+      fql.Let({
+        createdPack: fql.Create<Pack>('pack', {
+          version: 1,
+          added: fql.Now(),
+          updated: fql.Now(),
+          maintainers: [userId],
+          manifest,
+        }),
+      }, ({ createdPack }) => ({
+        ok: true,
+        pack: fql.Ref(createdPack),
+      })),
+    ));
 }
 
 export function addPack(
   {
     instance,
-    githubId,
-    manifest,
+    packId,
+    userId,
   }: {
     instance: InstanceExpr;
-    githubId: NumberExpr;
-    manifest: ManifestExpr;
+    packId: StringExpr;
+    userId: StringExpr;
   },
 ): ResponseExpr {
   return fql.Let({
     match: fql.Match(
-      fql.Index('pack_github_id'),
-      githubId,
+      fql.Index('pack_manifest_id'),
+      packId,
     ),
-    pack: fql.If(
-      fql.IsNonEmpty(fql.Var('match')),
-      fql.Get(fql.Var('match')),
-      fql.Create<Pack>('pack', {
-        id: githubId,
-        instances: [],
-        firstInstall: fql.Now(),
-        lastInstall: fql.Now(),
-        manifest,
-      }),
-    ),
-  }, ({ pack }) =>
+  }, ({ match }) =>
     fql.If(
-      fql.Equals(
-        // old manifest id
-        fql.Select(['data', 'manifest', 'id'], pack),
-        // new manifest id
-        fql.Select(['id'], manifest),
-      ),
+      fql.IsNonEmpty(match),
       fql.Let(
         {
-          // update the instance
           updatedInstance: fql.If(
             // if the pack already exists in the packs list
-            // don't re-add it
             fql.Includes(
-              fql.Ref(pack),
-              fql.Select(['data', 'packs'], instance),
+              [fql.Ref(instance)],
+              fql.Paginate(
+                fql.Match(
+                  fql.Index('pack_ref_instances'),
+                  fql.Ref(fql.Get(match)),
+                ),
+                {},
+              ),
             ),
             instance,
             fql.Update<Instance>(fql.Ref(instance), {
               packs: fql.Append(
-                fql.Ref(pack),
+                {
+                  ref: fql.Ref(fql.Get(match)),
+                  timestamp: fql.Now(),
+                  by: userId,
+                } as PackInstall,
                 fql.Select(['data', 'packs'], instance),
               ),
             }),
           ),
-          // update the pack
-          updatePack: fql.Update<Pack>(fql.Ref(pack), {
-            manifest,
-            lastInstall: fql.Now(),
-            instances: fql.If(
-              // if the instance already exists in the instance list
-              // don't re-add it
-              fql.Includes(
-                fql.Ref(instance),
-                fql.Select(['data', 'instances'], pack),
-              ),
-              fql.Select(['data', 'instances'], pack),
-              fql.Append(
-                fql.Ref(instance),
-                fql.Select(['data', 'instances'], pack),
-              ),
-            ),
-          }),
         },
         () => ({
           ok: true,
-          manifest,
+          pack: match,
         }),
       ),
       {
         ok: false,
-        error: 'PACK_ID_CHANGED',
-        manifest: fql.Select(['data', 'manifest'], pack),
+        error: 'PACK_NOT_FOUND',
       },
     ));
 }
@@ -112,46 +133,38 @@ export function addPack(
 export function removePack(
   {
     instance,
-    manifestId,
+    packId,
   }: {
     instance: InstanceExpr;
-    manifestId: StringExpr;
+    packId: StringExpr;
   },
 ): ResponseExpr {
   return fql.Let({
     match: fql.Match(
       fql.Index('pack_manifest_id'),
-      manifestId,
+      packId,
     ),
   }, ({ match }) =>
     fql.If(
       fql.IsNonEmpty(match),
-      fql.If(
-        fql.Includes(
-          fql.Ref(fql.Get(match)),
-          fql.Select(['data', 'packs'], instance),
-        ),
-        fql.Let({
-          updatedInstance: fql.Update<Instance>(fql.Ref(instance), {
-            packs: fql.Remove(
-              fql.Ref(fql.Get(match)),
-              fql.Select(['data', 'packs'], instance),
-            ),
-          }),
-          updatePack: fql.Update<Pack>(fql.Ref(fql.Get(match)), {
-            instances: fql.Remove(
-              fql.Ref(instance),
-              fql.Select(['data', 'instances'], fql.Get(match)),
-            ),
-          }),
-        }, ({ updatePack }) => ({
-          ok: true,
-          manifest: fql.Select(['data', 'manifest'], updatePack),
-        })),
+      fql.Let(
         {
-          ok: false,
-          error: 'PACK_NOT_INSTALLED',
+          ref: fql.Ref(fql.Get(match)),
+          updatedInstance: fql.Update<Instance>(fql.Ref(instance), {
+            packs: fql.Filter(
+              fql.Select(['data', 'packs'], instance),
+              (pack) =>
+                fql.Not(fql.Equals(
+                  fql.Select(['ref'], pack as unknown as PackExpr),
+                  fql.Var('ref'),
+                )),
+            ),
+          }),
         },
+        () => ({
+          ok: true,
+          pack: match,
+        }),
       ),
       {
         ok: false,
@@ -170,25 +183,32 @@ export default function (client: Client): {
         client,
         unique: true,
         collection: 'pack',
-        name: 'pack_github_id',
-        terms: [{ field: ['data', 'id'] }],
+        name: 'pack_manifest_id',
+        terms: [{ field: ['data', 'manifest', 'id'] }],
       }),
       fql.Indexer({
         client,
         unique: false,
-        collection: 'pack',
-        name: 'pack_manifest_id',
-        terms: [{ field: ['data', 'manifest', 'id'] }],
+        collection: 'instance',
+        name: 'pack_ref_instances',
+        terms: [{ field: ['data', 'packs', 'ref'] }],
       }),
     ],
     resolvers: [
       fql.Resolver({
         client,
+        name: 'publish_pack',
+        lambda: (userId: StringExpr, manifest: ManifestExpr) => {
+          return publishPack({ userId, manifest });
+        },
+      }),
+      fql.Resolver({
+        client,
         name: 'add_pack_to_instance',
         lambda: (
           guildId: StringExpr,
-          githubId: NumberExpr,
-          manifest: ManifestExpr,
+          userId: StringExpr,
+          packId: StringExpr,
         ) => {
           return fql.Let(
             {
@@ -198,8 +218,8 @@ export default function (client: Client): {
             ({ instance }) =>
               addPack({
                 instance,
-                githubId,
-                manifest,
+                packId,
+                userId,
               }),
           );
         },
@@ -209,7 +229,7 @@ export default function (client: Client): {
         name: 'remove_pack_from_instance',
         lambda: (
           guildId: StringExpr,
-          manifestId: StringExpr,
+          packId: StringExpr,
         ) => {
           return fql.Let(
             {
@@ -219,7 +239,7 @@ export default function (client: Client): {
             ({ instance }) =>
               removePack({
                 instance,
-                manifestId,
+                packId,
               }),
           );
         },

@@ -6,6 +6,7 @@ import {
   InstanceExpr,
   InventoryExpr,
   NumberExpr,
+  PackExpr,
   RefExpr,
   StringExpr,
   TimeExpr,
@@ -31,10 +32,16 @@ export interface Guild {
   instances: RefExpr[];
 }
 
+export interface PackInstall {
+  ref: RefExpr;
+  timestamp: TimeExpr;
+  by: StringExpr;
+}
+
 export interface Instance {
   main: BooleanExpr;
   inventories: RefExpr[];
-  packs: RefExpr[];
+  packs: PackInstall[];
   guild: RefExpr;
 }
 

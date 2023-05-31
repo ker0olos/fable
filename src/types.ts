@@ -220,6 +220,14 @@ export namespace Schema {
   export type Mutation =
     | {
       ok: false;
+      error: 'PACK_NOT_FOUND';
+    }
+    | {
+      ok: false;
+      error: 'PERMISSION_DENIED';
+    }
+    | {
+      ok: false;
       error: 'CHARACTER_EXISTS';
     }
     | {

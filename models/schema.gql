@@ -1,8 +1,3 @@
-type Like @embedded {
-  mediaId: String
-  characterId: String
-}
-
 type User @collection(name: "user") {
   # discord user id
   id: String!
@@ -10,11 +5,11 @@ type User @collection(name: "user") {
   inventories: [Inventory!]!
   # all the badges this user owns
   badges: [Badge!]
-  # 
-  lastVote: Time,
+  #
+  lastVote: Time
   # the amount of votes available to be exchanged for rewards
   availableVotes: Int
-  # 
+  #
   dailyTimestamp: Time
   # guaranteed pulls
   guarantees: [Int!]
@@ -36,8 +31,8 @@ type Instance @collection(name: "instance") {
   inventories: [Inventory!]!
   # the guild where the instance resides
   guild: Guild!
-  # community packs installed on the instance 
-  packs: [Pack!]!
+  # community packs installed on the instance
+  packs: [PackInstall!]!
 }
 
 type Inventory @collection(name: "inventory") {
@@ -66,7 +61,7 @@ type Character @collection(name: "character") {
   mediaId: String!
   # the rating of the character
   rating: Int!
-  # a custom image 
+  # a custom image
   nickname: String
   # a custom image url
   image: String
@@ -79,16 +74,16 @@ type Character @collection(name: "character") {
 }
 
 type Pack @collection(name: "pack") {
-  # github repo id
-  id: Int!
-  # all the instances where this pack is installed
-  instances: [Instance!]!
   # the pack's manifest
   manifest: Manifest!
-  # the first time the pack was installed on an instance
-  firstInstall: Time!
-  # the last time the pack was installed on an instance
-  lastInstall: Time!
+  # first added timestamp
+  added: Time!
+  # last updated timestamp
+  updated: Time!
+  # version number
+  version: Int!
+  # list of maintainers
+  maintainers: [String!]!
 }
 
 type Badge @collection(name: "badge") {
@@ -97,7 +92,7 @@ type Badge @collection(name: "badge") {
   # short description of the badge
   description: String!
   # the emote representing the badge
-  emote: String! 
+  emote: String!
   # all users who own this badge
   users: [User!]!
 }
@@ -108,4 +103,15 @@ type Party @embedded {
   member3: Character
   member4: Character
   member5: Character
+}
+
+type Like @embedded {
+  mediaId: String
+  characterId: String
+}
+
+type PackInstall @embedded {
+  ref: Pack!
+  timestamp: Time!
+  by: String!
 }

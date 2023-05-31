@@ -67,7 +67,7 @@ if (import.meta.main) {
       --graphqlHost graphql.us.fauna.com\
       --graphqlPort 443`.quiet();
 
-    if (r.stdout.includes('error')) {
+    if (!r.stdout.includes('Schema imported successfully')) {
       console.error(r.stdout);
       throw new Error();
     }
