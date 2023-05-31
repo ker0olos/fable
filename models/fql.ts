@@ -1,10 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { spy } from 'https://deno.land/std@0.186.0/testing/mock.ts';
+import { spy } from '$std/testing/mock.ts';
 
-import _fql from 'https://esm.sh/faunadb@4.7.1';
+import _fql from '$fauna';
 
-import type { Client, Expr, ExprArg } from 'https://esm.sh/faunadb@4.7.1';
+import type { Client, Expr, ExprArg } from '$fauna';
 
 type TypedExpr<T> = Expr & { type?: T };
 

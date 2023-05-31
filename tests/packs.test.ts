@@ -6,14 +6,11 @@ import {
   assertObjectMatch,
   assertRejects,
   assertThrows,
-} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
+} from '$std/testing/asserts.ts';
 
-import {
-  assertSpyCalls,
-  stub,
-} from 'https://deno.land/std@0.186.0/testing/mock.ts';
+import { assertSpyCalls, stub } from '$std/testing/mock.ts';
 
-import { assertSnapshot } from 'https://deno.land/std@0.186.0/testing/snapshot.ts';
+import { assertSnapshot } from '$std/testing/snapshot.ts';
 
 import validate, { assertValidManifest } from '../src/validate.ts';
 

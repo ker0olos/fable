@@ -1,10 +1,10 @@
 import 'https://esm.sh/@total-typescript/ts-reset@0.4.2/filter-boolean';
 
-import $ from 'https://deno.land/x/dax@0.31.1/mod.ts';
+import $ from 'dax';
 
-import { green } from 'https://deno.land/std@0.186.0/fmt/colors.ts';
+import { green } from '$std/fmt/colors.ts';
 
-import { load as Dotenv } from 'https://deno.land/std@0.186.0/dotenv/mod.ts';
+import { load as Dotenv } from '$std/dotenv/mod.ts';
 
 try {
   await Dotenv({ export: true, allowEmptyValues: true });
@@ -12,7 +12,7 @@ try {
   //
 }
 
-import fauna from 'https://esm.sh/faunadb@4.7.1';
+import fauna from '$fauna';
 
 import getUserInventory from './models/get_user_inventory.ts';
 

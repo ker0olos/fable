@@ -1,15 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
 
-import {
-  assertEquals,
-  assertRejects,
-} from 'https://deno.land/std@0.186.0/testing/asserts.ts';
+import { assertEquals, assertRejects } from '$std/testing/asserts.ts';
 
-import {
-  assertSpyCallArg,
-  assertSpyCalls,
-  stub,
-} from 'https://deno.land/std@0.186.0/testing/mock.ts';
+import { assertSpyCallArg, assertSpyCalls, stub } from '$std/testing/mock.ts';
 
 import * as anilist from '../packs/anilist/index.ts';
 

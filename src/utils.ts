@@ -1,23 +1,15 @@
-import nacl from 'https://esm.sh/tweetnacl@1.0.3';
+import nacl from 'tweetnacl';
 
 import {
   decode as base64Decode,
   encode as base64Encode,
-} from 'https://raw.githubusercontent.com/commenthol/url-safe-base64/v1.3.0/src/index.js';
+} from 'url-safe-base64';
 
-import {
-  captureException,
-  init as initSentry,
-} from 'https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts';
+import { captureException, init as initSentry } from 'sentry';
 
-import {
-  json,
-  serve,
-  serveStatic,
-  validateRequest,
-} from 'https://deno.land/x/sift@0.6.0/mod.ts';
+import { json, serve, serveStatic, validateRequest } from 'sift';
 
-import { distance as _distance } from 'https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts';
+import { distance as _distance } from 'levenshtein';
 
 import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
 

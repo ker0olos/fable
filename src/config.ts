@@ -1,4 +1,4 @@
-import { load as Dotenv } from 'https://deno.land/std@0.186.0/dotenv/mod.ts';
+import { load as Dotenv } from '$std/dotenv/mod.ts';
 
 export const faunaUrl = 'https://graphql.us.fauna.com/graphql';
 

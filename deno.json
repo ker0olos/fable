@@ -15,10 +15,10 @@
       ]
     }
   },
+  "importMap": "./import_map.json",
   "tasks": {
     "discord": "deno run -A update_commands.ts",
     "fauna": "deno run -A update_schema.ts && deno run -A update_models.ts",
-    "update": "deno run -A https://deno.land/x/udd/main.ts *.ts **/*.ts",
     "start": "deno run --watch --allow-net --allow-read --allow-env src/interactions.ts",
     "tunnel": "concurrently \"deno task start\" \"ngrok http 127.0.0.1:8000\" \"sleep 1 && deno task tunnel_url\"",
     "tunnel_url": "curl -Ss http://localhost:4040/api/tunnels | jq -C \".tunnels[0].public_url\""

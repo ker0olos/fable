@@ -1,4 +1,4 @@
-import { join } from 'https://deno.land/std@0.186.0/path/mod.ts';
+import { join } from '$std/path/mod.ts';
 
 import utils from '../../src/utils.ts';
 

@@ -1,8 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertSpyCalls } from 'https://deno.land/std@0.186.0/testing/mock.ts';
+import { assertSpyCalls } from '$std/testing/mock.ts';
 
-import { assertSnapshot } from 'https://deno.land/std@0.186.0/testing/snapshot.ts';
+import { assertSnapshot } from '$std/testing/snapshot.ts';
 
 import { FakeClient } from './fql.ts';
 
