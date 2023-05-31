@@ -6,6 +6,40 @@ import config, { faunaUrl } from './config.ts';
 
 import { Manifest, Schema } from './types.ts';
 
+import validate, { purgeReservedProps } from './validate.ts';
+
+import type { ConnInfo, PathParams } from 'sift';
+
+async function maintainer(
+  req: Request,
+  _: ConnInfo,
+  params: PathParams,
+): Promise<Response> {
+  const { error } = await utils.validateRequest(req, {
+    GET: {},
+  });
+
+  if (error) {
+    return utils.json(
+      { error: error.message },
+      { status: error.status },
+    );
+  }
+
+  const userId = params?.userId;
+
+  if (!userId) {
+    return utils.json(
+      { error: 'Invalid User ID' },
+      { status: 400 },
+    );
+  }
+
+  // TODO implement
+
+  return new Response();
+}
+
 async function publish(req: Request): Promise<Response> {
   const { error, body } = await utils.validateRequest(req, {
     POST: { body: ['accessToken', 'manifest'] },
@@ -22,6 +56,17 @@ async function publish(req: Request): Promise<Response> {
     accessToken: string;
     manifest: Manifest;
   };
+
+  const valid = validate(manifest);
+
+  if (valid.errors?.length) {
+    return utils.json({
+      errors: valid.errors,
+    }, {
+      status: 400,
+      statusText: 'Bad Request',
+    });
+  }
 
   const auth = await fetch('https://discord.com/api/users/@me', {
     method: 'GET',
@@ -56,7 +101,7 @@ async function publish(req: Request): Promise<Response> {
     },
     variables: {
       userId,
-      manifest,
+      manifest: purgeReservedProps(manifest),
     },
   });
 
@@ -85,8 +130,9 @@ async function publish(req: Request): Promise<Response> {
   });
 }
 
-const marketplace = {
+const community = {
+  maintainer,
   publish,
 };
 
-export default marketplace;
+export default community;

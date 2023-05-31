@@ -5,7 +5,6 @@ import {
   assertEquals,
   assertObjectMatch,
   assertRejects,
-  assertThrows,
 } from '$std/testing/asserts.ts';
 
 import { assertSpyCalls, stub } from '$std/testing/mock.ts';
@@ -34,6 +33,7 @@ import {
 } from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
+
 import { NonFetalError } from '../src/errors.ts';
 
 Deno.test('list', async (test) => {

@@ -6,7 +6,6 @@ import {
   InstanceExpr,
   InventoryExpr,
   NumberExpr,
-  PackExpr,
   RefExpr,
   StringExpr,
   TimeExpr,

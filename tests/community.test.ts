@@ -11,7 +11,7 @@ import {
 
 import config from '../src/config.ts';
 
-import marketplace from '../src/marketplace.ts';
+import community from '../src/community.ts';
 
 Deno.test('/publish', async (test) => {
   await test.step('normal', async () => {
@@ -53,7 +53,7 @@ Deno.test('/publish', async (test) => {
         }),
       });
 
-      const response = await marketplace.publish(request);
+      const response = await community.publish(request);
 
       assertSpyCalls(fetchStub, 2);
 
@@ -106,7 +106,7 @@ Deno.test('/publish', async (test) => {
       method: 'GET',
     });
 
-    const response = await marketplace.publish(request);
+    const response = await community.publish(request);
 
     assertEquals(response.ok, false);
     assertEquals(response.status, 405);
@@ -123,7 +123,7 @@ Deno.test('/publish', async (test) => {
       }),
     });
 
-    const response = await marketplace.publish(request);
+    const response = await community.publish(request);
 
     assertEquals(response.ok, false);
     assertEquals(response.status, 400);
@@ -142,7 +142,7 @@ Deno.test('/publish', async (test) => {
       }),
     });
 
-    const response = await marketplace.publish(request);
+    const response = await community.publish(request);
 
     assertEquals(response.ok, false);
     assertEquals(response.status, 400);
@@ -181,7 +181,7 @@ Deno.test('/publish', async (test) => {
         }),
       });
 
-      const response = await marketplace.publish(request);
+      const response = await community.publish(request);
 
       assertSpyCalls(fetchStub, 1);
 
@@ -205,6 +205,36 @@ Deno.test('/publish', async (test) => {
     } finally {
       fetchStub.restore();
     }
+  });
+
+  await test.step('invalid manifest', async () => {
+    const request = new Request('http://localhost:8000', {
+      method: 'POST',
+      body: JSON.stringify({
+        accessToken: 'token',
+        manifest: {},
+      }),
+    });
+
+    const response = await community.publish(request);
+
+    assertEquals(response.ok, false);
+    assertEquals(response.status, 400);
+    assertEquals(response.statusText, 'Bad Request');
+
+    assertEquals(await response.json(), {
+      errors: [
+        {
+          instancePath: '',
+          keyword: 'required',
+          message: 'must have required property \'id\'',
+          params: {
+            missingProperty: 'id',
+          },
+          schemaPath: '#/required',
+        },
+      ],
+    });
   });
 
   await test.step('permission denied', async () => {
@@ -247,7 +277,7 @@ Deno.test('/publish', async (test) => {
         }),
       });
 
-      const response = await marketplace.publish(request);
+      const response = await community.publish(request);
 
       assertSpyCalls(fetchStub, 2);
 
@@ -338,7 +368,7 @@ Deno.test('/publish', async (test) => {
         }),
       });
 
-      const response = await marketplace.publish(request);
+      const response = await community.publish(request);
 
       assertSpyCalls(fetchStub, 2);
 
