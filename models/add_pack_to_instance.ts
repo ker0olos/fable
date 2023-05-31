@@ -5,6 +5,7 @@ import {
   ManifestExpr,
   NumberExpr,
   PackExpr,
+  RefExpr,
   ResponseExpr,
   StringExpr,
   TimeExpr,
@@ -27,6 +28,34 @@ export interface Pack {
   updated: TimeExpr;
   version: NumberExpr;
   owner: StringExpr;
+}
+
+export function getPacksByUserId(
+  { userId }: { userId: StringExpr },
+): PackExpr[] {
+  return fql.Let(
+    {
+      owner: fql.Match(
+        fql.Index('packs_owner_user_id'),
+        userId,
+      ),
+      maintainer: fql.Match(
+        fql.Index('packs_maintainers_user_id'),
+        userId,
+      ),
+    },
+    ({ owner, maintainer }) =>
+      fql.Prepend(
+        fql.Map<RefExpr, PackExpr>(
+          fql.Select(['data'], fql.Paginate(owner, {}), []),
+          fql.Get,
+        ),
+        fql.Map<RefExpr, PackExpr>(
+          fql.Select(['data'], fql.Paginate(maintainer, {}), []),
+          fql.Get,
+        ),
+      ),
+  );
 }
 
 export function publishPack(
@@ -202,6 +231,20 @@ export default function (client: Client): {
         name: 'pack_ref_instances',
         terms: [{ field: ['data', 'packs', 'ref'] }],
       }),
+      fql.Indexer({
+        client,
+        unique: false,
+        collection: 'pack',
+        name: 'packs_owner_user_id',
+        terms: [{ field: ['data', 'owner'] }],
+      }),
+      fql.Indexer({
+        client,
+        unique: false,
+        collection: 'pack',
+        name: 'packs_maintainers_user_id',
+        terms: [{ field: ['data', 'manifest', 'maintainers'] }],
+      }),
     ],
     resolvers: [
       fql.Resolver({
@@ -209,6 +252,13 @@ export default function (client: Client): {
         name: 'publish_pack',
         lambda: (userId: StringExpr, manifest: ManifestExpr) => {
           return publishPack({ userId, manifest });
+        },
+      }),
+      fql.Resolver({
+        client,
+        name: 'get_packs_by_user_id',
+        lambda: (userId: StringExpr) => {
+          return getPacksByUserId({ userId });
         },
       }),
       fql.Resolver({

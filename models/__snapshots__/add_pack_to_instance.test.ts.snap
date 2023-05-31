@@ -192,6 +192,190 @@ snapshot[`model 3`] = `
     raw: {
       else: U {
         raw: {
+          create_index: U {
+            raw: {
+              object: {
+                name: "packs_owner_user_id",
+                source: U {
+                  raw: {
+                    collection: "pack",
+                  },
+                },
+                terms: U {
+                  raw: [
+                    U {
+                      raw: {
+                        object: {
+                          field: U {
+                            raw: [
+                              "data",
+                              "owner",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+                unique: false,
+                values: undefined,
+              },
+            },
+          },
+        },
+      },
+      if: U {
+        raw: {
+          exists: U {
+            raw: {
+              index: "packs_owner_user_id",
+            },
+          },
+        },
+      },
+      then: U {
+        raw: {
+          params: U {
+            raw: {
+              object: {
+                name: "packs_owner_user_id",
+                source: U {
+                  raw: {
+                    collection: "pack",
+                  },
+                },
+                terms: U {
+                  raw: [
+                    U {
+                      raw: {
+                        object: {
+                          field: U {
+                            raw: [
+                              "data",
+                              "owner",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+                unique: false,
+                values: undefined,
+              },
+            },
+          },
+          update: U {
+            raw: {
+              index: "packs_owner_user_id",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;
+
+snapshot[`model 4`] = `
+[
+  U {
+    raw: {
+      else: U {
+        raw: {
+          create_index: U {
+            raw: {
+              object: {
+                name: "packs_maintainers_user_id",
+                source: U {
+                  raw: {
+                    collection: "pack",
+                  },
+                },
+                terms: U {
+                  raw: [
+                    U {
+                      raw: {
+                        object: {
+                          field: U {
+                            raw: [
+                              "data",
+                              "manifest",
+                              "maintainers",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+                unique: false,
+                values: undefined,
+              },
+            },
+          },
+        },
+      },
+      if: U {
+        raw: {
+          exists: U {
+            raw: {
+              index: "packs_maintainers_user_id",
+            },
+          },
+        },
+      },
+      then: U {
+        raw: {
+          params: U {
+            raw: {
+              object: {
+                name: "packs_maintainers_user_id",
+                source: U {
+                  raw: {
+                    collection: "pack",
+                  },
+                },
+                terms: U {
+                  raw: [
+                    U {
+                      raw: {
+                        object: {
+                          field: U {
+                            raw: [
+                              "data",
+                              "manifest",
+                              "maintainers",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+                unique: false,
+                values: undefined,
+              },
+            },
+          },
+          update: U {
+            raw: {
+              index: "packs_maintainers_user_id",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;
+
+snapshot[`model 5`] = `
+[
+  U {
+    raw: {
+      else: U {
+        raw: {
           create_function: U {
             raw: {
               object: {
@@ -837,7 +1021,322 @@ snapshot[`model 3`] = `
 ]
 `;
 
-snapshot[`model 4`] = `
+snapshot[`model 6`] = `
+[
+  U {
+    raw: {
+      else: U {
+        raw: {
+          create_function: U {
+            raw: {
+              object: {
+                body: U {
+                  raw: {
+                    query: U {
+                      raw: {
+                        expr: U {
+                          raw: {
+                            in: U {
+                              raw: {
+                                collection: U {
+                                  raw: {
+                                    collection: U {
+                                      raw: {
+                                        default: U {
+                                          raw: [],
+                                        },
+                                        from: U {
+                                          raw: {
+                                            after: undefined,
+                                            before: undefined,
+                                            paginate: U {
+                                              raw: {
+                                                var: "maintainer",
+                                              },
+                                            },
+                                            size: undefined,
+                                          },
+                                        },
+                                        select: U {
+                                          raw: [
+                                            "data",
+                                          ],
+                                        },
+                                      },
+                                    },
+                                    map: U {
+                                      raw: {
+                                        expr: U {
+                                          raw: {
+                                            get: U {
+                                              raw: {
+                                                var: "refOrMatch",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        lambda: "refOrMatch",
+                                      },
+                                    },
+                                  },
+                                },
+                                prepend: U {
+                                  raw: {
+                                    collection: U {
+                                      raw: {
+                                        default: U {
+                                          raw: [],
+                                        },
+                                        from: U {
+                                          raw: {
+                                            after: undefined,
+                                            before: undefined,
+                                            paginate: U {
+                                              raw: {
+                                                var: "owner",
+                                              },
+                                            },
+                                            size: undefined,
+                                          },
+                                        },
+                                        select: U {
+                                          raw: [
+                                            "data",
+                                          ],
+                                        },
+                                      },
+                                    },
+                                    map: U {
+                                      raw: {
+                                        expr: U {
+                                          raw: {
+                                            get: U {
+                                              raw: {
+                                                var: "refOrMatch",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        lambda: "refOrMatch",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                            let: [
+                              {
+                                owner: U {
+                                  raw: {
+                                    match: U {
+                                      raw: {
+                                        index: "packs_owner_user_id",
+                                      },
+                                    },
+                                    terms: U {
+                                      raw: {
+                                        var: "userId",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              {
+                                maintainer: U {
+                                  raw: {
+                                    match: U {
+                                      raw: {
+                                        index: "packs_maintainers_user_id",
+                                      },
+                                    },
+                                    terms: U {
+                                      raw: {
+                                        var: "userId",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: "userId",
+                      },
+                    },
+                  },
+                },
+                name: "get_packs_by_user_id",
+              },
+            },
+          },
+        },
+      },
+      if: U {
+        raw: {
+          exists: U {
+            raw: {
+              function: "get_packs_by_user_id",
+            },
+          },
+        },
+      },
+      then: U {
+        raw: {
+          params: U {
+            raw: {
+              object: {
+                body: U {
+                  raw: {
+                    query: U {
+                      raw: {
+                        expr: U {
+                          raw: {
+                            in: U {
+                              raw: {
+                                collection: U {
+                                  raw: {
+                                    collection: U {
+                                      raw: {
+                                        default: U {
+                                          raw: [],
+                                        },
+                                        from: U {
+                                          raw: {
+                                            after: undefined,
+                                            before: undefined,
+                                            paginate: U {
+                                              raw: {
+                                                var: "maintainer",
+                                              },
+                                            },
+                                            size: undefined,
+                                          },
+                                        },
+                                        select: U {
+                                          raw: [
+                                            "data",
+                                          ],
+                                        },
+                                      },
+                                    },
+                                    map: U {
+                                      raw: {
+                                        expr: U {
+                                          raw: {
+                                            get: U {
+                                              raw: {
+                                                var: "refOrMatch",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        lambda: "refOrMatch",
+                                      },
+                                    },
+                                  },
+                                },
+                                prepend: U {
+                                  raw: {
+                                    collection: U {
+                                      raw: {
+                                        default: U {
+                                          raw: [],
+                                        },
+                                        from: U {
+                                          raw: {
+                                            after: undefined,
+                                            before: undefined,
+                                            paginate: U {
+                                              raw: {
+                                                var: "owner",
+                                              },
+                                            },
+                                            size: undefined,
+                                          },
+                                        },
+                                        select: U {
+                                          raw: [
+                                            "data",
+                                          ],
+                                        },
+                                      },
+                                    },
+                                    map: U {
+                                      raw: {
+                                        expr: U {
+                                          raw: {
+                                            get: U {
+                                              raw: {
+                                                var: "refOrMatch",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        lambda: "refOrMatch",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                            let: [
+                              {
+                                owner: U {
+                                  raw: {
+                                    match: U {
+                                      raw: {
+                                        index: "packs_owner_user_id",
+                                      },
+                                    },
+                                    terms: U {
+                                      raw: {
+                                        var: "userId",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              {
+                                maintainer: U {
+                                  raw: {
+                                    match: U {
+                                      raw: {
+                                        index: "packs_maintainers_user_id",
+                                      },
+                                    },
+                                    terms: U {
+                                      raw: {
+                                        var: "userId",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: "userId",
+                      },
+                    },
+                  },
+                },
+                name: "get_packs_by_user_id",
+              },
+            },
+          },
+          update: U {
+            raw: {
+              function: "get_packs_by_user_id",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;
+
+snapshot[`model 7`] = `
 [
   U {
     raw: {
@@ -1762,7 +2261,7 @@ snapshot[`model 4`] = `
 ]
 `;
 
-snapshot[`model 5`] = `
+snapshot[`model 8`] = `
 [
   U {
     raw: {

@@ -27,6 +27,10 @@ type Query {
   #
   getActiveInventories(guildId: String!): [Inventory!]
     @resolver(name: "get_active_inventories")
+
+  #
+  getPacksByUserId(userId: String!): [Pack!]
+    @resolver(name: "get_packs_by_user_id")
 }
 
 type Mutation {

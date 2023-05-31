@@ -8,11 +8,11 @@ import { Manifest, Schema } from './types.ts';
 
 import validate, { purgeReservedProps } from './validate.ts';
 
-import type { ConnInfo, PathParams } from 'sift';
+import type { PathParams } from 'sift';
 
-async function maintainer(
+async function query(
   req: Request,
-  _: ConnInfo,
+  _: unknown,
   params: PathParams,
 ): Promise<Response> {
   const { error } = await utils.validateRequest(req, {
@@ -28,16 +28,116 @@ async function maintainer(
 
   const userId = params?.userId;
 
-  if (!userId) {
+  if (typeof userId !== 'string') {
     return utils.json(
-      { error: 'Invalid User ID' },
+      { error: 'invalid user id' },
       { status: 400 },
     );
   }
 
-  // TODO implement
+  const query = gql`
+    query ($userId: String!) {
+      getPacksByUserId(userId: $userId) {
+        owner
+        version
+        added
+        updated
+        manifest {
+          id
+          title
+          description
+          author
+          image
+          url
+          media {
+            conflicts
+            new {
+              id
+              type
+              title {
+                english
+                romaji
+                native
+                alternative
+              }
+              format
+              description
+              popularity
+              images {
+                url
+                nsfw
+                artist {
+                  username
+                  url
+                }
+              }
+              externalLinks {
+                url
+                site
+              }
+              trailer {
+                id
+                site
+              }
+              relations {
+                relation
+                mediaId
+              }
+              characters {
+                role
+                characterId
+              }
+            }
+          }
+          characters {
+            conflicts
+            new {
+              id
+              name {
+                english
+                romaji
+                native
+                alternative
+              }
+              description
+              popularity
+              gender
+              age
+              images {
+                url
+                nsfw
+                artist {
+                  username
+                  url
+                }
+              }
+              externalLinks {
+                url
+                site
+              }
+              media {
+                role
+                mediaId
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
 
-  return new Response();
+  const response = (await request<{
+    getPacksByUserId: Schema.Pack[];
+  }>({
+    query,
+    url: faunaUrl,
+    headers: { 'authorization': `Bearer ${config.faunaSecret}` },
+    variables: { userId },
+  })).getPacksByUserId;
+
+  return utils.json({
+    data: response,
+  });
 }
 
 async function publish(req: Request): Promise<Response> {
@@ -131,7 +231,7 @@ async function publish(req: Request): Promise<Response> {
 }
 
 const community = {
-  maintainer,
+  query,
   publish,
 };
 

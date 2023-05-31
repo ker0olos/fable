@@ -1110,7 +1110,7 @@ if (import.meta.main) {
     '/': handler,
     '/webhooks/topgg': webhooks.topgg,
     '/community/publish': community.publish,
-    '/community/:userId': community.maintainer,
+    '/community/:userId': community.query,
     '/invite': () =>
       Response.redirect(
         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`,
