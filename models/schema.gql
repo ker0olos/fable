@@ -82,8 +82,8 @@ type Pack @collection(name: "pack") {
   updated: Time!
   # version number
   version: Int!
-  # list of maintainers
-  maintainers: [String!]!
+  # original owner
+  owner: String!
 }
 
 type Badge @collection(name: "badge") {

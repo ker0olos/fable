@@ -61,6 +61,17 @@
         "pattern": "^[-_a-z0-9]+$"
       }
     },
+    "maintainers": {
+      "title": "maintainers",
+      "type": "array",
+      "description": "A list of discord ids with accesses to manage this pack",
+      "items": {
+        "title": "user",
+        "type": "string",
+        "description": "Discord User Id",
+        "pattern": "^[0-9]+$"
+      }
+    },
     "media": {
       "title": "media",
       "type": "object",

@@ -26,7 +26,7 @@ export interface Pack {
   added: TimeExpr;
   updated: TimeExpr;
   version: NumberExpr;
-  maintainers: StringExpr[];
+  owner: StringExpr;
 }
 
 export function publishPack(
@@ -44,7 +44,16 @@ export function publishPack(
         pack: fql.Get<PackExpr>(match),
       }, ({ pack }) =>
         fql.If(
-          fql.Includes(userId, fql.Select(['data', 'maintainers'], pack)),
+          fql.Or(
+            fql.Equals(
+              userId,
+              fql.Select(['data', 'owner'], pack),
+            ),
+            fql.Includes(
+              userId,
+              fql.Select(['data', 'manifest', 'maintainers'], pack, []),
+            ),
+          ),
           fql.Let({
             updatedPack: fql.Update<Pack>(fql.Ref(pack), {
               version: fql.Add(fql.Select(['data', 'version'], pack), 1),
@@ -62,7 +71,7 @@ export function publishPack(
           version: 1,
           added: fql.Now(),
           updated: fql.Now(),
-          maintainers: [userId],
+          owner: userId,
           manifest,
         }),
       }, ({ createdPack }) => ({

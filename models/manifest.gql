@@ -10,6 +10,8 @@ type Manifest @embedded {
   conflicts: [String!]
   media: MediaObject
   characters: CharacterObject
+  # list of discord user ids
+  maintainers: [String!]
 }
 
 type MediaObject @embedded {
@@ -66,7 +68,7 @@ type ImageArtist @embedded {
   url: String
 }
 
-type ExternalLink @embedded { 
+type ExternalLink @embedded {
   url: String!
   site: String!
 }

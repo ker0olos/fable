@@ -242,18 +242,14 @@ snapshot[`model 3`] = `
                                                             now: null,
                                                           },
                                                         },
-                                                        maintainers: U {
-                                                          raw: [
-                                                            U {
-                                                              raw: {
-                                                                var: "userId",
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
                                                         manifest: U {
                                                           raw: {
                                                             var: "manifest",
+                                                          },
+                                                        },
+                                                        owner: U {
+                                                          raw: {
+                                                            var: "userId",
                                                           },
                                                         },
                                                         updated: U {
@@ -297,25 +293,65 @@ snapshot[`model 3`] = `
                                         },
                                         if: U {
                                           raw: {
-                                            contains_value: U {
-                                              raw: {
-                                                var: "userId",
-                                              },
-                                            },
-                                            in: U {
-                                              raw: {
-                                                from: U {
+                                            or: U {
+                                              raw: [
+                                                U {
                                                   raw: {
-                                                    var: "pack",
+                                                    equals: U {
+                                                      raw: [
+                                                        U {
+                                                          raw: {
+                                                            var: "userId",
+                                                          },
+                                                        },
+                                                        U {
+                                                          raw: {
+                                                            from: U {
+                                                              raw: {
+                                                                var: "pack",
+                                                              },
+                                                            },
+                                                            select: U {
+                                                              raw: [
+                                                                "data",
+                                                                "owner",
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                      ],
+                                                    },
                                                   },
                                                 },
-                                                select: U {
-                                                  raw: [
-                                                    "data",
-                                                    "maintainers",
-                                                  ],
+                                                U {
+                                                  raw: {
+                                                    contains_value: U {
+                                                      raw: {
+                                                        var: "userId",
+                                                      },
+                                                    },
+                                                    in: U {
+                                                      raw: {
+                                                        default: U {
+                                                          raw: [],
+                                                        },
+                                                        from: U {
+                                                          raw: {
+                                                            var: "pack",
+                                                          },
+                                                        },
+                                                        select: U {
+                                                          raw: [
+                                                            "data",
+                                                            "manifest",
+                                                            "maintainers",
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
                                                 },
-                                              },
+                                              ],
                                             },
                                           },
                                         },
@@ -529,18 +565,14 @@ snapshot[`model 3`] = `
                                                             now: null,
                                                           },
                                                         },
-                                                        maintainers: U {
-                                                          raw: [
-                                                            U {
-                                                              raw: {
-                                                                var: "userId",
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
                                                         manifest: U {
                                                           raw: {
                                                             var: "manifest",
+                                                          },
+                                                        },
+                                                        owner: U {
+                                                          raw: {
+                                                            var: "userId",
                                                           },
                                                         },
                                                         updated: U {
@@ -584,25 +616,65 @@ snapshot[`model 3`] = `
                                         },
                                         if: U {
                                           raw: {
-                                            contains_value: U {
-                                              raw: {
-                                                var: "userId",
-                                              },
-                                            },
-                                            in: U {
-                                              raw: {
-                                                from: U {
+                                            or: U {
+                                              raw: [
+                                                U {
                                                   raw: {
-                                                    var: "pack",
+                                                    equals: U {
+                                                      raw: [
+                                                        U {
+                                                          raw: {
+                                                            var: "userId",
+                                                          },
+                                                        },
+                                                        U {
+                                                          raw: {
+                                                            from: U {
+                                                              raw: {
+                                                                var: "pack",
+                                                              },
+                                                            },
+                                                            select: U {
+                                                              raw: [
+                                                                "data",
+                                                                "owner",
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                      ],
+                                                    },
                                                   },
                                                 },
-                                                select: U {
-                                                  raw: [
-                                                    "data",
-                                                    "maintainers",
-                                                  ],
+                                                U {
+                                                  raw: {
+                                                    contains_value: U {
+                                                      raw: {
+                                                        var: "userId",
+                                                      },
+                                                    },
+                                                    in: U {
+                                                      raw: {
+                                                        default: U {
+                                                          raw: [],
+                                                        },
+                                                        from: U {
+                                                          raw: {
+                                                            var: "pack",
+                                                          },
+                                                        },
+                                                        select: U {
+                                                          raw: [
+                                                            "data",
+                                                            "manifest",
+                                                            "maintainers",
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
                                                 },
-                                              },
+                                              ],
                                             },
                                           },
                                         },

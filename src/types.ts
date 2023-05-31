@@ -151,6 +151,7 @@ export interface Manifest {
   image?: string;
   url?: string;
   depends?: string[];
+  maintainers?: string[];
   conflicts?: string[];
   media?: {
     conflicts?: string[];
