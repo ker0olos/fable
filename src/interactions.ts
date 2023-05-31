@@ -214,7 +214,7 @@ export const handler = async (r: Request) => {
         // suggest installed packs
         if (
           // deno-lint-ignore no-non-null-assertion
-          name === 'packs' && ['update', 'uninstall'].includes(subcommand!)
+          name === 'packs' && ['uninstall'].includes(subcommand!)
         ) {
           // deno-lint-ignore no-non-null-assertion
           const id = options[focused!] as string;
@@ -602,16 +602,20 @@ export const handler = async (r: Request) => {
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'builtin':
               case 'community': {
                 return (await packs.pages({
-                  type: subcommand as PackType,
                   index: 0,
                   guildId,
                 })).setFlags(discord.MessageFlags.Ephemeral).send();
               }
               case 'install': {
-                return packs.install()
+                const id = options['id'] as string;
+
+                return (await packs.install({
+                  id,
+                  guildId,
+                  userId: member.user.id,
+                }))
                   .setFlags(discord.MessageFlags.Ephemeral)
                   .send();
               }
@@ -962,16 +966,11 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
-          case 'builtin':
           case 'community': {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return (await packs.pages({
-              index,
-              guildId,
-              type: customType as PackType,
-            }))
+            return (await packs.pages({ index, guildId }))
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -996,12 +995,9 @@ export const handler = async (r: Request) => {
           }
           case 'uninstall': {
             // deno-lint-ignore no-non-null-assertion
-            const manifestId = customValues![0];
+            const id = customValues![0];
 
-            return (await packs.uninstall({
-              guildId,
-              manifestId,
-            }))
+            return (await packs.uninstall({ id, guildId }))
               .setFlags(discord.MessageFlags.Ephemeral)
               .setType(discord.MessageType.Update)
               .send();

@@ -2745,87 +2745,6 @@ Deno.test('steal components', async (test) => {
 });
 
 Deno.test('packs pages', async (test) => {
-  await test.step('builtin', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Component,
-      guild_id: 'guild_id',
-      channel_id: 'channel_id',
-      data: {
-        custom_id: 'builtin==0',
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const setTypeSpy = spy(() => ({
-      send: () => true,
-    }));
-
-    const packsStub = stub(packs, 'pages', () =>
-      ({
-        setType: setTypeSpy,
-      }) as any);
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.Update],
-      });
-
-      assertSpyCall(packsStub, 0, {
-        args: [{
-          guildId: 'guild_id',
-          type: PackType.Builtin,
-          index: 0,
-        }],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      packsStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-
   await test.step('community', async () => {
     const body = JSON.stringify({
       id: 'id',
@@ -2892,7 +2811,6 @@ Deno.test('packs pages', async (test) => {
       assertSpyCall(packsStub, 0, {
         args: [{
           guildId: 'guild_id',
-          type: PackType.Community,
           index: 1,
         }],
       });
@@ -2913,7 +2831,7 @@ Deno.test('packs uninstall', async (test) => {
     const pack = {
       id: 1,
       type: PackType.Community,
-      manifest: { id: 'manifest_id' },
+      manifest: { id: 'pack_id' },
     };
 
     const body = JSON.stringify({
@@ -2923,7 +2841,7 @@ Deno.test('packs uninstall', async (test) => {
       guild_id: 'guild_id',
       channel_id: 'channel_id',
       data: {
-        custom_id: 'uninstall=manifest_id',
+        custom_id: 'uninstall=pack_id',
       },
     });
 
@@ -2991,7 +2909,7 @@ Deno.test('packs uninstall', async (test) => {
       assertSpyCall(packsStub, 0, {
         args: [{
           guildId: 'guild_id',
-          manifestId: 'manifest_id',
+          id: 'pack_id',
         }],
       });
 
@@ -3010,7 +2928,7 @@ Deno.test('packs uninstall', async (test) => {
     const pack = {
       id: 1,
       type: PackType.Community,
-      manifest: { id: 'manifest_id' },
+      manifest: { id: 'pack_id' },
     };
 
     const body = JSON.stringify({
@@ -3020,7 +2938,7 @@ Deno.test('packs uninstall', async (test) => {
       guild_id: 'guild_id',
       channel_id: 'channel_id',
       data: {
-        custom_id: 'puninstall=manifest_id',
+        custom_id: 'puninstall=pack_id',
       },
     });
 
@@ -3100,7 +3018,7 @@ Deno.test('packs uninstall', async (test) => {
       guild_id: 'guild_id',
       channel_id: 'channel_id',
       data: {
-        custom_id: 'puninstall=manifest_id',
+        custom_id: 'puninstall=pack_id',
       },
     });
 

@@ -281,7 +281,7 @@ export namespace Schema {
       user: User;
       inventory: Inventory;
       character: Character;
-      manifest: Manifest;
+      pack: { timestamp: string; by: string; manifest: Manifest };
     };
 }
 

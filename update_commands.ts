@@ -743,12 +743,6 @@ export const commands = [
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
       Option({
-        name: 'builtin',
-        description: 'View all the builtin packs',
-        type: Type.SUB_COMMAND,
-        optional: true,
-      }),
-      Option({
         name: 'community',
         description: 'View all instated community packs',
         type: Type.SUB_COMMAND,
@@ -761,8 +755,8 @@ export const commands = [
         optional: true,
         options: [
           Option({
-            name: 'github',
-            description: 'A github repository url',
+            name: 'id',
+            description: 'The id of the pack',
             type: Type.STRING,
           }),
         ],

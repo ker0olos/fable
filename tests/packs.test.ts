@@ -3892,85 +3892,10 @@ Deno.test('titles to array', async (test) => {
 });
 
 Deno.test('/packs [builtin-community]', async (test) => {
-  await test.step('builtin packs', async () => {
-    const manifest: Manifest = {
-      author: 'author',
-      id: 'manifest_id',
-      description: 'description',
-      image: 'image',
-    };
-
-    const listStub = stub(
-      packs,
-      'all',
-      () =>
-        Promise.resolve([
-          { manifest, type: PackType.Builtin },
-          { manifest, type: PackType.Builtin },
-        ]),
-    );
-
-    try {
-      const message = await packs.pages({
-        type: PackType.Builtin,
-        guildId: 'guild_id',
-        index: 0,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'builtin==1=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '1/2',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'builtin==1=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description:
-              'Builtin packs are developed and maintained directly by Fable',
-          }, {
-            type: 'rich',
-            title: 'manifest_id',
-            description: 'description',
-            footer: {
-              text: 'author',
-            },
-            thumbnail: {
-              url: 'image',
-            },
-          }],
-        },
-      });
-    } finally {
-      listStub.restore();
-    }
-  });
-
   await test.step('community packs', async () => {
     const manifest: Manifest = {
       author: 'author',
-      id: 'manifest_id',
+      id: 'pack_id',
       description: 'description',
       image: 'image',
     };
@@ -3989,7 +3914,6 @@ Deno.test('/packs [builtin-community]', async (test) => {
 
     try {
       const message = await packs.pages({
-        type: PackType.Community,
         guildId: 'guild_id',
         index: 1,
       });
@@ -4021,7 +3945,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'puninstall=manifest_id',
+                custom_id: 'puninstall=pack_id',
                 label: 'Uninstall',
                 style: 4,
                 type: 2,
@@ -4034,7 +3958,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
               'The following third-party packs were manually installed by your server members',
           }, {
             type: 'rich',
-            title: 'manifest_id',
+            title: 'pack_id',
             description: 'description',
             footer: {
               text: 'author',
@@ -4059,7 +3983,6 @@ Deno.test('/packs [builtin-community]', async (test) => {
       await assertRejects(
         () =>
           packs.pages({
-            type: PackType.Community,
             guildId: 'guild_id',
             index: 0,
           }),
@@ -4080,12 +4003,13 @@ Deno.test('/packs [builtin-community]', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Builtin }]),
+      () => Promise.resolve([{ manifest, type: PackType.Community }]),
     );
+
+    config.communityPacks = true;
 
     try {
       const message = await packs.pages({
-        type: PackType.Builtin,
         guildId: 'guild_id',
         index: 0,
       });
@@ -4098,7 +4022,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'builtin==0=prev',
+                custom_id: 'community==0=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
@@ -4111,9 +4035,15 @@ Deno.test('/packs [builtin-community]', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'builtin==0=next',
+                custom_id: 'community==0=next',
                 label: 'Next',
                 style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'puninstall=pack-id',
+                label: 'Uninstall',
+                style: 4,
                 type: 2,
               },
             ],
@@ -4121,7 +4051,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
           embeds: [{
             type: 'rich',
             description:
-              'Builtin packs are developed and maintained directly by Fable',
+              'The following third-party packs were manually installed by your server members',
           }, {
             type: 'rich',
             description: undefined,
@@ -4130,6 +4060,8 @@ Deno.test('/packs [builtin-community]', async (test) => {
         },
       });
     } finally {
+      delete config.communityPacks;
+
       listStub.restore();
     }
   });
@@ -4145,13 +4077,14 @@ Deno.test('/packs [builtin-community]', async (test) => {
       'all',
       () =>
         Promise.resolve([
-          { manifest, type: PackType.Builtin },
+          { manifest, type: PackType.Community },
         ]),
     );
 
+    config.communityPacks = true;
+
     try {
       const message = await packs.pages({
-        type: PackType.Builtin,
         guildId: 'guild_id',
         index: 0,
       });
@@ -4164,7 +4097,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'builtin==0=prev',
+                custom_id: 'community==0=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
@@ -4177,7 +4110,7 @@ Deno.test('/packs [builtin-community]', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'builtin==0=next',
+                custom_id: 'community==0=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -4188,12 +4121,18 @@ Deno.test('/packs [builtin-community]', async (test) => {
                 style: 5,
                 type: 2,
               },
+              {
+                custom_id: 'puninstall=pack-id',
+                label: 'Uninstall',
+                style: 4,
+                type: 2,
+              },
             ],
           }],
           embeds: [{
             type: 'rich',
             description:
-              'Builtin packs are developed and maintained directly by Fable',
+              'The following third-party packs were manually installed by your server members',
           }, {
             type: 'rich',
             description: undefined,
@@ -4202,6 +4141,8 @@ Deno.test('/packs [builtin-community]', async (test) => {
         },
       });
     } finally {
+      delete config.communityPacks;
+
       listStub.restore();
     }
   });
@@ -4213,9 +4154,10 @@ Deno.test('/packs [builtin-community]', async (test) => {
       () => Promise.resolve([]),
     );
 
+    config.communityPacks = true;
+
     try {
       const message = await packs.pages({
-        type: PackType.Builtin,
         guildId: 'guild_id',
         index: 0,
       });
@@ -4232,15 +4174,106 @@ Deno.test('/packs [builtin-community]', async (test) => {
         },
       });
     } finally {
+      delete config.communityPacks;
+
       listStub.restore();
+    }
+  });
+
+  await test.step('under maintenance', async () => {
+    config.communityPacks = false;
+
+    try {
+      await assertRejects(
+        () => packs.pages({ guildId: 'guild_id', index: 0 }),
+        NonFetalError,
+        'Community Packs are under maintenance, try again later!',
+      );
+    } finally {
+      delete config.communityPacks;
     }
   });
 });
 
 Deno.test('/packs install', async (test) => {
-  await test.step('normal', () => {
-    assertThrows(
-      () => packs.install(),
+  await test.step('normal', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              addPackToInstance: {
+                ok: true,
+                pack: {
+                  manifest: {
+                    author: 'author',
+                    id: 'pack_id',
+                    description: 'description',
+                    url: 'url',
+                    image: 'image',
+                  },
+                },
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+    config.communityPacks = true;
+
+    try {
+      const message = await packs.install({
+        id: 'pack_id',
+        guildId: 'guild_id',
+        userId: 'user_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              description: 'Installed',
+              type: 'rich',
+            },
+            {
+              type: 'rich',
+              description: 'description',
+              footer: {
+                text: 'author',
+              },
+              thumbnail: {
+                url: 'image',
+              },
+              title: 'pack_id',
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.communityPacks;
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('under maintenance', async () => {
+    await assertRejects(
+      () =>
+        packs.install({
+          guildId: 'guild_id',
+          userId: 'user_id',
+          id: 'pack_id',
+        }),
       NonFetalError,
       'Community Packs are under maintenance, try again later!',
     );
@@ -4259,12 +4292,14 @@ Deno.test('/packs uninstall', async (test) => {
             data: {
               removePackFromInstance: {
                 ok: true,
-                manifest: {
-                  author: 'author',
-                  id: 'manifest_id',
-                  description: 'description',
-                  url: 'url',
-                  image: 'image',
+                pack: {
+                  manifest: {
+                    author: 'author',
+                    id: 'pack_id',
+                    description: 'description',
+                    url: 'url',
+                    image: 'image',
+                  },
                 },
               },
             },
@@ -4278,8 +4313,8 @@ Deno.test('/packs uninstall', async (test) => {
 
     try {
       const message = await packs.uninstall({
+        id: 'pack_id',
         guildId: 'guild_id',
-        manifestId: 'manifest_id',
       });
 
       assertEquals(message.json(), {
@@ -4301,7 +4336,7 @@ Deno.test('/packs uninstall', async (test) => {
               thumbnail: {
                 url: 'image',
               },
-              title: 'manifest_id',
+              title: 'pack_id',
             },
           ],
         },
@@ -4315,12 +4350,16 @@ Deno.test('/packs uninstall', async (test) => {
     }
   });
 
-  await test.step('under maintenance', () => {
+  await test.step('under maintenance', async () => {
     config.communityPacks = false;
 
     try {
-      assertThrows(
-        () => packs.install(),
+      await assertRejects(
+        () =>
+          packs.uninstall({
+            guildId: 'guild_id',
+            id: 'pack_id',
+          }),
         NonFetalError,
         'Community Packs are under maintenance, try again later!',
       );
@@ -4355,8 +4394,8 @@ Deno.test('/packs uninstall', async (test) => {
       await assertRejects(
         async () =>
           await packs.uninstall({
+            id: 'pack_id',
             guildId: 'guild_id',
-            manifestId: 'manifest_id',
           }),
         Error,
         '404',
@@ -4396,8 +4435,8 @@ Deno.test('/packs uninstall', async (test) => {
       await assertRejects(
         async () =>
           await packs.uninstall({
+            id: 'pack_id',
             guildId: 'guild_id',
-            manifestId: 'manifest_id',
           }),
         Error,
         '404',
