@@ -101,6 +101,94 @@ Deno.test('/publish', async (test) => {
     }
   });
 
+  await test.step('bot', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              id: 'bot_id',
+            })),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                publishPack: {
+                  ok: true,
+                },
+              },
+            }))),
+        } as any,
+      ]),
+    );
+
+    config.faunaSecret = 'fauna_secret';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        method: 'POST',
+        body: JSON.stringify({
+          tokenType: 'Bot',
+          accessToken: 'bot_token',
+          manifest: {
+            id: 'pack_id',
+          },
+        }),
+      });
+
+      const response = await community.publish(request);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertSpyCall(fetchStub, 0, {
+        args: ['https://discord.com/api/users/@me', {
+          method: 'GET',
+          headers: {
+            'content-type': 'application/json',
+            'authorization': `Bot bot_token`,
+          },
+        }],
+      });
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://graphql.us.fauna.com/graphql',
+      );
+
+      assertEquals(
+        fetchStub.calls[1].args[1]?.headers?.entries,
+        new Headers({
+          accept: 'application/json',
+          authorization: 'Bearer fauna_secret',
+          'content-type': 'application/json',
+        }).entries,
+      );
+
+      assertEquals(
+        JSON.parse(fetchStub.calls[1].args[1]?.body as string).variables,
+        {
+          manifest: {
+            id: 'pack_id',
+          },
+          userId: 'bot_id',
+        },
+      );
+
+      assertEquals(response.ok, true);
+      assertEquals(response.status, 200);
+      assertEquals(response.statusText, 'OK');
+    } finally {
+      delete config.faunaSecret;
+
+      fetchStub.restore();
+    }
+  });
+
   await test.step('get method', async () => {
     const request = new Request('http://localhost:8000', {
       method: 'GET',
