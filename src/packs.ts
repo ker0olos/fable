@@ -229,7 +229,7 @@ async function all(
       }
 
       const response = (await request<{
-        getGuildInstance: { packs: Pack[] };
+        getGuildInstance: { packs: { ref: Pack }[] };
       }>({
         query,
         url: faunaUrl,
@@ -237,12 +237,12 @@ async function all(
         variables: { guildId },
       })).getGuildInstance;
 
-      response.packs
-        .forEach((pack) => pack.type = PackType.Community);
+      const _packs = response.packs
+        .map((pack) => (pack.ref.type = PackType.Community, pack.ref));
 
-      packs.cachedGuilds[guildId] = response.packs;
+      packs.cachedGuilds[guildId] = _packs;
 
-      return [...builtins, ...response.packs];
+      return [...builtins, ..._packs];
     }
   }
 }
