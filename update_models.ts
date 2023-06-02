@@ -1,4 +1,4 @@
-import 'https://esm.sh/@total-typescript/ts-reset@0.4.2/filter-boolean';
+import '#filter-boolean';
 
 import $ from 'dax';
 
