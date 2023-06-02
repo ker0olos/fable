@@ -1,14 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
 
-import Ajv from 'https://esm.sh/ajv@8.12.0';
+import Ajv from 'ajv';
 
-import { prettify } from 'https://esm.sh/awesome-ajv-errors@5.1.0';
-
-import { green, red } from '$std/fmt/colors.ts';
+import { prettify } from 'awesome-ajv';
 
 import { AssertionError } from '$std/testing/asserts.ts';
-
-import utils from './utils.ts';
 
 import alias from '../json/alias.json' assert {
   type: 'json',
@@ -96,42 +92,3 @@ export default (data: Manifest) => {
     return { errors: [] };
   }
 };
-
-// if being called directly
-if (import.meta.main) {
-  const filename = Deno.args[0];
-
-  let data = (await utils.readJson(filename)) as Manifest;
-
-  data = purgeReservedProps(data);
-
-  // deno-lint-ignore ban-ts-comment
-  //@ts-ignore
-  index.additionalProperties = false;
-
-  const validate = new Ajv({ strict: false, allErrors: true })
-    .addSchema(alias)
-    .addSchema(image)
-    .addSchema(media)
-    .addSchema(character)
-    .compile(index);
-
-  if (reservedIds.includes(data.id)) {
-    console.log(red(`${data.id} is a reserved id`));
-    Deno.exit(1);
-  } else if (!validate(data)) {
-    console.log(prettify(validate, {
-      bigNumbers: false,
-      data,
-    }));
-    Deno.exit(1);
-  } else if (data.media?.new?.length && data.media.new.length > 16) {
-    console.log(red(`A single pack can't contain more than 16 media`));
-    Deno.exit(1);
-  } else if (data.characters?.new?.length && data.characters.new.length > 128) {
-    console.log(red(`A single pack can't contain more than 128 characters`));
-    Deno.exit(1);
-  } else {
-    console.log(green('Valid'));
-  }
-}

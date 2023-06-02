@@ -11,7 +11,8 @@
         "no-non-null-assertion",
         "no-throw-literal",
         "no-sparse-arrays",
-        "explicit-function-return-type"
+        "explicit-function-return-type",
+        "no-external-import"
       ]
     }
   },

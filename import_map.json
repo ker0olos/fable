@@ -1,7 +1,10 @@
 {
   "imports": {
+    "#filter-boolean": "https://esm.sh/@total-typescript/ts-reset@0.4.2/filter-boolean",
     "$fauna": "https://esm.sh/faunadb@4.7.1",
     "$std/": "https://deno.land/std@0.189.0/",
+    "ajv": "https://esm.sh/ajv@8.12.0",
+    "awesome-ajv": "https://esm.sh/awesome-ajv-errors@5.1.0",
     "dax": "https://deno.land/x/dax@0.31.1/mod.ts",
     "levenshtein": "https://raw.githubusercontent.com/ka-weihe/fastest-levenshtein/1.0.15/mod.ts",
     "sentry": "https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts",

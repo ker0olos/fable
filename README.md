@@ -83,9 +83,7 @@ no players can pay to get ahead.
 Fable also has a powerful system to manage the characters in your server, people
 can make community packs that are full of new characters and anime.
 
-Wanna make your own community pack? Check
-[fable-community/example](https://github.com/fable-community/fable-pack-example)
-for more information.
+Wanna make your own community pack? Go to <https://packs.deno.dev>
 
 #### [Add Fable to Your Server][invite]
 
@@ -108,7 +106,7 @@ for more information.
 
 - [Roadmap](https://github.com/ker0olos/fable/issues/1)
 - [How to Contribute](https://github.com/ker0olos/fable/wiki)
-- [How to Create Packs](https://github.com/fable-community/fable-pack-example)
+- [How to Create Packs](https://packs.deno.dev)
 - [How to Self-host](https://github.com/ker0olos/fable/wiki/Self-hosting)
 - [Discord Support Server][discord]
 
@@ -154,9 +152,7 @@ available. Then install them by running
 <details><summary>How can I create a new pack?</summary>
 <p>
 
-Currently, it's only possible through editing JSON files. Please visit check
-[fable-community/example](https://github.com/fable-community/fable-pack-example),
-it includes most of the info you need.
+It's very easy to create a manage your packs, go to <https://packs.deno.dev>
 
 </p>
 </details>
