@@ -152,7 +152,8 @@ available. Then install them by running
 <details><summary>How can I create a new pack?</summary>
 <p>
 
-It's very easy to create a manage your packs, go to <https://packs.deno.dev>
+It's very easy to create and manage your community packs, go to
+<https://packs.deno.dev>
 
 </p>
 </details>
