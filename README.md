@@ -85,6 +85,10 @@ can make community packs that are full of new characters and anime.
 
 Wanna make your own community pack? Go to <https://packs.deno.dev>
 
+Please note that Discord currently won't notify you after you add Fable or any
+other "app" to your server. After adding Fable just go back to your server and
+call `/help` to confirm Fable is working.
+
 #### [Add Fable to Your Server][invite]
 
 <br clear="right"/>
@@ -138,11 +142,8 @@ you can go tell discord to add custom prefixes to "slash" commands instead of
 <details><summary>How can I install a new pack on my server?</summary>
 <p>
 
-We plan to have a `/marketplace` command where you can browse and install
-popular packs but since Fable is still new a there ain't that many people making
-packs, You will have to join our discord to manually check the packs currently
-available. Then install them by running
-`/packs install github: https://github.com/username/packname`
+We plan to have a `/packs marketplace` command where you can browse and install
+popular packs but as of right now you need to know a pack id to install it.
 
 > `Manage Server` permission is required to install packs on "your" server
 
@@ -152,7 +153,8 @@ available. Then install them by running
 <details><summary>How can I create a new pack?</summary>
 <p>
 
-It's very easy to create a manage your packs, go to <https://packs.deno.dev>
+It's very easy to create and manage your community packs, go to
+<https://packs.deno.dev>
 
 </p>
 </details>
