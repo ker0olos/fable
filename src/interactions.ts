@@ -1113,7 +1113,7 @@ if (import.meta.main) {
     '/community/:userId': community.query,
     '/invite': () =>
       Response.redirect(
-        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands%20bot`,
+        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,
       ),
     '/external/*': (r) => {
       const { pathname, search } = new URL(r.url);
