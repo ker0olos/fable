@@ -49,6 +49,7 @@ async function query(
           author
           image
           url
+          maintainers
           media {
             conflicts
             new {
