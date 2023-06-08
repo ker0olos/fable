@@ -486,7 +486,7 @@ Deno.test('/now', async (test) => {
     }
   });
 
-  await test.step('with 36 tokens', async () => {
+  await test.step('with 28 tokens', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
@@ -501,7 +501,7 @@ Deno.test('/now', async (test) => {
                 availablePulls: 4,
                 rechargeTimestamp: time.toISOString(),
                 user: {
-                  availableVotes: 36,
+                  availableVotes: 28,
                   lastVote: time.toISOString(),
                 },
               },
@@ -537,7 +537,7 @@ Deno.test('/now', async (test) => {
             },
             {
               type: 'rich',
-              title: '**36**',
+              title: '**28**',
               footer: {
                 text: 'Daily Tokens',
               },
@@ -577,7 +577,7 @@ Deno.test('/now', async (test) => {
     }
   });
 
-  await test.step('with 35 tokens', async () => {
+  await test.step('with 27 tokens', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
@@ -592,7 +592,7 @@ Deno.test('/now', async (test) => {
                 availablePulls: 4,
                 rechargeTimestamp: time.toISOString(),
                 user: {
-                  availableVotes: 35,
+                  availableVotes: 27,
                   lastVote: time.toISOString(),
                 },
               },
@@ -628,7 +628,7 @@ Deno.test('/now', async (test) => {
             },
             {
               type: 'rich',
-              title: '**35**',
+              title: '**27**',
               footer: {
                 text: 'Daily Tokens',
               },
@@ -1118,6 +1118,11 @@ Deno.test('/nick', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description:
+                'name 1\'s nickname has been changed to **returned_nickname**',
+            },
+            {
+              type: 'rich',
               fields: [
                 {
                   name: 'title',
@@ -1127,11 +1132,6 @@ Deno.test('/nick', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
-            },
-            {
-              type: 'rich',
-              description:
-                'name 1\'s nickname has been changed to **returned_nickname**',
             },
           ],
         },
@@ -1270,6 +1270,10 @@ Deno.test('/nick', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description: 'name 1\'s nickname has been reset',
+            },
+            {
+              type: 'rich',
               fields: [
                 {
                   name: 'title',
@@ -1279,10 +1283,6 @@ Deno.test('/nick', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
-            },
-            {
-              type: 'rich',
-              description: 'name 1\'s nickname has been reset',
             },
           ],
         },
@@ -1782,6 +1782,10 @@ Deno.test('/image', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description: 'name 1\'s image has been **changed**',
+            },
+            {
+              type: 'rich',
               fields: [
                 {
                   name: 'title',
@@ -1791,10 +1795,6 @@ Deno.test('/image', async (test) => {
               image: {
                 url: 'http://localhost:8000/external/returned_image_url',
               },
-            },
-            {
-              type: 'rich',
-              description: 'name 1\'s image has been **changed**',
             },
           ],
         },
@@ -1933,6 +1933,10 @@ Deno.test('/image', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description: 'name 1\'s image has been reset',
+            },
+            {
+              type: 'rich',
               fields: [
                 {
                   name: 'title',
@@ -1942,10 +1946,6 @@ Deno.test('/image', async (test) => {
               image: {
                 url: 'http://localhost:8000/external/',
               },
-            },
-            {
-              type: 'rich',
-              description: 'name 1\'s image has been reset',
             },
           ],
         },
@@ -5746,6 +5746,168 @@ Deno.test('/like', async (test) => {
               ],
             },
           ],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Liked',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**character**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      userStub.restore();
+    }
+  });
+
+  await test.step('normal (mentioned)', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: '2',
+              type: MediaType.Anime,
+              title: {
+                english: 'title',
+              },
+            },
+          }],
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                likeCharacter: {
+                  ok: true,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () => Promise.resolve(undefined),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.like({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        token: 'test_token',
+        search: 'character',
+        mention: true,
+        undo: false,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          allowed_mentions: { parse: [] },
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'character=anilist:1',
+                  label: '/character',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          content: '<@user_id>',
           embeds: [
             {
               type: 'rich',

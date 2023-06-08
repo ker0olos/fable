@@ -40,7 +40,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(1, chance);
+      assertEquals(51, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -112,7 +112,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(5, chance);
+      assertEquals(55, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -184,7 +184,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(15, chance);
+      assertEquals(65, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -256,7 +256,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(25, chance);
+      assertEquals(75, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -328,7 +328,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(50, chance);
+      assertEquals(100, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -1078,159 +1078,6 @@ Deno.test('attempt', async (test) => {
       delete config.origin;
 
       rngStub.restore();
-      fetchStub.restore();
-      listStub.restore();
-      packsStub.restore();
-      userStub.restore();
-      timeStub.restore();
-    }
-  });
-
-  await test.step('in party', async () => {
-    const character: Character = {
-      id: '1',
-      packId: 'id',
-      description: 'long description',
-      name: {
-        english: 'full name',
-      },
-      images: [{
-        url: 'image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: {
-            id: 'media',
-            packId: 'id',
-            type: MediaType.Anime,
-            title: {
-              english: 'media title',
-            },
-          },
-        }],
-      },
-    };
-
-    const timeStub = new FakeTime();
-
-    const rngStub = stub(utils, 'getRandomFloat', () => 0);
-
-    const sleepStub = stub(utils, 'sleep', () => Promise.resolve());
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                stealCharacter: {
-                  ok: false,
-                  error: 'CHARACTER_IN_PARTY',
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-        undefined,
-      ]),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const packsStub = stub(
-      packs,
-      'characters',
-      () => Promise.resolve([character]),
-    );
-
-    const userStub = stub(
-      user,
-      'findCharacter',
-      () =>
-        Promise.resolve({
-          id: 'id:1',
-          mediaId: 'id:2',
-          rating: 2,
-          user: {
-            id: 'user_id',
-          },
-        }),
-    );
-
-    config.stealing = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = steal.attempt({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        token: 'test_token',
-        characterId: 'character_id',
-        pre: 0,
-        stars: 0,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/steal.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCall(sleepStub, 0, {
-        args: [8],
-      });
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          components: [],
-          attachments: [],
-          embeds: [{
-            type: 'rich',
-            description: 'Character is currently in a party',
-          }],
-        },
-      );
-    } finally {
-      delete config.stealing;
-      delete config.appId;
-      delete config.origin;
-
-      rngStub.restore();
-      sleepStub.restore();
       fetchStub.restore();
       listStub.restore();
       packsStub.restore();
@@ -2295,13 +2142,13 @@ Deno.test('/steal', async (test) => {
             },
             {
               type: 'rich',
-              description: 'Your chance of success is **25.00%**',
+              description: 'Your chance of success is **75.00%**',
             },
           ],
           components: [{
             components: [
               {
-                custom_id: 'steal=user_id=id:1=25=0',
+                custom_id: 'steal=user_id=id:1=75=0',
                 label: 'Attempt',
                 style: 2,
                 type: 2,
@@ -2473,7 +2320,7 @@ Deno.test('/steal', async (test) => {
           components: [{
             components: [
               {
-                custom_id: 'bsteal=user_id=id:1=25=5',
+                custom_id: 'bsteal=user_id=id:1=75=5',
                 label: 'Continue',
                 style: 2,
                 type: 2,
@@ -2644,7 +2491,7 @@ Deno.test('/steal', async (test) => {
     }
   });
 
-  await test.step('stealing from party', async () => {
+  await test.step('stealing from party (inactive user)', async () => {
     const character: Character = {
       id: '1',
       packId: 'id',
@@ -2716,6 +2563,7 @@ Deno.test('/steal', async (test) => {
             id: 'another_user_id',
           },
           inventory: {
+            lastPull: undefined,
             party: {
               member2: {
                 id: 'id:1',
@@ -2779,8 +2627,195 @@ Deno.test('/steal', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description: '<@another_user_id>',
+              fields: [
+                {
+                  name: 'media title',
+                  value: '**full name**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+            },
+            {
+              type: 'rich',
+              description: 'Your chance of success is **75.00%**',
+            },
+          ],
+          components: [{
+            components: [
+              {
+                custom_id: 'steal=user_id=id:1=75=0',
+                label: 'Attempt',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'cancel=user_id',
+                label: 'Cancel',
+                style: 4,
+                type: 2,
+              },
+            ],
+            type: 1,
+          }],
+          attachments: [],
+        },
+      );
+    } finally {
+      delete config.stealing;
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+      packsStub.restore();
+      userStub.restore();
+      timeStub.restore();
+    }
+  });
+
+  await test.step('stealing from party (active user)', async () => {
+    const character: Character = {
+      id: '1',
+      packId: 'id',
+      description: 'long description',
+      name: {
+        english: 'full name',
+      },
+      images: [{
+        url: 'image_url',
+      }],
+      media: {
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: 'media',
+            packId: 'id',
+            type: MediaType.Anime,
+            title: {
+              english: 'media title',
+            },
+          },
+        }],
+      },
+    };
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  stealTimestamp: undefined,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const packsStub = stub(
+      packs,
+      'characters',
+      () => Promise.resolve([character]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () =>
+        Promise.resolve({
+          id: 'id:1',
+          mediaId: 'id:2',
+          rating: 2,
+          user: {
+            id: 'another_user_id',
+          },
+          inventory: {
+            lastPull: new Date().toISOString(),
+            party: {
+              member2: {
+                id: 'id:1',
+                mediaId: 'id:2',
+                rating: 2,
+                user: {
+                  id: 'another_user_id',
+                },
+              },
+            },
+          },
+        }),
+    );
+
+    config.stealing = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = steal.pre({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        token: 'test_token',
+        id: 'character_id',
+        stars: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          components: [],
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
               description:
-                'As part of <@another_user_id>\'s party, **full name** cannot be stolen',
+                'As part of <@another_user_id>\'s party, **full name** cannot be stolen while <@another_user_id> is still active',
             },
             {
               type: 'rich',
@@ -2797,11 +2832,6 @@ Deno.test('/steal', async (test) => {
               },
             },
           ],
-          allowed_mentions: {
-            parse: [],
-          },
-          components: [],
-          attachments: [],
         },
       );
     } finally {

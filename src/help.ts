@@ -1,3 +1,4 @@
+import { COSTS } from '../models/add_tokens_to_user.ts';
 import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
 import { COOLDOWN_DAYS } from '../models/steal_character.ts';
 
@@ -102,14 +103,15 @@ function pages(
             '',
             '__Inactive users are easier to steal from.__ Stay active by using `/gacha` or `/q` once a day.',
             '',
+            '__Inactive users lose their party protection__ after **4** days.',
+            '',
             `__The higher the character's rating the harder it is to steal.__ 5${discord.emotes.smolStar}characters have a base success rate of 1%.`,
             '',
-            `Steal has a cooldown of ${COOLDOWN_DAYS} days regardless of the outcome of the attempt.`,
+            `__Steal has a cooldown of **${COOLDOWN_DAYS}** days__ regardless of the outcome of the attempt.`,
             '',
-            'You can sacrifice your own characters to boost your chance of success,',
-            'You lose those characters regardless of the outcome of the attempt.',
+            '__You can sacrifice your own characters for a small boost__ to your chance of success, You lose those characters regardless of the outcome of the attempt.',
             '',
-            'Staying active is the best defense against stealing.',
+            '> Staying active is the best defense against stealing.',
             '\u200B',
           ].join('\n')),
       ),
@@ -139,6 +141,10 @@ function pages(
             '`/buy guaranteed` guarantees you get a character from one specific star rating.',
             '',
             `Example: \`/buy guaranteed 5\` will guarantee you get one random 5${discord.emotes.smolStar}character.`,
+            '',
+            `3${discord.emotes.smolStar}cost **${COSTS.THREE}** tokens`,
+            `4${discord.emotes.smolStar}cost **${COSTS.FOUR}** tokens`,
+            `5${discord.emotes.smolStar}cost **${COSTS.FIVE}** tokens`,
             '',
             'Use the guaranteed pulls you bought by calling `/pull stars:`',
             '\u200B',

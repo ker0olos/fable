@@ -418,7 +418,7 @@ Deno.test('/buy', async (test) => {
         embeds: [{
           type: 'rich',
           description:
-            'You want to spent **36 tokens** <:remove:1099004424111792158> for a **5<:smolstar:1107503653956374638>**<:add:1099004747123523644>?',
+            'You want to spent **28 tokens** <:remove:1099004424111792158> for a **5<:smolstar:1107503653956374638>**<:add:1099004747123523644>?',
         }],
       },
     });

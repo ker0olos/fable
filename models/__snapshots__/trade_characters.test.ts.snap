@@ -208,159 +208,190 @@ snapshot[`model 1`] = `
                                                           raw: {
                                                             expr: U {
                                                               raw: {
-                                                                any: U {
-                                                                  raw: [
-                                                                    U {
-                                                                      raw: {
-                                                                        equals: U {
-                                                                          raw: [
-                                                                            U {
+                                                                not: U {
+                                                                  raw: {
+                                                                    equals: U {
+                                                                      raw: [
+                                                                        U {
+                                                                          raw: {
+                                                                            else: U {
                                                                               raw: {
-                                                                                var: "characterRef",
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                default: null,
-                                                                                from: U {
+                                                                                else: U {
                                                                                   raw: {
-                                                                                    var: "inventory",
+                                                                                    else: U {
+                                                                                      raw: {
+                                                                                        else: U {
+                                                                                          raw: {
+                                                                                            else: null,
+                                                                                            if: U {
+                                                                                              raw: {
+                                                                                                equals: U {
+                                                                                                  raw: [
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        var: "characterRef",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        default: null,
+                                                                                                        from: U {
+                                                                                                          raw: {
+                                                                                                            var: "inventory",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        select: U {
+                                                                                                          raw: [
+                                                                                                            "data",
+                                                                                                            "party",
+                                                                                                            "member5",
+                                                                                                          ],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                            then: 5,
+                                                                                          },
+                                                                                        },
+                                                                                        if: U {
+                                                                                          raw: {
+                                                                                            equals: U {
+                                                                                              raw: [
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    var: "characterRef",
+                                                                                                  },
+                                                                                                },
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    default: null,
+                                                                                                    from: U {
+                                                                                                      raw: {
+                                                                                                        var: "inventory",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: U {
+                                                                                                      raw: [
+                                                                                                        "data",
+                                                                                                        "party",
+                                                                                                        "member4",
+                                                                                                      ],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                              ],
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        then: 4,
+                                                                                      },
+                                                                                    },
+                                                                                    if: U {
+                                                                                      raw: {
+                                                                                        equals: U {
+                                                                                          raw: [
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                var: "characterRef",
+                                                                                              },
+                                                                                            },
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                default: null,
+                                                                                                from: U {
+                                                                                                  raw: {
+                                                                                                    var: "inventory",
+                                                                                                  },
+                                                                                                },
+                                                                                                select: U {
+                                                                                                  raw: [
+                                                                                                    "data",
+                                                                                                    "party",
+                                                                                                    "member3",
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                          ],
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    then: 3,
                                                                                   },
                                                                                 },
-                                                                                select: U {
+                                                                                if: U {
+                                                                                  raw: {
+                                                                                    equals: U {
+                                                                                      raw: [
+                                                                                        U {
+                                                                                          raw: {
+                                                                                            var: "characterRef",
+                                                                                          },
+                                                                                        },
+                                                                                        U {
+                                                                                          raw: {
+                                                                                            default: null,
+                                                                                            from: U {
+                                                                                              raw: {
+                                                                                                var: "inventory",
+                                                                                              },
+                                                                                            },
+                                                                                            select: U {
+                                                                                              raw: [
+                                                                                                "data",
+                                                                                                "party",
+                                                                                                "member2",
+                                                                                              ],
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                then: 2,
+                                                                              },
+                                                                            },
+                                                                            if: U {
+                                                                              raw: {
+                                                                                equals: U {
                                                                                   raw: [
-                                                                                    "data",
-                                                                                    "party",
-                                                                                    "member1",
+                                                                                    U {
+                                                                                      raw: {
+                                                                                        var: "characterRef",
+                                                                                      },
+                                                                                    },
+                                                                                    U {
+                                                                                      raw: {
+                                                                                        default: null,
+                                                                                        from: U {
+                                                                                          raw: {
+                                                                                            var: "inventory",
+                                                                                          },
+                                                                                        },
+                                                                                        select: U {
+                                                                                          raw: [
+                                                                                            "data",
+                                                                                            "party",
+                                                                                            "member1",
+                                                                                          ],
+                                                                                        },
+                                                                                      },
+                                                                                    },
                                                                                   ],
                                                                                 },
                                                                               },
                                                                             },
-                                                                          ],
+                                                                            then: 1,
+                                                                          },
                                                                         },
-                                                                      },
+                                                                        null,
+                                                                      ],
                                                                     },
-                                                                    U {
-                                                                      raw: {
-                                                                        equals: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                var: "characterRef",
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                default: null,
-                                                                                from: U {
-                                                                                  raw: {
-                                                                                    var: "inventory",
-                                                                                  },
-                                                                                },
-                                                                                select: U {
-                                                                                  raw: [
-                                                                                    "data",
-                                                                                    "party",
-                                                                                    "member2",
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                    U {
-                                                                      raw: {
-                                                                        equals: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                var: "characterRef",
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                default: null,
-                                                                                from: U {
-                                                                                  raw: {
-                                                                                    var: "inventory",
-                                                                                  },
-                                                                                },
-                                                                                select: U {
-                                                                                  raw: [
-                                                                                    "data",
-                                                                                    "party",
-                                                                                    "member3",
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                    U {
-                                                                      raw: {
-                                                                        equals: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                var: "characterRef",
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                default: null,
-                                                                                from: U {
-                                                                                  raw: {
-                                                                                    var: "inventory",
-                                                                                  },
-                                                                                },
-                                                                                select: U {
-                                                                                  raw: [
-                                                                                    "data",
-                                                                                    "party",
-                                                                                    "member4",
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                    U {
-                                                                      raw: {
-                                                                        equals: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                var: "characterRef",
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                default: null,
-                                                                                from: U {
-                                                                                  raw: {
-                                                                                    var: "inventory",
-                                                                                  },
-                                                                                },
-                                                                                select: U {
-                                                                                  raw: [
-                                                                                    "data",
-                                                                                    "party",
-                                                                                    "member5",
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  ],
+                                                                  },
                                                                 },
                                                               },
                                                             },
@@ -1544,159 +1575,190 @@ snapshot[`model 1`] = `
                                                           raw: {
                                                             expr: U {
                                                               raw: {
-                                                                any: U {
-                                                                  raw: [
-                                                                    U {
-                                                                      raw: {
-                                                                        equals: U {
-                                                                          raw: [
-                                                                            U {
+                                                                not: U {
+                                                                  raw: {
+                                                                    equals: U {
+                                                                      raw: [
+                                                                        U {
+                                                                          raw: {
+                                                                            else: U {
                                                                               raw: {
-                                                                                var: "characterRef",
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                default: null,
-                                                                                from: U {
+                                                                                else: U {
                                                                                   raw: {
-                                                                                    var: "inventory",
+                                                                                    else: U {
+                                                                                      raw: {
+                                                                                        else: U {
+                                                                                          raw: {
+                                                                                            else: null,
+                                                                                            if: U {
+                                                                                              raw: {
+                                                                                                equals: U {
+                                                                                                  raw: [
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        var: "characterRef",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        default: null,
+                                                                                                        from: U {
+                                                                                                          raw: {
+                                                                                                            var: "inventory",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        select: U {
+                                                                                                          raw: [
+                                                                                                            "data",
+                                                                                                            "party",
+                                                                                                            "member5",
+                                                                                                          ],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                            then: 5,
+                                                                                          },
+                                                                                        },
+                                                                                        if: U {
+                                                                                          raw: {
+                                                                                            equals: U {
+                                                                                              raw: [
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    var: "characterRef",
+                                                                                                  },
+                                                                                                },
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    default: null,
+                                                                                                    from: U {
+                                                                                                      raw: {
+                                                                                                        var: "inventory",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: U {
+                                                                                                      raw: [
+                                                                                                        "data",
+                                                                                                        "party",
+                                                                                                        "member4",
+                                                                                                      ],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                              ],
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        then: 4,
+                                                                                      },
+                                                                                    },
+                                                                                    if: U {
+                                                                                      raw: {
+                                                                                        equals: U {
+                                                                                          raw: [
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                var: "characterRef",
+                                                                                              },
+                                                                                            },
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                default: null,
+                                                                                                from: U {
+                                                                                                  raw: {
+                                                                                                    var: "inventory",
+                                                                                                  },
+                                                                                                },
+                                                                                                select: U {
+                                                                                                  raw: [
+                                                                                                    "data",
+                                                                                                    "party",
+                                                                                                    "member3",
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                          ],
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    then: 3,
                                                                                   },
                                                                                 },
-                                                                                select: U {
+                                                                                if: U {
+                                                                                  raw: {
+                                                                                    equals: U {
+                                                                                      raw: [
+                                                                                        U {
+                                                                                          raw: {
+                                                                                            var: "characterRef",
+                                                                                          },
+                                                                                        },
+                                                                                        U {
+                                                                                          raw: {
+                                                                                            default: null,
+                                                                                            from: U {
+                                                                                              raw: {
+                                                                                                var: "inventory",
+                                                                                              },
+                                                                                            },
+                                                                                            select: U {
+                                                                                              raw: [
+                                                                                                "data",
+                                                                                                "party",
+                                                                                                "member2",
+                                                                                              ],
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                then: 2,
+                                                                              },
+                                                                            },
+                                                                            if: U {
+                                                                              raw: {
+                                                                                equals: U {
                                                                                   raw: [
-                                                                                    "data",
-                                                                                    "party",
-                                                                                    "member1",
+                                                                                    U {
+                                                                                      raw: {
+                                                                                        var: "characterRef",
+                                                                                      },
+                                                                                    },
+                                                                                    U {
+                                                                                      raw: {
+                                                                                        default: null,
+                                                                                        from: U {
+                                                                                          raw: {
+                                                                                            var: "inventory",
+                                                                                          },
+                                                                                        },
+                                                                                        select: U {
+                                                                                          raw: [
+                                                                                            "data",
+                                                                                            "party",
+                                                                                            "member1",
+                                                                                          ],
+                                                                                        },
+                                                                                      },
+                                                                                    },
                                                                                   ],
                                                                                 },
                                                                               },
                                                                             },
-                                                                          ],
+                                                                            then: 1,
+                                                                          },
                                                                         },
-                                                                      },
+                                                                        null,
+                                                                      ],
                                                                     },
-                                                                    U {
-                                                                      raw: {
-                                                                        equals: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                var: "characterRef",
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                default: null,
-                                                                                from: U {
-                                                                                  raw: {
-                                                                                    var: "inventory",
-                                                                                  },
-                                                                                },
-                                                                                select: U {
-                                                                                  raw: [
-                                                                                    "data",
-                                                                                    "party",
-                                                                                    "member2",
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                    U {
-                                                                      raw: {
-                                                                        equals: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                var: "characterRef",
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                default: null,
-                                                                                from: U {
-                                                                                  raw: {
-                                                                                    var: "inventory",
-                                                                                  },
-                                                                                },
-                                                                                select: U {
-                                                                                  raw: [
-                                                                                    "data",
-                                                                                    "party",
-                                                                                    "member3",
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                    U {
-                                                                      raw: {
-                                                                        equals: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                var: "characterRef",
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                default: null,
-                                                                                from: U {
-                                                                                  raw: {
-                                                                                    var: "inventory",
-                                                                                  },
-                                                                                },
-                                                                                select: U {
-                                                                                  raw: [
-                                                                                    "data",
-                                                                                    "party",
-                                                                                    "member4",
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                    U {
-                                                                      raw: {
-                                                                        equals: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                var: "characterRef",
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                default: null,
-                                                                                from: U {
-                                                                                  raw: {
-                                                                                    var: "inventory",
-                                                                                  },
-                                                                                },
-                                                                                select: U {
-                                                                                  raw: [
-                                                                                    "data",
-                                                                                    "party",
-                                                                                    "member5",
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                  ],
+                                                                  },
                                                                 },
                                                               },
                                                             },
@@ -3046,159 +3108,190 @@ snapshot[`model 2`] = `
                                                                   raw: {
                                                                     expr: U {
                                                                       raw: {
-                                                                        any: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
+                                                                        not: U {
+                                                                          raw: {
+                                                                            equals: U {
+                                                                              raw: [
+                                                                                U {
+                                                                                  raw: {
+                                                                                    else: U {
                                                                                       raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
+                                                                                        else: U {
                                                                                           raw: {
-                                                                                            var: "inventory",
+                                                                                            else: U {
+                                                                                              raw: {
+                                                                                                else: U {
+                                                                                                  raw: {
+                                                                                                    else: null,
+                                                                                                    if: U {
+                                                                                                      raw: {
+                                                                                                        equals: U {
+                                                                                                          raw: [
+                                                                                                            U {
+                                                                                                              raw: {
+                                                                                                                var: "characterRef",
+                                                                                                              },
+                                                                                                            },
+                                                                                                            U {
+                                                                                                              raw: {
+                                                                                                                default: null,
+                                                                                                                from: U {
+                                                                                                                  raw: {
+                                                                                                                    var: "inventory",
+                                                                                                                  },
+                                                                                                                },
+                                                                                                                select: U {
+                                                                                                                  raw: [
+                                                                                                                    "data",
+                                                                                                                    "party",
+                                                                                                                    "member5",
+                                                                                                                  ],
+                                                                                                                },
+                                                                                                              },
+                                                                                                            },
+                                                                                                          ],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                    then: 5,
+                                                                                                  },
+                                                                                                },
+                                                                                                if: U {
+                                                                                                  raw: {
+                                                                                                    equals: U {
+                                                                                                      raw: [
+                                                                                                        U {
+                                                                                                          raw: {
+                                                                                                            var: "characterRef",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        U {
+                                                                                                          raw: {
+                                                                                                            default: null,
+                                                                                                            from: U {
+                                                                                                              raw: {
+                                                                                                                var: "inventory",
+                                                                                                              },
+                                                                                                            },
+                                                                                                            select: U {
+                                                                                                              raw: [
+                                                                                                                "data",
+                                                                                                                "party",
+                                                                                                                "member4",
+                                                                                                              ],
+                                                                                                            },
+                                                                                                          },
+                                                                                                        },
+                                                                                                      ],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                                then: 4,
+                                                                                              },
+                                                                                            },
+                                                                                            if: U {
+                                                                                              raw: {
+                                                                                                equals: U {
+                                                                                                  raw: [
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        var: "characterRef",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        default: null,
+                                                                                                        from: U {
+                                                                                                          raw: {
+                                                                                                            var: "inventory",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        select: U {
+                                                                                                          raw: [
+                                                                                                            "data",
+                                                                                                            "party",
+                                                                                                            "member3",
+                                                                                                          ],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                            then: 3,
                                                                                           },
                                                                                         },
-                                                                                        select: U {
+                                                                                        if: U {
+                                                                                          raw: {
+                                                                                            equals: U {
+                                                                                              raw: [
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    var: "characterRef",
+                                                                                                  },
+                                                                                                },
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    default: null,
+                                                                                                    from: U {
+                                                                                                      raw: {
+                                                                                                        var: "inventory",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: U {
+                                                                                                      raw: [
+                                                                                                        "data",
+                                                                                                        "party",
+                                                                                                        "member2",
+                                                                                                      ],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                              ],
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        then: 2,
+                                                                                      },
+                                                                                    },
+                                                                                    if: U {
+                                                                                      raw: {
+                                                                                        equals: U {
                                                                                           raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member1",
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                var: "characterRef",
+                                                                                              },
+                                                                                            },
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                default: null,
+                                                                                                from: U {
+                                                                                                  raw: {
+                                                                                                    var: "inventory",
+                                                                                                  },
+                                                                                                },
+                                                                                                select: U {
+                                                                                                  raw: [
+                                                                                                    "data",
+                                                                                                    "party",
+                                                                                                    "member1",
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
                                                                                           ],
                                                                                         },
                                                                                       },
                                                                                     },
-                                                                                  ],
+                                                                                    then: 1,
+                                                                                  },
                                                                                 },
-                                                                              },
+                                                                                null,
+                                                                              ],
                                                                             },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "inventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member2",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "inventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member3",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "inventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member4",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "inventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member5",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
+                                                                          },
                                                                         },
                                                                       },
                                                                     },
@@ -3222,159 +3315,190 @@ snapshot[`model 2`] = `
                                                                   raw: {
                                                                     expr: U {
                                                                       raw: {
-                                                                        any: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
+                                                                        not: U {
+                                                                          raw: {
+                                                                            equals: U {
+                                                                              raw: [
+                                                                                U {
+                                                                                  raw: {
+                                                                                    else: U {
                                                                                       raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
+                                                                                        else: U {
                                                                                           raw: {
-                                                                                            var: "targetInventory",
+                                                                                            else: U {
+                                                                                              raw: {
+                                                                                                else: U {
+                                                                                                  raw: {
+                                                                                                    else: null,
+                                                                                                    if: U {
+                                                                                                      raw: {
+                                                                                                        equals: U {
+                                                                                                          raw: [
+                                                                                                            U {
+                                                                                                              raw: {
+                                                                                                                var: "characterRef",
+                                                                                                              },
+                                                                                                            },
+                                                                                                            U {
+                                                                                                              raw: {
+                                                                                                                default: null,
+                                                                                                                from: U {
+                                                                                                                  raw: {
+                                                                                                                    var: "targetInventory",
+                                                                                                                  },
+                                                                                                                },
+                                                                                                                select: U {
+                                                                                                                  raw: [
+                                                                                                                    "data",
+                                                                                                                    "party",
+                                                                                                                    "member5",
+                                                                                                                  ],
+                                                                                                                },
+                                                                                                              },
+                                                                                                            },
+                                                                                                          ],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                    then: 5,
+                                                                                                  },
+                                                                                                },
+                                                                                                if: U {
+                                                                                                  raw: {
+                                                                                                    equals: U {
+                                                                                                      raw: [
+                                                                                                        U {
+                                                                                                          raw: {
+                                                                                                            var: "characterRef",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        U {
+                                                                                                          raw: {
+                                                                                                            default: null,
+                                                                                                            from: U {
+                                                                                                              raw: {
+                                                                                                                var: "targetInventory",
+                                                                                                              },
+                                                                                                            },
+                                                                                                            select: U {
+                                                                                                              raw: [
+                                                                                                                "data",
+                                                                                                                "party",
+                                                                                                                "member4",
+                                                                                                              ],
+                                                                                                            },
+                                                                                                          },
+                                                                                                        },
+                                                                                                      ],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                                then: 4,
+                                                                                              },
+                                                                                            },
+                                                                                            if: U {
+                                                                                              raw: {
+                                                                                                equals: U {
+                                                                                                  raw: [
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        var: "characterRef",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        default: null,
+                                                                                                        from: U {
+                                                                                                          raw: {
+                                                                                                            var: "targetInventory",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        select: U {
+                                                                                                          raw: [
+                                                                                                            "data",
+                                                                                                            "party",
+                                                                                                            "member3",
+                                                                                                          ],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                            then: 3,
                                                                                           },
                                                                                         },
-                                                                                        select: U {
+                                                                                        if: U {
+                                                                                          raw: {
+                                                                                            equals: U {
+                                                                                              raw: [
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    var: "characterRef",
+                                                                                                  },
+                                                                                                },
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    default: null,
+                                                                                                    from: U {
+                                                                                                      raw: {
+                                                                                                        var: "targetInventory",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: U {
+                                                                                                      raw: [
+                                                                                                        "data",
+                                                                                                        "party",
+                                                                                                        "member2",
+                                                                                                      ],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                              ],
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        then: 2,
+                                                                                      },
+                                                                                    },
+                                                                                    if: U {
+                                                                                      raw: {
+                                                                                        equals: U {
                                                                                           raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member1",
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                var: "characterRef",
+                                                                                              },
+                                                                                            },
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                default: null,
+                                                                                                from: U {
+                                                                                                  raw: {
+                                                                                                    var: "targetInventory",
+                                                                                                  },
+                                                                                                },
+                                                                                                select: U {
+                                                                                                  raw: [
+                                                                                                    "data",
+                                                                                                    "party",
+                                                                                                    "member1",
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
                                                                                           ],
                                                                                         },
                                                                                       },
                                                                                     },
-                                                                                  ],
+                                                                                    then: 1,
+                                                                                  },
                                                                                 },
-                                                                              },
+                                                                                null,
+                                                                              ],
                                                                             },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "targetInventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member2",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "targetInventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member3",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "targetInventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member4",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "targetInventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member5",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
+                                                                          },
                                                                         },
                                                                       },
                                                                     },
@@ -4798,159 +4922,190 @@ snapshot[`model 2`] = `
                                                                   raw: {
                                                                     expr: U {
                                                                       raw: {
-                                                                        any: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
+                                                                        not: U {
+                                                                          raw: {
+                                                                            equals: U {
+                                                                              raw: [
+                                                                                U {
+                                                                                  raw: {
+                                                                                    else: U {
                                                                                       raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
+                                                                                        else: U {
                                                                                           raw: {
-                                                                                            var: "inventory",
+                                                                                            else: U {
+                                                                                              raw: {
+                                                                                                else: U {
+                                                                                                  raw: {
+                                                                                                    else: null,
+                                                                                                    if: U {
+                                                                                                      raw: {
+                                                                                                        equals: U {
+                                                                                                          raw: [
+                                                                                                            U {
+                                                                                                              raw: {
+                                                                                                                var: "characterRef",
+                                                                                                              },
+                                                                                                            },
+                                                                                                            U {
+                                                                                                              raw: {
+                                                                                                                default: null,
+                                                                                                                from: U {
+                                                                                                                  raw: {
+                                                                                                                    var: "inventory",
+                                                                                                                  },
+                                                                                                                },
+                                                                                                                select: U {
+                                                                                                                  raw: [
+                                                                                                                    "data",
+                                                                                                                    "party",
+                                                                                                                    "member5",
+                                                                                                                  ],
+                                                                                                                },
+                                                                                                              },
+                                                                                                            },
+                                                                                                          ],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                    then: 5,
+                                                                                                  },
+                                                                                                },
+                                                                                                if: U {
+                                                                                                  raw: {
+                                                                                                    equals: U {
+                                                                                                      raw: [
+                                                                                                        U {
+                                                                                                          raw: {
+                                                                                                            var: "characterRef",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        U {
+                                                                                                          raw: {
+                                                                                                            default: null,
+                                                                                                            from: U {
+                                                                                                              raw: {
+                                                                                                                var: "inventory",
+                                                                                                              },
+                                                                                                            },
+                                                                                                            select: U {
+                                                                                                              raw: [
+                                                                                                                "data",
+                                                                                                                "party",
+                                                                                                                "member4",
+                                                                                                              ],
+                                                                                                            },
+                                                                                                          },
+                                                                                                        },
+                                                                                                      ],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                                then: 4,
+                                                                                              },
+                                                                                            },
+                                                                                            if: U {
+                                                                                              raw: {
+                                                                                                equals: U {
+                                                                                                  raw: [
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        var: "characterRef",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        default: null,
+                                                                                                        from: U {
+                                                                                                          raw: {
+                                                                                                            var: "inventory",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        select: U {
+                                                                                                          raw: [
+                                                                                                            "data",
+                                                                                                            "party",
+                                                                                                            "member3",
+                                                                                                          ],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                            then: 3,
                                                                                           },
                                                                                         },
-                                                                                        select: U {
+                                                                                        if: U {
+                                                                                          raw: {
+                                                                                            equals: U {
+                                                                                              raw: [
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    var: "characterRef",
+                                                                                                  },
+                                                                                                },
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    default: null,
+                                                                                                    from: U {
+                                                                                                      raw: {
+                                                                                                        var: "inventory",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: U {
+                                                                                                      raw: [
+                                                                                                        "data",
+                                                                                                        "party",
+                                                                                                        "member2",
+                                                                                                      ],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                              ],
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        then: 2,
+                                                                                      },
+                                                                                    },
+                                                                                    if: U {
+                                                                                      raw: {
+                                                                                        equals: U {
                                                                                           raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member1",
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                var: "characterRef",
+                                                                                              },
+                                                                                            },
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                default: null,
+                                                                                                from: U {
+                                                                                                  raw: {
+                                                                                                    var: "inventory",
+                                                                                                  },
+                                                                                                },
+                                                                                                select: U {
+                                                                                                  raw: [
+                                                                                                    "data",
+                                                                                                    "party",
+                                                                                                    "member1",
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
                                                                                           ],
                                                                                         },
                                                                                       },
                                                                                     },
-                                                                                  ],
+                                                                                    then: 1,
+                                                                                  },
                                                                                 },
-                                                                              },
+                                                                                null,
+                                                                              ],
                                                                             },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "inventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member2",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "inventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member3",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "inventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member4",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "inventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member5",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
+                                                                          },
                                                                         },
                                                                       },
                                                                     },
@@ -4974,159 +5129,190 @@ snapshot[`model 2`] = `
                                                                   raw: {
                                                                     expr: U {
                                                                       raw: {
-                                                                        any: U {
-                                                                          raw: [
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
+                                                                        not: U {
+                                                                          raw: {
+                                                                            equals: U {
+                                                                              raw: [
+                                                                                U {
+                                                                                  raw: {
+                                                                                    else: U {
                                                                                       raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
+                                                                                        else: U {
                                                                                           raw: {
-                                                                                            var: "targetInventory",
+                                                                                            else: U {
+                                                                                              raw: {
+                                                                                                else: U {
+                                                                                                  raw: {
+                                                                                                    else: null,
+                                                                                                    if: U {
+                                                                                                      raw: {
+                                                                                                        equals: U {
+                                                                                                          raw: [
+                                                                                                            U {
+                                                                                                              raw: {
+                                                                                                                var: "characterRef",
+                                                                                                              },
+                                                                                                            },
+                                                                                                            U {
+                                                                                                              raw: {
+                                                                                                                default: null,
+                                                                                                                from: U {
+                                                                                                                  raw: {
+                                                                                                                    var: "targetInventory",
+                                                                                                                  },
+                                                                                                                },
+                                                                                                                select: U {
+                                                                                                                  raw: [
+                                                                                                                    "data",
+                                                                                                                    "party",
+                                                                                                                    "member5",
+                                                                                                                  ],
+                                                                                                                },
+                                                                                                              },
+                                                                                                            },
+                                                                                                          ],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                    then: 5,
+                                                                                                  },
+                                                                                                },
+                                                                                                if: U {
+                                                                                                  raw: {
+                                                                                                    equals: U {
+                                                                                                      raw: [
+                                                                                                        U {
+                                                                                                          raw: {
+                                                                                                            var: "characterRef",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        U {
+                                                                                                          raw: {
+                                                                                                            default: null,
+                                                                                                            from: U {
+                                                                                                              raw: {
+                                                                                                                var: "targetInventory",
+                                                                                                              },
+                                                                                                            },
+                                                                                                            select: U {
+                                                                                                              raw: [
+                                                                                                                "data",
+                                                                                                                "party",
+                                                                                                                "member4",
+                                                                                                              ],
+                                                                                                            },
+                                                                                                          },
+                                                                                                        },
+                                                                                                      ],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                                then: 4,
+                                                                                              },
+                                                                                            },
+                                                                                            if: U {
+                                                                                              raw: {
+                                                                                                equals: U {
+                                                                                                  raw: [
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        var: "characterRef",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    U {
+                                                                                                      raw: {
+                                                                                                        default: null,
+                                                                                                        from: U {
+                                                                                                          raw: {
+                                                                                                            var: "targetInventory",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        select: U {
+                                                                                                          raw: [
+                                                                                                            "data",
+                                                                                                            "party",
+                                                                                                            "member3",
+                                                                                                          ],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                            then: 3,
                                                                                           },
                                                                                         },
-                                                                                        select: U {
+                                                                                        if: U {
+                                                                                          raw: {
+                                                                                            equals: U {
+                                                                                              raw: [
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    var: "characterRef",
+                                                                                                  },
+                                                                                                },
+                                                                                                U {
+                                                                                                  raw: {
+                                                                                                    default: null,
+                                                                                                    from: U {
+                                                                                                      raw: {
+                                                                                                        var: "targetInventory",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    select: U {
+                                                                                                      raw: [
+                                                                                                        "data",
+                                                                                                        "party",
+                                                                                                        "member2",
+                                                                                                      ],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                              ],
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        then: 2,
+                                                                                      },
+                                                                                    },
+                                                                                    if: U {
+                                                                                      raw: {
+                                                                                        equals: U {
                                                                                           raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member1",
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                var: "characterRef",
+                                                                                              },
+                                                                                            },
+                                                                                            U {
+                                                                                              raw: {
+                                                                                                default: null,
+                                                                                                from: U {
+                                                                                                  raw: {
+                                                                                                    var: "targetInventory",
+                                                                                                  },
+                                                                                                },
+                                                                                                select: U {
+                                                                                                  raw: [
+                                                                                                    "data",
+                                                                                                    "party",
+                                                                                                    "member1",
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            },
                                                                                           ],
                                                                                         },
                                                                                       },
                                                                                     },
-                                                                                  ],
+                                                                                    then: 1,
+                                                                                  },
                                                                                 },
-                                                                              },
+                                                                                null,
+                                                                              ],
                                                                             },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "targetInventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member2",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "targetInventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member3",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "targetInventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member4",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                            U {
-                                                                              raw: {
-                                                                                equals: U {
-                                                                                  raw: [
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        var: "characterRef",
-                                                                                      },
-                                                                                    },
-                                                                                    U {
-                                                                                      raw: {
-                                                                                        default: null,
-                                                                                        from: U {
-                                                                                          raw: {
-                                                                                            var: "targetInventory",
-                                                                                          },
-                                                                                        },
-                                                                                        select: U {
-                                                                                          raw: [
-                                                                                            "data",
-                                                                                            "party",
-                                                                                            "member5",
-                                                                                          ],
-                                                                                        },
-                                                                                      },
-                                                                                    },
-                                                                                  ],
-                                                                                },
-                                                                              },
-                                                                            },
-                                                                          ],
+                                                                          },
                                                                         },
                                                                       },
                                                                     },

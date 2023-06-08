@@ -20,7 +20,7 @@ import {
 export const COSTS = {
   THREE: 4,
   FOUR: 12,
-  FIVE: 36,
+  FIVE: 28,
 };
 
 export function addPulls(
