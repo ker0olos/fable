@@ -443,6 +443,18 @@ function give({
         newMessage.addEmbed(embed);
       });
 
+      if (giveCharacters.length === 1) {
+        newMessage.addComponents([
+          new discord.Component()
+            .setLabel('/character')
+            .setId(
+              `character`,
+              `${giveCharacters[0].packId}:${giveCharacters[0].id}`,
+              '1',
+            ),
+        ]);
+      }
+
       await updateMessage.patch(token);
 
       return newMessage.followup(token);

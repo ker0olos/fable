@@ -468,6 +468,13 @@ function nick({
       const name = packs.aliasToArray(character.name)[0];
 
       message
+        .addEmbed(
+          new discord.Embed().setDescription(
+            !nick
+              ? `${name}'s nickname has been reset`
+              : `${name}'s nickname has been changed to **${response.character.nickname}**`,
+          ),
+        )
         .addEmbed(srch.characterEmbed(
           character,
           channelId,
@@ -483,14 +490,7 @@ function nick({
               user: undefined,
             },
           },
-        ))
-        .addEmbed(
-          new discord.Embed().setDescription(
-            !nick
-              ? `${name}'s nickname has been reset`
-              : `${name}'s nickname has been changed to **${response.character.nickname}**`,
-          ),
-        );
+        ));
 
       return message.patch(token);
     })
@@ -631,6 +631,13 @@ function image({
       const name = packs.aliasToArray(character.name)[0];
 
       message
+        .addEmbed(
+          new discord.Embed().setDescription(
+            !image
+              ? `${name}'s image has been reset`
+              : `${name}'s image has been **changed**`,
+          ),
+        )
         .addEmbed(srch.characterEmbed(
           character,
           channelId,
@@ -645,14 +652,7 @@ function image({
               user: undefined,
             },
           },
-        ))
-        .addEmbed(
-          new discord.Embed().setDescription(
-            !image
-              ? `${name}'s image has been reset`
-              : `${name}'s image has been **changed**`,
-          ),
-        );
+        ));
 
       return message.patch(token);
     })

@@ -1118,6 +1118,11 @@ Deno.test('/nick', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description:
+                'name 1\'s nickname has been changed to **returned_nickname**',
+            },
+            {
+              type: 'rich',
               fields: [
                 {
                   name: 'title',
@@ -1127,11 +1132,6 @@ Deno.test('/nick', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
-            },
-            {
-              type: 'rich',
-              description:
-                'name 1\'s nickname has been changed to **returned_nickname**',
             },
           ],
         },
@@ -1270,6 +1270,10 @@ Deno.test('/nick', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description: 'name 1\'s nickname has been reset',
+            },
+            {
+              type: 'rich',
               fields: [
                 {
                   name: 'title',
@@ -1279,10 +1283,6 @@ Deno.test('/nick', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
               },
-            },
-            {
-              type: 'rich',
-              description: 'name 1\'s nickname has been reset',
             },
           ],
         },
@@ -1782,6 +1782,10 @@ Deno.test('/image', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description: 'name 1\'s image has been **changed**',
+            },
+            {
+              type: 'rich',
               fields: [
                 {
                   name: 'title',
@@ -1791,10 +1795,6 @@ Deno.test('/image', async (test) => {
               image: {
                 url: 'http://localhost:8000/external/returned_image_url',
               },
-            },
-            {
-              type: 'rich',
-              description: 'name 1\'s image has been **changed**',
             },
           ],
         },
@@ -1933,6 +1933,10 @@ Deno.test('/image', async (test) => {
           embeds: [
             {
               type: 'rich',
+              description: 'name 1\'s image has been reset',
+            },
+            {
+              type: 'rich',
               fields: [
                 {
                   name: 'title',
@@ -1942,10 +1946,6 @@ Deno.test('/image', async (test) => {
               image: {
                 url: 'http://localhost:8000/external/',
               },
-            },
-            {
-              type: 'rich',
-              description: 'name 1\'s image has been reset',
             },
           ],
         },
