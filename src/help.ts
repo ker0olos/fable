@@ -1,3 +1,4 @@
+import { COSTS } from '../models/add_tokens_to_user.ts';
 import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
 import { COOLDOWN_DAYS } from '../models/steal_character.ts';
 
@@ -139,6 +140,10 @@ function pages(
             '`/buy guaranteed` guarantees you get a character from one specific star rating.',
             '',
             `Example: \`/buy guaranteed 5\` will guarantee you get one random 5${discord.emotes.smolStar}character.`,
+            '',
+            `3${discord.emotes.smolStar}cost **${COSTS.THREE}** tokens`,
+            `4${discord.emotes.smolStar}cost **${COSTS.FOUR}** tokens`,
+            `5${discord.emotes.smolStar}cost **${COSTS.FIVE}** tokens`,
             '',
             'Use the guaranteed pulls you bought by calling `/pull stars:`',
             '\u200B',

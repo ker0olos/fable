@@ -3056,7 +3056,7 @@ snapshot[`model 2`] = `
                                                     },
                                                   },
                                                 },
-                                                then: 36,
+                                                then: 28,
                                               },
                                             },
                                             if: U {
@@ -3420,7 +3420,7 @@ snapshot[`model 2`] = `
                                                     },
                                                   },
                                                 },
-                                                then: 36,
+                                                then: 28,
                                               },
                                             },
                                             if: U {

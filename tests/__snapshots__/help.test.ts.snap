@@ -391,6 +391,14 @@ snapshot[`/help 5`] = `
 " +
           "
 " +
+          "3<:smolstar:1107503653956374638>cost **4** tokens
+" +
+          "4<:smolstar:1107503653956374638>cost **12** tokens
+" +
+          "5<:smolstar:1107503653956374638>cost **28** tokens
+" +
+          "
+" +
           "Use the guaranteed pulls you bought by calling \`/pull stars:\`
 " +
           "​",

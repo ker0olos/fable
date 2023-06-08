@@ -486,7 +486,7 @@ Deno.test('/now', async (test) => {
     }
   });
 
-  await test.step('with 36 tokens', async () => {
+  await test.step('with 28 tokens', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
@@ -501,7 +501,7 @@ Deno.test('/now', async (test) => {
                 availablePulls: 4,
                 rechargeTimestamp: time.toISOString(),
                 user: {
-                  availableVotes: 36,
+                  availableVotes: 28,
                   lastVote: time.toISOString(),
                 },
               },
@@ -537,7 +537,7 @@ Deno.test('/now', async (test) => {
             },
             {
               type: 'rich',
-              title: '**36**',
+              title: '**28**',
               footer: {
                 text: 'Daily Tokens',
               },
@@ -577,7 +577,7 @@ Deno.test('/now', async (test) => {
     }
   });
 
-  await test.step('with 35 tokens', async () => {
+  await test.step('with 27 tokens', async () => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
@@ -592,7 +592,7 @@ Deno.test('/now', async (test) => {
                 availablePulls: 4,
                 rechargeTimestamp: time.toISOString(),
                 user: {
-                  availableVotes: 35,
+                  availableVotes: 27,
                   lastVote: time.toISOString(),
                 },
               },
@@ -628,7 +628,7 @@ Deno.test('/now', async (test) => {
             },
             {
               type: 'rich',
-              title: '**35**',
+              title: '**27**',
               footer: {
                 text: 'Daily Tokens',
               },
