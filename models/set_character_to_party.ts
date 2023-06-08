@@ -18,6 +18,79 @@ import {
   Inventory,
 } from './get_user_inventory.ts';
 
+export function existsInParty(
+  { inventory, characterRef }: {
+    inventory: InventoryExpr;
+    characterRef: RefExpr;
+  },
+): NumberExpr {
+  const checkMember = (n: 1 | 2 | 3 | 4 | 5) => {
+    return fql.Equals(
+      characterRef,
+      fql.Select(
+        ['data', 'party', `member${n}`],
+        inventory,
+        fql.Null(),
+      ),
+    );
+  };
+
+  return fql.If(
+    checkMember(1),
+    1,
+    fql.If(
+      checkMember(2),
+      2,
+      fql.If(
+        checkMember(3),
+        3,
+        fql.If(
+          checkMember(4),
+          4,
+          fql.If(
+            checkMember(5),
+            5,
+            fql.Null(),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+export function removeFromParty(
+  { spot, inventory }: {
+    spot: NumberExpr;
+    inventory: InventoryExpr;
+  },
+): {
+  member1?: RefExpr;
+  member2?: RefExpr;
+  member3?: RefExpr;
+  member4?: RefExpr;
+  member5?: RefExpr;
+} {
+  const getMember = (n: 1 | 2 | 3 | 4 | 5) => {
+    return fql.If(
+      fql.Equals(spot, n),
+      fql.Null(),
+      fql.Select(
+        ['data', 'party', `member${n}`],
+        inventory,
+        fql.Null(),
+      ),
+    );
+  };
+
+  return {
+    member1: getMember(1),
+    member2: getMember(2),
+    member3: getMember(3),
+    member4: getMember(4),
+    member5: getMember(5),
+  };
+}
+
 export function setCharacterToParty(
   {
     user,
@@ -46,12 +119,15 @@ export function setCharacterToParty(
     ),
   }, ({ character }) => {
     const getMember = (n: 1 | 2 | 3 | 4 | 5) => {
-      return fql.If( // if character is already assigned to the party
+      // if character is already assigned to the party
+      return fql.If(
         fql.Equals(
           fql.Select(['data', 'party', `member${n}`], inventory, fql.Null()),
           fql.Ref(character),
         ),
-        fql.Null(), // if true unassign the character
+        // if true unassign the character
+        fql.Null(),
+        // return the character assigned to this spot as long as it's different
         fql.Select(['data', 'party', `member${n}`], inventory, fql.Null()),
       );
     };
@@ -83,6 +159,8 @@ export function setCharacterToParty(
         fql.Let({
           spot: fql.If(
             fql.IsNull(spot),
+            // if spot is null
+            // find the first empty spot in the party
             fql.If(
               fql.IsNull(
                 fql.Select(['data', 'party', 'member1'], inventory, fql.Null()),
@@ -190,14 +268,6 @@ export function swapCharactersInParty(
     );
   };
 
-  // const getMember = (n: 1 | 2 | 3 | 4 | 5) => {
-  //   return fql.Select(
-  //     ['data', 'party', `member${n}`],
-  //     inventory,
-  //     fql.Null(),
-  //   );
-  // };
-
   return fql.Let({
     party: {
       member1: getMember(1),
@@ -221,30 +291,12 @@ export function removeCharacterFromParty(
     inventory,
     spot,
   }: {
-    inventory: InventoryExpr;
     spot: NumberExpr;
+    inventory: InventoryExpr;
   },
 ): unknown {
-  const getMember = (n: 1 | 2 | 3 | 4 | 5) => {
-    return fql.If(
-      fql.Equals(spot, n),
-      fql.Null(),
-      fql.Select(
-        ['data', 'party', `member${n}`],
-        inventory,
-        fql.Null(),
-      ),
-    );
-  };
-
   return fql.Let({
-    party: {
-      member1: getMember(1),
-      member2: getMember(2),
-      member3: getMember(3),
-      member4: getMember(4),
-      member5: getMember(5),
-    },
+    party: removeFromParty({ spot, inventory }),
     character: fql.Select(
       ['data', 'party', fql.Concat(['member', fql.ToString(spot)])],
       inventory,

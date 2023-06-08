@@ -17,6 +17,8 @@ import {
 
 import { Character } from './add_character_to_inventory.ts';
 
+import { existsInParty } from './set_character_to_party.ts';
+
 export function giveCharacters(
   {
     user,
@@ -60,48 +62,10 @@ export function giveCharacters(
         }, ({ giveCharactersRefs }) =>
           fql.If(
             fql.Any(fql.Map(giveCharactersRefs, (characterRef) =>
-              fql.Any([
-                fql.Equals(
-                  characterRef,
-                  fql.Select(
-                    ['data', 'party', 'member1'],
-                    inventory,
-                    fql.Null(),
-                  ),
-                ),
-                fql.Equals(
-                  characterRef,
-                  fql.Select(
-                    ['data', 'party', 'member2'],
-                    inventory,
-                    fql.Null(),
-                  ),
-                ),
-                fql.Equals(
-                  characterRef,
-                  fql.Select(
-                    ['data', 'party', 'member3'],
-                    inventory,
-                    fql.Null(),
-                  ),
-                ),
-                fql.Equals(
-                  characterRef,
-                  fql.Select(
-                    ['data', 'party', 'member4'],
-                    inventory,
-                    fql.Null(),
-                  ),
-                ),
-                fql.Equals(
-                  characterRef,
-                  fql.Select(
-                    ['data', 'party', 'member5'],
-                    inventory,
-                    fql.Null(),
-                  ),
-                ),
-              ]))),
+              fql.Not(fql.Equals(
+                existsInParty({ characterRef, inventory }),
+                fql.Null(),
+              )))),
             {
               ok: false,
               error: 'CHARACTER_IN_PARTY',
@@ -201,91 +165,15 @@ export function tradeCharacters(
           fql.If(
             fql.Or(
               fql.Any(fql.Map(giveCharactersRefs, (characterRef) =>
-                fql.Any([
-                  fql.Equals(
-                    characterRef,
-                    fql.Select(
-                      ['data', 'party', 'member1'],
-                      inventory,
-                      fql.Null(),
-                    ),
-                  ),
-                  fql.Equals(
-                    characterRef,
-                    fql.Select(
-                      ['data', 'party', 'member2'],
-                      inventory,
-                      fql.Null(),
-                    ),
-                  ),
-                  fql.Equals(
-                    characterRef,
-                    fql.Select(
-                      ['data', 'party', 'member3'],
-                      inventory,
-                      fql.Null(),
-                    ),
-                  ),
-                  fql.Equals(
-                    characterRef,
-                    fql.Select(
-                      ['data', 'party', 'member4'],
-                      inventory,
-                      fql.Null(),
-                    ),
-                  ),
-                  fql.Equals(
-                    characterRef,
-                    fql.Select(
-                      ['data', 'party', 'member5'],
-                      inventory,
-                      fql.Null(),
-                    ),
-                  ),
-                ]))),
+                fql.Not(fql.Equals(
+                  existsInParty({ characterRef, inventory }),
+                  fql.Null(),
+                )))),
               fql.Any(fql.Map(takeCharactersRefs, (characterRef) =>
-                fql.Any([
-                  fql.Equals(
-                    characterRef,
-                    fql.Select(
-                      ['data', 'party', 'member1'],
-                      targetInventory,
-                      fql.Null(),
-                    ),
-                  ),
-                  fql.Equals(
-                    characterRef,
-                    fql.Select(
-                      ['data', 'party', 'member2'],
-                      targetInventory,
-                      fql.Null(),
-                    ),
-                  ),
-                  fql.Equals(
-                    characterRef,
-                    fql.Select(
-                      ['data', 'party', 'member3'],
-                      targetInventory,
-                      fql.Null(),
-                    ),
-                  ),
-                  fql.Equals(
-                    characterRef,
-                    fql.Select(
-                      ['data', 'party', 'member4'],
-                      targetInventory,
-                      fql.Null(),
-                    ),
-                  ),
-                  fql.Equals(
-                    characterRef,
-                    fql.Select(
-                      ['data', 'party', 'member5'],
-                      targetInventory,
-                      fql.Null(),
-                    ),
-                  ),
-                ]))),
+                fql.Not(fql.Equals(
+                  existsInParty({ characterRef, inventory: targetInventory }),
+                  fql.Null(),
+                )))),
             ),
             {
               ok: false,

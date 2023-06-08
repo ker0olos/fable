@@ -291,21 +291,23 @@ snapshot[`/help 4`] = `
 " +
           "
 " +
+          "__Inactive users lose their party protection__ after **4** days.
+" +
+          "
+" +
           "__The higher the character's rating the harder it is to steal.__ 5<:smolstar:1107503653956374638>characters have a base success rate of 1%.
 " +
           "
 " +
-          "Steal has a cooldown of 3 days regardless of the outcome of the attempt.
+          "__Steal has a cooldown of **3** days__ regardless of the outcome of the attempt.
 " +
           "
 " +
-          "You can sacrifice your own characters to boost your chance of success,
-" +
-          "You lose those characters regardless of the outcome of the attempt.
+          "__You can sacrifice your own characters for a small boost__ to your chance of success, You lose those characters regardless of the outcome of the attempt.
 " +
           "
 " +
-          "Staying active is the best defense against stealing.
+          "> Staying active is the best defense against stealing.
 " +
           "​",
         type: "rich",
