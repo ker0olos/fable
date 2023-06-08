@@ -706,6 +706,7 @@ Deno.test('like components', async (test) => {
           guildId: 'guild_id',
           channelId: 'channel_id',
           id: 'character_id',
+          mention: true,
           undo: false,
         }],
       });
@@ -787,6 +788,7 @@ Deno.test('like components', async (test) => {
           guildId: 'guild_id',
           channelId: 'channel_id',
           id: 'character_id',
+          mention: true,
           undo: false,
         }],
       });

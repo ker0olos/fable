@@ -749,6 +749,7 @@ export const handler = async (r: Request) => {
               token,
               guildId,
               channelId,
+              mention: true,
               userId: member.user.id,
               undo: false,
             })

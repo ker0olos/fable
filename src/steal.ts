@@ -19,6 +19,16 @@ import { NonFetalError } from './errors.ts';
 
 const BOOST_FACTOR = 0.02;
 
+function getInactiveDays(inventory?: Partial<Schema.Inventory>): number {
+  const lastPull = inventory?.lastPull
+    ? new Date(inventory.lastPull)
+    : undefined;
+
+  return !lastPull
+    ? Number.MAX_SAFE_INTEGER
+    : utils.diffInDays(new Date(), lastPull);
+}
+
 function getChances(character: Schema.Character): number {
   let chance = 0;
 
@@ -42,11 +52,7 @@ function getChances(character: Schema.Character): number {
       break;
   }
 
-  const lastPull = character.inventory?.lastPull
-    ? new Date(character.inventory.lastPull)
-    : new Date();
-
-  const inactiveDays = utils.diffInDays(new Date(), lastPull);
+  const inactiveDays = getInactiveDays(character.inventory);
 
   if (inactiveDays >= 14) {
     chance += 50;
@@ -245,21 +251,25 @@ function pre({
       }
 
       if (party.includes(characterId)) {
-        message.addEmbed(
-          new discord.Embed().setDescription(
-            `As part of <@${existing?.user.id}>'s party, **${characterName}** cannot be stolen`,
-          ),
-        );
+        const inactiveDays = getInactiveDays(existing.inventory);
 
-        message.addEmbed(srch.characterEmbed(character, channelId, {
-          footer: true,
-          mode: 'thumbnail',
-          description: false,
-          media: { title: true },
-          existing: { rating: existing?.rating },
-        }));
+        if (inactiveDays <= 4) {
+          message.addEmbed(
+            new discord.Embed().setDescription(
+              `As part of <@${existing?.user.id}>'s party, **${characterName}** cannot be stolen while <@${existing?.user.id}> is still active`,
+            ),
+          );
 
-        return message.setPing().patch(token);
+          message.addEmbed(srch.characterEmbed(character, channelId, {
+            footer: true,
+            mode: 'thumbnail',
+            description: false,
+            media: { title: true },
+            existing: { rating: existing?.rating },
+          }));
+
+          return message.patch(token);
+        }
       }
 
       message.addEmbed(
@@ -625,10 +635,6 @@ function attempt({
                   response.stealCharacter.inventory.stealTimestamp,
                 )
               }:R>`,
-            );
-          case 'CHARACTER_IN_PARTY':
-            throw new NonFetalError(
-              'Character is currently in a party',
             );
           case 'CHARACTER_NOT_FOUND':
             throw new NonFetalError(

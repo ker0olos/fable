@@ -19,6 +19,8 @@ import {
 
 import { Character } from './add_character_to_inventory.ts';
 
+import { existsInParty, removeFromParty } from './set_character_to_party.ts';
+
 export const COOLDOWN_DAYS = 3;
 
 export function failSteal({ user, instance, inventory, sacrifices }: {
@@ -130,82 +132,54 @@ export function stealCharacter(
               user: fql.Var('target'),
             }),
           }, ({ targetInventory, characterRef }) =>
-            fql.If(
-              fql.Any([
-                fql.Equals(
-                  characterRef,
-                  fql.Select(
-                    ['data', 'party', 'member1'],
-                    targetInventory,
-                    fql.Null(),
-                  ),
-                ),
-                fql.Equals(
-                  characterRef,
-                  fql.Select(
-                    ['data', 'party', 'member2'],
-                    targetInventory,
-                    fql.Null(),
-                  ),
-                ),
-                fql.Equals(
-                  characterRef,
-                  fql.Select(
-                    ['data', 'party', 'member3'],
-                    targetInventory,
-                    fql.Null(),
-                  ),
-                ),
-                fql.Equals(
-                  characterRef,
-                  fql.Select(
-                    ['data', 'party', 'member4'],
-                    targetInventory,
-                    fql.Null(),
-                  ),
-                ),
-                fql.Equals(
-                  characterRef,
-                  fql.Select(
-                    ['data', 'party', 'member5'],
-                    targetInventory,
-                    fql.Null(),
-                  ),
-                ),
-              ]),
-              {
-                ok: false,
-                error: 'CHARACTER_IN_PARTY',
-              },
-              fql.Let({
-                sacrificedCharactersRefs: fql.Map(
-                  sacrificedCharacters,
-                  (char) => fql.Ref(fql.Get(char)),
-                ),
-                deletedCharacters: fql.Foreach(
-                  fql.Var<RefExpr[]>('sacrificedCharactersRefs'),
-                  fql.Delete,
-                ),
-                updatedInventory: fql.Update<Inventory>(
-                  fql.Ref(inventory),
+            fql.Let({
+              sacrificedCharactersRefs: fql.Map(
+                sacrificedCharacters,
+                (char) => fql.Ref(fql.Get(char)),
+              ),
+              deletedCharacters: fql.Foreach(
+                fql.Var<RefExpr[]>('sacrificedCharactersRefs'),
+                fql.Delete,
+              ),
+              partyMember: existsInParty({
+                characterRef,
+                inventory: targetInventory,
+              }),
+              targetTargetInventory: fql.If(
+                fql.Not(fql.Equals(
+                  fql.Var('partyMember'),
+                  fql.Null(),
+                )),
+                fql.Update<Inventory>(
+                  fql.Ref(targetInventory),
                   {
-                    stealTimestamp: fql.TimeAddInDays(fql.Now(), COOLDOWN_DAYS),
+                    party: removeFromParty({
+                      inventory: targetInventory,
+                      spot: fql.Var('partyMember'),
+                    }),
                   },
                 ),
-                updatedCharacter: fql.Update<Character>(
-                  characterRef,
-                  {
-                    user: fql.Ref(user),
-                    inventory: fql.Ref(inventory),
-                    nickname: fql.Null(),
-                    image: fql.Null(),
-                  },
-                ),
-              }, ({ updatedCharacter }) => ({
-                ok: true,
-                character: fql.Ref(updatedCharacter),
-              })),
-            )),
+                targetInventory,
+              ),
+              updatedInventory: fql.Update<Inventory>(
+                fql.Ref(inventory),
+                {
+                  stealTimestamp: fql.TimeAddInDays(fql.Now(), COOLDOWN_DAYS),
+                },
+              ),
+              updatedCharacter: fql.Update<Character>(
+                characterRef,
+                {
+                  user: fql.Ref(user),
+                  inventory: fql.Ref(inventory),
+                  nickname: fql.Null(),
+                  image: fql.Null(),
+                },
+              ),
+            }, ({ updatedCharacter }) => ({
+              ok: true,
+              character: fql.Ref(updatedCharacter),
+            }))),
           {
             ok: false,
             error: 'CHARACTER_NOT_FOUND',
