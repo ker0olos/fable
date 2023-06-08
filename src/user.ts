@@ -690,6 +690,7 @@ function like({
   userId,
   guildId,
   channelId,
+  mention,
   search,
   undo,
   id,
@@ -699,6 +700,7 @@ function like({
   guildId: string;
   channelId: string;
   undo: boolean;
+  mention?: boolean;
   search?: string;
   id?: string;
 }): discord.Message {
@@ -768,6 +770,12 @@ function like({
         character: results[0],
         end: 1,
       });
+
+      if (mention) {
+        message
+          .setContent(`<@${userId}>`)
+          .setPing();
+      }
 
       message
         .addEmbed(srch.characterEmbed(

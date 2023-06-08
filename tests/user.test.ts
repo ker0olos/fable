@@ -5780,6 +5780,168 @@ Deno.test('/like', async (test) => {
     }
   });
 
+  await test.step('normal (mentioned)', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: '2',
+              type: MediaType.Anime,
+              title: {
+                english: 'title',
+              },
+            },
+          }],
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                likeCharacter: {
+                  ok: true,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () => Promise.resolve(undefined),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.like({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        channelId: 'channel_id',
+        token: 'test_token',
+        search: 'character',
+        mention: true,
+        undo: false,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          allowed_mentions: { parse: [] },
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'character=anilist:1',
+                  label: '/character',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          content: '<@user_id>',
+          embeds: [
+            {
+              type: 'rich',
+              description: 'Liked',
+            },
+            {
+              type: 'rich',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**character**',
+                },
+              ],
+              thumbnail: {
+                url: 'http://localhost:8000/external/?size=thumbnail',
+              },
+              description:
+                '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      userStub.restore();
+    }
+  });
+
   await test.step('normal (exists)', async () => {
     const character: AniListCharacter = {
       id: '1',
