@@ -16,6 +16,7 @@
       ]
     }
   },
+  "lock": false,
   "importMap": "./import_map.json",
   "tasks": {
     "discord": "deno run -A update_commands.ts",
