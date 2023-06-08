@@ -518,6 +518,7 @@ export const commands = [
       Option({
         name: 'character',
         description: 'The name of the character',
+        autocomplete: true,
         type: Type.STRING,
       }),
       Option({
@@ -536,6 +537,7 @@ export const commands = [
         name: 'character',
         description: 'The name of the character',
         type: Type.STRING,
+        autocomplete: true,
       }),
       Option({
         name: 'new_nick',

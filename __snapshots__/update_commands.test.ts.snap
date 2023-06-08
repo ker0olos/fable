@@ -1070,7 +1070,7 @@ snapshot[`commands 1`] = `
     name: "image",
     options: [
       {
-        autocomplete: undefined,
+        autocomplete: true,
         choices: undefined,
         description: "The name of the character",
         max_value: undefined,
@@ -1101,7 +1101,7 @@ snapshot[`commands 1`] = `
     name: "custom",
     options: [
       {
-        autocomplete: undefined,
+        autocomplete: true,
         choices: undefined,
         description: "The name of the character",
         max_value: undefined,
@@ -1132,7 +1132,7 @@ snapshot[`commands 1`] = `
     name: "nick",
     options: [
       {
-        autocomplete: undefined,
+        autocomplete: true,
         choices: undefined,
         description: "The name of the character",
         max_value: undefined,
