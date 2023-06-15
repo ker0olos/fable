@@ -523,8 +523,26 @@ Deno.test('attempt', async (test) => {
           ) as any,
         ),
         {
-          components: [],
           attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'character=character_id=1',
+                  label: '/character',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'like=character_id',
+                  label: '/like',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
           embeds: [
             {
               type: 'rich',
@@ -567,8 +585,20 @@ Deno.test('attempt', async (test) => {
         ),
         {
           content: '<@another_user_id>',
-          components: [],
           attachments: [],
+          components: [
+            {
+              components: [
+                {
+                  custom_id: 'character=character_id=1',
+                  label: '/character',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+              type: 1,
+            },
+          ],
           embeds: [
             {
               type: 'rich',
