@@ -26,10 +26,6 @@ import index from '../json/schema.json' assert {
   type: 'json',
 };
 
-import builtin from '../json/schema.builtin.json' assert {
-  type: 'json',
-};
-
 import { Manifest } from './types.ts';
 
 const reservedIds = ['anilist', 'vtubers'];
@@ -54,7 +50,7 @@ export const assertValidManifest = (data: Manifest) => {
     .addSchema(image)
     .addSchema(media)
     .addSchema(character)
-    .addSchema(index).compile(builtin);
+    .compile(index);
 
   if (!validate(data)) {
     throw new AssertionError(prettify(validate, {

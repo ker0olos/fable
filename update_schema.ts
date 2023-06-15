@@ -4,11 +4,12 @@ import { green } from '$std/fmt/colors.ts';
 
 import { load as Dotenv } from '$std/dotenv/mod.ts';
 
-try {
-  await Dotenv({ export: true, allowEmptyValues: true });
-} catch {
-  //
-}
+await Dotenv({
+  export: true,
+  defaultsPath: '.env.example',
+  allowEmptyValues: true,
+  examplePath: null,
+});
 
 if (import.meta.main) {
   const FAUNA_SECRET = Deno.env.get('FAUNA_SECRET');

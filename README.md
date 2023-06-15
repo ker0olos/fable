@@ -10,9 +10,6 @@
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)][invite]
 [![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20support%20server&color=blue)][discord]
 
-[![Fable Status](https://api.checklyhq.com/v1/badges/checks/68acae41-252d-4684-89bf-face9a8b71bd?style=flat&theme=default&responseTime=true)](https://fable.instatus.com)
-[![Fable Status 2](https://api.checklyhq.com/v1/badges/checks/086d07ba-30e7-475d-b26d-309e87e2d2bd?style=flat&theme=default&responseTime=true)](https://fable.instatus.com)
-
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&label=tests)
 [![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC)](https://app.codecov.io/github/ker0olos/fable)
 
@@ -57,13 +54,13 @@ Fable has no in-app purchases, no premiums, and no bullshit.
 <p>
   <img align="left" src="https://i.imgur.com/y0PQpOj.png" alt="Stealing">
   <h4>Stealing</h4>
-  When all negotiations fails, it's fine to take what you want by force, right? Steal characters from that one annoying server member that refuses to trade.
+  When all negotiations fail, taking what you want by force is fine, right? Steal characters from that one annoying server member that refuses to trade.
 </p>
 
 <br clear="left"/>
 <br clear="left"/>
 
-<img src="https://i.imgur.com/478NYxi.png" alt="Fable compared to other bots">
+<img src="https://i.imgur.com/y5eV15M.png" alt="Fable compared to other bots">
 
 </details>
 </i>
@@ -77,19 +74,20 @@ Fable is a free, open-source gacha bot — a friendly, powerful alternative to
 bots like Mudae, Sofi, Karuta. Like those bots, you can pull anime characters,
 customize, and upgrade them.
 
-Unlike those bots, Fable is not a cash-grab scam, everything in Fable is free,
+Unlike those bots, Fable is NOT a cash-grab scam, everything in Fable is free,
 no players can pay to get ahead.
 
-Fable also has a powerful system to manage the characters in your server, people
-can make community packs that are full of new characters and anime.
-
-Wanna make your own community pack? Go to <https://packs.deno.dev>
-
-Please note that Discord currently won't notify you after you add Fable or any
-other "app" to your server. After adding Fable just go back to your server and
-call `/help` to confirm Fable is working.
+Fable also has an amazing system where anyone can handcraft new characters, or
+add characters that are missing from Fable. Then anyone can find and install the
+packs you make, wanna start creating your own community pack? Visit
+<https://packs.deno.dev>
 
 #### [Add Fable to Your Server][invite]
+
+_Please note that **Discord** currently won't notify you after you add Fable or
+any other "app" to your server. Fable also won't show up in your members' list,
+After adding Fable go back to your server and call `/help` to confirm Fable is
+working._
 
 <br clear="right"/>
 

@@ -2375,41 +2375,5 @@ snapshot[`commands 1`] = `
     ],
     type: undefined,
   },
-  {
-    default_member_permissions: undefined,
-    description: "A pack powered by [AniList](https://anilist.co).
-" +
-      "
-" +
-      "Contains over 100K of anime and manga characters.",
-    dm_permission: false,
-    name: "anilist",
-    options: [
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "Find when the next episode of an anime is airing",
-        max_value: undefined,
-        min_value: undefined,
-        name: "next_episode",
-        options: [
-          {
-            autocomplete: undefined,
-            choices: undefined,
-            description: "The title for an anime",
-            max_value: undefined,
-            min_value: undefined,
-            name: "title",
-            options: undefined,
-            required: true,
-            type: 3,
-          },
-        ],
-        required: false,
-        type: 1,
-      },
-    ],
-    type: undefined,
-  },
 ]
 `;

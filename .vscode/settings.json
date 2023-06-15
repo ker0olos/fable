@@ -40,7 +40,7 @@
       ]
     },
     {
-      "url": "./json/schema.builtin.json",
+      "url": "./json/schema.json",
       "fileMatch": [
         "packs/*/manifest.json"
       ]

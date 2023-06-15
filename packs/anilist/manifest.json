@@ -3,19 +3,5 @@
   "id": "anilist",
   "title": "AniList",
   "description": "A pack powered by [AniList](https://anilist.co).\n\nContains over 100K of anime and manga characters.",
-  "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png",
-  "commands": {
-    "next_episode": {
-      "source": "nextEpisode",
-      "description": "Find when the next episode of an anime is airing",
-      "options": [
-        {
-          "id": "title",
-          "description": "The title for an anime",
-          "type": "string",
-          "required": true
-        }
-      ]
-    }
-  }
+  "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/AniList_logo.svg/512px-AniList_logo.svg.png"
 }
