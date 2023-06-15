@@ -161,8 +161,6 @@ export interface Manifest {
     conflicts?: string[];
     new?: DisaggregatedCharacter[];
   };
-  // properties available for builtin packs only
-  commands?: { [key: string]: Command };
 }
 
 export interface PackInstall {
