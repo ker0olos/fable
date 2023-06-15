@@ -6,11 +6,12 @@ import { green } from '$std/fmt/colors.ts';
 
 import { load as Dotenv } from '$std/dotenv/mod.ts';
 
-try {
-  await Dotenv({ export: true, allowEmptyValues: true });
-} catch {
-  //
-}
+await Dotenv({
+  export: true,
+  defaultsPath: '.env.example',
+  allowEmptyValues: true,
+  examplePath: null,
+});
 
 import fauna from '$fauna';
 

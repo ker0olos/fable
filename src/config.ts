@@ -45,9 +45,12 @@ export async function initConfig(): Promise<void> {
     config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
 
     // load .env file
-    if (!config.deploy) {
-      await Dotenv({ export: true, allowEmptyValues: true });
-    }
+    await Dotenv({
+      export: true,
+      defaultsPath: '.env.example',
+      allowEmptyValues: true,
+      examplePath: null,
+    });
 
     config.sentry = Deno.env.get('SENTRY_DSN');
     config.instatus = Deno.env.get('INSTATUS_WEBHOOK');
