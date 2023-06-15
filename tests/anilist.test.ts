@@ -1,12 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals, assertRejects } from '$std/testing/asserts.ts';
+import { assertEquals } from '$std/testing/asserts.ts';
 
 import { assertSpyCallArg, assertSpyCalls, stub } from '$std/testing/mock.ts';
 
 import * as anilist from '../packs/anilist/index.ts';
-
-import { Status } from '../packs/anilist/types.ts';
 
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {

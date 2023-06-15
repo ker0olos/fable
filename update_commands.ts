@@ -4,8 +4,6 @@ import { load as Dotenv } from '$std/dotenv/mod.ts';
 
 import { green } from '$std/fmt/colors.ts';
 
-import { Manifest } from './src/types.ts';
-
 try {
   await Dotenv({ export: true, allowEmptyValues: true });
 } catch {

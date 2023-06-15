@@ -2,12 +2,7 @@
 
 import { assertEquals } from '$std/testing/asserts.ts';
 
-import {
-  assertSpyCall,
-  assertSpyCallArg,
-  spy,
-  stub,
-} from '$std/testing/mock.ts';
+import { assertSpyCall, spy, stub } from '$std/testing/mock.ts';
 
 import * as discord from '../src/discord.ts';
 
