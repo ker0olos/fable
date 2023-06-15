@@ -4,20 +4,6 @@ snapshot[`list > anilist 1`] = `
 {
   manifest: {
     author: "Fable",
-    commands: {
-      next_episode: {
-        description: "Find when the next episode of an anime is airing",
-        options: [
-          {
-            description: "The title for an anime",
-            id: "title",
-            required: true,
-            type: "string",
-          },
-        ],
-        source: "nextEpisode",
-      },
-    },
     description: "A pack powered by [AniList](https://anilist.co).
 " +
       "

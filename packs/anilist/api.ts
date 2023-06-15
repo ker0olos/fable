@@ -252,25 +252,3 @@ export async function characters(
 
   return data.Page.characters;
 }
-
-export async function nextEpisode(
-  variables: { search: string },
-): Promise<AniListMedia> {
-  const query = gql`
-    query ($search: String) {
-      Media(search: $search, type: ANIME, sort: ${mediaDefaultSort}, isAdult: false) {
-        title {
-          english
-          romaji
-          native
-        }
-        status
-        nextAiringEpisode {
-          airingAt
-        },
-      }
-    }
-  `;
-
-  return (await request({ url, query, variables })).Media;
-}

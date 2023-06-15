@@ -162,6 +162,12 @@ Deno.test('give', async (test) => {
                   style: 2,
                   type: 2,
                 },
+                {
+                  custom_id: 'like=anilist:1',
+                  label: '/like',
+                  style: 2,
+                  type: 2,
+                },
               ],
               type: 1,
             },

@@ -43,7 +43,7 @@ function pages(
           .setAuthor({ name: '2.' })
           .setTitle('`/synthesize`')
           .setDescription([
-            '~~Synthesize Merge~~ Sacrifice characters to pull a new character with a higher rating.',
+            'Sacrifice characters to pull a new character with a higher rating.',
             '',
             '__Be careful where you sacrifice your characters.__',
             'Characters are the main currency in Fable. While synthesis returns a higher-rated character its *"currency"* value will always be lower than the sum of the sacrificed characters.',
@@ -164,16 +164,12 @@ function pages(
           .setUrl('https://discord.gg/H69RVBxeYY'),
         new discord.Component()
           .setLabel('Donate')
-          .setUrl('https://github.com/sponsors/ker0olos'),
+          .setUrl('https://ko-fi.com/ker0olos'),
       ])
       .addEmbed(
         new discord.Embed()
           .setAuthor({ name: 'Roadmap' })
           .setDescription([
-            '__**Recently Added**__',
-            '',
-            '`/steal`\n_steal a character from another user_',
-            '',
             '__**Releasing in the near future (5 days ~ 2 months)**__',
             '',
             '**[Battles](https://github.com/ker0olos/fable/issues/74)**',
@@ -233,8 +229,6 @@ function pages(
             '- `/buy guaranteed` `/shop guaranteed`: _use votes to buy pulls with a specific guaranteed rating_',
             '',
             '- `/logs`: _list user last few found characters_',
-            '',
-            '- `/anilist next_episode`: _find when the next episode of an anime is airing_',
           ].join('\n')),
       ),
     new discord.Message()
@@ -242,9 +236,7 @@ function pages(
         new discord.Embed().setAuthor({ name: 'Admin Commands' })
           .setDescription([
             '_> `/packs` requires `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we don\'t recommend that._',
-            '- `/packs builtin`: _list all the builtin packs_',
             '- `/packs community`: _list all installed community packs_',
-            '',
             '- `/packs install`: _install a community pack_',
             '- `/packs uninstall`: _uninstall a pack_',
           ].join('\n')),

@@ -4,8 +4,6 @@ import { load as Dotenv } from '$std/dotenv/mod.ts';
 
 import { green } from '$std/fmt/colors.ts';
 
-import { Manifest } from './src/types.ts';
-
 try {
   await Dotenv({ export: true, allowEmptyValues: true });
 } catch {
@@ -133,38 +131,6 @@ const Command = ({
   );
 
   return commands;
-};
-
-const Pack = (path: string): Command => {
-  const data = Deno.readTextFileSync(path + '/manifest.json');
-
-  const manifest: Manifest = JSON.parse(data);
-
-  if (!manifest.commands) {
-    throw new Error('no commands found');
-  }
-
-  return Command({
-    name: manifest.id,
-    // deno-lint-ignore no-non-null-assertion
-    description: manifest.description!,
-    options: Object.entries(manifest.commands).map(([name, command]) => {
-      return Option({
-        name,
-        description: command.description,
-        type: Type.SUB_COMMAND,
-        optional: true,
-        options: command.options.map((opt) =>
-          Option({
-            name: opt.id,
-            description: opt.description,
-            type: Type[opt.type.toUpperCase() as keyof typeof Type],
-            optional: !opt.required,
-          })
-        ),
-      });
-    }),
-  })[0];
 };
 
 async function put(commands: Command[], {
@@ -779,8 +745,6 @@ export const commands = [
       }),
     ],
   }),
-  // non-standard commands (pack commands)
-  Pack('./packs/anilist'),
 ];
 
 if (import.meta.main) {

@@ -661,11 +661,6 @@ export const handler = async (r: Request) => {
               nick: userId !== member.user.id,
             }).send();
           }
-          case 'anilist': {
-            // deno-lint-ignore no-non-null-assertion
-            return (await packs.anilist(subcommand!, interaction))!
-              .send();
-          }
           default: {
             break;
           }

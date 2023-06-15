@@ -55,7 +55,6 @@ const packs = {
   aggregate,
   aliasToArray,
   all,
-  anilist,
   cachedGuilds,
   cachedChannels,
   characters,
@@ -72,20 +71,6 @@ const packs = {
   uninstall,
   uninstallDialog,
 };
-
-async function anilist(
-  name: string,
-  interaction: discord.Interaction<unknown>,
-): Promise<discord.Message> {
-  // deno-lint-ignore no-non-null-assertion
-  const command = anilistManifest.commands![name];
-
-  return await _anilist.default
-    [command.source as keyof typeof _anilist.default](
-      // deno-lint-ignore no-explicit-any
-      interaction.options as any,
-    );
-}
 
 async function all(
   { guildId, type }: {

@@ -117,7 +117,7 @@ snapshot[`/help 2`] = `
         author: {
           name: "2.",
         },
-        description: "~~Synthesize Merge~~ Sacrifice characters to pull a new character with a higher rating.
+        description: "Sacrifice characters to pull a new character with a higher rating.
 " +
           "
 " +
@@ -468,7 +468,7 @@ snapshot[`/help 6`] = `
             label: "Donate",
             style: 5,
             type: 2,
-            url: "https://github.com/sponsors/ker0olos",
+            url: "https://ko-fi.com/ker0olos",
           },
         ],
         type: 1,
@@ -479,17 +479,7 @@ snapshot[`/help 6`] = `
         author: {
           name: "Roadmap",
         },
-        description: "__**Recently Added**__
-" +
-          "
-" +
-          "\`/steal\`
-" +
-          "_steal a character from another user_
-" +
-          "
-" +
-          "__**Releasing in the near future (5 days ~ 2 months)**__
+        description: "__**Releasing in the near future (5 days ~ 2 months)**__
 " +
           "
 " +
@@ -660,11 +650,7 @@ snapshot[`/help 8`] = `
 " +
           "
 " +
-          "- \`/logs\`: _list user last few found characters_
-" +
-          "
-" +
-          "- \`/anilist next_episode\`: _find when the next episode of an anime is airing_",
+          "- \`/logs\`: _list user last few found characters_",
         type: "rich",
       },
     ],
@@ -710,11 +696,7 @@ snapshot[`/help 9`] = `
         },
         description: "_> \`/packs\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we don't recommend that._
 " +
-          "- \`/packs builtin\`: _list all the builtin packs_
-" +
           "- \`/packs community\`: _list all installed community packs_
-" +
-          "
 " +
           "- \`/packs install\`: _install a community pack_
 " +

@@ -444,14 +444,17 @@ function give({
       });
 
       if (giveCharacters.length === 1) {
+        const characterId = `${giveCharacters[0].packId}:${
+          giveCharacters[0].id
+        }`;
+
         newMessage.addComponents([
           new discord.Component()
             .setLabel('/character')
-            .setId(
-              `character`,
-              `${giveCharacters[0].packId}:${giveCharacters[0].id}`,
-              '1',
-            ),
+            .setId(`character`, characterId, '1'),
+          new discord.Component()
+            .setLabel('/like')
+            .setId(`like`, characterId),
         ]);
       }
 

@@ -662,6 +662,15 @@ function attempt({
         }),
       );
 
+      message.addComponents([
+        new discord.Component()
+          .setLabel('/character')
+          .setId(`character`, characterId, '1'),
+        new discord.Component()
+          .setLabel('/like')
+          .setId(`like`, characterId),
+      ]);
+
       message.patch(token);
 
       return new discord.Message()
@@ -685,6 +694,11 @@ function attempt({
             value: `${discord.emotes.remove}`,
           }),
         )
+        .addComponents([
+          new discord.Component()
+            .setLabel('/character')
+            .setId(`character`, characterId, '1'),
+        ])
         .followup(token);
     })
     .catch(async (err) => {
