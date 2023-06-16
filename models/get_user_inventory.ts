@@ -61,8 +61,8 @@ export interface Inventory {
   };
 }
 
-export const MAX_PULLS = 5;
-export const RECHARGE_MINS = 30;
+export const MAX_PULLS = 10;
+export const RECHARGE_MINS = 5;
 
 export function getUser(id: StringExpr): UserExpr {
   return fql.Let({
