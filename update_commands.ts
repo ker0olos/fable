@@ -705,18 +705,17 @@ export const commands = [
       }),
     ],
   }),
+  // pack viewing
+  ...Command({
+    name: 'community',
+    description: 'View all instated community packs',
+  }),
   // pack management commands
   ...Command({
     name: 'packs',
     description: 'pack management commands',
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
-      Option({
-        name: 'community',
-        description: 'View all instated community packs',
-        type: Type.SUB_COMMAND,
-        optional: true,
-      }),
       Option({
         name: 'install',
         description: 'Install a community pack',

@@ -6778,95 +6778,82 @@ Deno.test('synthesize command handlers', async (test) => {
   });
 });
 
-Deno.test('packs command handlers', async (test) => {
-  await test.step('packs community', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Command,
-      guild_id: 'guild_id',
-      channel_id: 'channel_id',
-      data: {
-        name: 'packs',
-        options: [{
-          type: 1,
-          name: `community`,
-          options: [],
-        }],
+Deno.test('community', async () => {
+  const body = JSON.stringify({
+    id: 'id',
+    token: 'token',
+    type: discord.InteractionType.Command,
+    guild_id: 'guild_id',
+    channel_id: 'channel_id',
+    data: {
+      name: 'community',
+    },
+  });
+
+  const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+  const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+    valid: true,
+    body,
+  } as any));
+
+  const packsStub = stub(packs, 'pages', () =>
+    ({
+      send: () => true,
+    }) as any);
+
+  config.publicKey = 'publicKey';
+
+  try {
+    const request = new Request('http://localhost:8000', {
+      body,
+      method: 'POST',
+      headers: {
+        'X-Signature-Ed25519': 'ed25519',
+        'X-Signature-Timestamp': 'timestamp',
       },
     });
 
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+    const response = await handler(request);
 
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const setFlagsSpy = spy(() => ({
-      send: () => true,
-    }));
-
-    const packsStub = stub(packs, 'pages', () =>
-      ({
-        setFlags: setFlagsSpy,
-      }) as any);
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [
-          request,
-          {
-            POST: {
-              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-            },
+    assertSpyCall(validateStub, 0, {
+      args: [
+        request,
+        {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
           },
-        ],
-      });
+        },
+      ],
+    });
 
-      assertSpyCall(setFlagsSpy, 0, {
-        args: [64],
-      });
+    assertSpyCall(signatureStub, 0, {
+      args: [{
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      }],
+    });
 
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
+    assertSpyCall(packsStub, 0, {
+      args: [{
+        guildId: 'guild_id',
+        index: 0,
+      }],
+    });
 
-      assertSpyCall(packsStub, 0, {
-        args: [{
-          guildId: 'guild_id',
-          index: 0,
-        }],
-      });
+    assertEquals(response, true as any);
+  } finally {
+    delete config.publicKey;
 
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
+    packsStub.restore();
+    validateStub.restore();
+    signatureStub.restore();
+  }
+});
 
-      packsStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-
+Deno.test('packs command handlers', async (test) => {
   await test.step('packs install', async () => {
     const body = JSON.stringify({
       id: 'id',

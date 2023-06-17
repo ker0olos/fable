@@ -2310,22 +2310,19 @@ snapshot[`commands 1`] = `
     type: undefined,
   },
   {
+    default_member_permissions: undefined,
+    description: "View all instated community packs",
+    dm_permission: false,
+    name: "community",
+    options: undefined,
+    type: undefined,
+  },
+  {
     default_member_permissions: 32,
     description: "pack management commands",
     dm_permission: false,
     name: "packs",
     options: [
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "View all instated community packs",
-        max_value: undefined,
-        min_value: undefined,
-        name: "community",
-        options: undefined,
-        required: false,
-        type: 1,
-      },
       {
         autocomplete: undefined,
         choices: undefined,

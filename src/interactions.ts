@@ -600,15 +600,15 @@ export const handler = async (r: Request) => {
             }
             break;
           }
+          case 'community': {
+            return (await packs.pages({
+              index: 0,
+              guildId,
+            })).send();
+          }
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'community': {
-                return (await packs.pages({
-                  index: 0,
-                  guildId,
-                })).setFlags(discord.MessageFlags.Ephemeral).send();
-              }
               case 'install': {
                 const id = options['id'] as string;
 

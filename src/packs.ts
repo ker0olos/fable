@@ -312,13 +312,6 @@ async function pages(
     ]);
   }
 
-  message.addComponents([
-    new discord.Component()
-      .setId('puninstall', pack.manifest.id)
-      .setStyle(discord.ButtonStyle.Red)
-      .setLabel('Uninstall'),
-  ]);
-
   return discord.Message.page({
     index,
     total: list.length,
