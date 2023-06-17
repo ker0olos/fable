@@ -30,6 +30,6 @@ Deno.test('model', async (test) => {
 });
 
 Deno.test('variables', () => {
-  assertEquals(MAX_PULLS, 5);
-  assertEquals(RECHARGE_MINS, 30);
+  assertEquals(MAX_PULLS, 10);
+  assertEquals(RECHARGE_MINS, 5);
 });
