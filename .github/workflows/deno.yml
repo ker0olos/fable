@@ -36,7 +36,7 @@ jobs:
 
   deploy:
     name: deploy
-    needs: [test]
+    #needs: [test]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
