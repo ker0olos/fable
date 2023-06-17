@@ -771,7 +771,7 @@ Deno.test('read json', async () => {
 Deno.test('recharge timestamps', () => {
   const now = new Date();
 
-  const expected = new Date().setMinutes(now.getMinutes() + 30).toString();
+  const expected = new Date().setMinutes(now.getMinutes() + 5).toString();
 
   assertEquals(
     utils.rechargeTimestamp(now.toISOString()),
