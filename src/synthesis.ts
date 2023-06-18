@@ -139,11 +139,11 @@ function characterPreview(
 
   if (media) {
     embed.addField({
-      name: packs.aliasToArray(media.title)[0],
-      value: name,
+      name: utils.wrap(packs.aliasToArray(media.title)[0]),
+      value: utils.wrap(name),
     });
   } else {
-    embed.setDescription(name);
+    embed.setDescription(utils.wrap(name));
   }
 
   return embed;
