@@ -4099,13 +4099,14 @@ Deno.test('/community', async (test) => {
     config.communityPacks = true;
 
     try {
-      await assertRejects(() =>
-        packs.pages({
-          guildId: 'guild_id',
-          index: 0,
-        }),
+      await assertRejects(
+        () =>
+          packs.pages({
+            guildId: 'guild_id',
+            index: 0,
+          }),
         NonFetalError,
-        'This pack doesn\'t exist'
+        'This pack doesn\'t exist',
       );
     } finally {
       delete config.communityPacks;

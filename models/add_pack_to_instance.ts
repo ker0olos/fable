@@ -130,38 +130,62 @@ export function addPack(
   }, ({ match }) =>
     fql.If(
       fql.IsNonEmpty(match),
-      fql.Let(
-        {
-          pack: {
-            ref: fql.Ref(fql.Get(match)),
-            timestamp: fql.Now(),
-            by: userId,
-          } as PackInstall,
-          updatedInstance: fql.If(
-            // if the pack already exists in the packs list
-            fql.Includes(
-              [fql.Ref(instance)],
-              fql.Paginate(
-                fql.Match(
-                  fql.Index('pack_ref_instances'),
-                  fql.Ref(fql.Get(match)),
-                ),
-                {},
-              ),
-            ),
-            instance,
-            fql.Update<Instance>(fql.Ref(instance), {
-              packs: fql.Append(
-                fql.Var('pack'),
-                fql.Select(['data', 'packs'], instance),
-              ),
-            }),
+      fql.If(
+        fql.Or(
+          fql.Equals(
+            false,
+            fql.Select(['data', 'manifest', 'private'], fql.Get(match), false),
           ),
+          fql.Equals(
+            userId,
+            fql.Select(['data', 'owner'], fql.Get(match)),
+          ),
+          fql.Includes(
+            userId,
+            fql.Select(
+              ['data', 'manifest', 'maintainers'],
+              fql.Get(match),
+              [],
+            ),
+          ),
+        ),
+        fql.Let(
+          {
+            pack: {
+              ref: fql.Ref(fql.Get(match)),
+              timestamp: fql.Now(),
+              by: userId,
+            } as PackInstall,
+            updatedInstance: fql.If(
+              // if the pack already exists in the packs list
+              fql.Includes(
+                [fql.Ref(instance)],
+                fql.Paginate(
+                  fql.Match(
+                    fql.Index('pack_ref_instances'),
+                    fql.Ref(fql.Get(match)),
+                  ),
+                  {},
+                ),
+              ),
+              instance,
+              fql.Update<Instance>(fql.Ref(instance), {
+                packs: fql.Append(
+                  fql.Var('pack'),
+                  fql.Select(['data', 'packs'], instance),
+                ),
+              }),
+            ),
+          },
+          ({ pack }) => ({
+            ok: true,
+            install: pack,
+          }),
+        ),
+        {
+          ok: false,
+          error: 'PACK_PRIVATE',
         },
-        ({ pack }) => ({
-          ok: true,
-          install: pack,
-        }),
       ),
       {
         ok: false,

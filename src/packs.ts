@@ -347,6 +347,10 @@ async function install(
     return message;
   } else {
     switch (response.error) {
+      case 'PACK_PRIVATE':
+        throw new NonFetalError(
+          'This pack is private and cannot be installed by you',
+        );
       case 'PACK_NOT_FOUND':
         throw new Error('404');
       default:

@@ -12,6 +12,8 @@ type Manifest @embedded {
   characters: CharacterObject
   # list of discord user ids
   maintainers: [String!]
+  # private packs can only be installed by its maintainers
+  private: Boolean
 }
 
 type MediaObject @embedded {

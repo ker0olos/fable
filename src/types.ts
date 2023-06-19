@@ -146,6 +146,7 @@ export interface Manifest {
   image?: string;
   url?: string;
   depends?: string[];
+  private?: boolean;
   maintainers?: string[];
   conflicts?: string[];
   media?: {
@@ -160,16 +161,14 @@ export interface Manifest {
 
 export interface PackInstall {
   id?: number;
-  by?: {
-    id: string;
-  };
+  by?: { id: string };
   ref: Pack;
 }
 
 export interface Pack {
   manifest: Manifest;
-  version?: number;
   approved?: boolean;
+  version?: number;
 }
 
 // deno-lint-ignore no-namespace
@@ -236,6 +235,10 @@ export namespace Schema {
     | {
       ok: false;
       error: 'PACK_NOT_FOUND';
+    }
+    | {
+      ok: false;
+      error: 'PACK_PRIVATE';
     }
     | {
       ok: false;
