@@ -84,6 +84,10 @@ type Pack @collection(name: "pack") {
   version: Int!
   # original owner
   owner: String!
+  # approved by us
+  approved: Boolean
+  # private packs can only be installed by its maintainers
+  private: Boolean
 }
 
 type Badge @collection(name: "badge") {

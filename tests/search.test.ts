@@ -5648,8 +5648,6 @@ Deno.test('media characters', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description:
-                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               fields: [
                 {
                   name: 'name',
@@ -5770,8 +5768,7 @@ Deno.test('media characters', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description:
-                '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              description: '<@user_id>',
               fields: [
                 {
                   name: 'name',

@@ -448,13 +448,17 @@ function characterEmbed(
   if (options?.existing?.rating) {
     // FIXME #63 Media Conflict
 
-    const rating = new Rating({ stars: options.existing.rating });
+    if (options?.rating) {
+      const rating = new Rating({ stars: options.existing.rating });
 
-    embed.setDescription(
-      options.existing.user?.id
-        ? `<@${options.existing.user.id}>\n\n${rating.emotes}`
-        : rating.emotes,
-    );
+      embed.setDescription(
+        options.existing.user?.id
+          ? `<@${options.existing.user.id}>\n\n${rating.emotes}`
+          : rating.emotes,
+      );
+    } else if (options.existing.user?.id) {
+      embed.setDescription(`<@${options.existing.user.id}>`);
+    }
   } else if (options?.rating) {
     if (typeof options.rating === 'boolean' && options.rating) {
       options.rating = Rating.fromCharacter(character as Character);
@@ -588,7 +592,7 @@ async function mediaCharacters(
 ): Promise<discord.Message> {
   const list = await packs.all({ guildId });
 
-  const { character: node, role, media, next, total } = await packs
+  const { character: node, media, next, total } = await packs
     .mediaCharacters({
       id,
       search,
@@ -629,12 +633,12 @@ async function mediaCharacters(
   ]);
 
   const message = characterMessage(character, channelId, {
-    existing,
-    rating: new Rating({
-      role,
-      popularity: character.popularity ?? media.popularity,
-    }),
+    rating: false,
     relations: false,
+    description: true,
+    externalLinks: true,
+    footer: true,
+    existing,
   }).addComponents([
     new discord.Component()
       .setId('media', `${media.packId}:${media.id}`)

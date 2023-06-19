@@ -127,7 +127,7 @@ function characterPreview(
   const media = character.media?.edges?.[0]?.node;
 
   const name = `${existing.rating}${discord.emotes.smolStar}${
-    existing?.nickname ?? packs.aliasToArray(character.name)[0]
+    utils.wrap(existing?.nickname ?? packs.aliasToArray(character.name)[0])
   }`;
 
   const embed = new discord.Embed()
@@ -140,10 +140,10 @@ function characterPreview(
   if (media) {
     embed.addField({
       name: utils.wrap(packs.aliasToArray(media.title)[0]),
-      value: utils.wrap(name),
+      value: name,
     });
   } else {
-    embed.setDescription(utils.wrap(name));
+    embed.setDescription(name);
   }
 
   return embed;
