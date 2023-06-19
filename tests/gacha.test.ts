@@ -28,7 +28,6 @@ import {
   MediaFormat,
   MediaRelation,
   MediaType,
-  PackType,
   Schema,
 } from '../src/types.ts';
 
@@ -556,11 +555,11 @@ Deno.test('filter invalid pools', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -735,11 +734,11 @@ Deno.test('disabled', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -821,11 +820,11 @@ Deno.test('disabled', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -1239,11 +1238,11 @@ Deno.test('valid pool', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -1899,11 +1898,11 @@ Deno.test('valid rng pools', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -4929,7 +4928,7 @@ Deno.test('/gacha', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'There are no more characters left',
+              description: 'There are no more characters left in this range',
             },
           ],
           components: [],

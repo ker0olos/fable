@@ -707,13 +707,13 @@ export const commands = [
   }),
   // pack viewing
   ...Command({
-    name: 'community',
-    description: 'View all instated community packs',
-  }),
-  // pack management commands
-  ...Command({
     name: 'packs',
-    description: 'pack management commands',
+    description: 'View all instated packs',
+  }),
+  // community packs management commands
+  ...Command({
+    name: 'community',
+    description: 'community packs management commands',
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
       Option({

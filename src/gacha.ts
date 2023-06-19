@@ -446,7 +446,12 @@ async function pullAnimation(
 
   await message.patch(token);
 
-  if (ping && guildId) {
+  if (
+    pull.character.media?.edges?.[0].role &&
+    pull.character.media.edges[0].role !== CharacterRole.Background &&
+    ping &&
+    guildId
+  ) {
     const pings: string[] = [];
 
     const inventories = await user.getActiveInventories(guildId);
@@ -541,11 +546,9 @@ function start(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              `There are no more ${
-                typeof guarantee === 'number'
-                  ? `${guarantee}${discord.emotes.smolStar}`
-                  : ''
-              }characters left`,
+              typeof guarantee === 'number'
+                ? `There are no more ${guarantee}${discord.emotes.smolStar}characters left`
+                : 'There are no more characters left in this range',
             ),
           ).patch(token);
       }

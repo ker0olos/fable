@@ -29,7 +29,6 @@ import {
   MediaFormat,
   MediaRelation,
   MediaType,
-  PackType,
 } from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
@@ -38,48 +37,40 @@ import { NonFetalError } from '../src/errors.ts';
 
 Deno.test('list', async (test) => {
   await test.step('anilist', async (test) => {
-    const list = await packs.all({ type: PackType.Builtin });
+    const list = await packs.all({});
 
     const pack = list[0];
 
     assertEquals(list.length, 2);
 
-    assertValidManifest(pack.manifest);
+    assertValidManifest(pack.ref.manifest);
 
     await assertSnapshot(test, pack);
   });
 
   await test.step('vtubers', async (test) => {
-    const list = await packs.all({ type: PackType.Builtin });
+    const list = await packs.all({});
 
     const pack = list[1];
 
     assertEquals(list.length, 2);
 
-    assertValidManifest(pack.manifest);
+    assertValidManifest(pack.ref.manifest);
 
     await assertSnapshot(test, pack);
   });
 
-  await test.step('community', async () => {
-    const list = await packs.all({ type: PackType.Community });
+  await test.step('filter', async () => {
+    const list = await packs.all({ filter: true });
 
     assertEquals(list.length, 0);
-  });
-
-  await test.step('no type', async () => {
-    const list = await packs.all({});
-
-    assertEquals(list.length, 1);
-
-    assertEquals(list[0].manifest.id, 'vtubers');
   });
 });
 
 Deno.test('reserved ids', async () => {
-  const list = await packs.all({ type: PackType.Builtin });
+  const list = await packs.all({});
 
-  list.forEach(({ manifest }) => {
+  list.forEach(({ ref: { manifest } }) => {
     assertEquals(validate(manifest), {
       errors: [`${manifest.id} is a reserved id`],
     });
@@ -98,11 +89,11 @@ Deno.test('disabled', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -126,11 +117,11 @@ Deno.test('disabled', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -154,11 +145,11 @@ Deno.test('disabled', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -206,11 +197,11 @@ Deno.test('disabled relations', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -262,11 +253,11 @@ Deno.test('disabled relations', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -315,11 +306,11 @@ Deno.test('disabled relations', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -381,15 +372,15 @@ Deno.test('disabled relations', async (test) => {
       'all',
       () =>
         Promise.resolve([
-          { manifest, type: PackType.Community },
-          { manifest: manifest2, type: PackType.Community },
+          { ref: { manifest } },
+          { ref: { manifest: manifest2 } },
         ]),
     );
 
     packs.cachedGuilds = {
       'guild_id': [
-        { manifest, type: PackType.Community },
-        { manifest: manifest2, type: PackType.Community },
+        { ref: { manifest } },
+        { ref: { manifest: manifest2 } },
       ],
     };
 
@@ -450,15 +441,15 @@ Deno.test('disabled relations', async (test) => {
       'all',
       () =>
         Promise.resolve([
-          { manifest, type: PackType.Community },
-          { manifest: manifest2, type: PackType.Community },
+          { ref: { manifest } },
+          { ref: { manifest: manifest2 } },
         ]),
     );
 
     packs.cachedGuilds = {
       'guild_id': [
-        { manifest, type: PackType.Community },
-        { manifest: manifest2, type: PackType.Community },
+        { ref: { manifest } },
+        { ref: { manifest: manifest2 } },
       ],
     };
 
@@ -519,15 +510,15 @@ Deno.test('disabled relations', async (test) => {
       'all',
       () =>
         Promise.resolve([
-          { manifest, type: PackType.Community },
-          { manifest: manifest2, type: PackType.Community },
+          { ref: { manifest } },
+          { ref: { manifest: manifest2 } },
         ]),
     );
 
     packs.cachedGuilds = {
       'guild_id': [
-        { manifest, type: PackType.Community },
-        { manifest: manifest2, type: PackType.Community },
+        { ref: { manifest } },
+        { ref: { manifest: manifest2 } },
       ],
     };
 
@@ -801,7 +792,7 @@ Deno.test('search for media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -866,11 +857,11 @@ Deno.test('search for media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -975,11 +966,11 @@ Deno.test('search for media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -1029,15 +1020,15 @@ Deno.test('search for media', async (test) => {
       'all',
       () =>
         Promise.resolve([
-          { manifest, type: PackType.Community },
-          { manifest: manifest2, type: PackType.Community },
+          { ref: { manifest } },
+          { ref: { manifest: manifest2 } },
         ]),
     );
 
     packs.cachedGuilds = {
       'guild_id': [
-        { manifest, type: PackType.Community },
-        { manifest: manifest2, type: PackType.Community },
+        { ref: { manifest } },
+        { ref: { manifest: manifest2 } },
       ],
     };
 
@@ -1290,11 +1281,11 @@ Deno.test('search for media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -1354,15 +1345,15 @@ Deno.test('search for media', async (test) => {
       'all',
       () =>
         Promise.resolve([
-          { manifest, type: PackType.Community },
-          { manifest: manifest2, type: PackType.Community },
+          { ref: { manifest } },
+          { ref: { manifest: manifest2 } },
         ]),
     );
 
     packs.cachedGuilds = {
       'guild_id': [
-        { manifest, type: PackType.Community },
-        { manifest: manifest2, type: PackType.Community },
+        { ref: { manifest } },
+        { ref: { manifest: manifest2 } },
       ],
     };
 
@@ -1469,7 +1460,7 @@ Deno.test('search for characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -1535,11 +1526,11 @@ Deno.test('search for characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2036,11 +2027,11 @@ Deno.test('media character', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2120,11 +2111,11 @@ Deno.test('media character', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2179,11 +2170,11 @@ Deno.test('media character', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2371,11 +2362,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2575,11 +2566,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2671,11 +2662,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2758,11 +2749,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2848,11 +2839,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2952,11 +2943,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -3244,14 +3235,11 @@ Deno.test('aggregate characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () =>
-        Promise.resolve([
-          { manifest, type: PackType.Community },
-        ]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -3429,14 +3417,11 @@ Deno.test('aggregate characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () =>
-        Promise.resolve([
-          { manifest, type: PackType.Community },
-        ]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -3533,11 +3518,11 @@ Deno.test('aggregate characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -3612,14 +3597,11 @@ Deno.test('aggregate characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () =>
-        Promise.resolve([
-          { manifest, type: PackType.Community },
-        ]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -3712,11 +3694,11 @@ Deno.test('aggregate characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ manifest, type: PackType.Community }],
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -3900,11 +3882,7 @@ Deno.test('/community', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () =>
-        Promise.resolve([
-          { manifest, type: PackType.Community },
-          { manifest, type: PackType.Community },
-        ]),
+      () => Promise.resolve([{ ref: { manifest } }, { ref: { manifest } }]),
     );
 
     config.communityPacks = true;
@@ -3923,7 +3901,7 @@ Deno.test('/community', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'community==0=prev',
+                custom_id: 'packs==0=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
@@ -3936,7 +3914,7 @@ Deno.test('/community', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'community==0=next',
+                custom_id: 'packs==0=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -3944,10 +3922,6 @@ Deno.test('/community', async (test) => {
             ],
           }],
           embeds: [{
-            type: 'rich',
-            description:
-              'The following third-party packs were manually installed by your server members',
-          }, {
             type: 'rich',
             title: 'pack_id',
             description: 'description',
@@ -3994,7 +3968,7 @@ Deno.test('/community', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     config.communityPacks = true;
@@ -4013,7 +3987,7 @@ Deno.test('/community', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'community==0=prev',
+                custom_id: 'packs==0=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
@@ -4026,7 +4000,7 @@ Deno.test('/community', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'community==0=next',
+                custom_id: 'packs==0=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -4034,10 +4008,6 @@ Deno.test('/community', async (test) => {
             ],
           }],
           embeds: [{
-            type: 'rich',
-            description:
-              'The following third-party packs were manually installed by your server members',
-          }, {
             type: 'rich',
             description: undefined,
             title: 'Title',
@@ -4060,10 +4030,7 @@ Deno.test('/community', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () =>
-        Promise.resolve([
-          { manifest, type: PackType.Community },
-        ]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     config.communityPacks = true;
@@ -4082,7 +4049,7 @@ Deno.test('/community', async (test) => {
             type: 1,
             components: [
               {
-                custom_id: 'community==0=prev',
+                custom_id: 'packs==0=prev',
                 label: 'Prev',
                 style: 2,
                 type: 2,
@@ -4095,7 +4062,7 @@ Deno.test('/community', async (test) => {
                 type: 2,
               },
               {
-                custom_id: 'community==0=next',
+                custom_id: 'packs==0=next',
                 label: 'Next',
                 style: 2,
                 type: 2,
@@ -4109,10 +4076,6 @@ Deno.test('/community', async (test) => {
             ],
           }],
           embeds: [{
-            type: 'rich',
-            description:
-              'The following third-party packs were manually installed by your server members',
-          }, {
             type: 'rich',
             description: undefined,
             title: 'pack-id',
@@ -4136,22 +4099,14 @@ Deno.test('/community', async (test) => {
     config.communityPacks = true;
 
     try {
-      const message = await packs.pages({
-        guildId: 'guild_id',
-        index: 0,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          components: [],
-          attachments: [],
-          embeds: [{
-            type: 'rich',
-            description: 'No packs have been installed yet',
-          }],
-        },
-      });
+      await assertRejects(() =>
+        packs.pages({
+          guildId: 'guild_id',
+          index: 0,
+        }),
+        NonFetalError,
+        'This pack doesn\'t exist'
+      );
     } finally {
       delete config.communityPacks;
 
@@ -4186,13 +4141,15 @@ Deno.test('/packs install', async (test) => {
             data: {
               addPackToInstance: {
                 ok: true,
-                pack: {
-                  manifest: {
-                    author: 'author',
-                    id: 'pack_id',
-                    description: 'description',
-                    url: 'url',
-                    image: 'image',
+                install: {
+                  ref: {
+                    manifest: {
+                      author: 'author',
+                      id: 'pack_id',
+                      description: 'description',
+                      url: 'url',
+                      image: 'image',
+                    },
                   },
                 },
               },
@@ -4271,7 +4228,7 @@ Deno.test('/packs uninstall', async (test) => {
             data: {
               removePackFromInstance: {
                 ok: true,
-                pack: {
+                uninstall: {
                   manifest: {
                     author: 'author',
                     id: 'pack_id',

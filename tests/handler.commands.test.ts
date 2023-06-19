@@ -25,7 +25,7 @@ import synthesis from '../src/synthesis.ts';
 
 import { NonFetalError, NoPermissionError } from '../src/errors.ts';
 
-import { Manifest, PackType } from '../src/types.ts';
+import { Manifest } from '../src/types.ts';
 
 Deno.test('search command handlers', async (test) => {
   await test.step('search', async () => {
@@ -6778,7 +6778,7 @@ Deno.test('synthesize command handlers', async (test) => {
   });
 });
 
-Deno.test('community', async () => {
+Deno.test('packs', async () => {
   const body = JSON.stringify({
     id: 'id',
     token: 'token',
@@ -6786,7 +6786,7 @@ Deno.test('community', async () => {
     guild_id: 'guild_id',
     channel_id: 'channel_id',
     data: {
-      name: 'community',
+      name: 'packs',
     },
   });
 
@@ -6853,8 +6853,8 @@ Deno.test('community', async () => {
   }
 });
 
-Deno.test('packs command handlers', async (test) => {
-  await test.step('packs install', async () => {
+Deno.test('community packs command handlers', async (test) => {
+  await test.step('community install', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -6867,7 +6867,7 @@ Deno.test('packs command handlers', async (test) => {
         },
       },
       data: {
-        name: 'packs',
+        name: 'community',
         options: [{
           type: 1,
           name: `install`,
@@ -6886,13 +6886,9 @@ Deno.test('packs command handlers', async (test) => {
       body,
     } as any));
 
-    const setFlagsSpy = spy(() => ({
-      send: () => true,
-    }));
-
     const packsStub = stub(packs, 'install', () =>
       ({
-        setFlags: setFlagsSpy,
+        send: () => true,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -6918,10 +6914,6 @@ Deno.test('packs command handlers', async (test) => {
             },
           },
         ],
-      });
-
-      assertSpyCall(setFlagsSpy, 0, {
-        args: [64],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -6958,8 +6950,13 @@ Deno.test('packs command handlers', async (test) => {
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
       channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
-        name: 'packs',
+        name: 'community',
         options: [{
           type: 1,
           name: `uninstall`,
@@ -6987,7 +6984,7 @@ Deno.test('packs command handlers', async (test) => {
       'all',
       () =>
         Promise.resolve([
-          { manifest, type: PackType.Community },
+          { ref: { manifest } },
         ]),
     );
 
@@ -7039,7 +7036,6 @@ Deno.test('packs command handlers', async (test) => {
       assertEquals({
         type: 4,
         data: {
-          flags: 64,
           embeds: [
             {
               type: 'rich',
@@ -7055,12 +7051,12 @@ Deno.test('packs command handlers', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'uninstall=pack_id',
+              custom_id: 'uninstall=pack_id=user_id',
               label: 'Confirm',
               style: 2,
               type: 2,
             }, {
-              custom_id: 'cancel',
+              custom_id: 'cancel=user_id',
               label: 'Cancel',
               style: 4,
               type: 2,
@@ -7085,7 +7081,7 @@ Deno.test('packs command handlers', async (test) => {
       guild_id: 'guild_id',
       channel_id: 'channel_id',
       data: {
-        name: 'packs',
+        name: 'community',
         options: [{
           type: 1,
           name: `uninstall`,

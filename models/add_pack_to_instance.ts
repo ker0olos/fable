@@ -11,12 +11,7 @@ import {
   TimeExpr,
 } from './fql.ts';
 
-import {
-  getGuild,
-  getInstance,
-  Instance,
-  PackInstall,
-} from './get_user_inventory.ts';
+import { getGuild, getInstance, Instance } from './get_user_inventory.ts';
 
 export interface Manifest {
   id: StringExpr;
@@ -28,6 +23,12 @@ export interface Pack {
   updated: TimeExpr;
   version: NumberExpr;
   owner: StringExpr;
+}
+
+export interface PackInstall {
+  ref: RefExpr;
+  timestamp: TimeExpr;
+  by: StringExpr;
 }
 
 export function getPacksByUserId(
@@ -131,6 +132,11 @@ export function addPack(
       fql.IsNonEmpty(match),
       fql.Let(
         {
+          pack: {
+            ref: fql.Ref(fql.Get(match)),
+            timestamp: fql.Now(),
+            by: userId,
+          } as PackInstall,
           updatedInstance: fql.If(
             // if the pack already exists in the packs list
             fql.Includes(
@@ -146,19 +152,15 @@ export function addPack(
             instance,
             fql.Update<Instance>(fql.Ref(instance), {
               packs: fql.Append(
-                {
-                  ref: fql.Ref(fql.Get(match)),
-                  timestamp: fql.Now(),
-                  by: userId,
-                } as PackInstall,
+                fql.Var('pack'),
                 fql.Select(['data', 'packs'], instance),
               ),
             }),
           ),
         },
-        () => ({
+        ({ pack }) => ({
           ok: true,
-          pack: match,
+          install: pack,
         }),
       ),
       {
@@ -201,7 +203,7 @@ export function removePack(
         },
         () => ({
           ok: true,
-          pack: match,
+          uninstall: match,
         }),
       ),
       {

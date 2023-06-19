@@ -1,3 +1,5 @@
+import { PackInstall } from './add_pack_to_instance.ts';
+
 import {
   BooleanExpr,
   Client,
@@ -29,12 +31,6 @@ export interface User {
 export interface Guild {
   id: StringExpr;
   instances: RefExpr[];
-}
-
-export interface PackInstall {
-  ref: RefExpr;
-  timestamp: TimeExpr;
-  by: StringExpr;
 }
 
 export interface Instance {

@@ -21,7 +21,6 @@ import shop from '../src/shop.ts';
 
 import synthesis from '../src/synthesis.ts';
 
-import { PackType } from '../src/types.ts';
 import steal from '../src/steal.ts';
 
 Deno.test('media components', async () => {
@@ -2751,7 +2750,7 @@ Deno.test('packs pages', async (test) => {
       guild_id: 'guild_id',
       channel_id: 'channel_id',
       data: {
-        custom_id: 'community==1',
+        custom_id: 'packs==1',
       },
     });
 
@@ -2824,12 +2823,10 @@ Deno.test('packs pages', async (test) => {
   });
 });
 
-Deno.test('packs uninstall', async (test) => {
+Deno.test('community packs uninstall', async (test) => {
   await test.step('normal', async () => {
     const pack = {
-      id: 1,
-      type: PackType.Community,
-      manifest: { id: 'pack_id' },
+      ref: { manifest: { id: 'pack_id' } },
     };
 
     const body = JSON.stringify({
@@ -2838,8 +2835,13 @@ Deno.test('packs uninstall', async (test) => {
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
       channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
-        custom_id: 'uninstall=pack_id',
+        custom_id: 'uninstall=pack_id=user_id',
       },
     });
 
@@ -2854,18 +2856,15 @@ Deno.test('packs uninstall', async (test) => {
       send: () => true,
     }));
 
-    const setFlagsSpy = spy(() => ({
-      setType: setTypeSpy,
-    }));
-
     const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
 
     const packsStub = stub(packs, 'uninstall', () =>
       ({
-        setFlags: setFlagsSpy,
+        setType: setTypeSpy,
       }) as any);
 
     config.publicKey = 'publicKey';
+    config.communityPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -2894,14 +2893,6 @@ Deno.test('packs uninstall', async (test) => {
           timestamp: 'timestamp',
           publicKey: 'publicKey',
         }],
-      });
-
-      assertSpyCall(setFlagsSpy, 0, {
-        args: [64],
-      });
-
-      assertSpyCall(setTypeSpy, 0, {
-        args: [7],
       });
 
       assertSpyCall(packsStub, 0, {
@@ -2914,6 +2905,7 @@ Deno.test('packs uninstall', async (test) => {
       assertEquals(response, true as any);
     } finally {
       delete config.publicKey;
+      delete config.communityPacks;
 
       listStub.restore();
       packsStub.restore();
@@ -2922,11 +2914,9 @@ Deno.test('packs uninstall', async (test) => {
     }
   });
 
-  await test.step('dialog', async () => {
+  await test.step('no permission', async () => {
     const pack = {
-      id: 1,
-      type: PackType.Community,
-      manifest: { id: 'pack_id' },
+      ref: { manifest: { id: 'pack_id' } },
     };
 
     const body = JSON.stringify({
@@ -2935,8 +2925,13 @@ Deno.test('packs uninstall', async (test) => {
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
       channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
-        custom_id: 'puninstall=pack_id',
+        custom_id: 'uninstall=pack_id=another_user_id',
       },
     });
 
@@ -2947,89 +2942,19 @@ Deno.test('packs uninstall', async (test) => {
       body,
     } as any));
 
-    const setFlagsSpy = spy(() => ({
+    const setTypeSpy = spy(() => ({
       send: () => true,
     }));
 
     const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
 
-    const packsStub = stub(packs, 'uninstallDialog', () =>
+    const packsStub = stub(packs, 'uninstall', () =>
       ({
-        setFlags: setFlagsSpy,
+        setType: setTypeSpy,
       }) as any);
 
     config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(setFlagsSpy, 0, {
-        args: [64],
-      });
-
-      assertSpyCall(packsStub, 0, {
-        args: [pack],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      listStub.restore();
-      packsStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-
-  await test.step('not found', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Component,
-      guild_id: 'guild_id',
-      channel_id: 'channel_id',
-      data: {
-        custom_id: 'puninstall=pack_id',
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
-
-    config.publicKey = 'publicKey';
+    config.communityPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -3075,21 +3000,24 @@ Deno.test('packs uninstall', async (test) => {
         type: 4,
         data: {
           flags: 64,
-          embeds: [
-            {
-              type: 'rich',
-              description: 'Found _nothing_ matching that query!',
-            },
-          ],
           content: '',
           attachments: [],
           components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You don\'t permission to complete this interaction!',
+            },
+          ],
         },
       }, json);
     } finally {
       delete config.publicKey;
+      delete config.communityPacks;
 
       listStub.restore();
+      packsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }

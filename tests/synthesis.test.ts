@@ -27,7 +27,6 @@ import {
   Manifest,
   MediaFormat,
   MediaType,
-  PackType,
   Schema,
 } from '../src/types.ts';
 
@@ -1528,7 +1527,7 @@ Deno.test('/synthesis', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);

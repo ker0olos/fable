@@ -1377,16 +1377,48 @@ snapshot[`model 7`] = `
                                         in: U {
                                           raw: {
                                             object: {
-                                              ok: true,
-                                              pack: U {
+                                              install: U {
                                                 raw: {
-                                                  var: "match",
+                                                  var: "pack",
                                                 },
                                               },
+                                              ok: true,
                                             },
                                           },
                                         },
                                         let: [
+                                          {
+                                            pack: U {
+                                              raw: {
+                                                object: {
+                                                  by: U {
+                                                    raw: {
+                                                      var: "userId",
+                                                    },
+                                                  },
+                                                  ref: U {
+                                                    raw: {
+                                                      from: U {
+                                                        raw: {
+                                                          get: U {
+                                                            raw: {
+                                                              var: "match",
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                      select: "ref",
+                                                    },
+                                                  },
+                                                  timestamp: U {
+                                                    raw: {
+                                                      now: null,
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
                                           {
                                             updatedInstance: U {
                                               raw: {
@@ -1402,32 +1434,7 @@ snapshot[`model 7`] = `
                                                                   raw: {
                                                                     append: U {
                                                                       raw: {
-                                                                        object: {
-                                                                          by: U {
-                                                                            raw: {
-                                                                              var: "userId",
-                                                                            },
-                                                                          },
-                                                                          ref: U {
-                                                                            raw: {
-                                                                              from: U {
-                                                                                raw: {
-                                                                                  get: U {
-                                                                                    raw: {
-                                                                                      var: "match",
-                                                                                    },
-                                                                                  },
-                                                                                },
-                                                                              },
-                                                                              select: "ref",
-                                                                            },
-                                                                          },
-                                                                          timestamp: U {
-                                                                            raw: {
-                                                                              now: null,
-                                                                            },
-                                                                          },
-                                                                        },
+                                                                        var: "pack",
                                                                       },
                                                                     },
                                                                     collection: U {
@@ -1837,16 +1844,48 @@ snapshot[`model 7`] = `
                                         in: U {
                                           raw: {
                                             object: {
-                                              ok: true,
-                                              pack: U {
+                                              install: U {
                                                 raw: {
-                                                  var: "match",
+                                                  var: "pack",
                                                 },
                                               },
+                                              ok: true,
                                             },
                                           },
                                         },
                                         let: [
+                                          {
+                                            pack: U {
+                                              raw: {
+                                                object: {
+                                                  by: U {
+                                                    raw: {
+                                                      var: "userId",
+                                                    },
+                                                  },
+                                                  ref: U {
+                                                    raw: {
+                                                      from: U {
+                                                        raw: {
+                                                          get: U {
+                                                            raw: {
+                                                              var: "match",
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                      select: "ref",
+                                                    },
+                                                  },
+                                                  timestamp: U {
+                                                    raw: {
+                                                      now: null,
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
                                           {
                                             updatedInstance: U {
                                               raw: {
@@ -1862,32 +1901,7 @@ snapshot[`model 7`] = `
                                                                   raw: {
                                                                     append: U {
                                                                       raw: {
-                                                                        object: {
-                                                                          by: U {
-                                                                            raw: {
-                                                                              var: "userId",
-                                                                            },
-                                                                          },
-                                                                          ref: U {
-                                                                            raw: {
-                                                                              from: U {
-                                                                                raw: {
-                                                                                  get: U {
-                                                                                    raw: {
-                                                                                      var: "match",
-                                                                                    },
-                                                                                  },
-                                                                                },
-                                                                              },
-                                                                              select: "ref",
-                                                                            },
-                                                                          },
-                                                                          timestamp: U {
-                                                                            raw: {
-                                                                              now: null,
-                                                                            },
-                                                                          },
-                                                                        },
+                                                                        var: "pack",
                                                                       },
                                                                     },
                                                                     collection: U {
@@ -2303,7 +2317,7 @@ snapshot[`model 8`] = `
                                           raw: {
                                             object: {
                                               ok: true,
-                                              pack: U {
+                                              uninstall: U {
                                                 raw: {
                                                   var: "match",
                                                 },
@@ -2727,7 +2741,7 @@ snapshot[`model 8`] = `
                                           raw: {
                                             object: {
                                               ok: true,
-                                              pack: U {
+                                              uninstall: U {
                                                 raw: {
                                                   var: "match",
                                                 },

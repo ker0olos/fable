@@ -2311,17 +2311,17 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "View all instated community packs",
+    description: "View all instated packs",
     dm_permission: false,
-    name: "community",
+    name: "packs",
     options: undefined,
     type: undefined,
   },
   {
     default_member_permissions: 32,
-    description: "pack management commands",
+    description: "community packs management commands",
     dm_permission: false,
-    name: "packs",
+    name: "community",
     options: [
       {
         autocomplete: undefined,

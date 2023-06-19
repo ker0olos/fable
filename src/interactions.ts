@@ -19,7 +19,7 @@ import community from './community.ts';
 
 import config, { initConfig } from './config.ts';
 
-import { Character, Media, PackType } from './types.ts';
+import { Character, Media } from './types.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
 
@@ -212,10 +212,10 @@ export const handler = async (r: Request) => {
           return message.send();
         }
 
-        // suggest installed packs
+        // suggest installed community packs
         if (
           // deno-lint-ignore no-non-null-assertion
-          name === 'packs' && ['uninstall'].includes(subcommand!)
+          name === 'community' && ['uninstall'].includes(subcommand!)
         ) {
           // deno-lint-ignore no-non-null-assertion
           const id = options[focused!] as string;
@@ -224,12 +224,15 @@ export const handler = async (r: Request) => {
             discord.MessageType.Suggestions,
           );
 
-          let list = await packs.all({ guildId, type: PackType.Community });
+          let list = await packs.all({
+            filter: true,
+            guildId,
+          });
 
           const distance: Record<string, number> = {};
 
           // sort suggestion based on distance
-          list.forEach(({ manifest }) => {
+          list.forEach(({ ref: { manifest } }) => {
             const d = utils.distance(manifest.id, id);
 
             if (manifest.title) {
@@ -245,10 +248,10 @@ export const handler = async (r: Request) => {
           });
 
           list = list.sort((a, b) =>
-            distance[b.manifest.id] - distance[a.manifest.id]
+            distance[b.ref.manifest.id] - distance[a.ref.manifest.id]
           );
 
-          list?.forEach(({ manifest }) => {
+          list?.forEach(({ ref: { manifest } }) => {
             message.addSuggestions({
               name: `${manifest.title ?? manifest.id}`,
               value: manifest.id,
@@ -600,13 +603,13 @@ export const handler = async (r: Request) => {
             }
             break;
           }
-          case 'community': {
+          case 'packs': {
             return (await packs.pages({
               index: 0,
               guildId,
             })).send();
           }
-          case 'packs': {
+          case 'community': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'install': {
@@ -617,16 +620,15 @@ export const handler = async (r: Request) => {
                   guildId,
                   userId: member.user.id,
                 }))
-                  .setFlags(discord.MessageFlags.Ephemeral)
                   .send();
               }
               case 'uninstall': {
                 const list = await packs.all({
-                  type: PackType.Community,
+                  filter: true,
                   guildId,
                 });
 
-                const pack = list.find(({ manifest }) =>
+                const pack = list.find(({ ref: { manifest } }) =>
                   manifest.id === options['id'] as string
                 );
 
@@ -634,8 +636,10 @@ export const handler = async (r: Request) => {
                   throw new Error('404');
                 }
 
-                return packs.uninstallDialog(pack)
-                  .setFlags(discord.MessageFlags.Ephemeral)
+                return packs.uninstallDialog({
+                  userId: member.user.id,
+                  pack,
+                })
                   .send();
               }
               default:
@@ -963,7 +967,7 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
-          case 'community': {
+          case 'packs': {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
@@ -971,33 +975,20 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'puninstall': {
-            const list = await packs.all({
-              type: PackType.Community,
-              guildId,
-            });
-
-            const pack = list.find(({ manifest }) =>
-              // deno-lint-ignore no-non-null-assertion
-              manifest.id === customValues![0]
-            );
-
-            if (!pack) {
-              throw new Error('404');
-            }
-
-            return packs.uninstallDialog(pack)
-              .setFlags(discord.MessageFlags.Ephemeral)
-              .send();
-          }
           case 'uninstall': {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return (await packs.uninstall({ id, guildId }))
-              .setFlags(discord.MessageFlags.Ephemeral)
-              .setType(discord.MessageType.Update)
-              .send();
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![1];
+
+            if (userId === member.user.id) {
+              return (await packs.uninstall({ id, guildId }))
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
           }
           case 'cancel': {
             // deno-lint-ignore no-non-null-assertion

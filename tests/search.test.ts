@@ -25,7 +25,6 @@ import {
   MediaFormat,
   MediaRelation,
   MediaType,
-  PackType,
 } from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
@@ -77,7 +76,7 @@ Deno.test('/media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -661,7 +660,7 @@ Deno.test('/media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -781,7 +780,7 @@ Deno.test('/media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -2371,7 +2370,7 @@ Deno.test('/media debug', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -2759,7 +2758,7 @@ Deno.test('/media debug', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -2899,7 +2898,7 @@ Deno.test('/media debug', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -3060,7 +3059,7 @@ Deno.test('/character', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -3956,7 +3955,7 @@ Deno.test('/character', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -4090,7 +4089,7 @@ Deno.test('/character', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -4672,7 +4671,7 @@ Deno.test('/character debug', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -5276,7 +5275,7 @@ Deno.test('/character debug', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -5434,7 +5433,7 @@ Deno.test('/character debug', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
+      () => Promise.resolve([{ ref: { manifest } }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);

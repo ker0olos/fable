@@ -4,7 +4,7 @@ import utils from './utils.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import { Manifest, Schema } from './types.ts';
+import { Manifest, Pack, Schema } from './types.ts';
 
 import validate, { purgeReservedProps } from './validate.ts';
 
@@ -128,7 +128,7 @@ async function query(
   `;
 
   const response = (await request<{
-    getPacksByUserId: Schema.Pack[];
+    getPacksByUserId: Pack[];
   }>({
     query,
     url: faunaUrl,
