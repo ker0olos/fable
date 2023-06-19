@@ -446,15 +446,13 @@ async function pullAnimation(
 
   await message.patch(token);
 
-  if (
-    pull.character.media?.edges?.[0].role &&
-    pull.character.media.edges[0].role !== CharacterRole.Background &&
-    ping &&
-    guildId
-  ) {
+  if (ping && guildId) {
     const pings: string[] = [];
 
     const inventories = await user.getActiveInventories(guildId);
+
+    const background =
+      pull.character.media?.edges?.[0].role === CharacterRole.Background;
 
     inventories.forEach(({ user }) => {
       if (
@@ -462,8 +460,11 @@ async function pullAnimation(
         (
           user.likes?.map(({ characterId }) => characterId).filter(Boolean)
             .includes(characterId) ||
-          user.likes?.map(({ mediaId }) => mediaId).filter(Boolean)
-            .some((id) => mediaIds.includes(id))
+          (
+            !background &&
+            user.likes?.map(({ mediaId }) => mediaId).filter(Boolean)
+              .some((id) => mediaIds.includes(id))
+          )
         )
       ) {
         pings.push(`<@${user.id}>`);
