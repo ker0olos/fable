@@ -49,14 +49,12 @@ type AnilistSearchOptions = {
 };
 
 const cachedGuilds: Record<string, PackInstall[]> = {};
-const cachedChannels: Record<string, discord.Channel> = {};
 
 const packs = {
   aggregate,
   aliasToArray,
   all,
   cachedGuilds,
-  cachedChannels,
   characters,
   formatToString,
   install,
@@ -105,7 +103,6 @@ async function all(
                   popularity
                   images {
                     url
-                    nsfw
                     artist {
                       username
                       url
@@ -145,7 +142,6 @@ async function all(
                   age
                   images {
                     url
-                    nsfw
                     artist {
                       username
                       url
@@ -409,6 +405,11 @@ async function uninstall(
 
     return message
       .addEmbed(new discord.Embed().setDescription('Uninstalled'))
+      .addEmbed(
+        new discord.Embed().setDescription(
+          '**All characters from this pack are now disabled**',
+        ),
+      )
       .addEmbed(packEmbed({ ref: response.uninstall }));
   } else {
     switch (response.error) {

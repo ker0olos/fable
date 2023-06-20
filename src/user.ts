@@ -364,7 +364,6 @@ function nick({
   token,
   userId,
   guildId,
-  channelId,
   nick,
   search,
   id,
@@ -372,7 +371,6 @@ function nick({
   token: string;
   userId: string;
   guildId: string;
-  channelId: string;
   nick?: string;
   search?: string;
   id?: string;
@@ -477,7 +475,6 @@ function nick({
         )
         .addEmbed(srch.characterEmbed(
           character,
-          channelId,
           {
             footer: true,
             rating: false,
@@ -527,7 +524,6 @@ function image({
   token,
   userId,
   guildId,
-  channelId,
   image,
   search,
   id,
@@ -535,7 +531,6 @@ function image({
   token: string;
   userId: string;
   guildId: string;
-  channelId: string;
   image?: string;
   search?: string;
   id?: string;
@@ -640,7 +635,6 @@ function image({
         )
         .addEmbed(srch.characterEmbed(
           character,
-          channelId,
           {
             footer: true,
             rating: false,
@@ -689,7 +683,6 @@ function like({
   token,
   userId,
   guildId,
-  channelId,
   mention,
   search,
   undo,
@@ -698,7 +691,6 @@ function like({
   token: string;
   userId: string;
   guildId: string;
-  channelId: string;
   undo: boolean;
   mention?: boolean;
   search?: string;
@@ -780,7 +772,6 @@ function like({
       message
         .addEmbed(srch.characterEmbed(
           character,
-          channelId,
           {
             footer: true,
             description: false,
@@ -836,7 +827,6 @@ function likeall({
   token,
   userId,
   guildId,
-  channelId,
   search,
   undo,
   id,
@@ -844,7 +834,6 @@ function likeall({
   token: string;
   userId: string;
   guildId: string;
-  channelId: string;
   undo: boolean;
   search?: string;
   id?: string;
@@ -900,7 +889,6 @@ function likeall({
       message
         .addEmbed(srch.mediaEmbed(
           media,
-          channelId,
           packs.aliasToArray(media.title),
         ));
 

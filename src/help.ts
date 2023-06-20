@@ -229,16 +229,17 @@ function pages(
             '- `/buy guaranteed` `/shop guaranteed`: _use votes to buy pulls with a specific guaranteed rating_',
             '',
             '- `/logs`: _list user last few found characters_',
+            '',
+            '- `/packs`: _list all the packs on a server_',
           ].join('\n')),
       ),
     new discord.Message()
       .addEmbed(
         new discord.Embed().setAuthor({ name: 'Admin Commands' })
           .setDescription([
-            '_> `/packs` requires `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we don\'t recommend that._',
-            '- `/packs community`: _list all installed community packs_',
-            '- `/packs install`: _install a community pack_',
-            '- `/packs uninstall`: _uninstall a pack_',
+            '_> `/community` requires `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we never recommend that._',
+            '- `/community install`: _install a community pack_',
+            '- `/community uninstall`: _uninstall a community pack_',
           ].join('\n')),
       ),
   ];

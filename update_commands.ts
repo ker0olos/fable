@@ -708,7 +708,7 @@ export const commands = [
   // pack viewing
   ...Command({
     name: 'packs',
-    description: 'View all instated packs',
+    description: 'List all the packs on this server',
   }),
   // community packs management commands
   ...Command({
@@ -731,7 +731,7 @@ export const commands = [
       }),
       Option({
         name: 'uninstall',
-        description: 'Uninstall a pack',
+        description: 'Uninstall a community pack',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [

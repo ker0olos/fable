@@ -650,7 +650,11 @@ snapshot[`/help 8`] = `
 " +
           "
 " +
-          "- \`/logs\`: _list user last few found characters_",
+          "- \`/logs\`: _list user last few found characters_
+" +
+          "
+" +
+          "- \`/packs\`: _list all the packs on a server_",
         type: "rich",
       },
     ],
@@ -694,13 +698,11 @@ snapshot[`/help 9`] = `
         author: {
           name: "Admin Commands",
         },
-        description: "_> \`/packs\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we don't recommend that._
+        description: "_> \`/community\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we never recommend that._
 " +
-          "- \`/packs community\`: _list all installed community packs_
+          "- \`/community install\`: _install a community pack_
 " +
-          "- \`/packs install\`: _install a community pack_
-" +
-          "- \`/packs uninstall\`: _uninstall a pack_",
+          "- \`/community uninstall\`: _uninstall a community pack_",
         type: "rich",
       },
     ],

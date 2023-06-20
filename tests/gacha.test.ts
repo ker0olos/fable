@@ -2778,7 +2778,6 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
         token: 'test_token',
       });
 
@@ -2992,7 +2991,6 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
         token: 'test_token',
         guarantee: 5,
       });
@@ -3207,7 +3205,6 @@ Deno.test('/gacha', async (test) => {
         mention: true,
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
         token: 'test_token',
       });
 
@@ -3429,7 +3426,6 @@ Deno.test('/gacha', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
         quiet: true,
       });
 
@@ -3589,7 +3585,6 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
         token: 'test_token',
       });
 
@@ -3831,7 +3826,6 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
         token: 'test_token',
       });
 
@@ -4086,7 +4080,6 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
         token: 'test_token',
       });
 
@@ -4255,445 +4248,6 @@ Deno.test('/gacha', async (test) => {
     }
   });
 
-  await test.step('nsfw', async () => {
-    const media: Media = {
-      id: '1',
-      packId: 'pack-id',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      popularity: 100,
-      title: {
-        english: 'title',
-      },
-      images: [{
-        nsfw: true,
-        url: 'media_image_url',
-      }],
-    };
-
-    const character: Character = {
-      id: '2',
-      packId: 'pack-id-2',
-      name: {
-        english: 'name',
-      },
-      images: [{
-        nsfw: true,
-        url: 'character_image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: media,
-        }],
-      },
-    };
-
-    const pull: Pull = {
-      media,
-      character,
-      rating: new Rating({ popularity: 100 }),
-      remaining: 1,
-    };
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => undefined as any,
-    );
-
-    const userStub = stub(
-      user,
-      'getActiveInventories',
-      () => Promise.resolve([]),
-    );
-
-    const pullStub = stub(
-      gacha,
-      'rngPull',
-      returnsNext([Promise.resolve(pull)]),
-    );
-
-    config.gacha = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = gacha.start({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        token: 'test_token',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          embeds: [{
-            type: 'rich',
-            title: 'title',
-            image: {
-              url:
-                'http://localhost:8000/external/media_image_url?size=medium&blur',
-            },
-          }],
-          components: [],
-          attachments: [],
-        },
-      );
-
-      await timeStub.nextAsync();
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/stars/1.gif',
-            },
-          }],
-          components: [],
-          attachments: [],
-        },
-      );
-
-      await timeStub.nextAsync();
-
-      assertSpyCalls(fetchStub, 3);
-
-      assertEquals(
-        fetchStub.calls[2].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          embeds: [{
-            type: 'rich',
-            description: new Rating({ popularity: 100 }).emotes,
-            fields: [{
-              name: 'title',
-              value: '**name**',
-            }],
-            image: {
-              url: 'http://localhost:8000/external/character_image_url?blur',
-            },
-          }],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'gacha=user_id',
-                label: '/gacha',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'character=pack-id-2:2=1',
-                label: '/character',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'like=pack-id-2:2',
-                label: '/like',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-        },
-      );
-
-      await timeStub.runMicrotasks();
-    } finally {
-      delete config.appId;
-      delete config.origin;
-      delete config.gacha;
-
-      timeStub.restore();
-      userStub.restore();
-      pullStub.restore();
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('nsfw 2', async () => {
-    const media: Media = {
-      id: '1',
-      packId: 'pack-id',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      popularity: 100,
-      title: {
-        english: 'title',
-      },
-      images: [{
-        nsfw: true,
-        url: 'media_image_url',
-      }],
-    };
-
-    const character: Character = {
-      id: '2',
-      packId: 'pack-id-2',
-      name: {
-        english: 'name',
-      },
-      images: [{
-        nsfw: true,
-        url: 'character_image_url',
-      }],
-      media: {
-        edges: [{
-          role: CharacterRole.Main,
-          node: media,
-        }],
-      },
-    };
-
-    const pull: Pull = {
-      media,
-      character,
-      rating: new Rating({ popularity: 100 }),
-      remaining: 1,
-    };
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => undefined as any,
-    );
-
-    const userStub = stub(
-      user,
-      'getActiveInventories',
-      () => Promise.resolve([]),
-    );
-
-    const pullStub = stub(
-      gacha,
-      'rngPull',
-      returnsNext([Promise.resolve(pull)]),
-    );
-
-    config.gacha = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    packs.cachedChannels['channel_id'] = {
-      nsfw: true,
-      name: 'channel',
-      id: 'channel_id',
-    };
-
-    try {
-      const message = gacha.start({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        token: 'test_token',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          embeds: [{
-            type: 'rich',
-            title: 'title',
-            image: {
-              url: 'http://localhost:8000/external/media_image_url?size=medium',
-            },
-          }],
-          components: [],
-          attachments: [],
-        },
-      );
-
-      await timeStub.nextAsync();
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/stars/1.gif',
-            },
-          }],
-          components: [],
-          attachments: [],
-        },
-      );
-
-      await timeStub.nextAsync();
-
-      assertSpyCalls(fetchStub, 3);
-
-      assertEquals(
-        fetchStub.calls[2].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          embeds: [{
-            type: 'rich',
-            description: new Rating({ popularity: 100 }).emotes,
-            fields: [{
-              name: 'title',
-              value: '**name**',
-            }],
-            image: {
-              url: 'http://localhost:8000/external/character_image_url',
-            },
-          }],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'gacha=user_id',
-                label: '/gacha',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'character=pack-id-2:2=1',
-                label: '/character',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'like=pack-id-2:2',
-                label: '/like',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
-        },
-      );
-
-      await timeStub.runMicrotasks();
-    } finally {
-      delete config.appId;
-      delete config.origin;
-      delete config.gacha;
-
-      delete packs.cachedChannels['channel_id'];
-
-      timeStub.restore();
-      userStub.restore();
-      pullStub.restore();
-      fetchStub.restore();
-    }
-  });
-
   await test.step('no pulls available', async () => {
     const timeStub = new FakeTime();
 
@@ -4720,7 +4274,6 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         token: 'test_token',
         guildId: 'guild_id',
-        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -4802,7 +4355,6 @@ Deno.test('/gacha', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
         guarantee: 5,
       });
 
@@ -4892,7 +4444,6 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         token: 'test_token',
         guildId: 'guild_id',
-        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -4972,7 +4523,6 @@ Deno.test('/gacha', async (test) => {
       const message = gacha.start({
         token: 'test_token',
         guildId: 'guild_id',
-        channelId: 'channel_id',
         guarantee: 5,
       });
 

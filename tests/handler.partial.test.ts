@@ -22,7 +22,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'search',
         options: [{
@@ -125,7 +125,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'anime',
         options: [{
@@ -228,7 +228,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'manga',
         options: [{
@@ -331,7 +331,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'media',
         options: [{
@@ -434,7 +434,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'found',
         options: [{
@@ -537,7 +537,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'owned',
         options: [{
@@ -640,7 +640,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'likeall',
         options: [{
@@ -743,7 +743,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'unlikeall',
         options: [{
@@ -846,7 +846,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'collection',
         options: [{
@@ -953,7 +953,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'coll',
         options: [{
@@ -1060,7 +1060,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'mm',
         options: [{
@@ -1167,7 +1167,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'search',
         options: [{
@@ -1271,7 +1271,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'character',
         options: [{
@@ -1383,7 +1383,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'char',
         options: [{
@@ -1495,7 +1495,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'trade',
         options: [{
@@ -1606,7 +1606,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'trade',
         options: [{
@@ -1720,7 +1720,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'offer',
         options: [{
@@ -1831,7 +1831,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'offer',
         options: [{
@@ -1942,7 +1942,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'steal',
         options: [{
@@ -2053,7 +2053,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'like',
         options: [{
@@ -2165,7 +2165,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'unlike',
         options: [{
@@ -2277,7 +2277,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'character',
         options: [{
@@ -2381,7 +2381,7 @@ Deno.test('party assign character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2502,7 +2502,7 @@ Deno.test('party assign character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2623,7 +2623,7 @@ Deno.test('party assign character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2746,7 +2746,7 @@ Deno.test('community packs', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'community',
         options: [{
@@ -2857,7 +2857,7 @@ Deno.test('community packs', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'community',
         options: [{
@@ -2994,7 +2994,7 @@ Deno.test('community packs', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'community',
         options: [{

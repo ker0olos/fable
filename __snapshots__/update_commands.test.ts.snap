@@ -2311,7 +2311,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "View all instated packs",
+    description: "List all the packs on this server",
     dm_permission: false,
     name: "packs",
     options: undefined,
@@ -2349,7 +2349,7 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Uninstall a pack",
+        description: "Uninstall a community pack",
         max_value: undefined,
         min_value: undefined,
         name: "uninstall",

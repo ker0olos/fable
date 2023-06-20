@@ -29,7 +29,7 @@ Deno.test('media components', async () => {
     token: 'token',
     type: discord.InteractionType.Component,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
+
     data: {
       custom_id: 'media=media_id',
     },
@@ -91,7 +91,6 @@ Deno.test('media components', async () => {
         token: 'token',
         id: 'media_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
       }],
     });
 
@@ -112,7 +111,7 @@ Deno.test('character components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -178,7 +177,7 @@ Deno.test('character components', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           id: 'character_id',
         }],
       });
@@ -199,7 +198,7 @@ Deno.test('character components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -265,7 +264,7 @@ Deno.test('character components', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           id: 'character_id',
         }],
       });
@@ -287,7 +286,7 @@ Deno.test('media characters components', async () => {
     token: 'token',
     type: discord.InteractionType.Component,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
+
     member: {
       user: {
         id: 'user_id',
@@ -353,7 +352,7 @@ Deno.test('media characters components', async () => {
       args: [{
         id: 'media_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         index: 1,
       }],
     });
@@ -375,7 +374,7 @@ Deno.test('collection list components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -464,7 +463,7 @@ Deno.test('collection list components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -553,7 +552,7 @@ Deno.test('collection list components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -644,7 +643,7 @@ Deno.test('like components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -703,7 +702,7 @@ Deno.test('like components', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           id: 'character_id',
           mention: true,
           undo: false,
@@ -726,7 +725,7 @@ Deno.test('like components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -785,7 +784,7 @@ Deno.test('like components', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           id: 'character_id',
           mention: true,
           undo: false,
@@ -810,7 +809,7 @@ Deno.test('likeslist components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -899,7 +898,6 @@ Deno.test('found components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
 
       data: {
         custom_id: 'found=media_id=1=prev',
@@ -982,7 +980,6 @@ Deno.test('found components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
 
       data: {
         custom_id: 'found=media_id=1=prev',
@@ -1067,7 +1064,7 @@ Deno.test('gacha components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1129,7 +1126,6 @@ Deno.test('gacha components', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -1149,7 +1145,7 @@ Deno.test('gacha components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1211,7 +1207,6 @@ Deno.test('gacha components', async (test) => {
           mention: true,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -1231,7 +1226,7 @@ Deno.test('gacha components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1293,7 +1288,6 @@ Deno.test('gacha components', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -1315,7 +1309,7 @@ Deno.test('buy components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1402,7 +1396,7 @@ Deno.test('buy components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1489,7 +1483,7 @@ Deno.test('buy components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1574,7 +1568,7 @@ Deno.test('buy components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1664,7 +1658,7 @@ Deno.test('buy components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1756,7 +1750,7 @@ Deno.test('now components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1836,7 +1830,7 @@ Deno.test('help components', async () => {
     token: 'token',
     type: discord.InteractionType.Component,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
+
     member: {
       user: {
         id: 'user_id',
@@ -1922,7 +1916,7 @@ Deno.test('give components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1992,7 +1986,6 @@ Deno.test('give components', async (test) => {
           targetId: 'target_id',
           giveCharactersIds: ['character_id', 'character_id2', 'character_id3'],
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -2012,7 +2005,7 @@ Deno.test('give components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2104,7 +2097,7 @@ Deno.test('trade components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'target_id',
@@ -2183,7 +2176,6 @@ Deno.test('trade components', async (test) => {
             'taken_character_id3',
           ],
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -2203,7 +2195,7 @@ Deno.test('trade components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2296,7 +2288,7 @@ Deno.test('synthesis components', async (test) => {
       token: 'test_token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2363,7 +2355,7 @@ Deno.test('synthesis components', async (test) => {
           token: 'test_token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           target: 5,
         }],
       });
@@ -2384,7 +2376,7 @@ Deno.test('synthesis components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2476,7 +2468,7 @@ Deno.test('steal components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2544,7 +2536,7 @@ Deno.test('steal components', async (test) => {
           userId: 'user_id',
           characterId: 'character_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           stars: NaN,
           pre: 40,
         }],
@@ -2566,7 +2558,7 @@ Deno.test('steal components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2634,7 +2626,7 @@ Deno.test('steal components', async (test) => {
           userId: 'user_id',
           characterId: 'character_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           stars: 5,
           pre: 40,
         }],
@@ -2656,7 +2648,7 @@ Deno.test('steal components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2748,7 +2740,7 @@ Deno.test('packs pages', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         custom_id: 'packs==1',
       },
@@ -2834,7 +2826,7 @@ Deno.test('community packs uninstall', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2924,7 +2916,7 @@ Deno.test('community packs uninstall', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3031,7 +3023,7 @@ Deno.test('cancel dialog', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3119,7 +3111,7 @@ Deno.test('cancel dialog', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'target_id',
@@ -3207,7 +3199,7 @@ Deno.test('cancel dialog', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3297,7 +3289,7 @@ Deno.test('cancel dialog', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',

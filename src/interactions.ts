@@ -65,11 +65,9 @@ export const handler = async (r: Request) => {
     name,
     type,
     token,
-    channelId,
     guildId,
     focused,
     member,
-    channel,
     options,
     subcommand,
     customType,
@@ -93,8 +91,6 @@ export const handler = async (r: Request) => {
   }
 
   config.origin = origin;
-
-  packs.cachedChannels[channelId] = channel;
 
   try {
     switch (type) {
@@ -273,7 +269,6 @@ export const handler = async (r: Request) => {
 
             if (options['characters']) {
               return (await search.mediaCharacters({
-                channelId,
                 guildId,
                 index: 0,
                 search: title,
@@ -286,7 +281,6 @@ export const handler = async (r: Request) => {
             return search.media({
               token,
               guildId,
-              channelId,
               search: title,
               debug: Boolean(options['debug']),
               id: title.startsWith(idPrefix)
@@ -302,7 +296,6 @@ export const handler = async (r: Request) => {
             return search.character({
               token,
               guildId,
-              channelId,
               search: name,
               debug: Boolean(options['debug']),
               id: name.startsWith(idPrefix)
@@ -323,7 +316,6 @@ export const handler = async (r: Request) => {
                   spot,
                   userId: member.user.id,
                   guildId,
-                  channelId,
                   search: character,
                   id: character.startsWith(idPrefix)
                     ? character.substring(idPrefix.length)
@@ -332,7 +324,6 @@ export const handler = async (r: Request) => {
               case 'swap':
                 return (await party.swap({
                   guildId,
-                  channelId,
                   userId: member.user.id,
                   a: options['a'] as number,
                   b: options['b'] as number,
@@ -341,7 +332,6 @@ export const handler = async (r: Request) => {
                 return (await party.remove({
                   spot,
                   guildId,
-                  channelId,
                   userId: member.user.id,
                 })).send();
               default: {
@@ -350,7 +340,6 @@ export const handler = async (r: Request) => {
                 return party.view({
                   token,
                   guildId,
-                  channelId,
                   userId: user,
                 }).send();
               }
@@ -405,7 +394,7 @@ export const handler = async (r: Request) => {
               token,
               search,
               guildId,
-              channelId,
+
               userId: member.user.id,
               undo: name === 'unlike',
               id: search.startsWith(idPrefix)
@@ -422,7 +411,7 @@ export const handler = async (r: Request) => {
               token,
               search,
               guildId,
-              channelId,
+
               userId: member.user.id,
               undo: name === 'unlikeall',
               id: search.startsWith(idPrefix)
@@ -477,7 +466,7 @@ export const handler = async (r: Request) => {
             const message = trade.pre({
               token,
               guildId,
-              channelId,
+
               userId: member.user.id,
               targetId: options['user'] as string,
               give: giveCharacters,
@@ -499,7 +488,7 @@ export const handler = async (r: Request) => {
               stars,
               token,
               guildId,
-              channelId,
+
               userId: member.user.id,
               search,
               id: search.startsWith(idPrefix)
@@ -530,7 +519,7 @@ export const handler = async (r: Request) => {
               .start({
                 token,
                 guildId,
-                channelId,
+
                 guarantee: stars,
                 quiet: name === 'q',
                 userId: member.user.id,
@@ -546,7 +535,7 @@ export const handler = async (r: Request) => {
               nick,
               token,
               guildId,
-              channelId,
+
               search: name,
               userId: member.user.id,
               id: name.startsWith(idPrefix)
@@ -564,7 +553,7 @@ export const handler = async (r: Request) => {
               image,
               token,
               guildId,
-              channelId,
+
               search: name,
               userId: member.user.id,
               id: name.startsWith(idPrefix)
@@ -580,7 +569,7 @@ export const handler = async (r: Request) => {
               token,
               target,
               guildId,
-              channelId,
+
               userId: member.user.id,
             })).send();
           }
@@ -676,7 +665,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return search.media({ id, guildId, channelId, token })
+            return search.media({ id, guildId, token })
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -691,7 +680,6 @@ export const handler = async (r: Request) => {
               id,
               token,
               guildId,
-              channelId,
             })
               .setType(
                 type === '1'
@@ -710,7 +698,7 @@ export const handler = async (r: Request) => {
             return (await search.mediaCharacters({
               index,
               guildId,
-              channelId,
+
               id: mediaId,
             }))
               .setType(discord.MessageType.Update)
@@ -747,7 +735,7 @@ export const handler = async (r: Request) => {
               id,
               token,
               guildId,
-              channelId,
+
               mention: true,
               userId: member.user.id,
               undo: false,
@@ -795,7 +783,7 @@ export const handler = async (r: Request) => {
               .start({
                 token,
                 guildId,
-                channelId,
+
                 mention: true,
                 guarantee: stars,
                 quiet: customType === 'q',
@@ -877,7 +865,7 @@ export const handler = async (r: Request) => {
                 token,
                 userId,
                 guildId,
-                channelId,
+
                 targetId: targetId,
                 giveCharactersIds,
               })
@@ -904,7 +892,7 @@ export const handler = async (r: Request) => {
               return trade.accepted({
                 token,
                 guildId,
-                channelId,
+
                 userId,
                 targetId,
                 giveCharactersIds,
@@ -928,7 +916,7 @@ export const handler = async (r: Request) => {
                 token,
                 target,
                 guildId,
-                channelId,
+
                 userId: member.user.id,
               })
                 .setType(discord.MessageType.Update)
@@ -955,7 +943,7 @@ export const handler = async (r: Request) => {
               return steal[customType === 'bsteal' ? 'sacrifices' : 'attempt']({
                 token,
                 guildId,
-                channelId,
+
                 userId: member.user.id,
                 characterId,
                 pre: chance,

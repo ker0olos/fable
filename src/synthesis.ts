@@ -116,13 +116,10 @@ function getSacrifices(
 function characterPreview(
   character: Character,
   existing: Partial<Schema.Character>,
-  channelId: string,
 ): discord.Embed {
   const image = existing?.image
     ? { url: existing?.image }
     : character.images?.[0];
-
-  const blur = image?.nsfw && !packs.cachedChannels[channelId]?.nsfw;
 
   const media = character.media?.edges?.[0]?.node;
 
@@ -132,7 +129,6 @@ function characterPreview(
 
   const embed = new discord.Embed()
     .setThumbnail({
-      blur,
       preview: true,
       url: image?.url,
     });
@@ -149,17 +145,10 @@ function characterPreview(
   return embed;
 }
 
-async function synthesize({
-  token,
-  userId,
-  guildId,
-  channelId,
-  target,
-}: {
+async function synthesize({ token, userId, guildId, target }: {
   token: string;
   userId: string;
   guildId: string;
-  channelId: string;
   target: number;
 }): Promise<discord.Message> {
   if (!config.synthesis) {
@@ -213,7 +202,7 @@ async function synthesize({
           });
 
           message.addEmbed(
-            synthesis.characterPreview(character, existing, channelId),
+            synthesis.characterPreview(character, existing),
           );
         }
       }));
@@ -264,13 +253,11 @@ function confirmed({
   userId,
   guildId,
   target,
-  channelId,
 }: {
   token: string;
   userId: string;
   guildId: string;
   target: number;
-  channelId: string;
 }): discord.Message {
   const mutation = gql`
     mutation (
@@ -320,13 +307,7 @@ function confirmed({
         },
       });
 
-      return gacha.pullAnimation({
-        token,
-        ping: true,
-        channelId,
-        guildId,
-        pull,
-      });
+      return gacha.pullAnimation({ token, guildId, pull, ping: true });
     })
     .catch(async (err) => {
       if (err instanceof PoolError) {

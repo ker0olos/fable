@@ -17,19 +17,10 @@ import { Character, Schema } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
 
-function pre({
-  token,
-  userId,
-  guildId,
-  channelId,
-  targetId,
-  give,
-  take,
-}: {
+function pre({ token, userId, guildId, targetId, give, take }: {
   token: string;
   userId: string;
   guildId: string;
-  channelId: string;
   targetId: string;
   give: string[];
   take: string[];
@@ -135,7 +126,7 @@ function pre({
           `${character.packId}:${character.id}` === id
         );
 
-        return search.characterEmbed(character, channelId, {
+        return search.characterEmbed(character, {
           footer: false,
           description: false,
           media: { title: true },
@@ -191,7 +182,7 @@ function pre({
             `${character.packId}:${character.id}` === id
           );
 
-          return search.characterEmbed(character, channelId, {
+          return search.characterEmbed(character, {
             footer: false,
             description: false,
             media: { title: true },
@@ -341,14 +332,12 @@ function give({
   targetId,
   giveCharactersIds,
   guildId,
-  channelId,
 }: {
   token: string;
   userId: string;
   targetId: string;
   giveCharactersIds: string[];
   guildId: string;
-  channelId: string;
 }): discord.Message {
   const mutation = gql`
     mutation (
@@ -432,7 +421,7 @@ function give({
       );
 
       giveCharacters.forEach((character) => {
-        const embed = search.characterEmbed(character, channelId, {
+        const embed = search.characterEmbed(character, {
           rating: true,
           mode: 'thumbnail',
           footer: false,
@@ -499,7 +488,6 @@ function accepted({
   giveCharactersIds,
   takeCharactersIds,
   guildId,
-  channelId,
 }: {
   token: string;
   userId: string;
@@ -507,7 +495,6 @@ function accepted({
   giveCharactersIds: string[];
   takeCharactersIds: string[];
   guildId: string;
-  channelId: string;
 }): discord.Message {
   const mutation = gql`
     mutation (
@@ -610,7 +597,6 @@ function accepted({
     takeCharacters.forEach((character) => {
       const embed = search.characterEmbed(
         character,
-        channelId,
         {
           rating: true,
           mode: 'thumbnail',
@@ -626,7 +612,6 @@ function accepted({
     giveCharacters.forEach((character) => {
       const embed = search.characterEmbed(
         character,
-        channelId,
         {
           rating: true,
           mode: 'thumbnail',

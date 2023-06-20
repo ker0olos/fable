@@ -66,7 +66,6 @@ async function query(
               popularity
               images {
                 url
-                nsfw
                 artist {
                   username
                   url
@@ -106,7 +105,6 @@ async function query(
               age
               images {
                 url
-                nsfw
                 artist {
                   username
                   url

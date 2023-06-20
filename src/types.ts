@@ -49,7 +49,6 @@ export type Alias = {
 
 export type Image = {
   url: string;
-  nsfw?: boolean;
   artist?: {
     username: string;
     url?: string;

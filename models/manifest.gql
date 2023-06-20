@@ -61,7 +61,6 @@ type Alias @embedded {
 
 type Image @embedded {
   url: String!
-  nsfw: Boolean
   artist: ImageArtist
 }
 

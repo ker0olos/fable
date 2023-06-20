@@ -4261,8 +4261,12 @@ Deno.test('/packs uninstall', async (test) => {
           components: [],
           embeds: [
             {
-              description: 'Uninstalled',
               type: 'rich',
+              description: 'Uninstalled',
+            },
+            {
+              type: 'rich',
+              description: '**All characters from this pack are now disabled**',
             },
             {
               type: 'rich',
