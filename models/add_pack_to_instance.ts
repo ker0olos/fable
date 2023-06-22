@@ -62,30 +62,19 @@ export function getPacksByUserId(
   );
 }
 
-export const getMostInstalledPacks = (
-  { size, after, before }: {
-    size?: number;
-    after?: StringExpr;
-    before?: StringExpr;
-  },
-): PackExpr[] => {
+export const getMostInstalledPacks = (): PackExpr[] => {
   return fql.Let({
     packs: fql.Match(fql.Index('packs_sorted_by_server_amount')),
   }, ({ packs }) => {
     return fql.Let({
-      page: fql.If<RefExpr[], RefExpr[]>(
-        fql.Not(fql.Equals(after, fql.Null())),
-        fql.Paginate(packs, { size, after }),
-        fql.If<RefExpr[], RefExpr[]>(
-          fql.Not(fql.Equals(before, fql.Null())),
-          fql.Paginate(packs, { size, before }),
-          fql.Paginate(packs, { size }),
-        ),
-      ),
+      page: fql.Paginate<RefExpr>(packs, { size: 100 }),
     }, ({ page }) =>
-      fql.Map(
-        page,
-        (x) => fql.Get(fql.Select([1], x)),
+      fql.Select(
+        ['data'],
+        fql.Map(
+          page,
+          (x) => fql.Get(fql.Select([1], x)),
+        ),
       ));
   });
 };
@@ -356,9 +345,7 @@ export default function (client: Client): {
       fql.Resolver({
         client,
         name: 'get_most_installed_packs',
-        lambda: (size?: number, after?: StringExpr, before?: StringExpr) => {
-          return getMostInstalledPacks({ size, after, before });
-        },
+        lambda: fql.EmptyLambda(getMostInstalledPacks()),
       }),
       fql.Resolver({
         client,

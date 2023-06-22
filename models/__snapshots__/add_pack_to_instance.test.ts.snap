@@ -1377,33 +1377,42 @@ snapshot[`model 7`] = `
                               raw: {
                                 in: U {
                                   raw: {
-                                    collection: U {
+                                    from: U {
                                       raw: {
-                                        var: "page",
-                                      },
-                                    },
-                                    map: U {
-                                      raw: {
-                                        expr: U {
+                                        collection: U {
                                           raw: {
-                                            get: U {
+                                            var: "page",
+                                          },
+                                        },
+                                        map: U {
+                                          raw: {
+                                            expr: U {
                                               raw: {
-                                                from: U {
+                                                get: U {
                                                   raw: {
-                                                    var: "x",
+                                                    from: U {
+                                                      raw: {
+                                                        var: "x",
+                                                      },
+                                                    },
+                                                    select: U {
+                                                      raw: [
+                                                        1,
+                                                      ],
+                                                    },
                                                   },
-                                                },
-                                                select: U {
-                                                  raw: [
-                                                    1,
-                                                  ],
                                                 },
                                               },
                                             },
+                                            lambda: "x",
                                           },
                                         },
-                                        lambda: "x",
                                       },
+                                    },
+                                    select: U {
+                                      raw: [
+                                        "data",
+                                      ],
                                     },
                                   },
                                 },
@@ -1411,102 +1420,14 @@ snapshot[`model 7`] = `
                                   {
                                     page: U {
                                       raw: {
-                                        else: U {
+                                        after: undefined,
+                                        before: undefined,
+                                        paginate: U {
                                           raw: {
-                                            else: U {
-                                              raw: {
-                                                after: undefined,
-                                                before: undefined,
-                                                paginate: U {
-                                                  raw: {
-                                                    var: "packs",
-                                                  },
-                                                },
-                                                size: U {
-                                                  raw: {
-                                                    var: "size",
-                                                  },
-                                                },
-                                              },
-                                            },
-                                            if: U {
-                                              raw: {
-                                                not: U {
-                                                  raw: {
-                                                    equals: U {
-                                                      raw: [
-                                                        U {
-                                                          raw: {
-                                                            var: "before",
-                                                          },
-                                                        },
-                                                        null,
-                                                      ],
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                            then: U {
-                                              raw: {
-                                                after: undefined,
-                                                before: U {
-                                                  raw: {
-                                                    var: "before",
-                                                  },
-                                                },
-                                                paginate: U {
-                                                  raw: {
-                                                    var: "packs",
-                                                  },
-                                                },
-                                                size: U {
-                                                  raw: {
-                                                    var: "size",
-                                                  },
-                                                },
-                                              },
-                                            },
+                                            var: "packs",
                                           },
                                         },
-                                        if: U {
-                                          raw: {
-                                            not: U {
-                                              raw: {
-                                                equals: U {
-                                                  raw: [
-                                                    U {
-                                                      raw: {
-                                                        var: "after",
-                                                      },
-                                                    },
-                                                    null,
-                                                  ],
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                        then: U {
-                                          raw: {
-                                            after: U {
-                                              raw: {
-                                                var: "after",
-                                              },
-                                            },
-                                            before: undefined,
-                                            paginate: U {
-                                              raw: {
-                                                var: "packs",
-                                              },
-                                            },
-                                            size: U {
-                                              raw: {
-                                                var: "size",
-                                              },
-                                            },
-                                          },
-                                        },
+                                        size: 100,
                                       },
                                     },
                                   },
@@ -1532,11 +1453,7 @@ snapshot[`model 7`] = `
                           },
                         },
                         lambda: U {
-                          raw: [
-                            "size",
-                            "after",
-                            "before",
-                          ],
+                          raw: [],
                         },
                       },
                     },
@@ -1572,33 +1489,42 @@ snapshot[`model 7`] = `
                               raw: {
                                 in: U {
                                   raw: {
-                                    collection: U {
+                                    from: U {
                                       raw: {
-                                        var: "page",
-                                      },
-                                    },
-                                    map: U {
-                                      raw: {
-                                        expr: U {
+                                        collection: U {
                                           raw: {
-                                            get: U {
+                                            var: "page",
+                                          },
+                                        },
+                                        map: U {
+                                          raw: {
+                                            expr: U {
                                               raw: {
-                                                from: U {
+                                                get: U {
                                                   raw: {
-                                                    var: "x",
+                                                    from: U {
+                                                      raw: {
+                                                        var: "x",
+                                                      },
+                                                    },
+                                                    select: U {
+                                                      raw: [
+                                                        1,
+                                                      ],
+                                                    },
                                                   },
-                                                },
-                                                select: U {
-                                                  raw: [
-                                                    1,
-                                                  ],
                                                 },
                                               },
                                             },
+                                            lambda: "x",
                                           },
                                         },
-                                        lambda: "x",
                                       },
+                                    },
+                                    select: U {
+                                      raw: [
+                                        "data",
+                                      ],
                                     },
                                   },
                                 },
@@ -1606,102 +1532,14 @@ snapshot[`model 7`] = `
                                   {
                                     page: U {
                                       raw: {
-                                        else: U {
+                                        after: undefined,
+                                        before: undefined,
+                                        paginate: U {
                                           raw: {
-                                            else: U {
-                                              raw: {
-                                                after: undefined,
-                                                before: undefined,
-                                                paginate: U {
-                                                  raw: {
-                                                    var: "packs",
-                                                  },
-                                                },
-                                                size: U {
-                                                  raw: {
-                                                    var: "size",
-                                                  },
-                                                },
-                                              },
-                                            },
-                                            if: U {
-                                              raw: {
-                                                not: U {
-                                                  raw: {
-                                                    equals: U {
-                                                      raw: [
-                                                        U {
-                                                          raw: {
-                                                            var: "before",
-                                                          },
-                                                        },
-                                                        null,
-                                                      ],
-                                                    },
-                                                  },
-                                                },
-                                              },
-                                            },
-                                            then: U {
-                                              raw: {
-                                                after: undefined,
-                                                before: U {
-                                                  raw: {
-                                                    var: "before",
-                                                  },
-                                                },
-                                                paginate: U {
-                                                  raw: {
-                                                    var: "packs",
-                                                  },
-                                                },
-                                                size: U {
-                                                  raw: {
-                                                    var: "size",
-                                                  },
-                                                },
-                                              },
-                                            },
+                                            var: "packs",
                                           },
                                         },
-                                        if: U {
-                                          raw: {
-                                            not: U {
-                                              raw: {
-                                                equals: U {
-                                                  raw: [
-                                                    U {
-                                                      raw: {
-                                                        var: "after",
-                                                      },
-                                                    },
-                                                    null,
-                                                  ],
-                                                },
-                                              },
-                                            },
-                                          },
-                                        },
-                                        then: U {
-                                          raw: {
-                                            after: U {
-                                              raw: {
-                                                var: "after",
-                                              },
-                                            },
-                                            before: undefined,
-                                            paginate: U {
-                                              raw: {
-                                                var: "packs",
-                                              },
-                                            },
-                                            size: U {
-                                              raw: {
-                                                var: "size",
-                                              },
-                                            },
-                                          },
-                                        },
+                                        size: 100,
                                       },
                                     },
                                   },
@@ -1727,11 +1565,7 @@ snapshot[`model 7`] = `
                           },
                         },
                         lambda: U {
-                          raw: [
-                            "size",
-                            "after",
-                            "before",
-                          ],
+                          raw: [],
                         },
                       },
                     },
