@@ -86,6 +86,8 @@ type Pack @collection(name: "pack") {
   owner: String!
   # approved by us
   approved: Boolean
+  # the amount of servers the pack is installed on currently
+  servers: Int
 }
 
 type Badge @collection(name: "badge") {

@@ -1,4 +1,5 @@
 import {
+  BooleanExpr,
   Client,
   fql,
   InstanceExpr,
@@ -23,6 +24,8 @@ export interface Pack {
   updated: TimeExpr;
   version: NumberExpr;
   owner: StringExpr;
+  approved?: BooleanExpr;
+  servers?: NumberExpr;
 }
 
 export interface PackInstall {
@@ -58,6 +61,34 @@ export function getPacksByUserId(
       ),
   );
 }
+
+export const getMostInstalledPacks = (
+  { size, after, before }: {
+    size?: number;
+    after?: StringExpr;
+    before?: StringExpr;
+  },
+): PackExpr[] => {
+  return fql.Let({
+    packs: fql.Match(fql.Index('packs_sorted_by_server_amount')),
+  }, ({ packs }) => {
+    return fql.Let({
+      page: fql.If<RefExpr[], RefExpr[]>(
+        fql.Not(fql.Equals(after, fql.Null())),
+        fql.Paginate(packs, { size, after }),
+        fql.If<RefExpr[], RefExpr[]>(
+          fql.Not(fql.Equals(before, fql.Null())),
+          fql.Paginate(packs, { size, before }),
+          fql.Paginate(packs, { size }),
+        ),
+      ),
+    }, ({ page }) =>
+      fql.Map(
+        page,
+        (x) => fql.Get(fql.Select([1], x)),
+      ));
+  });
+};
 
 export function publishPack(
   { manifest, userId }: { manifest: ManifestExpr; userId: StringExpr },
@@ -151,28 +182,36 @@ export function addPack(
         ),
         fql.Let(
           {
+            ref: fql.Ref(fql.Get(match)),
             pack: {
-              ref: fql.Ref(fql.Get(match)),
+              ref: fql.Var('ref'),
               timestamp: fql.Now(),
               by: userId,
             } as PackInstall,
-            updatedInstance: fql.If(
-              // if the pack already exists in the packs list
-              fql.Includes(
-                [fql.Ref(instance)],
-                fql.Paginate(
-                  fql.Match(
-                    fql.Index('pack_ref_instances'),
-                    fql.Ref(fql.Get(match)),
-                  ),
-                  {},
-                ),
+            installed: fql.Includes(
+              fql.Var('ref'),
+              fql.Map(
+                fql.Select<PackExpr[]>(['data', 'packs'], instance),
+                (pack) => fql.Select(['ref'], pack),
               ),
+            ),
+            updatedInstance: fql.If(
+              fql.Var('installed'),
               instance,
               fql.Update<Instance>(fql.Ref(instance), {
                 packs: fql.Append(
                   fql.Var('pack'),
                   fql.Select(['data', 'packs'], instance),
+                ),
+              }),
+            ),
+            updatedPack: fql.If(
+              fql.Var('installed'),
+              fql.Null(),
+              fql.Update<Pack>(fql.Var('ref'), {
+                servers: fql.Add(
+                  fql.Select(['data', 'servers'], fql.Get(match), 0),
+                  1,
                 ),
               }),
             ),
@@ -214,16 +253,40 @@ export function removePack(
       fql.Let(
         {
           ref: fql.Ref(fql.Get(match)),
-          updatedInstance: fql.Update<Instance>(fql.Ref(instance), {
-            packs: fql.Filter(
-              fql.Select(['data', 'packs'], instance),
-              (pack) =>
-                fql.Not(fql.Equals(
-                  fql.Select(['ref'], pack as unknown as PackExpr),
-                  fql.Var('ref'),
-                )),
+          installed: fql.Includes(
+            fql.Var('ref'),
+            fql.Map(
+              fql.Select<PackExpr[]>(['data', 'packs'], instance),
+              (pack) => fql.Select(['ref'], pack),
             ),
-          }),
+          ),
+          updatedInstance: fql.If(
+            fql.Var('installed'),
+            fql.Update<Instance>(fql.Ref(instance), {
+              packs: fql.Filter(
+                fql.Select(['data', 'packs'], instance),
+                (pack) =>
+                  fql.Not(fql.Equals(
+                    fql.Select(['ref'], pack as unknown as PackExpr),
+                    fql.Var('ref'),
+                  )),
+              ),
+            }),
+            instance,
+          ),
+          updatedPack: fql.If(
+            fql.Var('installed'),
+            fql.Update<Pack>(fql.Var('ref'), {
+              servers: fql.Max(
+                0,
+                fql.Subtract(
+                  fql.Select(['data', 'servers'], fql.Get(match), 0),
+                  1,
+                ),
+              ),
+            }),
+            fql.Null(),
+          ),
         },
         () => ({
           ok: true,
@@ -253,13 +316,6 @@ export default function (client: Client): {
       fql.Indexer({
         client,
         unique: false,
-        collection: 'instance',
-        name: 'pack_ref_instances',
-        terms: [{ field: ['data', 'packs', 'ref'] }],
-      }),
-      fql.Indexer({
-        client,
-        unique: false,
         collection: 'pack',
         name: 'packs_owner_user_id',
         terms: [{ field: ['data', 'owner'] }],
@@ -270,6 +326,16 @@ export default function (client: Client): {
         collection: 'pack',
         name: 'packs_maintainers_user_id',
         terms: [{ field: ['data', 'manifest', 'maintainers'] }],
+      }),
+      fql.Indexer({
+        client,
+        unique: false,
+        collection: 'pack',
+        name: 'packs_sorted_by_server_amount',
+        values: [
+          { field: ['data', 'servers'], reverse: true },
+          { field: ['ref'] },
+        ],
       }),
     ],
     resolvers: [
@@ -285,6 +351,13 @@ export default function (client: Client): {
         name: 'get_packs_by_user_id',
         lambda: (userId: StringExpr) => {
           return getPacksByUserId({ userId });
+        },
+      }),
+      fql.Resolver({
+        client,
+        name: 'get_most_installed_packs',
+        lambda: (size?: number, after?: StringExpr, before?: StringExpr) => {
+          return getMostInstalledPacks({ size, after, before });
         },
       }),
       fql.Resolver({

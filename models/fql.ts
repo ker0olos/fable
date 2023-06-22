@@ -191,10 +191,6 @@ function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
   return _fql.Equals(a!, b!);
 }
 
-// function Not(b: BooleanExpr): BooleanExpr {
-//   return _fql.Not(b);
-// }
-
 function Concat(s: StringExpr[], sep?: StringExpr): StringExpr {
   return _fql.Concat(s, sep ?? '');
 }

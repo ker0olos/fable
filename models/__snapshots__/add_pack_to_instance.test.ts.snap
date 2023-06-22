@@ -102,10 +102,10 @@ snapshot[`model 2`] = `
           create_index: U {
             raw: {
               object: {
-                name: "pack_ref_instances",
+                name: "packs_owner_user_id",
                 source: U {
                   raw: {
-                    collection: "instance",
+                    collection: "pack",
                   },
                 },
                 terms: U {
@@ -116,8 +116,7 @@ snapshot[`model 2`] = `
                           field: U {
                             raw: [
                               "data",
-                              "packs",
-                              "ref",
+                              "owner",
                             ],
                           },
                         },
@@ -136,7 +135,7 @@ snapshot[`model 2`] = `
         raw: {
           exists: U {
             raw: {
-              index: "pack_ref_instances",
+              index: "packs_owner_user_id",
             },
           },
         },
@@ -146,10 +145,10 @@ snapshot[`model 2`] = `
           params: U {
             raw: {
               object: {
-                name: "pack_ref_instances",
+                name: "packs_owner_user_id",
                 source: U {
                   raw: {
-                    collection: "instance",
+                    collection: "pack",
                   },
                 },
                 terms: U {
@@ -160,8 +159,7 @@ snapshot[`model 2`] = `
                           field: U {
                             raw: [
                               "data",
-                              "packs",
-                              "ref",
+                              "owner",
                             ],
                           },
                         },
@@ -176,7 +174,7 @@ snapshot[`model 2`] = `
           },
           update: U {
             raw: {
-              index: "pack_ref_instances",
+              index: "packs_owner_user_id",
             },
           },
         },
@@ -195,7 +193,7 @@ snapshot[`model 3`] = `
           create_index: U {
             raw: {
               object: {
-                name: "packs_owner_user_id",
+                name: "packs_maintainers_user_id",
                 source: U {
                   raw: {
                     collection: "pack",
@@ -209,7 +207,8 @@ snapshot[`model 3`] = `
                           field: U {
                             raw: [
                               "data",
-                              "owner",
+                              "manifest",
+                              "maintainers",
                             ],
                           },
                         },
@@ -228,7 +227,7 @@ snapshot[`model 3`] = `
         raw: {
           exists: U {
             raw: {
-              index: "packs_owner_user_id",
+              index: "packs_maintainers_user_id",
             },
           },
         },
@@ -238,7 +237,7 @@ snapshot[`model 3`] = `
           params: U {
             raw: {
               object: {
-                name: "packs_owner_user_id",
+                name: "packs_maintainers_user_id",
                 source: U {
                   raw: {
                     collection: "pack",
@@ -252,7 +251,8 @@ snapshot[`model 3`] = `
                           field: U {
                             raw: [
                               "data",
-                              "owner",
+                              "manifest",
+                              "maintainers",
                             ],
                           },
                         },
@@ -267,7 +267,7 @@ snapshot[`model 3`] = `
           },
           update: U {
             raw: {
-              index: "packs_owner_user_id",
+              index: "packs_maintainers_user_id",
             },
           },
         },
@@ -286,13 +286,15 @@ snapshot[`model 4`] = `
           create_index: U {
             raw: {
               object: {
-                name: "packs_maintainers_user_id",
+                name: "packs_sorted_by_server_amount",
                 source: U {
                   raw: {
                     collection: "pack",
                   },
                 },
-                terms: U {
+                terms: undefined,
+                unique: false,
+                values: U {
                   raw: [
                     U {
                       raw: {
@@ -300,8 +302,19 @@ snapshot[`model 4`] = `
                           field: U {
                             raw: [
                               "data",
-                              "manifest",
-                              "maintainers",
+                              "servers",
+                            ],
+                          },
+                          reverse: true,
+                        },
+                      },
+                    },
+                    U {
+                      raw: {
+                        object: {
+                          field: U {
+                            raw: [
+                              "ref",
                             ],
                           },
                         },
@@ -309,8 +322,6 @@ snapshot[`model 4`] = `
                     },
                   ],
                 },
-                unique: false,
-                values: undefined,
               },
             },
           },
@@ -320,7 +331,7 @@ snapshot[`model 4`] = `
         raw: {
           exists: U {
             raw: {
-              index: "packs_maintainers_user_id",
+              index: "packs_sorted_by_server_amount",
             },
           },
         },
@@ -330,13 +341,15 @@ snapshot[`model 4`] = `
           params: U {
             raw: {
               object: {
-                name: "packs_maintainers_user_id",
+                name: "packs_sorted_by_server_amount",
                 source: U {
                   raw: {
                     collection: "pack",
                   },
                 },
-                terms: U {
+                terms: undefined,
+                unique: false,
+                values: U {
                   raw: [
                     U {
                       raw: {
@@ -344,8 +357,19 @@ snapshot[`model 4`] = `
                           field: U {
                             raw: [
                               "data",
-                              "manifest",
-                              "maintainers",
+                              "servers",
+                            ],
+                          },
+                          reverse: true,
+                        },
+                      },
+                    },
+                    U {
+                      raw: {
+                        object: {
+                          field: U {
+                            raw: [
+                              "ref",
                             ],
                           },
                         },
@@ -353,14 +377,12 @@ snapshot[`model 4`] = `
                     },
                   ],
                 },
-                unique: false,
-                values: undefined,
               },
             },
           },
           update: U {
             raw: {
-              index: "packs_maintainers_user_id",
+              index: "packs_sorted_by_server_amount",
             },
           },
         },
@@ -1355,6 +1377,401 @@ snapshot[`model 7`] = `
                               raw: {
                                 in: U {
                                   raw: {
+                                    collection: U {
+                                      raw: {
+                                        var: "page",
+                                      },
+                                    },
+                                    map: U {
+                                      raw: {
+                                        expr: U {
+                                          raw: {
+                                            get: U {
+                                              raw: {
+                                                from: U {
+                                                  raw: {
+                                                    var: "x",
+                                                  },
+                                                },
+                                                select: U {
+                                                  raw: [
+                                                    1,
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        lambda: "x",
+                                      },
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    page: U {
+                                      raw: {
+                                        else: U {
+                                          raw: {
+                                            else: U {
+                                              raw: {
+                                                after: undefined,
+                                                before: undefined,
+                                                paginate: U {
+                                                  raw: {
+                                                    var: "packs",
+                                                  },
+                                                },
+                                                size: U {
+                                                  raw: {
+                                                    var: "size",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            if: U {
+                                              raw: {
+                                                not: U {
+                                                  raw: {
+                                                    equals: U {
+                                                      raw: [
+                                                        U {
+                                                          raw: {
+                                                            var: "before",
+                                                          },
+                                                        },
+                                                        null,
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            then: U {
+                                              raw: {
+                                                after: undefined,
+                                                before: U {
+                                                  raw: {
+                                                    var: "before",
+                                                  },
+                                                },
+                                                paginate: U {
+                                                  raw: {
+                                                    var: "packs",
+                                                  },
+                                                },
+                                                size: U {
+                                                  raw: {
+                                                    var: "size",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: U {
+                                          raw: {
+                                            not: U {
+                                              raw: {
+                                                equals: U {
+                                                  raw: [
+                                                    U {
+                                                      raw: {
+                                                        var: "after",
+                                                      },
+                                                    },
+                                                    null,
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: U {
+                                          raw: {
+                                            after: U {
+                                              raw: {
+                                                var: "after",
+                                              },
+                                            },
+                                            before: undefined,
+                                            paginate: U {
+                                              raw: {
+                                                var: "packs",
+                                              },
+                                            },
+                                            size: U {
+                                              raw: {
+                                                var: "size",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                packs: U {
+                                  raw: {
+                                    match: U {
+                                      raw: {
+                                        index: "packs_sorted_by_server_amount",
+                                      },
+                                    },
+                                    terms: U {
+                                      raw: [],
+                                    },
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: U {
+                          raw: [
+                            "size",
+                            "after",
+                            "before",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "get_most_installed_packs",
+              },
+            },
+          },
+        },
+      },
+      if: U {
+        raw: {
+          exists: U {
+            raw: {
+              function: "get_most_installed_packs",
+            },
+          },
+        },
+      },
+      then: U {
+        raw: {
+          params: U {
+            raw: {
+              object: {
+                body: U {
+                  raw: {
+                    query: U {
+                      raw: {
+                        expr: U {
+                          raw: {
+                            in: U {
+                              raw: {
+                                in: U {
+                                  raw: {
+                                    collection: U {
+                                      raw: {
+                                        var: "page",
+                                      },
+                                    },
+                                    map: U {
+                                      raw: {
+                                        expr: U {
+                                          raw: {
+                                            get: U {
+                                              raw: {
+                                                from: U {
+                                                  raw: {
+                                                    var: "x",
+                                                  },
+                                                },
+                                                select: U {
+                                                  raw: [
+                                                    1,
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        lambda: "x",
+                                      },
+                                    },
+                                  },
+                                },
+                                let: [
+                                  {
+                                    page: U {
+                                      raw: {
+                                        else: U {
+                                          raw: {
+                                            else: U {
+                                              raw: {
+                                                after: undefined,
+                                                before: undefined,
+                                                paginate: U {
+                                                  raw: {
+                                                    var: "packs",
+                                                  },
+                                                },
+                                                size: U {
+                                                  raw: {
+                                                    var: "size",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            if: U {
+                                              raw: {
+                                                not: U {
+                                                  raw: {
+                                                    equals: U {
+                                                      raw: [
+                                                        U {
+                                                          raw: {
+                                                            var: "before",
+                                                          },
+                                                        },
+                                                        null,
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            then: U {
+                                              raw: {
+                                                after: undefined,
+                                                before: U {
+                                                  raw: {
+                                                    var: "before",
+                                                  },
+                                                },
+                                                paginate: U {
+                                                  raw: {
+                                                    var: "packs",
+                                                  },
+                                                },
+                                                size: U {
+                                                  raw: {
+                                                    var: "size",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: U {
+                                          raw: {
+                                            not: U {
+                                              raw: {
+                                                equals: U {
+                                                  raw: [
+                                                    U {
+                                                      raw: {
+                                                        var: "after",
+                                                      },
+                                                    },
+                                                    null,
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: U {
+                                          raw: {
+                                            after: U {
+                                              raw: {
+                                                var: "after",
+                                              },
+                                            },
+                                            before: undefined,
+                                            paginate: U {
+                                              raw: {
+                                                var: "packs",
+                                              },
+                                            },
+                                            size: U {
+                                              raw: {
+                                                var: "size",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            let: [
+                              {
+                                packs: U {
+                                  raw: {
+                                    match: U {
+                                      raw: {
+                                        index: "packs_sorted_by_server_amount",
+                                      },
+                                    },
+                                    terms: U {
+                                      raw: [],
+                                    },
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: U {
+                          raw: [
+                            "size",
+                            "after",
+                            "before",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "get_most_installed_packs",
+              },
+            },
+          },
+          update: U {
+            raw: {
+              function: "get_most_installed_packs",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;
+
+snapshot[`model 8`] = `
+[
+  U {
+    raw: {
+      else: U {
+        raw: {
+          create_function: U {
+            raw: {
+              object: {
+                body: U {
+                  raw: {
+                    query: U {
+                      raw: {
+                        expr: U {
+                          raw: {
+                            in: U {
+                              raw: {
+                                in: U {
+                                  raw: {
                                     else: U {
                                       raw: {
                                         object: {
@@ -1500,6 +1917,22 @@ snapshot[`model 7`] = `
                                             },
                                             let: [
                                               {
+                                                ref: U {
+                                                  raw: {
+                                                    from: U {
+                                                      raw: {
+                                                        get: U {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    select: "ref",
+                                                  },
+                                                },
+                                              },
+                                              {
                                                 pack: U {
                                                   raw: {
                                                     object: {
@@ -1510,21 +1943,61 @@ snapshot[`model 7`] = `
                                                       },
                                                       ref: U {
                                                         raw: {
-                                                          from: U {
-                                                            raw: {
-                                                              get: U {
-                                                                raw: {
-                                                                  var: "match",
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                          select: "ref",
+                                                          var: "ref",
                                                         },
                                                       },
                                                       timestamp: U {
                                                         raw: {
                                                           now: null,
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                              {
+                                                installed: U {
+                                                  raw: {
+                                                    contains_value: U {
+                                                      raw: {
+                                                        var: "ref",
+                                                      },
+                                                    },
+                                                    in: U {
+                                                      raw: {
+                                                        collection: U {
+                                                          raw: {
+                                                            from: U {
+                                                              raw: {
+                                                                var: "instance",
+                                                              },
+                                                            },
+                                                            select: U {
+                                                              raw: [
+                                                                "data",
+                                                                "packs",
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                        map: U {
+                                                          raw: {
+                                                            expr: U {
+                                                              raw: {
+                                                                from: U {
+                                                                  raw: {
+                                                                    var: "pack",
+                                                                  },
+                                                                },
+                                                                select: U {
+                                                                  raw: [
+                                                                    "ref",
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                            lambda: "pack",
+                                                          },
                                                         },
                                                       },
                                                     },
@@ -1586,50 +2059,7 @@ snapshot[`model 7`] = `
                                                     },
                                                     if: U {
                                                       raw: {
-                                                        contains_value: U {
-                                                          raw: [
-                                                            U {
-                                                              raw: {
-                                                                from: U {
-                                                                  raw: {
-                                                                    var: "instance",
-                                                                  },
-                                                                },
-                                                                select: "ref",
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
-                                                        in: U {
-                                                          raw: {
-                                                            after: undefined,
-                                                            before: undefined,
-                                                            paginate: U {
-                                                              raw: {
-                                                                match: U {
-                                                                  raw: {
-                                                                    index: "pack_ref_instances",
-                                                                  },
-                                                                },
-                                                                terms: U {
-                                                                  raw: {
-                                                                    from: U {
-                                                                      raw: {
-                                                                        get: U {
-                                                                          raw: {
-                                                                            var: "match",
-                                                                          },
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                    select: "ref",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                            size: undefined,
-                                                          },
-                                                        },
+                                                        var: "installed",
                                                       },
                                                     },
                                                     then: U {
@@ -1637,6 +2067,68 @@ snapshot[`model 7`] = `
                                                         var: "instance",
                                                       },
                                                     },
+                                                  },
+                                                },
+                                              },
+                                              {
+                                                updatedPack: U {
+                                                  raw: {
+                                                    else: U {
+                                                      raw: {
+                                                        params: U {
+                                                          raw: {
+                                                            object: {
+                                                              data: U {
+                                                                raw: {
+                                                                  object: {
+                                                                    servers: U {
+                                                                      raw: {
+                                                                        add: U {
+                                                                          raw: [
+                                                                            U {
+                                                                              raw: {
+                                                                                default: 0,
+                                                                                from: U {
+                                                                                  raw: {
+                                                                                    get: U {
+                                                                                      raw: {
+                                                                                        var: "match",
+                                                                                      },
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                select: U {
+                                                                                  raw: [
+                                                                                    "data",
+                                                                                    "servers",
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                            1,
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                        update: U {
+                                                          raw: {
+                                                            var: "ref",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    if: U {
+                                                      raw: {
+                                                        var: "installed",
+                                                      },
+                                                    },
+                                                    then: null,
                                                   },
                                                 },
                                               },
@@ -2081,6 +2573,22 @@ snapshot[`model 7`] = `
                                             },
                                             let: [
                                               {
+                                                ref: U {
+                                                  raw: {
+                                                    from: U {
+                                                      raw: {
+                                                        get: U {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    select: "ref",
+                                                  },
+                                                },
+                                              },
+                                              {
                                                 pack: U {
                                                   raw: {
                                                     object: {
@@ -2091,21 +2599,61 @@ snapshot[`model 7`] = `
                                                       },
                                                       ref: U {
                                                         raw: {
-                                                          from: U {
-                                                            raw: {
-                                                              get: U {
-                                                                raw: {
-                                                                  var: "match",
-                                                                },
-                                                              },
-                                                            },
-                                                          },
-                                                          select: "ref",
+                                                          var: "ref",
                                                         },
                                                       },
                                                       timestamp: U {
                                                         raw: {
                                                           now: null,
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                              {
+                                                installed: U {
+                                                  raw: {
+                                                    contains_value: U {
+                                                      raw: {
+                                                        var: "ref",
+                                                      },
+                                                    },
+                                                    in: U {
+                                                      raw: {
+                                                        collection: U {
+                                                          raw: {
+                                                            from: U {
+                                                              raw: {
+                                                                var: "instance",
+                                                              },
+                                                            },
+                                                            select: U {
+                                                              raw: [
+                                                                "data",
+                                                                "packs",
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                        map: U {
+                                                          raw: {
+                                                            expr: U {
+                                                              raw: {
+                                                                from: U {
+                                                                  raw: {
+                                                                    var: "pack",
+                                                                  },
+                                                                },
+                                                                select: U {
+                                                                  raw: [
+                                                                    "ref",
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                            lambda: "pack",
+                                                          },
                                                         },
                                                       },
                                                     },
@@ -2167,50 +2715,7 @@ snapshot[`model 7`] = `
                                                     },
                                                     if: U {
                                                       raw: {
-                                                        contains_value: U {
-                                                          raw: [
-                                                            U {
-                                                              raw: {
-                                                                from: U {
-                                                                  raw: {
-                                                                    var: "instance",
-                                                                  },
-                                                                },
-                                                                select: "ref",
-                                                              },
-                                                            },
-                                                          ],
-                                                        },
-                                                        in: U {
-                                                          raw: {
-                                                            after: undefined,
-                                                            before: undefined,
-                                                            paginate: U {
-                                                              raw: {
-                                                                match: U {
-                                                                  raw: {
-                                                                    index: "pack_ref_instances",
-                                                                  },
-                                                                },
-                                                                terms: U {
-                                                                  raw: {
-                                                                    from: U {
-                                                                      raw: {
-                                                                        get: U {
-                                                                          raw: {
-                                                                            var: "match",
-                                                                          },
-                                                                        },
-                                                                      },
-                                                                    },
-                                                                    select: "ref",
-                                                                  },
-                                                                },
-                                                              },
-                                                            },
-                                                            size: undefined,
-                                                          },
-                                                        },
+                                                        var: "installed",
                                                       },
                                                     },
                                                     then: U {
@@ -2218,6 +2723,68 @@ snapshot[`model 7`] = `
                                                         var: "instance",
                                                       },
                                                     },
+                                                  },
+                                                },
+                                              },
+                                              {
+                                                updatedPack: U {
+                                                  raw: {
+                                                    else: U {
+                                                      raw: {
+                                                        params: U {
+                                                          raw: {
+                                                            object: {
+                                                              data: U {
+                                                                raw: {
+                                                                  object: {
+                                                                    servers: U {
+                                                                      raw: {
+                                                                        add: U {
+                                                                          raw: [
+                                                                            U {
+                                                                              raw: {
+                                                                                default: 0,
+                                                                                from: U {
+                                                                                  raw: {
+                                                                                    get: U {
+                                                                                      raw: {
+                                                                                        var: "match",
+                                                                                      },
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                select: U {
+                                                                                  raw: [
+                                                                                    "data",
+                                                                                    "servers",
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                            1,
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                        update: U {
+                                                          raw: {
+                                                            var: "ref",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    if: U {
+                                                      raw: {
+                                                        var: "installed",
+                                                      },
+                                                    },
+                                                    then: null,
                                                   },
                                                 },
                                               },
@@ -2503,7 +3070,7 @@ snapshot[`model 7`] = `
 ]
 `;
 
-snapshot[`model 8`] = `
+snapshot[`model 9`] = `
 [
   U {
     raw: {
@@ -2571,65 +3138,128 @@ snapshot[`model 8`] = `
                                             },
                                           },
                                           {
+                                            installed: U {
+                                              raw: {
+                                                contains_value: U {
+                                                  raw: {
+                                                    var: "ref",
+                                                  },
+                                                },
+                                                in: U {
+                                                  raw: {
+                                                    collection: U {
+                                                      raw: {
+                                                        from: U {
+                                                          raw: {
+                                                            var: "instance",
+                                                          },
+                                                        },
+                                                        select: U {
+                                                          raw: [
+                                                            "data",
+                                                            "packs",
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    map: U {
+                                                      raw: {
+                                                        expr: U {
+                                                          raw: {
+                                                            from: U {
+                                                              raw: {
+                                                                var: "pack",
+                                                              },
+                                                            },
+                                                            select: U {
+                                                              raw: [
+                                                                "ref",
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                        lambda: "pack",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                          {
                                             updatedInstance: U {
                                               raw: {
-                                                params: U {
+                                                else: U {
                                                   raw: {
-                                                    object: {
-                                                      data: U {
-                                                        raw: {
-                                                          object: {
-                                                            packs: U {
-                                                              raw: {
-                                                                collection: U {
+                                                    var: "instance",
+                                                  },
+                                                },
+                                                if: U {
+                                                  raw: {
+                                                    var: "installed",
+                                                  },
+                                                },
+                                                then: U {
+                                                  raw: {
+                                                    params: U {
+                                                      raw: {
+                                                        object: {
+                                                          data: U {
+                                                            raw: {
+                                                              object: {
+                                                                packs: U {
                                                                   raw: {
-                                                                    from: U {
+                                                                    collection: U {
                                                                       raw: {
-                                                                        var: "instance",
-                                                                      },
-                                                                    },
-                                                                    select: U {
-                                                                      raw: [
-                                                                        "data",
-                                                                        "packs",
-                                                                      ],
-                                                                    },
-                                                                  },
-                                                                },
-                                                                filter: U {
-                                                                  raw: {
-                                                                    expr: U {
-                                                                      raw: {
-                                                                        not: U {
+                                                                        from: U {
                                                                           raw: {
-                                                                            equals: U {
-                                                                              raw: [
-                                                                                U {
-                                                                                  raw: {
-                                                                                    from: U {
-                                                                                      raw: {
-                                                                                        var: "pack",
-                                                                                      },
-                                                                                    },
-                                                                                    select: U {
-                                                                                      raw: [
-                                                                                        "ref",
-                                                                                      ],
-                                                                                    },
-                                                                                  },
-                                                                                },
-                                                                                U {
-                                                                                  raw: {
-                                                                                    var: "ref",
-                                                                                  },
-                                                                                },
-                                                                              ],
-                                                                            },
+                                                                            var: "instance",
                                                                           },
+                                                                        },
+                                                                        select: U {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "packs",
+                                                                          ],
                                                                         },
                                                                       },
                                                                     },
-                                                                    lambda: "pack",
+                                                                    filter: U {
+                                                                      raw: {
+                                                                        expr: U {
+                                                                          raw: {
+                                                                            not: U {
+                                                                              raw: {
+                                                                                equals: U {
+                                                                                  raw: [
+                                                                                    U {
+                                                                                      raw: {
+                                                                                        from: U {
+                                                                                          raw: {
+                                                                                            var: "pack",
+                                                                                          },
+                                                                                        },
+                                                                                        select: U {
+                                                                                          raw: [
+                                                                                            "ref",
+                                                                                          ],
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    U {
+                                                                                      raw: {
+                                                                                        var: "ref",
+                                                                                      },
+                                                                                    },
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                        lambda: "pack",
+                                                                      },
+                                                                    },
                                                                   },
                                                                 },
                                                               },
@@ -2638,16 +3268,87 @@ snapshot[`model 8`] = `
                                                         },
                                                       },
                                                     },
-                                                  },
-                                                },
-                                                update: U {
-                                                  raw: {
-                                                    from: U {
+                                                    update: U {
                                                       raw: {
-                                                        var: "instance",
+                                                        from: U {
+                                                          raw: {
+                                                            var: "instance",
+                                                          },
+                                                        },
+                                                        select: "ref",
                                                       },
                                                     },
-                                                    select: "ref",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                          {
+                                            updatedPack: U {
+                                              raw: {
+                                                else: null,
+                                                if: U {
+                                                  raw: {
+                                                    var: "installed",
+                                                  },
+                                                },
+                                                then: U {
+                                                  raw: {
+                                                    params: U {
+                                                      raw: {
+                                                        object: {
+                                                          data: U {
+                                                            raw: {
+                                                              object: {
+                                                                servers: U {
+                                                                  raw: {
+                                                                    max: U {
+                                                                      raw: [
+                                                                        0,
+                                                                        U {
+                                                                          raw: {
+                                                                            subtract: U {
+                                                                              raw: [
+                                                                                U {
+                                                                                  raw: {
+                                                                                    default: 0,
+                                                                                    from: U {
+                                                                                      raw: {
+                                                                                        get: U {
+                                                                                          raw: {
+                                                                                            var: "match",
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    select: U {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "servers",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                1,
+                                                                              ],
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      ],
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    update: U {
+                                                      raw: {
+                                                        var: "ref",
+                                                      },
+                                                    },
                                                   },
                                                 },
                                               },
@@ -2995,65 +3696,128 @@ snapshot[`model 8`] = `
                                             },
                                           },
                                           {
+                                            installed: U {
+                                              raw: {
+                                                contains_value: U {
+                                                  raw: {
+                                                    var: "ref",
+                                                  },
+                                                },
+                                                in: U {
+                                                  raw: {
+                                                    collection: U {
+                                                      raw: {
+                                                        from: U {
+                                                          raw: {
+                                                            var: "instance",
+                                                          },
+                                                        },
+                                                        select: U {
+                                                          raw: [
+                                                            "data",
+                                                            "packs",
+                                                          ],
+                                                        },
+                                                      },
+                                                    },
+                                                    map: U {
+                                                      raw: {
+                                                        expr: U {
+                                                          raw: {
+                                                            from: U {
+                                                              raw: {
+                                                                var: "pack",
+                                                              },
+                                                            },
+                                                            select: U {
+                                                              raw: [
+                                                                "ref",
+                                                              ],
+                                                            },
+                                                          },
+                                                        },
+                                                        lambda: "pack",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                          {
                                             updatedInstance: U {
                                               raw: {
-                                                params: U {
+                                                else: U {
                                                   raw: {
-                                                    object: {
-                                                      data: U {
-                                                        raw: {
-                                                          object: {
-                                                            packs: U {
-                                                              raw: {
-                                                                collection: U {
+                                                    var: "instance",
+                                                  },
+                                                },
+                                                if: U {
+                                                  raw: {
+                                                    var: "installed",
+                                                  },
+                                                },
+                                                then: U {
+                                                  raw: {
+                                                    params: U {
+                                                      raw: {
+                                                        object: {
+                                                          data: U {
+                                                            raw: {
+                                                              object: {
+                                                                packs: U {
                                                                   raw: {
-                                                                    from: U {
+                                                                    collection: U {
                                                                       raw: {
-                                                                        var: "instance",
-                                                                      },
-                                                                    },
-                                                                    select: U {
-                                                                      raw: [
-                                                                        "data",
-                                                                        "packs",
-                                                                      ],
-                                                                    },
-                                                                  },
-                                                                },
-                                                                filter: U {
-                                                                  raw: {
-                                                                    expr: U {
-                                                                      raw: {
-                                                                        not: U {
+                                                                        from: U {
                                                                           raw: {
-                                                                            equals: U {
-                                                                              raw: [
-                                                                                U {
-                                                                                  raw: {
-                                                                                    from: U {
-                                                                                      raw: {
-                                                                                        var: "pack",
-                                                                                      },
-                                                                                    },
-                                                                                    select: U {
-                                                                                      raw: [
-                                                                                        "ref",
-                                                                                      ],
-                                                                                    },
-                                                                                  },
-                                                                                },
-                                                                                U {
-                                                                                  raw: {
-                                                                                    var: "ref",
-                                                                                  },
-                                                                                },
-                                                                              ],
-                                                                            },
+                                                                            var: "instance",
                                                                           },
+                                                                        },
+                                                                        select: U {
+                                                                          raw: [
+                                                                            "data",
+                                                                            "packs",
+                                                                          ],
                                                                         },
                                                                       },
                                                                     },
-                                                                    lambda: "pack",
+                                                                    filter: U {
+                                                                      raw: {
+                                                                        expr: U {
+                                                                          raw: {
+                                                                            not: U {
+                                                                              raw: {
+                                                                                equals: U {
+                                                                                  raw: [
+                                                                                    U {
+                                                                                      raw: {
+                                                                                        from: U {
+                                                                                          raw: {
+                                                                                            var: "pack",
+                                                                                          },
+                                                                                        },
+                                                                                        select: U {
+                                                                                          raw: [
+                                                                                            "ref",
+                                                                                          ],
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    U {
+                                                                                      raw: {
+                                                                                        var: "ref",
+                                                                                      },
+                                                                                    },
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                        lambda: "pack",
+                                                                      },
+                                                                    },
                                                                   },
                                                                 },
                                                               },
@@ -3062,16 +3826,87 @@ snapshot[`model 8`] = `
                                                         },
                                                       },
                                                     },
-                                                  },
-                                                },
-                                                update: U {
-                                                  raw: {
-                                                    from: U {
+                                                    update: U {
                                                       raw: {
-                                                        var: "instance",
+                                                        from: U {
+                                                          raw: {
+                                                            var: "instance",
+                                                          },
+                                                        },
+                                                        select: "ref",
                                                       },
                                                     },
-                                                    select: "ref",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                          {
+                                            updatedPack: U {
+                                              raw: {
+                                                else: null,
+                                                if: U {
+                                                  raw: {
+                                                    var: "installed",
+                                                  },
+                                                },
+                                                then: U {
+                                                  raw: {
+                                                    params: U {
+                                                      raw: {
+                                                        object: {
+                                                          data: U {
+                                                            raw: {
+                                                              object: {
+                                                                servers: U {
+                                                                  raw: {
+                                                                    max: U {
+                                                                      raw: [
+                                                                        0,
+                                                                        U {
+                                                                          raw: {
+                                                                            subtract: U {
+                                                                              raw: [
+                                                                                U {
+                                                                                  raw: {
+                                                                                    default: 0,
+                                                                                    from: U {
+                                                                                      raw: {
+                                                                                        get: U {
+                                                                                          raw: {
+                                                                                            var: "match",
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    select: U {
+                                                                                      raw: [
+                                                                                        "data",
+                                                                                        "servers",
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                1,
+                                                                              ],
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      ],
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    update: U {
+                                                      raw: {
+                                                        var: "ref",
+                                                      },
+                                                    },
                                                   },
                                                 },
                                               },
