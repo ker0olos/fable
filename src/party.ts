@@ -16,13 +16,8 @@ import { default as srch } from './search.ts';
 
 import { Character, DisaggregatedCharacter, Schema } from './types.ts';
 
-async function embed({
-  guildId,
-  channelId,
-  inventory,
-}: {
+async function embed({ guildId, inventory }: {
   guildId: string;
-  channelId: string;
   inventory: Schema.Inventory;
 }): Promise<discord.Message> {
   const message = new discord.Message();
@@ -87,7 +82,7 @@ async function embed({
       );
     }
 
-    const embed = srch.characterEmbed(character, channelId, {
+    const embed = srch.characterEmbed(character, {
       mode: 'thumbnail',
       media: { title: packs.aliasToArray(media[mediaIndex].title)[0] },
       rating: new Rating({ stars: members[i]?.rating }),
@@ -105,16 +100,10 @@ async function embed({
   return message;
 }
 
-function view({
-  token,
-  userId,
-  guildId,
-  channelId,
-}: {
+function view({ token, userId, guildId }: {
   token: string;
   userId: string;
   guildId: string;
-  channelId: string;
 }): discord.Message {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -174,11 +163,7 @@ function view({
     },
   })
     .then(async ({ getUserInventory: inventory }) => {
-      const message = await embed({
-        guildId,
-        channelId,
-        inventory,
-      });
+      const message = await embed({ guildId, inventory });
 
       return message.patch(token);
     })
@@ -206,13 +191,11 @@ async function assign({
   spot,
   userId,
   guildId,
-  channelId,
   search,
   id,
 }: {
   userId: string;
   guildId: string;
-  channelId: string;
   spot?: number;
   search?: string;
   id?: string;
@@ -302,7 +285,7 @@ async function assign({
 
   return message
     .addEmbed(new discord.Embed().setDescription('Assigned'))
-    .addEmbed(srch.characterEmbed(results[0], channelId, {
+    .addEmbed(srch.characterEmbed(results[0], {
       mode: 'thumbnail',
       rating: new Rating({ stars: response.character.rating }),
       description: true,
@@ -322,18 +305,11 @@ async function assign({
     ]);
 }
 
-async function swap({
-  a,
-  b,
-  userId,
-  guildId,
-  channelId,
-}: {
+async function swap({ a, b, userId, guildId }: {
   a: number;
   b: number;
   userId: string;
   guildId: string;
-  channelId: string;
 }): Promise<discord.Message> {
   const mutation = gql`
     mutation ($userId: String!, $guildId: String!, $a: Int!, $b: Int!) {
@@ -402,23 +378,13 @@ async function swap({
     throw new Error(response.error);
   }
 
-  return embed({
-    guildId,
-    channelId,
-    inventory: response.inventory,
-  });
+  return embed({ guildId, inventory: response.inventory });
 }
 
-async function remove({
-  spot,
-  userId,
-  guildId,
-  channelId,
-}: {
+async function remove({ spot, userId, guildId }: {
   spot: number;
   userId: string;
   guildId: string;
-  channelId: string;
 }): Promise<discord.Message> {
   const mutation = gql`
     mutation ($userId: String!, $guildId: String!, $spot: Int!) {
@@ -481,7 +447,7 @@ async function remove({
 
   return message
     .addEmbed(new discord.Embed().setDescription('Removed'))
-    .addEmbed(srch.characterEmbed(characters[0], channelId, {
+    .addEmbed(srch.characterEmbed(characters[0], {
       mode: 'thumbnail',
       rating: new Rating({ stars: response.character.rating }),
       description: true,

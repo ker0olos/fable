@@ -1076,7 +1076,7 @@ Deno.test('/nick', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         nick: 'new_nickname',
       });
@@ -1229,7 +1229,7 @@ Deno.test('/nick', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
       });
 
@@ -1335,7 +1335,7 @@ Deno.test('/nick', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         nick: 'new_nick',
       });
@@ -1451,7 +1451,7 @@ Deno.test('/nick', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         nick: 'new_nick',
       });
@@ -1586,7 +1586,7 @@ Deno.test('/nick', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         nick: 'new_nick',
       });
@@ -1740,7 +1740,7 @@ Deno.test('/image', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -1892,7 +1892,7 @@ Deno.test('/image', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
       });
 
@@ -1998,7 +1998,7 @@ Deno.test('/image', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -2114,7 +2114,7 @@ Deno.test('/image', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -2249,7 +2249,7 @@ Deno.test('/image', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -5696,7 +5696,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -5855,7 +5855,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         mention: true,
@@ -6023,7 +6023,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -6189,7 +6189,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -6349,7 +6349,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: true,
@@ -6504,7 +6504,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: true,
@@ -6659,7 +6659,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: true,
@@ -6777,7 +6777,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -6893,7 +6893,7 @@ Deno.test('/likeall', async (test) => {
       const message = user.likeall({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'title',
         undo: false,
@@ -7027,7 +7027,7 @@ Deno.test('/likeall', async (test) => {
       const message = user.likeall({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'title',
         undo: true,
@@ -7139,7 +7139,7 @@ Deno.test('/likeall', async (test) => {
       const message = user.likeall({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'title',
         undo: false,

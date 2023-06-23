@@ -705,15 +705,20 @@ export const commands = [
       }),
     ],
   }),
-  // pack management commands
+  // pack viewing
   ...Command({
     name: 'packs',
-    description: 'pack management commands',
+    description: 'List all the packs on this server',
+  }),
+  // community packs management commands
+  ...Command({
+    name: 'community',
+    description: 'community packs management commands',
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
       Option({
-        name: 'community',
-        description: 'View all instated community packs',
+        name: 'gallery',
+        description: 'Browse the most installed community packs',
         type: Type.SUB_COMMAND,
         optional: true,
       }),
@@ -732,7 +737,7 @@ export const commands = [
       }),
       Option({
         name: 'uninstall',
-        description: 'Uninstall a pack',
+        description: 'Uninstall a community pack',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [

@@ -49,7 +49,6 @@ export type Alias = {
 
 export type Image = {
   url: string;
-  nsfw?: boolean;
   artist?: {
     username: string;
     url?: string;
@@ -138,11 +137,6 @@ export type Pool = {
   };
 };
 
-export enum PackType {
-  Builtin = 'builtin',
-  Community = 'community',
-}
-
 export interface Manifest {
   id: string;
   title?: string;
@@ -151,6 +145,7 @@ export interface Manifest {
   image?: string;
   url?: string;
   depends?: string[];
+  private?: boolean;
   maintainers?: string[];
   conflicts?: string[];
   media?: {
@@ -165,16 +160,18 @@ export interface Manifest {
 
 export interface PackInstall {
   id?: number;
-  installedBy?: {
-    id: string;
-  };
-  manifest: Manifest;
-  type: PackType;
+  by?: { id: string };
+  ref: Pack;
 }
 
 export interface Pack {
   manifest: Manifest;
-  type: PackType;
+  added?: string;
+  updated?: string;
+  version?: number;
+  owner?: string;
+  approved?: boolean;
+  servers?: number;
 }
 
 // deno-lint-ignore no-namespace
@@ -188,14 +185,6 @@ export namespace Schema {
     nickname?: string;
     image?: string;
   };
-
-  export interface Pack {
-    version: number;
-    owner: string;
-    manifest: Manifest;
-    added: string;
-    updated: string;
-  }
 
   export type User = {
     id: string;
@@ -252,6 +241,10 @@ export namespace Schema {
     }
     | {
       ok: false;
+      error: 'PACK_PRIVATE';
+    }
+    | {
+      ok: false;
       error: 'NO_GUARANTEES';
       user: User;
     }
@@ -293,17 +286,7 @@ export namespace Schema {
       user: User;
       inventory: Inventory;
       character: Character;
-      pack: { timestamp: string; by: string; manifest: Manifest };
+      install: PackInstall;
+      uninstall: Pack;
     };
 }
-
-type Command = {
-  source: string;
-  description: string;
-  options: {
-    id: string;
-    type: string;
-    description: string;
-    required?: boolean;
-  }[];
-};

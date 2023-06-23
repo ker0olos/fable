@@ -325,18 +325,16 @@ async function rngPull(
 }
 
 async function pullAnimation(
-  { token, ping, userId, guildId, channelId, quiet, mention, guarantee, pull }:
-    {
-      token: string;
-      pull: Pull;
-      channelId: string;
-      userId?: string;
-      guildId?: string;
-      quiet?: boolean;
-      mention?: boolean;
-      guarantee?: number;
-      ping?: boolean;
-    },
+  { token, ping, userId, guildId, quiet, mention, guarantee, pull }: {
+    token: string;
+    pull: Pull;
+    userId?: string;
+    guildId?: string;
+    quiet?: boolean;
+    mention?: boolean;
+    guarantee?: number;
+    ping?: boolean;
+  },
 ): Promise<void> {
   const characterId = `${pull.character.packId}:${pull.character.id}`;
 
@@ -359,8 +357,6 @@ async function pullAnimation(
         .setImage({
           size: ImageSize.Medium,
           url: mediaImage?.url,
-          blur: mediaImage?.nsfw &&
-            !packs.cachedChannels[channelId]?.nsfw,
         }),
     );
 
@@ -394,7 +390,7 @@ async function pullAnimation(
     await utils.sleep(pull.rating.stars + 3);
   }
 
-  message = search.characterMessage(pull.character, channelId, {
+  message = search.characterMessage(pull.character, {
     relations: false,
     rating: pull.rating,
     description: false,
@@ -451,14 +447,20 @@ async function pullAnimation(
 
     const inventories = await user.getActiveInventories(guildId);
 
+    const background =
+      pull.character.media?.edges?.[0].role === CharacterRole.Background;
+
     inventories.forEach(({ user }) => {
       if (
         user.id !== userId &&
         (
           user.likes?.map(({ characterId }) => characterId).filter(Boolean)
             .includes(characterId) ||
-          user.likes?.map(({ mediaId }) => mediaId).filter(Boolean)
-            .some((id) => mediaIds.includes(id))
+          (
+            !background &&
+            user.likes?.map(({ mediaId }) => mediaId).filter(Boolean)
+              .some((id) => mediaIds.includes(id))
+          )
         )
       ) {
         pings.push(`<@${user.id}>`);
@@ -477,10 +479,9 @@ async function pullAnimation(
  * start the pull's animation
  */
 function start(
-  { token, guildId, channelId, userId, guarantee, mention, quiet }: {
+  { token, guildId, userId, guarantee, mention, quiet }: {
     token: string;
     guildId: string;
-    channelId: string;
     userId?: string;
     guarantee?: number;
     mention?: boolean;
@@ -498,7 +499,6 @@ function start(
       pullAnimation({
         token,
         ping: true,
-        channelId,
         userId,
         guildId,
         guarantee,
@@ -541,11 +541,9 @@ function start(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              `There are no more ${
-                typeof guarantee === 'number'
-                  ? `${guarantee}${discord.emotes.smolStar}`
-                  : ''
-              }characters left`,
+              typeof guarantee === 'number'
+                ? `There are no more ${guarantee}${discord.emotes.smolStar}characters left`
+                : 'There are no more characters left in this range',
             ),
           ).patch(token);
       }

@@ -4,7 +4,8 @@ type Response @embedded {
   user: User
   inventory: Inventory
   character: Character
-  pack: Pack
+  install: PackInstall
+  uninstall: Pack
 }
 
 type Query {
@@ -31,6 +32,9 @@ type Query {
   #
   getPacksByUserId(userId: String!): [Pack!]
     @resolver(name: "get_packs_by_user_id")
+
+  #
+  getMostInstalledPacks: [Pack!] @resolver(name: "get_most_installed_packs")
 }
 
 type Mutation {

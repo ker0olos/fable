@@ -20,8 +20,8 @@ import trade from '../src/trade.ts';
 import shop from '../src/shop.ts';
 
 import synthesis from '../src/synthesis.ts';
+import community from '../src/community.ts';
 
-import { PackType } from '../src/types.ts';
 import steal from '../src/steal.ts';
 
 Deno.test('media components', async () => {
@@ -30,7 +30,7 @@ Deno.test('media components', async () => {
     token: 'token',
     type: discord.InteractionType.Component,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
+
     data: {
       custom_id: 'media=media_id',
     },
@@ -92,7 +92,6 @@ Deno.test('media components', async () => {
         token: 'token',
         id: 'media_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
       }],
     });
 
@@ -113,7 +112,7 @@ Deno.test('character components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -179,7 +178,7 @@ Deno.test('character components', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           id: 'character_id',
         }],
       });
@@ -200,7 +199,7 @@ Deno.test('character components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -266,7 +265,7 @@ Deno.test('character components', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           id: 'character_id',
         }],
       });
@@ -288,7 +287,7 @@ Deno.test('media characters components', async () => {
     token: 'token',
     type: discord.InteractionType.Component,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
+
     member: {
       user: {
         id: 'user_id',
@@ -354,7 +353,7 @@ Deno.test('media characters components', async () => {
       args: [{
         id: 'media_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         index: 1,
       }],
     });
@@ -376,7 +375,7 @@ Deno.test('collection list components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -465,7 +464,7 @@ Deno.test('collection list components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -554,7 +553,7 @@ Deno.test('collection list components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -645,7 +644,7 @@ Deno.test('like components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -704,7 +703,7 @@ Deno.test('like components', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           id: 'character_id',
           mention: true,
           undo: false,
@@ -727,7 +726,7 @@ Deno.test('like components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -786,7 +785,7 @@ Deno.test('like components', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           id: 'character_id',
           mention: true,
           undo: false,
@@ -811,7 +810,7 @@ Deno.test('likeslist components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -900,7 +899,6 @@ Deno.test('found components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
 
       data: {
         custom_id: 'found=media_id=1=prev',
@@ -983,7 +981,6 @@ Deno.test('found components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
 
       data: {
         custom_id: 'found=media_id=1=prev',
@@ -1068,7 +1065,7 @@ Deno.test('gacha components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1130,7 +1127,6 @@ Deno.test('gacha components', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -1150,7 +1146,7 @@ Deno.test('gacha components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1212,7 +1208,6 @@ Deno.test('gacha components', async (test) => {
           mention: true,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -1232,7 +1227,7 @@ Deno.test('gacha components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1294,7 +1289,6 @@ Deno.test('gacha components', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -1316,7 +1310,7 @@ Deno.test('buy components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1403,7 +1397,7 @@ Deno.test('buy components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1490,7 +1484,7 @@ Deno.test('buy components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1575,7 +1569,7 @@ Deno.test('buy components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1665,7 +1659,7 @@ Deno.test('buy components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1757,7 +1751,7 @@ Deno.test('now components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1837,7 +1831,7 @@ Deno.test('help components', async () => {
     token: 'token',
     type: discord.InteractionType.Component,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
+
     member: {
       user: {
         id: 'user_id',
@@ -1923,7 +1917,7 @@ Deno.test('give components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1993,7 +1987,6 @@ Deno.test('give components', async (test) => {
           targetId: 'target_id',
           giveCharactersIds: ['character_id', 'character_id2', 'character_id3'],
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -2013,7 +2006,7 @@ Deno.test('give components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2105,7 +2098,7 @@ Deno.test('trade components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'target_id',
@@ -2184,7 +2177,6 @@ Deno.test('trade components', async (test) => {
             'taken_character_id3',
           ],
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -2204,7 +2196,7 @@ Deno.test('trade components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2297,7 +2289,7 @@ Deno.test('synthesis components', async (test) => {
       token: 'test_token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2364,7 +2356,7 @@ Deno.test('synthesis components', async (test) => {
           token: 'test_token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           target: 5,
         }],
       });
@@ -2385,7 +2377,7 @@ Deno.test('synthesis components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2477,7 +2469,7 @@ Deno.test('steal components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2545,7 +2537,7 @@ Deno.test('steal components', async (test) => {
           userId: 'user_id',
           characterId: 'character_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           stars: NaN,
           pre: 40,
         }],
@@ -2567,7 +2559,7 @@ Deno.test('steal components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2635,7 +2627,7 @@ Deno.test('steal components', async (test) => {
           userId: 'user_id',
           characterId: 'character_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
+
           stars: 5,
           pre: 40,
         }],
@@ -2657,7 +2649,7 @@ Deno.test('steal components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2749,9 +2741,9 @@ Deno.test('packs pages', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
-        custom_id: 'community==1',
+        custom_id: 'packs==1',
       },
     });
 
@@ -2824,22 +2816,20 @@ Deno.test('packs pages', async (test) => {
   });
 });
 
-Deno.test('packs uninstall', async (test) => {
+Deno.test('community packs gallery', async (test) => {
   await test.step('normal', async () => {
-    const pack = {
-      id: 1,
-      type: PackType.Community,
-      manifest: { id: 'pack_id' },
-    };
-
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
-        custom_id: 'uninstall=pack_id',
+        custom_id: 'gallery==1',
       },
     });
 
@@ -2854,18 +2844,13 @@ Deno.test('packs uninstall', async (test) => {
       send: () => true,
     }));
 
-    const setFlagsSpy = spy(() => ({
-      setType: setTypeSpy,
-    }));
-
-    const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
-
-    const packsStub = stub(packs, 'uninstall', () =>
+    const packsStub = stub(community, 'getMostInstalledPacks', () =>
       ({
-        setFlags: setFlagsSpy,
+        setType: setTypeSpy,
       }) as any);
 
     config.publicKey = 'publicKey';
+    config.communityPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -2896,12 +2881,183 @@ Deno.test('packs uninstall', async (test) => {
         }],
       });
 
-      assertSpyCall(setFlagsSpy, 0, {
-        args: [64],
+      assertSpyCall(packsStub, 0, {
+        args: [{
+          index: 1,
+          guildId: 'guild_id',
+        }],
       });
 
-      assertSpyCall(setTypeSpy, 0, {
-        args: [7],
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      packsStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('community packs install', async (test) => {
+  await test.step('normal', async () => {
+    const pack = {
+      ref: { manifest: { id: 'pack_id' } },
+    };
+
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'install=pack_id=user_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
+
+    const packsStub = stub(packs, 'install', () =>
+      ({
+        send: () => true,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+    config.communityPacks = true;
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(packsStub, 0, {
+        args: [{
+          userId: 'user_id',
+          guildId: 'guild_id',
+          id: 'pack_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+      delete config.communityPacks;
+
+      listStub.restore();
+      packsStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('community packs uninstall', async (test) => {
+  await test.step('normal', async () => {
+    const pack = {
+      ref: { manifest: { id: 'pack_id' } },
+    };
+
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'uninstall=pack_id=user_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const setTypeSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
+
+    const packsStub = stub(packs, 'uninstall', () =>
+      ({
+        setType: setTypeSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+    config.communityPacks = true;
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
       });
 
       assertSpyCall(packsStub, 0, {
@@ -2914,6 +3070,7 @@ Deno.test('packs uninstall', async (test) => {
       assertEquals(response, true as any);
     } finally {
       delete config.publicKey;
+      delete config.communityPacks;
 
       listStub.restore();
       packsStub.restore();
@@ -2922,11 +3079,9 @@ Deno.test('packs uninstall', async (test) => {
     }
   });
 
-  await test.step('dialog', async () => {
+  await test.step('no permission', async () => {
     const pack = {
-      id: 1,
-      type: PackType.Community,
-      manifest: { id: 'pack_id' },
+      ref: { manifest: { id: 'pack_id' } },
     };
 
     const body = JSON.stringify({
@@ -2934,9 +3089,14 @@ Deno.test('packs uninstall', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
-        custom_id: 'puninstall=pack_id',
+        custom_id: 'uninstall=pack_id=another_user_id',
       },
     });
 
@@ -2947,89 +3107,19 @@ Deno.test('packs uninstall', async (test) => {
       body,
     } as any));
 
-    const setFlagsSpy = spy(() => ({
+    const setTypeSpy = spy(() => ({
       send: () => true,
     }));
 
     const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
 
-    const packsStub = stub(packs, 'uninstallDialog', () =>
+    const packsStub = stub(packs, 'uninstall', () =>
       ({
-        setFlags: setFlagsSpy,
+        setType: setTypeSpy,
       }) as any);
 
     config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(setFlagsSpy, 0, {
-        args: [64],
-      });
-
-      assertSpyCall(packsStub, 0, {
-        args: [pack],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      listStub.restore();
-      packsStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-
-  await test.step('not found', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Component,
-      guild_id: 'guild_id',
-      channel_id: 'channel_id',
-      data: {
-        custom_id: 'puninstall=pack_id',
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
-
-    config.publicKey = 'publicKey';
+    config.communityPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -3075,21 +3165,24 @@ Deno.test('packs uninstall', async (test) => {
         type: 4,
         data: {
           flags: 64,
-          embeds: [
-            {
-              type: 'rich',
-              description: 'Found _nothing_ matching that query!',
-            },
-          ],
           content: '',
           attachments: [],
           components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                'You don\'t permission to complete this interaction!',
+            },
+          ],
         },
       }, json);
     } finally {
       delete config.publicKey;
+      delete config.communityPacks;
 
       listStub.restore();
+      packsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
@@ -3103,7 +3196,7 @@ Deno.test('cancel dialog', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3191,7 +3284,7 @@ Deno.test('cancel dialog', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'target_id',
@@ -3279,7 +3372,7 @@ Deno.test('cancel dialog', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3369,7 +3462,7 @@ Deno.test('cancel dialog', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',

@@ -12,6 +12,8 @@ type Manifest @embedded {
   characters: CharacterObject
   # list of discord user ids
   maintainers: [String!]
+  # private packs can only be installed by its maintainers
+  private: Boolean
 }
 
 type MediaObject @embedded {
@@ -59,7 +61,6 @@ type Alias @embedded {
 
 type Image @embedded {
   url: String!
-  nsfw: Boolean
   artist: ImageArtist
 }
 

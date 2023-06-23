@@ -19,7 +19,7 @@ import community from './community.ts';
 
 import config, { initConfig } from './config.ts';
 
-import { Character, Media, PackType } from './types.ts';
+import { Character, Media } from './types.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
 
@@ -65,11 +65,9 @@ export const handler = async (r: Request) => {
     name,
     type,
     token,
-    channelId,
     guildId,
     focused,
     member,
-    channel,
     options,
     subcommand,
     customType,
@@ -93,8 +91,6 @@ export const handler = async (r: Request) => {
   }
 
   config.origin = origin;
-
-  packs.cachedChannels[channelId] = channel;
 
   try {
     switch (type) {
@@ -212,10 +208,10 @@ export const handler = async (r: Request) => {
           return message.send();
         }
 
-        // suggest installed packs
+        // suggest installed community packs
         if (
           // deno-lint-ignore no-non-null-assertion
-          name === 'packs' && ['uninstall'].includes(subcommand!)
+          name === 'community' && ['uninstall'].includes(subcommand!)
         ) {
           // deno-lint-ignore no-non-null-assertion
           const id = options[focused!] as string;
@@ -224,12 +220,15 @@ export const handler = async (r: Request) => {
             discord.MessageType.Suggestions,
           );
 
-          let list = await packs.all({ guildId, type: PackType.Community });
+          let list = await packs.all({
+            filter: true,
+            guildId,
+          });
 
           const distance: Record<string, number> = {};
 
           // sort suggestion based on distance
-          list.forEach(({ manifest }) => {
+          list.forEach(({ ref: { manifest } }) => {
             const d = utils.distance(manifest.id, id);
 
             if (manifest.title) {
@@ -245,10 +244,10 @@ export const handler = async (r: Request) => {
           });
 
           list = list.sort((a, b) =>
-            distance[b.manifest.id] - distance[a.manifest.id]
+            distance[b.ref.manifest.id] - distance[a.ref.manifest.id]
           );
 
-          list?.forEach(({ manifest }) => {
+          list?.forEach(({ ref: { manifest } }) => {
             message.addSuggestions({
               name: `${manifest.title ?? manifest.id}`,
               value: manifest.id,
@@ -270,7 +269,6 @@ export const handler = async (r: Request) => {
 
             if (options['characters']) {
               return (await search.mediaCharacters({
-                channelId,
                 guildId,
                 index: 0,
                 search: title,
@@ -283,7 +281,6 @@ export const handler = async (r: Request) => {
             return search.media({
               token,
               guildId,
-              channelId,
               search: title,
               debug: Boolean(options['debug']),
               id: title.startsWith(idPrefix)
@@ -299,7 +296,6 @@ export const handler = async (r: Request) => {
             return search.character({
               token,
               guildId,
-              channelId,
               search: name,
               debug: Boolean(options['debug']),
               id: name.startsWith(idPrefix)
@@ -320,7 +316,6 @@ export const handler = async (r: Request) => {
                   spot,
                   userId: member.user.id,
                   guildId,
-                  channelId,
                   search: character,
                   id: character.startsWith(idPrefix)
                     ? character.substring(idPrefix.length)
@@ -329,7 +324,6 @@ export const handler = async (r: Request) => {
               case 'swap':
                 return (await party.swap({
                   guildId,
-                  channelId,
                   userId: member.user.id,
                   a: options['a'] as number,
                   b: options['b'] as number,
@@ -338,7 +332,6 @@ export const handler = async (r: Request) => {
                 return (await party.remove({
                   spot,
                   guildId,
-                  channelId,
                   userId: member.user.id,
                 })).send();
               default: {
@@ -347,7 +340,6 @@ export const handler = async (r: Request) => {
                 return party.view({
                   token,
                   guildId,
-                  channelId,
                   userId: user,
                 }).send();
               }
@@ -402,7 +394,7 @@ export const handler = async (r: Request) => {
               token,
               search,
               guildId,
-              channelId,
+
               userId: member.user.id,
               undo: name === 'unlike',
               id: search.startsWith(idPrefix)
@@ -419,7 +411,7 @@ export const handler = async (r: Request) => {
               token,
               search,
               guildId,
-              channelId,
+
               userId: member.user.id,
               undo: name === 'unlikeall',
               id: search.startsWith(idPrefix)
@@ -474,7 +466,7 @@ export const handler = async (r: Request) => {
             const message = trade.pre({
               token,
               guildId,
-              channelId,
+
               userId: member.user.id,
               targetId: options['user'] as string,
               give: giveCharacters,
@@ -496,7 +488,7 @@ export const handler = async (r: Request) => {
               stars,
               token,
               guildId,
-              channelId,
+
               userId: member.user.id,
               search,
               id: search.startsWith(idPrefix)
@@ -527,7 +519,7 @@ export const handler = async (r: Request) => {
               .start({
                 token,
                 guildId,
-                channelId,
+
                 guarantee: stars,
                 quiet: name === 'q',
                 userId: member.user.id,
@@ -543,7 +535,7 @@ export const handler = async (r: Request) => {
               nick,
               token,
               guildId,
-              channelId,
+
               search: name,
               userId: member.user.id,
               id: name.startsWith(idPrefix)
@@ -561,7 +553,7 @@ export const handler = async (r: Request) => {
               image,
               token,
               guildId,
-              channelId,
+
               search: name,
               userId: member.user.id,
               id: name.startsWith(idPrefix)
@@ -577,7 +569,7 @@ export const handler = async (r: Request) => {
               token,
               target,
               guildId,
-              channelId,
+
               userId: member.user.id,
             })).send();
           }
@@ -601,13 +593,21 @@ export const handler = async (r: Request) => {
             break;
           }
           case 'packs': {
+            return (await packs.pages({
+              index: 0,
+              guildId,
+            })).send();
+          }
+          case 'community': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'community': {
-                return (await packs.pages({
-                  index: 0,
+              case 'gallery': {
+                return (await community.getMostInstalledPacks({
                   guildId,
-                })).setFlags(discord.MessageFlags.Ephemeral).send();
+                  index: 0,
+                }))
+                  .setFlags(discord.MessageFlags.Ephemeral)
+                  .send();
               }
               case 'install': {
                 const id = options['id'] as string;
@@ -617,16 +617,15 @@ export const handler = async (r: Request) => {
                   guildId,
                   userId: member.user.id,
                 }))
-                  .setFlags(discord.MessageFlags.Ephemeral)
                   .send();
               }
               case 'uninstall': {
                 const list = await packs.all({
-                  type: PackType.Community,
+                  filter: true,
                   guildId,
                 });
 
-                const pack = list.find(({ manifest }) =>
+                const pack = list.find(({ ref: { manifest } }) =>
                   manifest.id === options['id'] as string
                 );
 
@@ -634,8 +633,10 @@ export const handler = async (r: Request) => {
                   throw new Error('404');
                 }
 
-                return packs.uninstallDialog(pack)
-                  .setFlags(discord.MessageFlags.Ephemeral)
+                return packs.uninstallDialog({
+                  userId: member.user.id,
+                  pack,
+                })
                   .send();
               }
               default:
@@ -672,7 +673,7 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return search.media({ id, guildId, channelId, token })
+            return search.media({ id, guildId, token })
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -687,7 +688,6 @@ export const handler = async (r: Request) => {
               id,
               token,
               guildId,
-              channelId,
             })
               .setType(
                 type === '1'
@@ -706,7 +706,7 @@ export const handler = async (r: Request) => {
             return (await search.mediaCharacters({
               index,
               guildId,
-              channelId,
+
               id: mediaId,
             }))
               .setType(discord.MessageType.Update)
@@ -743,7 +743,7 @@ export const handler = async (r: Request) => {
               id,
               token,
               guildId,
-              channelId,
+
               mention: true,
               userId: member.user.id,
               undo: false,
@@ -791,7 +791,7 @@ export const handler = async (r: Request) => {
               .start({
                 token,
                 guildId,
-                channelId,
+
                 mention: true,
                 guarantee: stars,
                 quiet: customType === 'q',
@@ -873,7 +873,7 @@ export const handler = async (r: Request) => {
                 token,
                 userId,
                 guildId,
-                channelId,
+
                 targetId: targetId,
                 giveCharactersIds,
               })
@@ -900,7 +900,7 @@ export const handler = async (r: Request) => {
               return trade.accepted({
                 token,
                 guildId,
-                channelId,
+
                 userId,
                 targetId,
                 giveCharactersIds,
@@ -924,7 +924,7 @@ export const handler = async (r: Request) => {
                 token,
                 target,
                 guildId,
-                channelId,
+
                 userId: member.user.id,
               })
                 .setType(discord.MessageType.Update)
@@ -951,7 +951,7 @@ export const handler = async (r: Request) => {
               return steal[customType === 'bsteal' ? 'sacrifices' : 'attempt']({
                 token,
                 guildId,
-                channelId,
+
                 userId: member.user.id,
                 characterId,
                 pre: chance,
@@ -963,7 +963,7 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
-          case 'community': {
+          case 'packs': {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
@@ -971,33 +971,39 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'puninstall': {
-            const list = await packs.all({
-              type: PackType.Community,
+          case 'gallery': {
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            return (await community.getMostInstalledPacks({ guildId, index }))
+              .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'install': {
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+
+            return (await packs.install({
+              id,
               guildId,
-            });
-
-            const pack = list.find(({ manifest }) =>
-              // deno-lint-ignore no-non-null-assertion
-              manifest.id === customValues![0]
-            );
-
-            if (!pack) {
-              throw new Error('404');
-            }
-
-            return packs.uninstallDialog(pack)
-              .setFlags(discord.MessageFlags.Ephemeral)
+              userId: member.user.id,
+            }))
               .send();
           }
           case 'uninstall': {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
 
-            return (await packs.uninstall({ id, guildId }))
-              .setFlags(discord.MessageFlags.Ephemeral)
-              .setType(discord.MessageType.Update)
-              .send();
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![1];
+
+            if (userId === member.user.id) {
+              return (await packs.uninstall({ id, guildId }))
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
           }
           case 'cancel': {
             // deno-lint-ignore no-non-null-assertion
@@ -1104,9 +1110,12 @@ if (import.meta.main) {
 
   utils.serve({
     '/': handler,
+    //
     '/webhooks/topgg': webhooks.topgg,
+    //
     '/community/publish': community.publish,
     '/community/:userId': community.query,
+    //
     '/invite': () =>
       Response.redirect(
         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,
@@ -1122,10 +1131,6 @@ if (import.meta.main) {
     },
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       intervene: override(86400),
-      baseUrl: import.meta.url,
-    }),
-    '/:filename+': utils.serveStatic('../json', {
-      intervene: override(86400, 'application/schema+json'),
       baseUrl: import.meta.url,
     }),
   });

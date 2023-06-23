@@ -162,19 +162,10 @@ function getSacrifices(characters: Schema.Character[], target: number): {
   };
 }
 
-function pre({
-  token,
-  userId,
-  guildId,
-  channelId,
-  stars,
-  search,
-  id,
-}: {
+function pre({ token, userId, guildId, stars, search, id }: {
   token: string;
   userId: string;
   guildId: string;
-  channelId: string;
   stars: number;
   search?: string;
   id?: string;
@@ -228,7 +219,7 @@ function pre({
           ),
         );
 
-        message.addEmbed(srch.characterEmbed(character, channelId, {
+        message.addEmbed(srch.characterEmbed(character, {
           footer: false,
           mode: 'thumbnail',
           description: false,
@@ -260,7 +251,7 @@ function pre({
             ),
           );
 
-          message.addEmbed(srch.characterEmbed(character, channelId, {
+          message.addEmbed(srch.characterEmbed(character, {
             footer: true,
             mode: 'thumbnail',
             description: false,
@@ -273,7 +264,7 @@ function pre({
       }
 
       message.addEmbed(
-        srch.characterEmbed(character, channelId, {
+        srch.characterEmbed(character, {
           footer: true,
           rating: false,
           mode: 'thumbnail',
@@ -352,14 +343,12 @@ function sacrifices({
   userId,
   guildId,
   characterId,
-  channelId,
   stars,
   pre,
 }: {
   token: string;
   userId: string;
   guildId: string;
-  channelId: string;
   stars: number;
   characterId: string;
   pre: number;
@@ -409,7 +398,7 @@ function sacrifices({
             });
 
             message.addEmbed(
-              synthesis.characterPreview(character, existing, channelId),
+              synthesis.characterPreview(character, existing),
             );
           }
         }));
@@ -470,7 +459,6 @@ function attempt({
   userId,
   guildId,
   characterId,
-  channelId,
   stars,
   pre,
 }: {
@@ -478,7 +466,6 @@ function attempt({
   userId: string;
   guildId: string;
   characterId: string;
-  channelId: string;
   stars: number;
   pre: number;
 }): discord.Message {
@@ -648,7 +635,7 @@ function attempt({
       message.addEmbed(new discord.Embed().setDescription('**You Succeed!**'));
 
       message.addEmbed(
-        srch.characterEmbed(character, channelId, {
+        srch.characterEmbed(character, {
           footer: false,
           mode: 'thumbnail',
           description: false,
@@ -681,7 +668,7 @@ function attempt({
           ),
         )
         .addEmbed(
-          srch.characterEmbed(character, channelId, {
+          srch.characterEmbed(character, {
             footer: false,
             mode: 'thumbnail',
             description: false,

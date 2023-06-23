@@ -478,7 +478,7 @@ Deno.test('attempt', async (test) => {
       const message = steal.attempt({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         characterId: 'character_id',
         pre: 0,
@@ -729,7 +729,7 @@ Deno.test('attempt', async (test) => {
       const message = steal.attempt({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         characterId: 'character_id',
         pre: 0,
@@ -894,7 +894,7 @@ Deno.test('attempt', async (test) => {
       const message = steal.attempt({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         characterId: 'character_id',
         pre: 0,
@@ -1050,7 +1050,7 @@ Deno.test('attempt', async (test) => {
       const message = steal.attempt({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         characterId: 'character_id',
         pre: 100,
@@ -1203,7 +1203,7 @@ Deno.test('attempt', async (test) => {
       const message = steal.attempt({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         characterId: 'character_id',
         pre: 0,
@@ -1346,7 +1346,7 @@ Deno.test('attempt', async (test) => {
       const message = steal.attempt({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         characterId: 'character_id',
         pre: 0,
@@ -1571,7 +1571,7 @@ Deno.test('sacrifices', async (test) => {
       const message = steal.sacrifices({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         characterId: 'character_id',
         pre: 5,
@@ -1822,7 +1822,7 @@ Deno.test('sacrifices', async (test) => {
       const message = steal.sacrifices({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         characterId: 'character_id',
         pre: 5,
@@ -1954,7 +1954,7 @@ Deno.test('sacrifices', async (test) => {
       const message = steal.sacrifices({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         characterId: 'character_id',
         pre: 5,
@@ -2118,7 +2118,7 @@ Deno.test('/steal', async (test) => {
       const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         id: 'character_id',
         stars: 0,
@@ -2290,7 +2290,7 @@ Deno.test('/steal', async (test) => {
       const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         id: 'character_id',
         stars: 5,
@@ -2462,7 +2462,7 @@ Deno.test('/steal', async (test) => {
       const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         id: 'character_id',
         stars: 0,
@@ -2616,7 +2616,7 @@ Deno.test('/steal', async (test) => {
       const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         id: 'character_id',
         stars: 0,
@@ -2801,7 +2801,7 @@ Deno.test('/steal', async (test) => {
       const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         id: 'character_id',
         stars: 0,
@@ -2959,7 +2959,7 @@ Deno.test('/steal', async (test) => {
       const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         id: 'character_id',
         stars: 0,
@@ -3061,7 +3061,7 @@ Deno.test('/steal', async (test) => {
       const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         id: 'character_id',
         stars: 0,
@@ -3193,7 +3193,7 @@ Deno.test('/steal', async (test) => {
       const message = steal.pre({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         id: 'character_id',
         stars: 0,
@@ -3277,7 +3277,7 @@ Deno.test('/steal', async (test) => {
           steal.pre({
             userId: 'user_id',
             guildId: 'guild_id',
-            channelId: 'channel_id',
+
             token: 'test_token',
             id: 'character_id',
             stars: 0,
