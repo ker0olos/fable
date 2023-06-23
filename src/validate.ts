@@ -28,8 +28,6 @@ import index from '../json/schema.json' assert {
 
 import { Manifest } from './types.ts';
 
-const reservedIds = ['anilist', 'vtubers'];
-
 export const purgeReservedProps = (data: Manifest): Manifest => {
   const purged: any = {};
 
@@ -74,9 +72,7 @@ export default (data: Manifest) => {
     .addSchema(character)
     .compile(index);
 
-  if (reservedIds.includes(data.id)) {
-    return { errors: [`${data.id} is a reserved id`] };
-  } else if (!validate(data)) {
+  if (!validate(data)) {
     return {
       errors: validate.errors,
     };

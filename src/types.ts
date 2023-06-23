@@ -166,8 +166,12 @@ export interface PackInstall {
 
 export interface Pack {
   manifest: Manifest;
-  approved?: boolean;
+  added?: string;
+  updated?: string;
   version?: number;
+  owner?: string;
+  approved?: boolean;
+  servers?: number;
 }
 
 // deno-lint-ignore no-namespace

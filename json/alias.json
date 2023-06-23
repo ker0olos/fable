@@ -1,5 +1,5 @@
 {
-  "$id": "https://fable.deno.dev/alias.json",
+  "$id": "https://raw.githubusercontent.com/ker0olos/fable/main/json/alias.json",
   "type": "object",
   "title": "alias",
   "additionalProperties": false,

@@ -1,5 +1,5 @@
 {
-  "$id": "https://fable.deno.dev/schema.json",
+  "$id": "https://raw.githubusercontent.com/ker0olos/fable/main/json/schema.json",
   "title": "manifest",
   "type": "object",
   "required": ["id"],
@@ -8,7 +8,7 @@
       "title": "id",
       "type": "string",
       "description": "A unique alphanumeric id",
-      "pattern": "^[-_a-z0-9]+$",
+      "pattern": "^(?!.*(\bfable\b|\bvtubers\b|\banilist\b))[-_a-z0-9]+$",
       "minLength": 1,
       "maxLength": 20
     },
@@ -27,7 +27,8 @@
     "author": {
       "title": "author",
       "type": "string",
-      "description": "The name of the pack's author"
+      "description": "The name of the pack's author",
+      "pattern": "^(?!.*\bFable\b).+$"
     },
     "image": {
       "title": "image",

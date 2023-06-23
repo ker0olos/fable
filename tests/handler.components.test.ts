@@ -20,6 +20,7 @@ import trade from '../src/trade.ts';
 import shop from '../src/shop.ts';
 
 import synthesis from '../src/synthesis.ts';
+import community from '../src/community.ts';
 
 import steal from '../src/steal.ts';
 
@@ -2808,6 +2809,178 @@ Deno.test('packs pages', async (test) => {
     } finally {
       delete config.publicKey;
 
+      packsStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('community packs gallery', async (test) => {
+  await test.step('normal', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'gallery==1',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const setTypeSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const packsStub = stub(community, 'getMostInstalledPacks', () =>
+      ({
+        setType: setTypeSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+    config.communityPacks = true;
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(packsStub, 0, {
+        args: [{
+          index: 1,
+          guildId: 'guild_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      packsStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('community packs install', async (test) => {
+  await test.step('normal', async () => {
+    const pack = {
+      ref: { manifest: { id: 'pack_id' } },
+    };
+
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'install=pack_id=user_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
+
+    const packsStub = stub(packs, 'install', () =>
+      ({
+        send: () => true,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+    config.communityPacks = true;
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(packsStub, 0, {
+        args: [{
+          userId: 'user_id',
+          guildId: 'guild_id',
+          id: 'pack_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+      delete config.communityPacks;
+
+      listStub.restore();
       packsStub.restore();
       validateStub.restore();
       signatureStub.restore();

@@ -934,32 +934,6 @@ export class Message {
     return message.insertComponents(group);
   }
 
-  static anchor(
-    { message, type, target, id, anchor }: {
-      id: string;
-      target: string | number;
-      type: string;
-      anchor: string;
-      message: Message;
-    },
-  ): Message {
-    const group: Component[] = [];
-
-    group.push(
-      new Component()
-        .setId(type, `${target}`, id, `${anchor}`, 'prev')
-        .setLabel(`Prev`),
-    );
-
-    group.push(
-      new Component()
-        .setId(type, `${target}`, id, `${anchor}`, 'next')
-        .setLabel(`Next`),
-    );
-
-    return message.insertComponents(group);
-  }
-
   static dialog(
     {
       type,

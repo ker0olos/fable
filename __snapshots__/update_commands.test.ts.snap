@@ -2326,6 +2326,17 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
+        description: "Browse the most installed community packs",
+        max_value: undefined,
+        min_value: undefined,
+        name: "gallery",
+        options: undefined,
+        required: false,
+        type: 1,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
         description: "Install a community pack",
         max_value: undefined,
         min_value: undefined,

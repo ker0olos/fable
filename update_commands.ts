@@ -717,6 +717,12 @@ export const commands = [
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
       Option({
+        name: 'gallery',
+        description: 'Browse the most installed community packs',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+      Option({
         name: 'install',
         description: 'Install a community pack',
         type: Type.SUB_COMMAND,

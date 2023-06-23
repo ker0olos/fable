@@ -21,14 +21,7 @@ import Rating from '../src/rating.ts';
 
 import synthesis from '../src/synthesis.ts';
 
-import {
-  CharacterRole,
-  DisaggregatedCharacter,
-  Manifest,
-  MediaFormat,
-  MediaType,
-  Schema,
-} from '../src/types.ts';
+import { CharacterRole, MediaFormat, MediaType, Schema } from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 

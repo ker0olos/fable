@@ -601,6 +601,14 @@ export const handler = async (r: Request) => {
           case 'community': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
+              case 'gallery': {
+                return (await community.getMostInstalledPacks({
+                  guildId,
+                  index: 0,
+                }))
+                  .setFlags(discord.MessageFlags.Ephemeral)
+                  .send();
+              }
               case 'install': {
                 const id = options['id'] as string;
 
@@ -963,6 +971,25 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
+          case 'gallery': {
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            return (await community.getMostInstalledPacks({ guildId, index }))
+              .setType(discord.MessageType.Update)
+              .send();
+          }
+          case 'install': {
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+
+            return (await packs.install({
+              id,
+              guildId,
+              userId: member.user.id,
+            }))
+              .send();
+          }
           case 'uninstall': {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
@@ -1083,9 +1110,12 @@ if (import.meta.main) {
 
   utils.serve({
     '/': handler,
+    //
     '/webhooks/topgg': webhooks.topgg,
+    //
     '/community/publish': community.publish,
     '/community/:userId': community.query,
+    //
     '/invite': () =>
       Response.redirect(
         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,
@@ -1101,10 +1131,6 @@ if (import.meta.main) {
     },
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       intervene: override(86400),
-      baseUrl: import.meta.url,
-    }),
-    '/:filename+': utils.serveStatic('../json', {
-      intervene: override(86400, 'application/schema+json'),
       baseUrl: import.meta.url,
     }),
   });

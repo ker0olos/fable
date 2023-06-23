@@ -238,6 +238,7 @@ function pages(
         new discord.Embed().setAuthor({ name: 'Admin Commands' })
           .setDescription([
             '_> `/community` requires `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we never recommend that._',
+            '- `/community gallery`: _browse the most installed community packs_',
             '- `/community install`: _install a community pack_',
             '- `/community uninstall`: _uninstall a community pack_',
           ].join('\n')),

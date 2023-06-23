@@ -23,9 +23,11 @@ import help from '../src/help.ts';
 
 import synthesis from '../src/synthesis.ts';
 
+import community from '../src/community.ts';
+
 import { NonFetalError, NoPermissionError } from '../src/errors.ts';
 
-import { Manifest } from '../src/types.ts';
+import type { Manifest } from '../src/types.ts';
 
 Deno.test('search command handlers', async (test) => {
   await test.step('search', async () => {
@@ -6807,6 +6809,97 @@ Deno.test('packs', async () => {
 });
 
 Deno.test('community packs command handlers', async (test) => {
+  await test.step('community gallery', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'community',
+        options: [{
+          type: 1,
+          name: `gallery`,
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const setFlagsSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const communityStub = stub(community, 'getMostInstalledPacks', () =>
+      ({
+        setFlags: setFlagsSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
+      });
+
+      assertSpyCall(communityStub, 0, {
+        args: [{
+          index: 0,
+          guildId: 'guild_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      communityStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
   await test.step('community install', async () => {
     const body = JSON.stringify({
       id: 'id',
