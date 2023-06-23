@@ -24,8 +24,8 @@ export interface Pack {
   updated: TimeExpr;
   version: NumberExpr;
   owner: StringExpr;
+  servers: NumberExpr;
   approved?: BooleanExpr;
-  servers?: NumberExpr;
 }
 
 export interface PackInstall {
@@ -122,6 +122,7 @@ export function publishPack(
           added: fql.Now(),
           updated: fql.Now(),
           owner: userId,
+          servers: 0,
           manifest,
         }),
       }, ({ createdPack }) => ({

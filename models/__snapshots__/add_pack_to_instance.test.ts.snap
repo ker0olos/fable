@@ -458,6 +458,7 @@ snapshot[`model 5`] = `
                                                             var: "userId",
                                                           },
                                                         },
+                                                        servers: 0,
                                                         updated: U {
                                                           raw: {
                                                             now: null,
@@ -781,6 +782,7 @@ snapshot[`model 5`] = `
                                                             var: "userId",
                                                           },
                                                         },
+                                                        servers: 0,
                                                         updated: U {
                                                           raw: {
                                                             now: null,

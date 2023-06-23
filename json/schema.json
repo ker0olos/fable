@@ -8,7 +8,7 @@
       "title": "id",
       "type": "string",
       "description": "A unique alphanumeric id",
-      "pattern": "^(?!.*(\bfable\b|\bvtubers\b|\banilist\b))[-_a-z0-9]+$",
+      "pattern": "^[-_a-z0-9]+$",
       "minLength": 1,
       "maxLength": 20
     },
@@ -27,8 +27,7 @@
     "author": {
       "title": "author",
       "type": "string",
-      "description": "The name of the pack's author",
-      "pattern": "^(?!.*\bFable\b).+$"
+      "description": "The name of the pack's author"
     },
     "image": {
       "title": "image",
