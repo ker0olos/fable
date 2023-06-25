@@ -76,11 +76,6 @@ export const handler = async (r: Request) => {
 
   const ts = Date.now() - parseInt(timestamp) * 1000;
 
-  // the delay between user sending a command and Fable processing it
-  if (config.deploy) {
-    console.error(`request received after ${ts}ms`);
-  }
-
   // exceeded time limit set by discord (3 seconds)
   if (ts >= 2800) {
     return Response.error();
@@ -1127,6 +1122,13 @@ if (import.meta.main) {
         `${config.imageProxyUrl}/${
           pathname.substring('/external/'.length)
         }${search}`,
+      );
+    },
+    '/robots.txt': () => {
+      return new Response(
+        `User-agent: *
+Disallow: /`,
+        { headers: { contentType: 'text/plain' } },
       );
     },
     '/assets/:filename+': utils.serveStatic('../assets/public', {
