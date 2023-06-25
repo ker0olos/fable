@@ -9652,3 +9652,48 @@ snapshot[`auto synthesize 2`] = `
   },
 ]
 `;
+
+snapshot[`auto synthesize 3`] = `
+[
+  {
+    id: "id:4",
+    mediaId: "media_id",
+    rating: 4,
+    user: {
+      id: "user_id",
+    },
+  },
+  {
+    id: "id:0",
+    mediaId: "media_id",
+    rating: 5,
+    user: {
+      id: "user_id",
+    },
+  },
+  {
+    id: "id:1",
+    mediaId: "media_id",
+    rating: 5,
+    user: {
+      id: "user_id",
+    },
+  },
+  {
+    id: "id:2",
+    mediaId: "media_id",
+    rating: 5,
+    user: {
+      id: "user_id",
+    },
+  },
+  {
+    id: "id:3",
+    mediaId: "media_id",
+    rating: 5,
+    user: {
+      id: "user_id",
+    },
+  },
+]
+`;
