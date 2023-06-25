@@ -1,10 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import {
-  assertEquals,
-  assertRejects,
-  assertThrows,
-} from '$std/testing/asserts.ts';
+import { assertEquals, assertRejects } from '$std/testing/asserts.ts';
 
 import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
 
@@ -194,7 +190,7 @@ Deno.test('auto synthesize', async (test) => {
     await assertSnapshot(test, sacrifices);
   });
 
-  await test.step('5 fives', () => {
+  await test.step('5 fives', async () => {
     const characters: Schema.Character[] = Array(25).fill({}).map((_, i) => ({
       rating: 5,
       id: `id:${i}`,
@@ -202,11 +198,41 @@ Deno.test('auto synthesize', async (test) => {
       user: { id: 'user_id' },
     }));
 
-    assertThrows(
-      () => synthesis.getSacrifices(characters, 5),
-      NonFetalError,
-      'You only have **0 out the 5** sacrifices needed for 5<:smolstar:1107503653956374638>',
-    );
+    const sacrifices = synthesis.getSacrifices(characters, 5);
+
+    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 5);
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('4 fours + 1 five', async () => {
+    const characters: Schema.Character[] = Array(4).fill({}).map((_, i) => ({
+      rating: 4,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    }));
+
+    characters.push({
+      rating: 5,
+      id: 'id:4',
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    });
+
+    const sacrifices = synthesis.getSacrifices(characters, 5);
+
+    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 4);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 1);
+
+    await assertSnapshot(test, sacrifices);
   });
 });
 

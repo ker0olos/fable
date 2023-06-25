@@ -289,7 +289,12 @@ async function getMostInstalledPacks(
 
   const current = await packs.all({ guildId });
 
-  const pages = utils.chunks(response, 1);
+  const pages = utils.chunks(
+    response
+      // filter out private packs
+      .filter(({ manifest }) => !manifest.private),
+    1,
+  );
 
   const pack = pages[index ?? 0][0];
 
