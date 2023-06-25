@@ -735,4 +735,91 @@ Deno.test('/gallery', async (test) => {
       listStub.restore();
     }
   });
+
+  await test.step('filter', async () => {
+    const manifest: Pack = {
+      servers: 2000,
+      manifest: {
+        id: 'pack-id',
+        private: true,
+      },
+    };
+
+    const manifest2: Pack = {
+      servers: 1,
+      manifest: {
+        id: 'pack-id2',
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              getMostInstalledPacks: [manifest, manifest2],
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await community.getMostInstalledPacks({
+        guildId: 'guild_id',
+        index: 0,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: '_',
+                  disabled: true,
+                  label: '1',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'install=pack-id2',
+                  label: 'Install',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              description: '**pack-id2**\nin 1 servers\n\n',
+              title: '1.',
+              type: 'rich',
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
 });

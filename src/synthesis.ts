@@ -62,8 +62,8 @@ function getSacrifices(
 
   // separate each rating into its own array
   characters.forEach((char) => {
-    if (char.rating < target) {
-      split[char.rating].push(char);
+    if (char.rating < target || target === 5) {
+      split[char.rating === 5 ? 4 : char.rating].push(char);
     }
   });
 
@@ -191,7 +191,7 @@ async function synthesize({ token, userId, guildId, target }: {
         ),
       );
 
-      await Promise.all(highlights.map(async (existing) => {
+      for (const existing of highlights) {
         const match = highlightedCharacters
           .find((char) => existing.id === `${char.packId}:${char.id}`);
 
@@ -205,7 +205,7 @@ async function synthesize({ token, userId, guildId, target }: {
             synthesis.characterPreview(character, existing),
           );
         }
-      }));
+      }
 
       if (sacrifices.length - highlightedCharacters.length) {
         message.addEmbed(
