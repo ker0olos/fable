@@ -325,7 +325,7 @@ async function rngPull(
 }
 
 async function pullAnimation(
-  { token, ping, userId, guildId, quiet, mention, guarantee, pull }: {
+  { token, userId, guildId, quiet, mention, guarantee, pull }: {
     token: string;
     pull: Pull;
     userId?: string;
@@ -333,7 +333,6 @@ async function pullAnimation(
     quiet?: boolean;
     mention?: boolean;
     guarantee?: number;
-    ping?: boolean;
   },
 ): Promise<void> {
   const characterId = `${pull.character.packId}:${pull.character.id}`;
@@ -442,7 +441,7 @@ async function pullAnimation(
 
   await message.patch(token);
 
-  if (ping && guildId) {
+  if (guildId) {
     const pings: string[] = [];
 
     const inventories = await user.getActiveInventories(guildId);
@@ -468,8 +467,21 @@ async function pullAnimation(
     });
 
     if (pings.length) {
+      const embed = search.characterEmbed(pull.character, {
+        mode: 'thumbnail',
+        rating: false,
+        description: false,
+        footer: true,
+        media: { title: true },
+        existing: {
+          rating: pull.rating.stars,
+          user: { id: userId },
+        },
+      });
+
       await new discord.Message()
-        .setContent(pings.join(''))
+        .addEmbed(embed)
+        .setContent(pings.join(' '))
         .followup(token);
     }
   }
@@ -498,7 +510,6 @@ function start(
     .then((pull) =>
       pullAnimation({
         token,
-        ping: true,
         userId,
         guildId,
         guarantee,

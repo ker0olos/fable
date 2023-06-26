@@ -309,7 +309,7 @@ function confirmed({
         },
       });
 
-      return gacha.pullAnimation({ token, guildId, pull, ping: true });
+      return gacha.pullAnimation({ token, guildId, pull });
     })
     .catch(async (err) => {
       if (err instanceof PoolError) {

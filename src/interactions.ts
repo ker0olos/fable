@@ -517,7 +517,6 @@ export const handler = async (r: Request) => {
               .start({
                 token,
                 guildId,
-
                 guarantee: stars,
                 quiet: name === 'q',
                 userId: member.user.id,
@@ -533,7 +532,6 @@ export const handler = async (r: Request) => {
               nick,
               token,
               guildId,
-
               search: name,
               userId: member.user.id,
               id: name.startsWith(idPrefix)
@@ -741,7 +739,6 @@ export const handler = async (r: Request) => {
               id,
               token,
               guildId,
-
               mention: true,
               userId: member.user.id,
               undo: false,
@@ -793,7 +790,6 @@ export const handler = async (r: Request) => {
               .start({
                 token,
                 guildId,
-
                 mention: true,
                 guarantee: stars,
                 quiet: customType === 'q',
