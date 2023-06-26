@@ -25,7 +25,7 @@ import {
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
-Deno.test('find character', async () => {
+Deno.test('find characters', async () => {
   const fetchStub = stub(
     globalThis,
     'fetch',
@@ -34,22 +34,22 @@ Deno.test('find character', async () => {
       text: (() =>
         Promise.resolve(JSON.stringify({
           data: {
-            findCharacter: {
-              id: 'id',
+            findCharacters: [{
+              id: 'pack-id:id',
               rating: 1,
               mediaId: 'media_id',
               user: {
                 id: 'user_id',
               },
-            },
+            }],
           },
         }))),
     } as any),
   );
 
   try {
-    const characters = await user.findCharacter({
-      characterId: 'character_id',
+    const characters = await user.findCharacters({
+      ids: ['pack-id:another-id', 'pack-id:id'],
       guildId: 'guild_id',
     });
 
@@ -62,15 +62,17 @@ Deno.test('find character', async () => {
       'https://graphql.us.fauna.com/graphql',
     );
 
-    assertEquals(characters, {
-      id: 'id',
-      rating: 1,
-      mediaId: 'media_id',
-      user: {
-        id: 'user_id',
+    assertEquals(characters, [
+      undefined,
+      {
+        id: 'pack-id:id',
+        rating: 1,
+        mediaId: 'media_id',
+        user: {
+          id: 'user_id',
+        },
       },
-      //
-    } as any);
+    ] as any);
   } finally {
     fetchStub.restore();
   }
@@ -1076,7 +1078,7 @@ Deno.test('/nick', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         nick: 'new_nickname',
       });
@@ -1229,7 +1231,7 @@ Deno.test('/nick', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
       });
 
@@ -1335,7 +1337,7 @@ Deno.test('/nick', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         nick: 'new_nick',
       });
@@ -1451,7 +1453,7 @@ Deno.test('/nick', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         nick: 'new_nick',
       });
@@ -1586,7 +1588,7 @@ Deno.test('/nick', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         nick: 'new_nick',
       });
@@ -1740,7 +1742,7 @@ Deno.test('/image', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -1892,7 +1894,7 @@ Deno.test('/image', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
       });
 
@@ -1998,7 +2000,7 @@ Deno.test('/image', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -2114,7 +2116,7 @@ Deno.test('/image', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -2249,7 +2251,7 @@ Deno.test('/image', async (test) => {
         token: 'test_token',
         userId: 'user',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
         image: 'image_url',
       });
@@ -5696,7 +5698,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -5855,7 +5857,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         mention: true,
@@ -6023,7 +6025,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -6189,7 +6191,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -6349,7 +6351,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: true,
@@ -6504,7 +6506,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: true,
@@ -6659,7 +6661,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: true,
@@ -6777,7 +6779,7 @@ Deno.test('/like', async (test) => {
       const message = user.like({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'character',
         undo: false,
@@ -6893,7 +6895,7 @@ Deno.test('/likeall', async (test) => {
       const message = user.likeall({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'title',
         undo: false,
@@ -7027,7 +7029,7 @@ Deno.test('/likeall', async (test) => {
       const message = user.likeall({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'title',
         undo: true,
@@ -7139,7 +7141,7 @@ Deno.test('/likeall', async (test) => {
       const message = user.likeall({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
         search: 'title',
         undo: false,
@@ -7362,8 +7364,8 @@ Deno.test('/likeslist', async (test) => {
 
     const userStub = stub(
       user,
-      'findCharacter',
-      () => Promise.resolve(undefined),
+      'findCharacters',
+      () => Promise.resolve([]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -7415,7 +7417,7 @@ Deno.test('/likeslist', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'likes=user_id=1=prev',
+                  custom_id: 'likes=user_id=0=1=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -7428,7 +7430,7 @@ Deno.test('/likeslist', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'likes=user_id=1=next',
+                  custom_id: 'likes=user_id=0=1=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -7544,10 +7546,10 @@ Deno.test('/likeslist', async (test) => {
 
     const userStub = stub(
       user,
-      'findCharacter',
+      'findCharacters',
       () =>
-        Promise.resolve({
-          id: '',
+        Promise.resolve([{
+          id: 'anilist:1',
           mediaId: '',
           rating: 3,
           nickname: 'nickname',
@@ -7555,7 +7557,7 @@ Deno.test('/likeslist', async (test) => {
           user: {
             id: 'another_user_id',
           },
-        }),
+        }]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -7607,7 +7609,7 @@ Deno.test('/likeslist', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'likes=user_id=0=prev',
+                  custom_id: 'likes=user_id=0=0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -7620,7 +7622,7 @@ Deno.test('/likeslist', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'likes=user_id=0=next',
+                  custom_id: 'likes=user_id=0=0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -7637,6 +7639,231 @@ Deno.test('/likeslist', async (test) => {
                   name: 'title',
                   value:
                     '3<:smolstar:1107503653956374638> <@another_user_id> character',
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+      userStub.restore();
+    }
+  });
+
+  await test.step('normal (filtered)', async () => {
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'character 1',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: '1',
+              type: MediaType.Anime,
+              title: {
+                english: 'title 1',
+              },
+            },
+          }],
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'character 2',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: '2',
+              type: MediaType.Anime,
+              title: {
+                english: 'title 2',
+              },
+            },
+          }],
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'character 3',
+        },
+        media: {
+          edges: [{
+            characterRole: CharacterRole.Main,
+            node: {
+              id: '3',
+              type: MediaType.Anime,
+              title: {
+                english: 'title 3',
+              },
+            },
+          }],
+        },
+      },
+    ];
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getUserInventory: {
+                  user: {
+                    likes: [
+                      { characterId: 'anilist:1' },
+                      { characterId: 'anilist:2' },
+                      { characterId: 'anilist:3' },
+                    ],
+                  },
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+
+    const userStub = stub(
+      user,
+      'findCharacters',
+      () =>
+        Promise.resolve([
+          {
+            id: 'anilist:1',
+            mediaId: '',
+            rating: 3,
+            user: {
+              id: 'user_id',
+            },
+          },
+          {
+            id: 'anilist:2',
+            mediaId: '',
+            rating: 3,
+            user: {
+              id: 'another_user_id',
+            },
+          },
+        ]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.likeslist({
+        index: 0,
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        filter: true,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'likes=user_id=1=0=prev',
+                  label: 'Prev',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: '_',
+                  disabled: true,
+                  label: '1/1',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'likes=user_id=1=0=next',
+                  label: 'Next',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              fields: [
+                {
+                  inline: false,
+                  name: 'title 2',
+                  value:
+                    '3<:smolstar:1107503653956374638> <@another_user_id> character 2',
+                },
+                {
+                  inline: false,
+                  name: 'title 3',
+                  value: '1<:smolstar:1107503653956374638> character 3',
                 },
               ],
             },
@@ -7726,10 +7953,10 @@ Deno.test('/likeslist', async (test) => {
                 getUserInventory: {
                   user: {
                     likes: [
-                      { characterId: 'anilist:1' },
-                      { characterId: 'anilist:2' },
                       { mediaId: 'anilist:3' },
+                      { characterId: 'anilist:1' },
                       { mediaId: 'anilist:4' },
+                      { characterId: 'anilist:2' },
                     ],
                   },
                 },
@@ -7772,8 +7999,8 @@ Deno.test('/likeslist', async (test) => {
 
     const userStub = stub(
       user,
-      'findCharacter',
-      () => Promise.resolve(undefined),
+      'findCharacters',
+      () => Promise.resolve([]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -7825,7 +8052,7 @@ Deno.test('/likeslist', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'likes=user_id=0=prev',
+                  custom_id: 'likes=user_id=0=0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -7838,7 +8065,7 @@ Deno.test('/likeslist', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'likes=user_id=0=next',
+                  custom_id: 'likes=user_id=0=0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -7852,16 +8079,6 @@ Deno.test('/likeslist', async (test) => {
               fields: [
                 {
                   inline: false,
-                  name: 'all 1',
-                  value: '<:all:1107511909999181824>',
-                },
-                {
-                  inline: false,
-                  name: 'all 2',
-                  value: '<:all:1107511909999181824>',
-                },
-                {
-                  inline: false,
                   name: 'title 1',
                   value: '1<:smolstar:1107503653956374638> character 1',
                 },
@@ -7869,6 +8086,16 @@ Deno.test('/likeslist', async (test) => {
                   inline: false,
                   name: 'title 2',
                   value: '1<:smolstar:1107503653956374638> character 2',
+                },
+                {
+                  inline: false,
+                  name: 'all 1',
+                  value: '<:all:1107511909999181824>',
+                },
+                {
+                  inline: false,
+                  name: 'all 2',
+                  value: '<:all:1107511909999181824>',
                 },
               ],
             },
@@ -7972,8 +8199,8 @@ Deno.test('/likeslist', async (test) => {
 
     const userStub = stub(
       user,
-      'findCharacter',
-      () => Promise.resolve(undefined),
+      'findCharacters',
+      () => Promise.resolve([]),
     );
 
     const isDisabledStub = stub(
@@ -8034,7 +8261,7 @@ Deno.test('/likeslist', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'likes=user_id=0=prev',
+                  custom_id: 'likes=user_id=0=0=prev',
                   label: 'Prev',
                   style: 2,
                   type: 2,
@@ -8047,7 +8274,7 @@ Deno.test('/likeslist', async (test) => {
                   type: 2,
                 },
                 {
-                  custom_id: 'likes=user_id=0=next',
+                  custom_id: 'likes=user_id=0=0=next',
                   label: 'Next',
                   style: 2,
                   type: 2,
@@ -8113,8 +8340,8 @@ Deno.test('/likeslist', async (test) => {
 
     const userStub = stub(
       user,
-      'findCharacter',
-      () => Promise.resolve(undefined),
+      'findCharacters',
+      () => Promise.resolve([]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -8214,8 +8441,8 @@ Deno.test('/likeslist', async (test) => {
 
     const userStub = stub(
       user,
-      'findCharacter',
-      () => Promise.resolve(undefined),
+      'findCharacters',
+      () => Promise.resolve([]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);

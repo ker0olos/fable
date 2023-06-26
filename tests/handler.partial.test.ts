@@ -13,7 +13,7 @@ import { handler } from '../src/interactions.ts';
 
 import packs from '../src/packs.ts';
 
-import { MediaFormat, PackType } from '../src/types.ts';
+import { MediaFormat } from '../src/types.ts';
 
 Deno.test('media suggestions', async (test) => {
   await test.step('search', async () => {
@@ -22,7 +22,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'search',
         options: [{
@@ -125,7 +125,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'anime',
         options: [{
@@ -228,7 +228,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'manga',
         options: [{
@@ -331,7 +331,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'media',
         options: [{
@@ -434,7 +434,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'found',
         options: [{
@@ -537,7 +537,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'owned',
         options: [{
@@ -640,7 +640,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'likeall',
         options: [{
@@ -743,7 +743,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'unlikeall',
         options: [{
@@ -846,7 +846,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'collection',
         options: [{
@@ -953,7 +953,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'coll',
         options: [{
@@ -1060,7 +1060,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'mm',
         options: [{
@@ -1167,7 +1167,7 @@ Deno.test('media suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'search',
         options: [{
@@ -1271,7 +1271,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'character',
         options: [{
@@ -1383,7 +1383,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'char',
         options: [{
@@ -1495,7 +1495,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'trade',
         options: [{
@@ -1606,7 +1606,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'trade',
         options: [{
@@ -1720,7 +1720,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'offer',
         options: [{
@@ -1831,7 +1831,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'offer',
         options: [{
@@ -1942,7 +1942,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'steal',
         options: [{
@@ -2053,7 +2053,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'like',
         options: [{
@@ -2165,7 +2165,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'unlike',
         options: [{
@@ -2277,7 +2277,7 @@ Deno.test('character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'character',
         options: [{
@@ -2381,7 +2381,7 @@ Deno.test('party assign character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2502,7 +2502,7 @@ Deno.test('party assign character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2623,7 +2623,7 @@ Deno.test('party assign character suggestions', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2739,16 +2739,16 @@ Deno.test('party assign character suggestions', async (test) => {
   });
 });
 
-Deno.test('packs', async (test) => {
+Deno.test('community packs', async (test) => {
   await test.step('uninstall', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
-        name: 'packs',
+        name: 'community',
         options: [{
           type: 1,
           name: 'uninstall',
@@ -2774,10 +2774,11 @@ Deno.test('packs', async (test) => {
       () =>
         Promise.resolve([
           {
-            type: PackType.Community,
-            manifest: {
-              id: 'id',
-              title: 'title',
+            ref: {
+              manifest: {
+                id: 'id',
+                title: 'title',
+              },
             },
           },
         ]),
@@ -2817,7 +2818,7 @@ Deno.test('packs', async (test) => {
       assertSpyCall(listStub, 0, {
         args: [{
           guildId: 'guild_id',
-          type: PackType.Community,
+          filter: true,
         }],
       });
 
@@ -2856,9 +2857,9 @@ Deno.test('packs', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
-        name: 'packs',
+        name: 'community',
         options: [{
           type: 1,
           name: 'uninstall',
@@ -2884,24 +2885,27 @@ Deno.test('packs', async (test) => {
       () =>
         Promise.resolve([
           {
-            type: PackType.Community,
-            manifest: {
-              id: 'id535245',
-              title: 'title',
+            ref: {
+              manifest: {
+                id: 'id535245',
+                title: 'title',
+              },
             },
           },
           {
-            type: PackType.Community,
-            manifest: {
-              id: 'id998943894',
-              title: 'name',
+            ref: {
+              manifest: {
+                id: 'id998943894',
+                title: 'name',
+              },
             },
           },
           {
-            type: PackType.Community,
-            manifest: {
-              id: 'id424535',
-              title: 'alias',
+            ref: {
+              manifest: {
+                id: 'id424535',
+                title: 'alias',
+              },
             },
           },
         ]),
@@ -2941,7 +2945,7 @@ Deno.test('packs', async (test) => {
       assertSpyCall(listStub, 0, {
         args: [{
           guildId: 'guild_id',
-          type: PackType.Community,
+          filter: true,
         }],
       });
 
@@ -2990,9 +2994,9 @@ Deno.test('packs', async (test) => {
       token: 'token',
       type: discord.InteractionType.Partial,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
-        name: 'packs',
+        name: 'community',
         options: [{
           type: 1,
           name: 'uninstall',
@@ -3018,21 +3022,24 @@ Deno.test('packs', async (test) => {
       () =>
         Promise.resolve([
           {
-            type: PackType.Community,
-            manifest: {
-              id: 'name',
+            ref: {
+              manifest: {
+                id: 'name',
+              },
             },
           },
           {
-            type: PackType.Community,
-            manifest: {
-              id: 'title',
+            ref: {
+              manifest: {
+                id: 'title',
+              },
             },
           },
           {
-            type: PackType.Community,
-            manifest: {
-              id: 'alias',
+            ref: {
+              manifest: {
+                id: 'alias',
+              },
             },
           },
         ]),
@@ -3072,7 +3079,7 @@ Deno.test('packs', async (test) => {
       assertSpyCall(listStub, 0, {
         args: [{
           guildId: 'guild_id',
-          type: PackType.Community,
+          filter: true,
         }],
       });
 

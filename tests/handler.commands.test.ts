@@ -23,9 +23,11 @@ import help from '../src/help.ts';
 
 import synthesis from '../src/synthesis.ts';
 
+import community from '../src/community.ts';
+
 import { NonFetalError, NoPermissionError } from '../src/errors.ts';
 
-import { Manifest, PackType } from '../src/types.ts';
+import type { Manifest } from '../src/types.ts';
 
 Deno.test('search command handlers', async (test) => {
   await test.step('search', async () => {
@@ -34,7 +36,7 @@ Deno.test('search command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'search',
         options: [{
@@ -93,7 +95,6 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -116,7 +117,7 @@ Deno.test('search command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'anime',
         options: [{
@@ -175,7 +176,6 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -198,7 +198,7 @@ Deno.test('search command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'manga',
         options: [{
@@ -257,7 +257,6 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -280,7 +279,7 @@ Deno.test('search command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'media',
         options: [{
@@ -339,7 +338,6 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'title',
           debug: false,
           id: undefined,
@@ -362,7 +360,7 @@ Deno.test('search command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'search',
         options: [{
@@ -424,7 +422,6 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'title',
           debug: true,
           id: undefined,
@@ -447,7 +444,7 @@ Deno.test('search command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'search',
         options: [{
@@ -506,7 +503,6 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'id=uuid',
           debug: false,
           id: 'uuid',
@@ -529,7 +525,7 @@ Deno.test('search command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -599,7 +595,6 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           index: 0,
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'title',
           id: undefined,
         }],
@@ -621,7 +616,7 @@ Deno.test('search command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -691,7 +686,6 @@ Deno.test('search command handlers', async (test) => {
         args: [{
           index: 0,
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'id=uuid',
           id: 'uuid',
         }],
@@ -715,7 +709,7 @@ Deno.test('character command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -779,7 +773,6 @@ Deno.test('character command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'name',
           debug: false,
           id: undefined,
@@ -802,7 +795,7 @@ Deno.test('character command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -866,7 +859,6 @@ Deno.test('character command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'name',
           debug: false,
           id: undefined,
@@ -889,7 +881,7 @@ Deno.test('character command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -956,7 +948,6 @@ Deno.test('character command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'name',
           debug: true,
           id: undefined,
@@ -979,7 +970,7 @@ Deno.test('character command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1043,7 +1034,6 @@ Deno.test('character command handlers', async (test) => {
         args: [{
           token: 'token',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'id=uuid',
           debug: false,
           id: 'uuid',
@@ -1068,7 +1058,7 @@ Deno.test('party command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1137,7 +1127,6 @@ Deno.test('party command handlers', async (test) => {
           token: 'token',
           userId: 'another_user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -1157,7 +1146,7 @@ Deno.test('party command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1222,7 +1211,6 @@ Deno.test('party command handlers', async (test) => {
           token: 'token',
           userId: 'another_user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
         }],
       });
 
@@ -1242,7 +1230,7 @@ Deno.test('party command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1310,7 +1298,6 @@ Deno.test('party command handlers', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'name',
           spot: undefined,
           id: undefined,
@@ -1333,7 +1320,7 @@ Deno.test('party command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1404,7 +1391,6 @@ Deno.test('party command handlers', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'name',
           spot: 5,
           id: undefined,
@@ -1427,7 +1413,7 @@ Deno.test('party command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1495,7 +1481,6 @@ Deno.test('party command handlers', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'id=uuid',
           spot: undefined,
           id: 'uuid',
@@ -1518,7 +1503,7 @@ Deno.test('party command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1589,7 +1574,6 @@ Deno.test('party command handlers', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           a: 5,
           b: 1,
         }],
@@ -1611,7 +1595,7 @@ Deno.test('party command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1679,7 +1663,6 @@ Deno.test('party command handlers', async (test) => {
         args: [{
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           spot: 5,
         }],
       });
@@ -1702,7 +1685,7 @@ Deno.test('collection command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1796,7 +1779,7 @@ Deno.test('collection command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1895,7 +1878,7 @@ Deno.test('collection command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -1993,7 +1976,7 @@ Deno.test('collection command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2091,7 +2074,7 @@ Deno.test('collection command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2188,7 +2171,7 @@ Deno.test('likeslist command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2256,6 +2239,7 @@ Deno.test('likeslist command handlers', async (test) => {
           userId: 'user_id',
           guildId: 'guild_id',
           nick: false,
+          filter: undefined,
           index: 0,
         }],
       });
@@ -2276,7 +2260,7 @@ Deno.test('likeslist command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2344,6 +2328,7 @@ Deno.test('likeslist command handlers', async (test) => {
           userId: 'another_user_id',
           guildId: 'guild_id',
           nick: true,
+          filter: undefined,
           index: 0,
         }],
       });
@@ -2366,7 +2351,7 @@ Deno.test('logs command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2453,7 +2438,7 @@ Deno.test('logs command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2542,7 +2527,7 @@ Deno.test('found command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'found',
         options: [{
@@ -2623,7 +2608,7 @@ Deno.test('found command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'owned',
         options: [{
@@ -2704,7 +2689,7 @@ Deno.test('found command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
         name: 'found',
         options: [{
@@ -2787,7 +2772,7 @@ Deno.test('now command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2867,7 +2852,7 @@ Deno.test('now command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -2947,7 +2932,7 @@ Deno.test('now command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3029,7 +3014,7 @@ Deno.test('trade command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3121,7 +3106,6 @@ Deno.test('trade command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           targetId: 'another_user_id',
           give: [
             'give_character_id',
@@ -3153,7 +3137,7 @@ Deno.test('trade command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3229,7 +3213,6 @@ Deno.test('trade command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           targetId: 'another_user_id',
           give: ['give_character_id_3'],
           take: ['take_character_id_3'],
@@ -3253,7 +3236,7 @@ Deno.test('trade command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3361,7 +3344,7 @@ Deno.test('give command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3448,7 +3431,6 @@ Deno.test('give command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           targetId: 'another_user_id',
           give: [
             'give_character_id',
@@ -3476,7 +3458,7 @@ Deno.test('give command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3555,7 +3537,6 @@ Deno.test('give command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           targetId: 'another_user_id',
           give: ['give_character_id_3'],
           take: [],
@@ -3579,7 +3560,7 @@ Deno.test('give command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3683,7 +3664,7 @@ Deno.test('steal command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3757,7 +3738,6 @@ Deno.test('steal command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'character',
           id: undefined,
           stars: 0,
@@ -3780,7 +3760,7 @@ Deno.test('steal command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3854,7 +3834,6 @@ Deno.test('steal command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'id=character_id',
           id: 'character_id',
           stars: 0,
@@ -3879,7 +3858,7 @@ Deno.test('gacha command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -3941,7 +3920,6 @@ Deno.test('gacha command handlers', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           token: 'token',
         }],
       });
@@ -3962,7 +3940,7 @@ Deno.test('gacha command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4024,7 +4002,6 @@ Deno.test('gacha command handlers', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           token: 'token',
         }],
       });
@@ -4045,7 +4022,7 @@ Deno.test('gacha command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4111,7 +4088,6 @@ Deno.test('gacha command handlers', async (test) => {
           guarantee: 4,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           token: 'token',
         }],
       });
@@ -4132,7 +4108,7 @@ Deno.test('gacha command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4198,7 +4174,6 @@ Deno.test('gacha command handlers', async (test) => {
           guarantee: 4,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           token: 'token',
         }],
       });
@@ -4219,7 +4194,7 @@ Deno.test('gacha command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4281,7 +4256,6 @@ Deno.test('gacha command handlers', async (test) => {
           guarantee: undefined,
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           token: 'token',
         }],
       });
@@ -4302,7 +4276,7 @@ Deno.test('gacha command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4396,7 +4370,7 @@ Deno.test('buy command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4483,7 +4457,7 @@ Deno.test('buy command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4570,7 +4544,7 @@ Deno.test('buy command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4657,7 +4631,7 @@ Deno.test('buy command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4746,7 +4720,7 @@ Deno.test('like command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4811,7 +4785,6 @@ Deno.test('like command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'character',
           id: undefined,
           undo: false,
@@ -4834,7 +4807,7 @@ Deno.test('like command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4899,7 +4872,6 @@ Deno.test('like command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'id=character_id',
           id: 'character_id',
           undo: false,
@@ -4922,7 +4894,7 @@ Deno.test('like command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -4987,7 +4959,6 @@ Deno.test('like command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'character',
           id: undefined,
           undo: false,
@@ -5010,7 +4981,7 @@ Deno.test('like command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -5075,7 +5046,6 @@ Deno.test('like command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'character',
           id: undefined,
           undo: false,
@@ -5098,7 +5068,7 @@ Deno.test('like command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -5163,7 +5133,6 @@ Deno.test('like command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'character',
           id: undefined,
           undo: true,
@@ -5186,7 +5155,7 @@ Deno.test('like command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -5251,7 +5220,6 @@ Deno.test('like command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'id=character_id',
           id: 'character_id',
           undo: true,
@@ -5276,7 +5244,7 @@ Deno.test('likeall command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -5341,7 +5309,6 @@ Deno.test('likeall command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'media',
           id: undefined,
           undo: false,
@@ -5364,7 +5331,7 @@ Deno.test('likeall command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -5429,7 +5396,6 @@ Deno.test('likeall command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'id=media_id',
           id: 'media_id',
           undo: false,
@@ -5452,7 +5418,7 @@ Deno.test('likeall command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -5517,7 +5483,6 @@ Deno.test('likeall command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'media',
           id: undefined,
           undo: true,
@@ -5540,7 +5505,7 @@ Deno.test('likeall command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -5605,7 +5570,6 @@ Deno.test('likeall command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           search: 'id=character_id',
           id: 'character_id',
           undo: true,
@@ -5630,7 +5594,7 @@ Deno.test('help command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -5709,7 +5673,7 @@ Deno.test('help command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -5788,7 +5752,7 @@ Deno.test('help command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -5867,7 +5831,7 @@ Deno.test('help command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -5946,7 +5910,7 @@ Deno.test('help command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -6031,7 +5995,7 @@ Deno.test('nick command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -6102,7 +6066,6 @@ Deno.test('nick command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           nick: 'New Nickname',
           search: 'name',
           id: undefined,
@@ -6125,7 +6088,7 @@ Deno.test('nick command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -6196,7 +6159,6 @@ Deno.test('nick command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           nick: 'New Nickname',
           search: 'id=character_id',
           id: 'character_id',
@@ -6221,7 +6183,7 @@ Deno.test('image command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -6292,7 +6254,6 @@ Deno.test('image command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           image: 'https://image_url.png',
           search: 'name',
           id: undefined,
@@ -6315,7 +6276,7 @@ Deno.test('image command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -6386,7 +6347,6 @@ Deno.test('image command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           image: 'https://image_url.png',
           search: 'id=character_id',
           id: 'character_id',
@@ -6409,7 +6369,7 @@ Deno.test('image command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -6480,7 +6440,6 @@ Deno.test('image command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           image: 'https://image_url.png',
           search: 'name',
           id: undefined,
@@ -6505,7 +6464,7 @@ Deno.test('synthesize command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -6573,7 +6532,6 @@ Deno.test('synthesize command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           target: 4,
         }],
       });
@@ -6595,7 +6553,7 @@ Deno.test('synthesize command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -6663,7 +6621,6 @@ Deno.test('synthesize command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
-          channelId: 'channel_id',
           target: 5,
         }],
       });
@@ -6685,7 +6642,7 @@ Deno.test('synthesize command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
@@ -6778,20 +6735,98 @@ Deno.test('synthesize command handlers', async (test) => {
   });
 });
 
-Deno.test('packs command handlers', async (test) => {
-  await test.step('packs community', async () => {
+Deno.test('packs', async () => {
+  const body = JSON.stringify({
+    id: 'id',
+    token: 'token',
+    type: discord.InteractionType.Command,
+    guild_id: 'guild_id',
+
+    data: {
+      name: 'packs',
+    },
+  });
+
+  const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+  const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+    valid: true,
+    body,
+  } as any));
+
+  const packsStub = stub(packs, 'pages', () =>
+    ({
+      send: () => true,
+    }) as any);
+
+  config.publicKey = 'publicKey';
+
+  try {
+    const request = new Request('http://localhost:8000', {
+      body,
+      method: 'POST',
+      headers: {
+        'X-Signature-Ed25519': 'ed25519',
+        'X-Signature-Timestamp': 'timestamp',
+      },
+    });
+
+    const response = await handler(request);
+
+    assertSpyCall(validateStub, 0, {
+      args: [
+        request,
+        {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        },
+      ],
+    });
+
+    assertSpyCall(signatureStub, 0, {
+      args: [{
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      }],
+    });
+
+    assertSpyCall(packsStub, 0, {
+      args: [{
+        guildId: 'guild_id',
+        index: 0,
+      }],
+    });
+
+    assertEquals(response, true as any);
+  } finally {
+    delete config.publicKey;
+
+    packsStub.restore();
+    validateStub.restore();
+    signatureStub.restore();
+  }
+});
+
+Deno.test('community packs command handlers', async (test) => {
+  await test.step('community gallery', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
-        name: 'packs',
+        name: 'community',
         options: [{
           type: 1,
-          name: `community`,
-          options: [],
+          name: `gallery`,
         }],
       },
     });
@@ -6807,7 +6842,7 @@ Deno.test('packs command handlers', async (test) => {
       send: () => true,
     }));
 
-    const packsStub = stub(packs, 'pages', () =>
+    const communityStub = stub(community, 'getMostInstalledPacks', () =>
       ({
         setFlags: setFlagsSpy,
       }) as any);
@@ -6837,10 +6872,6 @@ Deno.test('packs command handlers', async (test) => {
         ],
       });
 
-      assertSpyCall(setFlagsSpy, 0, {
-        args: [64],
-      });
-
       assertSpyCall(signatureStub, 0, {
         args: [{
           body,
@@ -6850,10 +6881,14 @@ Deno.test('packs command handlers', async (test) => {
         }],
       });
 
-      assertSpyCall(packsStub, 0, {
+      assertSpyCall(setFlagsSpy, 0, {
+        args: [64],
+      });
+
+      assertSpyCall(communityStub, 0, {
         args: [{
-          guildId: 'guild_id',
           index: 0,
+          guildId: 'guild_id',
         }],
       });
 
@@ -6861,26 +6896,26 @@ Deno.test('packs command handlers', async (test) => {
     } finally {
       delete config.publicKey;
 
-      packsStub.restore();
+      communityStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
   });
 
-  await test.step('packs install', async () => {
+  await test.step('community install', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       member: {
         user: {
           id: 'user_id',
         },
       },
       data: {
-        name: 'packs',
+        name: 'community',
         options: [{
           type: 1,
           name: `install`,
@@ -6899,13 +6934,9 @@ Deno.test('packs command handlers', async (test) => {
       body,
     } as any));
 
-    const setFlagsSpy = spy(() => ({
-      send: () => true,
-    }));
-
     const packsStub = stub(packs, 'install', () =>
       ({
-        setFlags: setFlagsSpy,
+        send: () => true,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -6931,10 +6962,6 @@ Deno.test('packs command handlers', async (test) => {
             },
           },
         ],
-      });
-
-      assertSpyCall(setFlagsSpy, 0, {
-        args: [64],
       });
 
       assertSpyCall(signatureStub, 0, {
@@ -6970,9 +6997,14 @@ Deno.test('packs command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
-        name: 'packs',
+        name: 'community',
         options: [{
           type: 1,
           name: `uninstall`,
@@ -7000,7 +7032,7 @@ Deno.test('packs command handlers', async (test) => {
       'all',
       () =>
         Promise.resolve([
-          { manifest, type: PackType.Community },
+          { ref: { manifest } },
         ]),
     );
 
@@ -7052,7 +7084,6 @@ Deno.test('packs command handlers', async (test) => {
       assertEquals({
         type: 4,
         data: {
-          flags: 64,
           embeds: [
             {
               type: 'rich',
@@ -7068,12 +7099,12 @@ Deno.test('packs command handlers', async (test) => {
           components: [{
             type: 1,
             components: [{
-              custom_id: 'uninstall=pack_id',
+              custom_id: 'uninstall=pack_id=user_id',
               label: 'Confirm',
               style: 2,
               type: 2,
             }, {
-              custom_id: 'cancel',
+              custom_id: 'cancel=user_id',
               label: 'Cancel',
               style: 4,
               type: 2,
@@ -7096,9 +7127,9 @@ Deno.test('packs command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-      channel_id: 'channel_id',
+
       data: {
-        name: 'packs',
+        name: 'community',
         options: [{
           type: 1,
           name: `uninstall`,
@@ -7258,7 +7289,7 @@ Deno.test('unimplemented interaction', async () => {
     token: 'token',
     type: discord.InteractionType.Command,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
+
     data: {
       name: 'name',
     },
@@ -7340,7 +7371,6 @@ Deno.test('ping interaction', async () => {
     token: 'token',
     type: discord.InteractionType.Ping,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
   });
 
   const validateStub = stub(utils, 'validateRequest', () => ({} as any));
@@ -7412,7 +7442,7 @@ Deno.test('not found error', async () => {
     token: 'token',
     type: discord.InteractionType.Command,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
+
     data: {
       name: 'search',
       options: [{
@@ -7508,7 +7538,7 @@ Deno.test('not fetal error', async () => {
     token: 'token',
     type: discord.InteractionType.Command,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
+
     data: {
       name: 'search',
       options: [{
@@ -7604,7 +7634,7 @@ Deno.test('no permission error', async () => {
     token: 'token',
     type: discord.InteractionType.Command,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
+
     data: {
       name: 'search',
       options: [{
@@ -7700,7 +7730,7 @@ Deno.test('internal error', async () => {
     token: 'token',
     type: discord.InteractionType.Command,
     guild_id: 'guild_id',
-    channel_id: 'channel_id',
+
     data: {
       name: 'search',
       options: [{

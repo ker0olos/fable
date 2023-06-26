@@ -61,11 +61,13 @@ function getSacrifices(
   };
 
   // separate each rating into its own array
-  characters.forEach((char) => {
-    if (char.rating < target) {
-      split[char.rating].push(char);
-    }
-  });
+  characters
+    .toSorted((a, b) => a.rating - b.rating)
+    .forEach((char) => {
+      if (char.rating < target || target === 5) {
+        split[char.rating === 5 ? 4 : char.rating].push(char);
+      }
+    });
 
   const possibilities: Record<number, Schema.Character[][]> = {
     1: [],
@@ -116,30 +118,26 @@ function getSacrifices(
 function characterPreview(
   character: Character,
   existing: Partial<Schema.Character>,
-  channelId: string,
 ): discord.Embed {
   const image = existing?.image
     ? { url: existing?.image }
     : character.images?.[0];
 
-  const blur = image?.nsfw && !packs.cachedChannels[channelId]?.nsfw;
-
   const media = character.media?.edges?.[0]?.node;
 
   const name = `${existing.rating}${discord.emotes.smolStar}${
-    existing?.nickname ?? packs.aliasToArray(character.name)[0]
+    utils.wrap(existing?.nickname ?? packs.aliasToArray(character.name)[0])
   }`;
 
   const embed = new discord.Embed()
     .setThumbnail({
-      blur,
       preview: true,
       url: image?.url,
     });
 
   if (media) {
     embed.addField({
-      name: packs.aliasToArray(media.title)[0],
+      name: utils.wrap(packs.aliasToArray(media.title)[0]),
       value: name,
     });
   } else {
@@ -149,17 +147,10 @@ function characterPreview(
   return embed;
 }
 
-async function synthesize({
-  token,
-  userId,
-  guildId,
-  channelId,
-  target,
-}: {
+async function synthesize({ token, userId, guildId, target }: {
   token: string;
   userId: string;
   guildId: string;
-  channelId: string;
   target: number;
 }): Promise<discord.Message> {
   if (!config.synthesis) {
@@ -202,7 +193,7 @@ async function synthesize({
         ),
       );
 
-      await Promise.all(highlights.map(async (existing) => {
+      for (const existing of highlights) {
         const match = highlightedCharacters
           .find((char) => existing.id === `${char.packId}:${char.id}`);
 
@@ -213,10 +204,10 @@ async function synthesize({
           });
 
           message.addEmbed(
-            synthesis.characterPreview(character, existing, channelId),
+            synthesis.characterPreview(character, existing),
           );
         }
-      }));
+      }
 
       if (sacrifices.length - highlightedCharacters.length) {
         message.addEmbed(
@@ -264,13 +255,11 @@ function confirmed({
   userId,
   guildId,
   target,
-  channelId,
 }: {
   token: string;
   userId: string;
   guildId: string;
   target: number;
-  channelId: string;
 }): discord.Message {
   const mutation = gql`
     mutation (
@@ -320,13 +309,7 @@ function confirmed({
         },
       });
 
-      return gacha.pullAnimation({
-        token,
-        ping: true,
-        channelId,
-        guildId,
-        pull,
-      });
+      return gacha.pullAnimation({ token, guildId, pull });
     })
     .catch(async (err) => {
       if (err instanceof PoolError) {

@@ -17,6 +17,7 @@ export type TimeExpr = TypedExpr<'time'>;
 export type IndexExpr = TypedExpr<'index'>;
 export type MatchExpr = TypedExpr<'match'>;
 export type RefExpr = TypedExpr<'ref'>;
+export type LambdaExpr = TypedExpr<'lambda'>;
 
 export type ResponseExpr = TypedExpr<'response'>;
 
@@ -191,10 +192,6 @@ function Equals<A = Expr, B = Expr>(a?: A, b?: B): BooleanExpr {
   return _fql.Equals(a!, b!);
 }
 
-// function Not(b: BooleanExpr): BooleanExpr {
-//   return _fql.Not(b);
-// }
-
 function Concat(s: StringExpr[], sep?: StringExpr): StringExpr {
   return _fql.Concat(s, sep ?? '');
 }
@@ -290,6 +287,10 @@ function Null(): NullExpr {
   return null as unknown as NullExpr;
 }
 
+function EmptyLambda(t: any): LambdaExpr {
+  return _fql.Lambda([], t);
+}
+
 function Indexer(
   { client, name, unique, collection, values, terms }: {
     client: Client;
@@ -327,7 +328,7 @@ function Resolver(
   { client, name, lambda }: {
     name: string;
     client: Client;
-    lambda: (...vars: any[]) => ExprArg;
+    lambda: ((...vars: any[]) => ExprArg) | LambdaExpr;
   },
 ): () => Promise<void> {
   const params = {
@@ -355,6 +356,7 @@ export const fql = {
   Create,
   Delete,
   Divide,
+  EmptyLambda,
   Equals,
   Filter,
   Foreach,

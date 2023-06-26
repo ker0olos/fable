@@ -146,7 +146,7 @@ Deno.test('/party view', async (test) => {
       const message = party.view({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
       });
 
@@ -409,7 +409,7 @@ Deno.test('/party view', async (test) => {
       const message = party.view({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
       });
 
@@ -652,7 +652,7 @@ Deno.test('/party view', async (test) => {
       const message = party.view({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
       });
 
@@ -909,7 +909,7 @@ Deno.test('/party view', async (test) => {
       const message = party.view({
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         token: 'test_token',
       });
 
@@ -1081,7 +1081,7 @@ Deno.test('/party assign', async (test) => {
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
       });
 
@@ -1191,7 +1191,7 @@ Deno.test('/party assign', async (test) => {
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
       });
 
@@ -1295,7 +1295,7 @@ Deno.test('/party assign', async (test) => {
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
       });
 
@@ -1391,7 +1391,7 @@ Deno.test('/party assign', async (test) => {
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         id: 'anilist:1',
       });
 
@@ -1558,7 +1558,6 @@ Deno.test('/party swap', async (test) => {
         b: 2,
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -1789,7 +1788,6 @@ Deno.test('/party swap', async (test) => {
         b: 2,
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -1910,7 +1908,6 @@ Deno.test('/party swap', async (test) => {
             b: 2,
             userId: 'user_id',
             guildId: 'guild_id',
-            channelId: 'channel_id',
           }),
         Error,
         'UNKNOWN_ERROR',
@@ -1979,7 +1976,6 @@ Deno.test('/party remove', async (test) => {
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -2088,7 +2084,6 @@ Deno.test('/party remove', async (test) => {
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -2199,7 +2194,6 @@ Deno.test('/party remove', async (test) => {
         spot: 2,
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -2278,7 +2272,6 @@ Deno.test('/party remove', async (test) => {
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
       });
 
       assertEquals(message.json(), {
@@ -2337,7 +2330,6 @@ Deno.test('/party remove', async (test) => {
             spot: 1,
             userId: 'user_id',
             guildId: 'guild_id',
-            channelId: 'channel_id',
           }),
         Error,
         'UNKNOWN_ERROR',

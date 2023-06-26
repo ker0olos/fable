@@ -1,5 +1,5 @@
 {
-  "$id": "https://fable.deno.dev/schema.json",
+  "$id": "https://raw.githubusercontent.com/ker0olos/fable/main/json/schema.json",
   "title": "manifest",
   "type": "object",
   "required": ["id"],

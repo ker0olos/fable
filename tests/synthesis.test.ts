@@ -1,10 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import {
-  assertEquals,
-  assertRejects,
-  assertThrows,
-} from '$std/testing/asserts.ts';
+import { assertEquals, assertRejects } from '$std/testing/asserts.ts';
 
 import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
 
@@ -21,15 +17,7 @@ import Rating from '../src/rating.ts';
 
 import synthesis from '../src/synthesis.ts';
 
-import {
-  CharacterRole,
-  DisaggregatedCharacter,
-  Manifest,
-  MediaFormat,
-  MediaType,
-  PackType,
-  Schema,
-} from '../src/types.ts';
+import { CharacterRole, MediaFormat, MediaType, Schema } from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
@@ -202,7 +190,7 @@ Deno.test('auto synthesize', async (test) => {
     await assertSnapshot(test, sacrifices);
   });
 
-  await test.step('5 fives', () => {
+  await test.step('5 fives', async () => {
     const characters: Schema.Character[] = Array(25).fill({}).map((_, i) => ({
       rating: 5,
       id: `id:${i}`,
@@ -210,11 +198,61 @@ Deno.test('auto synthesize', async (test) => {
       user: { id: 'user_id' },
     }));
 
-    assertThrows(
-      () => synthesis.getSacrifices(characters, 5),
-      NonFetalError,
-      'You only have **0 out the 5** sacrifices needed for 5<:smolstar:1107503653956374638>',
-    );
+    const sacrifices = synthesis.getSacrifices(characters, 5);
+
+    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 5);
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('4 fours + 1 five', async () => {
+    const characters: Schema.Character[] = Array(4).fill({}).map((_, i) => ({
+      rating: 4,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    }));
+
+    characters.push({
+      rating: 5,
+      id: 'id:4',
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    });
+
+    const sacrifices = synthesis.getSacrifices(characters, 5);
+
+    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 4);
+    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 1);
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('4 fives + 1 four', async () => {
+    const characters: Schema.Character[] = Array(4).fill({}).map((_, i) => ({
+      rating: 5,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    }));
+
+    characters.push({
+      rating: 4,
+      id: 'id:4',
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    });
+
+    const sacrifices = synthesis.getSacrifices(characters, 5);
+
+    await assertSnapshot(test, sacrifices);
   });
 });
 
@@ -344,7 +382,7 @@ Deno.test('synthesis confirmed', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         target: 2,
       });
 
@@ -602,7 +640,7 @@ Deno.test('synthesis confirmed', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         target: 2,
       });
 
@@ -704,7 +742,7 @@ Deno.test('synthesis confirmed', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         target: 2,
       });
 
@@ -823,7 +861,7 @@ Deno.test('synthesis confirmed', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         target: 2,
       });
 
@@ -1037,7 +1075,7 @@ Deno.test('/synthesis', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         target: 2,
       });
 
@@ -1291,7 +1329,7 @@ Deno.test('/synthesis', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         target: 2,
       });
 
@@ -1388,255 +1426,6 @@ Deno.test('/synthesis', async (test) => {
               thumbnail: {
                 url:
                   'http://localhost:8000/external/custom_image_url?size=preview',
-              },
-            },
-          ],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-      delete config.synthesis;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-    }
-  });
-
-  await test.step('with blur', async () => {
-    const characters: DisaggregatedCharacter[] = [
-      {
-        id: '1',
-        packId: 'pack-id',
-        name: {
-          english: 'character 1',
-        },
-        images: [{
-          nsfw: true,
-          url: 'image_url',
-        }],
-      },
-      {
-        id: '2',
-        packId: 'pack-id',
-        name: {
-          english: 'character 2',
-        },
-        images: [{
-          nsfw: true,
-          url: 'image_url',
-        }],
-      },
-      {
-        id: '3',
-        packId: 'pack-id',
-        name: {
-          english: 'character 3',
-        },
-        images: [{
-          nsfw: true,
-          url: 'image_url',
-        }],
-      },
-      {
-        id: '4',
-        packId: 'pack-id',
-        name: {
-          english: 'character 4',
-        },
-        images: [{
-          nsfw: false,
-          url: 'image_url',
-        }],
-      },
-      {
-        id: '5',
-        packId: 'pack-id',
-        name: {
-          english: 'character 5',
-        },
-        images: [{
-          nsfw: false,
-          url: 'image_url',
-        }],
-      },
-    ];
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                getUserInventory: {
-                  user: {},
-                  characters: [
-                    {
-                      id: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'pack-id:2',
-                      rating: 1,
-                    },
-                    {
-                      id: 'pack-id:3',
-                      rating: 1,
-                    },
-                    {
-                      id: 'pack-id:4',
-                      rating: 1,
-                    },
-                    {
-                      id: 'pack-id:5',
-                      rating: 1,
-                    },
-                  ],
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [],
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
-    );
-
-    const manifest: Manifest = {
-      id: 'pack-id',
-      characters: {
-        new: characters,
-      },
-    };
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([{ manifest, type: PackType.Community }]),
-    );
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    config.synthesis = true;
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = await synthesis.synthesize({
-        token: 'test_token',
-        userId: 'user_id',
-        guildId: 'guild_id',
-        channelId: 'channel_id',
-        target: 2,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 2);
-
-      assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'synthesis=user_id=2',
-                label: 'Confirm',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'cancel=user_id',
-                label: 'Cancel',
-                style: 4,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [
-            {
-              type: 'rich',
-              description: 'Sacrifice **5** characters?',
-            },
-            {
-              type: 'rich',
-              description: '1<:smolstar:1107503653956374638>character 1',
-              thumbnail: {
-                url:
-                  'http://localhost:8000/external/image_url?size=preview&blur',
-              },
-            },
-            {
-              type: 'rich',
-              description: '1<:smolstar:1107503653956374638>character 2',
-              thumbnail: {
-                url:
-                  'http://localhost:8000/external/image_url?size=preview&blur',
-              },
-            },
-            {
-              type: 'rich',
-              description: '1<:smolstar:1107503653956374638>character 3',
-              thumbnail: {
-                url:
-                  'http://localhost:8000/external/image_url?size=preview&blur',
-              },
-            },
-            {
-              type: 'rich',
-              description: '1<:smolstar:1107503653956374638>character 4',
-              thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=preview',
-              },
-            },
-            {
-              type: 'rich',
-              description: '1<:smolstar:1107503653956374638>character 5',
-              thumbnail: {
-                url: 'http://localhost:8000/external/image_url?size=preview',
               },
             },
           ],
@@ -1784,7 +1573,7 @@ Deno.test('/synthesis', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-        channelId: 'channel_id',
+
         target: 2,
       });
 
@@ -1982,7 +1771,7 @@ Deno.test('/synthesis', async (test) => {
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
-            channelId: 'channel_id',
+
             target: 2,
           }),
         NonFetalError,
@@ -2086,7 +1875,7 @@ Deno.test('/synthesis', async (test) => {
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
-            channelId: 'channel_id',
+
             target: 2,
           }),
         NonFetalError,
@@ -2186,7 +1975,7 @@ Deno.test('/synthesis', async (test) => {
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
-            channelId: 'channel_id',
+
             target: 2,
           }),
         NonFetalError,
@@ -2236,7 +2025,7 @@ Deno.test('/synthesis', async (test) => {
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
-            channelId: 'channel_id',
+
             target: 5,
           }),
         NonFetalError,
@@ -2260,7 +2049,7 @@ Deno.test('/synthesis', async (test) => {
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
-            channelId: 'channel_id',
+
             target: 2,
           }),
         NonFetalError,

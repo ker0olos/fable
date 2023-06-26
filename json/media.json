@@ -1,5 +1,5 @@
 {
-  "$id": "https://fable.deno.dev/media.json",
+  "$id": "https://raw.githubusercontent.com/ker0olos/fable/main/json/media.json",
   "type": "object",
   "title": "media",
   "additionalProperties": false,

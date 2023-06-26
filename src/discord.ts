@@ -91,12 +91,6 @@ export type Option = {
   emote?: Emote;
 };
 
-export type Channel = {
-  id: string;
-  nsfw: boolean;
-  name: string;
-};
-
 export type Member = {
   nick?: string;
   avatar?: string;
@@ -215,7 +209,6 @@ export class Interaction<Options> {
   type: InteractionType;
 
   guildId: string;
-  channelId: string;
   targetId?: string;
 
   resolved?: Resolved;
@@ -243,9 +236,6 @@ export class Interaction<Options> {
   /** member is sent when the interaction is invoked in a guild */
   member: Member;
 
-  /** channel is sent when the interaction is invoked in a guild */
-  channel: Channel;
-
   // /** available on all interaction types except PING */
   // locale?: string;
 
@@ -259,7 +249,6 @@ export class Interaction<Options> {
       type: number;
       name: string;
       guild_id: string;
-      channel_id: string;
       resolved?: Resolved;
       target_id?: string;
       values?: string[];
@@ -291,12 +280,10 @@ export class Interaction<Options> {
     this.reference = obj.message;
 
     this.guildId = obj.guild_id;
-    this.channelId = obj.channel_id;
 
     // this.user = obj.user;
     // this.message = obj?.message
     this.member = obj.member;
-    this.channel = obj.channel;
 
     // this.locale = obj.locale;
     // this.guildLocale = obj.guild_locale;
@@ -530,10 +517,8 @@ export class Embed {
     default?: boolean;
     proxy?: boolean;
     size?: ImageSize;
-    blur?: boolean;
   }): Embed {
     const size = image.size === ImageSize.Medium ? '?size=medium' : '';
-    const blur = image.blur ? size.length ? '&blur' : '?blur' : '';
 
     image.default = image.default ?? true;
     image.proxy = image.proxy ?? true;
@@ -552,7 +537,7 @@ export class Embed {
         this.#data.image = {
           url: `${config.origin}/external/${
             encodeURIComponent(image.url ?? '')
-          }${size}${blur}`,
+          }${size}`,
         };
       }
     }
@@ -565,11 +550,8 @@ export class Embed {
       preview?: boolean;
       default?: boolean;
       proxy?: boolean;
-      blur?: boolean;
     },
   ): Embed {
-    const blur = thumbnail.blur ? '&blur' : '';
-
     thumbnail.default = thumbnail.default ?? true;
     thumbnail.proxy = thumbnail.proxy ?? true;
 
@@ -587,7 +569,7 @@ export class Embed {
         this.#data.thumbnail = {
           url: `${config.origin}/external/${
             encodeURIComponent(thumbnail.url ?? '')
-          }?size=${thumbnail.preview ? 'preview' : 'thumbnail'}${blur}`,
+          }?size=${thumbnail.preview ? 'preview' : 'thumbnail'}`,
         };
       }
     }
@@ -948,32 +930,6 @@ export class Message {
           .setLabel(`Next`),
       );
     }
-
-    return message.insertComponents(group);
-  }
-
-  static anchor(
-    { message, type, target, id, anchor }: {
-      id: string;
-      target: string | number;
-      type: string;
-      anchor: string;
-      message: Message;
-    },
-  ): Message {
-    const group: Component[] = [];
-
-    group.push(
-      new Component()
-        .setId(type, `${target}`, id, `${anchor}`, 'prev')
-        .setLabel(`Prev`),
-    );
-
-    group.push(
-      new Component()
-        .setId(type, `${target}`, id, `${anchor}`, 'next')
-        .setLabel(`Next`),
-    );
 
     return message.insertComponents(group);
   }

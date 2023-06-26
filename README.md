@@ -60,6 +60,15 @@ Fable has no in-app purchases, no premiums, and no bullshit.
 <br clear="left"/>
 <br clear="left"/>
 
+<p>
+  <img align="left" src="https://i.imgur.com/Kbh4IxM.png" alt="Community Packs">
+  <h4>Community Packs</h4>
+  As easy as installing an app on your phone, add community-made character packs to your server.
+</p>
+
+<br clear="left"/>
+<br clear="left"/>
+
 <img src="https://i.imgur.com/y5eV15M.png" alt="Fable compared to other bots">
 
 </details>
@@ -80,14 +89,9 @@ no players can pay to get ahead.
 Fable also has an amazing system where anyone can handcraft new characters, or
 add characters that are missing from Fable. Then anyone can find and install the
 packs you make, wanna start creating your own community pack? Visit
-<https://packs.deno.dev>
+<https://packs.deno.dev> (no coding required).
 
 #### [Add Fable to Your Server][invite]
-
-_Please note that **Discord** currently won't notify you after you add Fable or
-any other "app" to your server. Fable also won't show up in your members' list,
-After adding Fable go back to your server and call `/help` to confirm Fable is
-working._
 
 <br clear="right"/>
 
@@ -116,6 +120,17 @@ working._
 
 ### FAQ
 
+<details><summary>Fable didn't join my server?</summary>
+<p>
+
+Please note that Fable won't show up in your members' list, After adding Fable
+go back to your server and call `/help` to confirm Fable is working.
+
+This is because Fable is an "app" not a "bot user".
+
+</p>
+</details>
+
 <details><summary>How can I limit Fable to 1 channel?</summary>
 <p>
 
@@ -140,8 +155,8 @@ you can go tell discord to add custom prefixes to "slash" commands instead of
 <details><summary>How can I install a new pack on my server?</summary>
 <p>
 
-We plan to have a `/packs marketplace` command where you can browse and install
-popular packs but as of right now you need to know a pack id to install it.
+Check `/community gallery` to browse the most popular packs or create your own
+pack at <https://packs.deno.dev>
 
 > `Manage Server` permission is required to install packs on "your" server
 
@@ -151,8 +166,8 @@ popular packs but as of right now you need to know a pack id to install it.
 <details><summary>How can I create a new pack?</summary>
 <p>
 
-It's very easy to create and manage your community packs, go to
-<https://packs.deno.dev>
+It's very easy to create and manage your community packs, No coding required. Go
+to <https://packs.deno.dev>
 
 </p>
 </details>
