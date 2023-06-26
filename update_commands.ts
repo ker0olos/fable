@@ -295,6 +295,12 @@ export const commands = [
         type: Type.USER,
         optional: true,
       }),
+      Option({
+        name: 'filter',
+        description: 'Filter out the likes owned by user',
+        type: Type.BOOLEAN,
+        optional: true,
+      }),
     ],
   }),
   ...Command({
