@@ -234,6 +234,26 @@ Deno.test('auto synthesize', async (test) => {
 
     await assertSnapshot(test, sacrifices);
   });
+
+  await test.step('4 fives + 1 four', async () => {
+    const characters: Schema.Character[] = Array(4).fill({}).map((_, i) => ({
+      rating: 5,
+      id: `id:${i}`,
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    }));
+
+    characters.push({
+      rating: 4,
+      id: 'id:4',
+      mediaId: 'media_id',
+      user: { id: 'user_id' },
+    });
+
+    const sacrifices = synthesis.getSacrifices(characters, 5);
+
+    await assertSnapshot(test, sacrifices);
+  });
 });
 
 Deno.test('synthesis confirmed', async (test) => {

@@ -61,11 +61,13 @@ function getSacrifices(
   };
 
   // separate each rating into its own array
-  characters.forEach((char) => {
-    if (char.rating < target || target === 5) {
-      split[char.rating === 5 ? 4 : char.rating].push(char);
-    }
-  });
+  characters
+    .toSorted((a, b) => a.rating - b.rating)
+    .forEach((char) => {
+      if (char.rating < target || target === 5) {
+        split[char.rating === 5 ? 4 : char.rating].push(char);
+      }
+    });
 
   const possibilities: Record<number, Schema.Character[][]> = {
     1: [],
@@ -307,7 +309,7 @@ function confirmed({
         },
       });
 
-      return gacha.pullAnimation({ token, guildId, pull, ping: true });
+      return gacha.pullAnimation({ token, guildId, pull });
     })
     .catch(async (err) => {
       if (err instanceof PoolError) {

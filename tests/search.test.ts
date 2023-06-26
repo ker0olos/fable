@@ -2648,14 +2648,14 @@ Deno.test('/character', async (test) => {
           text: (() =>
             Promise.resolve(JSON.stringify({
               data: {
-                findCharacter: {
+                findCharacters: [{
                   user: {
                     id: 'user_id',
                   },
-                  id: 'character_id',
+                  id: 'anilist:1',
                   mediaId: 'media_id',
                   rating: 3,
-                },
+                }],
               },
             }))),
         } as any,
@@ -4468,14 +4468,14 @@ Deno.test('media characters', async (test) => {
         text: (() =>
           Promise.resolve(JSON.stringify({
             data: {
-              findCharacter: {
+              findCharacters: [{
                 user: {
                   id: 'user_id',
                 },
-                id: 'character_id',
+                id: 'pack-id:2',
                 mediaId: 'media_id',
                 rating: 3,
-              },
+              }],
             },
           }))),
       } as any),
@@ -4493,7 +4493,6 @@ Deno.test('media characters', async (test) => {
       const message = await search.mediaCharacters({
         id: 'pack-id:1',
         guildId: 'guild_id',
-
         index: 0,
       });
 

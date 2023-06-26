@@ -22,8 +22,8 @@ type Query {
     @resolver(name: "find_media")
 
   #
-  findCharacter(characterId: String!, guildId: String!): Character
-    @resolver(name: "find_character")
+  findCharacters(charactersId: [String!], guildId: String!): [Character!]
+    @resolver(name: "find_characters")
 
   #
   getActiveInventories(guildId: String!): [Inventory!]

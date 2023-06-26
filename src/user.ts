@@ -303,20 +303,20 @@ async function now({
   return message;
 }
 
-async function findCharacter({
+async function findCharacters({
   guildId,
-  characterId,
+  ids,
 }: {
   guildId?: string;
-  characterId?: string;
-}): Promise<Schema.Character | undefined> {
-  if (!guildId || !characterId) {
-    return undefined;
+  ids?: string[];
+}): Promise<(Schema.Character | undefined)[]> {
+  if (!guildId || !ids?.length) {
+    return [];
   }
 
   const query = gql`
-    query ($guildId: String!, $characterId: String!) {
-      findCharacter(guildId: $guildId, characterId: $characterId) {
+    query ($guildId: String!, $charactersId: [String!]) {
+      findCharacters(guildId: $guildId, charactersId: $charactersId) {
         id
         image
         nickname
@@ -339,8 +339,8 @@ async function findCharacter({
     }
   `;
 
-  const result = (await request<{
-    findCharacter?: Schema.Character;
+  const results = (await request<{
+    findCharacters?: Schema.Character[];
   }>({
     url: faunaUrl,
     query,
@@ -348,16 +348,31 @@ async function findCharacter({
       'authorization': `Bearer ${config.faunaSecret}`,
     },
     variables: {
-      characterId,
+      charactersId: ids,
       guildId,
     },
-  })).findCharacter;
+  })).findCharacters;
 
-  if (!result) {
-    return undefined;
+  if (!results?.length) {
+    return [];
   }
 
-  return result;
+  return ids
+    .map((id) => results.find((r) => r.id === id));
+}
+
+async function findCharacter({
+  guildId,
+  characterId,
+}: {
+  guildId?: string;
+  characterId?: string;
+}): Promise<Schema.Character | undefined> {
+  if (!guildId || !characterId) {
+    return;
+  }
+
+  return (await user.findCharacters({ guildId, ids: [characterId] }))[0];
 }
 
 function nick({
@@ -1148,12 +1163,14 @@ function likeslist({
   guildId,
   index,
   nick,
+  filter,
 }: {
   token: string;
   index: number;
   userId: string;
   guildId: string;
   nick?: boolean;
+  filter?: boolean;
 }): discord.Message {
   const query = gql`
     query ($userId: String!, $guildId: String!) {
@@ -1186,7 +1203,7 @@ function likeslist({
 
       const message = new discord.Message();
 
-      const { likes } = getUserInventory.user;
+      let { likes } = getUserInventory.user;
 
       if (!likes?.length) {
         const message = new discord.Message()
@@ -1200,6 +1217,34 @@ function likeslist({
           );
 
         return message.patch(token);
+      }
+
+      // sort so that all media likes are in the bottom of the list
+      likes.sort((a, b) => {
+        const aId = typeof a.characterId === 'string';
+        const bId = typeof b.characterId === 'string';
+
+        if (aId && !bId) {
+          return -1;
+        } else if (!aId && bId) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+
+      // find the ownership info of all liked characters
+      const results = await user.findCharacters({
+        guildId,
+        ids: likes.map(({ characterId }) => characterId)
+          .filter(Boolean),
+      });
+
+      // filter out characters that are owned by the user
+      if (filter) {
+        likes = likes.filter((like, i) => {
+          return like.characterId && results[i]?.user.id !== userId;
+        });
       }
 
       const chunks = utils.chunks(likes, 5);
@@ -1217,29 +1262,17 @@ function likeslist({
         }),
       ]);
 
-      media.forEach((media) => {
-        const title = utils.wrap(packs.aliasToArray(media.title)[0]);
-
-        embed.addField({
-          inline: false,
-          name: title,
-          value: discord.emotes.all,
-        });
-      });
-
       await Promise.all(
         characters.map(async (character) => {
-          const [char, existing] = await Promise.all([
-            packs.aggregate<Character>({
-              guildId,
-              character,
-              end: 1,
-            }),
-            user.findCharacter({
-              guildId,
-              characterId: `${character.packId}:${character.id}`,
-            }),
-          ]);
+          const existing = results.find((r) =>
+            r?.id === `${character.packId}:${character.id}`
+          );
+
+          const char = await packs.aggregate<Character>({
+            guildId,
+            character,
+            end: 1,
+          });
 
           const rating = existing?.rating ?? Rating.fromCharacter(char).stars;
 
@@ -1260,10 +1293,20 @@ function likeslist({
         }),
       );
 
+      media.forEach((media) => {
+        const title = utils.wrap(packs.aliasToArray(media.title)[0]);
+
+        embed.addField({
+          inline: false,
+          name: title,
+          value: discord.emotes.all,
+        });
+      });
+
       return discord.Message.page({
         index,
         type: 'likes',
-        target: userId,
+        target: discord.join(userId, filter ? '1' : '0'),
         total: chunks.length,
         message: message.addEmbed(embed),
         next: index + 1 < chunks.length,
@@ -1393,6 +1436,7 @@ function logs({
 
 const user = {
   findCharacter,
+  findCharacters,
   getActiveInventories,
   getUserCharacters,
   image,

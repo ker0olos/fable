@@ -2239,6 +2239,7 @@ Deno.test('likeslist command handlers', async (test) => {
           userId: 'user_id',
           guildId: 'guild_id',
           nick: false,
+          filter: undefined,
           index: 0,
         }],
       });
@@ -2327,6 +2328,7 @@ Deno.test('likeslist command handlers', async (test) => {
           userId: 'another_user_id',
           guildId: 'guild_id',
           nick: true,
+          filter: undefined,
           index: 0,
         }],
       });

@@ -419,12 +419,15 @@ export const handler = async (r: Request) => {
           case 'likeslist': {
             const userId = options['user'] as string ?? member.user.id;
 
+            const filter = options['filter'] as boolean | undefined;
+
             return user.likeslist({
               token,
               guildId,
               userId,
               index: 0,
               nick: userId !== member.user.id,
+              filter,
             }).send();
           }
           case 'found':
@@ -514,7 +517,6 @@ export const handler = async (r: Request) => {
               .start({
                 token,
                 guildId,
-
                 guarantee: stars,
                 quiet: name === 'q',
                 userId: member.user.id,
@@ -530,7 +532,6 @@ export const handler = async (r: Request) => {
               nick,
               token,
               guildId,
-
               search: name,
               userId: member.user.id,
               id: name.startsWith(idPrefix)
@@ -738,7 +739,6 @@ export const handler = async (r: Request) => {
               id,
               token,
               guildId,
-
               mention: true,
               userId: member.user.id,
               undo: false,
@@ -750,13 +750,17 @@ export const handler = async (r: Request) => {
             const userId = customValues![0];
 
             // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
+            const filter = customValues![1] === '1';
+
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![2]);
 
             return user.likeslist({
               index,
               token,
               userId,
               guildId,
+              filter,
             })
               .setType(discord.MessageType.Update)
               .send();
@@ -786,7 +790,6 @@ export const handler = async (r: Request) => {
               .start({
                 token,
                 guildId,
-
                 mention: true,
                 guarantee: stars,
                 quiet: customType === 'q',

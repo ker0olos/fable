@@ -1050,22 +1050,83 @@ snapshot[`model 4`] = `
                               raw: {
                                 in: U {
                                   raw: {
-                                    else: null,
-                                    if: U {
+                                    collection: U {
                                       raw: {
-                                        is_nonempty: U {
+                                        collection: U {
                                           raw: {
-                                            var: "match",
+                                            var: "matches",
+                                          },
+                                        },
+                                        map: U {
+                                          raw: {
+                                            expr: U {
+                                              raw: {
+                                                collection: U {
+                                                  raw: {
+                                                    from: U {
+                                                      raw: {
+                                                        after: undefined,
+                                                        before: undefined,
+                                                        paginate: U {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                        size: 1000,
+                                                      },
+                                                    },
+                                                    select: U {
+                                                      raw: [
+                                                        "data",
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                                map: U {
+                                                  raw: {
+                                                    expr: U {
+                                                      raw: {
+                                                        get: U {
+                                                          raw: {
+                                                            var: "refOrMatch",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    lambda: "refOrMatch",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            lambda: "match",
                                           },
                                         },
                                       },
                                     },
-                                    then: U {
+                                    initial: U {
+                                      raw: [],
+                                    },
+                                    reduce: U {
                                       raw: {
-                                        get: U {
+                                        expr: U {
                                           raw: {
-                                            var: "match",
+                                            collection: U {
+                                              raw: {
+                                                var: "b",
+                                              },
+                                            },
+                                            prepend: U {
+                                              raw: {
+                                                var: "a",
+                                              },
+                                            },
                                           },
+                                        },
+                                        lambda: U {
+                                          raw: [
+                                            "a",
+                                            "b",
+                                          ],
                                         },
                                       },
                                     },
@@ -1073,31 +1134,45 @@ snapshot[`model 4`] = `
                                 },
                                 let: [
                                   {
-                                    match: U {
+                                    matches: U {
                                       raw: {
-                                        match: U {
+                                        collection: U {
                                           raw: {
-                                            index: "characters_instance_id",
+                                            var: "charactersId",
                                           },
                                         },
-                                        terms: U {
-                                          raw: [
-                                            U {
+                                        map: U {
+                                          raw: {
+                                            expr: U {
                                               raw: {
-                                                var: "characterId",
-                                              },
-                                            },
-                                            U {
-                                              raw: {
-                                                from: U {
+                                                match: U {
                                                   raw: {
-                                                    var: "instance",
+                                                    index: "characters_instance_id",
                                                   },
                                                 },
-                                                select: "ref",
+                                                terms: U {
+                                                  raw: [
+                                                    U {
+                                                      raw: {
+                                                        var: "characterId",
+                                                      },
+                                                    },
+                                                    U {
+                                                      raw: {
+                                                        from: U {
+                                                          raw: {
+                                                            var: "instance",
+                                                          },
+                                                        },
+                                                        select: "ref",
+                                                      },
+                                                    },
+                                                  ],
+                                                },
                                               },
                                             },
-                                          ],
+                                            lambda: "characterId",
+                                          },
                                         },
                                       },
                                     },
@@ -1335,7 +1410,7 @@ snapshot[`model 4`] = `
                         },
                         lambda: U {
                           raw: [
-                            "characterId",
+                            "charactersId",
                             "guildId",
                           ],
                         },
@@ -1343,7 +1418,7 @@ snapshot[`model 4`] = `
                     },
                   },
                 },
-                name: "find_character",
+                name: "find_characters",
               },
             },
           },
@@ -1353,7 +1428,7 @@ snapshot[`model 4`] = `
         raw: {
           exists: U {
             raw: {
-              function: "find_character",
+              function: "find_characters",
             },
           },
         },
@@ -1373,22 +1448,83 @@ snapshot[`model 4`] = `
                               raw: {
                                 in: U {
                                   raw: {
-                                    else: null,
-                                    if: U {
+                                    collection: U {
                                       raw: {
-                                        is_nonempty: U {
+                                        collection: U {
                                           raw: {
-                                            var: "match",
+                                            var: "matches",
+                                          },
+                                        },
+                                        map: U {
+                                          raw: {
+                                            expr: U {
+                                              raw: {
+                                                collection: U {
+                                                  raw: {
+                                                    from: U {
+                                                      raw: {
+                                                        after: undefined,
+                                                        before: undefined,
+                                                        paginate: U {
+                                                          raw: {
+                                                            var: "match",
+                                                          },
+                                                        },
+                                                        size: 1000,
+                                                      },
+                                                    },
+                                                    select: U {
+                                                      raw: [
+                                                        "data",
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                                map: U {
+                                                  raw: {
+                                                    expr: U {
+                                                      raw: {
+                                                        get: U {
+                                                          raw: {
+                                                            var: "refOrMatch",
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    lambda: "refOrMatch",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            lambda: "match",
                                           },
                                         },
                                       },
                                     },
-                                    then: U {
+                                    initial: U {
+                                      raw: [],
+                                    },
+                                    reduce: U {
                                       raw: {
-                                        get: U {
+                                        expr: U {
                                           raw: {
-                                            var: "match",
+                                            collection: U {
+                                              raw: {
+                                                var: "b",
+                                              },
+                                            },
+                                            prepend: U {
+                                              raw: {
+                                                var: "a",
+                                              },
+                                            },
                                           },
+                                        },
+                                        lambda: U {
+                                          raw: [
+                                            "a",
+                                            "b",
+                                          ],
                                         },
                                       },
                                     },
@@ -1396,31 +1532,45 @@ snapshot[`model 4`] = `
                                 },
                                 let: [
                                   {
-                                    match: U {
+                                    matches: U {
                                       raw: {
-                                        match: U {
+                                        collection: U {
                                           raw: {
-                                            index: "characters_instance_id",
+                                            var: "charactersId",
                                           },
                                         },
-                                        terms: U {
-                                          raw: [
-                                            U {
+                                        map: U {
+                                          raw: {
+                                            expr: U {
                                               raw: {
-                                                var: "characterId",
-                                              },
-                                            },
-                                            U {
-                                              raw: {
-                                                from: U {
+                                                match: U {
                                                   raw: {
-                                                    var: "instance",
+                                                    index: "characters_instance_id",
                                                   },
                                                 },
-                                                select: "ref",
+                                                terms: U {
+                                                  raw: [
+                                                    U {
+                                                      raw: {
+                                                        var: "characterId",
+                                                      },
+                                                    },
+                                                    U {
+                                                      raw: {
+                                                        from: U {
+                                                          raw: {
+                                                            var: "instance",
+                                                          },
+                                                        },
+                                                        select: "ref",
+                                                      },
+                                                    },
+                                                  ],
+                                                },
                                               },
                                             },
-                                          ],
+                                            lambda: "characterId",
+                                          },
                                         },
                                       },
                                     },
@@ -1658,7 +1808,7 @@ snapshot[`model 4`] = `
                         },
                         lambda: U {
                           raw: [
-                            "characterId",
+                            "charactersId",
                             "guildId",
                           ],
                         },
@@ -1666,13 +1816,13 @@ snapshot[`model 4`] = `
                     },
                   },
                 },
-                name: "find_character",
+                name: "find_characters",
               },
             },
           },
           update: U {
             raw: {
-              function: "find_character",
+              function: "find_characters",
             },
           },
         },

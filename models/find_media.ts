@@ -3,8 +3,6 @@ import {
   Client,
   fql,
   InstanceExpr,
-  MatchExpr,
-  NullExpr,
   RefExpr,
   StringExpr,
 } from './fql.ts';
@@ -21,8 +19,8 @@ export function findMedia(
         mediaId,
         fql.Ref(instance),
       )),
-  }, ({ matches }) => {
-    return fql.Reduce(
+  }, ({ matches }) =>
+    fql.Reduce(
       fql.Map(
         matches,
         (match) =>
@@ -35,30 +33,39 @@ export function findMedia(
           ),
       ),
       (a, b) => fql.Prepend(a, b),
-    );
-  });
+    ));
 }
 
-export function findCharacter(
+export function findCharacters(
   {
-    characterId,
+    charactersId,
     instance,
   }: {
-    characterId: StringExpr;
+    charactersId: StringExpr[];
     instance: InstanceExpr;
   },
-): MatchExpr | NullExpr {
+): CharacterExpr[] {
   return fql.Let({
-    match: fql.Match(
-      fql.Index('characters_instance_id'),
-      characterId,
-      fql.Ref(instance),
-    ),
-  }, ({ match }) =>
-    fql.If(
-      fql.IsNonEmpty(match),
-      fql.Get(match),
-      fql.Null(),
+    matches: fql.Map(charactersId, (characterId) =>
+      fql.Match(
+        fql.Index('characters_instance_id'),
+        characterId,
+        fql.Ref(instance),
+      )),
+  }, ({ matches }) =>
+    fql.Reduce(
+      fql.Map(
+        matches,
+        (match) =>
+          fql.Map<RefExpr, CharacterExpr>(
+            fql.Select(
+              ['data'],
+              fql.Paginate(match, { size: 1000 }),
+            ),
+            fql.Get,
+          ),
+      ),
+      (a, b) => fql.Prepend(a, b),
     ));
 }
 
@@ -90,7 +97,7 @@ export default function (client: Client): {
       fql.Resolver({
         client,
         name: 'find_media',
-        lambda: (mediaIds: string[], guildId: string) => {
+        lambda: (mediaIds: StringExpr[], guildId: StringExpr) => {
           return fql.Let(
             {
               guild: getGuild(guildId),
@@ -102,14 +109,14 @@ export default function (client: Client): {
       }),
       fql.Resolver({
         client,
-        name: 'find_character',
-        lambda: (characterId: string, guildId: string) => {
+        name: 'find_characters',
+        lambda: (charactersId: StringExpr[], guildId: StringExpr) => {
           return fql.Let(
             {
               guild: getGuild(guildId),
               instance: getInstance(fql.Var('guild')),
             },
-            ({ instance }) => findCharacter({ characterId, instance }),
+            ({ instance }) => findCharacters({ charactersId, instance }),
           );
         },
       }),

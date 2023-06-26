@@ -3735,10 +3735,25 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          embeds: [],
           components: [],
           attachments: [],
           content: '<@another_user_id>',
+          embeds: [
+            {
+              type: 'rich',
+              description: '<@user_id>',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**name**',
+                },
+              ],
+              thumbnail: {
+                url:
+                  'http://localhost:8000/external/character_image_url?size=thumbnail',
+              },
+            },
+          ],
         },
       );
     } finally {
@@ -3976,10 +3991,25 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          embeds: [],
           components: [],
           attachments: [],
           content: '<@another_user_id>',
+          embeds: [
+            {
+              type: 'rich',
+              description: '<@user_id>',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**name**',
+                },
+              ],
+              thumbnail: {
+                url:
+                  'http://localhost:8000/external/character_image_url?size=thumbnail',
+              },
+            },
+          ],
         },
       );
     } finally {
@@ -4230,10 +4260,25 @@ Deno.test('/gacha', async (test) => {
           ) as any,
         ),
         {
-          embeds: [],
           components: [],
           attachments: [],
           content: '<@another_user_id>',
+          embeds: [
+            {
+              type: 'rich',
+              description: '<@user_id>',
+              fields: [
+                {
+                  name: 'title',
+                  value: '**name**',
+                },
+              ],
+              thumbnail: {
+                url:
+                  'http://localhost:8000/external/character_image_url?size=thumbnail',
+              },
+            },
+          ],
         },
       );
     } finally {
