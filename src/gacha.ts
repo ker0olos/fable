@@ -325,16 +325,19 @@ async function rngPull(
 }
 
 async function pullAnimation(
-  { token, userId, guildId, quiet, mention, guarantee, pull }: {
+  { token, userId, guildId, quiet, mention, components, guarantee, pull }: {
     token: string;
     pull: Pull;
     userId?: string;
     guildId?: string;
     quiet?: boolean;
     mention?: boolean;
+    components?: boolean;
     guarantee?: number;
   },
 ): Promise<void> {
+  components ??= true;
+
   const characterId = `${pull.character.packId}:${pull.character.id}`;
 
   const mediaIds = [
@@ -400,7 +403,7 @@ async function pullAnimation(
     },
   });
 
-  if (userId) {
+  if (components && userId) {
     if (
       typeof guarantee === 'number' &&
       pull.guarantees?.length &&
