@@ -1112,7 +1112,8 @@ if (import.meta.main) {
     '/webhooks/topgg': webhooks.topgg,
     //
     '/community/publish': community.publish,
-    '/community/:userId': community.query,
+    '/community/*': community.query, // TODO REMOVE provides backwards compatibility
+    '/community': community.query,
     //
     '/invite': () =>
       Response.redirect(
@@ -1129,9 +1130,8 @@ if (import.meta.main) {
     },
     '/robots.txt': () => {
       return new Response(
-        `User-agent: *
-Disallow: /`,
-        { headers: { contentType: 'text/plain' } },
+        'User-agent: *\nDisallow: /',
+        { headers: { 'content-type': 'text/plain' } },
       );
     },
     '/assets/:filename+': utils.serveStatic('../assets/public', {
