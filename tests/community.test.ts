@@ -16,6 +16,142 @@ import community from '../src/community.ts';
 import type { DisaggregatedCharacter, Pack } from '../src/types.ts';
 import packs from '../src/packs.ts';
 
+Deno.test('/', async (test) => {
+  await test.step('normal', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              id: 'user_id',
+            })),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                getPacksByUserId: [{
+                  manifest: { id: 'pack_id' },
+                }],
+              },
+            }))),
+        } as any,
+      ]),
+    );
+
+    config.faunaSecret = 'fauna_secret';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        method: 'GET',
+        headers: { 'authorization': 'Bearer token' },
+      });
+
+      const response = await community.query(request);
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertSpyCall(fetchStub, 0, {
+        args: ['https://discord.com/api/users/@me', {
+          method: 'GET',
+          headers: {
+            'content-type': 'application/json',
+            'authorization': `Bearer token`,
+          },
+        }],
+      });
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://graphql.us.fauna.com/graphql',
+      );
+
+      assertEquals(
+        fetchStub.calls[1].args[1]?.headers?.entries,
+        new Headers({
+          accept: 'application/json',
+          authorization: 'Bearer fauna_secret',
+          'content-type': 'application/json',
+        }).entries,
+      );
+
+      assertEquals(
+        JSON.parse(fetchStub.calls[1].args[1]?.body as string).variables,
+        { userId: 'user_id' },
+      );
+
+      assertEquals(response.ok, true);
+      assertEquals(response.status, 200);
+      assertEquals(response.statusText, 'OK');
+
+      assertEquals(await response.json(), {
+        data: [{ manifest: { id: 'pack_id' } }],
+      });
+    } finally {
+      delete config.faunaSecret;
+
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('invalid access token', async () => {
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
+        {
+          ok: false,
+          status: 403,
+          statusText: 'Unauthorized',
+          json: (() =>
+            Promise.resolve({
+              error: 'invalid access token',
+            })),
+        } as any,
+      ]),
+    );
+
+    config.faunaSecret = 'fauna_secret';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        method: 'GET',
+        headers: { 'authorization': 'Bearer token' },
+      });
+
+      const response = await community.query(request);
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: ['https://discord.com/api/users/@me', {
+          method: 'GET',
+          headers: {
+            'content-type': 'application/json',
+            'authorization': `Bearer token`,
+          },
+        }],
+      });
+
+      assertEquals(response.ok, false);
+      assertEquals(response.status, 403);
+      assertEquals(response.statusText, 'Unauthorized');
+
+      assertEquals(await response.json(), {
+        error: 'invalid access token',
+      });
+    } finally {
+      delete config.faunaSecret;
+
+      fetchStub.restore();
+    }
+  });
+});
+
 Deno.test('/publish', async (test) => {
   await test.step('normal', async () => {
     const fetchStub = stub(
@@ -48,8 +184,8 @@ Deno.test('/publish', async (test) => {
     try {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
+        headers: { 'authorization': 'Bearer token' },
         body: JSON.stringify({
-          accessToken: 'token',
           manifest: {
             id: 'pack_id',
           },
@@ -104,58 +240,6 @@ Deno.test('/publish', async (test) => {
     }
   });
 
-  await test.step('get method', async () => {
-    const request = new Request('http://localhost:8000', {
-      method: 'GET',
-    });
-
-    const response = await community.publish(request);
-
-    assertEquals(response.ok, false);
-    assertEquals(response.status, 405);
-    assertEquals(response.statusText, 'Method Not Allowed');
-  });
-
-  await test.step('missing access token', async () => {
-    const request = new Request('http://localhost:8000', {
-      method: 'POST',
-      body: JSON.stringify({
-        manifest: {
-          id: 'pack_id',
-        },
-      }),
-    });
-
-    const response = await community.publish(request);
-
-    assertEquals(response.ok, false);
-    assertEquals(response.status, 400);
-    assertEquals(response.statusText, 'Bad Request');
-
-    assertEquals(await response.json(), {
-      error: 'field \'accessToken\' is not available in the body',
-    });
-  });
-
-  await test.step('missing manifest', async () => {
-    const request = new Request('http://localhost:8000', {
-      method: 'POST',
-      body: JSON.stringify({
-        accessToken: 'token',
-      }),
-    });
-
-    const response = await community.publish(request);
-
-    assertEquals(response.ok, false);
-    assertEquals(response.status, 400);
-    assertEquals(response.statusText, 'Bad Request');
-
-    assertEquals(await response.json(), {
-      error: 'field \'manifest\' is not available in the body',
-    });
-  });
-
   await test.step('invalid access token', async () => {
     const fetchStub = stub(
       globalThis,
@@ -176,8 +260,8 @@ Deno.test('/publish', async (test) => {
     try {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
+        headers: { 'authorization': 'Bearer token' },
         body: JSON.stringify({
-          accessToken: 'token',
           manifest: {
             id: 'pack_id',
           },
@@ -211,33 +295,51 @@ Deno.test('/publish', async (test) => {
   });
 
   await test.step('invalid manifest', async () => {
-    const request = new Request('http://localhost:8000', {
-      method: 'POST',
-      body: JSON.stringify({
-        accessToken: 'token',
-        manifest: {},
-      }),
-    });
-
-    const response = await community.publish(request);
-
-    assertEquals(response.ok, false);
-    assertEquals(response.status, 400);
-    assertEquals(response.statusText, 'Bad Request');
-
-    assertEquals(await response.json(), {
-      errors: [
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      returnsNext([
         {
-          instancePath: '',
-          keyword: 'required',
-          message: 'must have required property \'id\'',
-          params: {
-            missingProperty: 'id',
+          ok: true,
+          json: (() =>
+            Promise.resolve({
+              id: 'user_id',
+            })),
+        } as any,
+      ]),
+    );
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        method: 'POST',
+        headers: { 'authorization': 'Bearer token' },
+        body: JSON.stringify({
+          manifest: {},
+        }),
+      });
+
+      const response = await community.publish(request);
+
+      assertEquals(response.ok, false);
+      assertEquals(response.status, 400);
+      assertEquals(response.statusText, 'Bad Request');
+
+      assertEquals(await response.json(), {
+        errors: [
+          {
+            instancePath: '',
+            keyword: 'required',
+            message: 'must have required property \'id\'',
+            params: {
+              missingProperty: 'id',
+            },
+            schemaPath: '#/required',
           },
-          schemaPath: '#/required',
-        },
-      ],
-    });
+        ],
+      });
+    } finally {
+      fetchStub.restore();
+    }
   });
 
   await test.step('permission denied', async () => {
@@ -272,8 +374,8 @@ Deno.test('/publish', async (test) => {
     try {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
+        headers: { 'authorization': 'Bearer token' },
         body: JSON.stringify({
-          accessToken: 'token',
           manifest: {
             id: 'pack_id',
           },
@@ -363,8 +465,8 @@ Deno.test('/publish', async (test) => {
     try {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
+        headers: { 'authorization': 'Bearer token' },
         body: JSON.stringify({
-          accessToken: 'token',
           manifest: {
             id: 'pack_id',
           },
@@ -421,111 +523,6 @@ Deno.test('/publish', async (test) => {
 
       fetchStub.restore();
     }
-  });
-});
-
-Deno.test('/:userId', async (test) => {
-  await test.step('normal', async () => {
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              getPacksByUserId: [{
-                manifest: { id: 'pack_id' },
-              }],
-            },
-          }))),
-      } as any),
-    );
-
-    config.faunaSecret = 'fauna_secret';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-      });
-
-      const response = await community.query(request, {}, {
-        userId: 'user_id',
-      });
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://graphql.us.fauna.com/graphql',
-      );
-
-      assertEquals(
-        fetchStub.calls[0].args[1]?.headers?.entries,
-        new Headers({
-          accept: 'application/json',
-          authorization: 'Bearer fauna_secret',
-          'content-type': 'application/json',
-        }).entries,
-      );
-
-      assertEquals(
-        JSON.parse(fetchStub.calls[0].args[1]?.body as string).variables,
-        {
-          userId: 'user_id',
-        },
-      );
-
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
-
-      assertEquals(await response.json(), {
-        data: [
-          {
-            manifest: {
-              id: 'pack_id',
-            },
-          },
-        ],
-      });
-    } finally {
-      delete config.faunaSecret;
-
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('post method', async () => {
-    const request = new Request('http://localhost:8000', {
-      method: 'POST',
-    });
-
-    const response = await community.query(request, {}, {
-      userId: 'user_id',
-    });
-
-    assertEquals(response.ok, false);
-    assertEquals(response.status, 405);
-    assertEquals(response.statusText, 'Method Not Allowed');
-  });
-
-  await test.step('invalid user_id', async () => {
-    const request = new Request('http://localhost:8000', {
-      method: 'GET',
-    });
-
-    const response = await community.query(request, {}, {
-      userId: undefined as any,
-    });
-
-    assertEquals(response.ok, false);
-    assertEquals(response.status, 400);
-    assertEquals(response.statusText, 'Bad Request');
-
-    assertEquals(await response.json(), {
-      error: 'invalid user id',
-    });
   });
 });
 
