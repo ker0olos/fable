@@ -55,6 +55,7 @@ async function query(req: Request): Promise<Response> {
           author
           image
           url
+          webhookUrl
           maintainers
           media {
             conflicts

@@ -6,6 +6,7 @@ type Manifest @embedded {
   author: String
   image: String
   url: String
+  webhookUrl: String
   conflicts: [String!]
   media: MediaObject
   characters: CharacterObject

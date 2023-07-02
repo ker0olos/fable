@@ -146,6 +146,7 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
+  webhookUrl?: string;
   private?: boolean;
   maintainers?: string[];
   conflicts?: string[];

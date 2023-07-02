@@ -3,6 +3,7 @@
   "title": "manifest",
   "type": "object",
   "required": ["id"],
+  "additionalProperties": false,
   "properties": {
     "id": {
       "title": "id",
@@ -38,6 +39,11 @@
       "title": "url",
       "type": "string",
       "description": "A url to pack's homepage"
+    },
+    "webhookUrl": {
+      "title": "webhookUrl",
+      "type": "string",
+      "description": "A discord webhook url that can be used to publish changes to a server"
     },
     "conflicts": {
       "title": "conflicts",
