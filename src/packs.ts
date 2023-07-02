@@ -87,8 +87,8 @@ async function all(
               author
               image
               url
+              conflicts
               media {
-                conflicts
                 new {
                   id
                   type
@@ -127,7 +127,6 @@ async function all(
                 }
               }
               characters {
-                conflicts
                 new {
                   id
                   name {

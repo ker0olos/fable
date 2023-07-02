@@ -57,8 +57,8 @@ async function query(req: Request): Promise<Response> {
           url
           webhookUrl
           maintainers
+          conflicts
           media {
-            conflicts
             new {
               id
               type
@@ -97,7 +97,6 @@ async function query(req: Request): Promise<Response> {
             }
           }
           characters {
-            conflicts
             new {
               id
               name {
