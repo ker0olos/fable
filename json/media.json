@@ -15,7 +15,7 @@
     "type": {
       "title": "type",
       "type": "string",
-      "enum": ["ANIME", "MANGA", "OTHER"],
+      "enum": ["ANIME", "MANGA"],
       "description": "Choose what type of media this is"
     },
     "format": {
@@ -31,7 +31,6 @@
         "ONA",
         "MUSIC",
         "MANGA",
-        "VIDEO_GAME",
         "NOVEL",
         "ONE_SHOT"
       ]
