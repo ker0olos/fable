@@ -3,7 +3,6 @@
   "title": "manifest",
   "type": "object",
   "required": ["id"],
-  "additionalProperties": false,
   "properties": {
     "id": {
       "title": "id",
@@ -40,21 +39,26 @@
       "type": "string",
       "description": "A url to pack's homepage"
     },
-    "webhookUrl": {
-      "title": "webhookUrl",
-      "type": "string",
-      "description": "A discord webhook url that can be used to publish changes to a server"
+    "depends": {
+      "title": "depends",
+      "type": "array",
+      "description": "A list of packs that are required to make your pack function properly",
+      "items": {
+        "title": "dependency",
+        "type": "string",
+        "description": "Reference a pack",
+        "pattern": "^[-_a-z0-9]+$"
+      }
     },
     "conflicts": {
       "title": "conflicts",
       "type": "array",
-      "description": "A list of characters/media that might conflict with your pack (All entities listed here will be entirely disabled).",
+      "description": "A list of packs that might conflict with your pack",
       "items": {
         "title": "conflict",
         "type": "string",
-        "description": "Reference an existing entity (pack:id)",
-        "examples": ["anilist:206017", "vtubers:holomyth"],
-        "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
+        "description": "Reference a pack",
+        "pattern": "^[-_a-z0-9]+$"
       }
     },
     "maintainers": {
@@ -83,6 +87,18 @@
             "allOf": [{ "$ref": "media.json" }],
             "required": ["id", "title", "type"]
           }
+        },
+        "conflicts": {
+          "title": "conflicts",
+          "type": "array",
+          "description": "A list of media that might conflict with your pack. All media listed here will be entirely disabled.",
+          "items": {
+            "title": "conflict",
+            "type": "string",
+            "description": "Reference an existing media (pack:id)",
+            "examples": ["anilist:118123", "vtubers:hololive"],
+            "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
+          }
         }
       }
     },
@@ -100,6 +116,18 @@
             "title": "character",
             "allOf": [{ "$ref": "character.json" }],
             "required": ["id", "name"]
+          }
+        },
+        "conflicts": {
+          "title": "conflicts",
+          "type": "array",
+          "description": "A list of characters that might conflict with your pack (All characters listed here will be entirely disabled).",
+          "items": {
+            "title": "conflict",
+            "type": "string",
+            "description": "Reference an existing character (pack:id)",
+            "examples": ["anilist:206017", "vtubers:gura"],
+            "pattern": "^[-_a-z0-9]+:[-_a-z0-9]+$"
           }
         }
       }

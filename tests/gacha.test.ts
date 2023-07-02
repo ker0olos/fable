@@ -686,7 +686,9 @@ Deno.test('disabled', async (test) => {
 
     const manifest: Manifest = {
       id: 'pack-id',
-      conflicts: ['anilist:anime'],
+      media: {
+        conflicts: ['anilist:anime'],
+      },
     };
 
     const { readJsonStub, fetchStub } = fakePool(
@@ -771,7 +773,9 @@ Deno.test('disabled', async (test) => {
 
     const manifest: Manifest = {
       id: 'pack-id',
-      conflicts: ['anilist:1'],
+      media: {
+        conflicts: ['anilist:1'],
+      },
     };
 
     const { readJsonStub, fetchStub } = fakePool(

@@ -6,7 +6,7 @@ type Manifest @embedded {
   author: String
   image: String
   url: String
-  webhookUrl: String
+  depends: [String!]
   conflicts: [String!]
   media: MediaObject
   characters: CharacterObject
@@ -17,10 +17,12 @@ type Manifest @embedded {
 }
 
 type MediaObject @embedded {
+  conflicts: [String!]
   new: [DisaggregatedMedia!]
 }
 
 type CharacterObject @embedded {
+  conflicts: [String!]
   new: [DisaggregatedCharacter!]
 }
 

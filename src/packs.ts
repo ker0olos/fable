@@ -208,7 +208,8 @@ function isDisabled(id: string, list: PackInstall[]): boolean {
 
   // TODO refactor to avoid this the loops-purgatory
   list.forEach(({ ref: { manifest } }) => {
-    manifest.conflicts?.forEach((id) => disabled[id] = true);
+    manifest.media?.conflicts?.forEach((id) => disabled[id] = true);
+    manifest.characters?.conflicts?.forEach((id) => disabled[id] = true);
   });
 
   return disabled[id];
@@ -964,7 +965,6 @@ function formatToString(format?: MediaFormat): string {
   return utils.capitalize(
     format
       .replace(/TV_SHORT|OVA|ONA/, 'Short')
-      .replace('VIDEO_GAME', 'Video Game')
       .replace('TV', 'Anime'),
   ) as string;
 }

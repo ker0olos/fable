@@ -3,7 +3,6 @@ export type Modify<T, R> = Omit<T, keyof R> & R;
 export enum MediaType {
   Anime = 'ANIME',
   Manga = 'MANGA',
-  Other = 'OTHER',
 }
 
 export enum MediaFormat {
@@ -17,7 +16,6 @@ export enum MediaFormat {
   Manga = 'MANGA',
   Novel = 'NOVEL',
   OneShot = 'ONE_SHOT',
-  VideoGame = 'VIDEO_GAME',
 }
 
 export enum MediaRelation {
@@ -146,14 +144,16 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
-  webhookUrl?: string;
+  depends?: string[];
   private?: boolean;
   maintainers?: string[];
   conflicts?: string[];
   media?: {
+    conflicts?: string[];
     new?: DisaggregatedMedia[];
   };
   characters?: {
+    conflicts?: string[];
     new?: DisaggregatedCharacter[];
   };
 }
