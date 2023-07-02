@@ -3,19 +3,31 @@
   "id": "vtubers",
   "title": "Vtubers",
   "description": "A pack containing a set of the most famous vtubers.",
+  "conflicts": [
+    "anilist:145478",
+    "anilist:118123",
+    "anilist:139756",
+    "anilist:129963",
+    "anilist:148104",
+    "anilist:139342",
+    "anilist:156165",
+    "anilist:153348",
+    "anilist:128539",
+    "anilist:128713",
+
+    "anilist:206017",
+    "anilist:206013",
+    "anilist:206012",
+    "anilist:206019",
+    "anilist:206020",
+    "anilist:249913",
+    "anilist:249912",
+    "anilist:249911",
+    "anilist:249910",
+    "anilist:249908",
+    "anilist:245363"
+  ],
   "media": {
-    "conflicts": [
-      "anilist:145478",
-      "anilist:118123",
-      "anilist:139756",
-      "anilist:129963",
-      "anilist:148104",
-      "anilist:139342",
-      "anilist:156165",
-      "anilist:153348",
-      "anilist:128539",
-      "anilist:128713"
-    ],
     "new": [{
       "id": "hololive",
       "type": "ANIME",
@@ -133,19 +145,6 @@
     }]
   },
   "characters": {
-    "conflicts": [
-      "anilist:206017",
-      "anilist:206013",
-      "anilist:206012",
-      "anilist:206019",
-      "anilist:206020",
-      "anilist:249913",
-      "anilist:249912",
-      "anilist:249911",
-      "anilist:249910",
-      "anilist:249908",
-      "anilist:245363"
-    ],
     "new": [{
       "id": "gura",
       "name": {
