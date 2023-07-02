@@ -965,6 +965,7 @@ function formatToString(format?: MediaFormat): string {
   return utils.capitalize(
     format
       .replace(/TV_SHORT|OVA|ONA/, 'Short')
+      .replace('VIDEO_GAME', 'Video Game')
       .replace('TV', 'Anime'),
   ) as string;
 }
