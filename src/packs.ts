@@ -208,8 +208,7 @@ function isDisabled(id: string, list: PackInstall[]): boolean {
 
   // TODO refactor to avoid this the loops-purgatory
   list.forEach(({ ref: { manifest } }) => {
-    manifest.media?.conflicts?.forEach((id) => disabled[id] = true);
-    manifest.characters?.conflicts?.forEach((id) => disabled[id] = true);
+    manifest.conflicts?.forEach((id) => disabled[id] = true);
   });
 
   return disabled[id];

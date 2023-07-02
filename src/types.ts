@@ -146,16 +146,13 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
-  depends?: string[];
   private?: boolean;
   maintainers?: string[];
   conflicts?: string[];
   media?: {
-    conflicts?: string[];
     new?: DisaggregatedMedia[];
   };
   characters?: {
-    conflicts?: string[];
     new?: DisaggregatedCharacter[];
   };
 }
