@@ -140,10 +140,7 @@ Deno.test('filter invalid pools', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await gacha.rngPull({
-            userId: 'user_id',
-            guildId: 'guild_id',
-          }),
+          await gacha.rngPull({ userId: 'user_id', guildId: 'guild_id' }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );

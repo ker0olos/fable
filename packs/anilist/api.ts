@@ -252,5 +252,5 @@ export async function characters(
   } = await request({ url, query, variables });
 
   return data.Page.characters
-    .filter((character) => !character.media?.edges?.[0].node?.isAdult);
+    .filter((character) => !character.media?.edges?.[0]?.node?.isAdult);
 }

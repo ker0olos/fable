@@ -1,3 +1,5 @@
+import utils from './utils.ts';
+
 export class GraphQLError extends Error {
   constructor(
     url: string,
@@ -35,12 +37,15 @@ export class NonFetalError extends Error {
 }
 
 export class NoPullsError extends Error {
+  rechargeTimestamp: string;
+
   constructor(rechargeTimestamp?: string) {
-    super('NO_PULLS_AVAILABLE', {
-      cause: { rechargeTimestamp },
-    });
+    super('NO_PULLS_AVAILABLE');
 
     this.name = 'NoPullsError';
+    this.rechargeTimestamp = utils.rechargeTimestamp(
+      rechargeTimestamp,
+    );
   }
 }
 
