@@ -21,6 +21,7 @@ export type AniListMedia = Modify<Media, {
     romaji?: string;
     native?: string;
   };
+  isAdult: boolean;
   tags?: { name: string }[];
   genres?: string[];
   synonyms?: string[];

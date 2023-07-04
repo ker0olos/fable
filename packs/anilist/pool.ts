@@ -72,6 +72,7 @@ async function queryMedia(
                   node { 
                     id
                     popularity
+                    isAdult
                   }
                 }
               }
@@ -119,6 +120,7 @@ async function queryCharacters(
                 node { 
                   id
                   popularity
+                  isAdult
                 }
               }
             }
@@ -189,9 +191,10 @@ for (const range of ranges) {
 
             nodes.forEach((character) => {
               const media = character.media?.edges[0];
+
               const mediaId = `anilist:${media?.node.id}`;
 
-              if (media) {
+              if (media && !media.node.isAdult) {
                 const id = `anilist:${character.id}`;
 
                 const rating = new Rating({
