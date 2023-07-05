@@ -597,8 +597,8 @@ export const handler = async (r: Request) => {
           case 'community': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'gallery': {
-                return (await community.getMostInstalledPacks({
+              case 'popular': {
+                return (await community.popularPacks({
                   guildId,
                   index: 0,
                 }))
@@ -643,6 +643,7 @@ export const handler = async (r: Request) => {
           case 'help':
           case 'start':
           case 'guide':
+          case 'wiki':
           case 'tuto': {
             const index = options['page'] as number || 0;
 
@@ -969,11 +970,11 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'gallery': {
+          case 'popular': {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return (await community.getMostInstalledPacks({ guildId, index }))
+            return (await community.popularPacks({ guildId, index }))
               .setType(discord.MessageType.Update)
               .send();
           }

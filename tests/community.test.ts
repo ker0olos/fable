@@ -526,7 +526,7 @@ Deno.test('/publish', async (test) => {
   });
 });
 
-Deno.test('/gallery', async (test) => {
+Deno.test('/popular', async (test) => {
   await test.step('normal', async () => {
     const character: DisaggregatedCharacter = {
       id: '1',
@@ -576,7 +576,7 @@ Deno.test('/gallery', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await community.getMostInstalledPacks({
+      const message = await community.popularPacks({
         guildId: 'guild_id',
         index: 0,
       });
@@ -685,7 +685,7 @@ Deno.test('/gallery', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await community.getMostInstalledPacks({
+      const message = await community.popularPacks({
         guildId: 'guild_id',
         index: 0,
       });
@@ -773,7 +773,7 @@ Deno.test('/gallery', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await community.getMostInstalledPacks({
+      const message = await community.popularPacks({
         guildId: 'guild_id',
         index: 0,
       });
