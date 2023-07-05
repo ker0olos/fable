@@ -7207,35 +7207,11 @@ Deno.test('/likeslist', async (test) => {
         name: {
           full: 'character 1',
         },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: '1',
-              type: MediaType.Anime,
-              title: {
-                english: 'title 1',
-              },
-            },
-          }],
-        },
       },
       {
         id: '2',
         name: {
           full: 'character 2',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: '2',
-              type: MediaType.Anime,
-              title: {
-                english: 'title 2',
-              },
-            },
-          }],
         },
       },
       {
@@ -7243,35 +7219,11 @@ Deno.test('/likeslist', async (test) => {
         name: {
           full: 'character 3',
         },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: '3',
-              type: MediaType.Anime,
-              title: {
-                english: 'title 3',
-              },
-            },
-          }],
-        },
       },
       {
         id: '4',
         name: {
           full: 'character 4',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: '4',
-              type: MediaType.Anime,
-              title: {
-                english: 'title 4',
-              },
-            },
-          }],
         },
       },
       {
@@ -7280,34 +7232,13 @@ Deno.test('/likeslist', async (test) => {
           full: 'character 5',
         },
         media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: '5',
-              type: MediaType.Anime,
-              title: {
-                english: 'title 5',
-              },
-            },
-          }],
+          edges: [],
         },
       },
       {
         id: '6',
         name: {
           full: 'character 6',
-        },
-        media: {
-          edges: [{
-            characterRole: CharacterRole.Main,
-            node: {
-              id: '6',
-              type: MediaType.Anime,
-              title: {
-                english: 'title 6',
-              },
-            },
-          }],
         },
       },
     ];
@@ -7444,28 +7375,28 @@ Deno.test('/likeslist', async (test) => {
               fields: [
                 {
                   inline: false,
-                  name: 'title 1',
-                  value: '1<:smolstar:1107503653956374638> character 1',
+                  name: '1<:smolstar:1107503653956374638> character 1',
+                  value: '\u200B',
                 },
                 {
                   inline: false,
-                  name: 'title 2',
-                  value: '1<:smolstar:1107503653956374638> character 2',
+                  name: '1<:smolstar:1107503653956374638> character 2',
+                  value: '\u200B',
                 },
                 {
                   inline: false,
-                  name: 'title 3',
-                  value: '1<:smolstar:1107503653956374638> character 3',
+                  name: '1<:smolstar:1107503653956374638> character 3',
+                  value: '\u200B',
                 },
                 {
                   inline: false,
-                  name: 'title 4',
-                  value: '1<:smolstar:1107503653956374638> character 4',
+                  name: '1<:smolstar:1107503653956374638> character 4',
+                  value: '\u200B',
                 },
                 {
                   inline: false,
-                  name: 'title 5',
-                  value: '1<:smolstar:1107503653956374638> character 5',
+                  name: '1<:smolstar:1107503653956374638> character 5',
+                  value: '\u200B',
                 },
               ],
             },

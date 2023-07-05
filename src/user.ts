@@ -1276,10 +1276,11 @@ function likeslist({
 
           const rating = existing?.rating ?? Rating.fromCharacter(char).stars;
 
-          const media = utils.wrap(
-            // deno-lint-ignore no-non-null-assertion
-            packs.aliasToArray(char.media!.edges[0].node.title)[0],
-          );
+          const media = char.media?.edges?.[0]?.node?.title
+            ? utils.wrap(
+              packs.aliasToArray(char.media.edges[0].node.title)[0],
+            )
+            : undefined;
 
           const name = `${rating}${discord.emotes.smolStar} ${
             existing ? `<@${existing.user.id}> ` : ''
@@ -1287,8 +1288,8 @@ function likeslist({
 
           embed.addField({
             inline: false,
-            name: media,
-            value: name,
+            name: media ? media : name,
+            value: media ? name : undefined,
           });
         }),
       );
