@@ -81,9 +81,7 @@ Deno.test('disabled', async (test) => {
   await test.step('disabled media', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
-      media: {
-        conflicts: ['another-pack:1'],
-      },
+      conflicts: ['another-pack:1'],
     };
 
     const listStub = stub(
@@ -109,9 +107,7 @@ Deno.test('disabled', async (test) => {
   await test.step('disabled character', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
-      characters: {
-        conflicts: ['another-pack:1'],
-      },
+      conflicts: ['another-pack:1'],
     };
 
     const listStub = stub(
@@ -137,9 +133,7 @@ Deno.test('disabled', async (test) => {
   await test.step('none', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
-      characters: {
-        conflicts: [],
-      },
+      conflicts: [],
     };
 
     const listStub = stub(
@@ -189,9 +183,7 @@ Deno.test('disabled relations', async (test) => {
 
     const manifest: Manifest = {
       id: 'pack-id',
-      media: {
-        conflicts: ['anilist:2'],
-      },
+      conflicts: ['anilist:2'],
     };
 
     const listStub = stub(
@@ -245,9 +237,7 @@ Deno.test('disabled relations', async (test) => {
 
     const manifest: Manifest = {
       id: 'pack-id',
-      media: {
-        conflicts: ['anilist:2'],
-      },
+      conflicts: ['anilist:2'],
     };
 
     const listStub = stub(
@@ -298,9 +288,7 @@ Deno.test('disabled relations', async (test) => {
 
     const manifest: Manifest = {
       id: 'pack-id',
-      media: {
-        conflicts: ['anilist:2'],
-      },
+      conflicts: ['anilist:2'],
     };
 
     const listStub = stub(
@@ -362,9 +350,7 @@ Deno.test('disabled relations', async (test) => {
 
     const manifest2: Manifest = {
       id: 'pack2',
-      media: {
-        conflicts: ['pack-id:2'],
-      },
+      conflicts: ['pack-id:2'],
     };
 
     const listStub = stub(
@@ -431,9 +417,7 @@ Deno.test('disabled relations', async (test) => {
 
     const manifest2: Manifest = {
       id: 'pack2',
-      characters: {
-        conflicts: ['pack-id:2'],
-      },
+      conflicts: ['pack-id:2'],
     };
 
     const listStub = stub(
@@ -500,9 +484,7 @@ Deno.test('disabled relations', async (test) => {
 
     const manifest2: Manifest = {
       id: 'pack2',
-      characters: {
-        conflicts: ['pack-id:2'],
-      },
+      conflicts: ['pack-id:2'],
     };
 
     const listStub = stub(
@@ -942,9 +924,7 @@ Deno.test('search for media', async (test) => {
 
     const manifest: Manifest = {
       id: 'pack-id',
-      media: {
-        conflicts: ['anilist:1'],
-      },
+      conflicts: ['anilist:1'],
     };
 
     const fetchStub = stub(
@@ -990,9 +970,7 @@ Deno.test('search for media', async (test) => {
   await test.step('disabled pack id', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
-      media: {
-        conflicts: ['pack2:1'],
-      },
+      conflicts: ['pack2:1'],
     };
 
     const manifest2: Manifest = {
@@ -1257,9 +1235,7 @@ Deno.test('search for media', async (test) => {
 
     const manifest: Manifest = {
       id: 'pack-id',
-      media: {
-        conflicts: ['anilist:1'],
-      },
+      conflicts: ['anilist:1'],
     };
 
     const fetchStub = stub(
@@ -1305,9 +1281,7 @@ Deno.test('search for media', async (test) => {
   await test.step('disabled pack match', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
-      media: {
-        conflicts: ['pack2:1'],
-      },
+      conflicts: ['pack2:1'],
     };
 
     const manifest2: Manifest = {
@@ -2156,9 +2130,7 @@ Deno.test('media character', async (test) => {
   await test.step('disabled media', async () => {
     const manifest: Manifest = {
       id: 'pack-id',
-      media: {
-        conflicts: ['anilist:1'],
-      },
+      conflicts: ['anilist:1'],
     };
 
     const fetchStub = stub(

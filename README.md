@@ -8,17 +8,16 @@
 [![top.gg page](https://top.gg/api/widget/servers/1041970851559522304.svg?noavatar=true)][topgg2]
 
 [![Discord Bot Invite](https://img.shields.io/badge/Add%20Fable%20to%20Your%20Server-blue?logo=discord&logoColor=white)][invite]
-[![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20support%20server&color=blue)][discord]
+[![Discord Server](https://img.shields.io/discord/992416714497212518?label=discord%20community%20server&color=blue)][discord]
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&label=tests)
-[![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC)](https://app.codecov.io/github/ker0olos/fable)
+[![Status](https://img.shields.io/endpoint?url=https%3A%2F%2Ffresh-heron-97.deno.dev&logo=instatus)](https://fable.instatus.com/)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&label=tests&logo=github)
+[![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC&label=codecov&logo=codecov)](https://app.codecov.io/github/ker0olos/fable)
 
 </i>
 
 <i align="center">
-<details><summary>List of features and
-how Fable compares to other bots</summary>
-<img src="https://i.imgur.com/7ZI6dhj.png" alt="120K+ characters">
+<details><summary>List of features and how Fable compares to other bots</summary>
 
 <p>
   <img align="left" src="https://i.imgur.com/IO91qt1.png" alt="100% FREE">
@@ -89,7 +88,7 @@ no players can pay to get ahead.
 Fable also has an amazing system where anyone can handcraft new characters, or
 add characters that are missing from Fable. Then anyone can find and install the
 packs you make, wanna start creating your own community pack? Visit
-<https://packs.deno.dev> (no coding required).
+<https://packs.deno.dev>
 
 #### [Add Fable to Your Server][invite]
 

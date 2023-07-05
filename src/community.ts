@@ -13,13 +13,9 @@ import validate, { purgeReservedProps } from './validate.ts';
 
 import type { Manifest, Pack, Schema } from './types.ts';
 
-async function query(
-  req: Request,
-  _: unknown,
-  params: import('sift').PathParams,
-): Promise<Response> {
+async function query(req: Request): Promise<Response> {
   const { error } = await utils.validateRequest(req, {
-    GET: {},
+    GET: { headers: ['authorization'] },
   });
 
   if (error) {
@@ -29,14 +25,19 @@ async function query(
     );
   }
 
-  const userId = params?.userId;
+  const auth = await fetch('https://discord.com/api/users/@me', {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json',
+      'authorization': req.headers.get('authorization') ?? '',
+    },
+  });
 
-  if (typeof userId !== 'string') {
-    return utils.json(
-      { error: 'invalid user id' },
-      { status: 400 },
-    );
+  if (!auth.ok) {
+    return auth;
   }
+
+  const { id: userId } = await auth.json();
 
   const query = gql`
     query ($userId: String!) {
@@ -54,9 +55,10 @@ async function query(
           author
           image
           url
+          webhookUrl
           maintainers
+          conflicts
           media {
-            conflicts
             new {
               id
               type
@@ -95,7 +97,6 @@ async function query(
             }
           }
           characters {
-            conflicts
             new {
               id
               name {
@@ -146,7 +147,7 @@ async function query(
 
 async function publish(req: Request): Promise<Response> {
   const { error, body } = await utils.validateRequest(req, {
-    POST: { body: ['accessToken', 'manifest'] },
+    POST: { body: ['manifest'], headers: ['authorization'] },
   });
 
   if (error) {
@@ -156,8 +157,21 @@ async function publish(req: Request): Promise<Response> {
     );
   }
 
-  const { accessToken, manifest } = body as {
-    accessToken: string;
+  const auth = await fetch('https://discord.com/api/users/@me', {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json',
+      'authorization': req.headers.get('authorization') ?? '',
+    },
+  });
+
+  if (!auth.ok) {
+    return auth;
+  }
+
+  const { id: userId } = await auth.json();
+
+  const { manifest } = body as {
     manifest: Manifest;
   };
 
@@ -171,20 +185,6 @@ async function publish(req: Request): Promise<Response> {
       statusText: 'Bad Request',
     });
   }
-
-  const auth = await fetch('https://discord.com/api/users/@me', {
-    method: 'GET',
-    headers: {
-      'content-type': 'application/json',
-      'authorization': `Bearer ${accessToken}`,
-    },
-  });
-
-  if (!auth.ok) {
-    return auth;
-  }
-
-  const { id: userId } = await auth.json();
 
   const mutation = gql`
     mutation ($userId: String!, $manifest: ManifestInput!) {
