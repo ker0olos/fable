@@ -215,13 +215,16 @@ async function all(
 }
 
 function isDisabled(id: string, guildId: string): boolean {
+  const disables = [
+    // deno-lint-ignore no-non-null-assertion
+    ...vtubersManifest.conflicts!,
+  ];
+
   if (guildId in packs.cachedGuilds) {
-    if (packs.cachedGuilds[guildId].disables.includes(id)) {
-      return true;
-    }
+    disables.push(...packs.cachedGuilds[guildId].disables);
   }
 
-  return false;
+  return disables.includes(id);
 }
 
 function packEmbed(pack: PackInstall): discord.Embed {
