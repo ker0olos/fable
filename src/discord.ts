@@ -512,10 +512,6 @@ export class Embed {
     return this;
   }
 
-  getFieldsCount(): number {
-    return this.#data.fields?.length ?? 0;
-  }
-
   setImage(image: {
     url?: string;
     default?: boolean;

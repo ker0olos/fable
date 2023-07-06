@@ -756,13 +756,15 @@ Deno.test('/party view', async (test) => {
   });
 
   await test.step('disabled characters', async () => {
-    const media: AniListMedia = {
-      id: '0',
-      type: MediaType.Anime,
-      title: {
-        english: 'title',
+    const media: AniListMedia[] = [
+      {
+        id: '0',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
       },
-    };
+    ];
 
     const characters: AniListCharacter[] = [
       {
@@ -846,7 +848,7 @@ Deno.test('/party view', async (test) => {
             Promise.resolve(JSON.stringify({
               data: {
                 Page: {
-                  media: [media],
+                  media,
                   characters,
                 },
               },
@@ -877,12 +879,32 @@ Deno.test('/party view', async (test) => {
     const isDisabledStub = stub(
       packs,
       'isDisabled',
-      (id) => id === 'anilist:4',
+      returnsNext([
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+      ]),
     );
 
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
-
     try {
       const message = party.view({
         userId: 'user_id',
@@ -983,211 +1005,6 @@ Deno.test('/party view', async (test) => {
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
-            },
-          ],
-          components: [],
-          attachments: [],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-      timeStub.restore();
-    }
-  });
-
-  await test.step('disabled media', async () => {
-    const media: AniListMedia = {
-      id: '0',
-      type: MediaType.Anime,
-      title: {
-        english: 'title',
-      },
-    };
-
-    const characters: AniListCharacter[] = [
-      {
-        id: '1',
-        name: {
-          full: 'name 1',
-        },
-      },
-      {
-        id: '2',
-        name: {
-          full: 'name 2',
-        },
-      },
-      {
-        id: '3',
-        name: {
-          full: 'name 3',
-        },
-      },
-      {
-        id: '4',
-        name: {
-          full: 'name 4',
-        },
-      },
-      {
-        id: '5',
-        name: {
-          full: 'name 5',
-        },
-      },
-    ];
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                getUserInventory: {
-                  party: {
-                    member1: {
-                      id: 'anilist:1',
-                      mediaId: 'anilist:0',
-                      rating: 1,
-                    },
-                    member2: {
-                      id: 'anilist:2',
-                      mediaId: 'anilist:0',
-                      rating: 2,
-                    },
-                    member3: {
-                      id: 'anilist:3',
-                      mediaId: 'anilist:0',
-                      rating: 3,
-                    },
-                    member4: {
-                      id: 'anilist:4',
-                      mediaId: 'anilist:0',
-                      rating: 4,
-                    },
-                    member5: {
-                      id: 'anilist:5',
-                      mediaId: 'anilist:0',
-                      rating: 5,
-                    },
-                  },
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media: [media],
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  media,
-                  characters,
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      (id) => id === 'anilist:0',
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = party.view({
-        userId: 'user_id',
-        guildId: 'guild_id',
-
-        token: 'test_token',
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner3.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 4);
-
-      assertEquals(
-        fetchStub.calls[3].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          embeds: [
-            {
-              type: 'rich',
-              description: 'This character was removed or disabled',
-            },
-            {
-              type: 'rich',
-              description: 'This character was removed or disabled',
-            },
-            {
-              type: 'rich',
-              description: 'This character was removed or disabled',
-            },
-            {
-              type: 'rich',
-              description: 'This character was removed or disabled',
-            },
-            {
-              type: 'rich',
-              description: 'This character was removed or disabled',
             },
           ],
           components: [],

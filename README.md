@@ -154,7 +154,7 @@ you can go tell discord to add custom prefixes to "slash" commands instead of
 <details><summary>How can I install a new pack on my server?</summary>
 <p>
 
-Check `/community popular` to browse the most popular packs or create your own
+Check `/community gallery` to browse the most popular packs or create your own
 pack at <https://packs.deno.dev>
 
 > `Manage Server` permission is required to install packs on "your" server

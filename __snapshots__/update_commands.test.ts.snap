@@ -746,7 +746,7 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Merging",
+            name: "Synthesis",
             value: 1,
           },
           {
@@ -803,7 +803,7 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Merging",
+            name: "Synthesis",
             value: 1,
           },
           {
@@ -860,64 +860,7 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Merging",
-            value: 1,
-          },
-          {
-            name: "Party",
-            value: 2,
-          },
-          {
-            name: "Stealing",
-            value: 3,
-          },
-          {
-            name: "Shop",
-            value: 4,
-          },
-          {
-            name: "Roadmap",
-            value: 5,
-          },
-          {
-            name: "Essential Commands",
-            value: 6,
-          },
-          {
-            name: "Other Commands",
-            value: 7,
-          },
-          {
-            name: "Admin Commands",
-            value: 8,
-          },
-        ],
-        description: "Specify a page to display",
-        max_value: undefined,
-        min_value: undefined,
-        name: "page",
-        options: undefined,
-        required: false,
-        type: 4,
-      },
-    ],
-    type: undefined,
-  },
-  {
-    default_member_permissions: undefined,
-    description: "Need more information? We got you",
-    dm_permission: false,
-    name: "wiki",
-    options: [
-      {
-        autocomplete: undefined,
-        choices: [
-          {
-            name: "Gacha",
-            value: 0,
-          },
-          {
-            name: "Merging",
+            name: "Synthesis",
             value: 1,
           },
           {
@@ -974,7 +917,7 @@ snapshot[`commands 1`] = `
             value: 0,
           },
           {
-            name: "Merging",
+            name: "Synthesis",
             value: 1,
           },
           {
@@ -1226,44 +1169,7 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "merge characters together to pull a new character",
-    dm_permission: false,
-    name: "merge",
-    options: [
-      {
-        autocomplete: undefined,
-        choices: [
-          {
-            name: "5",
-            value: 5,
-          },
-          {
-            name: "4",
-            value: 4,
-          },
-          {
-            name: "3",
-            value: 3,
-          },
-          {
-            name: "2",
-            value: 2,
-          },
-        ],
-        description: "The target star rating of this merge",
-        max_value: undefined,
-        min_value: undefined,
-        name: "target",
-        options: undefined,
-        required: true,
-        type: 4,
-      },
-    ],
-    type: undefined,
-  },
-  {
-    default_member_permissions: undefined,
-    description: "merge characters together to pull a new character",
+    description: "synthesize characters together to pull a new character",
     dm_permission: false,
     name: "synthesize",
     options: [
@@ -1287,7 +1193,44 @@ snapshot[`commands 1`] = `
             value: 2,
           },
         ],
-        description: "The target star rating of this merge",
+        description: "The target star rating of this synthesis",
+        max_value: undefined,
+        min_value: undefined,
+        name: "target",
+        options: undefined,
+        required: true,
+        type: 4,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
+    description: "synthesize characters together to pull a new character",
+    dm_permission: false,
+    name: "merge",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: [
+          {
+            name: "5",
+            value: 5,
+          },
+          {
+            name: "4",
+            value: 4,
+          },
+          {
+            name: "3",
+            value: 3,
+          },
+          {
+            name: "2",
+            value: 2,
+          },
+        ],
+        description: "The target star rating of this synthesis",
         max_value: undefined,
         min_value: undefined,
         name: "target",
@@ -2397,7 +2340,7 @@ snapshot[`commands 1`] = `
         description: "Browse the most installed community packs",
         max_value: undefined,
         min_value: undefined,
-        name: "popular",
+        name: "gallery",
         options: undefined,
         required: false,
         type: 1,

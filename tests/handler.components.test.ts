@@ -2905,7 +2905,7 @@ Deno.test('packs pages', async (test) => {
   });
 });
 
-Deno.test('community packs popular', async (test) => {
+Deno.test('community packs gallery', async (test) => {
   await test.step('normal', async () => {
     const body = JSON.stringify({
       id: 'id',
@@ -2918,7 +2918,7 @@ Deno.test('community packs popular', async (test) => {
         },
       },
       data: {
-        custom_id: 'popular==1',
+        custom_id: 'gallery==1',
       },
     });
 
@@ -2933,7 +2933,7 @@ Deno.test('community packs popular', async (test) => {
       send: () => true,
     }));
 
-    const packsStub = stub(community, 'popularPacks', () =>
+    const packsStub = stub(community, 'getMostInstalledPacks', () =>
       ({
         setType: setTypeSpy,
       }) as any);

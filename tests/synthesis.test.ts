@@ -1864,12 +1864,18 @@ Deno.test('/synthesis', async (test) => {
     const isDisabledStub = stub(
       packs,
       'isDisabled',
-      (id) => id === 'anilist:1' || id === 'anilist:2',
+      returnsNext([
+        true,
+        true,
+        false,
+        false,
+        false,
+      ]),
     );
 
+    config.synthesis = true;
     config.appId = 'app_id';
     config.origin = 'http://localhost:8000';
-    config.synthesis = true;
 
     try {
       const message = await synthesis.synthesize({

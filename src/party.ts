@@ -16,8 +16,6 @@ import { default as srch } from './search.ts';
 
 import { Character, DisaggregatedCharacter, Schema } from './types.ts';
 
-// TODO add loading spinners
-
 async function embed({ guildId, inventory }: {
   guildId: string;
   inventory: Schema.Inventory;
@@ -48,8 +46,7 @@ async function embed({ guildId, inventory }: {
     inventory.party?.member5,
   ];
 
-  // load community packs
-  await packs.all({ guildId });
+  const list = await packs.all({ guildId });
 
   const [media, characters] = await Promise.all([
     packs.media({ ids: mediaIds.filter(Boolean), guildId }),
@@ -74,9 +71,9 @@ async function embed({ guildId, inventory }: {
     if (
       !character ||
       mediaIndex === -1 ||
-      packs.isDisabled(characterId, guildId) ||
+      packs.isDisabled(characterId, list) ||
       // deno-lint-ignore no-non-null-assertion
-      packs.isDisabled(mediaIds[i]!, guildId)
+      packs.isDisabled(mediaIds[i]!, list)
     ) {
       return message.addEmbed(
         new discord.Embed().setDescription(
@@ -225,25 +222,13 @@ async function assign({
   const results: (Character | DisaggregatedCharacter)[] = await packs
     .characters(id ? { ids: [id], guildId } : { search, guildId });
 
-  const character = await packs.aggregate<Character>({
-    character: results[0],
-    guildId,
-    end: 1,
-  });
-
-  const media = character.media?.edges?.[0]?.node;
-
-  if (
-    !results.length ||
-    packs.isDisabled(`${character.packId}:${character.id}`, guildId) ||
-    (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
-  ) {
+  if (!results.length) {
     throw new Error('404');
   }
 
   const message = new discord.Message();
 
-  const characterId = `${character.packId}:${character.id}`;
+  const characterId = `${results[0].packId}:${results[0].id}`;
 
   const response = (await request<{
     setCharacterToParty: Schema.Mutation;
@@ -445,16 +430,12 @@ async function remove({ spot, userId, guildId }: {
     );
   }
 
-  const characters = await packs.characters({
-    ids: [response.character.id],
-    guildId,
-  });
+  const [characters] = await Promise.all([
+    // packs.media({ ids: [response.character.mediaId] }),
+    packs.characters({ ids: [response.character.id], guildId }),
+  ]);
 
-  if (
-    !characters.length ||
-    packs.isDisabled(response.character.id, guildId) ||
-    packs.isDisabled(response.character.mediaId, guildId)
-  ) {
+  if (!characters.length) {
     return message
       .addEmbed(new discord.Embed().setDescription(`Removed #${spot}`))
       .addEmbed(

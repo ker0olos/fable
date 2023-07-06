@@ -408,7 +408,7 @@ export const commands = [
   ...Command({
     name: 'help',
     description: 'Need more information? We got you',
-    aliases: ['start', 'guide', 'wiki', 'tuto'],
+    aliases: ['start', 'guide', 'tuto'],
     options: [
       Option({
         name: 'page',
@@ -421,7 +421,7 @@ export const commands = [
             value: 0,
           },
           {
-            name: 'Merging',
+            name: 'Synthesis',
             value: 1,
           },
           {
@@ -521,13 +521,13 @@ export const commands = [
     ],
   }),
   ...Command({
-    name: 'merge',
-    description: 'merge characters together to pull a new character',
-    aliases: ['synthesize'],
+    name: 'synthesize',
+    description: 'synthesize characters together to pull a new character',
+    aliases: ['merge'],
     options: [
       Option({
         name: 'target',
-        description: 'The target star rating of this merge',
+        description: 'The target star rating of this synthesis',
         choices: spots.slice(1).toReversed(),
         type: Type.INTEGER,
       }),
@@ -723,7 +723,7 @@ export const commands = [
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
       Option({
-        name: 'popular',
+        name: 'gallery',
         description: 'Browse the most installed community packs',
         type: Type.SUB_COMMAND,
         optional: true,

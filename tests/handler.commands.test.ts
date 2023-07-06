@@ -6811,7 +6811,7 @@ Deno.test('packs', async () => {
 });
 
 Deno.test('community packs command handlers', async (test) => {
-  await test.step('community popular', async () => {
+  await test.step('community gallery', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -6826,7 +6826,7 @@ Deno.test('community packs command handlers', async (test) => {
         name: 'community',
         options: [{
           type: 1,
-          name: `popular`,
+          name: `gallery`,
         }],
       },
     });
@@ -6842,7 +6842,7 @@ Deno.test('community packs command handlers', async (test) => {
       send: () => true,
     }));
 
-    const communityStub = stub(community, 'popularPacks', () =>
+    const communityStub = stub(community, 'getMostInstalledPacks', () =>
       ({
         setFlags: setFlagsSpy,
       }) as any);

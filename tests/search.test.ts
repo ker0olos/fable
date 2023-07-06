@@ -4557,7 +4557,7 @@ Deno.test('media characters', async (test) => {
     }
   });
 
-  await test.step('disabled media', async () => {
+  await test.step('disabled character', async () => {
     const characterStub = stub(
       packs,
       'mediaCharacters',
@@ -4594,62 +4594,7 @@ Deno.test('media characters', async (test) => {
           await search.mediaCharacters({
             id: 'pack-id:1',
             guildId: 'guild_id',
-            index: 0,
-          }),
-        Error,
-        '404',
-      );
-    } finally {
-      characterStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
-  });
 
-  await test.step('disabled character', async () => {
-    const characterStub = stub(
-      packs,
-      'mediaCharacters',
-      () =>
-        Promise.resolve({
-          next: false,
-          media: {
-            id: '1',
-            type: MediaType.Anime,
-            title: {
-              english: 'title',
-            },
-          },
-          character: {
-            id: '2',
-            name: {
-              english: 'name',
-            },
-          },
-        }),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(
-      packs,
-      'isDisabled',
-      returnsNext([
-        false,
-        true,
-      ]),
-    );
-
-    try {
-      await assertRejects(
-        async () =>
-          await search.mediaCharacters({
-            id: 'pack-id:1',
-            guildId: 'guild_id',
             index: 0,
           }),
         NonFetalError,
@@ -4956,13 +4901,7 @@ Deno.test('/found', async (test) => {
                   inline: false,
                   name: 'title',
                   value:
-                    '4<:smolstar:1107503653956374638> <@another_user_id> name 2',
-                },
-                {
-                  inline: false,
-                  name: 'title',
-                  value:
-                    '2<:smolstar:1107503653956374638> <@another_user_id> name',
+                    '4<:smolstar:1107503653956374638> <@another_user_id> name 2\n2<:smolstar:1107503653956374638> <@another_user_id> name',
                 },
               ],
             },
@@ -5197,13 +5136,7 @@ Deno.test('/found', async (test) => {
                   inline: false,
                   name: 'title',
                   value:
-                    '4<:smolstar:1107503653956374638> <@another_user_id> name 3',
-                },
-                {
-                  inline: false,
-                  name: 'title',
-                  value:
-                    '1<:smolstar:1107503653956374638> <@another_user_id> name',
+                    '4<:smolstar:1107503653956374638> <@another_user_id> name 3\n1<:smolstar:1107503653956374638> <@another_user_id> name',
                 },
                 {
                   inline: false,
@@ -5233,17 +5166,7 @@ Deno.test('/found', async (test) => {
     const fetchStub = stub(
       globalThis,
       'fetch',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              Page: {
-                media: [{}],
-              },
-            },
-          }))),
-      } as any),
+      () => undefined as any,
     );
 
     const listStub = stub(
@@ -5281,18 +5204,18 @@ Deno.test('/found', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 2);
+      assertSpyCalls(fetchStub, 1);
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -5361,17 +5284,6 @@ Deno.test('/found', async (test) => {
               },
             }))),
         } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [{}],
-                },
-              },
-            }))),
-        } as any,
         undefined,
       ]),
     );
@@ -5418,28 +5330,57 @@ Deno.test('/found', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 4);
+      assertSpyCalls(fetchStub, 3);
 
       assertEquals(
-        fetchStub.calls[3].args[0],
+        fetchStub.calls[2].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
         {
           attachments: [],
-          components: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'found=anilist:2=0=prev',
+                label: 'Prev',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: '_',
+                disabled: true,
+                label: '1/1',
+                style: 2,
+                type: 2,
+              },
+              {
+                custom_id: 'found=anilist:2=0=next',
+                label: 'Next',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
           embeds: [
             {
               type: 'rich',
-              description: 'No one has found any title characters',
+              fields: [
+                {
+                  inline: false,
+                  name: '_1 disabled characters_',
+                  value: '\u200B',
+                },
+              ],
             },
           ],
         },

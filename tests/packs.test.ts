@@ -17,6 +17,8 @@ import packs from '../src/packs.ts';
 
 import config from '../src/config.ts';
 
+import * as anilist from '../packs/anilist/api.ts';
+
 import {
   Character,
   CharacterRole,
@@ -76,414 +78,448 @@ Deno.test('reserved ids', async () => {
 });
 
 Deno.test('disabled', async (test) => {
-  await test.step('disabled media', () => {
+  await test.step('disabled media', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      conflicts: ['another-pack:1'],
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ ref: { manifest } }]),
+    );
+
     packs.cachedGuilds = {
-      'guild_id': {
-        packs: [],
-        disables: ['another-pack:1'],
-      },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
-      assert(packs.isDisabled('another-pack:1', 'guild_id'));
+      const list = await packs.all({ guildId: 'guild_id' });
+
+      assert(packs.isDisabled('another-pack:1', list));
     } finally {
       packs.cachedGuilds = {};
+      listStub.restore();
     }
   });
 
-  await test.step('disabled character', () => {
+  await test.step('disabled character', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      conflicts: ['another-pack:1'],
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ ref: { manifest } }]),
+    );
+
     packs.cachedGuilds = {
-      'guild_id': {
-        packs: [],
-        disables: ['another-pack:1'],
-      },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
-      assert(packs.isDisabled('another-pack:1', 'guild_id'));
+      const list = await packs.all({ guildId: 'guild_id' });
+
+      assert(packs.isDisabled('another-pack:1', list));
     } finally {
       packs.cachedGuilds = {};
+      listStub.restore();
     }
   });
 
-  await test.step('none', () => {
-    const manifest: Manifest = { id: 'pack-id' };
+  await test.step('none', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      conflicts: [],
+    };
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ ref: { manifest } }]),
+    );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
-      assert(!packs.isDisabled('another-pack:1', 'guild_id'));
+      const list = await packs.all({ guildId: 'guild_id' });
+
+      assert(!packs.isDisabled('another-pack:1', list));
     } finally {
       packs.cachedGuilds = {};
+      listStub.restore();
     }
   });
 });
 
-// Deno.test('disabled relations', async (test) => {
-//   await test.step('disabled anilist media relations', async () => {
-//     const media: AniListMedia = {
-//       id: '1',
-//       type: MediaType.Anime,
-//       format: MediaFormat.TV,
-//       title: {
-//         english: 'title',
-//       },
-//       relations: {
-//         edges: [{
-//           relationType: MediaRelation.Contains,
-//           node: {
-//             id: '2',
-//             type: MediaType.Anime,
-//             format: MediaFormat.TV,
-//             title: {
-//               english: 'title 2',
-//             },
-//           },
-//         }],
-//       },
-//     };
+Deno.test('disabled relations', async (test) => {
+  await test.step('disabled anilist media relations', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      relations: {
+        edges: [{
+          relationType: MediaRelation.Contains,
+          node: {
+            id: '2',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            title: {
+              english: 'title 2',
+            },
+          },
+        }],
+      },
+    };
 
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       conflicts: ['anilist:2'],
-//     };
+    const manifest: Manifest = {
+      id: 'pack-id',
+      conflicts: ['anilist:2'],
+    };
 
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () => Promise.resolve([{ ref: { manifest } }]),
-//     );
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ ref: { manifest } }]),
+    );
 
-//     packs.cachedGuilds = {
-//       'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
-//     };
+    packs.cachedGuilds = {
+      'guild_id': [{ ref: { manifest } }],
+    };
 
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Media>({
-//           guildId: 'guild_id',
-//           media: anilist.transform<Media>({ item: media }),
-//         }))
-//           .relations?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
+    try {
+      assertEquals(
+        (await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media: anilist.transform<Media>({ item: media }),
+        }))
+          .relations?.edges.length,
+        0,
+      );
+    } finally {
+      packs.cachedGuilds = {};
+      listStub.restore();
+    }
+  });
 
-//   await test.step('disabled anilist media characters', async () => {
-//     const media: AniListMedia = {
-//       id: '1',
-//       type: MediaType.Anime,
-//       format: MediaFormat.TV,
-//       title: {
-//         english: 'title',
-//       },
-//       characters: {
-//         pageInfo: {
-//           hasNextPage: false,
-//         },
-//         edges: [{
-//           role: CharacterRole.Main,
-//           node: {
-//             id: '2',
-//             name: {
-//               full: 'name',
-//             },
-//           },
-//         }],
-//       },
-//     };
+  await test.step('disabled anilist media characters', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'title',
+      },
+      characters: {
+        pageInfo: {
+          hasNextPage: false,
+        },
+        edges: [{
+          role: CharacterRole.Main,
+          node: {
+            id: '2',
+            name: {
+              full: 'name',
+            },
+          },
+        }],
+      },
+    };
 
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       conflicts: ['anilist:2'],
-//     };
+    const manifest: Manifest = {
+      id: 'pack-id',
+      conflicts: ['anilist:2'],
+    };
 
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () => Promise.resolve([{ ref: { manifest } }]),
-//     );
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ ref: { manifest } }]),
+    );
 
-//     packs.cachedGuilds = {
-//       'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
-//     };
+    packs.cachedGuilds = {
+      'guild_id': [{ ref: { manifest } }],
+    };
 
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Media>({
-//           guildId: 'guild_id',
-//           media: anilist.transform<Media>({ item: media }),
-//         }))
-//           .characters?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
+    try {
+      assertEquals(
+        (await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          media: anilist.transform<Media>({ item: media }),
+        }))
+          .characters?.edges.length,
+        0,
+      );
+    } finally {
+      packs.cachedGuilds = {};
+      listStub.restore();
+    }
+  });
 
-//   await test.step('disabled anilist character media', async () => {
-//     const character: AniListCharacter = {
-//       id: '1',
-//       name: {
-//         full: 'name',
-//       },
-//       media: {
-//         edges: [{
-//           characterRole: CharacterRole.Main,
-//           node: {
-//             id: '2',
-//             type: MediaType.Anime,
-//             format: MediaFormat.TV,
-//             title: {
-//               english: 'title',
-//             },
-//           },
-//         }],
-//       },
-//     };
+  await test.step('disabled anilist character media', async () => {
+    const character: AniListCharacter = {
+      id: '1',
+      name: {
+        full: 'name',
+      },
+      media: {
+        edges: [{
+          characterRole: CharacterRole.Main,
+          node: {
+            id: '2',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            title: {
+              english: 'title',
+            },
+          },
+        }],
+      },
+    };
 
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       conflicts: ['anilist:2'],
-//     };
+    const manifest: Manifest = {
+      id: 'pack-id',
+      conflicts: ['anilist:2'],
+    };
 
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () => Promise.resolve([{ ref: { manifest } }]),
-//     );
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ ref: { manifest } }]),
+    );
 
-//     packs.cachedGuilds = {
-//       'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
-//     };
+    packs.cachedGuilds = {
+      'guild_id': [{ ref: { manifest } }],
+    };
 
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Character>({
-//           guildId: 'guild_id',
-//           character: anilist.transform<Character>({ item: character }),
-//         }))
-//           .media?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
+    try {
+      assertEquals(
+        (await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          character: anilist.transform<Character>({ item: character }),
+        }))
+          .media?.edges.length,
+        0,
+      );
+    } finally {
+      packs.cachedGuilds = {};
+      listStub.restore();
+    }
+  });
 
-//   await test.step('disabled packs media relations', async () => {
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       media: {
-//         new: [{
-//           id: '1',
-//           packId: 'pack-id',
-//           type: MediaType.Anime,
-//           format: MediaFormat.TV,
-//           title: {
-//             english: 'title 1',
-//           },
-//           relations: [{
-//             mediaId: '2',
-//             relation: MediaRelation.Contains,
-//           }],
-//         }, {
-//           id: '2',
-//           packId: 'pack-id',
-//           type: MediaType.Anime,
-//           format: MediaFormat.TV,
-//           title: {
-//             english: 'title 2',
-//           },
-//           relations: [{
-//             mediaId: '1',
-//             relation: MediaRelation.Parent,
-//           }],
-//         }],
-//       },
-//     };
+  await test.step('disabled packs media relations', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [{
+          id: '1',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title 1',
+          },
+          relations: [{
+            mediaId: '2',
+            relation: MediaRelation.Contains,
+          }],
+        }, {
+          id: '2',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title 2',
+          },
+          relations: [{
+            mediaId: '1',
+            relation: MediaRelation.Parent,
+          }],
+        }],
+      },
+    };
 
-//     const manifest2: Manifest = {
-//       id: 'pack2',
-//       conflicts: ['pack-id:2'],
-//     };
+    const manifest2: Manifest = {
+      id: 'pack2',
+      conflicts: ['pack-id:2'],
+    };
 
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () =>
-//         Promise.resolve([
-//           { ref: { manifest } },
-//           { ref: { manifest: manifest2 } },
-//         ]),
-//     );
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          { ref: { manifest } },
+          { ref: { manifest: manifest2 } },
+        ]),
+    );
 
-//     packs.cachedGuilds = {
-//       'guild_id': {
-//         packs: [{ ref: { manifest } }, { ref: { manifest: manifest2 } }],
-//         disables: [],
-//       },
-//     };
+    packs.cachedGuilds = {
+      'guild_id': [
+        { ref: { manifest } },
+        { ref: { manifest: manifest2 } },
+      ],
+    };
 
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Media>({
-//           guildId: 'guild_id',
-//           // deno-lint-ignore no-non-null-assertion
-//           media: manifest.media!.new![0],
-//         }))
-//           .relations?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
+    try {
+      assertEquals(
+        (await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          // deno-lint-ignore no-non-null-assertion
+          media: manifest.media!.new![0],
+        }))
+          .relations?.edges.length,
+        0,
+      );
+    } finally {
+      packs.cachedGuilds = {};
+      listStub.restore();
+    }
+  });
 
-//   await test.step('disabled packs media characters', async () => {
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       media: {
-//         new: [{
-//           id: '1',
-//           packId: 'pack-id',
-//           type: MediaType.Anime,
-//           format: MediaFormat.TV,
-//           title: {
-//             english: 'title',
-//           },
-//           characters: [{
-//             characterId: '2',
-//             role: CharacterRole.Main,
-//           }],
-//         }],
-//       },
-//       characters: {
-//         new: [{
-//           id: '2',
-//           packId: 'pack-id',
-//           name: {
-//             english: 'name',
-//           },
-//         }],
-//       },
-//     };
+  await test.step('disabled packs media characters', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      media: {
+        new: [{
+          id: '1',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+          characters: [{
+            characterId: '2',
+            role: CharacterRole.Main,
+          }],
+        }],
+      },
+      characters: {
+        new: [{
+          id: '2',
+          packId: 'pack-id',
+          name: {
+            english: 'name',
+          },
+        }],
+      },
+    };
 
-//     const manifest2: Manifest = {
-//       id: 'pack2',
-//       conflicts: ['pack-id:2'],
-//     };
+    const manifest2: Manifest = {
+      id: 'pack2',
+      conflicts: ['pack-id:2'],
+    };
 
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () =>
-//         Promise.resolve([
-//           { ref: { manifest } },
-//           { ref: { manifest: manifest2 } },
-//         ]),
-//     );
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          { ref: { manifest } },
+          { ref: { manifest: manifest2 } },
+        ]),
+    );
 
-//     packs.cachedGuilds = {
-//       'guild_id': {
-//         packs: [{ ref: { manifest } }, { ref: { manifest: manifest2 } }],
-//         disables: [],
-//       },
-//     };
+    packs.cachedGuilds = {
+      'guild_id': [
+        { ref: { manifest } },
+        { ref: { manifest: manifest2 } },
+      ],
+    };
 
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Media>({
-//           guildId: 'guild_id',
-//           // deno-lint-ignore no-non-null-assertion
-//           media: manifest.media!.new![0],
-//         }))
-//           .characters?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
+    try {
+      assertEquals(
+        (await packs.aggregate<Media>({
+          guildId: 'guild_id',
+          // deno-lint-ignore no-non-null-assertion
+          media: manifest.media!.new![0],
+        }))
+          .characters?.edges.length,
+        0,
+      );
+    } finally {
+      packs.cachedGuilds = {};
+      listStub.restore();
+    }
+  });
 
-//   await test.step('disabled packs character media', async () => {
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       characters: {
-//         new: [{
-//           id: '1',
-//           packId: 'pack-id',
-//           name: {
-//             english: 'name',
-//           },
-//           media: [{
-//             mediaId: '2',
-//             role: CharacterRole.Main,
-//           }],
-//         }],
-//       },
-//       media: {
-//         new: [{
-//           id: '2',
-//           packId: 'pack-id',
-//           type: MediaType.Anime,
-//           format: MediaFormat.TV,
-//           title: {
-//             english: 'title',
-//           },
-//         }],
-//       },
-//     };
+  await test.step('disabled packs character media', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      characters: {
+        new: [{
+          id: '1',
+          packId: 'pack-id',
+          name: {
+            english: 'name',
+          },
+          media: [{
+            mediaId: '2',
+            role: CharacterRole.Main,
+          }],
+        }],
+      },
+      media: {
+        new: [{
+          id: '2',
+          packId: 'pack-id',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'title',
+          },
+        }],
+      },
+    };
 
-//     const manifest2: Manifest = {
-//       id: 'pack2',
-//       conflicts: ['pack-id:2'],
-//     };
+    const manifest2: Manifest = {
+      id: 'pack2',
+      conflicts: ['pack-id:2'],
+    };
 
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () =>
-//         Promise.resolve([
-//           { ref: { manifest } },
-//           { ref: { manifest: manifest2 } },
-//         ]),
-//     );
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          { ref: { manifest } },
+          { ref: { manifest: manifest2 } },
+        ]),
+    );
 
-//     packs.cachedGuilds = {
-//       'guild_id': {
-//         packs: [{ ref: { manifest } }, { ref: { manifest: manifest2 } }],
-//         disables: [],
-//       },
-//     };
+    packs.cachedGuilds = {
+      'guild_id': [
+        { ref: { manifest } },
+        { ref: { manifest: manifest2 } },
+      ],
+    };
 
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Character>({
-//           guildId: 'guild_id',
-//           // deno-lint-ignore no-non-null-assertion
-//           character: manifest.characters!.new![0],
-//         }))
-//           .media?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
-// });
+    try {
+      assertEquals(
+        (await packs.aggregate<Character>({
+          guildId: 'guild_id',
+          // deno-lint-ignore no-non-null-assertion
+          character: manifest.characters!.new![0],
+        }))
+          .media?.edges.length,
+        0,
+      );
+    } finally {
+      packs.cachedGuilds = {};
+      listStub.restore();
+    }
+  });
+});
 
 Deno.test('search many', async (test) => {
   await test.step('sort by match percentage', async () => {
@@ -807,7 +843,7 @@ Deno.test('search for media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -873,6 +909,118 @@ Deno.test('search for media', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+    }
+  });
+
+  await test.step('disabled anilist id', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'anilist media',
+      },
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      conflicts: ['anilist:1'],
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ ref: { manifest } }]),
+    );
+
+    packs.cachedGuilds = {
+      'guild_id': [{ ref: { manifest } }],
+    };
+
+    try {
+      const results = await packs.media({
+        guildId: 'guild_id',
+        ids: ['anilist:1'],
+      });
+
+      assertEquals(results.length, 0);
+    } finally {
+      packs.cachedGuilds = {};
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('disabled pack id', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      conflicts: ['pack2:1'],
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      media: {
+        new: [{
+          id: '1',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'media',
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          { ref: { manifest } },
+          { ref: { manifest: manifest2 } },
+        ]),
+    );
+
+    packs.cachedGuilds = {
+      'guild_id': [
+        { ref: { manifest } },
+        { ref: { manifest: manifest2 } },
+      ],
+    };
+
+    try {
+      const results = await packs.media({
+        guildId: 'guild_id',
+        ids: ['pack2:1'],
+      });
+
+      assertEquals(results.length, 0);
+    } finally {
+      packs.cachedGuilds = {};
+      fetchStub.restore();
+      listStub.restore();
     }
   });
 
@@ -1075,6 +1223,128 @@ Deno.test('search for media', async (test) => {
     }
   });
 
+  await test.step('disabled anilist match', async () => {
+    const media: AniListMedia = {
+      id: '1',
+      type: MediaType.Anime,
+      format: MediaFormat.TV,
+      title: {
+        english: 'anilist media',
+      },
+    };
+
+    const manifest: Manifest = {
+      id: 'pack-id',
+      conflicts: ['anilist:1'],
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                media: [media],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ ref: { manifest } }]),
+    );
+
+    packs.cachedGuilds = {
+      'guild_id': [{ ref: { manifest } }],
+    };
+
+    try {
+      const results = await packs.media({
+        guildId: 'guild_id',
+        search: 'anilist media',
+      });
+
+      assertEquals(results.length, 0);
+    } finally {
+      packs.cachedGuilds = {};
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('disabled pack match', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      conflicts: ['pack2:1'],
+    };
+
+    const manifest2: Manifest = {
+      id: 'pack2',
+      media: {
+        new: [{
+          id: '1',
+          type: MediaType.Anime,
+          format: MediaFormat.TV,
+          title: {
+            english: 'pack media',
+          },
+        }],
+      },
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => ({
+        ok: true,
+        text: (() =>
+          Promise.resolve(JSON.stringify({
+            data: {
+              Page: {
+                media: [],
+              },
+            },
+          }))),
+      } as any),
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          { ref: { manifest } },
+          { ref: { manifest: manifest2 } },
+        ]),
+    );
+
+    packs.cachedGuilds = {
+      'guild_id': [
+        { ref: { manifest } },
+        { ref: { manifest: manifest2 } },
+      ],
+    };
+
+    try {
+      const results = await packs.media({
+        guildId: 'guild_id',
+        search: 'pack media',
+      });
+
+      assertEquals(results.length, 0);
+    } finally {
+      packs.cachedGuilds = {};
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
   await test.step('no matches', async () => {
     const media: AniListMedia = {
       id: '1',
@@ -1234,7 +1504,7 @@ Deno.test('search for characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -1735,7 +2005,7 @@ Deno.test('media character', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -1819,7 +2089,7 @@ Deno.test('media character', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -1850,6 +2120,46 @@ Deno.test('media character', async (test) => {
           },
         },
       });
+    } finally {
+      packs.cachedGuilds = {};
+      fetchStub.restore();
+      listStub.restore();
+    }
+  });
+
+  await test.step('disabled media', async () => {
+    const manifest: Manifest = {
+      id: 'pack-id',
+      conflicts: ['anilist:1'],
+    };
+
+    const fetchStub = stub(
+      globalThis,
+      'fetch',
+      () => undefined as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ ref: { manifest } }]),
+    );
+
+    packs.cachedGuilds = {
+      'guild_id': [{ ref: { manifest } }],
+    };
+
+    try {
+      await assertRejects(
+        async () =>
+          await packs.mediaCharacters({
+            id: 'anilist:1',
+            guildId: 'guild_id',
+            index: 0,
+          }),
+        Error,
+        '404',
+      );
     } finally {
       packs.cachedGuilds = {};
       fetchStub.restore();
@@ -2028,7 +2338,7 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2232,7 +2542,7 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2328,7 +2638,7 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2415,7 +2725,7 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2505,7 +2815,7 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2609,7 +2919,7 @@ Deno.test('aggregate media', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -2716,7 +3026,7 @@ Deno.test('aggregate media', async (test) => {
       );
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
+      assertSpyCalls(listStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -2766,7 +3076,7 @@ Deno.test('aggregate media', async (test) => {
       );
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 2);
+      assertSpyCalls(listStub, 3);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -2901,7 +3211,7 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -3083,7 +3393,7 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -3184,7 +3494,7 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -3263,7 +3573,7 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -3360,7 +3670,7 @@ Deno.test('aggregate characters', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': [{ ref: { manifest } }],
     };
 
     try {
@@ -3449,7 +3759,7 @@ Deno.test('aggregate characters', async (test) => {
       );
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 0);
+      assertSpyCalls(listStub, 1);
     } finally {
       fetchStub.restore();
       listStub.restore();
@@ -3494,7 +3804,7 @@ Deno.test('aggregate characters', async (test) => {
       );
 
       assertSpyCalls(fetchStub, 0);
-      assertSpyCalls(listStub, 1);
+      assertSpyCalls(listStub, 2);
     } finally {
       fetchStub.restore();
       listStub.restore();

@@ -177,10 +177,7 @@ function pre({ token, userId, guildId, stars, search, id }: {
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then((results: (Character | DisaggregatedCharacter)[]) => {
-      if (
-        !results.length ||
-        packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
-      ) {
+      if (!results.length) {
         throw new Error('404');
       }
 
@@ -206,21 +203,6 @@ function pre({ token, userId, guildId, stars, search, id }: {
       const characterId = `${character.packId}:${character.id}`;
 
       const characterName = packs.aliasToArray(character.name)[0];
-
-      const media = character.media?.edges?.[0]?.node;
-
-      if (
-        (
-          existing &&
-          packs.isDisabled(existing.mediaId, guildId)
-        ) ||
-        (
-          media &&
-          packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-        )
-      ) {
-        throw new Error('404');
-      }
 
       if (cooldown > Date.now()) {
         throw new NonFetalError(
