@@ -163,23 +163,12 @@ async function synthesize({ token, userId, guildId, target }: {
 
   const characters = await synthesis.getFilteredCharacters({ userId, guildId });
 
-  // const occurrences = sacrifices.map(({ rating }) => rating)
-  //   .reduce(
-  //     (acc, n) => (acc[n] = (acc[n] || 0) + 1, acc),
-  //     {} as Record<number, number>,
-  //   );
-
-  // const all = Object.entries(occurrences)
-  //   .toReversed()
-  //   .map(([rating, occurrences]) =>
-  //     `${discord.empty}(**${rating}${discord.emotes.smolStar}x${occurrences}**)${discord.empty}`
-  //   );
-
   const sacrifices: Schema.Character[] = getSacrifices(characters, target)
     .sort((a, b) => b.rating - a.rating);
 
   // highlight the top characters
-  const highlights = sacrifices.slice(0, 5);
+  const highlights = sacrifices
+    .slice(0, 5);
 
   packs.characters({
     ids: highlights.map(({ id }) => id),
@@ -188,20 +177,30 @@ async function synthesize({ token, userId, guildId, target }: {
     .then(async (highlightedCharacters) => {
       message.addEmbed(
         new discord.Embed().setDescription(
-          // `Sacrifice${all.join('')}characters? ${discord.emotes.remove}`,
           `Sacrifice **${sacrifices.length}** characters?`,
         ),
       );
 
       for (const existing of highlights) {
-        const match = highlightedCharacters
-          .find((char) => existing.id === `${char.packId}:${char.id}`);
+        const index = highlightedCharacters
+          .findIndex((char) => existing.id === `${char.packId}:${char.id}`);
 
-        if (match) {
+        if (index > -1) {
           const character = await packs.aggregate<Character>({
-            character: match,
+            character: highlightedCharacters[index],
             guildId,
           });
+
+          const media = character?.media?.edges?.[0]?.node;
+
+          if (
+            packs.isDisabled(`${character.packId}:${character.id}`, guildId) ||
+            (packs.isDisabled(existing.mediaId, guildId)) ||
+            (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
+          ) {
+            highlightedCharacters.splice(index, 1);
+            continue;
+          }
 
           message.addEmbed(
             synthesis.characterPreview(character, existing),

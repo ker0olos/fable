@@ -412,7 +412,22 @@ function nick({
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
-      if (!results.length) {
+      if (
+        !results.length ||
+        packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
+      ) {
+        throw new Error('404');
+      }
+
+      const character = await packs.aggregate<Character>({
+        guildId,
+        character: results[0],
+        end: 1,
+      });
+
+      const media = character.media?.edges?.[0]?.node;
+
+      if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
         throw new Error('404');
       }
 
@@ -471,12 +486,6 @@ function nick({
             throw new Error(response.error);
         }
       }
-
-      const character = await packs.aggregate<Character>({
-        guildId,
-        character: results[0],
-        end: 1,
-      });
 
       const name = packs.aliasToArray(character.name)[0];
 
@@ -572,7 +581,22 @@ function image({
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
-      if (!results.length) {
+      if (
+        !results.length ||
+        packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
+      ) {
+        throw new Error('404');
+      }
+
+      const character = await packs.aggregate<Character>({
+        guildId,
+        character: results[0],
+        end: 1,
+      });
+
+      const media = character.media?.edges?.[0]?.node;
+
+      if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
         throw new Error('404');
       }
 
@@ -631,12 +655,6 @@ function image({
             throw new Error(response.error);
         }
       }
-
-      const character = await packs.aggregate<Character>({
-        guildId,
-        character: results[0],
-        end: 1,
-      });
 
       const name = packs.aliasToArray(character.name)[0];
 
@@ -736,13 +754,28 @@ function like({
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
-      if (!results.length) {
+      if (
+        !results.length ||
+        packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
+      ) {
+        throw new Error('404');
+      }
+
+      const character = await packs.aggregate<Character>({
+        guildId,
+        character: results[0],
+        end: 1,
+      });
+
+      const media = character.media?.edges?.[0]?.node;
+
+      if (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
         throw new Error('404');
       }
 
       const message = new discord.Message();
 
-      const characterId = `${results[0].packId}:${results[0].id}`;
+      const characterId = `${character.packId}:${character.id}`;
 
       const response = (await request<{
         likeCharacter: Schema.Mutation;
@@ -771,12 +804,6 @@ function like({
         .addEmbed(
           new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked'),
         );
-
-      const character = await packs.aggregate<Character>({
-        guildId,
-        character: results[0],
-        end: 1,
-      });
 
       if (mention) {
         message
@@ -864,7 +891,10 @@ function likeall({
   packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Media | DisaggregatedMedia)[]) => {
-      if (!results.length) {
+      if (
+        !results.length ||
+        packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
+      ) {
         throw new Error('404');
       }
 
@@ -981,7 +1011,10 @@ function list({
         const results = await packs
           .media(id ? { ids: [id], guildId } : { search, guildId });
 
-        if (!results.length) {
+        if (
+          !results.length ||
+          packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
+        ) {
           throw new Error('404');
         }
 
@@ -1018,20 +1051,66 @@ function list({
           .sort((a, b) => b.rating - a.rating);
       }
 
-      if (!characters?.length) {
-        const message = new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription(
-                `${nick ? `<@${userId}> doesn't` : 'You don\'t'} have any ${
-                  rating ? `${rating}${discord.emotes.smolStar}characters` : ''
-                }${
-                  media.length
-                    ? `characters from ${packs.aliasToArray(media[0].title)[0]}`
-                    : ''
-                }`,
-              ),
-          );
+      const chunks = utils.chunks(characters, 5);
+
+      const _characters = await packs.characters({
+        ids: chunks[index]?.map(({ id }) => id),
+        guildId,
+      });
+
+      await Promise.all(_characters.map(async (char) => {
+        // deno-lint-ignore no-non-null-assertion
+        const existing = chunks[index].find(({ id }) =>
+          id === `${char.packId}:${char.id}`
+        )!;
+
+        const media = (await packs.aggregate<Character>({
+          character: char,
+          guildId,
+        })).media?.edges?.[0]?.node;
+
+        const mediaTitle = media?.title
+          ? utils.wrap(
+            packs.aliasToArray(media.title)[0],
+          )
+          : undefined;
+
+        const name = `${existing.rating}${discord.emotes.smolStar}${
+          likes?.some((like) =>
+              like.characterId === existing.id ||
+              like.mediaId === existing.mediaId
+            )
+            ? `${discord.emotes.liked}`
+            : ''
+        } ${existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])}`;
+
+        if (
+          packs.isDisabled(`${char.packId}:${char.id}`, guildId) ||
+          (
+            media &&
+            packs.isDisabled(`${media.packId}:${media.id}`, guildId)
+          )
+        ) {
+          return;
+        }
+
+        embed.addField({
+          inline: false,
+          name: mediaTitle ? mediaTitle : name,
+          value: mediaTitle ? name : undefined,
+        });
+      }));
+
+      if (embed.getFieldsCount() <= 0) {
+        message.addEmbed(embed.setDescription(
+          `${nick ? `<@${userId}> doesn't` : 'You don\'t'} have any ${
+            rating ? `${rating}${discord.emotes.smolStar}characters` : ''
+          }${
+            media.length
+              ? `characters from ${packs.aliasToArray(media[0].title)[0]}`
+              : ''
+          }`,
+        ));
 
         if (!nick) {
           message.addComponents([
@@ -1043,76 +1122,6 @@ function list({
         }
 
         return message.patch(token);
-      }
-
-      const chunks = utils.chunks(characters, 5);
-
-      const _characters = await packs.characters({
-        ids: chunks[index].map(({ id }) => id),
-        guildId,
-      });
-
-      const fields: Record<string, {
-        title: string;
-        names: string[];
-      }> = {};
-
-      for (let i = 0; i < _characters.length; i++) {
-        const char = _characters[i];
-
-        // deno-lint-ignore no-non-null-assertion
-        const existing = chunks[index].find(({ id }) =>
-          id === `${char.packId}:${char.id}`
-        )!;
-
-        if (!fields[existing.mediaId]) {
-          const media = (await packs.aggregate<Character>({
-            character: char,
-            guildId,
-          })).media?.edges[0].node;
-
-          const title = utils.wrap(
-            packs.aliasToArray(
-              // deno-lint-ignore no-non-null-assertion
-              media!.title,
-            )[0],
-          );
-
-          fields[existing.mediaId] = {
-            title,
-            names: [],
-          };
-        }
-
-        const field = fields[existing.mediaId];
-
-        const name = `${existing.rating}${discord.emotes.smolStar}${
-          likes?.some((like) =>
-              like.characterId === existing.id ||
-              like.mediaId === existing.mediaId
-            )
-            ? `${discord.emotes.liked}`
-            : ''
-        } ${existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])}`;
-
-        field.names.push(name);
-      }
-
-      Object.values(fields).forEach(({ title, names }) =>
-        embed.addField({
-          inline: false,
-          name: title,
-          value: names.join('\n'),
-        })
-      );
-
-      if (_characters.length !== chunks[index].length) {
-        embed.addField({
-          inline: false,
-          name: `_${
-            chunks[index].length - _characters.length
-          } disabled characters_`,
-        });
       }
 
       return discord.Message.page({
@@ -1205,19 +1214,7 @@ function likeslist({
 
       let { likes } = getUserInventory.user;
 
-      if (!likes?.length) {
-        const message = new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription(
-                `${
-                  nick ? `<@${userId}> doesn't` : 'You don\'t'
-                } have any likes`,
-              ),
-          );
-
-        return message.patch(token);
-      }
+      likes ??= [];
 
       // sort so that all media likes are in the bottom of the list
       likes.sort((a, b) => {
@@ -1252,12 +1249,12 @@ function likeslist({
       const [characters, media] = await Promise.all([
         await packs.characters({
           guildId,
-          ids: chunks[index].map(({ characterId }) => characterId)
+          ids: chunks[index]?.map(({ characterId }) => characterId)
             .filter(Boolean),
         }),
         await packs.media({
           guildId,
-          ids: chunks[index].map(({ mediaId }) => mediaId)
+          ids: chunks[index]?.map(({ mediaId }) => mediaId)
             .filter(Boolean),
         }),
       ]);
@@ -1276,9 +1273,11 @@ function likeslist({
 
           const rating = existing?.rating ?? Rating.fromCharacter(char).stars;
 
-          const media = char.media?.edges?.[0]?.node?.title
+          const media = char.media?.edges?.[0]?.node;
+
+          const mediaTitle = media?.title
             ? utils.wrap(
-              packs.aliasToArray(char.media.edges[0].node.title)[0],
+              packs.aliasToArray(media.title)[0],
             )
             : undefined;
 
@@ -1286,10 +1285,20 @@ function likeslist({
             existing ? `<@${existing.user.id}> ` : ''
           }${utils.wrap(packs.aliasToArray(char.name)[0])}`;
 
+          if (
+            packs.isDisabled(`${char.packId}:${char.id}`, guildId) ||
+            (
+              media &&
+              packs.isDisabled(`${media.packId}:${media.id}`, guildId)
+            )
+          ) {
+            return;
+          }
+
           embed.addField({
             inline: false,
-            name: media ? media : name,
-            value: media ? name : undefined,
+            name: mediaTitle ? mediaTitle : name,
+            value: mediaTitle ? name : undefined,
           });
         }),
       );
@@ -1303,6 +1312,14 @@ function likeslist({
           value: discord.emotes.all,
         });
       });
+
+      if (embed.getFieldsCount() <= 0) {
+        message.addEmbed(embed.setDescription(
+          `${nick ? `<@${userId}> doesn't` : 'You don\'t'} have any likes`,
+        ));
+
+        return message.patch(token);
+      }
 
       return discord.Message.page({
         index,
@@ -1349,6 +1366,7 @@ function logs({
       getUserInventory(userId: $userId, guildId: $guildId) {
         characters {
           id
+          mediaId
           rating
           nickname
         }
@@ -1375,20 +1393,6 @@ function logs({
       const characters = getUserInventory.characters
         .slice(-10);
 
-      if (!characters?.length) {
-        const message = new discord.Message()
-          .addEmbed(
-            new discord.Embed()
-              .setDescription(
-                `${
-                  nick ? `<@${userId}> doesn't` : 'You don\'t'
-                } have any characters`,
-              ),
-          );
-
-        return message.patch(token);
-      }
-
       const names: string[] = [];
 
       const results = await packs.characters({
@@ -1401,14 +1405,33 @@ function logs({
           `${packId}:${id}` === existing.id
         );
 
-        if (char) {
-          const name = `${existing.rating}${discord.emotes.smolStar} ${
-            existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
-          }`;
-
-          names.push(name);
+        if (
+          !char ||
+          packs.isDisabled(`${char.packId}:${char.id}`, guildId) ||
+          packs.isDisabled(existing.mediaId, guildId)
+        ) {
+          return;
         }
+
+        const name = `${existing.rating}${discord.emotes.smolStar} ${
+          existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])
+        }`;
+
+        names.push(name);
       });
+
+      if (names.length <= 0) {
+        message.addEmbed(
+          new discord.Embed()
+            .setDescription(
+              `${
+                nick ? `<@${userId}> doesn't` : 'You don\'t'
+              } have any characters`,
+            ),
+        );
+
+        return message.patch(token);
+      }
 
       message.addEmbed(new discord.Embed()
         .setDescription(names.join('\n')));
