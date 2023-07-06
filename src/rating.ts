@@ -48,7 +48,9 @@ export default class Rating {
       }
     } else {
       utils.captureException(
-        `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
+        new Error(
+          `Couldn't determine the star rating for { role: "${role}", popularity: ${popularity} }`,
+        ),
       );
     }
   }
