@@ -128,16 +128,21 @@ export const handler = async (r: Request) => {
             threshold: 45,
           });
 
-          results?.forEach((media) => {
-            const format = packs.formatToString(media.format);
+          results
+            ?.forEach((media) => {
+              const format = packs.formatToString(media.format);
 
-            message.addSuggestions({
-              name: `${packs.aliasToArray(media.title)[0]}${
-                format ? ` (${format})` : ''
-              }`,
-              value: `${idPrefix}${media.packId}:${media.id}`,
+              if (packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
+                return;
+              }
+
+              message.addSuggestions({
+                name: `${packs.aliasToArray(media.title)[0]}${
+                  format ? ` (${format})` : ''
+                }`,
+                value: `${idPrefix}${media.packId}:${media.id}`,
+              });
             });
-          });
 
           return message.send();
         }
@@ -176,10 +181,7 @@ export const handler = async (r: Request) => {
           }).then((characters) =>
             Promise.all(
               characters.map((character) =>
-                packs.aggregate<Character>({
-                  character,
-                  guildId,
-                })
+                packs.aggregate<Character>({ character, guildId })
               ),
             )
           );
@@ -190,12 +192,24 @@ export const handler = async (r: Request) => {
 
             return bP - aP;
           }).forEach((char) => {
-            const media = char.media?.edges.length
-              ? ` (${packs.aliasToArray(char.media.edges[0].node.title)[0]})`
+            const media = char.media?.edges?.[0]?.node;
+
+            const mediaTitle = media
+              ? `(${packs.aliasToArray(media.title)[0]})`
               : '';
 
+            if (
+              packs.isDisabled(`${char.packId}:${char.id}`, guildId) ||
+              (
+                media &&
+                packs.isDisabled(`${media.packId}:${media.id}`, guildId)
+              )
+            ) {
+              return;
+            }
+
             message.addSuggestions({
-              name: `${packs.aliasToArray(char.name)[0]}${media}`,
+              name: `${packs.aliasToArray(char.name)[0]} ${mediaTitle}`.trim(),
               value: `${idPrefix}${char.packId}:${char.id}`,
             });
           });
@@ -597,8 +611,8 @@ export const handler = async (r: Request) => {
           case 'community': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'gallery': {
-                return (await community.getMostInstalledPacks({
+              case 'popular': {
+                return (await community.popularPacks({
                   guildId,
                   index: 0,
                 }))
@@ -643,6 +657,7 @@ export const handler = async (r: Request) => {
           case 'help':
           case 'start':
           case 'guide':
+          case 'wiki':
           case 'tuto': {
             const index = options['page'] as number || 0;
 
@@ -969,11 +984,11 @@ export const handler = async (r: Request) => {
               .setType(discord.MessageType.Update)
               .send();
           }
-          case 'gallery': {
+          case 'popular': {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return (await community.getMostInstalledPacks({ guildId, index }))
+            return (await community.popularPacks({ guildId, index }))
               .setType(discord.MessageType.Update)
               .send();
           }
