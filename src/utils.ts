@@ -316,8 +316,10 @@ function captureException(err: Error, opts?: {
   extra?: any;
 }): string {
   return _captureException(err, {
-    ...err.cause ?? {},
-    ...opts?.extra ?? {},
+    extra: {
+      ...err.cause ?? {},
+      ...opts?.extra ?? {},
+    },
   });
 }
 
