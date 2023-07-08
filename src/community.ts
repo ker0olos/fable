@@ -234,7 +234,7 @@ async function publish(req: Request): Promise<Response> {
   });
 }
 
-async function getMostInstalledPacks(
+async function popularPacks(
   { guildId, index }: { guildId: string; index: number },
 ): Promise<discord.Message> {
   const query = gql`
@@ -343,7 +343,7 @@ async function getMostInstalledPacks(
   return discord.Message.page({
     index,
     message,
-    type: 'gallery',
+    type: 'popular',
     next: index + 1 < pages.length,
   });
 }
@@ -351,7 +351,7 @@ async function getMostInstalledPacks(
 const community = {
   query,
   publish,
-  getMostInstalledPacks,
+  popularPacks,
 };
 
 export default community;

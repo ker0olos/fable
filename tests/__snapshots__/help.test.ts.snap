@@ -121,27 +121,21 @@ snapshot[`/help 2`] = `
 " +
           "
 " +
-          "__Be careful where you sacrifice your characters.__
-" +
-          'Characters are the main currency in Fable. While synthesis returns a higher-rated character its *"currency"* value will always be lower than the sum of the sacrificed characters.
-' +
-          "
-" +
-          "__Your party members and likes will never be sacrificed.__ To protect characters from synthesis, add them to your likeslist with \`/like\`
+          "__Your party members and likes will never be sacrificed.__ To protect characters from being merged, add them to your likeslist with \`/like\`
 " +
           "
 " +
-          "__It takes 5 characters from a guaranteed rating__ to get a new character with 1 more star than the sacrificed.
+          "__It takes 5 characters with a lower rating__ to pull a new character
 " +
           "
 " +
-          "__Fable will always auto-synthesize your lower-rated characters first.__
+          "__Fable will always auto-merge your lowest-rated characters first.__
 " +
           "
 " +
-          "Example: \`/synthesize 3\` will sacrifice __25 of your 1<:smolstar:1107503653956374638>characters__
+          "Example: \`/merge target: 3\` will sacrifice __25 of your 1<:smolstar:1107503653956374638>characters__
 " +
-          "or __5 of your 2<:smolstar:1107503653956374638>characters__ or any other combination of both lower ratings.
+          "or __5 of your 2<:smolstar:1107503653956374638>characters.__
 " +
           "
 " +
@@ -149,9 +143,9 @@ snapshot[`/help 2`] = `
 " +
           "​",
         footer: {
-          text: "aliases: /merge",
+          text: "aliases: /synthesis",
         },
-        title: "\`/synthesize\`",
+        title: "\`/merge\`",
         type: "rich",
       },
     ],
@@ -700,7 +694,7 @@ snapshot[`/help 9`] = `
         },
         description: "_> \`/community\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we never recommend that._
 " +
-          "- \`/community gallery\`: _browse the most installed community packs_
+          "- \`/community popular\`: _browse the most popular community packs_
 " +
           "- \`/community install\`: _install a community pack_
 " +

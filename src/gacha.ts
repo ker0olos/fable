@@ -200,14 +200,13 @@ async function rngPull(
 
     const characterId = pool.splice(i, 1)[0].id;
 
-    const results = await packs.characters({ guildId, ids: [characterId] });
-
-    // search will return empty if the character is disabled
-    if (!results.length) {
+    if (packs.isDisabled(characterId, guildId)) {
       continue;
     }
 
-    if (!validate(results[0])) {
+    const results = await packs.characters({ guildId, ids: [characterId] });
+
+    if (!results.length || !validate(results[0])) {
       continue;
     }
 
@@ -220,12 +219,11 @@ async function rngPull(
 
     const edge = candidate.media?.edges?.[0];
 
-    // if no media
-    if (!edge) {
+    if (!edge || !validate(candidate)) {
       continue;
     }
 
-    if (!validate(candidate)) {
+    if (packs.isDisabled(`${edge.node.packId}:${edge.node.id}`, guildId)) {
       continue;
     }
 

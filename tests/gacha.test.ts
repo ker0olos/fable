@@ -140,10 +140,7 @@ Deno.test('filter invalid pools', async (test) => {
     try {
       await assertRejects(
         async () =>
-          await gacha.rngPull({
-            userId: 'user_id',
-            guildId: 'guild_id',
-          }),
+          await gacha.rngPull({ userId: 'user_id', guildId: 'guild_id' }),
         PoolError,
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
@@ -559,7 +556,7 @@ Deno.test('filter invalid pools', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ ref: { manifest } }],
+      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
     };
 
     try {
@@ -684,10 +681,7 @@ Deno.test('disabled', async (test) => {
       role: CharacterRole.Main,
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      conflicts: ['anilist:anime'],
-    };
+    const manifest: Manifest = { id: 'pack-id' };
 
     const { readJsonStub, fetchStub } = fakePool(
       {
@@ -736,7 +730,10 @@ Deno.test('disabled', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ ref: { manifest } }],
+      'guild_id': {
+        packs: [{ ref: { manifest } }],
+        disables: ['anilist:anime'],
+      },
     };
 
     try {
@@ -820,7 +817,7 @@ Deno.test('disabled', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ ref: { manifest } }],
+      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
     };
 
     try {
@@ -834,7 +831,7 @@ Deno.test('disabled', async (test) => {
         'failed to pull a character due to the pool not containing any characters that match the randomly chosen variables',
       );
 
-      assertSpyCalls(fetchStub, 0);
+      assertSpyCalls(fetchStub, 1);
       assertSpyCalls(rngStub, 2);
     } finally {
       packs.cachedGuilds = {};
@@ -1238,7 +1235,7 @@ Deno.test('valid pool', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ ref: { manifest } }],
+      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
     };
 
     try {
@@ -1898,7 +1895,7 @@ Deno.test('valid rng pools', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': [{ ref: { manifest } }],
+      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
     };
 
     try {

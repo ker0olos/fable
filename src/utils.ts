@@ -5,7 +5,10 @@ import {
   encode as base64Encode,
 } from 'url-safe-base64';
 
-import { captureException, init as initSentry } from 'sentry';
+import {
+  captureException as _captureException,
+  init as initSentry,
+} from 'sentry';
 
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
@@ -306,6 +309,18 @@ function decipher(a: string, secret: number): string {
   }
 
   return str;
+}
+
+function captureException(err: Error, opts?: {
+  // deno-lint-ignore no-explicit-any
+  extra?: any;
+}): string {
+  return _captureException(err, {
+    extra: {
+      ...err.cause ?? {},
+      ...opts?.extra ?? {},
+    },
+  });
 }
 
 function captureOutage(id: string): Promise<Response> {

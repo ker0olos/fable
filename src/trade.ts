@@ -43,20 +43,19 @@ function pre({ token, userId, guildId, targetId, give, take }: {
   }
 
   Promise.all([
-    // TODO decrease number of outgoing requests
     ...give.map((char) =>
       packs.characters(
         char.startsWith(idPrefix)
           ? { ids: [char.substring(idPrefix.length)], guildId }
           : { search: char, guildId },
-      ).then((results) => results[0])
+      ).then((r) => r[0])
     ),
     ...take.map((char) =>
       packs.characters(
         char.startsWith(idPrefix)
           ? { ids: [char.substring(idPrefix.length)], guildId }
           : { search: char, guildId },
-      ).then((results) => results[0])
+      ).then((r) => r[0])
     ),
   ])
     // filter undefined results
@@ -64,7 +63,12 @@ function pre({ token, userId, guildId, targetId, give, take }: {
     .then(async (results) => {
       const message = new discord.Message();
 
-      if (results.length !== (give.length + take.length)) {
+      if (
+        results.length !== (give.length + take.length) ||
+        results.some((char) =>
+          packs.isDisabled(`${char.packId}:${char.id}`, guildId)
+        )
+      ) {
         throw new Error('404');
       }
 
@@ -77,6 +81,23 @@ function pre({ token, userId, guildId, targetId, give, take }: {
           })
         ),
       );
+
+      if (
+        results.some((char) => {
+          const media = (char as Character).media?.edges?.[0].node;
+
+          if (
+            media &&
+            packs.isDisabled(`${media.packId}:${media.id}`, guildId)
+          ) {
+            return true;
+          }
+
+          return false;
+        })
+      ) {
+        throw new Error('404');
+      }
 
       let [giveCharacters, takeCharacters] = [
         results.slice(0, give.length),
