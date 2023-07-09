@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals, assertRejects } from '$std/testing/asserts.ts';
+import { assertEquals } from '$std/testing/asserts.ts';
 
 import { FakeTime } from '$std/testing/time.ts';
 
@@ -146,7 +146,6 @@ Deno.test('/party view', async (test) => {
       const message = party.view({
         userId: 'user_id',
         guildId: 'guild_id',
-
         token: 'test_token',
       });
 
@@ -1217,6 +1216,8 @@ Deno.test('/party assign', async (test) => {
       },
     ];
 
+    const timeStub = new FakeTime();
+
     const fetchStub = stub(
       globalThis,
       'fetch',
@@ -1248,6 +1249,7 @@ Deno.test('/party assign', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -1259,18 +1261,50 @@ Deno.test('/party assign', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await party.assign({
+      const message = party.assign({
         spot: 1,
+        token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-
         id: 'anilist:1',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -1285,7 +1319,7 @@ Deno.test('/party assign', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -1304,11 +1338,15 @@ Deno.test('/party assign', async (test) => {
           }],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1321,6 +1359,8 @@ Deno.test('/party assign', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -1355,6 +1395,7 @@ Deno.test('/party assign', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -1370,17 +1411,46 @@ Deno.test('/party assign', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await party.assign({
+      const message = party.assign({
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
-
+        token: 'test_token',
         id: 'anilist:1',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -1414,7 +1484,7 @@ Deno.test('/party assign', async (test) => {
           }],
           attachments: [],
         },
-      });
+      );
     } finally {
       delete config.appId;
       delete config.origin;
@@ -1422,6 +1492,7 @@ Deno.test('/party assign', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1434,6 +1505,8 @@ Deno.test('/party assign', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -1462,6 +1535,7 @@ Deno.test('/party assign', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -1473,23 +1547,54 @@ Deno.test('/party assign', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await party.assign({
+      const message = party.assign({
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
-
+        token: 'test_token',
         id: 'anilist:1',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          flags: 64,
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
-              description: 'name 1 hasn\'t been found by anyone yet.',
+              description: 'name 1 hasn\'t been found by anyone yet',
             },
           ],
           components: [{
@@ -1505,11 +1610,15 @@ Deno.test('/party assign', async (test) => {
           }],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1522,6 +1631,8 @@ Deno.test('/party assign', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -1558,6 +1669,7 @@ Deno.test('/party assign', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -1569,24 +1681,55 @@ Deno.test('/party assign', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await party.assign({
+      const message = party.assign({
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
-
+        token: 'test_token',
         id: 'anilist:1',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
-          flags: 64,
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
               description:
-                'name 1 is owned by <@user_2> and cannot be assigned to your party.',
+                'name 1 is owned by <@user_2> and cannot be assigned to your party',
             },
           ],
           components: [{
@@ -1602,11 +1745,15 @@ Deno.test('/party assign', async (test) => {
           }],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 });
@@ -1655,6 +1802,8 @@ Deno.test('/party swap', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -1724,6 +1873,7 @@ Deno.test('/party swap', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -1735,17 +1885,50 @@ Deno.test('/party swap', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await party.swap({
+      const message = party.swap({
         a: 1,
         b: 2,
         userId: 'user_id',
         guildId: 'guild_id',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -1756,7 +1939,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -1770,7 +1953,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -1784,7 +1967,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -1798,7 +1981,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
@@ -1812,7 +1995,7 @@ Deno.test('/party swap', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
@@ -1821,11 +2004,15 @@ Deno.test('/party swap', async (test) => {
           components: [],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -1872,6 +2059,8 @@ Deno.test('/party swap', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -1951,6 +2140,7 @@ Deno.test('/party swap', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -1966,16 +2156,46 @@ Deno.test('/party swap', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await party.swap({
+      const message = party.swap({
         a: 1,
         b: 2,
         userId: 'user_id',
         guildId: 'guild_id',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 4);
+
+      assertEquals(
+        fetchStub.calls[3].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -2051,7 +2271,7 @@ Deno.test('/party swap', async (test) => {
           components: [],
           attachments: [],
         },
-      });
+      );
     } finally {
       delete config.appId;
       delete config.origin;
@@ -2059,44 +2279,7 @@ Deno.test('/party swap', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
-    }
-  });
-
-  await test.step('unknown error', async () => {
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                swapCharactersInParty: {
-                  ok: false,
-                  error: 'UNKNOWN_ERROR',
-                },
-              },
-            }))),
-          //
-        } as any,
-      ]),
-    );
-
-    try {
-      await assertRejects(
-        async () =>
-          await party.swap({
-            a: 1,
-            b: 2,
-            userId: 'user_id',
-            guildId: 'guild_id',
-          }),
-        Error,
-        'UNKNOWN_ERROR',
-      );
-    } finally {
-      fetchStub.restore();
+      timeStub.restore();
     }
   });
 });
@@ -2111,6 +2294,8 @@ Deno.test('/party remove', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -2143,6 +2328,7 @@ Deno.test('/party remove', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -2154,16 +2340,49 @@ Deno.test('/party remove', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await party.remove({
+      const message = party.remove({
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -2178,7 +2397,7 @@ Deno.test('/party remove', async (test) => {
                 },
               ],
               thumbnail: {
-                url: 'undefined/external/?size=thumbnail',
+                url: 'http://localhost:8000/external/?size=thumbnail',
               },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -2197,11 +2416,15 @@ Deno.test('/party remove', async (test) => {
           }],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2214,6 +2437,8 @@ Deno.test('/party remove', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -2248,6 +2473,7 @@ Deno.test('/party remove', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -2263,15 +2489,45 @@ Deno.test('/party remove', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await party.remove({
+      const message = party.remove({
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -2305,7 +2561,7 @@ Deno.test('/party remove', async (test) => {
           }],
           attachments: [],
         },
-      });
+      );
     } finally {
       delete config.appId;
       delete config.origin;
@@ -2313,6 +2569,7 @@ Deno.test('/party remove', async (test) => {
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2325,6 +2582,8 @@ Deno.test('/party remove', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -2357,6 +2616,7 @@ Deno.test('/party remove', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -2372,16 +2632,49 @@ Deno.test('/party remove', async (test) => {
       returnsNext([true]),
     );
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await party.remove({
+      const message = party.remove({
         spot: 2,
         userId: 'user_id',
         guildId: 'guild_id',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 3);
+
+      assertEquals(
+        fetchStub.calls[2].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -2395,11 +2688,15 @@ Deno.test('/party remove', async (test) => {
           components: [],
           attachments: [],
         },
-      });
+      );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 
@@ -2412,6 +2709,8 @@ Deno.test('/party remove', async (test) => {
         },
       },
     ];
+
+    const timeStub = new FakeTime();
 
     const fetchStub = stub(
       globalThis,
@@ -2439,6 +2738,7 @@ Deno.test('/party remove', async (test) => {
               },
             }))),
         } as any,
+        undefined,
       ]),
     );
 
@@ -2450,16 +2750,49 @@ Deno.test('/party remove', async (test) => {
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
     try {
-      const message = await party.remove({
+      const message = party.remove({
         spot: 1,
         userId: 'user_id',
         guildId: 'guild_id',
+        token: 'test_token',
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
           embeds: [
             {
               type: 'rich',
@@ -2470,57 +2803,15 @@ Deno.test('/party remove', async (test) => {
           components: [],
           attachments: [],
         },
-      });
-    } finally {
-      fetchStub.restore();
-      listStub.restore();
-      isDisabledStub.restore();
-    }
-  });
-
-  await test.step('unknown error', async () => {
-    const fetchStub = stub(
-      globalThis,
-      'fetch',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                removeCharacterFromParty: {
-                  ok: false,
-                  error: 'UNKNOWN_ERROR',
-                },
-              },
-            }))),
-        } as any,
-      ]),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    const isDisabledStub = stub(packs, 'isDisabled', () => false);
-
-    try {
-      await assertRejects(
-        async () =>
-          await party.remove({
-            spot: 1,
-            userId: 'user_id',
-            guildId: 'guild_id',
-          }),
-        Error,
-        'UNKNOWN_ERROR',
       );
     } finally {
+      delete config.appId;
+      delete config.origin;
+
       fetchStub.restore();
       listStub.restore();
       isDisabledStub.restore();
+      timeStub.restore();
     }
   });
 });

@@ -1296,6 +1296,7 @@ Deno.test('party command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
           search: 'name',
@@ -1389,6 +1390,7 @@ Deno.test('party command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
           search: 'name',
@@ -1479,6 +1481,7 @@ Deno.test('party command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
           search: 'id=uuid',
@@ -1572,6 +1575,7 @@ Deno.test('party command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
           a: 5,
@@ -1661,6 +1665,7 @@ Deno.test('party command handlers', async (test) => {
 
       assertSpyCall(partyStub, 0, {
         args: [{
+          token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
           spot: 5,
