@@ -19,6 +19,7 @@ const config: {
   stealing?: boolean;
   synthesis?: boolean;
   communityPacks?: boolean;
+  combat?: boolean;
 } = {
   deploy: false,
   appId: undefined,
@@ -36,6 +37,7 @@ const config: {
   stealing: undefined,
   synthesis: undefined,
   communityPacks: undefined,
+  combat: undefined,
 };
 
 export async function initConfig(): Promise<void> {
@@ -82,6 +84,9 @@ export async function initConfig(): Promise<void> {
 
     config.communityPacks = !Deno.env.has('COMMUNITY_PACKS') ||
       Deno.env.get('COMMUNITY_PACKS') === '1';
+
+    config.combat = !Deno.env.has('COMBAT') ||
+      Deno.env.get('COMBAT') === '1';
 
     config.origin = undefined;
   }
