@@ -40,7 +40,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(51, chance);
+      assertEquals(90, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -58,7 +58,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(6, chance);
+      assertEquals(1, chance);
     });
 
     await test.step('7 inactive day', () => {
@@ -96,6 +96,24 @@ Deno.test('chances', async (test) => {
 
       assertEquals(51, chance);
     });
+
+    await test.step('31 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 31);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(90, chance);
+    });
   });
 
   await test.step('4*', async (test) => {
@@ -112,7 +130,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(55, chance);
+      assertEquals(90, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -130,7 +148,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(10, chance);
+      assertEquals(3, chance);
     });
 
     await test.step('7 inactive day', () => {
@@ -148,7 +166,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(30, chance);
+      assertEquals(28, chance);
     });
 
     await test.step('14 inactive day', () => {
@@ -166,7 +184,25 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(55, chance);
+      assertEquals(53, chance);
+    });
+
+    await test.step('31 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 31);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(90, chance);
     });
   });
 
@@ -184,7 +220,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(65, chance);
+      assertEquals(90, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -202,7 +238,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(20, chance);
+      assertEquals(15, chance);
     });
 
     await test.step('7 inactive day', () => {
@@ -240,6 +276,24 @@ Deno.test('chances', async (test) => {
 
       assertEquals(65, chance);
     });
+
+    await test.step('31 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 31);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(90, chance);
+    });
   });
 
   await test.step('2*', async (test) => {
@@ -256,7 +310,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(75, chance);
+      assertEquals(90, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -274,7 +328,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(30, chance);
+      assertEquals(25, chance);
     });
 
     await test.step('7 inactive day', () => {
@@ -312,6 +366,24 @@ Deno.test('chances', async (test) => {
 
       assertEquals(75, chance);
     });
+
+    await test.step('31 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 31);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(90, chance);
+    });
   });
 
   await test.step('1*', async (test) => {
@@ -328,7 +400,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(100, chance);
+      assertEquals(90, chance);
     });
 
     await test.step('1 inactive day', () => {
@@ -346,7 +418,7 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(55, chance);
+      assertEquals(50, chance);
     });
 
     await test.step('7 inactive day', () => {
@@ -382,7 +454,25 @@ Deno.test('chances', async (test) => {
         },
       });
 
-      assertEquals(100, chance);
+      assertEquals(90, chance);
+    });
+
+    await test.step('31 inactive day', () => {
+      const date = new Date();
+
+      date.setDate(date.getDate() - 31);
+
+      const chance = steal.getChances({
+        id: '',
+        mediaId: '',
+        rating,
+        user: {},
+        inventory: {
+          lastPull: date.toISOString(),
+        },
+      });
+
+      assertEquals(90, chance);
     });
   });
 });
@@ -2172,13 +2262,13 @@ Deno.test('/steal', async (test) => {
             },
             {
               type: 'rich',
-              description: 'Your chance of success is **75.00%**',
+              description: 'Your chance of success is **90.00%**',
             },
           ],
           components: [{
             components: [
               {
-                custom_id: 'steal=user_id=id:1=75=0',
+                custom_id: 'steal=user_id=id:1=90=0',
                 label: 'Attempt',
                 style: 2,
                 type: 2,
@@ -2350,7 +2440,7 @@ Deno.test('/steal', async (test) => {
           components: [{
             components: [
               {
-                custom_id: 'bsteal=user_id=id:1=75=5',
+                custom_id: 'bsteal=user_id=id:1=90=5',
                 label: 'Continue',
                 style: 2,
                 type: 2,
@@ -2670,13 +2760,13 @@ Deno.test('/steal', async (test) => {
             },
             {
               type: 'rich',
-              description: 'Your chance of success is **75.00%**',
+              description: 'Your chance of success is **90.00%**',
             },
           ],
           components: [{
             components: [
               {
-                custom_id: 'steal=user_id=id:1=75=0',
+                custom_id: 'steal=user_id=id:1=90=0',
                 label: 'Attempt',
                 style: 2,
                 type: 2,

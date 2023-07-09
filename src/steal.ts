@@ -37,7 +37,7 @@ function getChances(character: Schema.Character): number {
       chance = 1;
       break;
     case 4:
-      chance = 5;
+      chance = 3;
       break;
     case 3:
       chance = 15;
@@ -54,15 +54,15 @@ function getChances(character: Schema.Character): number {
 
   const inactiveDays = getInactiveDays(character.inventory);
 
-  if (inactiveDays >= 14) {
+  if (inactiveDays > 30) {
+    chance += 90;
+  } else if (inactiveDays >= 14) {
     chance += 50;
   } else if (inactiveDays >= 7) {
     chance += 25;
-  } else if (inactiveDays >= 1) {
-    chance += 5;
   }
 
-  return chance;
+  return Math.min(chance, 90);
 }
 
 async function getCooldown({ userId, guildId }: {
