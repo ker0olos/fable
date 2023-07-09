@@ -54,6 +54,16 @@ type Inventory @collection(name: "inventory") {
   user: User!
 }
 
+type CharacterCombat @embedded {
+  stats: CharacterStats!
+}
+
+type CharacterStats @embedded {
+  strength: Int!
+  stamina: Int!
+  agility: Int!
+}
+
 type Character @collection(name: "character") {
   # the character pack-id:id
   id: String!
@@ -65,6 +75,8 @@ type Character @collection(name: "character") {
   nickname: String
   # a custom image url
   image: String
+  # character combat related data
+  combat: CharacterCombat
   # the instance that contains this character
   instance: Instance!
   # the inventory where this character is currently
