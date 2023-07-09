@@ -321,7 +321,8 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'assign':
-                return (await party.assign({
+                return party.assign({
+                  token,
                   spot,
                   userId: member.user.id,
                   guildId,
@@ -329,20 +330,22 @@ export const handler = async (r: Request) => {
                   id: character.startsWith(idPrefix)
                     ? character.substring(idPrefix.length)
                     : undefined,
-                })).send();
+                }).send();
               case 'swap':
-                return (await party.swap({
+                return party.swap({
+                  token,
                   guildId,
                   userId: member.user.id,
                   a: options['a'] as number,
                   b: options['b'] as number,
-                })).send();
+                }).send();
               case 'remove':
-                return (await party.remove({
+                return party.remove({
+                  token,
                   spot,
                   guildId,
                   userId: member.user.id,
-                })).send();
+                }).send();
               default: {
                 const user = options['user'] as string ?? member.user.id;
 

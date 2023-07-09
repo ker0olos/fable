@@ -14,9 +14,7 @@ import * as discord from './discord.ts';
 
 import { default as srch } from './search.ts';
 
-import { Character, DisaggregatedCharacter, Schema } from './types.ts';
-
-// TODO add loading spinners
+import { Character, Schema } from './types.ts';
 
 async function embed({ guildId, inventory }: {
   guildId: string;
@@ -190,142 +188,171 @@ function view({ token, userId, guildId }: {
   return loading;
 }
 
-async function assign({
+function assign({
+  token,
   spot,
   userId,
   guildId,
   search,
   id,
 }: {
+  token: string;
   userId: string;
   guildId: string;
   spot?: number;
   search?: string;
   id?: string;
-}): Promise<discord.Message> {
-  const mutation = gql`
-    mutation ($userId: String!, $guildId: String!, $characterId: String!, $spot: Int) {
-      setCharacterToParty(userId: $userId, guildId: $guildId, characterId: $characterId, spot: $spot) {
-        ok
-        error
-        character {
-          id
-          mediaId
-          rating
-          image
-          nickname
-          user {
-            id
+}): discord.Message {
+  packs
+    .characters(id ? { ids: [id], guildId } : { search, guildId })
+    .then(async (results) => {
+      const mutation = gql`
+        mutation ($userId: String!, $guildId: String!, $characterId: String!, $spot: Int) {
+          setCharacterToParty(userId: $userId, guildId: $guildId, characterId: $characterId, spot: $spot) {
+            ok
+            error
+            character {
+              id
+              mediaId
+              rating
+              image
+              nickname
+              user {
+                id
+              }
+            }
           }
         }
+      `;
+
+      const character = await packs.aggregate<Character>({
+        character: results[0],
+        guildId,
+        end: 1,
+      });
+
+      const media = character.media?.edges?.[0]?.node;
+
+      if (
+        !results.length ||
+        packs.isDisabled(`${character.packId}:${character.id}`, guildId) ||
+        (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
+      ) {
+        throw new Error('404');
       }
-    }
-  `;
 
-  const results: (Character | DisaggregatedCharacter)[] = await packs
-    .characters(id ? { ids: [id], guildId } : { search, guildId });
+      const message = new discord.Message();
 
-  const character = await packs.aggregate<Character>({
-    character: results[0],
-    guildId,
-    end: 1,
-  });
+      const characterId = `${character.packId}:${character.id}`;
 
-  const media = character.media?.edges?.[0]?.node;
+      const response = (await request<{
+        setCharacterToParty: Schema.Mutation;
+      }>({
+        url: faunaUrl,
+        query: mutation,
+        headers: {
+          'authorization': `Bearer ${config.faunaSecret}`,
+        },
+        variables: {
+          userId,
+          guildId,
+          characterId,
+          spot,
+        },
+      })).setCharacterToParty;
 
-  if (
-    !results.length ||
-    packs.isDisabled(`${character.packId}:${character.id}`, guildId) ||
-    (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
-  ) {
-    throw new Error('404');
-  }
+      if (!response.ok) {
+        const names = packs.aliasToArray(results[0].name);
 
-  const message = new discord.Message();
-
-  const characterId = `${character.packId}:${character.id}`;
-
-  const response = (await request<{
-    setCharacterToParty: Schema.Mutation;
-  }>({
-    url: faunaUrl,
-    query: mutation,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-      characterId,
-      spot,
-    },
-  })).setCharacterToParty;
-
-  if (!response.ok) {
-    const names = packs.aliasToArray(results[0].name);
-
-    message.setFlags(discord.MessageFlags.Ephemeral);
-
-    switch (response.error) {
-      case 'CHARACTER_NOT_FOUND': {
-        return message.addEmbed(
-          new discord.Embed().setDescription(
-            `${names[0]} hasn't been found by anyone yet.`,
-          ),
-        ).addComponents([
-          new discord.Component()
-            .setLabel('/character')
-            .setId(`character`, characterId),
-        ]);
+        switch (response.error) {
+          case 'CHARACTER_NOT_FOUND': {
+            return message.addEmbed(
+              new discord.Embed().setDescription(
+                `${names[0]} hasn't been found by anyone yet`,
+              ),
+            ).addComponents([
+              new discord.Component()
+                .setLabel('/character')
+                .setId(`character`, characterId),
+            ]).patch(token);
+          }
+          case 'CHARACTER_NOT_OWNED':
+            return message.addEmbed(
+              new discord.Embed().setDescription(
+                `${
+                  names[0]
+                } is owned by <@${response.character.user.id}> and cannot be assigned to your party`,
+              ),
+            ).addComponents([
+              new discord.Component()
+                .setLabel('/character')
+                .setId(
+                  `character`,
+                  response.character.id,
+                ),
+            ]).patch(token);
+          default:
+            throw new Error(response.error);
+        }
       }
-      case 'CHARACTER_NOT_OWNED':
-        return message.addEmbed(
-          new discord.Embed().setDescription(
-            `${
-              names[0]
-            } is owned by <@${response.character.user.id}> and cannot be assigned to your party.`,
-          ),
-        ).addComponents([
+
+      return message
+        .addEmbed(new discord.Embed().setDescription('Assigned'))
+        .addEmbed(srch.characterEmbed(results[0], {
+          mode: 'thumbnail',
+          rating: new Rating({ stars: response.character.rating }),
+          description: true,
+          footer: false,
+          existing: {
+            image: response.character.image,
+            nickname: response.character.nickname,
+          },
+        }))
+        .addComponents([
           new discord.Component()
             .setLabel('/character')
             .setId(
               `character`,
               response.character.id,
             ),
-        ]);
-      default:
-        throw new Error(response.error);
-    }
-  }
+        ]).patch(token);
+    })
+    .catch(async (err) => {
+      if (err.message === '404') {
+        await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'Found _nothing_ matching that query!',
+            ),
+          ).patch(token);
+      }
 
-  return message
-    .addEmbed(new discord.Embed().setDescription('Assigned'))
-    .addEmbed(srch.characterEmbed(results[0], {
-      mode: 'thumbnail',
-      rating: new Rating({ stars: response.character.rating }),
-      description: true,
-      footer: false,
-      existing: {
-        image: response.character.image,
-        nickname: response.character.nickname,
-      },
-    }))
-    .addComponents([
-      new discord.Component()
-        .setLabel('/character')
-        .setId(
-          `character`,
-          response.character.id,
-        ),
-    ]);
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner3.gif` },
+      ),
+    );
+
+  return loading;
 }
 
-async function swap({ a, b, userId, guildId }: {
+function swap({ token, a, b, userId, guildId }: {
+  token: string;
   a: number;
   b: number;
   userId: string;
   guildId: string;
-}): Promise<discord.Message> {
+}): discord.Message {
   const mutation = gql`
     mutation ($userId: String!, $guildId: String!, $a: Int!, $b: Int!) {
       swapCharactersInParty(userId: $userId, guildId: $guildId, a: $a, b: $b) {
@@ -373,7 +400,7 @@ async function swap({ a, b, userId, guildId }: {
     }
   `;
 
-  const response = (await request<{
+  request<{
     swapCharactersInParty: Schema.Mutation;
   }>({
     url: faunaUrl,
@@ -387,20 +414,41 @@ async function swap({ a, b, userId, guildId }: {
       a,
       b,
     },
-  })).swapCharactersInParty;
+  })
+    .then(async ({ swapCharactersInParty: response }) => {
+      if (!response.ok) {
+        throw new Error(response.error);
+      }
 
-  if (!response.ok) {
-    throw new Error(response.error);
-  }
+      return (await embed({ guildId, inventory: response.inventory }))
+        .patch(token);
+    })
+    .catch(async (err) => {
+      if (!config.sentry) {
+        throw err;
+      }
 
-  return embed({ guildId, inventory: response.inventory });
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner3.gif` },
+      ),
+    );
+
+  return loading;
 }
 
-async function remove({ spot, userId, guildId }: {
+function remove({ token, spot, userId, guildId }: {
+  token: string;
   spot: number;
   userId: string;
   guildId: string;
-}): Promise<discord.Message> {
+}): discord.Message {
   const mutation = gql`
     mutation ($userId: String!, $guildId: String!, $spot: Int!) {
       removeCharacterFromParty(userId: $userId, guildId: $guildId, spot: $spot) {
@@ -416,9 +464,7 @@ async function remove({ spot, userId, guildId }: {
     }
   `;
 
-  const message = new discord.Message();
-
-  const response = (await request<{
+  request<{
     removeCharacterFromParty: Schema.Mutation;
   }>({
     url: faunaUrl,
@@ -431,59 +477,80 @@ async function remove({ spot, userId, guildId }: {
       guildId,
       spot,
     },
-  })).removeCharacterFromParty;
+  })
+    .then(async ({ removeCharacterFromParty: response }) => {
+      if (!response.ok) {
+        throw new Error(response.error);
+      }
 
-  if (!response.ok) {
-    throw new Error(response.error);
-  }
+      const message = new discord.Message();
 
-  if (!response.character) {
-    return message.addEmbed(
-      new discord.Embed().setDescription(
-        'There was no character assigned to this spot of the party',
+      if (!response.character) {
+        return message.addEmbed(
+          new discord.Embed().setDescription(
+            'There was no character assigned to this spot of the party',
+          ),
+        ).patch(token);
+      }
+
+      const characters = await packs.characters({
+        ids: [response.character.id],
+        guildId,
+      });
+
+      if (
+        !characters.length ||
+        packs.isDisabled(response.character.id, guildId) ||
+        packs.isDisabled(response.character.mediaId, guildId)
+      ) {
+        return message
+          .addEmbed(new discord.Embed().setDescription(`Removed #${spot}`))
+          .addEmbed(
+            new discord.Embed().setDescription(
+              'This character was removed or disabled',
+            ),
+          ).patch(token);
+      }
+
+      return message
+        .addEmbed(new discord.Embed().setDescription('Removed'))
+        .addEmbed(srch.characterEmbed(characters[0], {
+          mode: 'thumbnail',
+          rating: new Rating({ stars: response.character.rating }),
+          description: true,
+          footer: false,
+          existing: {
+            image: response.character.image,
+            nickname: response.character.nickname,
+          },
+        }))
+        .addComponents([
+          new discord.Component()
+            .setLabel('/character')
+            .setId(
+              `character`,
+              response.character.id,
+            ),
+        ]).patch(token);
+    })
+    .catch(async (err) => {
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner3.gif` },
       ),
     );
-  }
 
-  const characters = await packs.characters({
-    ids: [response.character.id],
-    guildId,
-  });
-
-  if (
-    !characters.length ||
-    packs.isDisabled(response.character.id, guildId) ||
-    packs.isDisabled(response.character.mediaId, guildId)
-  ) {
-    return message
-      .addEmbed(new discord.Embed().setDescription(`Removed #${spot}`))
-      .addEmbed(
-        new discord.Embed().setDescription(
-          'This character was removed or disabled',
-        ),
-      );
-  }
-
-  return message
-    .addEmbed(new discord.Embed().setDescription('Removed'))
-    .addEmbed(srch.characterEmbed(characters[0], {
-      mode: 'thumbnail',
-      rating: new Rating({ stars: response.character.rating }),
-      description: true,
-      footer: false,
-      existing: {
-        image: response.character.image,
-        nickname: response.character.nickname,
-      },
-    }))
-    .addComponents([
-      new discord.Component()
-        .setLabel('/character')
-        .setId(
-          `character`,
-          response.character.id,
-        ),
-    ]);
+  return loading;
 }
 
 const user = {
