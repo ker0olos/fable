@@ -1104,21 +1104,6 @@ export const handler = async (r: Request) => {
     .send();
 };
 
-function override(
-  age: number,
-  type?: string,
-): (req: Request, res: Response) => Response {
-  return (_: Request, response: Response): Response => {
-    if (type) {
-      response.headers.set('Content-Type', type);
-    }
-
-    response.headers.set('Cache-Control', `public, max-age=${age}`);
-
-    return response;
-  };
-}
-
 if (import.meta.main) {
   await initConfig();
 
@@ -1126,13 +1111,9 @@ if (import.meta.main) {
 
   utils.serve({
     '/': handler,
-    //
     '/webhooks/topgg': webhooks.topgg,
-    //
     '/community/publish': community.publish,
-    '/community/*': community.query, // TODO REMOVE provides backwards compatibility
     '/community': community.query,
-    //
     '/invite': () =>
       Response.redirect(
         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,
@@ -1148,15 +1129,14 @@ if (import.meta.main) {
         return Response.redirect(decodeURIComponent(imgUrl));
       }
     },
+    '/assets/:filename+': utils.serveStatic('../assets/public', {
+      baseUrl: import.meta.url,
+    }),
     '/robots.txt': () => {
       return new Response(
         'User-agent: *\nDisallow: /',
         { headers: { 'content-type': 'text/plain' } },
       );
     },
-    '/assets/:filename+': utils.serveStatic('../assets/public', {
-      intervene: override(86400),
-      baseUrl: import.meta.url,
-    }),
   });
 }
