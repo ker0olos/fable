@@ -112,7 +112,7 @@ packs you make, wanna start creating your own community pack? Visit
 - [Roadmap](https://github.com/ker0olos/fable/issues/1)
 - [How to Contribute](https://github.com/ker0olos/fable/wiki)
 - [How to Create Packs](https://packs.deno.dev)
-- [How to Self-host](https://github.com/ker0olos/fable/wiki/Self-hosting)
+- [Donate to Fable](https://github.com/sponsors/ker0olos)
 - [Discord Support Server][discord]
 
 <br/>

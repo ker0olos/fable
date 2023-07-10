@@ -1140,11 +1140,13 @@ if (import.meta.main) {
     '/external/*': (r) => {
       const { pathname, search } = new URL(r.url);
 
-      return Response.redirect(
-        `${config.imageProxyUrl}/${
-          pathname.substring('/external/'.length)
-        }${search}`,
-      );
+      const imgUrl = `${pathname.substring('/external/'.length)}${search}`;
+
+      if (config.imageProxyUrl) {
+        return Response.redirect(`${config.imageProxyUrl}/${imgUrl}`);
+      } else {
+        return Response.redirect(decodeURIComponent(imgUrl));
+      }
     },
     '/robots.txt': () => {
       return new Response(
