@@ -46,9 +46,6 @@ async function embed({ guildId, inventory }: {
     inventory.party?.member5,
   ];
 
-  // load community packs
-  await packs.all({ guildId });
-
   const [media, characters] = await Promise.all([
     packs.media({ ids: mediaIds.filter(Boolean), guildId }),
     packs.characters({ ids: ids.filter(Boolean), guildId }),

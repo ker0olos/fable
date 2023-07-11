@@ -19,6 +19,7 @@ import packs from '../src/packs.ts';
 import trade from '../src/trade.ts';
 import steal from '../src/steal.ts';
 import shop from '../src/shop.ts';
+import battle from '../src/battle.ts';
 import help from '../src/help.ts';
 
 import synthesis from '../src/synthesis.ts';
@@ -7227,6 +7228,96 @@ Deno.test('community packs command handlers', async (test) => {
       signatureStub.restore();
     }
   });
+});
+
+Deno.test('battle', async () => {
+  const body = JSON.stringify({
+    id: 'id',
+    token: 'token',
+    type: discord.InteractionType.Command,
+    guild_id: 'guild_id',
+    data: {
+      name: 'experimental',
+      options: [{
+        type: 1,
+        name: `battle`,
+        options: [
+          {
+            name: 'char1',
+            value: 'char1_id',
+          },
+          {
+            name: 'char2',
+            value: 'char2_id',
+          },
+        ],
+      }],
+    },
+  });
+
+  const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+  const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+    valid: true,
+    body,
+  } as any));
+
+  const packsStub = stub(battle, 'pre', () =>
+    ({
+      send: () => true,
+    }) as any);
+
+  config.publicKey = 'publicKey';
+
+  try {
+    const request = new Request('http://localhost:8000', {
+      body,
+      method: 'POST',
+      headers: {
+        'X-Signature-Ed25519': 'ed25519',
+        'X-Signature-Timestamp': 'timestamp',
+      },
+    });
+
+    const response = await handler(request);
+
+    assertSpyCall(validateStub, 0, {
+      args: [
+        request,
+        {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        },
+      ],
+    });
+
+    assertSpyCall(signatureStub, 0, {
+      args: [{
+        body,
+        signature: 'ed25519',
+        timestamp: 'timestamp',
+        publicKey: 'publicKey',
+      }],
+    });
+
+    assertSpyCall(packsStub, 0, {
+      args: [{
+        token: 'token',
+        guildId: 'guild_id',
+        party1: ['char1_id'],
+        party2: ['char2_id'],
+      }],
+    });
+
+    assertEquals(response, true as any);
+  } finally {
+    delete config.publicKey;
+
+    packsStub.restore();
+    validateStub.restore();
+    signatureStub.restore();
+  }
 });
 
 Deno.test('invalid request', async (test) => {

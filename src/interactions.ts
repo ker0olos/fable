@@ -10,6 +10,7 @@ import gacha from './gacha.ts';
 import trade from './trade.ts';
 import steal from './steal.ts';
 import shop from './shop.ts';
+import battle from './battle.ts';
 import help from './help.ts';
 
 import synthesis from './synthesis.ts';
@@ -164,7 +165,8 @@ export const handler = async (r: Request) => {
             'custom',
             'like',
             'unlike',
-          ].includes(name)
+          ].includes(name) ||
+          (name === 'experimental' && subcommand === 'battle')
         ) {
           // deno-lint-ignore no-non-null-assertion
           const name = options[focused!] as string;
@@ -665,6 +667,25 @@ export const handler = async (r: Request) => {
             const index = options['page'] as number || 0;
 
             return help.pages({ userId: member.user.id, index }).send();
+          }
+          case 'experimental': {
+            //deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'battle': {
+                const targetId = options['versus'] as string;
+
+                return battle.pre({
+                  token,
+                  guildId,
+                  userId: member.user.id,
+                  targetId: targetId,
+                })
+                  .send();
+              }
+              default:
+                break;
+            }
+            break;
           }
           case 'logs': {
             const userId = options['user'] as string ?? member.user.id;
