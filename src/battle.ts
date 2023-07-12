@@ -189,7 +189,7 @@ function experimental({ token, guildId, user, target }: {
       // if agility is the same party 2 takes priority
       keys.sort((a, b) => setup[b].agility - setup[a].agility);
 
-      let winProbability = 50;
+      const winProbability = 50;
 
       message.addAttachment({
         type: 'image/png',
