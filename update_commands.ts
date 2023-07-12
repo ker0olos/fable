@@ -757,14 +757,15 @@ export const commands = [
       }),
     ],
   }),
-  // collection browsing
+  // experimental ephemeral temporary
   ...Command({
     name: 'experimental',
-    description: 'experimental ephemeral commands',
+    description: 'experimental ephemeral temporary commands',
     options: [
       Option({
         name: 'battle',
-        description: 'Mock battle',
+        description:
+          'Try the new combat in a mock battle against another player\'s party',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [

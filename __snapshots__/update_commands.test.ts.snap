@@ -2453,14 +2453,14 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "experimental ephemeral commands",
+    description: "experimental ephemeral temporary commands",
     dm_permission: false,
     name: "experimental",
     options: [
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Mock battle",
+        description: "Try the new combat in a mock battle against another player's party",
         max_value: undefined,
         min_value: undefined,
         name: "battle",

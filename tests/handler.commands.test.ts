@@ -6914,7 +6914,6 @@ Deno.test('community packs command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-
       member: {
         user: {
           id: 'user_id',
@@ -7236,19 +7235,27 @@ Deno.test('battle', async () => {
     token: 'token',
     type: discord.InteractionType.Command,
     guild_id: 'guild_id',
+    member: {
+      user: {
+        id: 'user_id',
+      },
+    },
     data: {
       name: 'experimental',
+      resolved: {
+        users: {
+          'another_user_id': {
+            id: 'another_user_id',
+          },
+        },
+      },
       options: [{
         type: 1,
         name: `battle`,
         options: [
           {
-            name: 'char1',
-            value: 'char1_id',
-          },
-          {
-            name: 'char2',
-            value: 'char2_id',
+            name: 'versus',
+            value: 'another_user_id',
           },
         ],
       }],
@@ -7262,7 +7269,7 @@ Deno.test('battle', async () => {
     body,
   } as any));
 
-  const packsStub = stub(battle, 'pre', () =>
+  const battleStub = stub(battle, 'experimental', () =>
     ({
       send: () => true,
     }) as any);
@@ -7301,12 +7308,16 @@ Deno.test('battle', async () => {
       }],
     });
 
-    assertSpyCall(packsStub, 0, {
+    assertSpyCall(battleStub, 0, {
       args: [{
         token: 'token',
         guildId: 'guild_id',
-        party1: ['char1_id'],
-        party2: ['char2_id'],
+        user: {
+          id: 'user_id',
+        } as any,
+        target: {
+          id: 'another_user_id',
+        } as any,
       }],
     });
 
@@ -7314,7 +7325,7 @@ Deno.test('battle', async () => {
   } finally {
     delete config.publicKey;
 
-    packsStub.restore();
+    battleStub.restore();
     validateStub.restore();
     signatureStub.restore();
   }

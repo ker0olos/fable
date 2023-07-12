@@ -20,9 +20,11 @@ import community from './community.ts';
 
 import config, { initConfig } from './config.ts';
 
-import { Character, Media } from './types.ts';
+import { handler as proxy } from '../images-proxy/build/images_proxy.js';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
+
+import type { Character, Media } from './types.ts';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -70,6 +72,7 @@ export const handler = async (r: Request) => {
     focused,
     member,
     options,
+    resolved,
     subcommand,
     customType,
     customValues,
@@ -674,11 +677,12 @@ export const handler = async (r: Request) => {
               case 'battle': {
                 const targetId = options['versus'] as string;
 
-                return battle.pre({
+                return battle.experimental({
                   token,
                   guildId,
-                  userId: member.user.id,
-                  targetId: targetId,
+                  user: member.user,
+                  // deno-lint-ignore no-non-null-assertion
+                  target: resolved!.users![targetId],
                 })
                   .send();
               }
@@ -1140,15 +1144,12 @@ if (import.meta.main) {
         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,
       ),
     '/external/*': (r) => {
-      const { pathname, search } = new URL(r.url);
+      const url = new URL(r.url);
 
-      const imgUrl = `${pathname.substring('/external/'.length)}${search}`;
+      url.pathname = url.pathname
+        .replace('/external/', '/');
 
-      if (config.imageProxyUrl) {
-        return Response.redirect(`${config.imageProxyUrl}/${imgUrl}`);
-      } else {
-        return Response.redirect(decodeURIComponent(imgUrl));
-      }
+      return proxy(new Request(url));
     },
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       baseUrl: import.meta.url,

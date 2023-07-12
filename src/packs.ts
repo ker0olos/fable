@@ -611,6 +611,9 @@ async function media({ ids, search, guildId, anilistOptions }: {
   anilistOptions?: AnilistSearchOptions;
 }): Promise<(Media | DisaggregatedMedia)[]> {
   if (ids?.length) {
+    // remove duplicates
+    ids = Array.from(new Set(ids));
+
     const results = await findById<Media | DisaggregatedMedia>(
       {
         ids,
@@ -638,6 +641,9 @@ async function characters({ ids, search, guildId }: {
   guildId: string;
 }): Promise<(Character | DisaggregatedCharacter)[]> {
   if (ids?.length) {
+    // remove duplicates
+    ids = Array.from(new Set(ids));
+
     const results = await findById<Character | DisaggregatedCharacter>(
       {
         ids,

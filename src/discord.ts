@@ -25,6 +25,8 @@ export const emotes = {
   add: '<:add:1099004747123523644>',
   all: '<:all:1107511909999181824>',
   liked: '<:liked:1110491720375873567>',
+  alive: '<:alive2:1128724907245711452>',
+  dead: '<:dead2:1128724910609551481>',
 };
 
 export const join = (...args: string[]): string => {
@@ -692,6 +694,18 @@ export class Message {
     }
 
     return this;
+  }
+
+  spliceEmbeds(start: number, deleteCount?: number): Message {
+    if (this.#data.embeds.length) {
+      this.#data.embeds.splice(start, deleteCount);
+    }
+
+    return this;
+  }
+
+  getEmbedsCount(): number {
+    return this.#data.embeds?.length ?? 0;
   }
 
   addComponents(components: Component[]): Message {

@@ -28,6 +28,27 @@ function getRandomFloat(): number {
   return randomInt / 2 ** 32;
 }
 
+function randomPortions(
+  min: number,
+  max: number,
+  length: number,
+  sum: number,
+): number[] {
+  return Array.from({ length }, (_, i) => {
+    const smin = (length - i - 1) * min;
+    const smax = (length - i - 1) * max;
+
+    const offset = Math.max(sum - smax, min);
+    const random = 1 + Math.min(sum - offset, max - offset, sum - smin - min);
+
+    const value = Math.floor(Math.random() * random + offset);
+
+    sum -= value;
+
+    return value;
+  });
+}
+
 function hexToInt(hex?: string): number | undefined {
   if (!hex) {
     return;
@@ -345,12 +366,14 @@ const utils = {
   compact,
   decipher,
   decodeDescription,
+  diffInDays,
   distance,
+  getRandomFloat,
   hexToInt,
   initSentry,
   json,
   parseInt: _parseInt,
-  diffInDays,
+  randomPortions,
   readJson,
   rechargeTimestamp,
   rng,
@@ -358,12 +381,11 @@ const utils = {
   serveStatic,
   shuffle,
   sleep,
+  stealTimestamp,
   truncate,
   validateRequest,
   verifySignature,
   votingTimestamp,
-  stealTimestamp,
-  getRandomFloat,
   wrap,
 };
 
