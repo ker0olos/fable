@@ -1,7 +1,8 @@
 [submodule "dyn-images"]
 	path = dyn-images
 	url = https://github.com/fable-community/dyn-images
+	branch = main
 [submodule "images-proxy"]
 	path = images-proxy
 	url = https://github.com/fable-community/images-proxy
-	branch = lib
+	branch = main

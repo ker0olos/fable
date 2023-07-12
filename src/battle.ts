@@ -9,7 +9,7 @@ import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
-import * as dynImages from '../dyn-images/build/dyn_images.js';
+import * as dynImages from '../dyn-images/mod.ts';
 
 import type { Schema } from './types.ts';
 

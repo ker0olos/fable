@@ -1,3 +1,5 @@
+import { LRU } from 'lru';
+
 import * as discord from './discord.ts';
 
 import search, { idPrefix } from './search.ts';
@@ -20,11 +22,15 @@ import community from './community.ts';
 
 import config, { initConfig } from './config.ts';
 
-import { handler as proxy } from '../images-proxy/build/images_proxy.js';
+import { proxy } from '../images-proxy/mod.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
 
 import type { Character, Media } from './types.ts';
+
+const TEN_MIB = 1024 * 1024 * 10;
+
+const lru = new LRU<{ body: ArrayBuffer; headers: Headers }>(20);
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -1146,10 +1152,45 @@ if (import.meta.main) {
     '/external/*': (r) => {
       const url = new URL(r.url);
 
-      url.pathname = url.pathname
-        .replace('/external/', '/');
+      const key = (url.pathname + url.search).substring(1);
 
-      return proxy(new Request(url));
+      const hit = lru.get(key);
+
+      if (hit) {
+        console.log(`cache hit: ${key}`);
+
+        return new Response(hit.body, {
+          headers: hit.headers,
+        });
+      }
+
+      const imageUrl = decodeURIComponent(url.pathname
+        .replace('/external/', ''));
+
+      return proxy(
+        imageUrl,
+        url.searchParams.get('size') as Parameters<typeof proxy>['1'],
+      )
+        .then(({ format, image }) => {
+          const response = new Response(image.buffer, {
+            headers: {
+              'content-type': format,
+              'content-length': `${image.byteLength}`,
+              'cache-control': `max-age=${86400 * 12}`,
+            },
+          });
+
+          if (image.byteLength <= TEN_MIB) {
+            const v = {
+              body: image.buffer,
+              headers: response.headers,
+            };
+
+            lru.set(key, v);
+          }
+
+          return response;
+        });
     },
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       baseUrl: import.meta.url,

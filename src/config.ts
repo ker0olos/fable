@@ -7,7 +7,6 @@ const config: {
   appId?: string;
   publicKey?: string;
   faunaSecret?: string;
-  imageProxyUrl?: string;
   topggCipher?: number;
   topggSecret?: string;
   sentry?: string;
@@ -25,7 +24,6 @@ const config: {
   appId: undefined,
   publicKey: undefined,
   faunaSecret: undefined,
-  imageProxyUrl: undefined,
   topggCipher: undefined,
   topggSecret: undefined,
   sentry: undefined,
@@ -62,7 +60,6 @@ export async function initConfig(): Promise<void> {
     config.publicKey = Deno.env.get('PUBLIC_KEY');
 
     config.faunaSecret = Deno.env.get('FAUNA_SECRET');
-    config.imageProxyUrl = Deno.env.get('IMAGE_PROXY_URL');
 
     config.topggCipher = Number(Deno.env.get('TOPGG_WEBHOOK_CIPHER'));
     config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');
