@@ -50,17 +50,7 @@ snapshot[`list > vtubers 1`] = `
             id: "gura",
             images: [
               {
-                url: "https://i.imgur.com/rRTI374.jpeg",
-              },
-              {
-                url: "https://i.imgur.com/3cxxJV7.jpeg",
-              },
-              {
-                artist: {
-                  url: "https://www.pixiv.net/en/users/9212166",
-                  username: "ふわり",
-                },
-                url: "https://i.imgur.com/nQFbxwh.jpeg",
+                url: "https://i.imgur.com/SbKAczR.jpeg",
               },
             ],
             media: [
@@ -104,11 +94,7 @@ snapshot[`list > vtubers 1`] = `
             id: "calliope",
             images: [
               {
-                artist: {
-                  url: "https://www.pixiv.net/en/users/1960050",
-                  username: "torino",
-                },
-                url: "https://i.imgur.com/1twuGk6.jpeg",
+                url: "https://i.imgur.com/dvoMqTL.jpeg",
               },
             ],
             media: [
