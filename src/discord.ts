@@ -631,6 +631,14 @@ export class Message {
     };
   }
 
+  clone(): Message {
+    const cloned = new Message();
+    cloned.#files = [...this.#files];
+    cloned.#data.attachments = [...this.#data.attachments];
+    cloned.#data.embeds = [...this.#data.embeds];
+    return cloned;
+  }
+
   setType(type: MessageType): Message {
     this.#type = type;
     return this;
@@ -662,28 +670,28 @@ export class Message {
     return this;
   }
 
-  addAttachment(
-    { arrayBuffer, filename, type }: {
-      arrayBuffer: ArrayBuffer;
-      filename: string;
-      type: string;
-    },
-  ): Message {
+  addAttachment({ arrayBuffer, filename, type }: {
+    arrayBuffer: ArrayBuffer;
+    filename: string;
+    type: string;
+  }): Message {
     if (!this.#data.attachments) {
       this.#data.attachments = [];
     }
 
     this.#data.attachments.push({
-      id: `${this.#data.attachments.length}`,
       filename,
+      id: `${this.#data.attachments.length}`,
     });
 
-    this.#files.push(
-      new File([arrayBuffer], filename, {
-        type,
-      }),
-    );
+    this.#files.push(new File([arrayBuffer], filename, { type }));
 
+    return this;
+  }
+
+  clearAttachments(): Message {
+    this.#files = [];
+    this.#data.attachments = [];
     return this;
   }
 
@@ -696,16 +704,22 @@ export class Message {
     return this;
   }
 
-  spliceEmbeds(start: number, deleteCount?: number): Message {
-    if (this.#data.embeds.length) {
-      this.#data.embeds.splice(start, deleteCount);
-    }
+  replaceEmbed(index: number, embed: Embed): Message {
+    this.#data.embeds[index] = embed.json();
 
     return this;
   }
 
-  getEmbedsCount(): number {
-    return this.#data.embeds?.length ?? 0;
+  insertEmbed(index: number, embed: Embed): Message {
+    this.#data.embeds.splice(index, 0, embed.json());
+
+    return this;
+  }
+
+  deleteEmbeds(index: number, deleteCount?: number): Message {
+    this.#data.embeds.splice(index, deleteCount ?? 1);
+
+    return this;
   }
 
   addComponents(components: Component[]): Message {
@@ -837,9 +851,7 @@ export class Message {
 
     const response = await fetch(url, { method, body: formData });
 
-    if (config.deploy) {
-      console.log(method, response?.status, response?.statusText);
-    }
+    console.log(method, response?.status, response?.statusText);
 
     if (response?.status === 429) {
       const extra = {

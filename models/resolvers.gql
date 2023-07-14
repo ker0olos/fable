@@ -18,6 +18,10 @@ type Query {
     @resolver(name: "get_user_inventory")
 
   #
+  getUsersInventories(usersIds: [String!], guildId: String!): [Inventory!]
+    @resolver(name: "get_users_inventories")
+
+  #
   findMedia(mediaIds: [String!], guildId: String!): [Character!]
     @resolver(name: "find_media")
 

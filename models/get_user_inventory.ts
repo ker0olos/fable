@@ -335,6 +335,24 @@ export default function (client: Client): {
       }),
       fql.Resolver({
         client,
+        name: 'get_users_inventories',
+        lambda: (usersIds: string[], guildId: string) => {
+          return fql.Let(
+            {
+              guild: getGuild(guildId),
+              instance: getInstance(fql.Var('guild')),
+              inventories: fql.Map(usersIds, (userId) =>
+                getInventory({
+                  user: getUser(userId),
+                  instance: fql.Var('instance'),
+                })),
+            },
+            ({ inventories }) => inventories,
+          );
+        },
+      }),
+      fql.Resolver({
+        client,
         name: 'get_active_inventories',
         lambda: (guildId: string) => {
           return fql.Let(
