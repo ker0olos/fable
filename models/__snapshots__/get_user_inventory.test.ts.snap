@@ -3682,6 +3682,1589 @@ snapshot[`model 8`] = `
                           raw: {
                             in: U {
                               raw: {
+                                var: "inventories",
+                              },
+                            },
+                            let: [
+                              {
+                                guild: U {
+                                  raw: {
+                                    in: U {
+                                      raw: {
+                                        else: U {
+                                          raw: {
+                                            create: U {
+                                              raw: {
+                                                collection: "guild",
+                                              },
+                                            },
+                                            params: U {
+                                              raw: {
+                                                object: {
+                                                  data: U {
+                                                    raw: {
+                                                      object: {
+                                                        id: U {
+                                                          raw: {
+                                                            var: "guildId",
+                                                          },
+                                                        },
+                                                        instances: U {
+                                                          raw: [],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: U {
+                                          raw: {
+                                            is_nonempty: U {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: U {
+                                          raw: {
+                                            get: U {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: U {
+                                          raw: {
+                                            match: U {
+                                              raw: {
+                                                index: "guilds_discord_id",
+                                              },
+                                            },
+                                            terms: U {
+                                              raw: {
+                                                var: "guildId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                              {
+                                instance: U {
+                                  raw: {
+                                    in: U {
+                                      raw: {
+                                        else: U {
+                                          raw: {
+                                            in: U {
+                                              raw: {
+                                                var: "createdInstance",
+                                              },
+                                            },
+                                            let: [
+                                              {
+                                                createdInstance: U {
+                                                  raw: {
+                                                    create: U {
+                                                      raw: {
+                                                        collection: "instance",
+                                                      },
+                                                    },
+                                                    params: U {
+                                                      raw: {
+                                                        object: {
+                                                          data: U {
+                                                            raw: {
+                                                              object: {
+                                                                guild: U {
+                                                                  raw: {
+                                                                    from: U {
+                                                                      raw: {
+                                                                        var: "guild",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                                inventories: U {
+                                                                  raw: [],
+                                                                },
+                                                                main: true,
+                                                                packs: U {
+                                                                  raw: [],
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                              {
+                                                updatedGuild: U {
+                                                  raw: {
+                                                    params: U {
+                                                      raw: {
+                                                        object: {
+                                                          data: U {
+                                                            raw: {
+                                                              object: {
+                                                                instances: U {
+                                                                  raw: [
+                                                                    U {
+                                                                      raw: {
+                                                                        from: U {
+                                                                          raw: {
+                                                                            var: "createdInstance",
+                                                                          },
+                                                                        },
+                                                                        select: "ref",
+                                                                      },
+                                                                    },
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    update: U {
+                                                      raw: {
+                                                        from: U {
+                                                          raw: {
+                                                            var: "guild",
+                                                          },
+                                                        },
+                                                        select: "ref",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                        if: U {
+                                          raw: {
+                                            is_nonempty: U {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: U {
+                                          raw: {
+                                            get: U {
+                                              raw: {
+                                                from: U {
+                                                  raw: {
+                                                    var: "match",
+                                                  },
+                                                },
+                                                select: U {
+                                                  raw: [
+                                                    0,
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: U {
+                                          raw: {
+                                            from: U {
+                                              raw: {
+                                                var: "guild",
+                                              },
+                                            },
+                                            select: U {
+                                              raw: [
+                                                "data",
+                                                "instances",
+                                              ],
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                              {
+                                inventories: U {
+                                  raw: {
+                                    collection: U {
+                                      raw: {
+                                        var: "usersIds",
+                                      },
+                                    },
+                                    map: U {
+                                      raw: {
+                                        expr: U {
+                                          raw: {
+                                            in: U {
+                                              raw: {
+                                                else: U {
+                                                  raw: {
+                                                    in: U {
+                                                      raw: {
+                                                        var: "createdInventory",
+                                                      },
+                                                    },
+                                                    let: [
+                                                      {
+                                                        createdInventory: U {
+                                                          raw: {
+                                                            create: U {
+                                                              raw: {
+                                                                collection: "inventory",
+                                                              },
+                                                            },
+                                                            params: U {
+                                                              raw: {
+                                                                object: {
+                                                                  data: U {
+                                                                    raw: {
+                                                                      object: {
+                                                                        availablePulls: 5,
+                                                                        instance: U {
+                                                                          raw: {
+                                                                            from: U {
+                                                                              raw: {
+                                                                                var: "instance",
+                                                                              },
+                                                                            },
+                                                                            select: "ref",
+                                                                          },
+                                                                        },
+                                                                        user: U {
+                                                                          raw: {
+                                                                            from: U {
+                                                                              raw: {
+                                                                                in: U {
+                                                                                  raw: {
+                                                                                    else: U {
+                                                                                      raw: {
+                                                                                        create: U {
+                                                                                          raw: {
+                                                                                            collection: "user",
+                                                                                          },
+                                                                                        },
+                                                                                        params: U {
+                                                                                          raw: {
+                                                                                            object: {
+                                                                                              data: U {
+                                                                                                raw: {
+                                                                                                  object: {
+                                                                                                    id: U {
+                                                                                                      raw: {
+                                                                                                        var: "userId",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    inventories: U {
+                                                                                                      raw: [],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    if: U {
+                                                                                      raw: {
+                                                                                        is_nonempty: U {
+                                                                                          raw: {
+                                                                                            var: "match",
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    then: U {
+                                                                                      raw: {
+                                                                                        get: U {
+                                                                                          raw: {
+                                                                                            var: "match",
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                let: [
+                                                                                  {
+                                                                                    match: U {
+                                                                                      raw: {
+                                                                                        match: U {
+                                                                                          raw: {
+                                                                                            index: "users_discord_id",
+                                                                                          },
+                                                                                        },
+                                                                                        terms: U {
+                                                                                          raw: {
+                                                                                            var: "userId",
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                  },
+                                                                                ],
+                                                                              },
+                                                                            },
+                                                                            select: "ref",
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                      {
+                                                        updatedInstance: U {
+                                                          raw: {
+                                                            params: U {
+                                                              raw: {
+                                                                object: {
+                                                                  data: U {
+                                                                    raw: {
+                                                                      object: {
+                                                                        inventories: U {
+                                                                          raw: {
+                                                                            append: U {
+                                                                              raw: {
+                                                                                from: U {
+                                                                                  raw: {
+                                                                                    var: "createdInventory",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                            collection: U {
+                                                                              raw: {
+                                                                                from: U {
+                                                                                  raw: {
+                                                                                    var: "instance",
+                                                                                  },
+                                                                                },
+                                                                                select: U {
+                                                                                  raw: [
+                                                                                    "data",
+                                                                                    "inventories",
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                            update: U {
+                                                              raw: {
+                                                                from: U {
+                                                                  raw: {
+                                                                    var: "instance",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                      {
+                                                        updatedUser: U {
+                                                          raw: {
+                                                            params: U {
+                                                              raw: {
+                                                                object: {
+                                                                  data: U {
+                                                                    raw: {
+                                                                      object: {
+                                                                        inventories: U {
+                                                                          raw: {
+                                                                            append: U {
+                                                                              raw: {
+                                                                                from: U {
+                                                                                  raw: {
+                                                                                    var: "createdInventory",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                            collection: U {
+                                                                              raw: {
+                                                                                from: U {
+                                                                                  raw: {
+                                                                                    in: U {
+                                                                                      raw: {
+                                                                                        else: U {
+                                                                                          raw: {
+                                                                                            create: U {
+                                                                                              raw: {
+                                                                                                collection: "user",
+                                                                                              },
+                                                                                            },
+                                                                                            params: U {
+                                                                                              raw: {
+                                                                                                object: {
+                                                                                                  data: U {
+                                                                                                    raw: {
+                                                                                                      object: {
+                                                                                                        id: U {
+                                                                                                          raw: {
+                                                                                                            var: "userId",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        inventories: U {
+                                                                                                          raw: [],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        if: U {
+                                                                                          raw: {
+                                                                                            is_nonempty: U {
+                                                                                              raw: {
+                                                                                                var: "match",
+                                                                                              },
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        then: U {
+                                                                                          raw: {
+                                                                                            get: U {
+                                                                                              raw: {
+                                                                                                var: "match",
+                                                                                              },
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    let: [
+                                                                                      {
+                                                                                        match: U {
+                                                                                          raw: {
+                                                                                            match: U {
+                                                                                              raw: {
+                                                                                                index: "users_discord_id",
+                                                                                              },
+                                                                                            },
+                                                                                            terms: U {
+                                                                                              raw: {
+                                                                                                var: "userId",
+                                                                                              },
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    ],
+                                                                                  },
+                                                                                },
+                                                                                select: U {
+                                                                                  raw: [
+                                                                                    "data",
+                                                                                    "inventories",
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                            update: U {
+                                                              raw: {
+                                                                from: U {
+                                                                  raw: {
+                                                                    in: U {
+                                                                      raw: {
+                                                                        else: U {
+                                                                          raw: {
+                                                                            create: U {
+                                                                              raw: {
+                                                                                collection: "user",
+                                                                              },
+                                                                            },
+                                                                            params: U {
+                                                                              raw: {
+                                                                                object: {
+                                                                                  data: U {
+                                                                                    raw: {
+                                                                                      object: {
+                                                                                        id: U {
+                                                                                          raw: {
+                                                                                            var: "userId",
+                                                                                          },
+                                                                                        },
+                                                                                        inventories: U {
+                                                                                          raw: [],
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                        if: U {
+                                                                          raw: {
+                                                                            is_nonempty: U {
+                                                                              raw: {
+                                                                                var: "match",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                        then: U {
+                                                                          raw: {
+                                                                            get: U {
+                                                                              raw: {
+                                                                                var: "match",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    let: [
+                                                                      {
+                                                                        match: U {
+                                                                          raw: {
+                                                                            match: U {
+                                                                              raw: {
+                                                                                index: "users_discord_id",
+                                                                              },
+                                                                            },
+                                                                            terms: U {
+                                                                              raw: {
+                                                                                var: "userId",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    ],
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    ],
+                                                  },
+                                                },
+                                                if: U {
+                                                  raw: {
+                                                    is_nonempty: U {
+                                                      raw: {
+                                                        var: "match",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                then: U {
+                                                  raw: {
+                                                    get: U {
+                                                      raw: {
+                                                        var: "match",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            let: [
+                                              {
+                                                match: U {
+                                                  raw: {
+                                                    match: U {
+                                                      raw: {
+                                                        index: "inventories_instance_user",
+                                                      },
+                                                    },
+                                                    terms: U {
+                                                      raw: [
+                                                        U {
+                                                          raw: {
+                                                            from: U {
+                                                              raw: {
+                                                                var: "instance",
+                                                              },
+                                                            },
+                                                            select: "ref",
+                                                          },
+                                                        },
+                                                        U {
+                                                          raw: {
+                                                            from: U {
+                                                              raw: {
+                                                                in: U {
+                                                                  raw: {
+                                                                    else: U {
+                                                                      raw: {
+                                                                        create: U {
+                                                                          raw: {
+                                                                            collection: "user",
+                                                                          },
+                                                                        },
+                                                                        params: U {
+                                                                          raw: {
+                                                                            object: {
+                                                                              data: U {
+                                                                                raw: {
+                                                                                  object: {
+                                                                                    id: U {
+                                                                                      raw: {
+                                                                                        var: "userId",
+                                                                                      },
+                                                                                    },
+                                                                                    inventories: U {
+                                                                                      raw: [],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    if: U {
+                                                                      raw: {
+                                                                        is_nonempty: U {
+                                                                          raw: {
+                                                                            var: "match",
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    then: U {
+                                                                      raw: {
+                                                                        get: U {
+                                                                          raw: {
+                                                                            var: "match",
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                let: [
+                                                                  {
+                                                                    match: U {
+                                                                      raw: {
+                                                                        match: U {
+                                                                          raw: {
+                                                                            index: "users_discord_id",
+                                                                          },
+                                                                        },
+                                                                        terms: U {
+                                                                          raw: {
+                                                                            var: "userId",
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                            },
+                                                            select: "ref",
+                                                          },
+                                                        },
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                        lambda: "userId",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: U {
+                          raw: [
+                            "usersIds",
+                            "guildId",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "get_users_inventories",
+              },
+            },
+          },
+        },
+      },
+      if: U {
+        raw: {
+          exists: U {
+            raw: {
+              function: "get_users_inventories",
+            },
+          },
+        },
+      },
+      then: U {
+        raw: {
+          params: U {
+            raw: {
+              object: {
+                body: U {
+                  raw: {
+                    query: U {
+                      raw: {
+                        expr: U {
+                          raw: {
+                            in: U {
+                              raw: {
+                                var: "inventories",
+                              },
+                            },
+                            let: [
+                              {
+                                guild: U {
+                                  raw: {
+                                    in: U {
+                                      raw: {
+                                        else: U {
+                                          raw: {
+                                            create: U {
+                                              raw: {
+                                                collection: "guild",
+                                              },
+                                            },
+                                            params: U {
+                                              raw: {
+                                                object: {
+                                                  data: U {
+                                                    raw: {
+                                                      object: {
+                                                        id: U {
+                                                          raw: {
+                                                            var: "guildId",
+                                                          },
+                                                        },
+                                                        instances: U {
+                                                          raw: [],
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                        if: U {
+                                          raw: {
+                                            is_nonempty: U {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: U {
+                                          raw: {
+                                            get: U {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: U {
+                                          raw: {
+                                            match: U {
+                                              raw: {
+                                                index: "guilds_discord_id",
+                                              },
+                                            },
+                                            terms: U {
+                                              raw: {
+                                                var: "guildId",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                              {
+                                instance: U {
+                                  raw: {
+                                    in: U {
+                                      raw: {
+                                        else: U {
+                                          raw: {
+                                            in: U {
+                                              raw: {
+                                                var: "createdInstance",
+                                              },
+                                            },
+                                            let: [
+                                              {
+                                                createdInstance: U {
+                                                  raw: {
+                                                    create: U {
+                                                      raw: {
+                                                        collection: "instance",
+                                                      },
+                                                    },
+                                                    params: U {
+                                                      raw: {
+                                                        object: {
+                                                          data: U {
+                                                            raw: {
+                                                              object: {
+                                                                guild: U {
+                                                                  raw: {
+                                                                    from: U {
+                                                                      raw: {
+                                                                        var: "guild",
+                                                                      },
+                                                                    },
+                                                                    select: "ref",
+                                                                  },
+                                                                },
+                                                                inventories: U {
+                                                                  raw: [],
+                                                                },
+                                                                main: true,
+                                                                packs: U {
+                                                                  raw: [],
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                              {
+                                                updatedGuild: U {
+                                                  raw: {
+                                                    params: U {
+                                                      raw: {
+                                                        object: {
+                                                          data: U {
+                                                            raw: {
+                                                              object: {
+                                                                instances: U {
+                                                                  raw: [
+                                                                    U {
+                                                                      raw: {
+                                                                        from: U {
+                                                                          raw: {
+                                                                            var: "createdInstance",
+                                                                          },
+                                                                        },
+                                                                        select: "ref",
+                                                                      },
+                                                                    },
+                                                                  ],
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    },
+                                                    update: U {
+                                                      raw: {
+                                                        from: U {
+                                                          raw: {
+                                                            var: "guild",
+                                                          },
+                                                        },
+                                                        select: "ref",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                        if: U {
+                                          raw: {
+                                            is_nonempty: U {
+                                              raw: {
+                                                var: "match",
+                                              },
+                                            },
+                                          },
+                                        },
+                                        then: U {
+                                          raw: {
+                                            get: U {
+                                              raw: {
+                                                from: U {
+                                                  raw: {
+                                                    var: "match",
+                                                  },
+                                                },
+                                                select: U {
+                                                  raw: [
+                                                    0,
+                                                  ],
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    let: [
+                                      {
+                                        match: U {
+                                          raw: {
+                                            from: U {
+                                              raw: {
+                                                var: "guild",
+                                              },
+                                            },
+                                            select: U {
+                                              raw: [
+                                                "data",
+                                                "instances",
+                                              ],
+                                            },
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                              {
+                                inventories: U {
+                                  raw: {
+                                    collection: U {
+                                      raw: {
+                                        var: "usersIds",
+                                      },
+                                    },
+                                    map: U {
+                                      raw: {
+                                        expr: U {
+                                          raw: {
+                                            in: U {
+                                              raw: {
+                                                else: U {
+                                                  raw: {
+                                                    in: U {
+                                                      raw: {
+                                                        var: "createdInventory",
+                                                      },
+                                                    },
+                                                    let: [
+                                                      {
+                                                        createdInventory: U {
+                                                          raw: {
+                                                            create: U {
+                                                              raw: {
+                                                                collection: "inventory",
+                                                              },
+                                                            },
+                                                            params: U {
+                                                              raw: {
+                                                                object: {
+                                                                  data: U {
+                                                                    raw: {
+                                                                      object: {
+                                                                        availablePulls: 5,
+                                                                        instance: U {
+                                                                          raw: {
+                                                                            from: U {
+                                                                              raw: {
+                                                                                var: "instance",
+                                                                              },
+                                                                            },
+                                                                            select: "ref",
+                                                                          },
+                                                                        },
+                                                                        user: U {
+                                                                          raw: {
+                                                                            from: U {
+                                                                              raw: {
+                                                                                in: U {
+                                                                                  raw: {
+                                                                                    else: U {
+                                                                                      raw: {
+                                                                                        create: U {
+                                                                                          raw: {
+                                                                                            collection: "user",
+                                                                                          },
+                                                                                        },
+                                                                                        params: U {
+                                                                                          raw: {
+                                                                                            object: {
+                                                                                              data: U {
+                                                                                                raw: {
+                                                                                                  object: {
+                                                                                                    id: U {
+                                                                                                      raw: {
+                                                                                                        var: "userId",
+                                                                                                      },
+                                                                                                    },
+                                                                                                    inventories: U {
+                                                                                                      raw: [],
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    if: U {
+                                                                                      raw: {
+                                                                                        is_nonempty: U {
+                                                                                          raw: {
+                                                                                            var: "match",
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    then: U {
+                                                                                      raw: {
+                                                                                        get: U {
+                                                                                          raw: {
+                                                                                            var: "match",
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                                let: [
+                                                                                  {
+                                                                                    match: U {
+                                                                                      raw: {
+                                                                                        match: U {
+                                                                                          raw: {
+                                                                                            index: "users_discord_id",
+                                                                                          },
+                                                                                        },
+                                                                                        terms: U {
+                                                                                          raw: {
+                                                                                            var: "userId",
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                  },
+                                                                                ],
+                                                                              },
+                                                                            },
+                                                                            select: "ref",
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                      {
+                                                        updatedInstance: U {
+                                                          raw: {
+                                                            params: U {
+                                                              raw: {
+                                                                object: {
+                                                                  data: U {
+                                                                    raw: {
+                                                                      object: {
+                                                                        inventories: U {
+                                                                          raw: {
+                                                                            append: U {
+                                                                              raw: {
+                                                                                from: U {
+                                                                                  raw: {
+                                                                                    var: "createdInventory",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                            collection: U {
+                                                                              raw: {
+                                                                                from: U {
+                                                                                  raw: {
+                                                                                    var: "instance",
+                                                                                  },
+                                                                                },
+                                                                                select: U {
+                                                                                  raw: [
+                                                                                    "data",
+                                                                                    "inventories",
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                            update: U {
+                                                              raw: {
+                                                                from: U {
+                                                                  raw: {
+                                                                    var: "instance",
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                      {
+                                                        updatedUser: U {
+                                                          raw: {
+                                                            params: U {
+                                                              raw: {
+                                                                object: {
+                                                                  data: U {
+                                                                    raw: {
+                                                                      object: {
+                                                                        inventories: U {
+                                                                          raw: {
+                                                                            append: U {
+                                                                              raw: {
+                                                                                from: U {
+                                                                                  raw: {
+                                                                                    var: "createdInventory",
+                                                                                  },
+                                                                                },
+                                                                                select: "ref",
+                                                                              },
+                                                                            },
+                                                                            collection: U {
+                                                                              raw: {
+                                                                                from: U {
+                                                                                  raw: {
+                                                                                    in: U {
+                                                                                      raw: {
+                                                                                        else: U {
+                                                                                          raw: {
+                                                                                            create: U {
+                                                                                              raw: {
+                                                                                                collection: "user",
+                                                                                              },
+                                                                                            },
+                                                                                            params: U {
+                                                                                              raw: {
+                                                                                                object: {
+                                                                                                  data: U {
+                                                                                                    raw: {
+                                                                                                      object: {
+                                                                                                        id: U {
+                                                                                                          raw: {
+                                                                                                            var: "userId",
+                                                                                                          },
+                                                                                                        },
+                                                                                                        inventories: U {
+                                                                                                          raw: [],
+                                                                                                        },
+                                                                                                      },
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                              },
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        if: U {
+                                                                                          raw: {
+                                                                                            is_nonempty: U {
+                                                                                              raw: {
+                                                                                                var: "match",
+                                                                                              },
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                        then: U {
+                                                                                          raw: {
+                                                                                            get: U {
+                                                                                              raw: {
+                                                                                                var: "match",
+                                                                                              },
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                    let: [
+                                                                                      {
+                                                                                        match: U {
+                                                                                          raw: {
+                                                                                            match: U {
+                                                                                              raw: {
+                                                                                                index: "users_discord_id",
+                                                                                              },
+                                                                                            },
+                                                                                            terms: U {
+                                                                                              raw: {
+                                                                                                var: "userId",
+                                                                                              },
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                      },
+                                                                                    ],
+                                                                                  },
+                                                                                },
+                                                                                select: U {
+                                                                                  raw: [
+                                                                                    "data",
+                                                                                    "inventories",
+                                                                                  ],
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                              },
+                                                            },
+                                                            update: U {
+                                                              raw: {
+                                                                from: U {
+                                                                  raw: {
+                                                                    in: U {
+                                                                      raw: {
+                                                                        else: U {
+                                                                          raw: {
+                                                                            create: U {
+                                                                              raw: {
+                                                                                collection: "user",
+                                                                              },
+                                                                            },
+                                                                            params: U {
+                                                                              raw: {
+                                                                                object: {
+                                                                                  data: U {
+                                                                                    raw: {
+                                                                                      object: {
+                                                                                        id: U {
+                                                                                          raw: {
+                                                                                            var: "userId",
+                                                                                          },
+                                                                                        },
+                                                                                        inventories: U {
+                                                                                          raw: [],
+                                                                                        },
+                                                                                      },
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                        if: U {
+                                                                          raw: {
+                                                                            is_nonempty: U {
+                                                                              raw: {
+                                                                                var: "match",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                        then: U {
+                                                                          raw: {
+                                                                            get: U {
+                                                                              raw: {
+                                                                                var: "match",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    let: [
+                                                                      {
+                                                                        match: U {
+                                                                          raw: {
+                                                                            match: U {
+                                                                              raw: {
+                                                                                index: "users_discord_id",
+                                                                              },
+                                                                            },
+                                                                            terms: U {
+                                                                              raw: {
+                                                                                var: "userId",
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    ],
+                                                                  },
+                                                                },
+                                                                select: "ref",
+                                                              },
+                                                            },
+                                                          },
+                                                        },
+                                                      },
+                                                    ],
+                                                  },
+                                                },
+                                                if: U {
+                                                  raw: {
+                                                    is_nonempty: U {
+                                                      raw: {
+                                                        var: "match",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                                then: U {
+                                                  raw: {
+                                                    get: U {
+                                                      raw: {
+                                                        var: "match",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            let: [
+                                              {
+                                                match: U {
+                                                  raw: {
+                                                    match: U {
+                                                      raw: {
+                                                        index: "inventories_instance_user",
+                                                      },
+                                                    },
+                                                    terms: U {
+                                                      raw: [
+                                                        U {
+                                                          raw: {
+                                                            from: U {
+                                                              raw: {
+                                                                var: "instance",
+                                                              },
+                                                            },
+                                                            select: "ref",
+                                                          },
+                                                        },
+                                                        U {
+                                                          raw: {
+                                                            from: U {
+                                                              raw: {
+                                                                in: U {
+                                                                  raw: {
+                                                                    else: U {
+                                                                      raw: {
+                                                                        create: U {
+                                                                          raw: {
+                                                                            collection: "user",
+                                                                          },
+                                                                        },
+                                                                        params: U {
+                                                                          raw: {
+                                                                            object: {
+                                                                              data: U {
+                                                                                raw: {
+                                                                                  object: {
+                                                                                    id: U {
+                                                                                      raw: {
+                                                                                        var: "userId",
+                                                                                      },
+                                                                                    },
+                                                                                    inventories: U {
+                                                                                      raw: [],
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              },
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    if: U {
+                                                                      raw: {
+                                                                        is_nonempty: U {
+                                                                          raw: {
+                                                                            var: "match",
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                    then: U {
+                                                                      raw: {
+                                                                        get: U {
+                                                                          raw: {
+                                                                            var: "match",
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                },
+                                                                let: [
+                                                                  {
+                                                                    match: U {
+                                                                      raw: {
+                                                                        match: U {
+                                                                          raw: {
+                                                                            index: "users_discord_id",
+                                                                          },
+                                                                        },
+                                                                        terms: U {
+                                                                          raw: {
+                                                                            var: "userId",
+                                                                          },
+                                                                        },
+                                                                      },
+                                                                    },
+                                                                  },
+                                                                ],
+                                                              },
+                                                            },
+                                                            select: "ref",
+                                                          },
+                                                        },
+                                                      ],
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                        lambda: "userId",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        lambda: U {
+                          raw: [
+                            "usersIds",
+                            "guildId",
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+                name: "get_users_inventories",
+              },
+            },
+          },
+          update: U {
+            raw: {
+              function: "get_users_inventories",
+            },
+          },
+        },
+      },
+    },
+  },
+]
+`;
+
+snapshot[`model 9`] = `
+[
+  U {
+    raw: {
+      else: U {
+        raw: {
+          create_function: U {
+            raw: {
+              object: {
+                body: U {
+                  raw: {
+                    query: U {
+                      raw: {
+                        expr: U {
+                          raw: {
+                            in: U {
+                              raw: {
                                 in: U {
                                   raw: {
                                     from: U {
