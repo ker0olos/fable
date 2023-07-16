@@ -757,6 +757,27 @@ export const commands = [
       }),
     ],
   }),
+  // experimental ephemeral temporary
+  ...Command({
+    name: 'experimental',
+    description: 'experimental ephemeral temporary commands',
+    options: [
+      Option({
+        name: 'battle',
+        description:
+          'Try the new combat in a mock battle against another player\'s party',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'versus',
+            description: 'The player you want to battle against',
+            type: Type.USER,
+          }),
+        ],
+      }),
+    ],
+  }),
 ];
 
 if (import.meta.main) {

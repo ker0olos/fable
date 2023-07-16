@@ -20,7 +20,7 @@ Deno.test('model', async (test) => {
   Model(client as any).indexers?.forEach((q) => q());
   Model(client as any).resolvers?.forEach((q) => q());
 
-  const length = 8;
+  const length = 9;
 
   assertSpyCalls(client.query, length);
 

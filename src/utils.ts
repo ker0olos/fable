@@ -10,11 +10,19 @@ import {
   init as initSentry,
 } from 'sentry';
 
+import { LRU } from 'lru';
+
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
 import { distance as _distance } from 'levenshtein';
 
+import { proxy } from '../images-proxy/mod.ts';
+
 import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
+
+const TEN_MIB = 1024 * 1024 * 10;
+
+const lru = new LRU<{ body: ArrayBuffer; headers: Headers }>(20);
 
 export enum ImageSize {
   Preview = 'preview',
@@ -26,6 +34,27 @@ export enum ImageSize {
 function getRandomFloat(): number {
   const randomInt = crypto.getRandomValues(new Uint32Array(1))[0];
   return randomInt / 2 ** 32;
+}
+
+function randomPortions(
+  min: number,
+  max: number,
+  length: number,
+  sum: number,
+): number[] {
+  return Array.from({ length }, (_, i) => {
+    const smin = (length - i - 1) * min;
+    const smax = (length - i - 1) * max;
+
+    const offset = Math.max(sum - smax, min);
+    const random = 1 + Math.min(sum - offset, max - offset, sum - smin - min);
+
+    const value = Math.floor(Math.random() * random + offset);
+
+    sum -= value;
+
+    return value;
+  });
 }
 
 function hexToInt(hex?: string): number | undefined {
@@ -323,6 +352,51 @@ function captureException(err: Error, opts?: {
   });
 }
 
+async function handleProxy(r: Request): Promise<Response> {
+  const url = new URL(r.url);
+
+  const key = (url.pathname + url.search)
+    .substring(1);
+
+  const hit = lru.get(key);
+
+  if (hit) {
+    console.log(`cache hit: ${key}`);
+
+    return new Response(hit.body, { headers: hit.headers });
+  }
+
+  const imageUrl = decodeURIComponent(
+    url.pathname
+      .replace('/external/', ''),
+  );
+
+  const { format, image } = await proxy(
+    imageUrl,
+    // deno-lint-ignore no-explicit-any
+    url.searchParams.get('size') as any,
+  );
+
+  const response = new Response(image.buffer, {
+    headers: {
+      'content-type': format,
+      'content-length': `${image.byteLength}`,
+      'cache-control': `max-age=${86400 * 12}`,
+    },
+  });
+
+  if (image.byteLength <= TEN_MIB) {
+    const v = {
+      body: image.buffer,
+      headers: response.headers,
+    };
+
+    lru.set(key, v);
+  }
+
+  return response;
+}
+
 function captureOutage(id: string): Promise<Response> {
   return fetch(
     `https://api.instatus.com/v3/integrations/webhook/${id}`,
@@ -345,12 +419,15 @@ const utils = {
   compact,
   decipher,
   decodeDescription,
+  diffInDays,
   distance,
+  getRandomFloat,
+  handleProxy,
   hexToInt,
   initSentry,
   json,
   parseInt: _parseInt,
-  diffInDays,
+  randomPortions,
   readJson,
   rechargeTimestamp,
   rng,
@@ -358,12 +435,11 @@ const utils = {
   serveStatic,
   shuffle,
   sleep,
+  stealTimestamp,
   truncate,
   validateRequest,
   verifySignature,
   votingTimestamp,
-  stealTimestamp,
-  getRandomFloat,
   wrap,
 };
 

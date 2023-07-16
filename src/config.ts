@@ -7,7 +7,6 @@ const config: {
   appId?: string;
   publicKey?: string;
   faunaSecret?: string;
-  imageProxyUrl?: string;
   topggCipher?: number;
   topggSecret?: string;
   sentry?: string;
@@ -19,12 +18,12 @@ const config: {
   stealing?: boolean;
   synthesis?: boolean;
   communityPacks?: boolean;
+  combat?: boolean;
 } = {
   deploy: false,
   appId: undefined,
   publicKey: undefined,
   faunaSecret: undefined,
-  imageProxyUrl: undefined,
   topggCipher: undefined,
   topggSecret: undefined,
   sentry: undefined,
@@ -36,6 +35,7 @@ const config: {
   stealing: undefined,
   synthesis: undefined,
   communityPacks: undefined,
+  combat: undefined,
 };
 
 export async function initConfig(): Promise<void> {
@@ -60,7 +60,6 @@ export async function initConfig(): Promise<void> {
     config.publicKey = Deno.env.get('PUBLIC_KEY');
 
     config.faunaSecret = Deno.env.get('FAUNA_SECRET');
-    config.imageProxyUrl = Deno.env.get('IMAGE_PROXY_URL');
 
     config.topggCipher = Number(Deno.env.get('TOPGG_WEBHOOK_CIPHER'));
     config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');
@@ -82,6 +81,9 @@ export async function initConfig(): Promise<void> {
 
     config.communityPacks = !Deno.env.has('COMMUNITY_PACKS') ||
       Deno.env.get('COMMUNITY_PACKS') === '1';
+
+    config.combat = !Deno.env.has('COMBAT') ||
+      Deno.env.get('COMBAT') === '1';
 
     config.origin = undefined;
   }

@@ -3,19 +3,6 @@ name: deno
 on: [push]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-      - run: deno test --config deno.json --allow-all --coverage=cov_profile
-      - run: deno coverage cov_profile --lcov --output=lcov.info
-      - uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-
   fmt:
     runs-on: ubuntu-latest
     steps:
@@ -34,6 +21,21 @@ jobs:
           deno-version: v1.x
       - run: deno lint --config deno.json
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - run: deno test --config deno.json --allow-all --coverage=cov_profile
+      - run: deno coverage cov_profile --lcov --output=lcov.info
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
   deploy:
     name: deploy
     needs: [test]
@@ -43,6 +45,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: recursive
       # NOTE: this is used since we need to wait for
       # fauna.yml to update the schema and models
       # and github doesn't support waiting for ouside jobs

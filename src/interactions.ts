@@ -10,6 +10,7 @@ import gacha from './gacha.ts';
 import trade from './trade.ts';
 import steal from './steal.ts';
 import shop from './shop.ts';
+import battle from './battle.ts';
 import help from './help.ts';
 
 import synthesis from './synthesis.ts';
@@ -19,9 +20,9 @@ import community from './community.ts';
 
 import config, { initConfig } from './config.ts';
 
-import { Character, Media } from './types.ts';
-
 import { NonFetalError, NoPermissionError } from './errors.ts';
+
+import type { Character, Media } from './types.ts';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -69,6 +70,7 @@ export const handler = async (r: Request) => {
     focused,
     member,
     options,
+    resolved,
     subcommand,
     customType,
     customValues,
@@ -164,7 +166,8 @@ export const handler = async (r: Request) => {
             'custom',
             'like',
             'unlike',
-          ].includes(name)
+          ].includes(name) ||
+          (name === 'experimental' && subcommand === 'battle')
         ) {
           // deno-lint-ignore no-non-null-assertion
           const name = options[focused!] as string;
@@ -666,6 +669,26 @@ export const handler = async (r: Request) => {
 
             return help.pages({ userId: member.user.id, index }).send();
           }
+          case 'experimental': {
+            //deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'battle': {
+                const targetId = options['versus'] as string;
+
+                return battle.experimental({
+                  token,
+                  guildId,
+                  user: member.user,
+                  // deno-lint-ignore no-non-null-assertion
+                  target: resolved!.users![targetId],
+                })
+                  .send();
+              }
+              default:
+                break;
+            }
+            break;
+          }
           case 'logs': {
             const userId = options['user'] as string ?? member.user.id;
 
@@ -1104,21 +1127,6 @@ export const handler = async (r: Request) => {
     .send();
 };
 
-function override(
-  age: number,
-  type?: string,
-): (req: Request, res: Response) => Response {
-  return (_: Request, response: Response): Response => {
-    if (type) {
-      response.headers.set('Content-Type', type);
-    }
-
-    response.headers.set('Cache-Control', `public, max-age=${age}`);
-
-    return response;
-  };
-}
-
 if (import.meta.main) {
   await initConfig();
 
@@ -1126,37 +1134,22 @@ if (import.meta.main) {
 
   utils.serve({
     '/': handler,
-    //
     '/webhooks/topgg': webhooks.topgg,
-    //
     '/community/publish': community.publish,
-    '/community/*': community.query, // TODO REMOVE provides backwards compatibility
     '/community': community.query,
-    //
     '/invite': () =>
       Response.redirect(
         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,
       ),
-    '/external/*': (r) => {
-      const { pathname, search } = new URL(r.url);
-
-      const imgUrl = `${pathname.substring('/external/'.length)}${search}`;
-
-      if (config.imageProxyUrl) {
-        return Response.redirect(`${config.imageProxyUrl}/${imgUrl}`);
-      } else {
-        return Response.redirect(decodeURIComponent(imgUrl));
-      }
-    },
+    '/external/*': utils.handleProxy,
+    '/assets/:filename+': utils.serveStatic('../assets/public', {
+      baseUrl: import.meta.url,
+    }),
     '/robots.txt': () => {
       return new Response(
         'User-agent: *\nDisallow: /',
         { headers: { 'content-type': 'text/plain' } },
       );
     },
-    '/assets/:filename+': utils.serveStatic('../assets/public', {
-      intervene: override(86400),
-      baseUrl: import.meta.url,
-    }),
   });
 }

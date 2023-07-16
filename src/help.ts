@@ -73,7 +73,7 @@ function pages(
           .setAuthor({ name: '3.' })
           .setTitle('`/party`')
           .setDescription([
-            'You will need a party to use combat features but all combat features are still in development, so parties are only an aesthetic right now.',
+            'You will need a party to use combat features',
             '',
             '__You can\'t have more than 1 party__ or save your current party to a preset and switch between presets.',
             '',

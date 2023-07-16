@@ -29,6 +29,7 @@ Deno.test('init', async (test) => {
         false,
         false,
         false,
+        false,
       ]),
     );
 
@@ -42,7 +43,6 @@ Deno.test('init', async (test) => {
         'app_id',
         'public_key',
         'fauna_secret',
-        'image_proxy_url',
         '123',
         'topgg_secret',
         'notice_message',
@@ -57,7 +57,6 @@ Deno.test('init', async (test) => {
         appId: 'app_id',
         publicKey: 'public_key',
         faunaSecret: 'fauna_secret',
-        imageProxyUrl: 'image_proxy_url',
         sentry: 'sentry_dsn',
         instatus: 'instatus_hook',
         topggCipher: 123,
@@ -68,6 +67,7 @@ Deno.test('init', async (test) => {
         stealing: true,
         synthesis: true,
         communityPacks: true,
+        combat: true,
         origin: undefined,
       });
     } finally {
@@ -101,6 +101,7 @@ Deno.test('init', async (test) => {
         true,
         true,
         true,
+        true,
       ]),
     );
 
@@ -114,10 +115,10 @@ Deno.test('init', async (test) => {
         'app_id',
         'public_key',
         'fauna_secret',
-        'image_proxy_url',
         '123',
         'topgg_secret',
         'notice_message',
+        '0',
         '0',
         '0',
         '0',
@@ -134,7 +135,6 @@ Deno.test('init', async (test) => {
         appId: 'app_id',
         publicKey: 'public_key',
         faunaSecret: 'fauna_secret',
-        imageProxyUrl: 'image_proxy_url',
         sentry: 'sentry_dsn',
         instatus: 'instatus_hook',
         topggCipher: 123,
@@ -145,6 +145,7 @@ Deno.test('init', async (test) => {
         stealing: false,
         synthesis: false,
         communityPacks: false,
+        combat: false,
         origin: undefined,
       });
     } finally {
