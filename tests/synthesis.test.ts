@@ -8,10 +8,13 @@ import { assertSnapshot } from '$std/testing/snapshot.ts';
 
 import { FakeTime } from '$std/testing/time.ts';
 
+import utils from '../src/utils.ts';
+
 import user from '../src/user.ts';
 import packs from '../src/packs.ts';
-import config from '../src/config.ts';
 import gacha from '../src/gacha.ts';
+
+import config from '../src/config.ts';
 
 import Rating from '../src/rating.ts';
 
@@ -292,8 +295,8 @@ Deno.test('synthesis confirmed', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -557,8 +560,8 @@ Deno.test('synthesis confirmed', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -866,8 +869,8 @@ Deno.test('synthesis confirmed', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -1009,7 +1012,7 @@ Deno.test('synthesis confirmed', async (test) => {
   await test.step('not enough sacrifices', async () => {
     const timeStub = new FakeTime();
 
-    const fetchStub = stub(globalThis, 'fetch', () => undefined as any);
+    const fetchStub = stub(utils, 'fetchWithRetry', () => undefined as any);
 
     const synthesisStub = stub(
       synthesis,
@@ -1110,8 +1113,8 @@ Deno.test('synthesis confirmed', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -1316,8 +1319,8 @@ Deno.test('/synthesis', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -1560,8 +1563,8 @@ Deno.test('/synthesis', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -1804,8 +1807,8 @@ Deno.test('/synthesis', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -1977,8 +1980,8 @@ Deno.test('/synthesis', async (test) => {
 
   await test.step('filter (party)', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -2090,8 +2093,8 @@ Deno.test('/synthesis', async (test) => {
 
   await test.step('filter (characters)', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -2194,8 +2197,8 @@ Deno.test('/synthesis', async (test) => {
 
   await test.step('filter (media)', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -2294,8 +2297,8 @@ Deno.test('/synthesis', async (test) => {
 
   await test.step('not enough', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,

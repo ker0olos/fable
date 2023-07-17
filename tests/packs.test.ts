@@ -13,6 +13,8 @@ import { assertSnapshot } from '$std/testing/snapshot.ts';
 
 import validate, { assertValidManifest } from '../src/validate.ts';
 
+import utils from '../src/utils.ts';
+
 import packs from '../src/packs.ts';
 
 import config from '../src/config.ts';
@@ -488,8 +490,8 @@ Deno.test('disabled', async (test) => {
 Deno.test('search many', async (test) => {
   await test.step('sort by match percentage', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -556,8 +558,8 @@ Deno.test('search many', async (test) => {
 
   await test.step('sort by match percentage then popularity', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -633,8 +635,8 @@ Deno.test('search many', async (test) => {
 
   await test.step('threshold', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -720,8 +722,8 @@ Deno.test('search for media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -785,8 +787,8 @@ Deno.test('search for media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -839,8 +841,8 @@ Deno.test('search for media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -887,8 +889,8 @@ Deno.test('search for media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -936,8 +938,8 @@ Deno.test('search for media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -985,8 +987,8 @@ Deno.test('search for media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1036,8 +1038,8 @@ Deno.test('search for media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1086,8 +1088,8 @@ Deno.test('search for media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1146,8 +1148,8 @@ Deno.test('search for characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1212,8 +1214,8 @@ Deno.test('search for characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1266,8 +1268,8 @@ Deno.test('search for characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1312,8 +1314,8 @@ Deno.test('search for characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1361,8 +1363,8 @@ Deno.test('search for characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1410,8 +1412,8 @@ Deno.test('search for characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1458,8 +1460,8 @@ Deno.test('search for characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1522,8 +1524,8 @@ Deno.test('media character', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1621,8 +1623,8 @@ Deno.test('media character', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1723,8 +1725,8 @@ Deno.test('media character', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -1807,8 +1809,8 @@ Deno.test('media character', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -1895,8 +1897,8 @@ Deno.test('aggregate media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -2016,8 +2018,8 @@ Deno.test('aggregate media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -2110,8 +2112,8 @@ Deno.test('aggregate media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -2221,8 +2223,8 @@ Deno.test('aggregate media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
     const listStub = stub(
@@ -2316,8 +2318,8 @@ Deno.test('aggregate media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -2392,8 +2394,8 @@ Deno.test('aggregate media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -2493,8 +2495,8 @@ Deno.test('aggregate media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -2597,8 +2599,8 @@ Deno.test('aggregate media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -2693,8 +2695,8 @@ Deno.test('aggregate media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -2735,8 +2737,8 @@ Deno.test('aggregate media', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -2799,8 +2801,8 @@ Deno.test('aggregate characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -2889,8 +2891,8 @@ Deno.test('aggregate characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -2967,8 +2969,8 @@ Deno.test('aggregate characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -3071,8 +3073,8 @@ Deno.test('aggregate characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -3161,8 +3163,8 @@ Deno.test('aggregate characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -3251,8 +3253,8 @@ Deno.test('aggregate characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -3348,8 +3350,8 @@ Deno.test('aggregate characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -3426,8 +3428,8 @@ Deno.test('aggregate characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -3466,8 +3468,8 @@ Deno.test('aggregate characters', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -3795,8 +3797,8 @@ Deno.test('/community', async (test) => {
 Deno.test('/packs install', async (test) => {
   await test.step('normal', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -3882,8 +3884,8 @@ Deno.test('/packs install', async (test) => {
 Deno.test('/packs uninstall', async (test) => {
   await test.step('normal', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -3973,8 +3975,8 @@ Deno.test('/packs uninstall', async (test) => {
 
   await test.step('not found', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -4014,8 +4016,8 @@ Deno.test('/packs uninstall', async (test) => {
 
   await test.step('not installed', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>

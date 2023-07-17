@@ -88,6 +88,26 @@ function sleep(secs: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, secs * 1000));
 }
 
+function fetchWithRetry(
+  input: RequestInfo | URL,
+  init: RequestInit,
+  n = 0,
+): Promise<Response> {
+  return new Promise((resolve, reject) => {
+    fetch(input, init)
+      .then((result) => resolve(result))
+      .catch((err) => {
+        if (n >= 1) {
+          return reject(err);
+        }
+
+        fetchWithRetry(input, init, n + 1)
+          .then(resolve)
+          .catch(reject);
+      });
+  });
+}
+
 function rng<T>(dict: { [chance: number]: T }): { value: T; chance: number } {
   const pool = Object.values(dict);
 
@@ -421,6 +441,7 @@ const utils = {
   decodeDescription,
   diffInDays,
   distance,
+  fetchWithRetry,
   getRandomFloat,
   handleProxy,
   hexToInt,

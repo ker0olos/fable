@@ -5,12 +5,13 @@ import { assertEquals } from '$std/testing/asserts.ts';
 import { assertSpyCallArg, assertSpyCalls, stub } from '$std/testing/mock.ts';
 
 import * as anilist from '../packs/anilist/index.ts';
+import utils from '../src/utils.ts';
 
 Deno.test('media', async (test) => {
   await test.step('normal search', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -50,8 +51,8 @@ Deno.test('media', async (test) => {
 
   await test.step('not found', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -89,8 +90,8 @@ Deno.test('media', async (test) => {
 Deno.test('character', async (test) => {
   await test.step('normal search', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -130,8 +131,8 @@ Deno.test('character', async (test) => {
 
   await test.step('not found', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
