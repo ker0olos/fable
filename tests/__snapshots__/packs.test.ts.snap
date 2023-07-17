@@ -483,6 +483,111 @@ cute...",
             },
             popularity: 200000,
           },
+          {
+            age: "17",
+            description: "The manager of an MMA club and an E-sports club. A supremely spirited, cheerful, and lively girl who can talk to anyone without breaking a sweat. She's currently practicing her pro-gamer skills.",
+            externalLinks: [
+              {
+                site: "YouTube",
+                url: "https://www.youtube.com/@OozoraSubaru",
+              },
+            ],
+            gender: "Female",
+            id: "subaru",
+            images: [
+              {
+                url: "https://i.imgur.com/MpJ2wRL.jpeg",
+              },
+            ],
+            media: [
+              {
+                mediaId: "hologen2",
+                role: "MAIN",
+              },
+              {
+                mediaId: "hololive",
+                role: "MAIN",
+              },
+            ],
+            name: {
+              alternative: [
+                "subaru",
+                "shuba",
+              ],
+              english: "Oozora Subaru",
+              native: "大空スバル",
+            },
+            popularity: 1510000,
+          },
+          {
+            age: "1500+",
+            description: "An Oni girl from the Underworld Academy. She loves to prank people. Many may not realize it, but she is actually the president of the student council.",
+            externalLinks: [
+              {
+                site: "YouTube",
+                url: "https://www.youtube.com/@NakiriAyame",
+              },
+            ],
+            gender: "Female",
+            id: "ayame",
+            images: [
+              {
+                url: "https://i.imgur.com/d2PcZKU.jpeg",
+              },
+            ],
+            media: [
+              {
+                mediaId: "hologen2",
+                role: "MAIN",
+              },
+              {
+                mediaId: "hololive",
+                role: "MAIN",
+              },
+            ],
+            name: {
+              alternative: [
+                "ayame",
+              ],
+              english: "Nakiri Ayame",
+              native: "百鬼あやめ",
+            },
+            popularity: 1420000,
+          },
+          {
+            description: "A child that randomly appears around the Underworld Academy... though she's actually an adult (or so she says). A self-proclaimed talented dark magician of noble birth (or so she says).",
+            externalLinks: [
+              {
+                site: "YouTube",
+                url: "https://www.youtube.com/@MurasakiShion",
+              },
+            ],
+            gender: "Female",
+            id: "shion",
+            images: [
+              {
+                url: "https://i.imgur.com/YRRpmZQ.jpeg",
+              },
+            ],
+            media: [
+              {
+                mediaId: "hologen2",
+                role: "MAIN",
+              },
+              {
+                mediaId: "hololive",
+                role: "MAIN",
+              },
+            ],
+            name: {
+              alternative: [
+                "shion",
+              ],
+              english: "Murasaki Shion",
+              native: "紫咲シオン",
+            },
+            popularity: 1140000,
+          },
         ],
       },
       conflicts: [
@@ -527,6 +632,10 @@ cute...",
               },
               {
                 mediaId: "holocouncil",
+                relation: "CONTAINS",
+              },
+              {
+                mediaId: "hologen2",
                 relation: "CONTAINS",
               },
             ],
@@ -593,10 +702,6 @@ cute...",
               ],
               english: "hololive English -Myth-",
             },
-            trailer: {
-              id: "8c4_22LjGQo",
-              site: "youtube",
-            },
             type: "ANIME",
           },
           {
@@ -655,9 +760,40 @@ cute...",
               ],
               english: "hololive English -Council-",
             },
-            trailer: {
-              id: "SLnxCyzFgPw",
-              site: "youtube",
+            type: "ANIME",
+          },
+          {
+            characters: [
+              {
+                characterId: "subaru",
+                role: "MAIN",
+              },
+              {
+                characterId: "ayame",
+                role: "MAIN",
+              },
+              {
+                characterId: "shion",
+                role: "MAIN",
+              },
+            ],
+            id: "hologen2",
+            images: [
+              {
+                url: "https://i.imgur.com/LxhVKRz.png",
+              },
+            ],
+            relations: [
+              {
+                mediaId: "hololive",
+                relation: "PARENT",
+              },
+            ],
+            title: {
+              alternative: [
+                "hologen2",
+              ],
+              english: "hololive Gen 2",
             },
             type: "ANIME",
           },
