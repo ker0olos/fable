@@ -546,7 +546,7 @@ snapshot[`/help 7`] = `
 " +
           "
 " +
-          "- \`/synthesize\` \`/merge\`: _synthesize characters together to pull a new character_
+          "- \`/merge\` \`/synthesize\`: _merge characters together to pull a new character_
 " +
           "
 " +
@@ -644,11 +644,11 @@ snapshot[`/help 8`] = `
 " +
           "
 " +
-          "- \`/logs\`: _list user last few found characters_
+          "- \`/packs\`: _list all the packs on a server_
 " +
           "
 " +
-          "- \`/packs\`: _list all the packs on a server_",
+          "- \`/logs\`: _list user last few found characters_",
         type: "rich",
       },
     ],
@@ -698,7 +698,11 @@ snapshot[`/help 9`] = `
 " +
           "- \`/community install\`: _install a community pack_
 " +
-          "- \`/community uninstall\`: _uninstall a community pack_",
+          "- \`/community uninstall\`: _uninstall a community pack_
+" +
+          "
+" +
+          "> To create your own community pack visit <https://packs.deno.dev>",
         type: "rich",
       },
     ],
