@@ -155,6 +155,36 @@
           "characterId": "shion"
         }
       ]
+    }, {
+      "id": "hologamers",
+      "type": "ANIME",
+      "title": {
+        "english": "hololive GAMERS",
+        "alternative": ["hologamers"]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/jYYBQTI.png"
+        }
+      ],
+      "relations": [{
+        "mediaId": "hololive",
+        "relation": "PARENT"
+      }],
+      "characters": [
+        {
+          "role": "MAIN",
+          "characterId": "fubuki"
+        },
+        {
+          "role": "MAIN",
+          "characterId": "okayu"
+        },
+        {
+          "role": "MAIN",
+          "characterId": "korone"
+        }
+      ]
     }]
   },
   "characters": {
@@ -599,6 +629,94 @@
       "media": [{
         "role": "MAIN",
         "mediaId": "hologen2"
+      }, {
+        "role": "MAIN",
+        "mediaId": "hololive"
+      }]
+    }, {
+      "id": "fubuki",
+      "name": {
+        "english": "Shirakami Fubuki",
+        "native": "白上フブキ",
+        "alternative": [
+          "fubuki",
+          "FBK"
+        ]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/QE8UQVS.jpeg"
+        }
+      ],
+      "popularity": 2170000,
+      "description": "A mysterious white-haired fox that appered one day out of nowhere claming to be a school girl.",
+      "gender": "Female",
+      "age": "102 in fox years",
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@ShirakamiFubuki"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "hologamers"
+      }, {
+        "role": "MAIN",
+        "mediaId": "hololive"
+      }]
+    }, {
+      "id": "okayu",
+      "name": {
+        "english": "Nekomata Okayu",
+        "native": "猫又おかゆ",
+        "alternative": [
+          "okayu"
+        ]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/103Dsz2.jpeg"
+        }
+      ],
+      "popularity": 1630000,
+      "description": "A cat being raised by an old lady that runs an onigiri store. She streams from a computer she stolen from the old lady.",
+      "gender": "Female",
+      "age": "80 in cat years",
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@NekomataOkayu"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "hologamers"
+      }, {
+        "role": "MAIN",
+        "mediaId": "hololive"
+      }]
+    }, {
+      "id": "korone",
+      "name": {
+        "english": "Inugami Korone",
+        "native": "戌神ころね",
+        "alternative": [
+          "korone"
+        ]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/2jlf6Ti.jpg"
+        }
+      ],
+      "popularity": 2000000,
+      "description": "A dog from a bakery in the city. She likes headpats and stealing human food (a bad thing for a dog living in a bakery).",
+      "gender": "Female",
+      "age": "92 in dog years",
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@InugamiKorone"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "hologamers"
       }, {
         "role": "MAIN",
         "mediaId": "hololive"

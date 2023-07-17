@@ -588,6 +588,112 @@ cute...",
             },
             popularity: 1140000,
           },
+          {
+            age: "102 in fox years",
+            description: "A mysterious white-haired fox that appered one day out of nowhere claming to be a school girl.",
+            externalLinks: [
+              {
+                site: "YouTube",
+                url: "https://www.youtube.com/@ShirakamiFubuki",
+              },
+            ],
+            gender: "Female",
+            id: "fubuki",
+            images: [
+              {
+                url: "https://i.imgur.com/QE8UQVS.jpeg",
+              },
+            ],
+            media: [
+              {
+                mediaId: "hologamers",
+                role: "MAIN",
+              },
+              {
+                mediaId: "hololive",
+                role: "MAIN",
+              },
+            ],
+            name: {
+              alternative: [
+                "fubuki",
+                "FBK",
+              ],
+              english: "Shirakami Fubuki",
+              native: "白上フブキ",
+            },
+            popularity: 2170000,
+          },
+          {
+            age: "80 in cat years",
+            description: "A cat being raised by an old lady that runs an onigiri store. She streams from a computer she stolen from the old lady.",
+            externalLinks: [
+              {
+                site: "YouTube",
+                url: "https://www.youtube.com/@NekomataOkayu",
+              },
+            ],
+            gender: "Female",
+            id: "okayu",
+            images: [
+              {
+                url: "https://i.imgur.com/103Dsz2.jpeg",
+              },
+            ],
+            media: [
+              {
+                mediaId: "hologamers",
+                role: "MAIN",
+              },
+              {
+                mediaId: "hololive",
+                role: "MAIN",
+              },
+            ],
+            name: {
+              alternative: [
+                "okayu",
+              ],
+              english: "Nekomata Okayu",
+              native: "猫又おかゆ",
+            },
+            popularity: 1630000,
+          },
+          {
+            age: "92 in dog years",
+            description: "A dog from a bakery in the city. She likes headpats and stealing human food (a bad thing for a dog living in a bakery).",
+            externalLinks: [
+              {
+                site: "YouTube",
+                url: "https://www.youtube.com/@InugamiKorone",
+              },
+            ],
+            gender: "Female",
+            id: "korone",
+            images: [
+              {
+                url: "https://i.imgur.com/2jlf6Ti.jpg",
+              },
+            ],
+            media: [
+              {
+                mediaId: "hologamers",
+                role: "MAIN",
+              },
+              {
+                mediaId: "hololive",
+                role: "MAIN",
+              },
+            ],
+            name: {
+              alternative: [
+                "korone",
+              ],
+              english: "Inugami Korone",
+              native: "戌神ころね",
+            },
+            popularity: 2000000,
+          },
         ],
       },
       conflicts: [
@@ -794,6 +900,41 @@ cute...",
                 "hologen2",
               ],
               english: "hololive Gen 2",
+            },
+            type: "ANIME",
+          },
+          {
+            characters: [
+              {
+                characterId: "fubuki",
+                role: "MAIN",
+              },
+              {
+                characterId: "okayu",
+                role: "MAIN",
+              },
+              {
+                characterId: "korone",
+                role: "MAIN",
+              },
+            ],
+            id: "hologamers",
+            images: [
+              {
+                url: "https://i.imgur.com/jYYBQTI.png",
+              },
+            ],
+            relations: [
+              {
+                mediaId: "hololive",
+                relation: "PARENT",
+              },
+            ],
+            title: {
+              alternative: [
+                "hologamers",
+              ],
+              english: "hololive GAMERS",
             },
             type: "ANIME",
           },
