@@ -849,7 +849,10 @@ export class Message {
       formData.append(`files[${index}]`, blob, name);
     });
 
-    const response = await fetch(url, { method, body: formData });
+    const response = await utils.fetchWithRetry(url, {
+      method,
+      body: formData,
+    });
 
     console.log(method, response?.status, response?.statusText);
 

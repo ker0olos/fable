@@ -5,16 +5,18 @@ import { assertEquals, assertRejects } from '$std/testing/asserts.ts';
 import { assertSpyCall, assertSpyCalls, spy, stub } from '$std/testing/mock.ts';
 
 import utils from '../src/utils.ts';
-import config from '../src/config.ts';
+
 import user from '../src/user.ts';
+
+import config from '../src/config.ts';
 
 import webhooks from '../src/webhooks.ts';
 
 Deno.test('topgg', async (test) => {
   await test.step('normal', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -63,8 +65,8 @@ Deno.test('topgg', async (test) => {
 
   await test.step('patch /now', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -180,8 +182,8 @@ Deno.test('topgg', async (test) => {
 
   await test.step('bad request', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -222,8 +224,8 @@ Deno.test('topgg', async (test) => {
 
   await test.step('non-string topgg secret', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -267,8 +269,8 @@ Deno.test('topgg', async (test) => {
 
   await test.step('short topgg secret', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -312,8 +314,8 @@ Deno.test('topgg', async (test) => {
 
   await test.step('fake auth token', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -363,8 +365,8 @@ Deno.test('topgg', async (test) => {
     });
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>

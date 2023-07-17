@@ -1,3 +1,5 @@
+import utils from './utils.ts';
+
 import { GraphQLError } from './errors.ts';
 
 // deno-lint-ignore no-explicit-any
@@ -37,7 +39,7 @@ export async function request<T = any, V = Variables>(
   options.headers.append('Content-Type', 'application/json');
   options.headers.append('Accept', 'application/json');
 
-  const response = await fetch(url, options);
+  const response = await utils.fetchWithRetry(url, options);
 
   const text = await response.text();
 

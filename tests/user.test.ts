@@ -11,6 +11,8 @@ import {
   stub,
 } from '$std/testing/mock.ts';
 
+import utils from '../src/utils.ts';
+
 import user from '../src/user.ts';
 import packs from '../src/packs.ts';
 
@@ -27,8 +29,8 @@ import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 Deno.test('find characters', async () => {
   const fetchStub = stub(
-    globalThis,
-    'fetch',
+    utils,
+    'fetchWithRetry',
     () => ({
       ok: true,
       text: (() =>
@@ -80,8 +82,8 @@ Deno.test('find characters', async () => {
 
 Deno.test('get active inventories', async () => {
   const fetchStub = stub(
-    globalThis,
-    'fetch',
+    utils,
+    'fetchWithRetry',
     () => ({
       ok: true,
       text: (() =>
@@ -122,8 +124,8 @@ Deno.test('get active inventories', async () => {
 Deno.test('/now', async (test) => {
   await test.step('with pulls', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -200,8 +202,8 @@ Deno.test('/now', async (test) => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -268,8 +270,8 @@ Deno.test('/now', async (test) => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -338,8 +340,8 @@ Deno.test('/now', async (test) => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -415,8 +417,8 @@ Deno.test('/now', async (test) => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -492,8 +494,8 @@ Deno.test('/now', async (test) => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -583,8 +585,8 @@ Deno.test('/now', async (test) => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -674,8 +676,8 @@ Deno.test('/now', async (test) => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -771,8 +773,8 @@ Deno.test('/now', async (test) => {
     timestamp.setDate(timestamp.getDate() + 2);
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -852,8 +854,8 @@ Deno.test('/now', async (test) => {
     const time = new Date('2023-02-05T03:21:46.253Z');
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -929,8 +931,8 @@ Deno.test('/now', async (test) => {
     const timeStub = new FakeTime(time);
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -1022,8 +1024,8 @@ Deno.test('/nick', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -1176,8 +1178,8 @@ Deno.test('/nick', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -1304,8 +1306,8 @@ Deno.test('/nick', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -1407,8 +1409,8 @@ Deno.test('/nick', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -1534,8 +1536,8 @@ Deno.test('/nick', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -1686,8 +1688,8 @@ Deno.test('/image', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -1839,8 +1841,8 @@ Deno.test('/image', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -1967,8 +1969,8 @@ Deno.test('/image', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -2070,8 +2072,8 @@ Deno.test('/image', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -2197,8 +2199,8 @@ Deno.test('/image', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -2446,8 +2448,8 @@ Deno.test('/collection stars', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -2750,8 +2752,8 @@ Deno.test('/collection stars', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -3060,8 +3062,8 @@ Deno.test('/collection stars', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -3296,8 +3298,8 @@ Deno.test('/collection stars', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -3502,8 +3504,8 @@ Deno.test('/collection stars', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -3663,8 +3665,8 @@ Deno.test('/collection stars', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -3756,8 +3758,8 @@ Deno.test('/collection stars', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -3902,8 +3904,8 @@ Deno.test('/collection media', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -4105,8 +4107,8 @@ Deno.test('/collection media', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -4310,8 +4312,8 @@ Deno.test('/collection media', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -4539,8 +4541,8 @@ Deno.test('/collection media', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -4757,8 +4759,8 @@ Deno.test('/collection media', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -4935,8 +4937,8 @@ Deno.test('/collection media', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -5116,8 +5118,8 @@ Deno.test('/collection media', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -5267,8 +5269,8 @@ Deno.test('/collection media', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -5419,8 +5421,8 @@ Deno.test('/like', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -5578,8 +5580,8 @@ Deno.test('/like', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -5738,8 +5740,8 @@ Deno.test('/like', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -5904,8 +5906,8 @@ Deno.test('/like', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -6072,8 +6074,8 @@ Deno.test('/like', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -6219,8 +6221,8 @@ Deno.test('/like', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -6374,8 +6376,8 @@ Deno.test('/like', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -6508,8 +6510,8 @@ Deno.test('/like', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -6622,8 +6624,8 @@ Deno.test('/likeall', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -6756,8 +6758,8 @@ Deno.test('/likeall', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -6868,8 +6870,8 @@ Deno.test('/likeall', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -7017,8 +7019,8 @@ Deno.test('/likeslist', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -7209,8 +7211,8 @@ Deno.test('/likeslist', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -7420,8 +7422,8 @@ Deno.test('/likeslist', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -7644,8 +7646,8 @@ Deno.test('/likeslist', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -7859,8 +7861,8 @@ Deno.test('/likeslist', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -8014,8 +8016,8 @@ Deno.test('/likeslist', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -8115,8 +8117,8 @@ Deno.test('/likeslist', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -8288,8 +8290,8 @@ Deno.test('/logs', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -8489,8 +8491,8 @@ Deno.test('/logs', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -8621,8 +8623,8 @@ Deno.test('/logs', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -8719,8 +8721,8 @@ Deno.test('/logs', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,

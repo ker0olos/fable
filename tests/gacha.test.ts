@@ -81,8 +81,8 @@ function fakePool(
   });
 
   const fetchStub = stub(
-    globalThis,
-    'fetch',
+    utils,
+    'fetchWithRetry',
     () => ({
       ok: true,
       text: (() =>
@@ -2129,8 +2129,8 @@ Deno.test('adding character to inventory', async (test) => {
     );
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([{
         ok: true,
         text: (() =>
@@ -2255,8 +2255,8 @@ Deno.test('adding character to inventory', async (test) => {
     );
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([{
         ok: true,
         text: (() =>
@@ -2353,8 +2353,8 @@ Deno.test('adding character to inventory', async (test) => {
     );
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([{
         ok: true,
         text: (() =>
@@ -2454,8 +2454,8 @@ Deno.test('adding character to inventory', async (test) => {
     );
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([{
         ok: true,
         text: (() =>
@@ -2746,8 +2746,8 @@ Deno.test('/gacha', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -2959,8 +2959,8 @@ Deno.test('/gacha', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -3172,8 +3172,8 @@ Deno.test('/gacha', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -3393,8 +3393,8 @@ Deno.test('/gacha', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -3547,8 +3547,8 @@ Deno.test('/gacha', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -3803,8 +3803,8 @@ Deno.test('/gacha', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -4072,8 +4072,8 @@ Deno.test('/gacha', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -4290,8 +4290,8 @@ Deno.test('/gacha', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -4370,8 +4370,8 @@ Deno.test('/gacha', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -4460,8 +4460,8 @@ Deno.test('/gacha', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 
@@ -4539,8 +4539,8 @@ Deno.test('/gacha', async (test) => {
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => undefined as any,
     );
 

@@ -11,16 +11,17 @@ import {
 
 import config from '../src/config.ts';
 
+import utils from '../src/utils.ts';
+import packs from '../src/packs.ts';
 import community from '../src/community.ts';
 
 import type { DisaggregatedCharacter, Pack } from '../src/types.ts';
-import packs from '../src/packs.ts';
 
 Deno.test('/', async (test) => {
   await test.step('normal', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -100,8 +101,8 @@ Deno.test('/', async (test) => {
 
   await test.step('invalid access token', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: false,
@@ -155,8 +156,8 @@ Deno.test('/', async (test) => {
 Deno.test('/publish', async (test) => {
   await test.step('normal', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -242,8 +243,8 @@ Deno.test('/publish', async (test) => {
 
   await test.step('invalid access token', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: false,
@@ -296,8 +297,8 @@ Deno.test('/publish', async (test) => {
 
   await test.step('invalid manifest', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -344,8 +345,8 @@ Deno.test('/publish', async (test) => {
 
   await test.step('permission denied', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -436,8 +437,8 @@ Deno.test('/publish', async (test) => {
 
   await test.step('unknown server error', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       returnsNext([
         {
           ok: true,
@@ -553,8 +554,8 @@ Deno.test('/popular', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -662,8 +663,8 @@ Deno.test('/popular', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -750,8 +751,8 @@ Deno.test('/popular', async (test) => {
     };
 
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>

@@ -4,8 +4,10 @@ import { assert, assertEquals } from '$std/testing/asserts.ts';
 
 import { assertSpyCall, assertSpyCalls, stub } from '$std/testing/mock.ts';
 
+import utils, { ImageSize } from '../src/utils.ts';
+
 import * as discord from '../src/discord.ts';
-import { ImageSize } from '../src/utils.ts';
+
 import config from '../src/config.ts';
 
 Deno.test('interactions', async (test) => {
@@ -693,8 +695,8 @@ Deno.test('static messages', async (test) => {
 
 Deno.test('patch messages', async () => {
   const fetchStub = stub(
-    globalThis,
-    'fetch',
+    utils,
+    'fetchWithRetry',
     () => true as any,
   );
 
@@ -733,8 +735,8 @@ Deno.test('patch messages', async () => {
 
 Deno.test('followup messages', async () => {
   const fetchStub = stub(
-    globalThis,
-    'fetch',
+    utils,
+    'fetchWithRetry',
     () => true as any,
   );
 

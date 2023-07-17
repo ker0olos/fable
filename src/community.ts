@@ -25,7 +25,7 @@ async function query(req: Request): Promise<Response> {
     );
   }
 
-  const auth = await fetch('https://discord.com/api/users/@me', {
+  const auth = await utils.fetchWithRetry('https://discord.com/api/users/@me', {
     method: 'GET',
     headers: {
       'content-type': 'application/json',
@@ -157,7 +157,7 @@ async function publish(req: Request): Promise<Response> {
     );
   }
 
-  const auth = await fetch('https://discord.com/api/users/@me', {
+  const auth = await utils.fetchWithRetry('https://discord.com/api/users/@me', {
     method: 'GET',
     headers: {
       'content-type': 'application/json',

@@ -4,7 +4,10 @@ import { assertEquals } from '$std/testing/asserts.ts';
 
 import { stub } from '$std/testing/mock.ts';
 
+import utils from '../src/utils.ts';
+
 import shop from '../src/shop.ts';
+
 import config from '../src/config.ts';
 
 Deno.test('/buy', async (test) => {
@@ -82,8 +85,8 @@ Deno.test('/buy', async (test) => {
 
   await test.step('normal confirmed', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -139,8 +142,8 @@ Deno.test('/buy', async (test) => {
 
   await test.step('normal confirmed (plural)', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -196,8 +199,8 @@ Deno.test('/buy', async (test) => {
 
   await test.step('normal insufficient votes', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -257,8 +260,8 @@ Deno.test('/buy', async (test) => {
 
   await test.step('normal insufficient votes (plural)', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -426,8 +429,8 @@ Deno.test('/buy', async (test) => {
 
   await test.step('guaranteed 3* confirmed', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -478,8 +481,8 @@ Deno.test('/buy', async (test) => {
 
   await test.step('guaranteed 4* confirmed', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -530,8 +533,8 @@ Deno.test('/buy', async (test) => {
 
   await test.step('guaranteed 5* confirmed', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -582,8 +585,8 @@ Deno.test('/buy', async (test) => {
 
   await test.step('guaranteed insufficient votes', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
@@ -643,8 +646,8 @@ Deno.test('/buy', async (test) => {
 
   await test.step('guaranteed insufficient votes (plural)', async () => {
     const fetchStub = stub(
-      globalThis,
-      'fetch',
+      utils,
+      'fetchWithRetry',
       () => ({
         ok: true,
         text: (() =>
