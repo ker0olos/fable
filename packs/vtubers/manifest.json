@@ -41,6 +41,9 @@
       }, {
         "mediaId": "holocouncil",
         "relation": "CONTAINS"
+      }, {
+        "mediaId": "hologen2",
+        "relation": "CONTAINS"
       }]
     }, {
       "id": "holomyth",
@@ -55,10 +58,6 @@
           "url": "https://i.imgur.com/0ehLlU5.png"
         }
       ],
-      "trailer": {
-        "site": "youtube",
-        "id": "8c4_22LjGQo"
-      },
       "externalLinks": [{
         "site": "YouTube",
         "url": "https://www.youtube.com/@hololiveEnglish"
@@ -99,10 +98,6 @@
           "url": "https://i.imgur.com/9ZBYZmj.png"
         }
       ],
-      "trailer": {
-        "site": "youtube",
-        "id": "SLnxCyzFgPw"
-      },
       "externalLinks": [{
         "site": "YouTube",
         "url": "https://www.youtube.com/@hololiveEnglish"
@@ -130,6 +125,66 @@
         "role": "MAIN",
         "characterId": "sana"
       }]
+    }, {
+      "id": "hologen2",
+      "type": "ANIME",
+      "title": {
+        "english": "hololive Gen 2",
+        "alternative": ["hologen2"]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/LxhVKRz.png"
+        }
+      ],
+      "relations": [{
+        "mediaId": "hololive",
+        "relation": "PARENT"
+      }],
+      "characters": [
+        {
+          "role": "MAIN",
+          "characterId": "subaru"
+        },
+        {
+          "role": "MAIN",
+          "characterId": "ayame"
+        },
+        {
+          "role": "MAIN",
+          "characterId": "shion"
+        }
+      ]
+    }, {
+      "id": "hologamers",
+      "type": "ANIME",
+      "title": {
+        "english": "hololive GAMERS",
+        "alternative": ["hologamers"]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/jYYBQTI.png"
+        }
+      ],
+      "relations": [{
+        "mediaId": "hololive",
+        "relation": "PARENT"
+      }],
+      "characters": [
+        {
+          "role": "MAIN",
+          "characterId": "fubuki"
+        },
+        {
+          "role": "MAIN",
+          "characterId": "okayu"
+        },
+        {
+          "role": "MAIN",
+          "characterId": "korone"
+        }
+      ]
     }]
   },
   "characters": {
@@ -487,6 +542,181 @@
       "media": [{
         "role": "MAIN",
         "mediaId": "holocouncil"
+      }, {
+        "role": "MAIN",
+        "mediaId": "hololive"
+      }]
+    }, {
+      "id": "subaru",
+      "name": {
+        "english": "Oozora Subaru",
+        "native": "大空スバル",
+        "alternative": [
+          "subaru",
+          "shuba"
+        ]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/MpJ2wRL.jpeg"
+        }
+      ],
+      "popularity": 1510000,
+      "description": "The manager of an MMA club and an E-sports club. A supremely spirited, cheerful, and lively girl who can talk to anyone without breaking a sweat. She's currently practicing her pro-gamer skills.",
+      "age": "17",
+      "gender": "Female",
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@OozoraSubaru"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "hologen2"
+      }, {
+        "role": "MAIN",
+        "mediaId": "hololive"
+      }]
+    }, {
+      "id": "ayame",
+      "name": {
+        "english": "Nakiri Ayame",
+        "native": "百鬼あやめ",
+        "alternative": [
+          "ayame"
+        ]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/d2PcZKU.jpeg"
+        }
+      ],
+      "popularity": 1420000,
+      "description": "An Oni girl from the Underworld Academy. She loves to prank people. Many may not realize it, but she is actually the president of the student council.",
+      "age": "1500+",
+      "gender": "Female",
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@NakiriAyame"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "hologen2"
+      }, {
+        "role": "MAIN",
+        "mediaId": "hololive"
+      }]
+    }, {
+      "id": "shion",
+      "name": {
+        "english": "Murasaki Shion",
+        "native": "紫咲シオン",
+        "alternative": [
+          "shion"
+        ]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/YRRpmZQ.jpeg"
+        }
+      ],
+      "popularity": 1140000,
+      "description": "A child that randomly appears around the Underworld Academy... though she's actually an adult (or so she says). A self-proclaimed talented dark magician of noble birth (or so she says).",
+      "gender": "Female",
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@MurasakiShion"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "hologen2"
+      }, {
+        "role": "MAIN",
+        "mediaId": "hololive"
+      }]
+    }, {
+      "id": "fubuki",
+      "name": {
+        "english": "Shirakami Fubuki",
+        "native": "白上フブキ",
+        "alternative": [
+          "fubuki",
+          "FBK"
+        ]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/QE8UQVS.jpeg"
+        }
+      ],
+      "popularity": 2170000,
+      "description": "A mysterious white-haired fox that appered one day out of nowhere claming to be a school girl.",
+      "gender": "Female",
+      "age": "102 in fox years",
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@ShirakamiFubuki"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "hologamers"
+      }, {
+        "role": "MAIN",
+        "mediaId": "hololive"
+      }]
+    }, {
+      "id": "okayu",
+      "name": {
+        "english": "Nekomata Okayu",
+        "native": "猫又おかゆ",
+        "alternative": [
+          "okayu"
+        ]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/103Dsz2.jpeg"
+        }
+      ],
+      "popularity": 1630000,
+      "description": "A cat being raised by an old lady that runs an onigiri store. She streams from a computer she stolen from the old lady.",
+      "gender": "Female",
+      "age": "80 in cat years",
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@NekomataOkayu"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "hologamers"
+      }, {
+        "role": "MAIN",
+        "mediaId": "hololive"
+      }]
+    }, {
+      "id": "korone",
+      "name": {
+        "english": "Inugami Korone",
+        "native": "戌神ころね",
+        "alternative": [
+          "korone"
+        ]
+      },
+      "images": [
+        {
+          "url": "https://i.imgur.com/2jlf6Ti.jpg"
+        }
+      ],
+      "popularity": 2000000,
+      "description": "A dog from a bakery in the city. She likes headpats and stealing human food (a bad thing for a dog living in a bakery).",
+      "gender": "Female",
+      "age": "92 in dog years",
+      "externalLinks": [{
+        "site": "YouTube",
+        "url": "https://www.youtube.com/@InugamiKorone"
+      }],
+      "media": [{
+        "role": "MAIN",
+        "mediaId": "hologamers"
       }, {
         "role": "MAIN",
         "mediaId": "hololive"
