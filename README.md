@@ -14,7 +14,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&label=tests&logo=github)
 [![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC&label=codecov&logo=codecov)](https://app.codecov.io/github/ker0olos/fable)
 
-[![Discord Bot Invite](https://img.shields.io/badge/Support%20us%20on%20Ko--fi-orange?logo=ko-fi&logoColor=white)][invite]
+[![Kofi](https://img.shields.io/badge/Support%20us%20on%20Ko--fi-orange?logo=ko-fi&logoColor=white)][kofi]
 
 </i>
 
@@ -202,3 +202,4 @@ time, and how many people are working on Fable at any giving moment.
 [topgg]: https://top.gg/bot/1041970851559522304/vote
 [topgg2]: https://top.gg/bot/1041970851559522304
 [invite]: https://fable.deno.dev/invite
+[kofi]: https://ko-fi.com/ker0olos
