@@ -14,6 +14,8 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ker0olos/fable/deno.yml?branch=main&label=tests&logo=github)
 [![codecov](https://img.shields.io/codecov/c/gh/ker0olos/fable/main?token=3C7ZTHzGqC&label=codecov&logo=codecov)](https://app.codecov.io/github/ker0olos/fable)
 
+[![Discord Bot Invite](https://img.shields.io/badge/Support%20us%20on%20Ko--fi-orange?logo=ko-fi&logoColor=white)][invite]
+
 </i>
 
 <i align="center">
@@ -41,9 +43,9 @@ Fable has no in-app purchases, no premiums, and no bullshit.
 <br clear="left"/>
 
 <p>
-  <img align="left" src="https://i.imgur.com/B897tj4.png" alt="Synthesis">
-  <h4>Synthesis</h4>
-  Synthesis those 2000 characters you have sitting in your inventory doing nothing
+  <img align="left" src="https://i.imgur.com/B897tj4.png" alt="Merging">
+  <h4>Merge</h4>
+  Merge those 200 characters you have sitting in your inventory doing nothing
   to get 2 characters that you might actually like.
 </p>
 
@@ -62,7 +64,7 @@ Fable has no in-app purchases, no premiums, and no bullshit.
 <p>
   <img align="left" src="https://i.imgur.com/Kbh4IxM.png" alt="Community Packs">
   <h4>Community Packs</h4>
-  As easy as installing an app on your phone, add community-made character packs to your server.
+  As easy as installing an app on your phone, add community-made character packs to your server, <a href="https://packs.deno.dev/">or create your own.</a>
 </p>
 
 <br clear="left"/>
@@ -78,16 +80,16 @@ Fable has no in-app purchases, no premiums, and no bullshit.
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227321932-2ad8d36c-e56c-46e9-91da-161b79eeb029.gif" alt="Animated Pulls">
 </i>
 
-Fable is a free, open-source gacha bot — a friendly, powerful alternative to
-bots like Mudae, Sofi, Karuta. Like those bots, you can pull anime characters,
-customize, and upgrade them.
+Fable is a free, open-source gacha bot — a greate alternative to bots like
+Mudae, Sofi, Karuta. Like those bots, you can pull anime characters, customize,
+and upgrade them.
 
 Unlike those bots, Fable is NOT a cash-grab scam, everything in Fable is free,
 no players can pay to get ahead.
 
-Fable also has an amazing system where anyone can handcraft new characters, or
-add characters that are missing from Fable. Then anyone can find and install the
-packs you make, wanna start creating your own community pack? Visit
+Fable comes with a system where anyone can create new characters, or add
+characters that are missing from Fable. Then publish them for anyone else using
+Fable to install, wanna start creating your own pack? Visit
 <https://packs.deno.dev>
 
 #### [Add Fable to Your Server][invite]
@@ -113,7 +115,6 @@ packs you make, wanna start creating your own community pack? Visit
 - [How to Contribute](https://github.com/ker0olos/fable/wiki)
 - [How to Create Packs](https://packs.deno.dev)
 - [Discord Support Server][discord]
-- [Dontate (Github)](https://github.com/sponsors/ker0olos)
 - [Dontate (Ko-fi)](https://ko-fi.com/ker0olos)
 
 <br/>
