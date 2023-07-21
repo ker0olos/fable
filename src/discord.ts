@@ -25,8 +25,9 @@ export const emotes = {
   add: '<:add:1099004747123523644>',
   all: '<:all:1107511909999181824>',
   liked: '<:liked:1110491720375873567>',
-  alive: '<:alive2:1128724907245711452>',
-  dead: '<:dead2:1128724910609551481>',
+  alive: '<:alive:1128724907245711452>',
+  outOfHP: '<:outofhp:1131872032456446053>',
+  outOfSta: '<:outofstamina:1128724910609551481>',
 };
 
 export const join = (...args: string[]): string => {

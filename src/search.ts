@@ -340,7 +340,7 @@ function characterMessage(
   character: Character | DisaggregatedCharacter,
   options?: Parameters<typeof characterEmbed>[1] & {
     externalLinks?: boolean;
-    relations?: boolean | number | DisaggregatedMedia[];
+    relations?: boolean | DisaggregatedMedia[];
   },
 ): discord.Message {
   options = {
@@ -373,17 +373,12 @@ function characterMessage(
   // relation components
   // sort media by popularity
   if (Array.isArray(options.relations)) {
-    relations = options.relations.slice(0, 4);
+    relations = options.relations.slice(0, 1);
   } else if (
     options.relations && character.media && 'edges' in character.media
   ) {
-    let edges = character.media.edges;
-
-    if (typeof options.relations === 'number') {
-      edges = edges.slice(0, Math.min(Math.max(options.relations, 1), 4));
-    } else {
-      edges = edges.slice(0, 4);
-    }
+    const edges = character.media.edges
+      .slice(0, 1);
 
     relations = edges.map(({ node }) => node);
   }

@@ -2,7 +2,7 @@
   "imports": {
     "#filter-boolean": "https://esm.sh/@total-typescript/ts-reset@0.4.2/filter-boolean",
     "$fauna": "https://esm.sh/faunadb@4.7.1",
-    "$std/": "https://deno.land/std@0.193.0/",
+    "$std/": "https://deno.land/std@0.194.0/",
     "ajv": "https://esm.sh/ajv@8.12.0",
     "awesome-ajv": "https://esm.sh/awesome-ajv-errors@5.1.0",
     "dax": "https://deno.land/x/dax@0.33.0/mod.ts",
@@ -10,7 +10,6 @@
     "sentry": "https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts",
     "sift": "https://raw.githubusercontent.com/ker0olos/sift/62110006c2d070fa6f00d5007a3a19dea6cd1d4d/mod.ts",
     "lru": "https://deno.land/x/lru@1.0.2/mod.ts",
-    "tweetnacl": "https://esm.sh/tweetnacl@1.0.3",
-    "url-safe-base64": "https://raw.githubusercontent.com/commenthol/url-safe-base64/v1.3.0/src/index.js"
+    "tweetnacl": "https://esm.sh/tweetnacl@1.0.3"
   }
 }

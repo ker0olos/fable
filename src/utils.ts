@@ -1,11 +1,6 @@
 import nacl from 'tweetnacl';
 
 import {
-  decode as base64Decode,
-  encode as base64Encode,
-} from 'url-safe-base64';
-
-import {
   captureException as _captureException,
   init as initSentry,
 } from 'sentry';
@@ -329,6 +324,27 @@ function stealTimestamp(v?: string): string {
 function diffInDays(a: Date, b: Date): number {
   return Math.floor(Math.abs(a.getTime() - b.getTime()) / 3600000 / 24);
 }
+
+const base64Encode = (base64: string): string => {
+  const ENC = {
+    '+': '-',
+    '/': '_',
+  };
+
+  return base64
+    .replace(/[+/]/g, (m) => ENC[m as keyof typeof ENC]);
+};
+
+const base64Decode = (safe: string): string => {
+  const DEC = {
+    '-': '+',
+    '_': '/',
+    '.': '=',
+  };
+
+  return safe
+    .replace(/[-_.]/g, (m) => DEC[m as keyof typeof DEC]);
+};
 
 function cipher(str: string, secret: number): string {
   let b = '';
