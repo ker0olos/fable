@@ -23,8 +23,19 @@ interface CharacterLive {
   agility: number;
   stamina: number;
   hp: number;
+
   curSta: number;
   curHp: number;
+
+  damageDone: number;
+  damageTaken: number;
+  dodges: number;
+  kills: string[];
+  killedBy: string;
+
+  out?: number;
+  reason?: 'HP' | 'STAMINA';
+
   userId: string;
 }
 
@@ -114,16 +125,16 @@ function experimental({ token, guildId, user, target }: {
   })
     .then(async ({ getUsersInventories: [user1, user2] }) => {
       const party1 = [
-        // user1.party?.member1,
-        // user1.party?.member2,
-        // user1.party?.member3,
-        // user1.party?.member4,
-        // user1.party?.member5,
-        { id: 'vtubers:gura' },
-        { id: 'vtubers:calliope' },
-        { id: 'vtubers:kiara' },
-        { id: 'vtubers:ina' },
-        { id: 'vtubers:watson' },
+        user1.party?.member1,
+        user1.party?.member2,
+        user1.party?.member3,
+        user1.party?.member4,
+        user1.party?.member5,
+        // { id: 'vtubers:gura' },
+        // { id: 'vtubers:calliope' },
+        // { id: 'vtubers:kiara' },
+        // { id: 'vtubers:ina' },
+        // { id: 'vtubers:watson' },
       ].filter(Boolean);
 
       if (party1.length <= 0) {
@@ -131,16 +142,16 @@ function experimental({ token, guildId, user, target }: {
       }
 
       const party2 = [
-        // user2.party?.member1,
-        // user2.party?.member2,
-        // user2.party?.member3,
-        // user2.party?.member4,
-        // user2.party?.member5,
-        { id: 'vtubers:kronii' },
-        { id: 'vtubers:mumei' },
-        { id: 'vtubers:chaos' },
-        { id: 'vtubers:fauna' },
-        { id: 'vtubers:sana' },
+        user2.party?.member1,
+        user2.party?.member2,
+        user2.party?.member3,
+        user2.party?.member4,
+        user2.party?.member5,
+        // { id: 'vtubers:kronii' },
+        // { id: 'vtubers:mumei' },
+        // { id: 'vtubers:chaos' },
+        // { id: 'vtubers:fauna' },
+        // { id: 'vtubers:sana' },
       ].filter(Boolean);
 
       if (party2.length <= 0) {
@@ -174,17 +185,15 @@ function experimental({ token, guildId, user, target }: {
 
         //
         // TODO experimental code
-        // character will have real stats in the database on stable
         const [strength, stamina, agility] = utils.randomPortions(
-          10,
-          50,
+          1,
+          8,
           3,
-          100,
+          20,
         );
         //
-        //
 
-        const hp = Math.floor(strength * 2 + stamina);
+        const hp = 15; // TODO experimental
 
         setup[char.id] = {
           rating: char.rating,
@@ -194,8 +203,15 @@ function experimental({ token, guildId, user, target }: {
           stamina,
           agility,
           hp,
-          curSta: stamina,
           curHp: hp,
+          curSta: stamina,
+
+          kills: [],
+          killedBy: '',
+          damageTaken: 0,
+          damageDone: 0,
+          dodges: 0,
+
           userId: user.id,
         };
       };
@@ -254,15 +270,6 @@ function experimental({ token, guildId, user, target }: {
         const p1 = p1Remaining / p1Sum;
         const p2 = p2Remaining / p2Sum;
 
-        // console.log(
-        //   p1,
-        //   '/',
-        //   p2,
-        //   `(${party1.map(({ id }) => setup[id].curHp)})`,
-        //   '/',
-        //   `(${party2.map(({ id }) => setup[id].curHp)})`,
-        // );
-
         return Math.floor(50 + ((p1 - p2) * 50));
       };
 
@@ -279,15 +286,28 @@ function experimental({ token, guildId, user, target }: {
         // sort character initiative by their agility
         .sort((a, b) => setup[b].agility - setup[a].agility);
 
-      const messages: discord.Message[] = [];
+      const rounds: {
+        p1State: string[];
+        p2State: string[];
+        damage: number;
+        events: discord.Embed[];
+      }[] = [
+        {
+          events: [],
+          damage: 50,
+          p1State: party1.map(() => discord.emotes.alive),
+          p2State: party2.map(() => discord.emotes.alive),
+        },
+      ];
 
-      const addMessage = (embed?: discord.Embed) => {
-        const prob = getDamage();
-
+      const makeMessage = (
+        round: number,
+        embed?: discord.Embed,
+      ) => {
         const message = new discord.Message()
           .addAttachment({
             type: 'image/png',
-            arrayBuffer: dynImages.probability(prob).buffer,
+            arrayBuffer: dynImages.probability(rounds[round].damage).buffer,
             filename: `damage.png`,
           })
           .addEmbed(
@@ -295,25 +315,22 @@ function experimental({ token, guildId, user, target }: {
               .addField({
                 inline: true,
                 name: `${user.display_name}`,
-                value: party1.map(({ id }) =>
-                  setup[id].curHp <= 0
-                    ? discord.emotes.eliminated
-                    : discord.emotes.alive
-                ).join(''),
+                value: rounds[round].p1State.toSorted().join(''),
               })
               .addField({
                 inline: true,
                 name: `${target.display_name}`,
-                value: party2.map(({ id }) =>
-                  setup[id].curHp <= 0
-                    ? discord.emotes.eliminated
-                    : discord.emotes.alive
-                ).join(''),
+                value: rounds[round].p2State.toSorted().join(''),
               })
-              .setImage({ url: `damage.png` })
+              .setImage({ url: `attachment://damage.png` })
               .setFooter({
-                // deno-lint-ignore no-non-null-assertion
-                text: stringify(prob, user.display_name!, target.display_name!),
+                text: stringify(
+                  rounds[round].damage,
+                  // deno-lint-ignore no-non-null-assertion
+                  user.display_name!,
+                  // deno-lint-ignore no-non-null-assertion
+                  target.display_name!,
+                ),
               }),
           );
 
@@ -321,24 +338,19 @@ function experimental({ token, guildId, user, target }: {
           message.addEmbed(embed);
         }
 
-        messages.push(message);
+        return message;
       };
-
-      // first message
-      addMessage();
 
       // start the battle loop
       for (let round = 0; round < MAX_ROUNDS; round++) {
         // start of round
 
-        //
-
         // loop each character
         for (const key of keys) {
           const character = setup[key];
 
-          // character is dead
-          if (character.curHp <= 0) {
+          // character is eliminated
+          if (character.curHp <= 0 || character.curSta <= 0) {
             continue;
           }
 
@@ -358,20 +370,61 @@ function experimental({ token, guildId, user, target }: {
             ? modParty1[Math.floor(Math.random() * modParty1.length)]
             : modParty2[Math.floor(Math.random() * modParty2.length)];
 
-          // TODO having 10 sta is pretty much guarantees you have enough
-          // this might not be the best good implementation
           if (enemy.curSta > 0 && enemy.agility >= character.strength) {
             enemy.curSta = Math.max(enemy.curSta - 1, 0);
+
+            enemy.dodges += 1;
+
+            if (enemy.curSta <= 0) {
+              enemy.out = round;
+              enemy.reason = 'STAMINA';
+            }
           } else {
             enemy.curHp = Math.max(enemy.curHp - character.strength, 0);
+
+            enemy.damageTaken += character.strength;
+            character.damageDone += character.strength;
+
+            if (enemy.curHp <= 0) {
+              enemy.out = round;
+              enemy.reason = 'HP';
+              enemy.killedBy = character.name;
+
+              character.kills.push(enemy.name);
+            }
           }
-        }
-        // end of looping all characters
+
+          character.curSta = Math.max(character.curSta - 1, 0);
+
+          if (character.curSta <= 0) {
+            character.out = round;
+            character.reason = 'STAMINA';
+          }
+        } // end of looping characters
 
         // end of round
 
         const { p1Remaining, p2Remaining, p1Incapable, p2Incapable } =
           winConditions();
+
+        rounds.push({
+          events: [],
+          damage: getDamage(),
+          p1State: party1.map(({ id }) =>
+            setup[id].curHp <= 0
+              ? discord.emotes.outOfHP
+              : setup[id].curSta <= 0
+              ? discord.emotes.outOfSta
+              : discord.emotes.alive
+          ),
+          p2State: party2.map(({ id }) =>
+            setup[id].curHp <= 0
+              ? discord.emotes.outOfHP
+              : setup[id].curSta <= 0
+              ? discord.emotes.outOfSta
+              : discord.emotes.alive
+          ),
+        });
 
         if (
           p1Remaining <= 0 ||
@@ -380,9 +433,6 @@ function experimental({ token, guildId, user, target }: {
         ) {
           break;
         }
-
-        // TODO add a highlight of each round?
-        addMessage();
 
         //
       }
@@ -398,13 +448,67 @@ function experimental({ token, guildId, user, target }: {
         win = target;
       }
 
-      addMessage(new discord.Embed()
-        .setTitle(win ? `${win.display_name} Wins` : 'Tie'));
+      for (const character of Object.values(setup)) {
+        if (character.reason) {
+          let format: string;
 
-      // send each message on an interval
-      for (const message of messages) {
-        await message.patch(token);
-        await utils.sleep(1);
+          switch (character.reason) {
+            case 'HP':
+              format = character.kills.length
+                ? `**${character.name} died** killing ${character.kills.length} ${
+                  character.kills.length === 1 ? 'character' : 'characters'
+                }`
+                : character.dodges
+                ? `**${character.name} died** while dodging ${character.dodges} ${
+                  character.dodges === 1 ? 'attack' : 'attacks'
+                }`
+                : `**${character.name} died**`;
+              break;
+            case 'STAMINA':
+              format = character.kills.length
+                ? `**${character.name} ran out of stamina** after killing ${character.kills.length} ${
+                  character.kills.length === 1 ? 'character' : 'characters'
+                }`
+                : character.dodges
+                ? `**${character.name} ran out of stamina** after dodging ${character.dodges} ${
+                  character.dodges === 1 ? 'attack' : 'attacks'
+                }`
+                : `**${character.name} ran out of stamina**`;
+              break;
+          }
+
+          // deno-lint-ignore no-non-null-assertion
+          rounds[character.out! + 1].events.push(
+            new discord.Embed()
+              .setThumbnail({ url: character.image, preview: true })
+              .setAuthor({
+                name: character.userId === target.id
+                  ? target.display_name
+                  : user.display_name,
+              })
+              .setDescription(format),
+          );
+        }
+      }
+
+      for (let i = 0; i < rounds.length; i++) {
+        const { events } = rounds[i];
+
+        // add a new event to declare the winner
+        if (i === rounds.length - 1) {
+          events.push(new discord.Embed()
+            .setTitle(win ? `${win.display_name} Wins` : 'Tie'));
+        }
+
+        if (events.length) {
+          for (const event of events) {
+            await makeMessage(i, event).patch(token);
+            await utils.sleep(3);
+          }
+        } else {
+          await makeMessage(i).patch(token);
+          await utils.sleep(3);
+        }
       }
     })
     .catch(async (err) => {
