@@ -455,25 +455,25 @@ function experimental({ token, guildId, user, target }: {
           switch (character.reason) {
             case 'HP':
               format = character.kills.length
-                ? `**${character.name} died** killing ${character.kills.length} ${
+                ? `__${character.name} was killed by ${character.killedBy}__ but took ${character.kills.length} ${
                   character.kills.length === 1 ? 'character' : 'characters'
-                }`
+                } with them`
                 : character.dodges
-                ? `**${character.name} died** while dodging ${character.dodges} ${
+                ? `__${character.name} was killed by ${character.killedBy}__ after dodging ${character.dodges} ${
                   character.dodges === 1 ? 'attack' : 'attacks'
                 }`
-                : `**${character.name} died**`;
+                : `__${character.name} was killed by ${character.killedBy}__`;
               break;
             case 'STAMINA':
               format = character.kills.length
-                ? `**${character.name} ran out of stamina** after killing ${character.kills.length} ${
+                ? `__${character.name} ran out of stamina__ after killing ${character.kills.length} ${
                   character.kills.length === 1 ? 'character' : 'characters'
                 }`
                 : character.dodges
-                ? `**${character.name} ran out of stamina** after dodging ${character.dodges} ${
+                ? `__${character.name} ran out of stamina__ after dodging ${character.dodges} ${
                   character.dodges === 1 ? 'attack' : 'attacks'
                 }`
-                : `**${character.name} ran out of stamina**`;
+                : `__${character.name} ran out of stamina__`;
               break;
           }
 
