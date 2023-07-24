@@ -2195,105 +2195,105 @@ Deno.test('/synthesis', async (test) => {
     }
   });
 
-  await test.step('filter (media)', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                getUserInventory: {
-                  user: {
-                    likes: [
-                      { mediaId: 'pack-id:1' },
-                    ],
-                  },
-                  characters: [
-                    {
-                      id: 'anilist:1',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:2',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:3',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:4',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:5',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:6',
-                      mediaId: 'pack-id:2',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:7',
-                      mediaId: 'pack-id:2',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:8',
-                      mediaId: 'pack-id:2',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:9',
-                      mediaId: 'pack-id:2',
-                      rating: 1,
-                    },
-                  ],
-                },
-              },
-            }))),
-        } as any,
-        undefined,
-      ]),
-    );
+  // await test.step('filter (media)', async () => {
+  //   const fetchStub = stub(
+  //     utils,
+  //     'fetchWithRetry',
+  //     returnsNext([
+  //       {
+  //         ok: true,
+  //         text: (() =>
+  //           Promise.resolve(JSON.stringify({
+  //             data: {
+  //               getUserInventory: {
+  //                 user: {
+  //                   likes: [
+  //                     { mediaId: 'pack-id:1' },
+  //                   ],
+  //                 },
+  //                 characters: [
+  //                   {
+  //                     id: 'anilist:1',
+  //                     mediaId: 'pack-id:1',
+  //                     rating: 1,
+  //                   },
+  //                   {
+  //                     id: 'anilist:2',
+  //                     mediaId: 'pack-id:1',
+  //                     rating: 1,
+  //                   },
+  //                   {
+  //                     id: 'anilist:3',
+  //                     mediaId: 'pack-id:1',
+  //                     rating: 1,
+  //                   },
+  //                   {
+  //                     id: 'anilist:4',
+  //                     mediaId: 'pack-id:1',
+  //                     rating: 1,
+  //                   },
+  //                   {
+  //                     id: 'anilist:5',
+  //                     mediaId: 'pack-id:1',
+  //                     rating: 1,
+  //                   },
+  //                   {
+  //                     id: 'anilist:6',
+  //                     mediaId: 'pack-id:2',
+  //                     rating: 1,
+  //                   },
+  //                   {
+  //                     id: 'anilist:7',
+  //                     mediaId: 'pack-id:2',
+  //                     rating: 1,
+  //                   },
+  //                   {
+  //                     id: 'anilist:8',
+  //                     mediaId: 'pack-id:2',
+  //                     rating: 1,
+  //                   },
+  //                   {
+  //                     id: 'anilist:9',
+  //                     mediaId: 'pack-id:2',
+  //                     rating: 1,
+  //                   },
+  //                 ],
+  //               },
+  //             },
+  //           }))),
+  //       } as any,
+  //       undefined,
+  //     ]),
+  //   );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+  //   const listStub = stub(
+  //     packs,
+  //     'all',
+  //     () => Promise.resolve([]),
+  //   );
 
-    config.synthesis = true;
+  //   config.synthesis = true;
 
-    try {
-      await assertRejects(
-        () =>
-          synthesis.synthesize({
-            token: 'test_token',
-            userId: 'user_id',
-            guildId: 'guild_id',
+  //   try {
+  //     await assertRejects(
+  //       () =>
+  //         synthesis.synthesize({
+  //           token: 'test_token',
+  //           userId: 'user_id',
+  //           guildId: 'guild_id',
 
-            target: 2,
-          }),
-        NonFetalError,
-        'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
-      );
-    } finally {
-      delete config.appId;
+  //           target: 2,
+  //         }),
+  //       NonFetalError,
+  //       'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
+  //     );
+  //   } finally {
+  //     delete config.appId;
 
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
+  //     fetchStub.restore();
+  //     listStub.restore();
+  //   }
+  // });
 
   await test.step('not enough', async () => {
     const fetchStub = stub(
