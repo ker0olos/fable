@@ -34,11 +34,12 @@ async function getFilteredCharacters(
     ?.map(({ characterId, mediaId }) => characterId ?? mediaId);
 
   characters = characters
-    .filter(({ id, mediaId }) =>
+    .filter(({ id, mediaId: _ }) =>
       // filter party members
       !partyIds.includes(id) &&
       // filter liked characters
-      !likesIds?.some((likeId) => likeId === id || likeId === mediaId)
+      !likesIds?.some((likeId) => likeId === id)
+      // !likesIds?.some((likeId) => likeId === id || likeId === mediaId)
     );
 
   return characters;
