@@ -180,7 +180,7 @@ export const commands = [
   // uses characters and media from all packs
   ...Command({
     name: 'search',
-    aliases: ['anime', 'manga', 'media'],
+    aliases: ['anime', 'manga', 'media', 'series'],
     description: 'Search for a specific media',
     options: [
       Option({

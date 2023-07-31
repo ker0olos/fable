@@ -167,7 +167,7 @@ function pages(
         new discord.Embed()
           .setAuthor({ name: 'Roadmap' })
           .setDescription([
-            '__**Releasing in the near future (5 days ~ 2 months)**__',
+            '__**Releasing in the near future (~3 months)**__',
             '',
             '**[Battles](https://github.com/ker0olos/fable/issues/74)**',
             '',
@@ -187,7 +187,7 @@ function pages(
             '- `/pull` `/guaranteed`: _use the guaranteed pulls you have_',
             '',
             '- `/now` `/vote` `/tu`: _check what you can do right now_',
-            '- `/search` `/anime` `/manga`: _search for specific media_',
+            '- `/search` `/anime` `/manga` `/series`: _search for specific media_',
             '- `/character` `/char`: _search for a specific character_',
             '',
             '- `/merge` `/synthesize`: _merge characters together to pull a new character_',
