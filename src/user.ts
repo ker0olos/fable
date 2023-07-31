@@ -996,10 +996,18 @@ function list({
   nick?: boolean;
 }): discord.Message {
   user.getUserCharacters({ userId, guildId })
-    .then(async ({ characters, likes }) => {
+    .then(async ({ characters, party, likes }) => {
       const embed = new discord.Embed();
 
       const message = new discord.Message();
+
+      const members = [
+        party?.member1?.id,
+        party?.member2?.id,
+        party?.member3?.id,
+        party?.member4?.id,
+        party?.member5?.id,
+      ];
 
       let media: Media[] = [];
 
@@ -1076,10 +1084,9 @@ function list({
           : undefined;
 
         const name = `${existing.rating}${discord.emotes.smolStar}${
-          likes?.some((like) =>
-              like.characterId === existing.id ||
-              like.mediaId === existing.mediaId
-            )
+          members?.some((member) => member === existing.id)
+            ? discord.emotes.member
+            : likes?.some((like) => like.characterId === existing.id)
             ? `${discord.emotes.liked}`
             : ''
         } ${existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])}`;
