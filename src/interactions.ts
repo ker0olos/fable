@@ -104,6 +104,7 @@ export const handler = async (r: Request) => {
               'anime',
               'manga',
               'media',
+              'series',
               'found',
               'owned',
               'likeall',
@@ -276,7 +277,8 @@ export const handler = async (r: Request) => {
           case 'search':
           case 'anime':
           case 'manga':
-          case 'media': {
+          case 'media':
+          case 'series': {
             const title = options['title'] as string;
 
             if (options['characters']) {
