@@ -45,6 +45,11 @@
       "type": "string",
       "description": "A discord webhook url that can be used to publish changes to a server"
     },
+    "private": {
+      "title": "private",
+      "type": "boolean",
+      "description": "Limit pack installation to its owner and maintainers"
+    },
     "conflicts": {
       "title": "conflicts",
       "type": "array",
