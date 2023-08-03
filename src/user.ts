@@ -26,7 +26,7 @@ import {
 import { COSTS } from '../models/add_tokens_to_user.ts';
 
 const cachedUsers: Record<string, {
-  locale: string;
+  locale: discord.AvailableLocales;
 }> = {};
 
 async function getUserCharacters(
