@@ -10,6 +10,39 @@ enum CommandType {
   USER = 2,
 }
 
+export type AvailableLocales =
+  // https://discord.com/developers/docs/reference#locales
+  | 'en-US' // English [default, fallback]
+  | 'id' // Indonesian
+  | 'da' // Danish
+  | 'de' // German
+  | 'es-ES' // Spanish
+  | 'fr' // French
+  | 'hr' // Croatian
+  | 'it' // Italian
+  | 'lt' // Lithuanian
+  | 'hu' // Hungarian
+  | 'nl' // Dutch
+  | 'no' // Norwegian
+  | 'pl' // Polish
+  | 'pt-BR' // Portuguese, Brazilian
+  | 'ro' // Romanian, Romania
+  | 'fi' // Finnish,
+  | 'sv-SE' // Swedish
+  | 'vi' // Vietnamese
+  | 'tr' // Turkish
+  | 'cs' // Czech
+  | 'el' // Greek
+  | 'bg' // Bulgarian
+  | 'ru' // Russian
+  | 'uk' // Ukrainian
+  | 'hi' // Hindi
+  | 'th' // Thai
+  | 'zh-CN' // Chinese, China
+  | 'ja' // Japanese
+  | 'zh-TW' // Chinese, Taiwan
+  | 'ko'; // Korean
+
 export const empty = '\u200B';
 
 export const colors = {
@@ -240,11 +273,11 @@ export class Interaction<Options> {
   /** member is sent when the interaction is invoked in a guild */
   member: Member;
 
-  // /** available on all interaction types except PING */
-  // locale?: string;
+  /** available on all interaction types except PING */
+  locale?: AvailableLocales;
 
-  // /** guild's preferred locale (if invoked in a guild) */
-  // guildLocale?: string;
+  /** guild's preferred locale (if invoked in a guild) */
+  guildLocale?: AvailableLocales;
 
   constructor(body: string) {
     const obj = JSON.parse(body);
@@ -289,8 +322,8 @@ export class Interaction<Options> {
     // this.message = obj?.message
     this.member = obj.member;
 
-    // this.locale = obj.locale;
-    // this.guildLocale = obj.guild_locale;
+    this.locale = obj.locale;
+    this.guildLocale = obj.guild_locale;
 
     this.options = {};
 

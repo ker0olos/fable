@@ -25,6 +25,10 @@ import {
 
 import { COSTS } from '../models/add_tokens_to_user.ts';
 
+const cachedUsers: Record<string, {
+  locale: string;
+}> = {};
+
 async function getUserCharacters(
   { userId, guildId }: { userId: string; guildId: string },
 ): Promise<{
@@ -1466,6 +1470,7 @@ function logs({
 }
 
 const user = {
+  cachedUsers,
   findCharacter,
   findCharacters,
   getActiveInventories,

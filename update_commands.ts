@@ -4,6 +4,8 @@ import { load as Dotenv } from '$std/dotenv/mod.ts';
 
 import { green } from '$std/fmt/colors.ts';
 
+import { AvailableLocales } from './src/discord.ts';
+
 await Dotenv({
   export: true,
   defaultsPath: '.env.example',
@@ -53,26 +55,31 @@ enum Permission {
   'MANAGE_GUILD' = 1 << 5,
 }
 
+type LocalizationString = Record<AvailableLocales, string>;
+
+type Command = {
+  type?: CommandType;
+  name: string;
+  description?: string;
+  // nameLocalizations?: LocalizationString;
+  descriptionLocalizations?: LocalizationString;
+  options?: ReturnType<typeof Option>[];
+  aliases?: string[];
+  defaultPermission?: Permission;
+};
+
 type Option = {
   type: Type;
   name: string;
   description: string;
+  nameLocalizations?: LocalizationString;
+  descriptionLocalizations?: LocalizationString;
   autocomplete?: boolean;
   options?: Option[];
   choices?: Choice[];
   optional?: boolean;
-  aliases?: (string | { name: string; desc: string })[];
   min_value?: number;
   max_value?: number;
-};
-
-type Command = {
-  name: string;
-  type?: CommandType;
-  description?: string;
-  options?: ReturnType<typeof Option>[];
-  aliases?: string[];
-  defaultPermission?: Permission;
 };
 
 type Choice = {
@@ -85,6 +92,7 @@ const Option = (option: Option): Option => option;
 const Command = ({
   name,
   description,
+  descriptionLocalizations,
   type,
   options,
   aliases,
@@ -100,6 +108,8 @@ const Command = ({
     required: !option.optional,
     min_value: option.min_value,
     max_value: option.max_value,
+    name_localizations: option.nameLocalizations,
+    description_localizations: option.descriptionLocalizations,
     options: option.options?.map((option) => transformOption(option)),
   });
 
@@ -109,20 +119,9 @@ const Command = ({
     description,
     dm_permission: false,
     default_member_permissions: defaultPermission,
+    description_localizations: descriptionLocalizations,
     options: options?.map((option) => transformOption(option)),
   }];
-
-  options?.forEach((option, index) => {
-    option.aliases?.forEach((alias) => {
-      commands[0].options?.push({
-        ...commands[0].options[index],
-        name: typeof alias === 'object' ? alias.name : alias,
-        description: typeof alias === 'object'
-          ? alias.desc
-          : commands[0].options[index].description,
-      });
-    });
-  });
 
   aliases?.forEach((alias) =>
     commands.push({
@@ -758,26 +757,26 @@ export const commands = [
     ],
   }),
   // experimental ephemeral temporary
-  // ...Command({
-  //   name: 'experimental',
-  //   description: 'experimental ephemeral temporary commands',
-  //   options: [
-  //     Option({
-  //       name: 'battle',
-  //       description:
-  //         'Try the new combat in a mock battle against another player\'s party',
-  //       type: Type.SUB_COMMAND,
-  //       optional: true,
-  //       options: [
-  //         Option({
-  //           name: 'versus',
-  //           description: 'The player you want to battle against',
-  //           type: Type.USER,
-  //         }),
-  //       ],
-  //     }),
-  //   ],
-  // }),
+  ...Command({
+    name: 'experimental',
+    description: 'experimental ephemeral temporary commands',
+    options: [
+      Option({
+        name: 'battle',
+        description:
+          'Try the new combat in a mock battle against another player\'s party',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'versus',
+            description: 'The player you want to battle against',
+            type: Type.USER,
+          }),
+        ],
+      }),
+    ],
+  }),
 ];
 
 if (import.meta.main) {
