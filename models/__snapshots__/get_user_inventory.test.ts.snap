@@ -1545,7 +1545,7 @@ snapshot[`model 7`] = `
                                                                       data: U {
                                                                         raw: {
                                                                           object: {
-                                                                            availablePulls: 5,
+                                                                            availablePulls: 10,
                                                                             instance: U {
                                                                               raw: {
                                                                                 from: U {
@@ -1791,7 +1791,7 @@ snapshot[`model 7`] = `
                                                                       data: U {
                                                                         raw: {
                                                                           object: {
-                                                                            availablePulls: 5,
+                                                                            availablePulls: 10,
                                                                             instance: U {
                                                                               raw: {
                                                                                 from: U {
@@ -2035,7 +2035,7 @@ snapshot[`model 7`] = `
                                                                       data: U {
                                                                         raw: {
                                                                           object: {
-                                                                            availablePulls: 5,
+                                                                            availablePulls: 10,
                                                                             instance: U {
                                                                               raw: {
                                                                                 from: U {
@@ -2850,7 +2850,7 @@ snapshot[`model 7`] = `
                                                                       data: U {
                                                                         raw: {
                                                                           object: {
-                                                                            availablePulls: 5,
+                                                                            availablePulls: 10,
                                                                             instance: U {
                                                                               raw: {
                                                                                 from: U {
@@ -3096,7 +3096,7 @@ snapshot[`model 7`] = `
                                                                       data: U {
                                                                         raw: {
                                                                           object: {
-                                                                            availablePulls: 5,
+                                                                            availablePulls: 10,
                                                                             instance: U {
                                                                               raw: {
                                                                                 from: U {
@@ -3340,7 +3340,7 @@ snapshot[`model 7`] = `
                                                                       data: U {
                                                                         raw: {
                                                                           object: {
-                                                                            availablePulls: 5,
+                                                                            availablePulls: 10,
                                                                             instance: U {
                                                                               raw: {
                                                                                 from: U {
@@ -3946,7 +3946,7 @@ snapshot[`model 8`] = `
                                                                   data: U {
                                                                     raw: {
                                                                       object: {
-                                                                        availablePulls: 5,
+                                                                        availablePulls: 10,
                                                                         instance: U {
                                                                           raw: {
                                                                             from: U {
@@ -4735,7 +4735,7 @@ snapshot[`model 8`] = `
                                                                   data: U {
                                                                     raw: {
                                                                       object: {
-                                                                        availablePulls: 5,
+                                                                        availablePulls: 10,
                                                                         instance: U {
                                                                           raw: {
                                                                             from: U {
