@@ -2,6 +2,7 @@ import * as discord from './discord.ts';
 
 import search, { idPrefix } from './search.ts';
 
+import i18n from './i18n.ts';
 import user from './user.ts';
 import party from './party.ts';
 import packs from './packs.ts';
@@ -65,6 +66,7 @@ export const handler = async (r: Request) => {
   const {
     name,
     type,
+    locale,
     token,
     guildId,
     focused,
@@ -88,6 +90,12 @@ export const handler = async (r: Request) => {
   }
 
   config.origin = origin;
+
+  // cache the user's locale into a global variable
+  user.cachedUsers[member.user.id] = {
+    // deno-lint-ignore no-non-null-assertion
+    locale: locale!,
+  };
 
   try {
     switch (type) {
@@ -992,7 +1000,6 @@ export const handler = async (r: Request) => {
               return steal[customType === 'bsteal' ? 'sacrifices' : 'attempt']({
                 token,
                 guildId,
-
                 userId: member.user.id,
                 characterId,
                 pre: chance,
@@ -1066,7 +1073,9 @@ export const handler = async (r: Request) => {
             return new discord.Message()
               .setContent('')
               .addEmbed(new discord.Embed().setDescription(
-                targetId === member.user.id ? 'Declined' : 'Cancelled',
+                targetId === member.user.id
+                  ? i18n.get('declined', locale)
+                  : i18n.get('cancelled', locale),
               ))
               .setType(discord.MessageType.Update)
               .send();
@@ -1088,7 +1097,7 @@ export const handler = async (r: Request) => {
         .setFlags(discord.MessageFlags.Ephemeral)
         .addEmbed(
           new discord.Embed().setDescription(
-            'Found _nothing_ matching that query!',
+            i18n.get('found-nothing', locale),
           ),
         ).send();
     }
@@ -1108,7 +1117,7 @@ export const handler = async (r: Request) => {
         .setFlags(discord.MessageFlags.Ephemeral)
         .addEmbed(
           new discord.Embed().setDescription(
-            'You don\'t permission to complete this interaction!',
+            i18n.get('invalid-permission', locale),
           ),
         ).send();
     }
@@ -1124,7 +1133,9 @@ export const handler = async (r: Request) => {
     return discord.Message.internal(refId).send();
   }
 
-  return new discord.Message().setContent(`Unimplemented or removed.`)
+  return new discord.Message().setContent(
+    i18n.get('unimplemented', locale),
+  )
     .setFlags(discord.MessageFlags.Ephemeral)
     .send();
 };

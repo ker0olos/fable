@@ -53,10 +53,36 @@ enum Permission {
   'MANAGE_GUILD' = 1 << 5,
 }
 
+type LocalizationString = Record<
+  // https://discord.com/developers/docs/reference#locales
+  | 'de' // German
+  | 'es-ES' // Spanish
+  | 'pt-BR' // Portuguese, Brazilian
+  | 'it' // Italian
+  | 'fr' // French
+  | 'ja' // Japanese
+  | 'ru' // Russian
+  | 'tr', // Turkish
+  string
+>;
+
+type Command = {
+  type?: CommandType;
+  name: string;
+  nameLocalizations?: LocalizationString;
+  descriptionLocalizations?: LocalizationString;
+  description?: string;
+  options?: ReturnType<typeof Option>[];
+  aliases?: string[];
+  defaultPermission?: Permission;
+};
+
 type Option = {
   type: Type;
   name: string;
   description: string;
+  nameLocalizations?: LocalizationString;
+  descriptionLocalizations?: LocalizationString;
   autocomplete?: boolean;
   options?: Option[];
   choices?: Choice[];
@@ -64,15 +90,6 @@ type Option = {
   aliases?: (string | { name: string; desc: string })[];
   min_value?: number;
   max_value?: number;
-};
-
-type Command = {
-  name: string;
-  type?: CommandType;
-  description?: string;
-  options?: ReturnType<typeof Option>[];
-  aliases?: string[];
-  defaultPermission?: Permission;
 };
 
 type Choice = {
@@ -85,6 +102,8 @@ const Option = (option: Option): Option => option;
 const Command = ({
   name,
   description,
+  nameLocalizations,
+  descriptionLocalizations,
   type,
   options,
   aliases,
@@ -758,26 +777,26 @@ export const commands = [
     ],
   }),
   // experimental ephemeral temporary
-  // ...Command({
-  //   name: 'experimental',
-  //   description: 'experimental ephemeral temporary commands',
-  //   options: [
-  //     Option({
-  //       name: 'battle',
-  //       description:
-  //         'Try the new combat in a mock battle against another player\'s party',
-  //       type: Type.SUB_COMMAND,
-  //       optional: true,
-  //       options: [
-  //         Option({
-  //           name: 'versus',
-  //           description: 'The player you want to battle against',
-  //           type: Type.USER,
-  //         }),
-  //       ],
-  //     }),
-  //   ],
-  // }),
+  ...Command({
+    name: 'experimental',
+    description: 'experimental ephemeral temporary commands',
+    options: [
+      Option({
+        name: 'battle',
+        description:
+          'Try the new combat in a mock battle against another player\'s party',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'versus',
+            description: 'The player you want to battle against',
+            type: Type.USER,
+          }),
+        ],
+      }),
+    ],
+  }),
 ];
 
 if (import.meta.main) {

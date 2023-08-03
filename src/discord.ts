@@ -240,11 +240,11 @@ export class Interaction<Options> {
   /** member is sent when the interaction is invoked in a guild */
   member: Member;
 
-  // /** available on all interaction types except PING */
-  // locale?: string;
+  /** available on all interaction types except PING */
+  locale?: string;
 
-  // /** guild's preferred locale (if invoked in a guild) */
-  // guildLocale?: string;
+  /** guild's preferred locale (if invoked in a guild) */
+  guildLocale?: string;
 
   constructor(body: string) {
     const obj = JSON.parse(body);
@@ -289,8 +289,8 @@ export class Interaction<Options> {
     // this.message = obj?.message
     this.member = obj.member;
 
-    // this.locale = obj.locale;
-    // this.guildLocale = obj.guild_locale;
+    this.locale = obj.locale;
+    this.guildLocale = obj.guild_locale;
 
     this.options = {};
 

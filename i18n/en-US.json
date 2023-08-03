@@ -1,0 +1,7 @@
+{
+  "declined": "Declined",
+  "cancelled": "Cancelled",
+  "unimplemented": "Unimplemented or removed.",
+  "invalid-permission": "You don't permission to complete this interaction!",
+  "found-nothing": "Found _nothing_ matching that query!"
+}
