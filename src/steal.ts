@@ -17,7 +17,9 @@ import { Character, DisaggregatedCharacter, Schema } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
 
-const BOOST_FACTOR = 0.02;
+export const PARTY_PROTECTION_PERIOD = 4;
+
+export const BOOST_FACTOR = 0.02;
 
 function getInactiveDays(inventory?: Partial<Schema.Inventory>): number {
   const lastPull = inventory?.lastPull
@@ -262,7 +264,7 @@ function pre({ token, userId, guildId, stars, search, id }: {
       if (party.includes(characterId)) {
         const inactiveDays = getInactiveDays(existing.inventory);
 
-        if (inactiveDays <= 4) {
+        if (inactiveDays <= PARTY_PROTECTION_PERIOD) {
           message.addEmbed(
             new discord.Embed().setDescription(
               `As part of <@${existing?.user.id}>'s party, **${characterName}** cannot be stolen while <@${existing?.user.id}> is still active`,

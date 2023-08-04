@@ -217,7 +217,7 @@ snapshot[`/help 3`] = `
 " +
           "
 " +
-          "\`/party assign name: spot:\` to assign a character you have to your party;
+          "\`/party assign name: spot:\` to assign a character you have to your party,
 " +
           "leaving the \`spot:\` empty will assign the character to the first empty spot or override the last spot.
 " +
@@ -436,28 +436,22 @@ snapshot[`/help 6`] = `
             type: 2,
           },
           {
-            label: "Full Roadmap",
-            style: 5,
-            type: 2,
-            url: "https://github.com/ker0olos/fable/issues/1",
-          },
-          {
             label: "GitHub",
             style: 5,
             type: 2,
             url: "https://github.com/ker0olos/fable",
           },
-        ],
-        type: 1,
-      },
-      {
-        components: [
           {
             label: "Discord Support Server",
             style: 5,
             type: 2,
             url: "https://discord.gg/H69RVBxeYY",
           },
+        ],
+        type: 1,
+      },
+      {
+        components: [
           {
             label: "Donate",
             style: 5,
