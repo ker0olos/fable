@@ -8,6 +8,28 @@
   "support-server": "Discord Support Server",
   "donate": "Donate",
 
+  "+1-pull": "_+1 pull {0}_",
+  "available-pull": "Available Pull",
+  "available-pulls": "Available Pulls",
+  "daily-token": "Daily Token",
+  "daily-tokens": "Daily Tokens",
+  "can-vote-again": "_Can vote again {0}_",
+  "steal-cooldown-ends": "_Steal cooldown ends {0}_",
+
+  "you-empty-collection": "You don't have any {0}characters",
+  "you-empty-media-collection": "You don't have any characters from {0}",
+
+  "user-empty-collection": "{0} doesn't have any {1}characters",
+  "user-empty-media-collection": "{0} doesn't have any characters from {1}",
+
+  "character-hasnt-been-found": "{0} hasn't been found by anyone yet.",
+  "character-not-owned-by-you": "{0} is owned by {1} and cannot be customized by you.",
+
+  "nickname-reset": "{0}'s nickname has been reset",
+  "nickname-changed": "{0}'s nickname has been changed to **{1}**",
+  "image-reset": "{0}'s image has been reset",
+  "image-changed": "{0}'s image has been **changed**",
+
   "help-page1-before-anything": "Before anything: You will need characters.",
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",
   "help-page1-characters-are-exclusive": "__Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.",
