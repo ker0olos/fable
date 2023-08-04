@@ -68,9 +68,9 @@
 
   "/gacha": "start a new gacha pull",
   "/q": "start a gacha pull but with no animations",
-  "/pull": "use the guaranteed pulls you have",
+  "/pull": "use a guaranteed pull you have",
   "/now": "check what you can do right now",
-  "/search": "search for specific media",
+  "/search": "search for a specific series",
   "/character": "search for a specific character",
   "/merge": "merge characters together to pull a new character",
 
@@ -79,8 +79,8 @@
   "/party swap": "swap characters spots with each others",
   "/party remove": "remove a character from your party",
 
-  "/coll stars": "view user your stars",
-  "/coll media": "view user characters in a specific media",
+  "/coll stars": "view user stars",
+  "/coll media": "view user characters in a specific series",
 
   "/steal": "steal a character from another user",
   "/trade": "trade characters with another user",
@@ -88,20 +88,66 @@
 
   "/nick": "change the nickname of a character",
   "/image": "change the image of a character",
-  "/found": "list all characters found from a specific media",
+  "/found": "list all characters found from a specific series",
 
-  "/likeslist": "list user likes",
+  "/likeslist": "list all user likes",
   "/like": "like a character to be notified if someone finds them",
   "/unlike": "remove character from your likes",
-  "/likeall": "like a media to be notified if someone finds any character from it",
-  "/unlikeall": "remove media from your likes",
+  "/likeall": "like a series to be notified if someone finds any character from it",
+  "/unlikeall": "remove a series from your likes",
 
-  "/buy normal": "use votes to buy normal pulls",
-  "/buy guaranteed": "use votes to buy pulls with a specific guaranteed rating",
+  "/buy normal": "use tokens to buy normal pulls",
+  "/buy guaranteed": "use tokens to buy pulls with a specific guaranteed rating",
   "/packs": "list all the packs on a server",
   "/logs": "list user last few found characters",
 
   "/community popular": "browse the most popular community packs",
   "/community install": "install a community pack",
-  "/community uninstall": "uninstall a community pack"
+  "/community uninstall": "uninstall a community pack",
+
+  "/experimental battle": "try the new upcoming combat in a mock battle against another user",
+
+  "/help": "need more information? we got you",
+
+  "$debug": "display the nerdy stuff",
+  "$media-title": "the title of the series",
+  "$character-name": "the name of the character",
+  "$media-characters": "view the characters from the series",
+  "$user-list": "the user of the list",
+  "$user-party": "the user of the party",
+  "$user-likes-list": "the user of the likes list",
+  "$user-likes-filter": "filter out the likes already found by the user",
+  "$trade-user": "the user you want to trade with",
+  "$trade-give-character": "a character to give away",
+  "$trade-take-character": "a character to take for yourself",
+  "$steal-sacrifices-boost": "the amount of stars to sacrifice for a boost",
+
+  "$stars": "the star rating",
+  "$merge-star-target": "the target star rating of the merge",
+
+  "$new-image": "new image url",
+  "$new-nick": "new nickname",
+
+  "$buy-normal-amount": "the amount of pulls you want to buy",
+  "$buy-guaranteed-stars": "the star rating you want to buy",
+
+  "$party-spot": "the spot where you want this character",
+  "$party-swap-1": "the first target of the swap",
+  "$party-swap-2": "the second target of the swap",
+  "$party-remove-spot": "the spot to empty",
+
+  "$versus": "the user to battle against",
+
+  "$pack-id": "the id of the pack",
+
+  "$help-page": "specify a page to display",
+  "$help-page-gacha": "Gacha",
+  "$help-page-merging": "Merging",
+  "$help-page-party": "Party",
+  "$help-page-stealing": "Stealing",
+  "$help-page-shop": "Shop",
+  "$help-page-roadmap": "Roadmap",
+  "$help-page-essential-commands": "Essential Commands",
+  "$help-page-other-commands": "Other Commands",
+  "$help-page-admin-commands": "Admin Commands"
 }
