@@ -26,6 +26,10 @@ import {
 
 import { COSTS } from '../models/add_tokens_to_user.ts';
 
+const cachedGuilds: Record<string, {
+  locale: discord.AvailableLocales;
+}> = {};
+
 const cachedUsers: Record<string, {
   locale: discord.AvailableLocales;
 }> = {};
@@ -1528,6 +1532,7 @@ function logs({
 
 const user = {
   cachedUsers,
+  cachedGuilds,
   findCharacter,
   findCharacters,
   getActiveInventories,

@@ -67,6 +67,7 @@ export const handler = async (r: Request) => {
     name,
     type,
     locale,
+    guildLocale,
     token,
     guildId,
     focused,
@@ -90,6 +91,13 @@ export const handler = async (r: Request) => {
   }
 
   config.origin = origin;
+
+  if (guildId) {
+    user.cachedGuilds[guildId] = {
+      // deno-lint-ignore no-non-null-assertion
+      locale: guildLocale!,
+    };
+  }
 
   if (member?.user?.id) {
     // cache the user's locale into a global variable

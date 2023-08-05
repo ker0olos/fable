@@ -229,6 +229,7 @@ async function synthesize({ token, userId, guildId, target }: {
         userId,
         message,
         confirm: ['synthesis', userId, `${target}`],
+        locale,
       })
         .patch(token);
     })

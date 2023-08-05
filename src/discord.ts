@@ -1,6 +1,8 @@
 import { json } from 'sift';
 
+import i18n from './i18n.ts';
 import utils, { ImageSize } from './utils.ts';
+
 import config from './config.ts';
 
 const splitter = '=';
@@ -959,13 +961,14 @@ export class Message {
   }
 
   static page(
-    { message, type, target, index, total, next }: {
+    { message, type, target, index, total, next, locale }: {
       type: string;
       message: Message;
       index: number;
       target?: string;
       next?: boolean;
       total?: number;
+      locale?: AvailableLocales;
     },
   ): Message {
     const group: Component[] = [];
@@ -979,7 +982,7 @@ export class Message {
       group.push(
         new Component()
           .setId(type, target ?? '', `${prevId}`, 'prev')
-          .setLabel(`Prev`),
+          .setLabel(i18n.get('prev', locale)),
       );
     }
 
@@ -995,7 +998,7 @@ export class Message {
       group.push(
         new Component()
           .setId(type, target ?? '', `${nextId}`, 'next')
-          .setLabel(`Next`),
+          .setLabel(i18n.get('next', locale)),
       );
     }
 
@@ -1012,6 +1015,7 @@ export class Message {
       cancelText,
       userId,
       targetId,
+      locale,
     }: {
       type?: string;
       userId?: string;
@@ -1021,14 +1025,15 @@ export class Message {
       message: Message;
       confirmText?: string;
       cancelText?: string;
+      locale?: AvailableLocales;
     },
   ): Message {
     const confirmComponent = new Component()
-      .setLabel(confirmText ?? 'Confirm');
+      .setLabel(confirmText ?? i18n.get('confirm', locale));
 
     const cancelComponent = new Component()
       .setStyle(ButtonStyle.Red)
-      .setLabel(cancelText ?? 'Cancel');
+      .setLabel(cancelText ?? i18n.get('cancel', locale));
 
     if (Array.isArray(confirm)) {
       confirmComponent.setId(...confirm);

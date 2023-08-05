@@ -7,6 +7,12 @@
   "found-nothing": "Found _nothing_ matching that query!",
   "support-server": "Discord Support Server",
   "donate": "Donate",
+  "prev": "Prev",
+  "next": "Next",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "accept": "Accept",
+  "decline": "Decline",
 
   "+1-pull": "_+1 pull {0}_",
   "available-pull": "Available Pull",
@@ -18,6 +24,7 @@
 
   "you-empty-collection": "You don't have any {0}characters",
   "you-empty-media-collection": "You don't have any characters from {0}",
+  "some-characters-disabled": "Some of those character do not exist or are disabled",
 
   "user-empty-collection": "{0} doesn't have any {1}characters",
   "user-empty-media-collection": "{0} doesn't have any characters from {1}",
@@ -34,8 +41,30 @@
   "image-reset": "{0}'s image has been reset",
   "image-changed": "{0}'s image has been **changed**",
 
+  "trade-with-yourself": "You can't trade with yourself!",
+  "gift-with-yourself": "You can't gift yourself!",
+
+  "trade-you-not-owned": "You don't have {0}",
+  "trade-you-party-member": "{0} is in your party and can't be traded",
+  "trade-user-not-owned": "{0} doesn't have {1}",
+  "trade-user-party-member": "{0} is in {1}'s party and can't be traded",
+
+  "give-you-party-members": "Some of those characters are currently in your party",
+  "trade-party-members": "Some of those characters are currently in parties",
+
+  "trade-offer": "{0} is offering that you lose **{1}** {2} and get **{3}** {4}",
+  "give": "Are you sure you want to give **{0}** {1} to {2} for free?",
+
+  "trade-received-offer": "{0} you received an offer!",
+  "trade-offer-accepted": "{0} your offer was accepted!",
+  "trade-offer-accepted2": "{0} accepted your offer",
+
+  "give-sent-to": "Gift sent to {0}!",
+  "give-received": "{0} sent you a gift",
+
   "maintenance-gacha": "Gacha is under maintenance, try again later!",
   "maintenance-merge": "Merging is under maintenance, try again later!",
+  "maintenance-trade": "Trading is under maintenance, try again later!",
 
   "gacha-no-more-pulls": "You don't have any more pulls!",
   "gacha-no-guarantees": "You don`t have any {0}pulls",
