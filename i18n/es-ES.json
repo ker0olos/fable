@@ -1,0 +1,228 @@
+{
+  "aliases": "aliases",
+  "declined": "Rechazado",
+  "cancelled": "Cancelado",
+  "unimplemented": "No implementado o eliminado.",
+  "invalid-permission": "No tienes permiso para completar esta interacción!",
+  "found-nothing": "No se encontraron resultados!",
+  "support-server": "Servidor de Soporte en Discord",
+  "donate": "Donar",
+  "prev": "Anterior",
+  "next": "Siguiente",
+  "confirm": "Confirmar",
+  "cancel": "Cancelar",
+  "accept": "Aceptar",
+  "decline": "Rechazar",
+
+  "+1-pull": "_+1 pull {0}_",
+  "available-pull": "Tirada disponible",
+  "available-pulls": "Tiradas disponibles",
+  "daily-token": "Token Diario",
+  "daily-tokens": "Tokens Diarios",
+  "can-vote-again": "_Puedes volver a votar {0}_",
+  "steal-cooldown-ends": "_El enfriamiento de Steal termina {0}_",
+
+  "token": "token",
+  "tokens": "tokens",
+  "pull": "tirada",
+  "pulls": "tiradas",
+  "thanks-for-voting": "Gracias por votar, {0}, obtuviste {1} {2}.",
+
+  "spent-tokens-normal": "¿Quieres gastar **{0} {1}** {2}?",
+  "spent-tokens-guaranteed": "¿Quieres gastar **{0} tokens** {1} en **{2}**{3}?",
+  "you-need-more-tokens": "Necesitas **{0} {1} más** antes de poder hacerlo.",
+  "you-bought-pulls": "Has comprado **{0}** {1} {2}",
+  "you-bought-guarantee": "Compraste una tirada de **{0}**{1} {2}",
+
+  "you-empty-collection": "No tienes ningún personaje de {0}",
+  "you-empty-media-collection": "No tienes ningún personaje de {0}",
+  "some-characters-disabled": "Algunos de estos personajes no existen o han sido desactivados",
+
+  "user-empty-collection": "{0} no tiene ningún personaje de {1}",
+  "user-empty-media-collection": "{0} no tiene ningún personaje de {1}",
+
+  "character-no-longer-owned": "Algunos de estos personajes han cambiado de dueño",
+  "character-hasnt-been-found": "{0} aún no pertenece a nadie.",
+  "character-not-owned-by-you": "{0} pertenece a {1} y no puedes personalizarlo.",
+
+  "merge-sacrifice": "¿Sacrificar **{0}** personajes?",
+  "merge-insufficient": "Sólo posees **{0} de 5** sacrificios necesarios para {1}",
+
+  "nickname-reset": "El apodo de {0} ha sido reseteado",
+  "nickname-changed": "El apodo de {0} ha cambiado ha **{1}**",
+  "image-reset": "La imagen de {0} ha sido reseteada",
+  "image-changed": "La imagen de {0} ha sido **cambiada**",
+
+  "trade-with-yourself": "¡No puedes intercambiar con tí mismo/a!",
+  "gift-with-yourself": "¡No puedes hacerte un regalo a tí mismo/a!",
+
+  "trade-you-not-owned": "Tú no posees {0}",
+  "trade-you-party-member": "{0} está en tu equipo y no puede ser intercambiado/a",
+  "trade-user-not-owned": "{0} no posee {1}",
+  "trade-user-party-member": "{0} está en su equipo y no puede ser intercambiado/a",
+
+  "give-you-party-members": "Algunos de esos personajes están actualmente en tu equipo",
+  "trade-party-members": "Alguno de esos personajes están actualmente en un equipo",
+
+  "trade-offer": "{0} te ofrece entregarle **{1}** {2} a cambio de darte **{3}** {4}",
+  "give": "¿Seguro/a que quieres darle **{0}** {1} a {2} como regalo?",
+
+  "trade-received-offer": "{0} ¡Recibiste una oferta!",
+  "trade-offer-accepted": "{0} ¡Tu oferta fue aceptada!",
+  "trade-offer-accepted2": "{0} aceptó tu oferta",
+
+  "give-sent-to": "¡Has enviado un regalo a {0}!",
+  "give-received": "{0} te envió un regalo",
+
+  "maintenance-gacha": "El gacha se encuentra en mantenimiento, reintentalo más tarde",
+  "maintenance-merge": "Merge se encuentra en mantenimiento, reintentalo más tarde",
+  "maintenance-trade": "Los intercambios se encuentran en mantenimiento, reintentalo más tarde",
+
+  "gacha-no-more-pulls": "¡No te quedan tiradas!",
+  "gacha-no-guarantees": "No posees ninguna tirada de {0}",
+  "gacha-no-more-characters-left": "Ya no quedan personajes de {0}",
+  "gacha-no-more-in-range": "Ya no quedan personajes en este rango",
+
+  "help-page1-before-anything": "Antes de nada: Necesitarás personajes.",
+  "help-page1-you-get-n-every-t": "__Obtienes una tirada (pull) gratis cada {0} minutes (hasta un máximo de {1})__. Utiliza `/now` para comprobar cuantas tiradas tienes y cuánto falta para tu siguiente tirada gratis.",
+  "help-page1-characters-are-exclusive": "__Los personajes son exclusivos__, una vez que un jugador los obtiene, nadie más puede encontrarlos en el gacha.",
+  "help-page1-characters-vary": "__Los personajes varían entre un grado de 1{0}y 5{0}__ El grado de un personaje está basado en su popularidad (y no se puede aumentar).",
+  "help-page1-gacha-rates": "__Las probabilidades del gacha dependen de múltiples factores__, pero en general la chance de que aparezca un 5{0}es igual o menos de un 1%.",
+  "help-page1-footer": "> *`/q` realiza una tirada sin animaciones*",
+
+  "help-page2-sacrifice-characters": "Sacrifica personajes para obtener uno nuevo de mayor grado.",
+  "help-page2-merge-protect": "__Los miembros de tu equipo y tus likes jamás serán sacrificados.__ Para protegerlos de un merge, añádelos a tu likeslist con `/like`",
+  "help-page2-merging": "__Necesitas 5 personajes de grado más bajo__ para generar uno nuevo",
+  "help-page2-auto-merging": "__Fable priorizará sacrificar tus personajes de grado más bajo.__",
+  "help-page2-merge-example-1": "Ejemplo: `/merge target: 3` sacrificará __25 de tus personajes 1{0}__",
+  "help-page2-merge-example-2": "o __5 de tus personajes 2{0}.__",
+  "help-page2-footer": "> *Los personajes sacrificados volverán a estar disponibles en `/gacha`*",
+
+  "help-page3-party-required": "Necesitarás un equipo (party) para el combate",
+  "help-page3-party-presets-disclaimer": "__No puedes tener más de un equipo__ o guardar tu equipo actual o cambiar entre guardados.",
+  "help-page3-party-synergy": "__Tu equipo rendirá mejor mientras más se relacionen sus integrantes__. Esto se llama sinergia, cinco integrantes de un mismo anime son mejores que cinco integrantes de diferente procedencia.",
+  "help-page3-party-view": "`/party view` para ver tu equipo actual.",
+  "help-page3-party-assign-1": "`/party assign name: spot:` para asignar un personaje que poseas a tu equipo,",
+  "help-page3-party-assign-2": "dejar el `spot:` vacío lo asignará al primer puesto vacío o reemplazará el último puesto.",
+  "help-page3-footer": "> *`/collection` se puede usar para buscar entre tus personajes y seleccionar potenciales integrantes del equipo*",
+
+  "help-page4-title": "Robar",
+  "help-page4-negotiations": "Cuando toda negociación fracasa, es el momento de tomar las cosas por la fuerza, ¿verdad?",
+  "help-page4-party-is-protected": "__No puedes robar personajes asignados a un equipo__, por lo que también puedes proteger tus personajes más preciados asignándolos a tu propio equipo.",
+  "help-page4-inactive-users": "__Los jugadores inactivos son más vulnerables al robo.__ Mantente activo usando `/gacha` o `/q` una vez al día.",
+  "help-page4-losing-protection": "__Los jugadores inactivos pierden su protección de equipo__ al cabo de **{0}** días.",
+  "help-page4-steal-chance": "__Los personajes de grado más alto son más difíciles de robar.__ Los personajes 5{0}tienen una chance de éxito base de 1%.",
+  "help-page4-cooldown": "__El robo tiene un enfriamiento de **{0}** días__ sin importar el resultado de tu intento.",
+  "help-page4-steal-boost": "__Puedes sacrificar personajes para obtener una pequeña bonificación__ a tu chance de éxito. Pierdes esos personajes sin importar el resultado.",
+  "help-page4-footer": "> Mantenerse activo es la mejor defensa contra el robo.",
+
+  "help-page5-title": "Tienda",
+  "help-page5-shop": "La tienda es una forma de comprar tiradas extra y tiradas garantizadas.",
+  "help-page5-daily-tokens": "__Obtienes 1 Token diario__, automáticamente añadido después de tu primer `/gacha` del día.",
+  "help-page5-voting": "__Votar a Fable en Top.gg te otorga 1 token__, puedes votar una vez cada 12 horas.",
+  "help-page5-voting-weekends": "__Votar en fines de semana te otorga 2 tokens__ (_viernes, sábados y domingos_).",
+  "help-page5-buy-normal": "`/buy normal` te otorga una tirada extra, exactamente iguales a las que obtienes cada {0} minutos.",
+  "help-page5-buy-guaranteed": "`/buy guaranteed` te garantiza un personaje de un grado de estrellas específico.",
+  "help-page5-example": "Example: `/buy guaranteed 5` te garantiza un personaje 5{0}aleatorio.",
+
+  "help-page5-buy-3s": "3{0}cuesta **{1}** tokens",
+  "help-page5-buy-4s": "4{0}cuesta **{1}** tokens",
+  "help-page5-buy-5s": "5{0}cuesta **{1}** tokens",
+
+  "help-page5-footer": "Usa las tiradas garantizadas con `/pull stars:`",
+
+  "help-page6-title": "Futuro del bot",
+  "help-page6-release": "__**Funciones del futuro cercano (~3 months)**__",
+
+  "help-page7-title": "Comandos Esenciales",
+  "help-page8-title": "Otros Comandos",
+  "help-page9-title": "Comandos de Administrador",
+
+  "community-packs-permission": "_> `/community` requiere el permiso `Administrar Servidor` por defecto, pero esto se puede cambiar en la sección `Integraciones` de tu servidor, aunque no lo recomendamos._",
+  "make-your-own-pack": "> Para crear tu propio pack de la comunidad visita <https://packs.deno.dev>",
+
+  "/gacha": "realiza una tirada de gacha",
+  "/q": "realizada una tirada pero sin animaciones",
+  "/pull": "usa una tirada garantizada que hayas comprado",
+  "/now": "comprueba lo que puedes hacer ahora mismo",
+  "/search": "busca una serie específica",
+  "/character": "busca un personaje específico",
+  "/merge": "combina personajes para obtener uno nuevo",
+
+  "/party view": "visualiza tu equipo actual",
+  "/party assign": "asigna personajes a tu equipo",
+  "/party swap": "intercambia puestos de tu equipo",
+  "/party remove": "quita a un personaje de tu equipo",
+
+  "/coll stars": "visualiza tus personajes de un grado concreto",
+  "/coll media": "visualiza tus personajes de una serie específica",
+
+  "/steal": "roba un personaje a otro usuario",
+  "/trade": "intercambia personajes con otro usuario",
+  "/give": "regala personajes a otro usuario",
+
+  "/nick": "cambia el apodo de un personaje",
+  "/image": "cambia la imagen de un personaje",
+  "/found": "muestra todos los personajes de una serie que hayan sido obtenidos",
+
+  "/likeslist": "muestra todos tus likes",
+  "/like": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga",
+  "/unlike": "quita personajes de tus likes",
+  "/likeall": "da like a una serie y recibe notificaciones cuando alguien obtenga un personaje de ella",
+  "/unlikeall": "quita series de tus likes",
+
+  "/buy normal": "usa tokens para comprar tiradas normales",
+  "/buy guaranteed": "usa tokens para comprar tiradas de un grado garantizado",
+  "/packs": "muestra todos los packs del servidor",
+  "/logs": "muestra los últimos personajes obtenidos",
+
+  "/community popular": "explora los packs de la comunidad más populares",
+  "/community install": "instala un pack de la comunidad",
+  "/community uninstall": "desinstala un pack de la comunidad",
+
+  "/experimental battle": "prueba el nuevo combate (próximamente implementado) en una simulación de batalla contra otro usuario",
+
+  "/help": "¿Necesitas más información? No te preocupes",
+
+  "$debug": "muestra los datos para nerds",
+  "$media-title": "el título de la serie",
+  "$character-name": "el nombre del personaje",
+  "$media-characters": "muestra los personajes de la serie",
+  "$user-list": "el usuario de la lista",
+  "$user-party": "el usuario del equipo",
+  "$user-likes-list": "el usuario de la lista de likes",
+  "$user-likes-filter": "no mostrar los likes que ya poseas",
+  "$trade-user": "el usuario con el que quieres intercambiar",
+  "$trade-give-character": "un personaje que darás",
+  "$trade-take-character": "un personaje que obtendrás",
+  "$steal-sacrifices-boost": "la cantidad de estrellas que sacrificarás para aumentar tus chances",
+
+  "$stars": "el grado de estrellas",
+  "$merge-star-target": "el grado del personaje a obtener",
+
+  "$new-image": "URL de la nueva imagen",
+  "$new-nick": "nuevo apodo",
+
+  "$buy-normal-amount": "la cantidad de tiradas a comprar",
+  "$buy-guaranteed-stars": "el grado de estrellas a comprar",
+
+  "$party-spot": "el puesto en el que quieres a este personaje",
+  "$party-swap-1": "el primer objetivo del intercambio",
+  "$party-swap-2": "el segundo objetivo del intercambio",
+  "$party-remove-spot": "el puesto a liberar",
+
+  "$versus": "el usuario contra el que pelearás",
+
+  "$pack-id": "el id del pack",
+
+  "$help-page": "especifica la página que quieres ver",
+  "$help-page-gacha": "Gacha",
+  "$help-page-merging": "Combinar (merge)",
+  "$help-page-party": "Equipo (party)",
+  "$help-page-stealing": "Robar",
+  "$help-page-shop": "Tienda",
+  "$help-page-roadmap": "Futuro del bot",
+  "$help-page-essential-commands": "Comandos Esenciales",
+  "$help-page-other-commands": "Otros Comandos",
+  "$help-page-admin-commands": "Comandos de Administrador"
+}
