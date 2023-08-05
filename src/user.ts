@@ -180,7 +180,8 @@ async function now({
 
   const message = new discord.Message();
 
-  const locale = cachedUsers[userId]?.locale;
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
 
   const { user, availablePulls, stealTimestamp, rechargeTimestamp } =
     (await request<{
@@ -430,7 +431,8 @@ function nick({
     }
   `;
 
-  const locale = cachedUsers[userId]?.locale;
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
@@ -608,7 +610,8 @@ function image({
     }
   `;
 
-  const locale = cachedUsers[userId]?.locale;
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
@@ -790,7 +793,8 @@ function like({
     }
   `;
 
-  const locale = cachedUsers[userId]?.locale;
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
@@ -929,7 +933,8 @@ function likeall({
     }
   `;
 
-  const locale = cachedUsers[userId]?.locale;
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
 
   packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
@@ -1038,7 +1043,8 @@ function list({
   id?: string;
   nick?: boolean;
 }): discord.Message {
-  const locale = cachedUsers[userId]?.locale;
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
 
   user.getUserCharacters({ userId, guildId })
     .then(async ({ characters, party, likes }) => {
@@ -1444,7 +1450,8 @@ function logs({
     }
   `;
 
-  const locale = cachedUsers[userId]?.locale;
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
 
   request<{
     getUserInventory: Schema.Inventory;

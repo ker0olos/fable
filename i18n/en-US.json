@@ -22,6 +22,10 @@
   "can-vote-again": "_Can vote again {0}_",
   "steal-cooldown-ends": "_Steal cooldown ends {0}_",
 
+  "token": "token",
+  "tokens": "tokens",
+  "thanks-for-voting": "Thanks for voting, {0}, you gained {1} {2}.",
+
   "you-empty-collection": "You don't have any {0}characters",
   "you-empty-media-collection": "You don't have any characters from {0}",
   "some-characters-disabled": "Some of those character do not exist or are disabled",

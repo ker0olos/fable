@@ -2,9 +2,10 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
-import user from './user.ts';
-
+import i18n from './i18n.ts';
 import utils from './utils.ts';
+
+import user from './user.ts';
 
 import * as discord from './discord.ts';
 
@@ -101,6 +102,9 @@ async function topgg(r: Request): Promise<Response> {
         config.topggCipher!,
       );
 
+      const locale = user.cachedUsers[data.user]?.locale ??
+        user.cachedGuilds[guildId]?.locale;
+
       // update the /now used to vote
       const message = (await user.now({
         guildId,
@@ -110,9 +114,15 @@ async function topgg(r: Request): Promise<Response> {
 
       new discord.Message()
         .setContent(
-          `Thanks for voting, <@${data.user}>, you gained ${amount} ${
-            amount === 1 ? 'token' : 'tokens'
-          }.`,
+          i18n.get(
+            'thanks-for-voting',
+            locale,
+            `<@${data.user}>`,
+            amount,
+            amount === 1
+              ? i18n.get('token', locale)
+              : i18n.get('tokens', locale),
+          ),
         )
         .addComponents([
           new discord.Component()

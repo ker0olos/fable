@@ -26,8 +26,8 @@ function pre({ token, userId, guildId, targetId, give, take }: {
   give: string[];
   take: string[];
 }): discord.Message {
-  const locale = user.cachedUsers[userId]?.locale;
-  const guildLocale = user.cachedGuilds[guildId]?.locale;
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
 
   // trading with yourself
   if (userId === targetId) {
@@ -295,7 +295,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
           message: message.setContent(`<@${targetId}>`),
           description: i18n.get(
             'trade-offer',
-            guildLocale,
+            locale,
             `<@${userId}>`,
             takeNames.join(', '),
             discord.emotes.remove,
@@ -309,8 +309,8 @@ function pre({ token, userId, guildId, targetId, give, take }: {
             giveIds.join('&'),
             takeIds.join('&'),
           ],
-          confirmText: i18n.get('accept', guildLocale),
-          cancelText: i18n.get('decline', guildLocale),
+          confirmText: i18n.get('accept', locale),
+          cancelText: i18n.get('decline', locale),
         }).patch(token);
 
         const followup = new discord.Message();
@@ -323,7 +323,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
 
         followup
           .setContent(
-            i18n.get('trade-received-offer', guildLocale, `<@${targetId}>`),
+            i18n.get('trade-received-offer', locale, `<@${targetId}>`),
           )
           .followup(token);
       } else {
@@ -403,8 +403,8 @@ function give({
     }
   `;
 
-  const locale = user.cachedUsers[userId]?.locale;
-  const guildLocale = user.cachedGuilds[guildId]?.locale;
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
 
   Promise.all([
     packs.characters({ ids: giveCharactersIds, guildId }),
@@ -456,7 +456,7 @@ function give({
 
       newMessage.addEmbed(
         new discord.Embed().setDescription(
-          i18n.get('give-received', guildLocale, `<@${userId}>`),
+          i18n.get('give-received', locale, `<@${userId}>`),
         ),
       );
 

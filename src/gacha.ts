@@ -236,7 +236,8 @@ async function rngPull(
 
     // add character to user's inventory
     if (userId) {
-      const locale = user.cachedUsers[userId]?.locale;
+      const locale = user.cachedUsers[userId]?.locale ??
+        user.cachedGuilds[guildId]?.locale;
 
       const _mutation = mutation?.query ?? gql`
         mutation (
@@ -506,7 +507,10 @@ function start(
     quiet?: boolean;
   },
 ): discord.Message {
-  const locale = userId ? user.cachedUsers[userId]?.locale : undefined;
+  const locale = userId
+    ? (user.cachedUsers[userId]?.locale ??
+      user.cachedGuilds[guildId]?.locale)
+    : user.cachedGuilds[guildId]?.locale;
 
   if (!config.gacha) {
     throw new NonFetalError(
