@@ -1,5 +1,8 @@
 import { gql, request } from './graphql.ts';
 
+import user from './user.ts';
+
+import i18n from './i18n.ts';
 import utils from './utils.ts';
 
 import config, { faunaUrl } from './config.ts';
@@ -24,23 +27,29 @@ export const voteComponent = (
 function normal(
   { userId, amount }: { userId: string; amount: number },
 ): discord.Message {
+  const locale = user.cachedUsers[userId]?.locale;
+
   const message = new discord.Message();
 
   message.addEmbed(
     new discord.Embed()
       .setDescription(
-        `You want to spent **${amount} ${
-          amount > 1 ? 'tokens' : 'token'
-        }** ${discord.emotes.remove}?`,
+        i18n.get(
+          'spent-tokens-normal',
+          locale,
+          amount,
+          amount > 1 ? i18n.get('tokens', locale) : i18n.get('token', locale),
+          discord.emotes.remove,
+        ),
       ),
   );
 
   message.addComponents([
     new discord.Component().setId('buy', 'normal', userId, `${amount}`)
-      .setLabel('Confirm'),
+      .setLabel(i18n.get('confirm', locale)),
     new discord.Component().setId('cancel', userId)
       .setStyle(discord.ButtonStyle.Red)
-      .setLabel('Cancel'),
+      .setLabel(i18n.get('cancel', locale)),
   ]);
 
   return message;
@@ -68,6 +77,8 @@ async function confirmNormal({ token, userId, guildId, amount }: {
     }
   `;
 
+  const locale = user.cachedUsers[userId]?.locale;
+
   const { exchangeTokensForPulls } = await request<{
     exchangeTokensForPulls: Schema.Mutation;
   }>({
@@ -93,9 +104,14 @@ async function confirmNormal({ token, userId, guildId, amount }: {
         return new discord.Message()
           .addEmbed(new discord.Embed()
             .setDescription(
-              `You need **${diff} more ${
-                diff > 1 ? 'tokens' : 'token'
-              }** before you can do this.`,
+              i18n.get(
+                'you-need-more-tokens',
+                locale,
+                diff,
+                diff > 1
+                  ? i18n.get('tokens', locale)
+                  : i18n.get('token', locale),
+              ),
             ))
           .addComponents([
             voteComponent({
@@ -113,9 +129,13 @@ async function confirmNormal({ token, userId, guildId, amount }: {
 
   message
     .addEmbed(new discord.Embed().setDescription(
-      `You bought **${amount}** ${
-        amount > 1 ? 'pulls' : 'pull'
-      } ${discord.emotes.add}`,
+      i18n.get(
+        'you-bought-pulls',
+        locale,
+        amount,
+        amount > 1 ? i18n.get('pulls', locale) : i18n.get('pull', locale),
+        discord.emotes.add,
+      ),
     ));
 
   message.addComponents([
@@ -137,6 +157,8 @@ function guaranteed({
   userId: string;
   stars: number;
 }): discord.Message {
+  const locale = user.cachedUsers[userId]?.locale;
+
   const message = new discord.Message();
 
   const cost = stars === 5
@@ -148,7 +170,14 @@ function guaranteed({
   message.addEmbed(
     new discord.Embed()
       .setDescription(
-        `You want to spent **${cost} tokens** ${discord.emotes.remove} for a **${stars}${discord.emotes.smolStar}**${discord.emotes.add}?`,
+        i18n.get(
+          'spent-tokens-guaranteed',
+          locale,
+          cost,
+          discord.emotes.remove,
+          `${stars}${discord.emotes.smolStar}`,
+          discord.emotes.add,
+        ),
       ),
   );
 
@@ -186,6 +215,8 @@ async function confirmGuaranteed({
     }
   `;
 
+  const locale = user.cachedUsers[userId]?.locale;
+
   const { exchangeTokensForGuarantees } = await request<{
     exchangeTokensForGuarantees: Schema.Mutation;
   }>({
@@ -216,9 +247,14 @@ async function confirmGuaranteed({
         return new discord.Message()
           .addEmbed(new discord.Embed()
             .setDescription(
-              `You need **${diff} more ${
-                diff > 1 ? 'tokens' : 'token'
-              }** before you can do this.`,
+              i18n.get(
+                'you-need-more-tokens',
+                locale,
+                diff,
+                diff > 1
+                  ? i18n.get('tokens', locale)
+                  : i18n.get('token', locale),
+              ),
             ))
           .addComponents([
             voteComponent({
@@ -236,7 +272,13 @@ async function confirmGuaranteed({
 
   message
     .addEmbed(new discord.Embed().setDescription(
-      `You bought a **${stars}**${discord.emotes.smolStar}pull ${discord.emotes.add}`,
+      i18n.get(
+        'you-bought-guarantee',
+        locale,
+        stars,
+        discord.emotes.smolStar,
+        discord.emotes.add,
+      ),
     ));
 
   message.addComponents([

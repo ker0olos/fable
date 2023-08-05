@@ -24,7 +24,15 @@
 
   "token": "token",
   "tokens": "tokens",
+  "pull": "pull",
+  "pulls": "pulls",
   "thanks-for-voting": "Thanks for voting, {0}, you gained {1} {2}.",
+
+  "spent-tokens-normal": "You want to spent **{0} {1}** {2}?",
+  "spent-tokens-guaranteed": "You want to spent **{0} tokens** {1} for a **{2}**{3}?",
+  "you-need-more-tokens": "You need **{0} more {1}** before you can do this.",
+  "you-bought-pulls": "You bought **{0}** {1} {2}",
+  "you-bought-guarantee": "You bought a **{0}**{1}pull {2}",
 
   "you-empty-collection": "You don't have any {0}characters",
   "you-empty-media-collection": "You don't have any characters from {0}",
