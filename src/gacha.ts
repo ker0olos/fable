@@ -23,6 +23,7 @@ import {
 } from './types.ts';
 
 import { NonFetalError, NoPullsError, PoolError } from './errors.ts';
+import i18n from './i18n.ts';
 
 export type Pull = {
   index?: number;
@@ -235,6 +236,8 @@ async function rngPull(
 
     // add character to user's inventory
     if (userId) {
+      const locale = user.cachedUsers[userId]?.locale;
+
       const _mutation = mutation?.query ?? gql`
         mutation (
           $userId: String!
@@ -293,7 +296,9 @@ async function rngPull(
           case 'NO_PULLS_AVAILABLE':
             throw new NoPullsError(response.inventory.rechargeTimestamp);
           case 'CHARACTER_NOT_OWNED':
-            throw new NonFetalError('Some of those characters changed hands');
+            throw new NonFetalError(
+              i18n.get('character-no-longer-owned', locale),
+            );
           // duplicate character
           case 'CHARACTER_EXISTS':
             continue;
@@ -501,9 +506,11 @@ function start(
     quiet?: boolean;
   },
 ): discord.Message {
+  const locale = userId ? user.cachedUsers[userId]?.locale : undefined;
+
   if (!config.gacha) {
     throw new NonFetalError(
-      'Gacha is under maintenance, try again later!',
+      i18n.get('maintenance-gacha', locale),
     );
   }
 
@@ -524,11 +531,13 @@ function start(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed()
-              .setDescription('You don\'t have any more pulls!'),
+              .setDescription(i18n.get('gacha-no-more-pulls', locale)),
           )
           .addEmbed(
             new discord.Embed()
-              .setDescription(`_+1 pull <t:${err.rechargeTimestamp}:R>_`),
+              .setDescription(
+                i18n.get('+1-pull', locale, `<t:${err.rechargeTimestamp}:R>`),
+              ),
           )
           .patch(token);
       }
@@ -537,7 +546,11 @@ function start(
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              `You don\`t have any ${guarantee}${discord.emotes.smolStar}pulls`,
+              i18n.get(
+                'gacha-no-guarantees',
+                locale,
+                `${guarantee}${discord.emotes.smolStar}`,
+              ),
             ),
           )
           .addComponents([
@@ -554,8 +567,12 @@ function start(
           .addEmbed(
             new discord.Embed().setDescription(
               typeof guarantee === 'number'
-                ? `There are no more ${guarantee}${discord.emotes.smolStar}characters left`
-                : 'There are no more characters left in this range',
+                ? i18n.get(
+                  'gacha-no-more-characters-left',
+                  locale,
+                  `${guarantee}${discord.emotes.smolStar}`,
+                )
+                : i18n.get('gacha-no-more-in-range', locale),
             ),
           ).patch(token);
       }

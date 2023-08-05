@@ -6805,7 +6805,7 @@ Deno.test('synthesize command handlers', async (test) => {
           content: '',
           embeds: [{
             type: 'rich',
-            description: 'Synthesis is under maintenance, try again later!',
+            description: 'Merging is under maintenance, try again later!',
           }],
           attachments: [],
           components: [],
