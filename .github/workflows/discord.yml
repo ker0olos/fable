@@ -1,6 +1,11 @@
 name: discord
 
-on: [push]
+on: 
+  push:
+    branches: 
+      - main
+  pull_request:
+    types: [opened, reopened]
 
 jobs:
   update-commands:
