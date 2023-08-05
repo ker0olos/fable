@@ -8,6 +8,7 @@ import packs from './packs.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import i18n from './i18n.ts';
 import user from './user.ts';
 import utils from './utils.ts';
 
@@ -25,20 +26,25 @@ function pre({ token, userId, guildId, targetId, give, take }: {
   give: string[];
   take: string[];
 }): discord.Message {
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
+
   // trading with yourself
   if (userId === targetId) {
     return new discord.Message()
       .setFlags(discord.MessageFlags.Ephemeral)
       .addEmbed(
         new discord.Embed().setDescription(
-          `You can\'t ${take.length ? 'trade with' : 'gift'} yourself!`,
+          take.length
+            ? i18n.get('trade-with-yourself', locale)
+            : i18n.get('gift-with-yourself', locale),
         ),
       );
   }
 
   if (!config.trading) {
     throw new NonFetalError(
-      'Trading is under maintenance, try again later!',
+      i18n.get('maintenance-trade', locale),
     );
   }
 
@@ -188,8 +194,8 @@ function pre({ token, userId, guildId, targetId, give, take }: {
             new discord.Embed()
               .setDescription(
                 giveParty.length
-                  ? `${giveNames[i]} is in your party and can\'t be traded`
-                  : `You don't have ${giveNames[i]}`,
+                  ? i18n.get('trade-you-party-member', locale, giveNames[i])
+                  : i18n.get('trade-you-not-owned', locale, giveNames[i]),
               ),
           ).addEmbed(giveEmbeds[i]);
         });
@@ -244,10 +250,18 @@ function pre({ token, userId, guildId, targetId, give, take }: {
               new discord.Embed()
                 .setDescription(
                   takeParty.length
-                    ? `${
-                      takeNames[i]
-                    } is in <@${targetId}>'s party and can't be traded`
-                    : `<@${targetId}> doesn't have ${takeNames[i]}`,
+                    ? i18n.get(
+                      'trade-user-party-member',
+                      locale,
+                      takeNames[i],
+                      `<@${targetId}>`,
+                    )
+                    : i18n.get(
+                      'trade-user-not-owned',
+                      locale,
+                      `<@${targetId}>`,
+                      takeNames[i],
+                    ),
                 ),
             ).addEmbed(takeEmbeds[i]);
           });
@@ -269,21 +283,25 @@ function pre({ token, userId, guildId, targetId, give, take }: {
       });
 
       if (takeCollection) {
-        const takeLiked = takeIds.filter((id) =>
-          takeCollection.likes
-            ?.map(({ characterId }) => characterId)
-            .includes(id)
-        );
+        // const takeLiked = takeIds.filter((id) =>
+        //   takeCollection.likes
+        //     ?.map(({ characterId }) => characterId)
+        //     .includes(id)
+        // );
 
         await discord.Message.dialog({
           userId,
           targetId,
           message: message.setContent(`<@${targetId}>`),
-          description: `<@${userId}> is offering that you lose **${
-            takeNames.join(', ')
-          }** ${discord.emotes.remove} and get **${
-            giveNames.join(', ')
-          }** ${discord.emotes.add}`,
+          description: i18n.get(
+            'trade-offer',
+            locale,
+            `<@${userId}>`,
+            takeNames.join(', '),
+            discord.emotes.remove,
+            giveNames.join(', '),
+            discord.emotes.add,
+          ),
           confirm: [
             'trade',
             userId,
@@ -291,30 +309,36 @@ function pre({ token, userId, guildId, targetId, give, take }: {
             giveIds.join('&'),
             takeIds.join('&'),
           ],
-          confirmText: 'Accept',
-          cancelText: 'Decline',
+          confirmText: i18n.get('accept', locale),
+          cancelText: i18n.get('decline', locale),
         }).patch(token);
 
         const followup = new discord.Message();
 
-        // deno-lint-ignore no-non-null-assertion
-        if (takeLiked!.length) {
-          followup.addEmbed(new discord.Embed().setDescription(
-            'Some of those characters are in your likeslist!',
-          ));
-        }
+        // if (takeLiked!.length) {
+        //   followup.addEmbed(new discord.Embed().setDescription(
+        //     'Some of those characters are in your likeslist!',
+        //   ));
+        // }
 
         followup
-          .setContent(`<@${targetId}> you received an offer!`)
+          .setContent(
+            i18n.get('trade-received-offer', locale, `<@${targetId}>`),
+          )
           .followup(token);
       } else {
         await discord.Message.dialog({
           userId,
           message,
-          description: `Are you sure you want to give **${
-            giveNames.join(', ')
-          }** ${discord.emotes.remove} to <@${targetId}> for free?`,
+          description: i18n.get(
+            'give',
+            locale,
+            giveNames.join(', '),
+            discord.emotes.remove,
+            `<@${targetId}>`,
+          ),
           confirm: ['give', userId, targetId, giveIds.join('&')],
+          locale,
         }).patch(token);
       }
     })
@@ -323,7 +347,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Some of those character do not exist or are disabled',
+              i18n.get('some-characters-disabled', locale),
             ),
           ).patch(token);
       }
@@ -379,6 +403,9 @@ function give({
     }
   `;
 
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
+
   Promise.all([
     packs.characters({ ids: giveCharactersIds, guildId }),
     request<{
@@ -402,15 +429,15 @@ function give({
         switch (response.giveCharacters.error) {
           case 'CHARACTER_IN_PARTY':
             throw new NonFetalError(
-              'Some of those characters are currently in your party',
+              i18n.get('give-you-party-members', locale),
             );
           case 'CHARACTER_NOT_OWNED':
             throw new NonFetalError(
-              'Some of those characters changed hands',
+              i18n.get('character-no-longer-owned', locale),
             );
           case 'CHARACTER_NOT_FOUND':
             throw new NonFetalError(
-              'Some of those characters were disabled or removed',
+              i18n.get('some-characters-disabled', locale),
             );
           default:
             throw new Error(response.giveCharacters.error);
@@ -422,11 +449,15 @@ function give({
       const newMessage = new discord.Message().setContent(`<@${targetId}>`);
 
       updateMessage.addEmbed(
-        new discord.Embed().setDescription(`Gift sent to <@${targetId}>!`),
+        new discord.Embed().setDescription(
+          i18n.get('give-sent-to', locale, `<@${targetId}>`),
+        ),
       );
 
       newMessage.addEmbed(
-        new discord.Embed().setDescription(`<@${userId}> sent you a gift`),
+        new discord.Embed().setDescription(
+          i18n.get('give-received', locale, `<@${userId}>`),
+        ),
       );
 
       const giveCharacters = await Promise.all(
@@ -538,6 +569,10 @@ function accepted({
     }
   `;
 
+  const locale = user.cachedUsers[userId]?.locale;
+  // const targetLocale = user.cachedUsers[targetId]?.locale;
+  const guildLocale = user.cachedGuilds[guildId]?.locale;
+
   Promise.all([
     packs.characters({
       ids: [...giveCharactersIds, ...takeCharactersIds],
@@ -564,15 +599,15 @@ function accepted({
       switch (response.tradeCharacters.error) {
         case 'CHARACTER_IN_PARTY':
           throw new NonFetalError(
-            'Some of those characters are currently in parties',
+            i18n.get('trade-party-members', locale ?? guildLocale),
           );
         case 'CHARACTER_NOT_OWNED':
           throw new NonFetalError(
-            'Some of those characters changed hands',
+            i18n.get('character-no-longer-owned', locale ?? guildLocale),
           );
         case 'CHARACTER_NOT_FOUND':
           throw new NonFetalError(
-            'Some of those characters were disabled or removed',
+            i18n.get('some-characters-disabled', locale ?? guildLocale),
           );
         default:
           throw new Error(response.tradeCharacters.error);
@@ -582,13 +617,19 @@ function accepted({
     const updateMessage = new discord.Message();
 
     const newMessage = new discord.Message().setContent(
-      `<@${userId}> your offer was accepted!`,
+      i18n.get('trade-offer-accepted', locale ?? guildLocale, `<@${userId}>`),
     );
 
     updateMessage.setContent(`<@${userId}>`);
 
     updateMessage.addEmbed(
-      new discord.Embed().setDescription(`<@${targetId}> accepted your offer`),
+      new discord.Embed().setDescription(
+        i18n.get(
+          'trade-offer-accepted2',
+          locale ?? guildLocale,
+          `<@${targetId}>`,
+        ),
+      ),
     );
 
     const giveCharacters = await Promise.all(

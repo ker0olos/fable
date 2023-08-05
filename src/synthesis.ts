@@ -8,6 +8,7 @@ import packs from './packs.ts';
 import user from './user.ts';
 import gacha from './gacha.ts';
 
+import i18n from './i18n.ts';
 import utils from './utils.ts';
 
 import { Character, Schema } from './types.ts';
@@ -48,6 +49,7 @@ async function getFilteredCharacters(
 function getSacrifices(
   characters: Schema.Character[],
   target: number,
+  locale?: discord.AvailableLocales,
 ): Schema.Character[] {
   // I'm sure there is a faster way to do this with just math
   // but i am not smart enough to figure it out
@@ -107,9 +109,12 @@ function getSacrifices(
 
   if (!possibilities[target].length) {
     throw new NonFetalError(
-      `You only have **${
-        possibilities[target - 1].length
-      } out the 5** sacrifices needed for ${target}${discord.emotes.smolStar}`,
+      i18n.get(
+        'merge-insufficient',
+        locale,
+        possibilities[target - 1].length,
+        `${target}${discord.emotes.smolStar}`,
+      ),
     );
   }
 
@@ -154,18 +159,21 @@ async function synthesize({ token, userId, guildId, target }: {
   guildId: string;
   target: number;
 }): Promise<discord.Message> {
+  const locale = user.cachedUsers[userId]?.locale;
+
   if (!config.synthesis) {
-    throw new NonFetalError(
-      'Synthesis is under maintenance, try again later!',
-    );
+    throw new NonFetalError(i18n.get('maintenance-merge', locale));
   }
 
   const message = new discord.Message();
 
   const characters = await synthesis.getFilteredCharacters({ userId, guildId });
 
-  const sacrifices: Schema.Character[] = getSacrifices(characters, target)
-    .sort((a, b) => b.rating - a.rating);
+  const sacrifices: Schema.Character[] = getSacrifices(
+    characters,
+    target,
+    locale,
+  ).sort((a, b) => b.rating - a.rating);
 
   // highlight the top characters
   const highlights = sacrifices
@@ -178,7 +186,7 @@ async function synthesize({ token, userId, guildId, target }: {
     .then(async (highlightedCharacters) => {
       message.addEmbed(
         new discord.Embed().setDescription(
-          `Sacrifice **${sacrifices.length}** characters?`,
+          i18n.get('merge-sacrifice', locale, sacrifices.length),
         ),
       );
 
@@ -221,6 +229,7 @@ async function synthesize({ token, userId, guildId, target }: {
         userId,
         message,
         confirm: ['synthesis', userId, `${target}`],
+        locale,
       })
         .patch(token);
     })
@@ -291,9 +300,11 @@ function confirmed({
     }
   `;
 
+  const locale = user.cachedUsers[userId]?.locale;
+
   synthesis.getFilteredCharacters({ userId, guildId })
     .then(async (characters) => {
-      const sacrifices = getSacrifices(characters, target)
+      const sacrifices = getSacrifices(characters, target, locale)
         .map(({ id }) => id);
 
       const pull = await gacha.rngPull({
@@ -322,7 +333,11 @@ function confirmed({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              `There are no more ${`${target}${discord.emotes.smolStar}`}characters left`,
+              i18n.get(
+                'gacha-no-more-characters-left',
+                locale,
+                `${target}${discord.emotes.smolStar}`,
+              ),
             ),
           ).patch(token);
       }

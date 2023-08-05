@@ -1,0 +1,228 @@
+{
+  "aliases": "aliases",
+  "declined": "Declined",
+  "cancelled": "Cancelled",
+  "unimplemented": "Unimplemented or removed.",
+  "invalid-permission": "You don't have permission to complete this interaction!",
+  "found-nothing": "Found _nothing_ matching that query!",
+  "support-server": "Discord Support Server",
+  "donate": "Donate",
+  "prev": "Prev",
+  "next": "Next",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "accept": "Accept",
+  "decline": "Decline",
+
+  "+1-pull": "_+1 pull {0}_",
+  "available-pull": "Available Pull",
+  "available-pulls": "Available Pulls",
+  "daily-token": "Daily Token",
+  "daily-tokens": "Daily Tokens",
+  "can-vote-again": "_Can vote again {0}_",
+  "steal-cooldown-ends": "_Steal cooldown ends {0}_",
+
+  "token": "token",
+  "tokens": "tokens",
+  "pull": "pull",
+  "pulls": "pulls",
+  "thanks-for-voting": "Thanks for voting, {0}, you gained {1} {2}.",
+
+  "spent-tokens-normal": "You want to spent **{0} {1}** {2}?",
+  "spent-tokens-guaranteed": "You want to spent **{0} tokens** {1} for a **{2}**{3}?",
+  "you-need-more-tokens": "You need **{0} more {1}** before you can do this.",
+  "you-bought-pulls": "You bought **{0}** {1} {2}",
+  "you-bought-guarantee": "You bought a **{0}**{1}pull {2}",
+
+  "you-empty-collection": "You don't have any {0}characters",
+  "you-empty-media-collection": "You don't have any characters from {0}",
+  "some-characters-disabled": "Some of those character do not exist or are disabled",
+
+  "user-empty-collection": "{0} doesn't have any {1}characters",
+  "user-empty-media-collection": "{0} doesn't have any characters from {1}",
+
+  "character-no-longer-owned": "Some of those characters changed hands",
+  "character-hasnt-been-found": "{0} hasn't been found by anyone yet.",
+  "character-not-owned-by-you": "{0} is owned by {1} and cannot be customized by you.",
+
+  "merge-sacrifice": "Sacrifice **{0}** characters?",
+  "merge-insufficient": "You only have **{0} out the 5** sacrifices needed for {1}",
+
+  "nickname-reset": "{0}'s nickname has been reset",
+  "nickname-changed": "{0}'s nickname has been changed to **{1}**",
+  "image-reset": "{0}'s image has been reset",
+  "image-changed": "{0}'s image has been **changed**",
+
+  "trade-with-yourself": "You can't trade with yourself!",
+  "gift-with-yourself": "You can't gift yourself!",
+
+  "trade-you-not-owned": "You don't have {0}",
+  "trade-you-party-member": "{0} is in your party and can't be traded",
+  "trade-user-not-owned": "{0} doesn't have {1}",
+  "trade-user-party-member": "{0} is in {1}'s party and can't be traded",
+
+  "give-you-party-members": "Some of those characters are currently in your party",
+  "trade-party-members": "Some of those characters are currently in parties",
+
+  "trade-offer": "{0} is offering that you lose **{1}** {2} and get **{3}** {4}",
+  "give": "Are you sure you want to give **{0}** {1} to {2} for free?",
+
+  "trade-received-offer": "{0} you received an offer!",
+  "trade-offer-accepted": "{0} your offer was accepted!",
+  "trade-offer-accepted2": "{0} accepted your offer",
+
+  "give-sent-to": "Gift sent to {0}!",
+  "give-received": "{0} sent you a gift",
+
+  "maintenance-gacha": "Gacha is under maintenance, try again later!",
+  "maintenance-merge": "Merging is under maintenance, try again later!",
+  "maintenance-trade": "Trading is under maintenance, try again later!",
+
+  "gacha-no-more-pulls": "You don't have any more pulls!",
+  "gacha-no-guarantees": "You don`t have any {0}pulls",
+  "gacha-no-more-characters-left": "There are no more {0}characters left",
+  "gacha-no-more-in-range": "There are no more characters left in this range",
+
+  "help-page1-before-anything": "Before anything: You will need characters.",
+  "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",
+  "help-page1-characters-are-exclusive": "__Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.",
+  "help-page1-characters-vary": "__Characters vary in ranks from 1{0}to 5{0}__ A character rating is based on their popularity (a character rating cannot be raised).",
+  "help-page1-gacha-rates": "__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5{0}appearing is equal or less than 1%.",
+  "help-page1-footer": "> *`/q` allows you to do gacha pulls with no animations*",
+
+  "help-page2-sacrifice-characters": "Sacrifice characters to pull a new character with a higher rating.",
+  "help-page2-merge-protect": "__Your party members and likes will never be sacrificed.__ To protect characters from being merged, add them to your likeslist with `/like`",
+  "help-page2-merging": "__It takes 5 characters with a lower rating__ to pull a new character",
+  "help-page2-auto-merging": "__Fable will always auto-merge your lowest-rated characters first.__",
+  "help-page2-merge-example-1": "Example: `/merge target: 3` will sacrifice __25 of your 1{0}characters__",
+  "help-page2-merge-example-2": "or __5 of your 2{0}characters.__",
+  "help-page2-footer": "> *Sacrificed characters will return to being available in `/gacha`*",
+
+  "help-page3-party-required": "You will need a party to use combat features",
+  "help-page3-party-presets-disclaimer": "__You can't have more than 1 party__ or save your current party to a preset and switch between presets.",
+  "help-page3-party-synergy": "__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.",
+  "help-page3-party-view": "`/party view` to see your current party.",
+  "help-page3-party-assign-1": "`/party assign name: spot:` to assign a character you have to your party,",
+  "help-page3-party-assign-2": "leaving the `spot:` empty will assign the character to the first empty spot or override the last spot.",
+  "help-page3-footer": "> *`/collection` can be used to browse your characters and select your potential party members*",
+
+  "help-page4-title": "Stealing",
+  "help-page4-negotiations": "When all negotiations fails, it's fine to take what you want by force, right?",
+  "help-page4-party-is-protected": "__You can't steal characters assigned as party members__, meaning you can protect your most precious characters by adding them to your party.",
+  "help-page4-inactive-users": "__Inactive users are easier to steal from.__ Stay active by using `/gacha` or `/q` once a day.",
+  "help-page4-losing-protection": "__Inactive users lose their party protection__ after **{0}** days.",
+  "help-page4-steal-chance": "__The higher the character's rating the harder it is to steal.__ 5{0}characters have a base success rate of 1%.",
+  "help-page4-cooldown": "__Steal has a cooldown of **{0}** days__ regardless of the outcome of the attempt.",
+  "help-page4-steal-boost": "__You can sacrifice your own characters for a small boost__ to your chance of success, You lose those characters regardless of the outcome of the attempt.",
+  "help-page4-footer": "> Staying active is the best defense against stealing.",
+
+  "help-page5-title": "Shop",
+  "help-page5-shop": "The shop is a way to purchase extra pulls and guaranteed pulls.",
+  "help-page5-daily-tokens": "__You get 1 daily token every day__, automatically added after your first `/gacha` of the day.",
+  "help-page5-voting": "__Voting for Fable on Top.gg awards 1 token__, you can vote once every 12 hours.",
+  "help-page5-voting-weekends": "__Voting on weekends awards 2 tokens__ (_Fridays, Saturdays and Sundays_).",
+  "help-page5-buy-normal": "`/buy normal` gets you extra pulls, they are the exact same as the ones you get every {0} minutes.",
+  "help-page5-buy-guaranteed": "`/buy guaranteed` guarantees you get a character from one specific star rating.",
+  "help-page5-example": "Example: `/buy guaranteed 5` will guarantee you get one random 5{0}character.",
+
+  "help-page5-buy-3s": "3{0}cost **{1}** tokens",
+  "help-page5-buy-4s": "4{0}cost **{1}** tokens",
+  "help-page5-buy-5s": "5{0}cost **{1}** tokens",
+
+  "help-page5-footer": "Use the guaranteed pulls you bought by calling `/pull stars:`",
+
+  "help-page6-title": "Roadmap",
+  "help-page6-release": "__**Releasing in the near future (~3 months)**__",
+
+  "help-page7-title": "Essential Commands",
+  "help-page8-title": "Other Commands",
+  "help-page9-title": "Admin Commands",
+
+  "community-packs-permission": "_> `/community` requires `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we never recommend that._",
+  "make-your-own-pack": "> To create your own community pack visit <https://packs.deno.dev>",
+
+  "/gacha": "start a new gacha pull",
+  "/q": "start a gacha pull but with no animations",
+  "/pull": "use a guaranteed pull you have",
+  "/now": "check what you can do right now",
+  "/search": "search for a specific series",
+  "/character": "search for a specific character",
+  "/merge": "merge characters together to pull a new character",
+
+  "/party view": "view your current party",
+  "/party assign": "assign a character to your party",
+  "/party swap": "swap characters spots with each others",
+  "/party remove": "remove a character from your party",
+
+  "/coll stars": "view user stars",
+  "/coll media": "view user characters in a specific series",
+
+  "/steal": "steal a character from another user",
+  "/trade": "trade characters with another user",
+  "/give": "give characters to another user",
+
+  "/nick": "change the nickname of a character",
+  "/image": "change the image of a character",
+  "/found": "list all characters found from a specific series",
+
+  "/likeslist": "list all user likes",
+  "/like": "like a character to be notified if someone finds them",
+  "/unlike": "remove character from your likes",
+  "/likeall": "like a series to be notified if someone finds any character from it",
+  "/unlikeall": "remove a series from your likes",
+
+  "/buy normal": "use tokens to buy normal pulls",
+  "/buy guaranteed": "use tokens to buy pulls with a specific guaranteed rating",
+  "/packs": "list all the packs on a server",
+  "/logs": "list user last few found characters",
+
+  "/community popular": "browse the most popular community packs",
+  "/community install": "install a community pack",
+  "/community uninstall": "uninstall a community pack",
+
+  "/experimental battle": "try the new upcoming combat in a mock battle against another user",
+
+  "/help": "need more information? we got you",
+
+  "$debug": "display the nerdy stuff",
+  "$media-title": "the title of the series",
+  "$character-name": "the name of the character",
+  "$media-characters": "view the characters from the series",
+  "$user-list": "the user of the list",
+  "$user-party": "the user of the party",
+  "$user-likes-list": "the user of the likes list",
+  "$user-likes-filter": "filter out the likes already found by the user",
+  "$trade-user": "the user you want to trade with",
+  "$trade-give-character": "a character to give away",
+  "$trade-take-character": "a character to take for yourself",
+  "$steal-sacrifices-boost": "the amount of stars to sacrifice for a boost",
+
+  "$stars": "the star rating",
+  "$merge-star-target": "the target star rating of the merge",
+
+  "$new-image": "new image url",
+  "$new-nick": "new nickname",
+
+  "$buy-normal-amount": "the amount of pulls you want to buy",
+  "$buy-guaranteed-stars": "the star rating you want to buy",
+
+  "$party-spot": "the spot where you want this character",
+  "$party-swap-1": "the first target of the swap",
+  "$party-swap-2": "the second target of the swap",
+  "$party-remove-spot": "the spot to empty",
+
+  "$versus": "the user to battle against",
+
+  "$pack-id": "the id of the pack",
+
+  "$help-page": "specify a page to display",
+  "$help-page-gacha": "Gacha",
+  "$help-page-merging": "Merging",
+  "$help-page-party": "Party",
+  "$help-page-stealing": "Stealing",
+  "$help-page-shop": "Shop",
+  "$help-page-roadmap": "Roadmap",
+  "$help-page-essential-commands": "Essential Commands",
+  "$help-page-other-commands": "Other Commands",
+  "$help-page-admin-commands": "Admin Commands"
+}

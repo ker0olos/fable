@@ -1729,7 +1729,7 @@ Deno.test('buy components', async (test) => {
             {
               type: 'rich',
               description:
-                'You don\'t permission to complete this interaction!',
+                'You don\'t have permission to complete this interaction!',
             },
           ],
         },
@@ -1819,7 +1819,7 @@ Deno.test('buy components', async (test) => {
             {
               type: 'rich',
               description:
-                'You don\'t permission to complete this interaction!',
+                'You don\'t have permission to complete this interaction!',
             },
           ],
         },
@@ -2166,7 +2166,7 @@ Deno.test('give components', async (test) => {
             {
               type: 'rich',
               description:
-                'You don\'t permission to complete this interaction!',
+                'You don\'t have permission to complete this interaction!',
             },
           ],
         },
@@ -2357,7 +2357,7 @@ Deno.test('trade components', async (test) => {
             {
               type: 'rich',
               description:
-                'You don\'t permission to complete this interaction!',
+                'You don\'t have permission to complete this interaction!',
             },
           ],
         },
@@ -2537,7 +2537,7 @@ Deno.test('synthesis components', async (test) => {
             {
               type: 'rich',
               description:
-                'You don\'t permission to complete this interaction!',
+                'You don\'t have permission to complete this interaction!',
             },
           ],
         },
@@ -2809,7 +2809,7 @@ Deno.test('steal components', async (test) => {
             {
               type: 'rich',
               description:
-                'You don\'t permission to complete this interaction!',
+                'You don\'t have permission to complete this interaction!',
             },
           ],
         },
@@ -3261,7 +3261,7 @@ Deno.test('community packs uninstall', async (test) => {
             {
               type: 'rich',
               description:
-                'You don\'t permission to complete this interaction!',
+                'You don\'t have permission to complete this interaction!',
             },
           ],
         },
@@ -3530,7 +3530,7 @@ Deno.test('cancel dialog', async (test) => {
             {
               type: 'rich',
               description:
-                'You don\'t permission to complete this interaction!',
+                'You don\'t have permission to complete this interaction!',
             },
           ],
           attachments: [],
@@ -3620,7 +3620,7 @@ Deno.test('cancel dialog', async (test) => {
             {
               type: 'rich',
               description:
-                'You don\'t permission to complete this interaction!',
+                'You don\'t have permission to complete this interaction!',
             },
           ],
           attachments: [],

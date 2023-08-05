@@ -58,6 +58,8 @@ export interface Inventory {
 }
 
 export const MAX_PULLS = 5;
+export const MAX_NEW_PULLS = 10;
+
 export const RECHARGE_MINS = 30;
 
 export function getUser(id: StringExpr): UserExpr {
@@ -138,7 +140,7 @@ export function getInventory(
         {
           // create a new inventory
           createdInventory: fql.Create<Inventory>('inventory', {
-            availablePulls: MAX_PULLS,
+            availablePulls: MAX_NEW_PULLS,
             instance: fql.Ref(instance),
             user: fql.Ref(user),
           }),

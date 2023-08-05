@@ -2359,7 +2359,7 @@ Deno.test('/synthesis', async (test) => {
             target: 2,
           }),
         NonFetalError,
-        'Synthesis is under maintenance, try again later!',
+        'Merging is under maintenance, try again later!',
       );
     } finally {
       delete config.synthesis;

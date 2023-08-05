@@ -4,6 +4,7 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import i18n from './i18n.ts';
 import utils from './utils.ts';
 import packs from './packs.ts';
 
@@ -24,6 +25,14 @@ import {
 } from './types.ts';
 
 import { COSTS } from '../models/add_tokens_to_user.ts';
+
+const cachedGuilds: Record<string, {
+  locale: discord.AvailableLocales;
+}> = {};
+
+const cachedUsers: Record<string, {
+  locale: discord.AvailableLocales;
+}> = {};
 
 async function getUserCharacters(
   { userId, guildId }: { userId: string; guildId: string },
@@ -171,6 +180,9 @@ async function now({
 
   const message = new discord.Message();
 
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
+
   const { user, availablePulls, stealTimestamp, rechargeTimestamp } =
     (await request<{
       getUserInventory: Schema.Inventory;
@@ -201,7 +213,9 @@ async function now({
           .join('')
       }`)
       .setFooter({
-        text: `Available ${availablePulls === 1 ? 'Pull' : 'Pulls'}`,
+        text: availablePulls === 1
+          ? i18n.get('available-pull', locale)
+          : i18n.get('available-pulls', locale),
       }),
   );
 
@@ -210,7 +224,9 @@ async function now({
       new discord.Embed()
         .setTitle(`**${user.availableVotes}**`)
         .setFooter({
-          text: `Daily ${user.availableVotes === 1 ? 'Token' : 'Tokens'}`,
+          text: user.availableVotes === 1
+            ? i18n.get('daily-token', locale)
+            : i18n.get('daily-tokens', locale),
         }),
     );
   }
@@ -225,7 +241,7 @@ async function now({
   if (availablePulls < 5) {
     message.addEmbed(
       new discord.Embed()
-        .setDescription(`_+1 pull <t:${recharge}:R>_`),
+        .setDescription(i18n.get('+1-pull', locale, `<t:${recharge}:R>`)),
     );
   }
 
@@ -233,9 +249,11 @@ async function now({
     message.addEmbed(
       new discord.Embed()
         .setDescription(
-          `_Can vote again <t:${
-            utils.votingTimestamp(user.lastVote).timeLeft
-          }:R>_`,
+          i18n.get(
+            'can-vote-again',
+            locale,
+            `<t:${utils.votingTimestamp(user.lastVote).timeLeft}:R>`,
+          ),
         ),
     );
   }
@@ -244,7 +262,11 @@ async function now({
     message.addEmbed(
       new discord.Embed()
         .setDescription(
-          `_Steal cooldown ends <t:${utils.stealTimestamp(stealTimestamp)}:R>_`,
+          i18n.get(
+            'steal-cooldown-ends',
+            locale,
+            `<t:${utils.stealTimestamp(stealTimestamp)}:R>`,
+          ),
         ),
     );
   }
@@ -409,6 +431,9 @@ function nick({
     }
   `;
 
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
+
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
@@ -459,7 +484,7 @@ function nick({
             return message
               .addEmbed(
                 new discord.Embed().setDescription(
-                  `${names[0]} hasn't been found by anyone yet.`,
+                  i18n.get('character-hasnt-been-found', locale, names[0]),
                 ),
               ).addComponents([
                 new discord.Component()
@@ -472,9 +497,12 @@ function nick({
             return message
               .addEmbed(
                 new discord.Embed().setDescription(
-                  `${
-                    names[0]
-                  } is owned by <@${response.character.user.id}> and cannot be customized by you.`,
+                  i18n.get(
+                    'character-not-owned-by-you',
+                    locale,
+                    names[0],
+                    `<@${response.character.user.id}>`,
+                  ),
                 ),
               ).addComponents([
                 new discord.Component()
@@ -492,9 +520,13 @@ function nick({
       message
         .addEmbed(
           new discord.Embed().setDescription(
-            !nick
-              ? `${name}'s nickname has been reset`
-              : `${name}'s nickname has been changed to **${response.character.nickname}**`,
+            !nick ? i18n.get('nickname-reset', locale, name) : i18n.get(
+              'nickname-changed',
+              locale,
+              name,
+              // deno-lint-ignore no-non-null-assertion
+              response.character.nickname!,
+            ),
           ),
         )
         .addEmbed(srch.characterEmbed(
@@ -520,7 +552,7 @@ function nick({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
       }
@@ -578,6 +610,9 @@ function image({
     }
   `;
 
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
+
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Character | DisaggregatedCharacter)[]) => {
@@ -628,7 +663,7 @@ function image({
             return message
               .addEmbed(
                 new discord.Embed().setDescription(
-                  `${names[0]} hasn't been found by anyone yet.`,
+                  i18n.get('character-hasnt-been-found', locale, names[0]),
                 ),
               ).addComponents([
                 new discord.Component()
@@ -641,9 +676,12 @@ function image({
             return message
               .addEmbed(
                 new discord.Embed().setDescription(
-                  `${
-                    names[0]
-                  } is owned by <@${response.character.user.id}> and cannot be customized by you.`,
+                  i18n.get(
+                    'character-not-owned-by-you',
+                    locale,
+                    names[0],
+                    `<@${response.character.user.id}>`,
+                  ),
                 ),
               ).addComponents([
                 new discord.Component()
@@ -661,9 +699,13 @@ function image({
       message
         .addEmbed(
           new discord.Embed().setDescription(
-            !image
-              ? `${name}'s image has been reset`
-              : `${name}'s image has been **changed**`,
+            !image ? i18n.get('image-reset', locale, name) : i18n.get(
+              'image-changed',
+              locale,
+              name,
+              // deno-lint-ignore no-non-null-assertion
+              response.character.image!,
+            ),
           ),
         )
         .addEmbed(srch.characterEmbed(
@@ -688,7 +730,7 @@ function image({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
       }
@@ -750,6 +792,9 @@ function like({
       }
     }
   `;
+
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
@@ -841,7 +886,7 @@ function like({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
       }
@@ -887,6 +932,9 @@ function likeall({
       }
     }
   `;
+
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
 
   packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
@@ -952,7 +1000,7 @@ function likeall({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
       }
@@ -995,6 +1043,9 @@ function list({
   id?: string;
   nick?: boolean;
 }): discord.Message {
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
+
   user.getUserCharacters({ userId, guildId })
     .then(async ({ characters, party, likes }) => {
       const embed = new discord.Embed();
@@ -1110,13 +1161,31 @@ function list({
 
       if (embed.getFieldsCount() <= 0) {
         message.addEmbed(embed.setDescription(
-          `${nick ? `<@${userId}> doesn't` : 'You don\'t'} have any ${
-            rating ? `${rating}${discord.emotes.smolStar}characters` : ''
-          }${
-            media.length
-              ? `characters from ${packs.aliasToArray(media[0].title)[0]}`
-              : ''
-          }`,
+          nick
+            ? (media.length
+              ? i18n.get(
+                'user-empty-media-collection',
+                locale,
+                `<@${userId}>`,
+                packs.aliasToArray(media[0].title)[0],
+              )
+              : i18n.get(
+                'user-empty-collection',
+                locale,
+                `<@${userId}>`,
+                rating ? `${rating}${discord.emotes.smolStar}` : '',
+              ))
+            : (media.length
+              ? i18n.get(
+                'you-empty-media-collection',
+                locale,
+                packs.aliasToArray(media[0].title)[0],
+              )
+              : i18n.get(
+                'you-empty-collection',
+                locale,
+                rating ? `${rating}${discord.emotes.smolStar}` : '',
+              )),
         ));
 
         if (!nick) {
@@ -1149,7 +1218,7 @@ function list({
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
       }
@@ -1381,6 +1450,9 @@ function logs({
     }
   `;
 
+  const locale = cachedUsers[userId]?.locale ??
+    cachedGuilds[guildId]?.locale;
+
   request<{
     getUserInventory: Schema.Inventory;
   }>({
@@ -1431,9 +1503,9 @@ function logs({
         message.addEmbed(
           new discord.Embed()
             .setDescription(
-              `${
-                nick ? `<@${userId}> doesn't` : 'You don\'t'
-              } have any characters`,
+              nick
+                ? i18n.get('user-empty-collection', locale, `<@${userId}>`, '')
+                : i18n.get('you-empty-collection', locale, ''),
             ),
         );
 
@@ -1466,6 +1538,8 @@ function logs({
 }
 
 const user = {
+  cachedUsers,
+  cachedGuilds,
   findCharacter,
   findCharacters,
   getActiveInventories,

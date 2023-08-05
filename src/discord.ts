@@ -1,6 +1,8 @@
 import { json } from 'sift';
 
+import i18n from './i18n.ts';
 import utils, { ImageSize } from './utils.ts';
+
 import config from './config.ts';
 
 const splitter = '=';
@@ -9,6 +11,39 @@ enum CommandType {
   CHAT = 1,
   USER = 2,
 }
+
+export type AvailableLocales =
+  // https://discord.com/developers/docs/reference#locales
+  | 'en-US' // English [default, fallback]
+  | 'id' // Indonesian
+  | 'da' // Danish
+  | 'de' // German
+  | 'es-ES' // Spanish
+  | 'fr' // French
+  | 'hr' // Croatian
+  | 'it' // Italian
+  | 'lt' // Lithuanian
+  | 'hu' // Hungarian
+  | 'nl' // Dutch
+  | 'no' // Norwegian
+  | 'pl' // Polish
+  | 'pt-BR' // Portuguese, Brazilian
+  | 'ro' // Romanian, Romania
+  | 'fi' // Finnish,
+  | 'sv-SE' // Swedish
+  | 'vi' // Vietnamese
+  | 'tr' // Turkish
+  | 'cs' // Czech
+  | 'el' // Greek
+  | 'bg' // Bulgarian
+  | 'ru' // Russian
+  | 'uk' // Ukrainian
+  | 'hi' // Hindi
+  | 'th' // Thai
+  | 'zh-CN' // Chinese, China
+  | 'ja' // Japanese
+  | 'zh-TW' // Chinese, Taiwan
+  | 'ko'; // Korean
 
 export const empty = '\u200B';
 
@@ -240,11 +275,11 @@ export class Interaction<Options> {
   /** member is sent when the interaction is invoked in a guild */
   member: Member;
 
-  // /** available on all interaction types except PING */
-  // locale?: string;
+  /** available on all interaction types except PING */
+  locale?: AvailableLocales;
 
-  // /** guild's preferred locale (if invoked in a guild) */
-  // guildLocale?: string;
+  /** guild's preferred locale (if invoked in a guild) */
+  guildLocale?: AvailableLocales;
 
   constructor(body: string) {
     const obj = JSON.parse(body);
@@ -289,8 +324,8 @@ export class Interaction<Options> {
     // this.message = obj?.message
     this.member = obj.member;
 
-    // this.locale = obj.locale;
-    // this.guildLocale = obj.guild_locale;
+    this.locale = obj.locale;
+    this.guildLocale = obj.guild_locale;
 
     this.options = {};
 
@@ -926,13 +961,14 @@ export class Message {
   }
 
   static page(
-    { message, type, target, index, total, next }: {
+    { message, type, target, index, total, next, locale }: {
       type: string;
       message: Message;
       index: number;
       target?: string;
       next?: boolean;
       total?: number;
+      locale?: AvailableLocales;
     },
   ): Message {
     const group: Component[] = [];
@@ -946,7 +982,7 @@ export class Message {
       group.push(
         new Component()
           .setId(type, target ?? '', `${prevId}`, 'prev')
-          .setLabel(`Prev`),
+          .setLabel(i18n.get('prev', locale)),
       );
     }
 
@@ -962,7 +998,7 @@ export class Message {
       group.push(
         new Component()
           .setId(type, target ?? '', `${nextId}`, 'next')
-          .setLabel(`Next`),
+          .setLabel(i18n.get('next', locale)),
       );
     }
 
@@ -979,6 +1015,7 @@ export class Message {
       cancelText,
       userId,
       targetId,
+      locale,
     }: {
       type?: string;
       userId?: string;
@@ -988,14 +1025,15 @@ export class Message {
       message: Message;
       confirmText?: string;
       cancelText?: string;
+      locale?: AvailableLocales;
     },
   ): Message {
     const confirmComponent = new Component()
-      .setLabel(confirmText ?? 'Confirm');
+      .setLabel(confirmText ?? i18n.get('confirm', locale));
 
     const cancelComponent = new Component()
       .setStyle(ButtonStyle.Red)
-      .setLabel(cancelText ?? 'Cancel');
+      .setLabel(cancelText ?? i18n.get('cancel', locale));
 
     if (Array.isArray(confirm)) {
       confirmComponent.setId(...confirm);

@@ -513,7 +513,8 @@ Deno.test('give', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Some of those characters were disabled or removed',
+              description:
+                'Some of those character do not exist or are disabled',
             },
           ],
         },
@@ -1164,7 +1165,8 @@ Deno.test('trade', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'Some of those characters were disabled or removed',
+              description:
+                'Some of those character do not exist or are disabled',
             },
           ],
         },
@@ -2425,10 +2427,7 @@ Deno.test('/trade', async (test) => {
           content: '<@another_user_id> you received an offer!',
           attachments: [],
           components: [],
-          embeds: [{
-            type: 'rich',
-            description: 'Some of those characters are in your likeslist!',
-          }],
+          embeds: [],
         },
       );
     } finally {

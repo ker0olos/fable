@@ -1,12 +1,18 @@
 import { COSTS } from '../models/add_tokens_to_user.ts';
-import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
+import { MAX_PULLS, RECHARGE_MINS } from '../models/get_user_inventory.ts';
 import { COOLDOWN_DAYS } from '../models/steal_character.ts';
+import { PARTY_PROTECTION_PERIOD } from './steal.ts';
+
+import i18n from './i18n.ts';
+import user from './user.ts';
 
 import * as discord from './discord.ts';
 
 function pages(
   { userId, index }: { userId: string; index: number },
 ): discord.Message {
+  const locale = user.cachedUsers[userId]?.locale;
+
   const pages = [
     new discord.Message()
       .addComponents([
@@ -22,20 +28,29 @@ function pages(
           .setAuthor({ name: '1.' })
           .setTitle('`/gacha`')
           .setDescription([
-            'Before anything: You will need characters.',
+            i18n.get('help-page1-before-anything', locale),
             '',
-            `__You get a free pull every ${RECHARGE_MINS} minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.`,
+            i18n.get(
+              'help-page1-you-get-n-every-t',
+              locale,
+              RECHARGE_MINS,
+              MAX_PULLS,
+            ),
             '',
-            '__Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.',
+            i18n.get('help-page1-characters-are-exclusive', locale),
             '',
-            `__Characters vary in ranks from 1${discord.emotes.smolStar}to 5${discord.emotes.smolStar}__ A character rating is based on their popularity (a character rating cannot be raised).`,
+            i18n.get(
+              'help-page1-characters-vary',
+              locale,
+              discord.emotes.smolStar,
+            ),
             '',
-            `__Gacha rates depend on multiple variables__, but generally speaking the chances of a 5${discord.emotes.smolStar}appearing is equal or less than 1%.`,
+            i18n.get('help-page1-gacha-rates', locale, discord.emotes.smolStar),
             '',
-            '> *`/q` allows you to do gacha pulls with no animations*',
-            '\u200B',
+            i18n.get('help-page1-footer', locale),
+            discord.empty,
           ].join('\n'))
-          .setFooter({ text: 'aliases: /w, /q' }),
+          .setFooter({ text: `${i18n.get('aliases', locale)}: /w, /q` }),
       ),
     new discord.Message()
       .addEmbed(
@@ -43,21 +58,29 @@ function pages(
           .setAuthor({ name: '2.' })
           .setTitle('`/merge`')
           .setDescription([
-            'Sacrifice characters to pull a new character with a higher rating.',
+            i18n.get('help-page2-sacrifice-characters', locale),
             '',
-            '__Your party members and likes will never be sacrificed.__ To protect characters from being merged, add them to your likeslist with `/like`',
+            i18n.get('help-page2-merge-protect', locale),
             '',
-            '__It takes 5 characters with a lower rating__ to pull a new character',
+            i18n.get('help-page2-merging', locale),
             '',
-            '__Fable will always auto-merge your lowest-rated characters first.__',
+            i18n.get('help-page2-auto-merging', locale),
             '',
-            `Example: \`/merge target: 3\` will sacrifice __25 of your 1${discord.emotes.smolStar}characters__`,
-            `or __5 of your 2${discord.emotes.smolStar}characters.__`,
+            i18n.get(
+              'help-page2-merge-example-1',
+              locale,
+              discord.emotes.smolStar,
+            ),
+            i18n.get(
+              'help-page2-merge-example-2',
+              locale,
+              discord.emotes.smolStar,
+            ),
             '',
-            '> *Sacrificed characters will return to being available in `/gacha`*',
-            '\u200B',
+            i18n.get('help-page2-footer', locale),
+            discord.empty,
           ].join('\n'))
-          .setFooter({ text: 'aliases: /synthesis' }),
+          .setFooter({ text: `${i18n.get('aliases', locale)}: /synthesis` }),
       ),
     new discord.Message()
       .addComponents([
@@ -72,44 +95,58 @@ function pages(
         new discord.Embed()
           .setAuthor({ name: '3.' })
           .setTitle('`/party`')
-          .setDescription([
-            'You will need a party to use combat features',
-            '',
-            '__You can\'t have more than 1 party__ or save your current party to a preset and switch between presets.',
-            '',
-            '__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.',
-            '',
-            '`/party view` to see your current party.',
-            '',
-            '`/party assign name: spot:` to assign a character you have to your party;',
-            'leaving the `spot:` empty will assign the character to the first empty spot or override the last spot.',
-            '',
-            '> *`/collection` can be used to browse your characters and select your potential party members*',
-            '\u200B',
-          ].join('\n'))
-          .setFooter({ text: 'aliases: /team, /p' }),
+          .setDescription(
+            [
+              i18n.get('help-page3-party-required', locale),
+              '',
+              i18n.get('help-page3-party-presets-disclaimer', locale),
+              '',
+              i18n.get('help-page3-party-synergy', locale),
+              '',
+              i18n.get('help-page3-party-view', locale),
+              '',
+              i18n.get('help-page3-party-assign-1', locale),
+              i18n.get('help-page3-party-assign-2', locale),
+              '',
+              i18n.get('help-page3-footer', locale),
+              discord.empty,
+            ].join('\n'),
+          )
+          .setFooter({ text: `${i18n.get('aliases', locale)}: /team, /p` }),
       ),
     new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setAuthor({ name: 'Stealing' })
+          .setAuthor({ name: i18n.get('help-page4-title', locale) })
           .setDescription([
-            'When all negotiations fails, it\'s fine to take what you want by force, right?',
+            i18n.get('help-page4-negotiations', locale),
             '',
-            '__You can\'t steal characters assigned as party members__, meaning you can protect your most precious characters by adding them to your party.',
+            i18n.get('help-page4-party-is-protected', locale),
             '',
-            '__Inactive users are easier to steal from.__ Stay active by using `/gacha` or `/q` once a day.',
+            i18n.get('help-page4-inactive-users', locale),
             '',
-            '__Inactive users lose their party protection__ after **4** days.',
+            i18n.get(
+              'help-page4-losing-protection',
+              locale,
+              PARTY_PROTECTION_PERIOD,
+            ),
             '',
-            `__The higher the character's rating the harder it is to steal.__ 5${discord.emotes.smolStar}characters have a base success rate of 1%.`,
+            i18n.get(
+              'help-page4-steal-chance',
+              locale,
+              discord.emotes.smolStar,
+            ),
             '',
-            `__Steal has a cooldown of **${COOLDOWN_DAYS}** days__ regardless of the outcome of the attempt.`,
+            i18n.get(
+              'help-page4-cooldown',
+              locale,
+              COOLDOWN_DAYS,
+            ),
             '',
-            '__You can sacrifice your own characters for a small boost__ to your chance of success, You lose those characters regardless of the outcome of the attempt.',
+            i18n.get('help-page4-steal-boost', locale),
             '',
-            '> Staying active is the best defense against stealing.',
-            '\u200B',
+            i18n.get('help-page4-footer', locale),
+            discord.empty,
           ].join('\n')),
       ),
     new discord.Message()
@@ -123,51 +160,66 @@ function pages(
       ])
       .addEmbed(
         new discord.Embed()
-          .setAuthor({ name: 'Shop' })
+          .setAuthor({ name: i18n.get('help-page5-title', locale) })
           .setDescription([
-            'The shop is a way to purchase extra pulls and guaranteed pulls.',
+            i18n.get('help-page5-shop', locale),
             '',
-            '__You get 1 Daily Token every day__, automatically added after your first `/gacha` of the day.',
+            i18n.get('help-page5-daily-tokens', locale),
             '',
-            '__Voting for Fable on Top.gg awards 1 daily token__, you can vote once every 12 hours.',
+            i18n.get('help-page5-voting', locale),
             '',
-            '__Voting on weekends awards 2 tokens__ (_Fridays, Saturdays and Sundays_).',
+            i18n.get('help-page5-voting-weekends', locale),
             '',
-            `\`/buy normal\` gets you extra pulls, they are the exact same as the ones you get every ${RECHARGE_MINS} minutes.`,
+            i18n.get('help-page5-buy-normal', locale, RECHARGE_MINS),
             '',
-            '`/buy guaranteed` guarantees you get a character from one specific star rating.',
+            i18n.get('help-page5-buy-guaranteed', locale),
             '',
-            `Example: \`/buy guaranteed 5\` will guarantee you get one random 5${discord.emotes.smolStar}character.`,
+            i18n.get('help-page5-example', locale, discord.emotes.smolStar),
             '',
-            `3${discord.emotes.smolStar}cost **${COSTS.THREE}** tokens`,
-            `4${discord.emotes.smolStar}cost **${COSTS.FOUR}** tokens`,
-            `5${discord.emotes.smolStar}cost **${COSTS.FIVE}** tokens`,
+            i18n.get(
+              'help-page5-buy-3s',
+              locale,
+              discord.emotes.smolStar,
+              COSTS.THREE,
+            ),
+            i18n.get(
+              'help-page5-buy-4s',
+              locale,
+              discord.emotes.smolStar,
+              COSTS.FOUR,
+            ),
+            i18n.get(
+              'help-page5-buy-5s',
+              locale,
+              discord.emotes.smolStar,
+              COSTS.FIVE,
+            ),
             '',
-            'Use the guaranteed pulls you bought by calling `/pull stars:`',
-            '\u200B',
+            i18n.get('help-page5-footer', locale),
+            discord.empty,
           ].join('\n'))
-          .setFooter({ text: 'aliases: /shop' }),
+          .setFooter({ text: `${i18n.get('aliases', locale)}: /shop` }),
       ),
     new discord.Message()
       .addComponents([
-        new discord.Component()
-          .setLabel('Full Roadmap')
-          .setUrl('https://github.com/ker0olos/fable/issues/1'),
+        // new discord.Component()
+        //   .setLabel('Full Roadmap')
+        //   .setUrl('https://github.com/ker0olos/fable/issues/1'),
         new discord.Component()
           .setLabel('GitHub')
           .setUrl('https://github.com/ker0olos/fable'),
         new discord.Component()
-          .setLabel('Discord Support Server')
+          .setLabel(i18n.get('support-server', locale))
           .setUrl('https://discord.gg/H69RVBxeYY'),
         new discord.Component()
-          .setLabel('Donate')
+          .setLabel(i18n.get('donate', locale))
           .setUrl('https://ko-fi.com/ker0olos'),
       ])
       .addEmbed(
         new discord.Embed()
-          .setAuthor({ name: 'Roadmap' })
+          .setAuthor({ name: i18n.get('help-page6-title', locale) })
           .setDescription([
-            '__**Releasing in the near future (~3 months)**__',
+            i18n.get('help-page6-release', locale),
             '',
             '**[Battles](https://github.com/ker0olos/fable/issues/74)**',
             '',
@@ -180,66 +232,94 @@ function pages(
     new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setAuthor({ name: 'Essential Commands' })
+          .setAuthor({ name: i18n.get('help-page7-title', locale) })
           .setDescription([
-            '- `/gacha` `/w`: _start a new gacha pull_',
-            '- `/q`: _start a gacha pull but with no animations_',
-            '- `/pull` `/guaranteed`: _use the guaranteed pulls you have_',
+            `- \`/gacha\` \`/w\`: _${i18n.get('/gacha', locale)}_`,
+            `- \`/q\`: _${i18n.get('/q', locale)}_`,
+            `- \`/pull\` \`/guaranteed\`: _${i18n.get('/pull', locale)}_`,
             '',
-            '- `/now` `/vote` `/tu`: _check what you can do right now_',
-            '- `/search` `/anime` `/manga` `/series`: _search for specific media_',
-            '- `/character` `/char`: _search for a specific character_',
+            `- \`/now\` \`/vote\` \`/tu\`: _${i18n.get('/now', locale)}_`,
+            `- \`/search\` \`/anime\` \`/manga\` \`/series\`: _${
+              i18n.get('/search', locale)
+            }_`,
+            `- \`/character\` \`/char\`: _${i18n.get('/character', locale)}_`,
             '',
-            '- `/merge` `/synthesize`: _merge characters together to pull a new character_',
+            `- \`/merge\` \`/synthesize\`: _${i18n.get('/merge', locale)}_`,
             '',
-            '- `/party view` `/team view` `/p view`: _view your current party_',
-            '- `/party assign` `/team assign` `/p assign`: _assign a character to your party_',
-            '- `/party swap` `/team swap` `/p swap`: _swap characters spots with each others_',
-            '- `/party remove` `/team remove` `/p remove`: _remove a character from your party_',
+            `- \`/party view\` \`/team view\` \`/p view\`: _${
+              i18n.get('/party view', locale)
+            }_`,
+            `- \`/party assign\` \`/team assign\` \`/p assign\`: _${
+              i18n.get('/party assign', locale)
+            }_`,
+            `- \`/party swap\` \`/team swap\` \`/p swap\`: _${
+              i18n.get('/party swap', locale)
+            }_`,
+            `- \`/party remove\` \`/team remove\` \`/p remove\`: _${
+              i18n.get('/party remove', locale)
+            }_`,
             '',
-            '- `/collection stars` `/coll stars` `/mm stars`: _view user your stars_',
-            '- `/collection media` `/coll media` `/mm media`: _view user characters in a specific media_',
+            `- \`/collection stars\` \`/coll stars\` \`/mm stars\`: _${
+              i18n.get('/coll stars', locale)
+            }_`,
+            `- \`/collection media\` \`/coll media\` \`/mm media\`: _${
+              i18n.get('/coll media', locale)
+            }_`,
             '',
-            '- `/steal`: _steal a character from another user_',
-            '- `/trade` `/offer`: _trade characters with another user_',
-            '- `/give` `/gift`: _give characters to another user_',
+            `- \`/steal\`: _${i18n.get('/steal', locale)}_`,
+            `- \`/trade\` \`/offer\`: _${i18n.get('/trade', locale)}_`,
+            `- \`/give\` \`/gift\`: _${i18n.get('/give', locale)}_`,
           ].join('\n')),
       ),
     new discord.Message()
       .addEmbed(
         new discord.Embed()
-          .setAuthor({ name: 'Other Commands' })
+          .setAuthor({ name: i18n.get('help-page8-title', locale) })
           .setDescription([
-            '- `/nick`: _change the nickname of a character_',
-            '- `/image` `/custom`: _change the image of a character_',
+            `- \`/nick\`: _${i18n.get('/nick', locale)}_`,
+            `- \`/image\` \`/custom\`: _${i18n.get('/image', locale)}_`,
             '',
-            '- `/found` `/owned`: _list all characters found from a specific media_',
+            `- \`/found\` \`/owned\`: _${i18n.get('/found', locale)}_`,
             '',
-            '- `/likeslist`: _list user likes_',
+            `- \`/likeslist\`: _${i18n.get('/likeslist', locale)}_`,
             '',
-            '- `/like` `/protect` `/wish`: _like a character to be notified if someone finds them_',
-            '- `/unlike`: _remove character from your likes_',
-            '- `/likeall`: _like a media to be notified if someone finds any character from it_',
-            '- `/unlikeall`: _remove media from your likes_',
+            `- \`/like\` \`/protect\` \`/wish\`: _${
+              i18n.get('/like', locale)
+            }_`,
+            `- \`/unlike\`: _${i18n.get('/unlike', locale)}_`,
+            `- \`/likeall\`: _${i18n.get('/likeall', locale)}_`,
+            `- \`/unlikeall\`: _${i18n.get('/unlikeall', locale)}_`,
             '',
-            '- `/buy normal` `/shop normal`: _use votes to buy normal pulls_',
-            '- `/buy guaranteed` `/shop guaranteed`: _use votes to buy pulls with a specific guaranteed rating_',
+            `- \`/buy normal\` \`/shop normal\`: _${
+              i18n.get('/buy normal', locale)
+            }_`,
+            `- \`/buy guaranteed\` \`/shop guaranteed\`: _${
+              i18n.get('/buy guaranteed', locale)
+            }_`,
             '',
-            '- `/packs`: _list all the packs on a server_',
+            `- \`/packs\`: _${i18n.get('/packs', locale)}_`,
             '',
-            '- `/logs`: _list user last few found characters_',
+            `- \`/logs\`: _${i18n.get('/logs', locale)}_`,
           ].join('\n')),
       ),
     new discord.Message()
       .addEmbed(
-        new discord.Embed().setAuthor({ name: 'Admin Commands' })
+        new discord.Embed().setAuthor({
+          name: i18n.get('help-page9-title', locale),
+        })
           .setDescription([
-            '_> `/community` requires `Manage Server` permission by default, but that can be changed in the `Integrations` section of your server settings, although we never recommend that._',
-            '- `/community popular`: _browse the most popular community packs_',
-            '- `/community install`: _install a community pack_',
-            '- `/community uninstall`: _uninstall a community pack_',
+            i18n.get('community-packs-permission', locale),
+            `- \`/community popular\`: _${
+              i18n.get('/community popular', locale)
+            }_`,
+            `- \`/community install\`: _${
+              i18n.get('/community install', locale)
+            }_`,
+            `- \`/community uninstall\`: _${
+              i18n.get('/community uninstall', locale)
+            }_`,
             '',
-            '> To create your own community pack visit <https://packs.deno.dev>',
+            i18n.get('make-your-own-pack', locale),
           ].join('\n')),
       ),
   ];

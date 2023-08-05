@@ -38,7 +38,7 @@ export const relationFilter = [
 const musicUrlRegex = /youtube|spotify/;
 
 const externalUrlRegex =
-  /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoon\.com|amazon\.com)[\S]*$/;
+  /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoons\.com|amazon\.com)[\S]*$/;
 
 function media(
   { token, id, search, debug, guildId }: {
