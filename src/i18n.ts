@@ -3,6 +3,7 @@ import '#filter-boolean';
 import { AvailableLocales } from './discord.ts';
 
 import EN from '../i18n/en-US.json' assert { type: 'json' };
+import ES from '../i18n/es-ES.json' assert { type: 'json' };
 
 function get(
   key: keyof typeof EN,
@@ -12,6 +13,9 @@ function get(
   let value: string = key;
 
   switch (locale) {
+    case 'es-ES':
+      value = ES[key];
+      break;
     default:
       value = EN[key];
       break;
