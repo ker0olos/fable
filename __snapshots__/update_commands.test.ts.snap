@@ -5,7 +5,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "search for a specific series",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "busca una serie específica",
+    },
     dm_permission: false,
     name: "search",
     options: [
@@ -13,11 +15,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the title of the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el título de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "title",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -26,11 +29,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "display the nerdy stuff",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los datos para nerds",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "debug",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -39,11 +43,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view the characters from the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los personajes de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "characters",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -54,7 +59,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "search for a specific series",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "busca una serie específica",
+    },
     dm_permission: false,
     name: "anime",
     options: [
@@ -62,11 +69,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the title of the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el título de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "title",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -75,11 +83,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "display the nerdy stuff",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los datos para nerds",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "debug",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -88,11 +97,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view the characters from the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los personajes de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "characters",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -103,7 +113,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "search for a specific series",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "busca una serie específica",
+    },
     dm_permission: false,
     name: "manga",
     options: [
@@ -111,11 +123,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the title of the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el título de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "title",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -124,11 +137,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "display the nerdy stuff",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los datos para nerds",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "debug",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -137,11 +151,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view the characters from the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los personajes de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "characters",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -152,7 +167,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "search for a specific series",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "busca una serie específica",
+    },
     dm_permission: false,
     name: "media",
     options: [
@@ -160,11 +177,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the title of the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el título de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "title",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -173,11 +191,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "display the nerdy stuff",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los datos para nerds",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "debug",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -186,11 +205,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view the characters from the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los personajes de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "characters",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -201,7 +221,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "search for a specific series",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "busca una serie específica",
+    },
     dm_permission: false,
     name: "series",
     options: [
@@ -209,11 +231,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the title of the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el título de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "title",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -222,11 +245,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "display the nerdy stuff",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los datos para nerds",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "debug",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -235,11 +259,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view the characters from the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los personajes de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "characters",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -250,7 +275,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "search for a specific character",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "busca un personaje específico",
+    },
     dm_permission: false,
     name: "character",
     options: [
@@ -258,11 +285,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the name of the character",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "name",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -271,11 +299,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "display the nerdy stuff",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los datos para nerds",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "debug",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -286,7 +315,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "search for a specific character",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "busca un personaje específico",
+    },
     dm_permission: false,
     name: "char",
     options: [
@@ -294,11 +325,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the name of the character",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "name",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -307,11 +339,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "display the nerdy stuff",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "muestra los datos para nerds",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "debug",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -322,7 +355,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "list all characters found from a specific series",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "muestra todos los personajes de una serie que hayan sido obtenidos",
+    },
     dm_permission: false,
     name: "found",
     options: [
@@ -330,11 +365,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the title of the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el título de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "title",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -345,7 +381,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "list all characters found from a specific series",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "muestra todos los personajes de una serie que hayan sido obtenidos",
+    },
     dm_permission: false,
     name: "owned",
     options: [
@@ -353,11 +391,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the title of the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el título de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "title",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -368,7 +407,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "like a character to be notified if someone finds them",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga",
+    },
     dm_permission: false,
     name: "like",
     options: [
@@ -376,11 +417,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the name of the character",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "name",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -391,7 +433,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "like a character to be notified if someone finds them",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga",
+    },
     dm_permission: false,
     name: "protect",
     options: [
@@ -399,11 +443,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the name of the character",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "name",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -414,7 +459,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "like a character to be notified if someone finds them",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "da like a un personaje y recibe notificaciones cuando alguien lo obtenga",
+    },
     dm_permission: false,
     name: "wish",
     options: [
@@ -422,11 +469,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the name of the character",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "name",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -437,7 +485,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "remove character from your likes",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "quita personajes de tus likes",
+    },
     dm_permission: false,
     name: "unlike",
     options: [
@@ -445,11 +495,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the name of the character",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "name",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -460,7 +511,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "like a series to be notified if someone finds any character from it",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "da like a una serie y recibe notificaciones cuando alguien obtenga un personaje de ella",
+    },
     dm_permission: false,
     name: "likeall",
     options: [
@@ -468,11 +521,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the title of the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el título de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "title",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -483,7 +537,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "remove a series from your likes",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "quita series de tus likes",
+    },
     dm_permission: false,
     name: "unlikeall",
     options: [
@@ -491,11 +547,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the title of the series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el título de la serie",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "title",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -506,7 +563,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "list all user likes",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "muestra todos tus likes",
+    },
     dm_permission: false,
     name: "likeslist",
     options: [
@@ -514,11 +573,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "the user of the likes list",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el usuario de la lista de likes",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "user",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 6,
@@ -527,11 +587,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "filter out the likes already found by the user",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "no mostrar los likes que ya poseas",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "filter",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 5,
@@ -542,7 +603,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "give characters to another user",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "regala personajes a otro usuario",
+    },
     dm_permission: false,
     name: "give",
     options: [
@@ -550,11 +613,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "the user you want to trade with",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el usuario con el que quieres intercambiar",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "user",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 6,
@@ -563,11 +627,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -576,11 +641,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give2",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -589,11 +655,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give3",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -604,7 +671,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "give characters to another user",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "regala personajes a otro usuario",
+    },
     dm_permission: false,
     name: "gift",
     options: [
@@ -612,11 +681,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "the user you want to trade with",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el usuario con el que quieres intercambiar",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "user",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 6,
@@ -625,11 +695,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -638,11 +709,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give2",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -651,11 +723,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give3",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -666,7 +739,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "trade characters with another user",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "intercambia personajes con otro usuario",
+    },
     dm_permission: false,
     name: "trade",
     options: [
@@ -674,11 +749,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "the user you want to trade with",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el usuario con el que quieres intercambiar",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "user",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 6,
@@ -687,11 +763,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -700,11 +777,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to take for yourself",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que obtendrás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "take",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -713,11 +791,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give2",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -726,11 +805,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give3",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -739,11 +819,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to take for yourself",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que obtendrás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "take2",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -752,11 +833,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to take for yourself",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que obtendrás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "take3",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -767,7 +849,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "trade characters with another user",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "intercambia personajes con otro usuario",
+    },
     dm_permission: false,
     name: "offer",
     options: [
@@ -775,11 +859,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "the user you want to trade with",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el usuario con el que quieres intercambiar",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "user",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 6,
@@ -788,11 +873,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -801,11 +887,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to take for yourself",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que obtendrás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "take",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -814,11 +901,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give2",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -827,11 +915,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to give away",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que darás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "give3",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -840,11 +929,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to take for yourself",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que obtendrás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "take2",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -853,11 +943,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "a character to take for yourself",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "un personaje que obtendrás",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "take3",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -868,7 +959,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "steal a character from another user",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "roba un personaje a otro usuario",
+    },
     dm_permission: false,
     name: "steal",
     options: [
@@ -876,11 +969,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the name of the character",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "name",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -889,11 +983,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "the amount of stars to sacrifice for a boost",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "la cantidad de estrellas que sacrificarás para aumentar tus chances",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "sacrifices",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 4,
@@ -904,7 +999,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "need more information? we got you",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "¿Necesitas más información? No te preocupes",
+    },
     dm_permission: false,
     name: "help",
     options: [
@@ -913,47 +1010,75 @@ snapshot[`commands 1`] = `
         choices: [
           {
             name: "Gacha",
+            name_localizations: {
+              "es-ES": "Gacha",
+            },
             value: 0,
           },
           {
             name: "Merging",
+            name_localizations: {
+              "es-ES": "Combinar (merge)",
+            },
             value: 1,
           },
           {
             name: "Party",
+            name_localizations: {
+              "es-ES": "Equipo (party)",
+            },
             value: 2,
           },
           {
             name: "Stealing",
+            name_localizations: {
+              "es-ES": "Robar",
+            },
             value: 3,
           },
           {
             name: "Shop",
+            name_localizations: {
+              "es-ES": "Tienda",
+            },
             value: 4,
           },
           {
             name: "Roadmap",
+            name_localizations: {
+              "es-ES": "Futuro del bot",
+            },
             value: 5,
           },
           {
             name: "Essential Commands",
+            name_localizations: {
+              "es-ES": "Comandos Esenciales",
+            },
             value: 6,
           },
           {
             name: "Other Commands",
+            name_localizations: {
+              "es-ES": "Otros Comandos",
+            },
             value: 7,
           },
           {
             name: "Admin Commands",
+            name_localizations: {
+              "es-ES": "Comandos de Administrador",
+            },
             value: 8,
           },
         ],
         description: "specify a page to display",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "especifica la página que quieres ver",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "page",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 4,
@@ -964,7 +1089,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "need more information? we got you",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "¿Necesitas más información? No te preocupes",
+    },
     dm_permission: false,
     name: "start",
     options: [
@@ -973,47 +1100,75 @@ snapshot[`commands 1`] = `
         choices: [
           {
             name: "Gacha",
+            name_localizations: {
+              "es-ES": "Gacha",
+            },
             value: 0,
           },
           {
             name: "Merging",
+            name_localizations: {
+              "es-ES": "Combinar (merge)",
+            },
             value: 1,
           },
           {
             name: "Party",
+            name_localizations: {
+              "es-ES": "Equipo (party)",
+            },
             value: 2,
           },
           {
             name: "Stealing",
+            name_localizations: {
+              "es-ES": "Robar",
+            },
             value: 3,
           },
           {
             name: "Shop",
+            name_localizations: {
+              "es-ES": "Tienda",
+            },
             value: 4,
           },
           {
             name: "Roadmap",
+            name_localizations: {
+              "es-ES": "Futuro del bot",
+            },
             value: 5,
           },
           {
             name: "Essential Commands",
+            name_localizations: {
+              "es-ES": "Comandos Esenciales",
+            },
             value: 6,
           },
           {
             name: "Other Commands",
+            name_localizations: {
+              "es-ES": "Otros Comandos",
+            },
             value: 7,
           },
           {
             name: "Admin Commands",
+            name_localizations: {
+              "es-ES": "Comandos de Administrador",
+            },
             value: 8,
           },
         ],
         description: "specify a page to display",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "especifica la página que quieres ver",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "page",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 4,
@@ -1024,7 +1179,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "need more information? we got you",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "¿Necesitas más información? No te preocupes",
+    },
     dm_permission: false,
     name: "guide",
     options: [
@@ -1033,47 +1190,75 @@ snapshot[`commands 1`] = `
         choices: [
           {
             name: "Gacha",
+            name_localizations: {
+              "es-ES": "Gacha",
+            },
             value: 0,
           },
           {
             name: "Merging",
+            name_localizations: {
+              "es-ES": "Combinar (merge)",
+            },
             value: 1,
           },
           {
             name: "Party",
+            name_localizations: {
+              "es-ES": "Equipo (party)",
+            },
             value: 2,
           },
           {
             name: "Stealing",
+            name_localizations: {
+              "es-ES": "Robar",
+            },
             value: 3,
           },
           {
             name: "Shop",
+            name_localizations: {
+              "es-ES": "Tienda",
+            },
             value: 4,
           },
           {
             name: "Roadmap",
+            name_localizations: {
+              "es-ES": "Futuro del bot",
+            },
             value: 5,
           },
           {
             name: "Essential Commands",
+            name_localizations: {
+              "es-ES": "Comandos Esenciales",
+            },
             value: 6,
           },
           {
             name: "Other Commands",
+            name_localizations: {
+              "es-ES": "Otros Comandos",
+            },
             value: 7,
           },
           {
             name: "Admin Commands",
+            name_localizations: {
+              "es-ES": "Comandos de Administrador",
+            },
             value: 8,
           },
         ],
         description: "specify a page to display",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "especifica la página que quieres ver",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "page",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 4,
@@ -1084,7 +1269,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "need more information? we got you",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "¿Necesitas más información? No te preocupes",
+    },
     dm_permission: false,
     name: "wiki",
     options: [
@@ -1093,47 +1280,75 @@ snapshot[`commands 1`] = `
         choices: [
           {
             name: "Gacha",
+            name_localizations: {
+              "es-ES": "Gacha",
+            },
             value: 0,
           },
           {
             name: "Merging",
+            name_localizations: {
+              "es-ES": "Combinar (merge)",
+            },
             value: 1,
           },
           {
             name: "Party",
+            name_localizations: {
+              "es-ES": "Equipo (party)",
+            },
             value: 2,
           },
           {
             name: "Stealing",
+            name_localizations: {
+              "es-ES": "Robar",
+            },
             value: 3,
           },
           {
             name: "Shop",
+            name_localizations: {
+              "es-ES": "Tienda",
+            },
             value: 4,
           },
           {
             name: "Roadmap",
+            name_localizations: {
+              "es-ES": "Futuro del bot",
+            },
             value: 5,
           },
           {
             name: "Essential Commands",
+            name_localizations: {
+              "es-ES": "Comandos Esenciales",
+            },
             value: 6,
           },
           {
             name: "Other Commands",
+            name_localizations: {
+              "es-ES": "Otros Comandos",
+            },
             value: 7,
           },
           {
             name: "Admin Commands",
+            name_localizations: {
+              "es-ES": "Comandos de Administrador",
+            },
             value: 8,
           },
         ],
         description: "specify a page to display",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "especifica la página que quieres ver",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "page",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 4,
@@ -1144,7 +1359,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "need more information? we got you",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "¿Necesitas más información? No te preocupes",
+    },
     dm_permission: false,
     name: "tuto",
     options: [
@@ -1153,47 +1370,75 @@ snapshot[`commands 1`] = `
         choices: [
           {
             name: "Gacha",
+            name_localizations: {
+              "es-ES": "Gacha",
+            },
             value: 0,
           },
           {
             name: "Merging",
+            name_localizations: {
+              "es-ES": "Combinar (merge)",
+            },
             value: 1,
           },
           {
             name: "Party",
+            name_localizations: {
+              "es-ES": "Equipo (party)",
+            },
             value: 2,
           },
           {
             name: "Stealing",
+            name_localizations: {
+              "es-ES": "Robar",
+            },
             value: 3,
           },
           {
             name: "Shop",
+            name_localizations: {
+              "es-ES": "Tienda",
+            },
             value: 4,
           },
           {
             name: "Roadmap",
+            name_localizations: {
+              "es-ES": "Futuro del bot",
+            },
             value: 5,
           },
           {
             name: "Essential Commands",
+            name_localizations: {
+              "es-ES": "Comandos Esenciales",
+            },
             value: 6,
           },
           {
             name: "Other Commands",
+            name_localizations: {
+              "es-ES": "Otros Comandos",
+            },
             value: 7,
           },
           {
             name: "Admin Commands",
+            name_localizations: {
+              "es-ES": "Comandos de Administrador",
+            },
             value: 8,
           },
         ],
         description: "specify a page to display",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "especifica la página que quieres ver",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "page",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 4,
@@ -1204,7 +1449,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "check what you can do right now",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "comprueba lo que puedes hacer ahora mismo",
+    },
     dm_permission: false,
     name: "now",
     options: undefined,
@@ -1213,7 +1460,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "check what you can do right now",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "comprueba lo que puedes hacer ahora mismo",
+    },
     dm_permission: false,
     name: "vote",
     options: undefined,
@@ -1222,7 +1471,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "check what you can do right now",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "comprueba lo que puedes hacer ahora mismo",
+    },
     dm_permission: false,
     name: "tu",
     options: undefined,
@@ -1231,7 +1482,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "start a gacha pull but with no animations",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "realizada una tirada pero sin animaciones",
+    },
     dm_permission: false,
     name: "q",
     options: undefined,
@@ -1240,7 +1493,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "start a new gacha pull",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "realiza una tirada de gacha",
+    },
     dm_permission: false,
     name: "gacha",
     options: undefined,
@@ -1249,7 +1504,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "start a new gacha pull",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "realiza una tirada de gacha",
+    },
     dm_permission: false,
     name: "w",
     options: undefined,
@@ -1258,7 +1515,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "use a guaranteed pull you have",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "usa una tirada garantizada que hayas comprado",
+    },
     dm_permission: false,
     name: "pull",
     options: [
@@ -1279,11 +1538,12 @@ snapshot[`commands 1`] = `
           },
         ],
         description: "the star rating",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el grado de estrellas",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "stars",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 4,
@@ -1294,7 +1554,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "use a guaranteed pull you have",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "usa una tirada garantizada que hayas comprado",
+    },
     dm_permission: false,
     name: "guaranteed",
     options: [
@@ -1315,11 +1577,12 @@ snapshot[`commands 1`] = `
           },
         ],
         description: "the star rating",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el grado de estrellas",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "stars",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 4,
@@ -1330,7 +1593,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "change the image of a character",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "cambia la imagen de un personaje",
+    },
     dm_permission: false,
     name: "image",
     options: [
@@ -1338,11 +1603,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the name of the character",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "character",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -1351,11 +1617,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "new image url",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "URL de la nueva imagen",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "new_image",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -1366,7 +1633,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "change the image of a character",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "cambia la imagen de un personaje",
+    },
     dm_permission: false,
     name: "custom",
     options: [
@@ -1374,11 +1643,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the name of the character",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "character",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -1387,11 +1657,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "new image url",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "URL de la nueva imagen",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "new_image",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -1402,7 +1673,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "change the nickname of a character",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "cambia el apodo de un personaje",
+    },
     dm_permission: false,
     name: "nick",
     options: [
@@ -1410,11 +1683,12 @@ snapshot[`commands 1`] = `
         autocomplete: true,
         choices: undefined,
         description: "the name of the character",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "character",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 3,
@@ -1423,11 +1697,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "new nickname",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "nuevo apodo",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "new_nick",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 3,
@@ -1438,7 +1713,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "merge characters together to pull a new character",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "combina personajes para obtener uno nuevo",
+    },
     dm_permission: false,
     name: "merge",
     options: [
@@ -1463,11 +1740,12 @@ snapshot[`commands 1`] = `
           },
         ],
         description: "the target star rating of the merge",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el grado del personaje a obtener",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "target",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 4,
@@ -1478,7 +1756,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "merge characters together to pull a new character",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "combina personajes para obtener uno nuevo",
+    },
     dm_permission: false,
     name: "synthesize",
     options: [
@@ -1503,11 +1783,12 @@ snapshot[`commands 1`] = `
           },
         ],
         description: "the target star rating of the merge",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el grado del personaje a obtener",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "target",
-        name_localizations: undefined,
         options: undefined,
         required: true,
         type: 4,
@@ -1518,7 +1799,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "list user last few found characters",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "muestra los últimos personajes obtenidos",
+    },
     dm_permission: false,
     name: "logs",
     options: [
@@ -1526,11 +1809,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "the user of the list",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "el usuario de la lista",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "user",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 6,
@@ -1541,7 +1825,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "token shop commands",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
     dm_permission: false,
     name: "buy",
     options: [
@@ -1549,21 +1835,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "use tokens to buy normal pulls",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "usa tokens para comprar tiradas normales",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "normal",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
             description: "the amount of pulls you want to buy",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "la cantidad de tiradas a comprar",
+            },
             max_value: 99,
             min_value: 1,
             name: "amount",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -1576,11 +1864,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "use tokens to buy pulls with a specific guaranteed rating",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "usa tokens para comprar tiradas de un grado garantizado",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "guaranteed",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
@@ -1599,11 +1888,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the star rating you want to buy",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el grado de estrellas a comprar",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "stars",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -1618,7 +1908,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "token shop commands",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
     dm_permission: false,
     name: "shop",
     options: [
@@ -1626,21 +1918,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "use tokens to buy normal pulls",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "usa tokens para comprar tiradas normales",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "normal",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
             description: "the amount of pulls you want to buy",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "la cantidad de tiradas a comprar",
+            },
             max_value: 99,
             min_value: 1,
             name: "amount",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -1653,11 +1947,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "use tokens to buy pulls with a specific guaranteed rating",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "usa tokens para comprar tiradas de un grado garantizado",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "guaranteed",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
@@ -1676,11 +1971,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the star rating you want to buy",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el grado de estrellas a comprar",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "stars",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -1695,7 +1991,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: undefined,
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
     dm_permission: false,
     name: "Party",
     options: undefined,
@@ -1704,7 +2002,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "party management commands",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
     dm_permission: false,
     name: "party",
     options: [
@@ -1712,21 +2012,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view your current party",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "visualiza tu equipo actual",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "view",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
             description: "the user of the party",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el usuario del equipo",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "user",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 6,
@@ -1739,21 +2041,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "assign a character to your party",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "asigna personajes a tu equipo",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "assign",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: true,
             choices: undefined,
             description: "the name of the character",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el nombre del personaje",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "name",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 3,
@@ -1783,11 +2087,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the spot where you want this character",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el puesto en el que quieres a este personaje",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "spot",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 4,
@@ -1800,11 +2105,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "swap characters spots with each others",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "intercambia puestos de tu equipo",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "swap",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
@@ -1831,11 +2137,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the first target of the swap",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el primer objetivo del intercambio",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "a",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -1865,11 +2172,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the second target of the swap",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el segundo objetivo del intercambio",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "b",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -1882,11 +2190,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "remove a character from your party",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "quita a un personaje de tu equipo",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "remove",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
@@ -1913,11 +2222,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the spot to empty",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el puesto a liberar",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "spot",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -1932,7 +2242,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "party management commands",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
     dm_permission: false,
     name: "team",
     options: [
@@ -1940,21 +2252,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view your current party",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "visualiza tu equipo actual",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "view",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
             description: "the user of the party",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el usuario del equipo",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "user",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 6,
@@ -1967,21 +2281,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "assign a character to your party",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "asigna personajes a tu equipo",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "assign",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: true,
             choices: undefined,
             description: "the name of the character",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el nombre del personaje",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "name",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 3,
@@ -2011,11 +2327,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the spot where you want this character",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el puesto en el que quieres a este personaje",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "spot",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 4,
@@ -2028,11 +2345,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "swap characters spots with each others",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "intercambia puestos de tu equipo",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "swap",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
@@ -2059,11 +2377,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the first target of the swap",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el primer objetivo del intercambio",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "a",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -2093,11 +2412,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the second target of the swap",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el segundo objetivo del intercambio",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "b",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -2110,11 +2430,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "remove a character from your party",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "quita a un personaje de tu equipo",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "remove",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
@@ -2141,11 +2462,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the spot to empty",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el puesto a liberar",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "spot",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -2160,7 +2482,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "party management commands",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
     dm_permission: false,
     name: "p",
     options: [
@@ -2168,21 +2492,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view your current party",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "visualiza tu equipo actual",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "view",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
             description: "the user of the party",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el usuario del equipo",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "user",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 6,
@@ -2195,21 +2521,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "assign a character to your party",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "asigna personajes a tu equipo",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "assign",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: true,
             choices: undefined,
             description: "the name of the character",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el nombre del personaje",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "name",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 3,
@@ -2239,11 +2567,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the spot where you want this character",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el puesto en el que quieres a este personaje",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "spot",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 4,
@@ -2256,11 +2585,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "swap characters spots with each others",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "intercambia puestos de tu equipo",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "swap",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
@@ -2287,11 +2617,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the first target of the swap",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el primer objetivo del intercambio",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "a",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -2321,11 +2652,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the second target of the swap",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el segundo objetivo del intercambio",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "b",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -2338,11 +2670,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "remove a character from your party",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "quita a un personaje de tu equipo",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "remove",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
@@ -2369,11 +2702,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the spot to empty",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el puesto a liberar",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "spot",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -2388,7 +2722,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "collection browsing commands",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
     dm_permission: false,
     name: "collection",
     options: [
@@ -2396,11 +2732,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view user stars",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "visualiza tus personajes de un grado concreto",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "stars",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
@@ -2427,11 +2764,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the star rating",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el grado de estrellas",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "rating",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -2440,11 +2778,12 @@ snapshot[`commands 1`] = `
             autocomplete: undefined,
             choices: undefined,
             description: "the user of the list",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el usuario de la lista",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "user",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 6,
@@ -2457,21 +2796,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view user characters in a specific series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "visualiza tus personajes de una serie específica",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "media",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: true,
             choices: undefined,
             description: "the title of the series",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el título de la serie",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "title",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 3,
@@ -2480,11 +2821,12 @@ snapshot[`commands 1`] = `
             autocomplete: undefined,
             choices: undefined,
             description: "the user of the list",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el usuario de la lista",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "user",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 6,
@@ -2499,7 +2841,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "collection browsing commands",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
     dm_permission: false,
     name: "coll",
     options: [
@@ -2507,11 +2851,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view user stars",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "visualiza tus personajes de un grado concreto",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "stars",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
@@ -2538,11 +2883,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the star rating",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el grado de estrellas",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "rating",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -2551,11 +2897,12 @@ snapshot[`commands 1`] = `
             autocomplete: undefined,
             choices: undefined,
             description: "the user of the list",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el usuario de la lista",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "user",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 6,
@@ -2568,21 +2915,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view user characters in a specific series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "visualiza tus personajes de una serie específica",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "media",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: true,
             choices: undefined,
             description: "the title of the series",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el título de la serie",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "title",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 3,
@@ -2591,11 +2940,12 @@ snapshot[`commands 1`] = `
             autocomplete: undefined,
             choices: undefined,
             description: "the user of the list",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el usuario de la lista",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "user",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 6,
@@ -2610,7 +2960,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "collection browsing commands",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
     dm_permission: false,
     name: "mm",
     options: [
@@ -2618,11 +2970,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view user stars",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "visualiza tus personajes de un grado concreto",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "stars",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
@@ -2649,11 +3002,12 @@ snapshot[`commands 1`] = `
               },
             ],
             description: "the star rating",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el grado de estrellas",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "rating",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 4,
@@ -2662,11 +3016,12 @@ snapshot[`commands 1`] = `
             autocomplete: undefined,
             choices: undefined,
             description: "the user of the list",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el usuario de la lista",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "user",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 6,
@@ -2679,21 +3034,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "view user characters in a specific series",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "visualiza tus personajes de una serie específica",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "media",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: true,
             choices: undefined,
             description: "the title of the series",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el título de la serie",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "title",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 3,
@@ -2702,11 +3059,12 @@ snapshot[`commands 1`] = `
             autocomplete: undefined,
             choices: undefined,
             description: "the user of the list",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el usuario de la lista",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "user",
-            name_localizations: undefined,
             options: undefined,
             required: false,
             type: 6,
@@ -2721,7 +3079,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "list all the packs on a server",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": "muestra todos los packs del servidor",
+    },
     dm_permission: false,
     name: "packs",
     options: undefined,
@@ -2730,7 +3090,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: 32,
     description: "community packs management commands",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
     dm_permission: false,
     name: "community",
     options: [
@@ -2738,11 +3100,12 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "browse the most popular community packs",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "explora los packs de la comunidad más populares",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "popular",
-        name_localizations: undefined,
         options: undefined,
         required: false,
         type: 1,
@@ -2751,21 +3114,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "install a community pack",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "instala un pack de la comunidad",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "install",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
             description: "the id of the pack",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el id del pack",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "id",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 3,
@@ -2778,21 +3143,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "uninstall a community pack",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "desinstala un pack de la comunidad",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "uninstall",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: true,
             choices: undefined,
             description: "the id of the pack",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el id del pack",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "id",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 3,
@@ -2807,7 +3174,9 @@ snapshot[`commands 1`] = `
   {
     default_member_permissions: undefined,
     description: "experimental ephemeral temporary commands",
-    description_localizations: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
     dm_permission: false,
     name: "experimental",
     options: [
@@ -2815,21 +3184,23 @@ snapshot[`commands 1`] = `
         autocomplete: undefined,
         choices: undefined,
         description: "try the new upcoming combat in a mock battle against another user",
-        description_localizations: undefined,
+        description_localizations: {
+          "es-ES": "prueba el nuevo combate (próximamente implementado) en una simulación de batalla contra otro usuario",
+        },
         max_value: undefined,
         min_value: undefined,
         name: "battle",
-        name_localizations: undefined,
         options: [
           {
             autocomplete: undefined,
             choices: undefined,
             description: "the user to battle against",
-            description_localizations: undefined,
+            description_localizations: {
+              "es-ES": "el usuario contra el que pelearás",
+            },
             max_value: undefined,
             min_value: undefined,
             name: "versus",
-            name_localizations: undefined,
             options: undefined,
             required: true,
             type: 6,
