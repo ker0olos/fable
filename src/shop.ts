@@ -14,10 +14,14 @@ import { Schema } from './types.ts';
 import { COSTS } from '../models/add_tokens_to_user.ts';
 
 export const voteComponent = (
-  { token, guildId, label }: { token: string; guildId: string; label?: string },
+  { token, guildId, locale }: {
+    token: string;
+    guildId: string;
+    locale?: discord.AvailableLocales;
+  },
 ) =>
   new discord.Component()
-    .setLabel(label ?? 'Vote')
+    .setLabel(i18n.get('vote', locale))
     .setUrl(
       `https://top.gg/bot/${config.appId}/vote?ref=${
         // deno-lint-ignore no-non-null-assertion
@@ -117,6 +121,7 @@ async function confirmNormal({ token, userId, guildId, amount }: {
             voteComponent({
               token,
               guildId,
+              locale,
             }),
           ]);
       }
@@ -260,6 +265,7 @@ async function confirmGuaranteed({
             voteComponent({
               token,
               guildId,
+              locale,
             }),
           ]);
       }

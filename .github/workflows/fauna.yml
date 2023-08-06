@@ -1,11 +1,6 @@
 name: fauna
 
-on: 
-  push:
-    branches: 
-      - main
-  pull_request:
-    types: [opened, reopened]
+on: [push]
 
 jobs:
   update-schema:

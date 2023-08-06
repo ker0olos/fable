@@ -330,6 +330,7 @@ function pages(
     type: 'help',
     next: index + 1 < pages.length,
     index,
+    locale,
   });
 }
 

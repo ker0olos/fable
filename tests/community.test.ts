@@ -578,6 +578,7 @@ Deno.test('/popular', async (test) => {
 
     try {
       const message = await community.popularPacks({
+        userId: 'user_id',
         guildId: 'guild_id',
         index: 0,
       });
@@ -687,6 +688,7 @@ Deno.test('/popular', async (test) => {
 
     try {
       const message = await community.popularPacks({
+        userId: 'user_id',
         guildId: 'guild_id',
         index: 0,
       });
@@ -775,6 +777,7 @@ Deno.test('/popular', async (test) => {
 
     try {
       const message = await community.popularPacks({
+        userId: 'user_id',
         guildId: 'guild_id',
         index: 0,
       });
