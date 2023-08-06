@@ -304,6 +304,7 @@ export const handler = async (r: Request) => {
                 guildId,
                 index: 0,
                 search: title,
+                userId: member.user.id,
                 id: title.startsWith(idPrefix)
                   ? title.substring(idPrefix.length)
                   : undefined,
@@ -479,6 +480,7 @@ export const handler = async (r: Request) => {
               guildId,
               index: 0,
               search: title,
+              userId: member.user.id,
               id: title.startsWith(idPrefix)
                 ? title.substring(idPrefix.length)
                 : undefined,
@@ -630,8 +632,9 @@ export const handler = async (r: Request) => {
           }
           case 'packs': {
             return (await packs.pages({
-              index: 0,
               guildId,
+              userId: member.user.id,
+              index: 0,
             })).send();
           }
           case 'community': {
@@ -640,6 +643,7 @@ export const handler = async (r: Request) => {
               case 'popular': {
                 return (await community.popularPacks({
                   guildId,
+                  userId: member.user.id,
                   index: 0,
                 }))
                   .setFlags(discord.MessageFlags.Ephemeral)
@@ -762,8 +766,8 @@ export const handler = async (r: Request) => {
 
             return (await search.mediaCharacters({
               index,
+              userId: member.user.id,
               guildId,
-
               id: mediaId,
             }))
               .setType(discord.MessageType.Update)
@@ -833,9 +837,10 @@ export const handler = async (r: Request) => {
             const index = parseInt(customValues![1]);
 
             return search.mediaFound({
-              token,
               id,
+              token,
               guildId,
+              userId: member.user.id,
               index,
             })
               .setType(discord.MessageType.Update)
@@ -1025,7 +1030,11 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return (await packs.pages({ index, guildId }))
+            return (await packs.pages({
+              userId: member.user.id,
+              guildId,
+              index,
+            }))
               .setType(discord.MessageType.Update)
               .send();
           }
@@ -1033,7 +1042,11 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);
 
-            return (await community.popularPacks({ guildId, index }))
+            return (await community.popularPacks({
+              userId: member.user.id,
+              guildId,
+              index,
+            }))
               .setType(discord.MessageType.Update)
               .send();
           }

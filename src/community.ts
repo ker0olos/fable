@@ -4,6 +4,7 @@ import config, { faunaUrl } from './config.ts';
 
 import * as discord from './discord.ts';
 
+import user from './user.ts';
 import packs from './packs.ts';
 import search from './search.ts';
 
@@ -235,7 +236,11 @@ async function publish(req: Request): Promise<Response> {
 }
 
 async function popularPacks(
-  { guildId, index }: { guildId: string; index: number },
+  { userId, guildId, index }: {
+    userId: string;
+    guildId: string;
+    index: number;
+  },
 ): Promise<discord.Message> {
   const query = gql`
     query {
@@ -276,6 +281,8 @@ async function popularPacks(
       }
     }
   `;
+
+  const locale = user.cachedUsers[userId]?.locale;
 
   const response = (await request<{
     getMostInstalledPacks: Pack[];
@@ -345,6 +352,7 @@ async function popularPacks(
     message,
     type: 'popular',
     next: index + 1 < pages.length,
+    locale,
   });
 }
 

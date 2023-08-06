@@ -3553,6 +3553,7 @@ Deno.test('/community', async (test) => {
 
     try {
       const message = await packs.pages({
+        userId: 'user_id',
         guildId: 'guild_id',
         index: 1,
       });
@@ -3612,6 +3613,7 @@ Deno.test('/community', async (test) => {
       await assertRejects(
         () =>
           packs.pages({
+            userId: 'user_id',
             guildId: 'guild_id',
             index: 0,
           }),
@@ -3639,6 +3641,7 @@ Deno.test('/community', async (test) => {
 
     try {
       const message = await packs.pages({
+        userId: 'user_id',
         guildId: 'guild_id',
         index: 0,
       });
@@ -3701,6 +3704,7 @@ Deno.test('/community', async (test) => {
 
     try {
       const message = await packs.pages({
+        userId: 'user_id',
         guildId: 'guild_id',
         index: 0,
       });
@@ -3766,6 +3770,7 @@ Deno.test('/community', async (test) => {
       await assertRejects(
         () =>
           packs.pages({
+            userId: 'user_id',
             guildId: 'guild_id',
             index: 0,
           }),
@@ -3784,7 +3789,12 @@ Deno.test('/community', async (test) => {
 
     try {
       await assertRejects(
-        () => packs.pages({ guildId: 'guild_id', index: 0 }),
+        () =>
+          packs.pages({
+            userId: 'user_id',
+            guildId: 'guild_id',
+            index: 0,
+          }),
         NonFetalError,
         'Community Packs are under maintenance, try again later!',
       );

@@ -2,10 +2,8 @@ name: deno
 
 on: 
   push:
-    branches: 
-      - main
-  pull_request:
-    types: [opened, reopened]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   fmt:
@@ -45,6 +43,7 @@ jobs:
     name: deploy
     needs: [test]
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     permissions:
       id-token: write
       contents: read

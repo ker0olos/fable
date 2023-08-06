@@ -352,8 +352,8 @@ Deno.test('media characters components', async () => {
     assertSpyCall(searchStub, 0, {
       args: [{
         id: 'media_id',
+        userId: 'user_id',
         guildId: 'guild_id',
-
         index: 1,
       }],
     });
@@ -988,7 +988,11 @@ Deno.test('found components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
         custom_id: 'found=media_id=1=prev',
       },
@@ -1050,6 +1054,7 @@ Deno.test('found components', async (test) => {
           index: 1,
           token: 'token',
           id: 'media_id',
+          userId: 'user_id',
           guildId: 'guild_id',
         }],
       });
@@ -1070,7 +1075,11 @@ Deno.test('found components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
         custom_id: 'found=media_id=1=prev',
       },
@@ -1132,6 +1141,7 @@ Deno.test('found components', async (test) => {
           index: 1,
           token: 'token',
           id: 'media_id',
+          userId: 'user_id',
           guildId: 'guild_id',
         }],
       });
@@ -1154,7 +1164,6 @@ Deno.test('gacha components', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-
       member: {
         user: {
           id: 'user_id',
@@ -2830,7 +2839,11 @@ Deno.test('packs pages', async (test) => {
       token: 'token',
       type: discord.InteractionType.Component,
       guild_id: 'guild_id',
-
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
         custom_id: 'packs==1',
       },
@@ -2889,6 +2902,7 @@ Deno.test('packs pages', async (test) => {
 
       assertSpyCall(packsStub, 0, {
         args: [{
+          userId: 'user_id',
           guildId: 'guild_id',
           index: 1,
         }],
@@ -2973,6 +2987,7 @@ Deno.test('community packs popular', async (test) => {
       assertSpyCall(packsStub, 0, {
         args: [{
           index: 1,
+          userId: 'user_id',
           guildId: 'guild_id',
         }],
       });
