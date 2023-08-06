@@ -570,13 +570,16 @@ function characterDebugMessage(character: Character): discord.Message {
 }
 
 async function mediaCharacters(
-  { search, id, guildId, index }: {
+  { search, id, userId, guildId, index }: {
     search?: string;
     id?: string;
+    userId: string;
     guildId: string;
     index: number;
   },
 ): Promise<discord.Message> {
+  const locale = user.cachedUsers[userId]?.locale;
+
   const { character: node, media, next, total } = await packs
     .mediaCharacters({
       id,
@@ -643,6 +646,7 @@ async function mediaCharacters(
     message,
     index,
     next,
+    locale,
   });
 }
 
@@ -652,15 +656,19 @@ function mediaFound(
     index,
     search,
     id,
+    userId,
     guildId,
   }: {
     token: string;
     index: number;
     guildId: string;
+    userId: string;
     search?: string;
     id?: string;
   },
 ): discord.Message {
+  const locale = user.cachedUsers[userId]?.locale;
+
   packs
     .media(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results: (Media | DisaggregatedMedia)[]) => {
@@ -792,6 +800,7 @@ function mediaFound(
         total: chunks.length,
         message: message.addEmbed(embed),
         next: index + 1 < chunks.length,
+        locale,
       }).patch(token);
     })
     .catch(async (err) => {

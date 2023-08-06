@@ -14,9 +14,10 @@ import * as discord from './discord.ts';
 
 import { gql, request } from './graphql.ts';
 
-import config, { faunaUrl } from './config.ts';
-
+import user from './user.ts';
 import utils from './utils.ts';
+
+import config, { faunaUrl } from './config.ts';
 
 import Rating from './rating.ts';
 
@@ -258,9 +259,10 @@ function uninstallDialog(
 }
 
 async function pages(
-  { index, guildId }: {
+  { index, userId, guildId }: {
     index: number;
     guildId: string;
+    userId: string;
   },
 ): Promise<discord.Message> {
   if (!config.communityPacks) {
@@ -268,6 +270,8 @@ async function pages(
       'Community Packs are under maintenance, try again later!',
     );
   }
+
+  const locale = user.cachedUsers[userId]?.locale;
 
   const list = (await packs.all({ guildId })).toReversed();
 
@@ -296,6 +300,7 @@ async function pages(
     total: list.length,
     next: list.length > index + 1,
     message,
+    locale,
   });
 }
 

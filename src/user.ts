@@ -312,6 +312,7 @@ async function now({
       voteComponent({
         token,
         guildId,
+        locale,
       }),
     ]);
   }
@@ -1211,6 +1212,7 @@ function list({
         total: chunks.length,
         message: message.addEmbed(embed),
         next: index + 1 < chunks.length,
+        locale,
       }).patch(token);
     })
     .catch(async (err) => {
@@ -1269,6 +1271,8 @@ function likeslist({
       }
     }
   `;
+
+  const locale = user.cachedUsers[userId]?.locale;
 
   request<{
     getUserInventory: Schema.Inventory;
@@ -1404,6 +1408,7 @@ function likeslist({
         total: chunks.length,
         message: message.addEmbed(embed),
         next: index + 1 < chunks.length,
+        locale,
       }).patch(token);
     })
     .catch(async (err) => {

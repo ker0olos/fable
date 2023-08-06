@@ -4374,8 +4374,8 @@ Deno.test('media characters', async (test) => {
     try {
       const message = await search.mediaCharacters({
         id: 'pack-id:1',
+        userId: 'user_id',
         guildId: 'guild_id',
-
         index: 0,
       });
 
@@ -4494,6 +4494,7 @@ Deno.test('media characters', async (test) => {
     try {
       const message = await search.mediaCharacters({
         id: 'pack-id:1',
+        userId: 'user_id',
         guildId: 'guild_id',
         index: 0,
       });
@@ -4595,6 +4596,7 @@ Deno.test('media characters', async (test) => {
         async () =>
           await search.mediaCharacters({
             id: 'pack-id:1',
+            userId: 'user_id',
             guildId: 'guild_id',
             index: 0,
           }),
@@ -4651,6 +4653,7 @@ Deno.test('media characters', async (test) => {
         async () =>
           await search.mediaCharacters({
             id: 'pack-id:1',
+            userId: 'user_id',
             guildId: 'guild_id',
             index: 0,
           }),
@@ -4692,8 +4695,8 @@ Deno.test('media characters', async (test) => {
         async () =>
           await search.mediaCharacters({
             id: 'pack-id:1',
+            userId: 'user_id',
             guildId: 'guild_id',
-
             index: 0,
           }),
         NonFetalError,
@@ -4733,8 +4736,8 @@ Deno.test('media characters', async (test) => {
         async () =>
           await search.mediaCharacters({
             id: 'pack-id:1',
+            userId: 'user_id',
             guildId: 'guild_id',
-
             index: 1,
           }),
         NonFetalError,
@@ -4761,8 +4764,8 @@ Deno.test('media characters', async (test) => {
         async () =>
           await search.mediaCharacters({
             id: 'pack-id:1',
+            userId: 'user_id',
             guildId: 'guild_id',
-
             index: 0,
           }),
         Error,
@@ -4889,6 +4892,7 @@ Deno.test('/found', async (test) => {
       const message = search.mediaFound({
         index: 0,
         token: 'test_token',
+        userId: 'user_id',
         guildId: 'guild_id',
         id: 'anilist:3',
       });
@@ -5130,6 +5134,7 @@ Deno.test('/found', async (test) => {
       const message = search.mediaFound({
         index: 0,
         token: 'test_token',
+        userId: 'user_id',
         guildId: 'guild_id',
         id: 'anilist:4',
       });
@@ -5263,6 +5268,7 @@ Deno.test('/found', async (test) => {
       const message = search.mediaFound({
         index: 0,
         token: 'test_token',
+        userId: 'user_id',
         guildId: 'guild_id',
         id: 'anilist:2',
       });
@@ -5400,6 +5406,7 @@ Deno.test('/found', async (test) => {
       const message = search.mediaFound({
         index: 0,
         token: 'test_token',
+        userId: 'user_id',
         guildId: 'guild_id',
         id: 'anilist:2',
       });
@@ -5513,6 +5520,7 @@ Deno.test('/found', async (test) => {
         index: 0,
         token: 'test_token',
         guildId: 'guild_id',
+        userId: 'user_id',
         id: 'anilist:2',
       });
 

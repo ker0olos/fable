@@ -676,6 +676,7 @@ Deno.test('search command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           index: 0,
+          userId: 'user_id',
           guildId: 'guild_id',
           search: 'title',
           id: undefined,
@@ -767,6 +768,7 @@ Deno.test('search command handlers', async (test) => {
       assertSpyCall(searchStub, 0, {
         args: [{
           index: 0,
+          userId: 'user_id',
           guildId: 'guild_id',
           search: 'id=uuid',
           id: 'uuid',
@@ -2614,7 +2616,11 @@ Deno.test('found command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
         name: 'found',
         options: [{
@@ -2673,6 +2679,7 @@ Deno.test('found command handlers', async (test) => {
         args: [{
           index: 0,
           token: 'token',
+          userId: 'user_id',
           guildId: 'guild_id',
           search: 'title',
           id: undefined,
@@ -2695,7 +2702,11 @@ Deno.test('found command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
         name: 'owned',
         options: [{
@@ -2754,6 +2765,7 @@ Deno.test('found command handlers', async (test) => {
         args: [{
           index: 0,
           token: 'token',
+          userId: 'user_id',
           guildId: 'guild_id',
           search: 'title',
           id: undefined,
@@ -2776,7 +2788,11 @@ Deno.test('found command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
       data: {
         name: 'found',
         options: [{
@@ -2835,6 +2851,7 @@ Deno.test('found command handlers', async (test) => {
         args: [{
           index: 0,
           token: 'token',
+          userId: 'user_id',
           guildId: 'guild_id',
           search: 'id=uuid',
           id: 'uuid',
@@ -6828,7 +6845,11 @@ Deno.test('packs', async () => {
     token: 'token',
     type: discord.InteractionType.Command,
     guild_id: 'guild_id',
-
+    member: {
+      user: {
+        id: 'user_id',
+      },
+    },
     data: {
       name: 'packs',
     },
@@ -6882,6 +6903,7 @@ Deno.test('packs', async () => {
 
     assertSpyCall(packsStub, 0, {
       args: [{
+        userId: 'user_id',
         guildId: 'guild_id',
         index: 0,
       }],
@@ -6975,6 +6997,7 @@ Deno.test('community packs command handlers', async (test) => {
       assertSpyCall(communityStub, 0, {
         args: [{
           index: 0,
+          userId: 'user_id',
           guildId: 'guild_id',
         }],
       });
