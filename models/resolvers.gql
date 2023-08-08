@@ -180,4 +180,13 @@ type Mutation {
     characterId: String!
     sacrifices: [String!]!
   ): Response! @resolver(name: "steal_character")
+
+  setCharacterStats(
+    userId: String!
+    guildId: String!
+    characterId: String!
+    strength: Int
+    stamina: Int
+    agility: Int
+  ): Response! @resolver(name: "set_character_stats")
 }
