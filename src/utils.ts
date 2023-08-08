@@ -91,10 +91,12 @@ function fetchWithRetry(
   return new Promise((resolve, reject) => {
     fetch(input, init)
       .then((result) => resolve(result))
-      .catch((err) => {
-        if (n >= 1) {
+      .catch(async (err) => {
+        if (n >= 2) {
           return reject(err);
         }
+
+        await sleep(0.5);
 
         fetchWithRetry(input, init, n + 1)
           .then(resolve)
