@@ -185,6 +185,7 @@ type Mutation {
     userId: String!
     guildId: String!
     characterId: String!
+    unclaimed: Int!
     strength: Int
     stamina: Int
     agility: Int

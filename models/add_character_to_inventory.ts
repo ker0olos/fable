@@ -27,6 +27,7 @@ export interface CharacterCombat {
 }
 
 export interface CharacterStats {
+  unclaimed?: number;
   strength?: number;
   stamina?: number;
   agility?: number;

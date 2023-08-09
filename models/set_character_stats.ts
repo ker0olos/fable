@@ -21,6 +21,7 @@ export function setCharacterStats(
     user,
     instance,
     characterId,
+    unclaimed,
     strength,
     stamina,
     agility,
@@ -28,6 +29,7 @@ export function setCharacterStats(
     user: UserExpr;
     instance: InstanceExpr;
     characterId: StringExpr;
+    unclaimed?: number;
     strength?: number;
     stamina?: number;
     agility?: number;
@@ -60,6 +62,16 @@ export function setCharacterStats(
           updatedCharacter: fql.Update<Character>(fql.Ref(character), {
             combat: {
               stats: {
+                unclaimed: fql.If(
+                  fql.Equals(unclaimed, fql.Null()),
+                  fql.Select(
+                    ['data', 'combat', 'stats', 'unclaimed'],
+                    character,
+                    0,
+                  ),
+                  // deno-lint-ignore no-non-null-assertion
+                  unclaimed!,
+                ),
                 strength: fql.If(
                   fql.Equals(strength, fql.Null()),
                   fql.Select(
@@ -119,6 +131,7 @@ export default function (client: Client): {
           userId: string,
           guildId: string,
           characterId: string,
+          unclaimed: number,
           strength?: number,
           stamina?: number,
           agility?: number,
@@ -138,6 +151,7 @@ export default function (client: Client): {
                 user,
                 instance,
                 characterId,
+                unclaimed,
                 strength,
                 stamina,
                 agility,
