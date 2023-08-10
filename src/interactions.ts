@@ -696,10 +696,13 @@ export const handler = async (r: Request) => {
           case 'stats': {
             const character = options['name'] as string;
 
+            const distribution = options['distribution'] as string;
+
             return battle.stats({
               token,
               guildId,
               character,
+              distribution,
               userId: member.user.id,
             }).send();
           }

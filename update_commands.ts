@@ -813,6 +813,12 @@ export const commands = [
         autocomplete: true,
         type: Type.STRING,
       }),
+      Option({
+        name: 'distribution',
+        description: '$distribution',
+        type: Type.STRING,
+        optional: true,
+      }),
     ],
   }),
   // experimental ephemeral temporary
