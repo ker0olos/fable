@@ -2,16 +2,20 @@ import '#filter-boolean';
 
 import { gql, request } from './graphql.ts';
 
-import config, { faunaUrl } from './config.ts';
+import search, { idPrefix } from './search.ts';
 
-import utils from './utils.ts';
+import _user from './user.ts';
 import packs from './packs.ts';
+import utils from './utils.ts';
+import i18n from './i18n.ts';
 
 import * as discord from './discord.ts';
 
 import * as dynImages from '../dyn-images/mod.ts';
 
-import type { Schema } from './types.ts';
+import config, { faunaUrl } from './config.ts';
+
+import type { Character, Schema } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
 
@@ -43,6 +47,10 @@ type Setup = Record<string, CharacterLive>;
 
 const MAX_ROUNDS = 10;
 
+function newUnclaimed(rating: number): number {
+  return 3 * rating;
+}
+
 function stringify(dmg: number, user: string, target: string): string {
   const _ = [
     `${user} ${dmg}%`,
@@ -52,15 +60,272 @@ function stringify(dmg: number, user: string, target: string): string {
   return (dmg >= 50 ? _ : _.toReversed()).join('\n');
 }
 
+async function updateStats({ token, type, characterId, userId, guildId }: {
+  token: string;
+  type: 'str' | 'sta' | 'agi' | 'reset';
+  characterId: string;
+  guildId: string;
+  userId: string;
+}): Promise<discord.Message> {
+  const locale = _user.cachedUsers[userId]?.locale;
+
+  const existing = await _user.findCharacter({ guildId, characterId });
+
+  if (!existing) {
+    throw new Error('404');
+  }
+
+  const mutation = gql`
+    mutation(
+      $userId: String!
+      $guildId: String!
+      $characterId: String!
+      $unclaimed: Int!
+      $strength: Int!
+      $stamina: Int!
+      $agility: Int!
+    ) {
+      setCharacterStats(
+        userId: $userId
+        guildId: $guildId
+        characterId: $characterId
+        unclaimed: $unclaimed
+        strength: $strength
+        stamina: $stamina
+        agility: $agility
+      ) {
+        ok
+        error
+      }
+    }
+  `;
+
+  let unclaimed = existing.combat?.stats?.unclaimed ??
+    newUnclaimed(existing.rating);
+
+  let strength = existing.combat?.stats?.strength ?? 0;
+  let stamina = existing.combat?.stats?.stamina ?? 0;
+  let agility = existing.combat?.stats?.agility ?? 0;
+
+  if (type !== 'reset' && unclaimed <= 0) {
+    throw new NonFetalError(i18n.get('not-enough-unclaimed', locale));
+  }
+
+  switch (type) {
+    case 'reset':
+      unclaimed = strength + stamina + agility + unclaimed;
+      strength = stamina = agility = 0;
+      break;
+    case 'str':
+      unclaimed = unclaimed - 1;
+      strength = strength + 1;
+      break;
+    case 'sta':
+      unclaimed = unclaimed - 1;
+      stamina = stamina + 1;
+      break;
+    case 'agi':
+      unclaimed = unclaimed - 1;
+      agility = agility + 1;
+      break;
+    default:
+      break;
+  }
+
+  const response = (await request<{
+    setCharacterStats: Schema.Mutation;
+  }>({
+    url: faunaUrl,
+    query: mutation,
+    headers: {
+      'authorization': `Bearer ${config.faunaSecret}`,
+    },
+    variables: {
+      userId,
+      guildId,
+      characterId,
+      unclaimed,
+      strength,
+      stamina,
+      agility,
+    },
+  })).setCharacterStats;
+
+  if (response.ok) {
+    return battle.stats({ token, character: characterId, userId, guildId });
+  } else {
+    switch (response.error) {
+      case 'CHARACTER_NOT_OWNED':
+        throw new NonFetalError(
+          i18n.get('character-no-longer-owned', locale),
+        );
+      default:
+        throw new Error(response.error);
+    }
+  }
+}
+
+function stats({ token, character, userId, guildId }: {
+  token: string;
+  character: string;
+  guildId: string;
+  userId: string;
+}): discord.Message {
+  const locale = _user.cachedUsers[userId]?.locale;
+
+  if (!config.combat) {
+    throw new NonFetalError(
+      i18n.get('maintenance-combat', locale),
+    );
+  }
+
+  packs.characters(
+    character.startsWith(idPrefix)
+      ? { ids: [character.substring(idPrefix.length)], guildId }
+      : { search: character, guildId },
+  )
+    .then((results) => {
+      if (!results.length) {
+        throw new Error('404');
+      }
+
+      if (packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)) {
+        throw new Error('404');
+      }
+
+      return Promise.all([
+        packs.aggregate<Character>({
+          guildId,
+          character: results[0],
+          end: 1,
+        }),
+        _user.findCharacter({
+          guildId,
+          characterId: `${results[0].packId}:${results[0].id}`,
+        }),
+      ]);
+    })
+    .then(async ([character, existing]) => {
+      if (!existing) {
+        const message = new discord.Message();
+
+        const embed = search.characterEmbed(character, {
+          mode: 'thumbnail',
+          media: { title: false },
+          description: false,
+          footer: false,
+        });
+
+        embed.setFooter({
+          text: i18n.get('not-fit-for-combat', locale),
+        });
+
+        message.addEmbed(embed);
+
+        return await message.patch(token);
+      }
+
+      const message = new discord.Message();
+
+      const embed = search.characterEmbed(character, {
+        footer: false,
+        existing: {
+          image: existing.image,
+          nickname: existing.nickname,
+          rating: existing.rating,
+        },
+        media: { title: false },
+        description: false,
+        mode: 'thumbnail',
+      });
+
+      const unclaimed = existing.combat?.stats?.unclaimed ??
+        newUnclaimed(existing.rating);
+
+      const strength = existing.combat?.stats?.strength ?? 0;
+      const stamina = existing.combat?.stats?.stamina ?? 0;
+      const agility = existing.combat?.stats?.agility ?? 0;
+
+      const charId = `${character.packId}:${character.id}`;
+
+      embed
+        .addField({
+          name: 'Stats',
+          value: [
+            `${i18n.get('unclaimed', locale)}: ${unclaimed}`,
+            `${i18n.get('strength', locale)}: ${strength}`,
+            `${i18n.get('stamina', locale)}: ${stamina}`,
+            `${i18n.get('agility', locale)}: ${agility}`,
+          ].join('\n'),
+        });
+
+      if (existing?.user.id === userId) {
+        message.addComponents([
+          new discord.Component()
+            .setLabel(`+1 ${i18n.get('str', locale)}`)
+            .setDisabled(unclaimed <= 0)
+            .setId('stats', 'str', userId, charId),
+
+          new discord.Component()
+            .setLabel(`+1 ${i18n.get('sta', locale)}`)
+            .setDisabled(unclaimed <= 0)
+            .setId('stats', 'sta', userId, charId),
+
+          new discord.Component()
+            .setLabel(`+1 ${i18n.get('agi', locale)}`)
+            .setDisabled(unclaimed <= 0)
+            .setId('stats', 'agi', userId, charId),
+
+          new discord.Component()
+            .setLabel(i18n.get('reset', locale))
+            .setId('stats', 'reset', userId, charId),
+        ]);
+      }
+
+      message.addEmbed(embed);
+
+      await message.patch(token);
+    })
+    .catch(async (err) => {
+      if (err.message === '404') {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get('some-characters-disabled', locale),
+            ),
+          ).patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner3.gif` },
+      ),
+    );
+
+  return loading;
+}
+
 function experimental({ token, guildId, user, target }: {
   token: string;
   guildId: string;
   user: discord.User;
   target: discord.User;
 }): discord.Message {
+  const locale = _user.cachedUsers[user.id]?.locale;
+
   if (!config.combat) {
     throw new NonFetalError(
-      'Combat is under maintenance, try again later!',
+      i18n.get('maintenance-combat', locale),
     );
   }
 
@@ -80,6 +345,13 @@ function experimental({ token, guildId, user, target }: {
             rating
             nickname
             image
+            combat {
+              stats {
+                strength
+                stamina
+                agility
+              }
+            }
           }
           member2 {
             id
@@ -87,6 +359,13 @@ function experimental({ token, guildId, user, target }: {
             rating
             nickname
             image
+            combat {
+              stats {
+                strength
+                stamina
+                agility
+              }
+            }
           }
           member3 {
             id
@@ -94,6 +373,13 @@ function experimental({ token, guildId, user, target }: {
             rating
             nickname
             image
+            combat {
+              stats {
+                strength
+                stamina
+                agility
+              }
+            }
           }
           member4 {
             id
@@ -101,6 +387,13 @@ function experimental({ token, guildId, user, target }: {
             rating
             nickname
             image
+            combat {
+              stats {
+                strength
+                stamina
+                agility
+              }
+            }
           }
           member5 {
             id
@@ -108,6 +401,13 @@ function experimental({ token, guildId, user, target }: {
             rating
             nickname
             image
+            combat {
+              stats {
+                strength
+                stamina
+                agility
+              }
+            }
           }
         }
       }
@@ -539,6 +839,8 @@ function experimental({ token, guildId, user, target }: {
 }
 
 const battle = {
+  stats,
+  updateStats,
   experimental,
 };
 

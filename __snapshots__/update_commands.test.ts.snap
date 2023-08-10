@@ -3173,6 +3173,32 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "manage your characters stat points and skills",
+    description_localizations: {
+      "es-ES": "manage your characters stat points and skills",
+    },
+    dm_permission: false,
+    name: "stats",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "the name of the character",
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
+        max_value: undefined,
+        min_value: undefined,
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
     description: "experimental ephemeral temporary commands",
     description_localizations: {
       "es-ES": undefined,

@@ -796,6 +796,18 @@ export const commands = [
       }),
     ],
   }),
+  ...Command({
+    name: 'stats',
+    description: '/stats',
+    options: [
+      Option({
+        name: 'name',
+        description: '$character-name',
+        autocomplete: true,
+        type: Type.STRING,
+      }),
+    ],
+  }),
   // experimental ephemeral temporary
   ...Command({
     name: 'experimental',

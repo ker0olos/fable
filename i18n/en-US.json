@@ -37,7 +37,7 @@
 
   "you-empty-collection": "You don't have any {0}characters",
   "you-empty-media-collection": "You don't have any characters from {0}",
-  "some-characters-disabled": "Some of those character do not exist or are disabled",
+  "some-characters-disabled": "Some of those characters do not exist or are disabled",
 
   "user-empty-collection": "{0} doesn't have any {1}characters",
   "user-empty-media-collection": "{0} doesn't have any characters from {1}",
@@ -78,11 +78,25 @@
   "maintenance-gacha": "Gacha is under maintenance, try again later!",
   "maintenance-merge": "Merging is under maintenance, try again later!",
   "maintenance-trade": "Trading is under maintenance, try again later!",
+  "maintenance-combat": "Combat is under maintenance, try again later!",
 
   "gacha-no-more-pulls": "You don't have any more pulls!",
   "gacha-no-guarantees": "You don`t have any {0}pulls",
   "gacha-no-more-characters-left": "There are no more {0}characters left",
   "gacha-no-more-in-range": "There are no more characters left in this range",
+
+  "not-fit-for-combat": "Character is yet to be found and isn't combat ready",
+  "not-enough-unclaimed": "Character doesn't have any unclaimed points left",
+
+  "str": "STR",
+  "sta": "STA",
+  "agi": "AGI",
+
+  "unclaimed": "Unclaimed",
+  "strength": "Strength",
+  "stamina": "Stamina",
+  "agility": "Agility",
+  "reset": "Reset",
 
   "help-page1-before-anything": "Before anything: You will need characters.",
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",
@@ -180,6 +194,8 @@
   "/community popular": "browse the most popular community packs",
   "/community install": "install a community pack",
   "/community uninstall": "uninstall a community pack",
+
+  "/stats": "manage your characters stat points and skills",
 
   "/experimental battle": "try the new upcoming combat in a mock battle against another user",
 
