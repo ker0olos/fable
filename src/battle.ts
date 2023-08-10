@@ -483,15 +483,9 @@ function experimental({ token, guildId, user, target }: {
           return;
         }
 
-        //
-        // TODO experimental code
-        const [strength, stamina, agility] = utils.randomPortions(
-          1,
-          8,
-          3,
-          20,
-        );
-        //
+        const strength = char.combat?.stats?.strength ?? 0;
+        const stamina = char.combat?.stats?.stamina ?? 0;
+        const agility = char.combat?.stats?.agility ?? 0;
 
         const hp = 15; // TODO experimental
 
