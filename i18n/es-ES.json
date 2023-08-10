@@ -83,21 +83,21 @@
   "gacha-no-more-pulls": "¡No te quedan tiradas!",
   "gacha-no-guarantees": "No posees ninguna tirada de {0}",
   "gacha-no-more-characters-left": "Ya no quedan personajes de {0}",
-  "gacha-no-more-in-range": "Ya no quedan personajes en este rango",
+  "gacha-no-more-in-range": "Ya no quedan personajes con este grado de estrellas",
 
-  "not-fit-for-combat": "Character is yet to be found and isn't combat ready",
-  "not-enough-unclaimed": "Character doesn't have enough unclaimed points left",
-  "incorrect-distribution": "Incorrect distribution format!\n\n**Correct:** STR-STA-AGI\n**Example:** 1-2-3",
+  "not-fit-for-combat": "El personaje debe aún ser encontrado y no se encuentra listo para el combate",
+  "not-enough-unclaimed": "El personaje no tiene puntos restantes sin asignar",
+  "incorrect-distribution": "¡Formato de distribución incorrecto!\n\n**Forma correcta:** FUE-RES-AGI\n**Ejemplo:** 1-2-3",
 
-  "str": "STR",
-  "sta": "STA",
+  "str": "FUE",
+  "sta": "RES",
   "agi": "AGI",
 
-  "unclaimed": "Unclaimed",
-  "strength": "Strength",
-  "stamina": "Stamina",
-  "agility": "Agility",
-  "reset": "Reset",
+  "unclaimed": "Sin Asignar",
+  "strength": "Fuerza",
+  "stamina": "Resistencia",
+  "agility": "Agilidad",
+  "reset": "Reiniciar",
 
   "help-page1-before-anything": "Antes de nada: Necesitarás personajes.",
   "help-page1-you-get-n-every-t": "__Obtienes una tirada (pull) gratis cada {0} minutes (hasta un máximo de {1})__. Utiliza `/now` para comprobar cuantas tiradas tienes y cuánto falta para tu siguiente tirada gratis.",
@@ -132,18 +132,18 @@
   "help-page4-steal-boost": "__Puedes sacrificar personajes para obtener una pequeña bonificación__ a tu chance de éxito. Pierdes esos personajes sin importar el resultado.",
   "help-page4-footer": "> Mantenerse activo es la mejor defensa contra el robo.",
 
-  "help-page10-title": "Combat",
-  "help-page10-combat": "Prepare your characters for combat using `/stats`",
-  "help-page10-starting-points": "__Every character gets a starting amount of unclaimed stat points__ based on their star rating.",
-  "help-page10-distribution": "__You can distribute those unclaimed points in 3 different base stats:__ strength, stamina, and agility.",
+  "help-page10-title": "Combate",
+  "help-page10-combat": "Prepara tus personajes para el combate utilizando `/stats`",
+  "help-page10-starting-points": "__Cada personaje comienza con una cantidad de puntos sin asignar__ basados en su grado de estrellas.",
+  "help-page10-distribution": "__Puedes distribuir esos puntos sin asignar en 3 estadísticas base diferentes:__ fuerza, resistencia, y agilidad.",
 
-  "help-page10-strength": "__Strength is the damage__ the character does when they land a hit.",
-  "help-page10-agility": "__Agility is for dodging__ attacks if your agility is higher than your enemy they can't hit you.",
-  "help-page10-stamina": "__Stamina is required__ every time your character attacks or dodges, if a character runs out of stamina they can no longer attack and all attack on them hit automatically.",
+  "help-page10-strength": "__La Fuerza es el daño__ que el personaje hará al golpear.",
+  "help-page10-agility": "__La Agilidad es para esquivar__ ataques. Si es más alta que la de tu enemigo no podrá golpearte.",
+  "help-page10-stamina": "__La Resistencia es la energía necesaria__ cada vez que tu personaje ataca o esquiva. Si un personaje se queda sin resistencia ya no podrá atacar y todos los ataques le golpearán.",
 
-  "help-page10-footer": "> Finding a good balance between all 3 stats is the most recommended route.",
+  "help-page10-footer": "> Encontrar un balance entre las 3 estadísticas es lo recomendado.",
 
-  "help-page10-disclaimer": "__**NOTE: Combat is still in testing, mechanics might change anytime.**__",
+  "help-page10-disclaimer": "__**NOTA: El Combate aún está en prueba, las mecánicas podrían cambiar en cualquier momento.**__",
 
   "help-page5-title": "Tienda",
   "help-page5-shop": "La tienda es una forma de comprar tiradas extra y tiradas garantizadas.",
@@ -171,7 +171,7 @@
   "make-your-own-pack": "> Para crear tu propio pack de la comunidad visita <https://packs.deno.dev>",
 
   "/gacha": "realiza una tirada de gacha",
-  "/q": "realizada una tirada pero sin animaciones",
+  "/q": "realiza una tirada pero sin animaciones",
   "/pull": "usa una tirada garantizada que hayas comprado",
   "/now": "comprueba lo que puedes hacer ahora mismo",
   "/search": "busca una serie específica",
@@ -244,7 +244,7 @@
 
   "$versus": "el usuario contra el que pelearás",
 
-  "$distribution": "quickly set your character stats in one command (format: str-sta-agi)",
+  "$distribution": "establece las stats de tu personaje rápidamente (formato: FUE-RES-AGI)",
 
   "$pack-id": "el id del pack",
 

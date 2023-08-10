@@ -1518,7 +1518,7 @@ snapshot[`commands 1`] = `
     default_member_permissions: undefined,
     description: "start a gacha pull but with no animations",
     description_localizations: {
-      "es-ES": "realizada una tirada pero sin animaciones",
+      "es-ES": "realiza una tirada pero sin animaciones",
     },
     dm_permission: false,
     name: "q",
@@ -3234,7 +3234,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "quickly set your character stats in one command (format: str-sta-agi)",
         description_localizations: {
-          "es-ES": "quickly set your character stats in one command (format: str-sta-agi)",
+          "es-ES": "establece las stats de tu personaje rápidamente (formato: FUE-RES-AGI)",
         },
         max_value: undefined,
         min_value: undefined,
