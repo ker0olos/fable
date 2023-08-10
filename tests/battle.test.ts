@@ -594,7 +594,7 @@ Deno.test('update stats', async (test) => {
             type: 'reset',
           }),
         NonFetalError,
-        'Some of those characters changed hands',
+        'You don\'t have permission to complete this interaction!',
       );
     } finally {
       fetchStub.restore();

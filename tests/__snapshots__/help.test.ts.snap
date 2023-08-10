@@ -367,7 +367,7 @@ snapshot[`/help 5`] = `
 " +
           "
 " +
-          "__Stamina is required__ every time your character attacks or dodges, if a character runs out of stamina they can no longer attack and all attack on them hit automatically.
+          "__Stamina is depleted__ every time your character attacks or dodges, if a character fully runs out of stamina they can no longer attack and all attack on them hit automatically.
 " +
           "
 " +

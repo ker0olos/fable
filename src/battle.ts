@@ -174,12 +174,17 @@ async function updateStats(
   })).setCharacterStats;
 
   if (response.ok) {
-    return battle.stats({ token, character: characterId, userId, guildId });
+    return battle.stats({
+      token,
+      character: `id=${characterId}`,
+      userId,
+      guildId,
+    });
   } else {
     switch (response.error) {
       case 'CHARACTER_NOT_OWNED':
         throw new NonFetalError(
-          i18n.get('character-no-longer-owned', locale),
+          i18n.get('invalid-permission', locale),
         );
       default:
         throw new Error(response.error);
