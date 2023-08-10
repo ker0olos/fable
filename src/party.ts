@@ -4,11 +4,12 @@ import { gql, request } from './graphql.ts';
 
 import config, { faunaUrl } from './config.ts';
 
+import user from './user.ts';
+import packs from './packs.ts';
+
 import utils from './utils.ts';
 
 import Rating from './rating.ts';
-
-import packs from './packs.ts';
 
 import * as discord from './discord.ts';
 
@@ -16,34 +17,34 @@ import { default as srch } from './search.ts';
 
 import { Character, Schema } from './types.ts';
 
-async function embed({ guildId, inventory }: {
+async function embed({ guildId, party }: {
   guildId: string;
-  inventory: Schema.Inventory;
+  party: Schema.Inventory['party'];
 }): Promise<discord.Message> {
   const message = new discord.Message();
 
   const ids = [
-    inventory.party?.member1?.id,
-    inventory.party?.member2?.id,
-    inventory.party?.member3?.id,
-    inventory.party?.member4?.id,
-    inventory.party?.member5?.id,
+    party?.member1?.id,
+    party?.member2?.id,
+    party?.member3?.id,
+    party?.member4?.id,
+    party?.member5?.id,
   ];
 
   const mediaIds = [
-    inventory.party?.member1?.mediaId,
-    inventory.party?.member2?.mediaId,
-    inventory.party?.member3?.mediaId,
-    inventory.party?.member4?.mediaId,
-    inventory.party?.member5?.mediaId,
+    party?.member1?.mediaId,
+    party?.member2?.mediaId,
+    party?.member3?.mediaId,
+    party?.member4?.mediaId,
+    party?.member5?.mediaId,
   ];
 
   const members = [
-    inventory.party?.member1,
-    inventory.party?.member2,
-    inventory.party?.member3,
-    inventory.party?.member4,
-    inventory.party?.member5,
+    party?.member1,
+    party?.member2,
+    party?.member3,
+    party?.member4,
+    party?.member5,
   ];
 
   const [media, characters] = await Promise.all([
@@ -90,7 +91,12 @@ async function embed({ guildId, inventory }: {
         image: members[i]?.image,
         nickname: members[i]?.nickname,
       },
-    });
+    })
+      .setFooter({
+        text: `${members[i]?.combat?.stats?.strength ?? 0}-${
+          members[i]?.combat?.stats?.stamina ?? 0
+        }-${members[i]?.combat?.stats?.agility ?? 0}`,
+      });
 
     message.addEmbed(embed);
   });
@@ -103,65 +109,9 @@ function view({ token, userId, guildId }: {
   userId: string;
   guildId: string;
 }): discord.Message {
-  const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        party {
-          member1 {
-            id
-            mediaId
-            rating
-            image
-            nickname
-          }
-          member2 {
-            id
-            mediaId
-            rating
-            image
-            nickname
-          }
-          member3 {
-            id
-            mediaId
-            rating
-            image
-            nickname
-          }
-          member4 {
-            id
-            mediaId
-            rating
-            image
-            nickname
-          }
-          member5 {
-            id
-            mediaId
-            rating
-            image
-            nickname
-          }
-        }
-      }
-    }
-  `;
-
-  request<{
-    getUserInventory: Schema.Inventory;
-  }>({
-    url: faunaUrl,
-    query,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-    },
-  })
-    .then(async ({ getUserInventory: inventory }) => {
-      const message = await embed({ guildId, inventory });
+  user.getUserCharacters({ userId, guildId })
+    .then(async ({ party }) => {
+      const message = await embed({ guildId, party });
 
       return message.patch(token);
     })
@@ -417,7 +367,7 @@ function swap({ token, a, b, userId, guildId }: {
         throw new Error(response.error);
       }
 
-      return (await embed({ guildId, inventory: response.inventory }))
+      return (await embed({ guildId, party: response.inventory.party }))
         .patch(token);
     })
     .catch(async (err) => {
@@ -550,11 +500,11 @@ function remove({ token, spot, userId, guildId }: {
   return loading;
 }
 
-const user = {
+const party = {
   view,
   assign,
   swap,
   remove,
 };
 
-export default user;
+export default party;

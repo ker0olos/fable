@@ -51,6 +51,13 @@ async function getUserCharacters(
             rating
             nickname
             image
+            combat {
+              stats {
+                strength
+                stamina
+                agility
+              }
+            }
           }
           member2 {
             id
@@ -58,6 +65,13 @@ async function getUserCharacters(
             rating
             nickname
             image
+            combat {
+              stats {
+                strength
+                stamina
+                agility
+              }
+            }
           }
           member3 {
             id
@@ -65,6 +79,13 @@ async function getUserCharacters(
             rating
             nickname
             image
+            combat {
+              stats {
+                strength
+                stamina
+                agility
+              }
+            }
           }
           member4 {
             id
@@ -72,6 +93,13 @@ async function getUserCharacters(
             rating
             nickname
             image
+            combat {
+              stats {
+                strength
+                stamina
+                agility
+              }
+            }
           }
           member5 {
             id
@@ -79,6 +107,13 @@ async function getUserCharacters(
             rating
             nickname
             image
+            combat {
+              stats {
+                strength
+                stamina
+                agility
+              }
+            }
           }
         }
         user {

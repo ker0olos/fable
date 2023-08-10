@@ -79,26 +79,61 @@ Deno.test('/party view', async (test) => {
                       id: 'anilist:1',
                       mediaId: 'anilist:0',
                       rating: 1,
+                      combat: {
+                        stats: {
+                          strength: 1,
+                          stamina: 2,
+                          agility: 3,
+                        },
+                      },
                     },
                     member2: {
                       id: 'anilist:2',
                       mediaId: 'anilist:0',
                       rating: 2,
+                      combat: {
+                        stats: {
+                          strength: 4,
+                          stamina: 5,
+                          agility: 6,
+                        },
+                      },
                     },
                     member3: {
                       id: 'anilist:3',
                       mediaId: 'anilist:0',
                       rating: 3,
+                      combat: {
+                        stats: {
+                          strength: 7,
+                          stamina: 8,
+                          agility: 9,
+                        },
+                      },
                     },
                     member4: {
                       id: 'anilist:4',
                       mediaId: 'anilist:0',
                       rating: 4,
+                      combat: {
+                        stats: {
+                          strength: 10,
+                          stamina: 11,
+                          agility: 12,
+                        },
+                      },
                     },
                     member5: {
                       id: 'anilist:5',
                       mediaId: 'anilist:0',
                       rating: 5,
+                      combat: {
+                        stats: {
+                          strength: 13,
+                          stamina: 14,
+                          agility: 15,
+                        },
+                      },
                     },
                   },
                 },
@@ -195,6 +230,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '1-2-3' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -209,6 +245,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '4-5-6' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -223,6 +260,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '7-8-9' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -237,6 +275,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '10-11-12' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
             },
@@ -251,6 +290,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '13-14-15' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
@@ -458,6 +498,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%201?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -472,6 +513,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%202?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -486,6 +528,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%203?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -500,6 +543,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%204?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
             },
@@ -514,6 +558,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%205?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
@@ -701,6 +746,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -715,6 +761,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -737,6 +784,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
@@ -936,6 +984,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -950,6 +999,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -964,6 +1014,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -982,6 +1033,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
@@ -1943,6 +1995,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -1957,6 +2010,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -1971,6 +2025,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -1985,6 +2040,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
             },
@@ -1999,6 +2055,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
@@ -2210,6 +2267,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%201?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -2224,6 +2282,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%202?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -2238,6 +2297,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%203?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906>',
             },
@@ -2252,6 +2312,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%204?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
             },
@@ -2266,6 +2327,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%205?size=thumbnail',
               },
+              footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098>',
             },
