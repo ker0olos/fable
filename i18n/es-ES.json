@@ -131,6 +131,19 @@
   "help-page4-steal-boost": "__Puedes sacrificar personajes para obtener una pequeña bonificación__ a tu chance de éxito. Pierdes esos personajes sin importar el resultado.",
   "help-page4-footer": "> Mantenerse activo es la mejor defensa contra el robo.",
 
+  "help-page10-title": "Combat",
+  "help-page10-combat": "Prepare your characters for combat using `/stats`",
+  "help-page10-starting-points": "__Every character gets a starting amount of unclaimed stat points__ based on their star rating.",
+  "help-page10-distribution": "__You can distribute those unclaimed points in 3 different base stats:__ strength, stamina, and agility.",
+
+  "help-page10-strength": "__Strength is the damage__ the character does when they land a hit.",
+  "help-page10-agility": "__Agility is for dodging__ attacks if your agility is higher than your enemy they can't hit you.",
+  "help-page10-stamina": "__Stamina is required__ every time your character attacks or dodges, if a character runs out of stamina they can no longer attack and all attack on them hit automatically.",
+
+  "help-page10-footer": "> Finding a good balance between all 3 stats is the most recommended route.",
+
+  "help-page10-disclaimer": "__**NOTE: Combat is still in testing, mechanics might change anytime.**__",
+
   "help-page5-title": "Tienda",
   "help-page5-shop": "La tienda es una forma de comprar tiradas extra y tiradas garantizadas.",
   "help-page5-daily-tokens": "__Obtienes 1 Token diario__, automáticamente añadido después de tu primer `/gacha` del día.",
@@ -237,6 +250,7 @@
   "$help-page-merging": "Combinar (merge)",
   "$help-page-party": "Equipo (party)",
   "$help-page-stealing": "Robar",
+  "$help-page-combat": "Combat",
   "$help-page-shop": "Tienda",
   "$help-page-roadmap": "Futuro del bot",
   "$help-page-essential-commands": "Comandos Esenciales",

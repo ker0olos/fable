@@ -8,7 +8,7 @@ snapshot[`/help 1`] = `
       {
         components: [
           {
-            custom_id: "help==8=prev",
+            custom_id: "help==9=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -16,7 +16,7 @@ snapshot[`/help 1`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "1/9",
+            label: "1/10",
             style: 2,
             type: 2,
           },
@@ -98,7 +98,7 @@ snapshot[`/help 2`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "2/9",
+            label: "2/10",
             style: 2,
             type: 2,
           },
@@ -170,7 +170,7 @@ snapshot[`/help 3`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "3/9",
+            label: "3/10",
             style: 2,
             type: 2,
           },
@@ -254,7 +254,7 @@ snapshot[`/help 4`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "4/9",
+            label: "4/10",
             style: 2,
             type: 2,
           },
@@ -328,12 +328,86 @@ snapshot[`/help 5`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "5/9",
+            label: "5/10",
             style: 2,
             type: 2,
           },
           {
             custom_id: "help==5=next",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        author: {
+          name: "Combat",
+        },
+        description: "Prepare your characters for combat using \`/stats\`
+" +
+          "
+" +
+          "__Every character gets a starting amount of unclaimed stat points__ based on their star rating.
+" +
+          "
+" +
+          "__You can distribute those unclaimed points in 3 different base stats:__ strength, stamina, and agility.
+" +
+          "
+" +
+          "__Strength is the damage__ the character does when they land a hit.
+" +
+          "
+" +
+          "__Agility is for dodging__ attacks if your agility is higher than your enemy they can't hit you.
+" +
+          "
+" +
+          "__Stamina is required__ every time your character attacks or dodges, if a character runs out of stamina they can no longer attack and all attack on them hit automatically.
+" +
+          "
+" +
+          "> Finding a good balance between all 3 stats is the most recommended route.
+" +
+          "
+" +
+          "__**NOTE: Combat is still in testing, mechanics might change anytime.**__
+" +
+          "​",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
+}
+`;
+
+snapshot[`/help 6`] = `
+{
+  data: {
+    attachments: [],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "help==4=prev",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "6/10",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "help==6=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -395,7 +469,7 @@ snapshot[`/help 5`] = `
 " +
           "
 " +
-          "Use the guaranteed pulls you bought by calling \`/pull stars:\`
+          "> Use the guaranteed pulls you bought by calling \`/pull stars:\`
 " +
           "​",
         footer: {
@@ -409,7 +483,7 @@ snapshot[`/help 5`] = `
 }
 `;
 
-snapshot[`/help 6`] = `
+snapshot[`/help 7`] = `
 {
   data: {
     attachments: [],
@@ -417,7 +491,7 @@ snapshot[`/help 6`] = `
       {
         components: [
           {
-            custom_id: "help==4=prev",
+            custom_id: "help==5=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -425,12 +499,12 @@ snapshot[`/help 6`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "6/9",
+            label: "7/10",
             style: 2,
             type: 2,
           },
           {
-            custom_id: "help==6=next",
+            custom_id: "help==7=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -489,7 +563,7 @@ snapshot[`/help 6`] = `
 }
 `;
 
-snapshot[`/help 7`] = `
+snapshot[`/help 8`] = `
 {
   data: {
     attachments: [],
@@ -497,7 +571,7 @@ snapshot[`/help 7`] = `
       {
         components: [
           {
-            custom_id: "help==5=prev",
+            custom_id: "help==6=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -505,12 +579,12 @@ snapshot[`/help 7`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "7/9",
+            label: "8/10",
             style: 2,
             type: 2,
           },
           {
-            custom_id: "help==7=next",
+            custom_id: "help==8=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -573,7 +647,7 @@ snapshot[`/help 7`] = `
 }
 `;
 
-snapshot[`/help 8`] = `
+snapshot[`/help 9`] = `
 {
   data: {
     attachments: [],
@@ -581,7 +655,7 @@ snapshot[`/help 8`] = `
       {
         components: [
           {
-            custom_id: "help==6=prev",
+            custom_id: "help==7=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -589,12 +663,12 @@ snapshot[`/help 8`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "8/9",
+            label: "9/10",
             style: 2,
             type: 2,
           },
           {
-            custom_id: "help==8=next",
+            custom_id: "help==9=next",
             label: "Next",
             style: 2,
             type: 2,
@@ -651,7 +725,7 @@ snapshot[`/help 8`] = `
 }
 `;
 
-snapshot[`/help 9`] = `
+snapshot[`/help 10`] = `
 {
   data: {
     attachments: [],
@@ -659,7 +733,7 @@ snapshot[`/help 9`] = `
       {
         components: [
           {
-            custom_id: "help==7=prev",
+            custom_id: "help==8=prev",
             label: "Prev",
             style: 2,
             type: 2,
@@ -667,7 +741,7 @@ snapshot[`/help 9`] = `
           {
             custom_id: "_",
             disabled: true,
-            label: "9/9",
+            label: "10/10",
             style: 2,
             type: 2,
           },

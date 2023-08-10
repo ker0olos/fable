@@ -664,7 +664,7 @@ function experimental({ token, guildId, user, target }: {
             ? modParty1[Math.floor(Math.random() * modParty1.length)]
             : modParty2[Math.floor(Math.random() * modParty2.length)];
 
-            // if (enemy.curSta > 0 && enemy.agility >= character.strength) {
+          // if (enemy.curSta > 0 && enemy.agility >= character.strength) {
           if (enemy.curSta > 0 && enemy.agility >= character.agility) {
             enemy.curSta = Math.max(enemy.curSta - 1, 0);
 

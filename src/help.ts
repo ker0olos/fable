@@ -150,6 +150,29 @@ function pages(
           ].join('\n')),
       ),
     new discord.Message()
+      .addEmbed(
+        new discord.Embed()
+          .setAuthor({ name: i18n.get('help-page10-title', locale) })
+          .setDescription([
+            i18n.get('help-page10-combat', locale),
+            '',
+            i18n.get('help-page10-starting-points', locale),
+            '',
+            i18n.get('help-page10-distribution', locale),
+            '',
+            i18n.get('help-page10-strength', locale),
+            '',
+            i18n.get('help-page10-agility', locale),
+            '',
+            i18n.get('help-page10-stamina', locale),
+            '',
+            i18n.get('help-page10-footer', locale),
+            '',
+            i18n.get('help-page10-disclaimer', locale),
+            discord.empty,
+          ].join('\n')),
+      ),
+    new discord.Message()
       .addComponents([
         new discord.Component()
           .setLabel('/vote')

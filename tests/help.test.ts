@@ -9,7 +9,7 @@ Deno.test('/help', async (test) => {
     const message = help.pages({ userId: 'user_id', index: 0 });
 
     assertEquals(message.json().data.components[0].components[0], {
-      custom_id: 'help==8=prev',
+      custom_id: 'help==9=prev',
       label: 'Prev',
       style: 2,
       type: 2,
@@ -18,7 +18,7 @@ Deno.test('/help', async (test) => {
     assertEquals(message.json().data.components[0].components[1], {
       custom_id: '_',
       disabled: true,
-      label: '1/9',
+      label: '1/10',
       style: 2,
       type: 2,
     });
@@ -32,7 +32,7 @@ Deno.test('/help', async (test) => {
   });
 
   await test.step('pages', async () => {
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 10; i++) {
       const message = help.pages({ userId: 'user_id', index: i });
 
       await assertSnapshot(test, message.json());

@@ -131,6 +131,19 @@
   "help-page4-steal-boost": "__You can sacrifice your own characters for a small boost__ to your chance of success, You lose those characters regardless of the outcome of the attempt.",
   "help-page4-footer": "> Staying active is the best defense against stealing.",
 
+  "help-page10-title": "Combat",
+  "help-page10-combat": "Prepare your characters for combat using `/stats`",
+  "help-page10-starting-points": "__Every character gets a starting amount of unclaimed stat points__ based on their star rating.",
+  "help-page10-distribution": "__You can distribute those unclaimed points in 3 different base stats:__ strength, stamina, and agility.",
+
+  "help-page10-strength": "__Strength is the damage__ the character does when they land a hit.",
+  "help-page10-agility": "__Agility is for dodging__ attacks if your agility is higher than your enemy they can't hit you.",
+  "help-page10-stamina": "__Stamina is required__ every time your character attacks or dodges, if a character runs out of stamina they can no longer attack and all attack on them hit automatically.",
+
+  "help-page10-footer": "> Finding a good balance between all 3 stats is the most recommended route.",
+
+  "help-page10-disclaimer": "__**NOTE: Combat is still in testing, mechanics might change anytime.**__",
+
   "help-page5-title": "Shop",
   "help-page5-shop": "The shop is a way to purchase extra pulls and guaranteed pulls.",
   "help-page5-daily-tokens": "__You get 1 daily token every day__, automatically added after your first `/gacha` of the day.",
@@ -144,7 +157,7 @@
   "help-page5-buy-4s": "4{0}cost **{1}** tokens",
   "help-page5-buy-5s": "5{0}cost **{1}** tokens",
 
-  "help-page5-footer": "Use the guaranteed pulls you bought by calling `/pull stars:`",
+  "help-page5-footer": "> Use the guaranteed pulls you bought by calling `/pull stars:`",
 
   "help-page6-title": "Roadmap",
   "help-page6-release": "__**Releasing in the near future (~3 months)**__",
@@ -237,6 +250,7 @@
   "$help-page-merging": "Merging",
   "$help-page-party": "Party",
   "$help-page-stealing": "Stealing",
+  "$help-page-combat": "Combat",
   "$help-page-shop": "Shop",
   "$help-page-roadmap": "Roadmap",
   "$help-page-essential-commands": "Essential Commands",
