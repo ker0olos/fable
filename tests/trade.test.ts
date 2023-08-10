@@ -514,7 +514,7 @@ Deno.test('give', async (test) => {
             {
               type: 'rich',
               description:
-                'Some of those character do not exist or are disabled',
+                'Some of those characters do not exist or are disabled',
             },
           ],
         },
@@ -1166,7 +1166,7 @@ Deno.test('trade', async (test) => {
             {
               type: 'rich',
               description:
-                'Some of those character do not exist or are disabled',
+                'Some of those characters do not exist or are disabled',
             },
           ],
         },
@@ -3034,7 +3034,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                'Some of those character do not exist or are disabled',
+                'Some of those characters do not exist or are disabled',
             },
           ],
         },

@@ -22,12 +22,24 @@ import {
   User,
 } from './get_user_inventory.ts';
 
+export interface CharacterCombat {
+  stats?: CharacterStats;
+}
+
+export interface CharacterStats {
+  unclaimed?: number;
+  strength?: number;
+  stamina?: number;
+  agility?: number;
+}
+
 export interface Character {
   id: StringExpr;
   mediaId: StringExpr;
   rating: NumberExpr;
   nickname?: string | NullExpr;
   image?: string | NullExpr;
+  combat?: CharacterCombat | NullExpr;
   inventory: RefExpr;
   instance: RefExpr;
   user: RefExpr;

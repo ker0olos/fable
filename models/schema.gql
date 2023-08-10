@@ -55,13 +55,14 @@ type Inventory @collection(name: "inventory") {
 }
 
 type CharacterCombat @embedded {
-  stats: CharacterStats!
+  stats: CharacterStats
 }
 
 type CharacterStats @embedded {
-  strength: Int!
-  stamina: Int!
-  agility: Int!
+  unclaimed: Int
+  strength: Int
+  stamina: Int
+  agility: Int
 }
 
 type Character @collection(name: "character") {

@@ -1037,39 +1037,46 @@ snapshot[`commands 1`] = `
             value: 3,
           },
           {
+            name: "Combat",
+            name_localizations: {
+              "es-ES": "Combat",
+            },
+            value: 4,
+          },
+          {
             name: "Shop",
             name_localizations: {
               "es-ES": "Tienda",
             },
-            value: 4,
+            value: 5,
           },
           {
             name: "Roadmap",
             name_localizations: {
               "es-ES": "Futuro del bot",
             },
-            value: 5,
+            value: 6,
           },
           {
             name: "Essential Commands",
             name_localizations: {
               "es-ES": "Comandos Esenciales",
             },
-            value: 6,
+            value: 7,
           },
           {
             name: "Other Commands",
             name_localizations: {
               "es-ES": "Otros Comandos",
             },
-            value: 7,
+            value: 8,
           },
           {
             name: "Admin Commands",
             name_localizations: {
               "es-ES": "Comandos de Administrador",
             },
-            value: 8,
+            value: 9,
           },
         ],
         description: "specify a page to display",
@@ -1127,39 +1134,46 @@ snapshot[`commands 1`] = `
             value: 3,
           },
           {
+            name: "Combat",
+            name_localizations: {
+              "es-ES": "Combat",
+            },
+            value: 4,
+          },
+          {
             name: "Shop",
             name_localizations: {
               "es-ES": "Tienda",
             },
-            value: 4,
+            value: 5,
           },
           {
             name: "Roadmap",
             name_localizations: {
               "es-ES": "Futuro del bot",
             },
-            value: 5,
+            value: 6,
           },
           {
             name: "Essential Commands",
             name_localizations: {
               "es-ES": "Comandos Esenciales",
             },
-            value: 6,
+            value: 7,
           },
           {
             name: "Other Commands",
             name_localizations: {
               "es-ES": "Otros Comandos",
             },
-            value: 7,
+            value: 8,
           },
           {
             name: "Admin Commands",
             name_localizations: {
               "es-ES": "Comandos de Administrador",
             },
-            value: 8,
+            value: 9,
           },
         ],
         description: "specify a page to display",
@@ -1217,39 +1231,46 @@ snapshot[`commands 1`] = `
             value: 3,
           },
           {
+            name: "Combat",
+            name_localizations: {
+              "es-ES": "Combat",
+            },
+            value: 4,
+          },
+          {
             name: "Shop",
             name_localizations: {
               "es-ES": "Tienda",
             },
-            value: 4,
+            value: 5,
           },
           {
             name: "Roadmap",
             name_localizations: {
               "es-ES": "Futuro del bot",
             },
-            value: 5,
+            value: 6,
           },
           {
             name: "Essential Commands",
             name_localizations: {
               "es-ES": "Comandos Esenciales",
             },
-            value: 6,
+            value: 7,
           },
           {
             name: "Other Commands",
             name_localizations: {
               "es-ES": "Otros Comandos",
             },
-            value: 7,
+            value: 8,
           },
           {
             name: "Admin Commands",
             name_localizations: {
               "es-ES": "Comandos de Administrador",
             },
-            value: 8,
+            value: 9,
           },
         ],
         description: "specify a page to display",
@@ -1307,39 +1328,46 @@ snapshot[`commands 1`] = `
             value: 3,
           },
           {
+            name: "Combat",
+            name_localizations: {
+              "es-ES": "Combat",
+            },
+            value: 4,
+          },
+          {
             name: "Shop",
             name_localizations: {
               "es-ES": "Tienda",
             },
-            value: 4,
+            value: 5,
           },
           {
             name: "Roadmap",
             name_localizations: {
               "es-ES": "Futuro del bot",
             },
-            value: 5,
+            value: 6,
           },
           {
             name: "Essential Commands",
             name_localizations: {
               "es-ES": "Comandos Esenciales",
             },
-            value: 6,
+            value: 7,
           },
           {
             name: "Other Commands",
             name_localizations: {
               "es-ES": "Otros Comandos",
             },
-            value: 7,
+            value: 8,
           },
           {
             name: "Admin Commands",
             name_localizations: {
               "es-ES": "Comandos de Administrador",
             },
-            value: 8,
+            value: 9,
           },
         ],
         description: "specify a page to display",
@@ -1397,39 +1425,46 @@ snapshot[`commands 1`] = `
             value: 3,
           },
           {
+            name: "Combat",
+            name_localizations: {
+              "es-ES": "Combat",
+            },
+            value: 4,
+          },
+          {
             name: "Shop",
             name_localizations: {
               "es-ES": "Tienda",
             },
-            value: 4,
+            value: 5,
           },
           {
             name: "Roadmap",
             name_localizations: {
               "es-ES": "Futuro del bot",
             },
-            value: 5,
+            value: 6,
           },
           {
             name: "Essential Commands",
             name_localizations: {
               "es-ES": "Comandos Esenciales",
             },
-            value: 6,
+            value: 7,
           },
           {
             name: "Other Commands",
             name_localizations: {
               "es-ES": "Otros Comandos",
             },
-            value: 7,
+            value: 8,
           },
           {
             name: "Admin Commands",
             name_localizations: {
               "es-ES": "Comandos de Administrador",
             },
-            value: 8,
+            value: 9,
           },
         ],
         description: "specify a page to display",
@@ -3167,6 +3202,32 @@ snapshot[`commands 1`] = `
         ],
         required: false,
         type: 1,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
+    description: "manage your characters stat points and skills",
+    description_localizations: {
+      "es-ES": "manage your characters stat points and skills",
+    },
+    dm_permission: false,
+    name: "stats",
+    options: [
+      {
+        autocomplete: true,
+        choices: undefined,
+        description: "the name of the character",
+        description_localizations: {
+          "es-ES": "el nombre del personaje",
+        },
+        max_value: undefined,
+        min_value: undefined,
+        name: "name",
+        options: undefined,
+        required: true,
+        type: 3,
       },
     ],
     type: undefined,

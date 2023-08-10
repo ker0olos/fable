@@ -253,7 +253,7 @@ function character(
 ): discord.Message {
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
-    .then((results: (Character | DisaggregatedCharacter)[]) => {
+    .then((results) => {
       if (!results.length) {
         throw new Error('404');
       }

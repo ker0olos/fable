@@ -184,6 +184,14 @@ export namespace Schema {
     inventory?: Partial<Schema.Inventory>;
     nickname?: string;
     image?: string;
+    combat?: {
+      stats?: {
+        unclaimed?: number;
+        strength?: number;
+        stamina?: number;
+        agility?: number;
+      };
+    };
   };
 
   export type User = {

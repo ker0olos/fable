@@ -345,6 +345,14 @@ async function findCharacters({
         nickname
         mediaId
         rating
+        combat {
+          stats {
+            unclaimed
+            strength
+            stamina
+            agility
+          }
+        }
         inventory {
           lastPull
           party {

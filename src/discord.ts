@@ -426,6 +426,11 @@ export class Component {
     return this;
   }
 
+  setDisabled(disabled: boolean): Component {
+    this.#data.disabled = disabled;
+    return this;
+  }
+
   toggle(): Component {
     this.#data.disabled = !this.#data.disabled;
     return this;

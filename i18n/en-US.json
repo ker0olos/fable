@@ -37,7 +37,7 @@
 
   "you-empty-collection": "You don't have any {0}characters",
   "you-empty-media-collection": "You don't have any characters from {0}",
-  "some-characters-disabled": "Some of those character do not exist or are disabled",
+  "some-characters-disabled": "Some of those characters do not exist or are disabled",
 
   "user-empty-collection": "{0} doesn't have any {1}characters",
   "user-empty-media-collection": "{0} doesn't have any characters from {1}",
@@ -78,11 +78,25 @@
   "maintenance-gacha": "Gacha is under maintenance, try again later!",
   "maintenance-merge": "Merging is under maintenance, try again later!",
   "maintenance-trade": "Trading is under maintenance, try again later!",
+  "maintenance-combat": "Combat is under maintenance, try again later!",
 
   "gacha-no-more-pulls": "You don't have any more pulls!",
   "gacha-no-guarantees": "You don`t have any {0}pulls",
   "gacha-no-more-characters-left": "There are no more {0}characters left",
   "gacha-no-more-in-range": "There are no more characters left in this range",
+
+  "not-fit-for-combat": "Character is yet to be found and isn't combat ready",
+  "not-enough-unclaimed": "Character doesn't have any unclaimed points left",
+
+  "str": "STR",
+  "sta": "STA",
+  "agi": "AGI",
+
+  "unclaimed": "Unclaimed",
+  "strength": "Strength",
+  "stamina": "Stamina",
+  "agility": "Agility",
+  "reset": "Reset",
 
   "help-page1-before-anything": "Before anything: You will need characters.",
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",
@@ -117,6 +131,19 @@
   "help-page4-steal-boost": "__You can sacrifice your own characters for a small boost__ to your chance of success, You lose those characters regardless of the outcome of the attempt.",
   "help-page4-footer": "> Staying active is the best defense against stealing.",
 
+  "help-page10-title": "Combat",
+  "help-page10-combat": "Prepare your characters for combat using `/stats`",
+  "help-page10-starting-points": "__Every character gets a starting amount of unclaimed stat points__ based on their star rating.",
+  "help-page10-distribution": "__You can distribute those unclaimed points in 3 different base stats:__ strength, stamina, and agility.",
+
+  "help-page10-strength": "__Strength is the damage__ the character does when they land a hit.",
+  "help-page10-agility": "__Agility is for dodging__ attacks if your agility is higher than your enemy they can't hit you.",
+  "help-page10-stamina": "__Stamina is required__ every time your character attacks or dodges, if a character runs out of stamina they can no longer attack and all attack on them hit automatically.",
+
+  "help-page10-footer": "> Finding a good balance between all 3 stats is the most recommended route.",
+
+  "help-page10-disclaimer": "__**NOTE: Combat is still in testing, mechanics might change anytime.**__",
+
   "help-page5-title": "Shop",
   "help-page5-shop": "The shop is a way to purchase extra pulls and guaranteed pulls.",
   "help-page5-daily-tokens": "__You get 1 daily token every day__, automatically added after your first `/gacha` of the day.",
@@ -130,7 +157,7 @@
   "help-page5-buy-4s": "4{0}cost **{1}** tokens",
   "help-page5-buy-5s": "5{0}cost **{1}** tokens",
 
-  "help-page5-footer": "Use the guaranteed pulls you bought by calling `/pull stars:`",
+  "help-page5-footer": "> Use the guaranteed pulls you bought by calling `/pull stars:`",
 
   "help-page6-title": "Roadmap",
   "help-page6-release": "__**Releasing in the near future (~3 months)**__",
@@ -181,6 +208,8 @@
   "/community install": "install a community pack",
   "/community uninstall": "uninstall a community pack",
 
+  "/stats": "manage your characters stat points and skills",
+
   "/experimental battle": "try the new upcoming combat in a mock battle against another user",
 
   "/help": "need more information? we got you",
@@ -221,6 +250,7 @@
   "$help-page-merging": "Merging",
   "$help-page-party": "Party",
   "$help-page-stealing": "Stealing",
+  "$help-page-combat": "Combat",
   "$help-page-shop": "Shop",
   "$help-page-roadmap": "Roadmap",
   "$help-page-essential-commands": "Essential Commands",

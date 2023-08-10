@@ -457,39 +457,46 @@ export const commands = [
             value: 3,
           },
           {
+            name: EN['$help-page-combat'],
+            name_localizations: {
+              'es-ES': ES['$help-page-combat'],
+            },
+            value: 4,
+          },
+          {
             name: EN['$help-page-shop'],
             name_localizations: {
               'es-ES': ES['$help-page-shop'],
             },
-            value: 4,
+            value: 5,
           },
           {
             name: EN['$help-page-roadmap'],
             name_localizations: {
               'es-ES': ES['$help-page-roadmap'],
             },
-            value: 5,
+            value: 6,
           },
           {
             name: EN['$help-page-essential-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-essential-commands'],
             },
-            value: 6,
+            value: 7,
           },
           {
             name: EN['$help-page-other-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-other-commands'],
             },
-            value: 7,
+            value: 8,
           },
           {
             name: EN['$help-page-admin-commands'],
             name_localizations: {
               'es-ES': ES['$help-page-admin-commands'],
             },
-            value: 8,
+            value: 9,
           },
         ],
       }),
@@ -793,6 +800,18 @@ export const commands = [
             type: Type.STRING,
           }),
         ],
+      }),
+    ],
+  }),
+  ...Command({
+    name: 'stats',
+    description: '/stats',
+    options: [
+      Option({
+        name: 'name',
+        description: '$character-name',
+        autocomplete: true,
+        type: Type.STRING,
       }),
     ],
   }),

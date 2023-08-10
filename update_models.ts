@@ -33,6 +33,8 @@ import customizeCharacter from './models/customize_character.ts';
 import stealCharacter from './models/steal_character.ts';
 import likeCharacter from './models/like_character.ts';
 
+import setCharacterStats from './models/set_character_stats.ts';
+
 if (import.meta.main) {
   const FAUNA_SECRET = Deno.env.get('FAUNA_SECRET');
 
@@ -56,6 +58,7 @@ if (import.meta.main) {
     customizeCharacter(client),
     stealCharacter(client),
     likeCharacter(client),
+    setCharacterStats(client),
   ];
 
   const _indexers = all

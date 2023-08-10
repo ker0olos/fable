@@ -185,8 +185,8 @@ export const handler = async (r: Request) => {
             'custom',
             'like',
             'unlike',
-          ].includes(name) ||
-          (name === 'experimental' && subcommand === 'battle')
+            'stats',
+          ].includes(name)
         ) {
           // deno-lint-ignore no-non-null-assertion
           const name = options[focused!] as string;
@@ -693,6 +693,16 @@ export const handler = async (r: Request) => {
 
             return help.pages({ userId: member.user.id, index }).send();
           }
+          case 'stats': {
+            const character = options['name'] as string;
+
+            return battle.stats({
+              token,
+              guildId,
+              character,
+              userId: member.user.id,
+            }).send();
+          }
           case 'experimental': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
@@ -1022,6 +1032,38 @@ export const handler = async (r: Request) => {
               })
                 .setType(discord.MessageType.Update)
                 .send();
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'stats': {
+            // deno-lint-ignore no-non-null-assertion
+            const type = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![1];
+
+            // deno-lint-ignore no-non-null-assertion
+            const characterId = customValues![2];
+
+            if (userId === member.user.id) {
+              switch (type) {
+                case 'str':
+                case 'sta':
+                case 'agi':
+                case 'reset':
+                  return (await battle.updateStats({
+                    type,
+                    token,
+                    guildId,
+                    characterId,
+                    userId: member.user.id,
+                  }))
+                    .setType(discord.MessageType.Update)
+                    .send();
+                default:
+                  break;
+              }
             }
 
             throw new NoPermissionError();

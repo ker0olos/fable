@@ -31,26 +31,26 @@ function getRandomFloat(): number {
   return randomInt / 2 ** 32;
 }
 
-function randomPortions(
-  min: number,
-  max: number,
-  length: number,
-  sum: number,
-): number[] {
-  return Array.from({ length }, (_, i) => {
-    const smin = (length - i - 1) * min;
-    const smax = (length - i - 1) * max;
+// function randomPortions(
+//   min: number,
+//   max: number,
+//   length: number,
+//   sum: number,
+// ): number[] {
+//   return Array.from({ length }, (_, i) => {
+//     const smin = (length - i - 1) * min;
+//     const smax = (length - i - 1) * max;
 
-    const offset = Math.max(sum - smax, min);
-    const random = 1 + Math.min(sum - offset, max - offset, sum - smin - min);
+//     const offset = Math.max(sum - smax, min);
+//     const random = 1 + Math.min(sum - offset, max - offset, sum - smin - min);
 
-    const value = Math.floor(Math.random() * random + offset);
+//     const value = Math.floor(Math.random() * random + offset);
 
-    sum -= value;
+//     sum -= value;
 
-    return value;
-  });
-}
+//     return value;
+//   });
+// }
 
 function hexToInt(hex?: string): number | undefined {
   if (!hex) {
@@ -91,10 +91,12 @@ function fetchWithRetry(
   return new Promise((resolve, reject) => {
     fetch(input, init)
       .then((result) => resolve(result))
-      .catch((err) => {
-        if (n >= 1) {
+      .catch(async (err) => {
+        if (n >= 2) {
           return reject(err);
         }
+
+        await sleep(0.5);
 
         fetchWithRetry(input, init, n + 1)
           .then(resolve)
@@ -464,7 +466,7 @@ const utils = {
   initSentry,
   json,
   parseInt: _parseInt,
-  randomPortions,
+  // randomPortions,
   readJson,
   rechargeTimestamp,
   rng,
