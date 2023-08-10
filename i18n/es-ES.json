@@ -86,7 +86,8 @@
   "gacha-no-more-in-range": "Ya no quedan personajes en este rango",
 
   "not-fit-for-combat": "Character is yet to be found and isn't combat ready",
-  "not-enough-unclaimed": "Character doesn't have any unclaimed points left",
+  "not-enough-unclaimed": "Character doesn't have enough unclaimed points left",
+  "incorrect-distribution": "Incorrect distribution format!\n\n**Correct:** STR-STA-AGI\n**Example:** 1-2-3",
 
   "str": "STR",
   "sta": "STA",
@@ -242,6 +243,8 @@
   "$party-remove-spot": "el puesto a liberar",
 
   "$versus": "el usuario contra el que pelearás",
+
+  "$distribution": "quickly set your character stats in one command (format: str-sta-agi)",
 
   "$pack-id": "el id del pack",
 

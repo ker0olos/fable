@@ -365,6 +365,183 @@ Deno.test('update stats', async (test) => {
     }
   });
 
+  await test.step('distribution', async () => {
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () =>
+        Promise.resolve({
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                setCharacterStats: {
+                  ok: true,
+                },
+              },
+            }))),
+        } as any),
+    );
+
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () =>
+        Promise.resolve({
+          id: 'id:1',
+          user: { id: 'user_id' },
+          mediaId: 'media_id',
+          rating: 4,
+          combat: {
+            stats: {
+              unclaimed: 1,
+              strength: 2,
+              stamina: 3,
+              agility: 4,
+            },
+          },
+        }),
+    );
+
+    const battleStub = stub(battle, 'stats', () => undefined as any);
+
+    config.faunaSecret = 'fauna_secret';
+
+    try {
+      await battle.updateStats({
+        token: 'test_token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        characterId: 'character_id',
+        distribution: '2-2-2',
+        type: 'reset',
+      });
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://graphql.us.fauna.com/graphql',
+      );
+
+      assertEquals(
+        fetchStub.calls[0].args[1]?.headers?.entries,
+        new Headers({
+          accept: 'application/json',
+          authorization: 'Bearer fauna_secret',
+          'content-type': 'application/json',
+        }).entries,
+      );
+
+      assertEquals(
+        JSON.parse(fetchStub.calls[0].args[1]?.body as string).variables,
+        {
+          userId: 'user_id',
+          guildId: 'guild_id',
+          characterId: 'character_id',
+          unclaimed: 4,
+          strength: 2,
+          stamina: 2,
+          agility: 2,
+        },
+      );
+    } finally {
+      delete config.faunaSecret;
+
+      fetchStub.restore();
+      userStub.restore();
+      battleStub.restore();
+    }
+  });
+
+  await test.step('distribution with not enough points', async () => {
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () =>
+        Promise.resolve({
+          id: 'id:1',
+          user: { id: 'user_id' },
+          mediaId: 'media_id',
+          rating: 4,
+          combat: {
+            stats: {
+              unclaimed: 1,
+              strength: 2,
+              stamina: 3,
+              agility: 4,
+            },
+          },
+        }),
+    );
+
+    const battleStub = stub(battle, 'stats', () => undefined as any);
+
+    config.faunaSecret = 'fauna_secret';
+
+    try {
+      await assertRejects(
+        () =>
+          battle.updateStats({
+            token: 'test_token',
+            userId: 'user_id',
+            guildId: 'guild_id',
+            characterId: 'character_id',
+            type: 'reset',
+            distribution: '9-9-9',
+          }),
+        NonFetalError,
+        'Character doesn\'t have enough unclaimed points left',
+      );
+    } finally {
+      userStub.restore();
+      battleStub.restore();
+    }
+  });
+
+  await test.step('incorrect distribution format', async () => {
+    const userStub = stub(
+      user,
+      'findCharacter',
+      () =>
+        Promise.resolve({
+          id: 'id:1',
+          user: { id: 'user_id' },
+          mediaId: 'media_id',
+          rating: 4,
+          combat: {
+            stats: {
+              unclaimed: 1,
+              strength: 2,
+              stamina: 3,
+              agility: 4,
+            },
+          },
+        }),
+    );
+
+    const battleStub = stub(battle, 'stats', () => undefined as any);
+
+    config.faunaSecret = 'fauna_secret';
+
+    try {
+      await assertRejects(
+        () =>
+          battle.updateStats({
+            token: 'test_token',
+            userId: 'user_id',
+            guildId: 'guild_id',
+            characterId: 'character_id',
+            type: 'reset',
+            distribution: 'a-b-c',
+          }),
+        NonFetalError,
+        'Incorrect distribution format!\n\n**Correct:** STR-STA-AGI\n**Example:** 1-2-3',
+      );
+    } finally {
+      userStub.restore();
+      battleStub.restore();
+    }
+  });
+
   await test.step('not owned', async () => {
     const fetchStub = stub(
       utils,
@@ -460,7 +637,7 @@ Deno.test('update stats', async (test) => {
             type: 'str',
           }),
         NonFetalError,
-        'Character doesn\'t have any unclaimed points left',
+        'Character doesn\'t have enough unclaimed points left',
       );
     } finally {
       userStub.restore();

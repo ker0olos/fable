@@ -60,13 +60,16 @@ function stringify(dmg: number, user: string, target: string): string {
   return (dmg >= 50 ? _ : _.toReversed()).join('\n');
 }
 
-async function updateStats({ token, type, characterId, userId, guildId }: {
-  token: string;
-  type: 'str' | 'sta' | 'agi' | 'reset';
-  characterId: string;
-  guildId: string;
-  userId: string;
-}): Promise<discord.Message> {
+async function updateStats(
+  { token, type, distribution, characterId, userId, guildId }: {
+    token: string;
+    type: 'str' | 'sta' | 'agi' | 'reset';
+    distribution?: string;
+    characterId: string;
+    guildId: string;
+    userId: string;
+  },
+): Promise<discord.Message> {
   const locale = _user.cachedUsers[userId]?.locale;
 
   const existing = await _user.findCharacter({ guildId, characterId });
@@ -132,6 +135,25 @@ async function updateStats({ token, type, characterId, userId, guildId }: {
       break;
   }
 
+  if (distribution && /\d-\d-\d/.test(distribution)) {
+    const [str, sta, agi] = distribution.split('-')
+      .map((n) => parseInt(n));
+
+    unclaimed = unclaimed - (str + sta + agi);
+
+    strength = str;
+    stamina = sta;
+    agility = agi;
+
+    if (unclaimed < 0) {
+      throw new NonFetalError(i18n.get('not-enough-unclaimed', locale));
+    }
+  } else if (distribution) {
+    throw new NonFetalError(
+      i18n.get('incorrect-distribution', locale),
+    );
+  }
+
   const response = (await request<{
     setCharacterStats: Schema.Mutation;
   }>({
@@ -165,11 +187,12 @@ async function updateStats({ token, type, characterId, userId, guildId }: {
   }
 }
 
-function stats({ token, character, userId, guildId }: {
+function stats({ token, character, userId, guildId, distribution }: {
   token: string;
   character: string;
   guildId: string;
   userId: string;
+  distribution?: string;
 }): discord.Message {
   const locale = _user.cachedUsers[userId]?.locale;
 
@@ -206,6 +229,8 @@ function stats({ token, character, userId, guildId }: {
       ]);
     })
     .then(async ([character, existing]) => {
+      const charId = `${character.packId}:${character.id}`;
+
       if (!existing) {
         const message = new discord.Message();
 
@@ -223,6 +248,17 @@ function stats({ token, character, userId, guildId }: {
         message.addEmbed(embed);
 
         return await message.patch(token);
+      }
+
+      if (distribution) {
+        return await updateStats({
+          token,
+          type: 'reset',
+          guildId,
+          characterId: charId,
+          distribution,
+          userId,
+        });
       }
 
       const message = new discord.Message();
@@ -245,8 +281,6 @@ function stats({ token, character, userId, guildId }: {
       const strength = existing.combat?.stats?.strength ?? 0;
       const stamina = existing.combat?.stats?.stamina ?? 0;
       const agility = existing.combat?.stats?.agility ?? 0;
-
-      const charId = `${character.packId}:${character.id}`;
 
       embed
         .addField({
@@ -293,6 +327,13 @@ function stats({ token, character, userId, guildId }: {
             new discord.Embed().setDescription(
               i18n.get('some-characters-disabled', locale),
             ),
+          ).patch(token);
+      }
+
+      if (err instanceof NonFetalError) {
+        return await new discord.Message()
+          .addEmbed(
+            new discord.Embed().setDescription(err.message),
           ).patch(token);
       }
 
