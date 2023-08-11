@@ -13,6 +13,7 @@ const config: {
   instatus?: string;
   origin?: string;
   notice?: string;
+  global?: boolean;
   gacha?: boolean;
   trading?: boolean;
   stealing?: boolean;
@@ -30,6 +31,7 @@ const config: {
   instatus: undefined,
   origin: undefined,
   notice: undefined,
+  global: undefined,
   gacha: undefined,
   trading: undefined,
   stealing: undefined,
@@ -67,6 +69,9 @@ export async function initConfig(): Promise<void> {
     config.notice = Deno.env.get('NOTICE');
 
     // feature flags
+    config.global = !Deno.env.has('GLOBAL') ||
+      Deno.env.get('GLOBAL') === '1';
+
     config.gacha = !Deno.env.has('GACHA') ||
       Deno.env.get('GACHA') === '1';
 

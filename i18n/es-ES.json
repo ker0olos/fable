@@ -75,10 +75,11 @@
   "give-sent-to": "¡Has enviado un regalo a {0}!",
   "give-received": "{0} te envió un regalo",
 
+  "global-maintenance": "Fable se maintenance en mantenimiento, reintentalo más tarde",
   "maintenance-gacha": "El gacha se encuentra en mantenimiento, reintentalo más tarde",
   "maintenance-merge": "Merge se encuentra en mantenimiento, reintentalo más tarde",
   "maintenance-trade": "Los intercambios se encuentran en mantenimiento, reintentalo más tarde",
-  "maintenance-combat": "Combat is under maintenance, try again later!",
+  "maintenance-combat": "Combate se encuentra en mantenimiento, reintentalo más tarde",
 
   "gacha-no-more-pulls": "¡No te quedan tiradas!",
   "gacha-no-guarantees": "No posees ninguna tirada de {0}",

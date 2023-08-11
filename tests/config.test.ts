@@ -30,6 +30,7 @@ Deno.test('init', async (test) => {
         false,
         false,
         false,
+        false,
       ]),
     );
 
@@ -62,6 +63,7 @@ Deno.test('init', async (test) => {
         topggCipher: 123,
         topggSecret: 'topgg_secret',
         notice: 'notice_message',
+        global: true,
         gacha: true,
         trading: true,
         stealing: true,
@@ -102,6 +104,7 @@ Deno.test('init', async (test) => {
         true,
         true,
         true,
+        true,
       ]),
     );
 
@@ -118,6 +121,7 @@ Deno.test('init', async (test) => {
         '123',
         'topgg_secret',
         'notice_message',
+        '0',
         '0',
         '0',
         '0',
@@ -141,6 +145,7 @@ Deno.test('init', async (test) => {
         topggSecret: 'topgg_secret',
         notice: 'notice_message',
         gacha: false,
+        global: false,
         trading: false,
         stealing: false,
         synthesis: false,

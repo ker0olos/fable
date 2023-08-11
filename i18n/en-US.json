@@ -75,6 +75,7 @@
   "give-sent-to": "Gift sent to {0}!",
   "give-received": "{0} sent you a gift",
 
+  "global-maintenance": "Fable is under maintenance, try again later!",
   "maintenance-gacha": "Gacha is under maintenance, try again later!",
   "maintenance-merge": "Merging is under maintenance, try again later!",
   "maintenance-trade": "Trading is under maintenance, try again later!",

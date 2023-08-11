@@ -90,6 +90,12 @@ export const handler = async (r: Request) => {
     return discord.Message.pong();
   }
 
+  if (!config.global) {
+    throw new NonFetalError(
+      i18n.get('global-maintenance', locale),
+    );
+  }
+
   config.origin = origin;
 
   if (guildId) {
