@@ -1,8 +1,8 @@
 import '#filter-boolean';
 
-import { gql, request } from './graphql.ts';
+import config from './config.ts';
 
-import config, { faunaUrl } from './config.ts';
+import db, { COSTS } from '../db/mod.ts';
 
 import i18n from './i18n.ts';
 import utils from './utils.ts';
@@ -21,10 +21,7 @@ import {
   DisaggregatedCharacter,
   DisaggregatedMedia,
   Media,
-  Schema,
 } from './types.ts';
-
-import { COSTS } from '../models/add_tokens_to_user.ts';
 
 const cachedGuilds: Record<string, {
   locale: discord.AvailableLocales;
@@ -33,159 +30,6 @@ const cachedGuilds: Record<string, {
 const cachedUsers: Record<string, {
   locale: discord.AvailableLocales;
 }> = {};
-
-async function getUserCharacters(
-  { userId, guildId }: { userId: string; guildId: string },
-): Promise<{
-  likes: Schema.User['likes'];
-  characters: Schema.Inventory['characters'];
-  party: Schema.Inventory['party'];
-}> {
-  const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        party {
-          member1 {
-            id
-            mediaId
-            rating
-            nickname
-            image
-            combat {
-              stats {
-                strength
-                stamina
-                agility
-              }
-            }
-          }
-          member2 {
-            id
-            mediaId
-            rating
-            nickname
-            image
-            combat {
-              stats {
-                strength
-                stamina
-                agility
-              }
-            }
-          }
-          member3 {
-            id
-            mediaId
-            rating
-            nickname
-            image
-            combat {
-              stats {
-                strength
-                stamina
-                agility
-              }
-            }
-          }
-          member4 {
-            id
-            mediaId
-            rating
-            nickname
-            image
-            combat {
-              stats {
-                strength
-                stamina
-                agility
-              }
-            }
-          }
-          member5 {
-            id
-            mediaId
-            rating
-            nickname
-            image
-            combat {
-              stats {
-                strength
-                stamina
-                agility
-              }
-            }
-          }
-        }
-        user {
-          likes {
-            mediaId
-            characterId
-          }
-        }
-        characters {
-          id
-          mediaId
-          rating
-          nickname
-          image
-        }
-      }
-    }
-  `;
-
-  const { getUserInventory: { user, party, characters } } = await request<{
-    getUserInventory: Schema.Inventory;
-  }>({
-    query,
-    url: faunaUrl,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-    },
-  });
-
-  return {
-    party,
-    characters,
-    likes: user?.likes,
-  };
-}
-
-async function getActiveInventories(
-  guildId: string,
-): Promise<Schema.Inventory[]> {
-  const query = gql`
-    query ($guildId: String!) {
-      getActiveInventories(guildId: $guildId) {
-        user {
-          id
-          likes {
-            mediaId
-            characterId
-          }
-        }
-      }
-    }
-  `;
-
-  const response = (await request<{
-    getActiveInventories: Schema.Inventory[];
-  }>({
-    query,
-    url: faunaUrl,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      guildId,
-    },
-  })).getActiveInventories;
-
-  return response;
-}
 
 async function now({
   token,
@@ -198,42 +42,21 @@ async function now({
   guildId: string;
   mention?: boolean;
 }): Promise<discord.Message> {
-  const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        availablePulls
-        rechargeTimestamp
-        stealTimestamp
-        user {
-          lastVote
-          availableVotes
-          guarantees
-        }
-      }
-    }
-  `;
-
-  const message = new discord.Message();
-
   const locale = cachedUsers[userId]?.locale ??
     cachedGuilds[guildId]?.locale;
 
-  const { user, availablePulls, stealTimestamp, rechargeTimestamp } =
-    (await request<{
-      getUserInventory: Schema.Inventory;
-    }>({
-      url: faunaUrl,
-      query,
-      headers: {
-        'authorization': `Bearer ${config.faunaSecret}`,
-      },
-      variables: {
-        userId,
-        guildId,
-      },
-    })).getUserInventory;
+  const user = await db.getUser(userId);
+  const guild = await db.getGuild(guildId);
+  const instance = await db.getInstance(guild);
+
+  const { inventory } = await db.rechargePulls(instance, user);
+
+  const { availablePulls, stealTimestamp, rechargeTimestamp } = inventory;
+
+  const message = new discord.Message();
 
   const recharge = utils.rechargeTimestamp(rechargeTimestamp);
+
   const voting = utils.votingTimestamp(user.lastVote);
 
   const guarantees = Array.from(new Set(user.guarantees ?? []))
@@ -254,12 +77,12 @@ async function now({
       }),
   );
 
-  if (user.availableVotes) {
+  if (user.availableTokens) {
     message.addEmbed(
       new discord.Embed()
-        .setTitle(`**${user.availableVotes}**`)
+        .setTitle(`**${user.availableTokens}**`)
         .setFooter({
-          text: user.availableVotes === 1
+          text: user.availableTokens === 1
             ? i18n.get('daily-token', locale)
             : i18n.get('daily-tokens', locale),
         }),
@@ -317,14 +140,14 @@ async function now({
     ]);
   }
 
-  if (user.availableVotes && user.availableVotes >= COSTS.FIVE) {
+  if (user.availableTokens && user.availableTokens >= COSTS.FIVE) {
     // `/buy guaranteed` 5 shortcut
     message.addComponents([
       new discord.Component()
         .setId('buy', 'bguaranteed', userId, '5')
         .setLabel(`/buy guaranteed 5`),
     ]);
-  } else if (user.availableVotes && user.availableVotes >= COSTS.FOUR) {
+  } else if (user.availableTokens && user.availableTokens >= COSTS.FOUR) {
     // `/buy guaranteed 4` shortcut
     message.addComponents([
       new discord.Component()
@@ -361,86 +184,6 @@ async function now({
   return message;
 }
 
-async function findCharacters({
-  guildId,
-  ids,
-}: {
-  guildId?: string;
-  ids?: string[];
-}): Promise<(Schema.Character | undefined)[]> {
-  if (!guildId || !ids?.length) {
-    return [];
-  }
-
-  const query = gql`
-    query ($guildId: String!, $charactersId: [String!]) {
-      findCharacters(guildId: $guildId, charactersId: $charactersId) {
-        id
-        image
-        nickname
-        mediaId
-        rating
-        combat {
-          stats {
-            unclaimed
-            strength
-            stamina
-            agility
-          }
-        }
-        inventory {
-          lastPull
-          party {
-            member1 { id }
-            member2 { id }
-            member3 { id }
-            member4 { id }
-            member5 { id }
-          }
-        }
-        user {
-          id
-        }
-      }
-    }
-  `;
-
-  const results = (await request<{
-    findCharacters?: Schema.Character[];
-  }>({
-    url: faunaUrl,
-    query,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      charactersId: ids,
-      guildId,
-    },
-  })).findCharacters;
-
-  if (!results?.length) {
-    return [];
-  }
-
-  return ids
-    .map((id) => results.find((r) => r.id === id));
-}
-
-async function findCharacter({
-  guildId,
-  characterId,
-}: {
-  guildId?: string;
-  characterId?: string;
-}): Promise<Schema.Character | undefined> {
-  if (!guildId || !characterId) {
-    return;
-  }
-
-  return (await user.findCharacters({ guildId, ids: [characterId] }))[0];
-}
-
 function nick({
   token,
   userId,
@@ -456,25 +199,6 @@ function nick({
   search?: string;
   id?: string;
 }): discord.Message {
-  const mutation = gql`
-    mutation ($userId: String!, $guildId: String!, $characterId: String!, $nick: String) {
-      setCharacterNickname(userId: $userId, guildId: $guildId, characterId: $characterId, nickname: $nick) {
-        ok
-        error
-        character {
-          id
-          image
-          nickname
-          mediaId
-          rating
-          user {
-            id
-          }
-        }
-      }
-    }
-  `;
-
   const locale = cachedUsers[userId]?.locale ??
     cachedGuilds[guildId]?.locale;
 
@@ -504,26 +228,55 @@ function nick({
 
       const characterId = `${results[0].packId}:${results[0].id}`;
 
-      const response = (await request<{
-        setCharacterNickname: Schema.Mutation;
-      }>({
-        url: faunaUrl,
-        query: mutation,
-        headers: {
-          'authorization': `Bearer ${config.faunaSecret}`,
-        },
-        variables: {
-          userId,
-          guildId,
+      const user = await db.getUser(userId);
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      const { inventory } = await db.getInventory(instance, user);
+
+      try {
+        const response = await db.setCharacterNickname(
+          user,
+          inventory,
+          instance,
           characterId,
           nick,
-        },
-      })).setCharacterNickname;
+        );
 
-      if (!response.ok) {
+        const name = packs.aliasToArray(character.name)[0];
+
+        message
+          .addEmbed(
+            new discord.Embed().setDescription(
+              !nick ? i18n.get('nickname-reset', locale, name) : i18n.get(
+                'nickname-changed',
+                locale,
+                name,
+                // deno-lint-ignore no-non-null-assertion
+                response.nickname!,
+              ),
+            ),
+          )
+          .addEmbed(srch.characterEmbed(
+            character,
+            {
+              footer: true,
+              rating: false,
+              mode: 'thumbnail',
+              description: false,
+              media: { title: true },
+              existing: {
+                ...response,
+                rating: undefined,
+              },
+            },
+          ));
+
+        return message.patch(token);
+      } catch (err) {
         const names = packs.aliasToArray(results[0].name);
 
-        switch (response.error) {
+        switch (err.message) {
           case 'CHARACTER_NOT_FOUND': {
             return message
               .addEmbed(
@@ -545,51 +298,18 @@ function nick({
                     'character-not-owned-by-you',
                     locale,
                     names[0],
-                    `<@${response.character.user.id}>`,
                   ),
                 ),
               ).addComponents([
                 new discord.Component()
-                  .setId(`character`, response.character.id)
+                  .setId(`character`, characterId)
                   .setLabel('/character'),
               ])
               .patch(token);
           default:
-            throw new Error(response.error);
+            throw err;
         }
       }
-
-      const name = packs.aliasToArray(character.name)[0];
-
-      message
-        .addEmbed(
-          new discord.Embed().setDescription(
-            !nick ? i18n.get('nickname-reset', locale, name) : i18n.get(
-              'nickname-changed',
-              locale,
-              name,
-              // deno-lint-ignore no-non-null-assertion
-              response.character.nickname!,
-            ),
-          ),
-        )
-        .addEmbed(srch.characterEmbed(
-          character,
-          {
-            footer: true,
-            rating: false,
-            mode: 'thumbnail',
-            description: false,
-            media: { title: true },
-            existing: {
-              ...response.character,
-              rating: undefined,
-              user: undefined,
-            },
-          },
-        ));
-
-      return message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
@@ -635,25 +355,6 @@ function image({
   search?: string;
   id?: string;
 }): discord.Message {
-  const mutation = gql`
-    mutation ($userId: String!, $guildId: String!, $characterId: String!, $image: String) {
-      setCharacterImage(userId: $userId, guildId: $guildId, characterId: $characterId, image: $image) {
-        ok
-        error
-        character {
-          id
-          image
-          nickname
-          mediaId
-          rating
-          user {
-            id
-          }
-        }
-      }
-    }
-  `;
-
   const locale = cachedUsers[userId]?.locale ??
     cachedGuilds[guildId]?.locale;
 
@@ -683,26 +384,54 @@ function image({
 
       const characterId = `${results[0].packId}:${results[0].id}`;
 
-      const response = (await request<{
-        setCharacterImage: Schema.Mutation;
-      }>({
-        url: faunaUrl,
-        query: mutation,
-        headers: {
-          'authorization': `Bearer ${config.faunaSecret}`,
-        },
-        variables: {
-          userId,
-          guildId,
+      const user = await db.getUser(userId);
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      const { inventory } = await db.getInventory(instance, user);
+
+      try {
+        const response = await db.setCharacterImage(
+          user,
+          inventory,
+          instance,
           characterId,
           image,
-        },
-      })).setCharacterImage;
+        );
 
-      if (!response.ok) {
+        const name = packs.aliasToArray(character.name)[0];
+
+        message
+          .addEmbed(
+            new discord.Embed().setDescription(
+              !image ? i18n.get('image-reset', locale, name) : i18n.get(
+                'image-changed',
+                locale,
+                name,
+                // deno-lint-ignore no-non-null-assertion
+                image!,
+              ),
+            ),
+          )
+          .addEmbed(srch.characterEmbed(
+            character,
+            {
+              footer: true,
+              rating: false,
+              description: false,
+              media: { title: true },
+              existing: {
+                ...response,
+                rating: undefined,
+              },
+            },
+          ));
+
+        return message.patch(token);
+      } catch (err) {
         const names = packs.aliasToArray(results[0].name);
 
-        switch (response.error) {
+        switch (err.message) {
           case 'CHARACTER_NOT_FOUND': {
             return message
               .addEmbed(
@@ -724,50 +453,18 @@ function image({
                     'character-not-owned-by-you',
                     locale,
                     names[0],
-                    `<@${response.character.user.id}>`,
                   ),
                 ),
               ).addComponents([
                 new discord.Component()
-                  .setId(`character`, response.character.id)
+                  .setId(`character`, characterId)
                   .setLabel('/character'),
               ])
               .patch(token);
           default:
-            throw new Error(response.error);
+            throw err;
         }
       }
-
-      const name = packs.aliasToArray(character.name)[0];
-
-      message
-        .addEmbed(
-          new discord.Embed().setDescription(
-            !image ? i18n.get('image-reset', locale, name) : i18n.get(
-              'image-changed',
-              locale,
-              name,
-              // deno-lint-ignore no-non-null-assertion
-              response.character.image!,
-            ),
-          ),
-        )
-        .addEmbed(srch.characterEmbed(
-          character,
-          {
-            footer: true,
-            rating: false,
-            description: false,
-            media: { title: true },
-            existing: {
-              ...response.character,
-              rating: undefined,
-              user: undefined,
-            },
-          },
-        ));
-
-      return message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
@@ -815,28 +512,6 @@ function like({
   search?: string;
   id?: string;
 }): discord.Message {
-  const mutation = gql`
-    mutation ($userId: String!, $guildId: String!, $characterId: String!) {
-  ${
-    undo
-      ? 'unlikeCharacter'
-      : 'likeCharacter'
-  }(userId: $userId, guildId: $guildId, characterId: $characterId) {
-        ok
-        character {
-          id
-          image
-          nickname
-          mediaId
-          rating
-          user {
-            id
-          }
-        }
-      }
-    }
-  `;
-
   const locale = cachedUsers[userId]?.locale ??
     cachedGuilds[guildId]?.locale;
 
@@ -866,64 +541,54 @@ function like({
 
       const characterId = `${character.packId}:${character.id}`;
 
-      const response = (await request<{
-        likeCharacter: Schema.Mutation;
-        unlikeCharacter: Schema.Mutation;
-      }>({
-        url: faunaUrl,
-        query: mutation,
-        headers: {
-          'authorization': `Bearer ${config.faunaSecret}`,
-        },
-        variables: {
-          userId,
-          guildId,
-          characterId,
-        },
-      }))[undo ? 'unlikeCharacter' : 'likeCharacter'];
+      const user = await db.getUser(userId);
 
-      if (!response.ok) {
-        switch (response.error) {
-          default:
-            throw new Error(response.error);
-        }
-      }
+      try {
+        const _ = !undo
+          ? await db.likeCharacter(
+            user,
+            characterId,
+          )
+          : await db.unlikeCharacter(
+            user,
+            characterId,
+          );
 
-      message
-        .addEmbed(
-          new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked'),
-        );
-
-      if (mention) {
         message
-          .setContent(`<@${userId}>`)
-          .setPing();
+          .addEmbed(
+            new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked'),
+          );
+
+        if (mention) {
+          message
+            .setContent(`<@${userId}>`)
+            .setPing();
+        }
+
+        message
+          .addEmbed(srch.characterEmbed(
+            character,
+            {
+              footer: true,
+              description: false,
+              mode: 'thumbnail',
+              media: { title: true },
+              rating: true,
+            },
+          ));
+
+        if (!undo) {
+          message.addComponents([
+            new discord.Component()
+              .setId(`character`, characterId)
+              .setLabel('/character'),
+          ]);
+        }
+
+        return message.patch(token);
+      } catch (err) {
+        throw err;
       }
-
-      message
-        .addEmbed(srch.characterEmbed(
-          character,
-          {
-            footer: true,
-            description: false,
-            mode: 'thumbnail',
-            media: { title: true },
-            rating: response.character?.rating
-              ? new Rating({ stars: response.character?.rating })
-              : true,
-            existing: !undo ? response.character : undefined,
-          },
-        ));
-
-      if (!undo) {
-        message.addComponents([
-          new discord.Component()
-            .setId(`character`, characterId)
-            .setLabel('/character'),
-        ]);
-      }
-
-      return message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
@@ -969,14 +634,6 @@ function likeall({
   search?: string;
   id?: string;
 }): discord.Message {
-  const mutation = gql`
-    mutation ($userId: String!, $mediaId: String!) {
-  ${undo ? 'unlikeMedia' : 'likeMedia'}(userId: $userId, mediaId: $mediaId) {
-        ok
-      }
-    }
-  `;
-
   const locale = cachedUsers[userId]?.locale ??
     cachedGuilds[guildId]?.locale;
 
@@ -994,50 +651,47 @@ function likeall({
 
       const mediaId = `${results[0].packId}:${results[0].id}`;
 
-      const response = (await request<{
-        likeMedia: Schema.Mutation;
-        unlikeMedia: Schema.Mutation;
-      }>({
-        url: faunaUrl,
-        query: mutation,
-        headers: {
-          'authorization': `Bearer ${config.faunaSecret}`,
-        },
-        variables: {
-          userId,
-          mediaId,
-        },
-      }))[undo ? 'unlikeMedia' : 'likeMedia'];
+      const user = await db.getUser(userId);
 
-      if (!response.ok) {
-        throw new Error(response.error);
+      try {
+        const _ = !undo
+          ? await db.likeMedia(
+            user,
+            mediaId,
+          )
+          : await db.unlikeMedia(
+            user,
+            mediaId,
+          );
+
+        message
+          .addEmbed(
+            new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked'),
+          );
+
+        const media = await packs.aggregate<Media>({
+          guildId,
+          media: results[0],
+        });
+
+        message
+          .addEmbed(srch.mediaEmbed(
+            media,
+            packs.aliasToArray(media.title),
+          ));
+
+        if (!undo) {
+          message.addComponents([
+            new discord.Component()
+              .setId(`media`, mediaId)
+              .setLabel(`/${media.type.toString().toLowerCase()}`),
+          ]);
+        }
+
+        return message.patch(token);
+      } catch (err) {
+        throw err;
       }
-
-      message
-        .addEmbed(
-          new discord.Embed().setDescription(!undo ? 'Liked' : 'Unliked'),
-        );
-
-      const media = await packs.aggregate<Media>({
-        guildId,
-        media: results[0],
-      });
-
-      message
-        .addEmbed(srch.mediaEmbed(
-          media,
-          packs.aliasToArray(media.title),
-        ));
-
-      if (!undo) {
-        message.addComponents([
-          new discord.Component()
-            .setId(`media`, mediaId)
-            .setLabel(`/${media.type.toString().toLowerCase()}`),
-        ]);
-      }
-
-      return message.patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
@@ -1090,18 +744,26 @@ function list({
   const locale = cachedUsers[userId]?.locale ??
     cachedGuilds[guildId]?.locale;
 
-  user.getUserCharacters({ userId, guildId })
-    .then(async ({ characters, party, likes }) => {
+  Promise.resolve()
+    .then(async () => {
+      const user = await db.getUser(userId);
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      const { inventory } = await db.getInventory(instance, user);
+
+      let characters = await db.getUserCharacters(inventory);
+
       const embed = new discord.Embed();
 
       const message = new discord.Message();
 
       const members = [
-        party?.member1?.id,
-        party?.member2?.id,
-        party?.member3?.id,
-        party?.member4?.id,
-        party?.member5?.id,
+        inventory.party?.member1,
+        inventory.party?.member2,
+        inventory.party?.member3,
+        inventory.party?.member4,
+        inventory.party?.member5,
       ];
 
       let media: Media[] = [];
@@ -1179,9 +841,9 @@ function list({
           : undefined;
 
         const name = `${existing.rating}${discord.emotes.smolStar}${
-          members?.some((member) => member === existing.id)
+          members?.some((member) => Boolean(member) && member === existing._id)
             ? discord.emotes.member
-            : likes?.some((like) => like.characterId === existing.id)
+            : user.likes?.some((like) => like.characterId === existing.id)
             ? `${discord.emotes.liked}`
             : ''
         } ${existing.nickname ?? utils.wrap(packs.aliasToArray(char.name)[0])}`;
@@ -1302,42 +964,19 @@ function likeslist({
   nick?: boolean;
   filter?: boolean;
 }): discord.Message {
-  const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        user {
-          likes {
-            mediaId
-            characterId
-          }
-        }
-      }
-    }
-  `;
-
   const locale = user.cachedUsers[userId]?.locale;
 
-  request<{
-    getUserInventory: Schema.Inventory;
-  }>({
-    url: faunaUrl,
-    query,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-    },
-  })
-    .then(async ({ getUserInventory }) => {
+  Promise.resolve()
+    .then(async () => {
+      const user = await db.getUser(userId);
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
       const embed = new discord.Embed();
 
       const message = new discord.Message();
 
-      let { likes } = getUserInventory.user;
-
-      likes ??= [];
+      let likes = user.likes ?? [];
 
       // sort so that all media likes are in the bottom of the list
       likes.sort((a, b) => {
@@ -1353,17 +992,16 @@ function likeslist({
         }
       });
 
-      // find the ownership info of all liked characters
-      const results = await user.findCharacters({
-        guildId,
-        ids: likes.map(({ characterId }) => characterId)
+      const results = await db.findCharacters(
+        instance,
+        likes.map(({ characterId }) => characterId)
           .filter(Boolean),
-      });
+      );
 
       // filter out characters that are owned by the user
       if (filter) {
         likes = likes.filter((like, i) => {
-          return like.characterId && results[i]?.user.id !== userId;
+          return like.characterId && results[i]?.[1]?.id !== userId;
         });
       }
 
@@ -1385,7 +1023,7 @@ function likeslist({
       await Promise.all(
         characters.map(async (character) => {
           const existing = results.find((r) =>
-            r?.id === `${character.packId}:${character.id}`
+            r?.[0]?.id === `${character.packId}:${character.id}`
           );
 
           const char = await packs.aggregate<Character>({
@@ -1394,7 +1032,8 @@ function likeslist({
             end: 1,
           });
 
-          const rating = existing?.rating ?? Rating.fromCharacter(char).stars;
+          const rating = existing?.[0]?.rating ??
+            Rating.fromCharacter(char).stars;
 
           const media = char.media?.edges?.[0]?.node;
 
@@ -1405,7 +1044,7 @@ function likeslist({
             : undefined;
 
           const name = `${rating}${discord.emotes.smolStar} ${
-            existing ? `<@${existing.user.id}> ` : ''
+            existing ? `<@${existing?.[1]?.id}> ` : ''
           }${utils.wrap(packs.aliasToArray(char.name)[0])}`;
 
           if (
@@ -1438,7 +1077,9 @@ function likeslist({
 
       if (embed.getFieldsCount() <= 0) {
         message.addEmbed(embed.setDescription(
-          `${nick ? `<@${userId}> doesn't` : 'You don\'t'} have any likes`,
+          nick
+            ? i18n.get('user-empty-likeslist', locale, `<@${userId}>`)
+            : i18n.get('you-empty-likeslist', locale),
         ));
 
         return message.patch(token);
@@ -1485,40 +1126,22 @@ function logs({
   guildId: string;
   nick?: boolean;
 }): discord.Message {
-  const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        characters {
-          id
-          mediaId
-          rating
-          nickname
-        }
-      }
-    }
-  `;
-
   const locale = cachedUsers[userId]?.locale ??
     cachedGuilds[guildId]?.locale;
 
-  request<{
-    getUserInventory: Schema.Inventory;
-  }>({
-    url: faunaUrl,
-    query,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-    },
-  })
-    .then(async ({ getUserInventory }) => {
+  Promise.resolve()
+    .then(async () => {
       const message = new discord.Message();
 
-      const characters = getUserInventory.characters
-        .slice(-10);
+      const user = await db.getUser(userId);
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      const { inventory } = await db.getInventory(instance, user);
+
+      let characters = await db.getUserCharacters(inventory);
+
+      characters = characters.slice(-10);
 
       const names: string[] = [];
 
@@ -1588,10 +1211,6 @@ function logs({
 const user = {
   cachedUsers,
   cachedGuilds,
-  findCharacter,
-  findCharacters,
-  getActiveInventories,
-  getUserCharacters,
   image,
   like,
   likeall,

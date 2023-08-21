@@ -1,6 +1,8 @@
 .env
-.faunarc
-bundle.gql
-cov_profile
+
 deno.lock
+
+cov_profile
 lcov.info
+
+migrate

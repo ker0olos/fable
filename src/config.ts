@@ -1,12 +1,9 @@
 import { load as Dotenv } from '$std/dotenv/mod.ts';
 
-export const faunaUrl = 'https://graphql.us.fauna.com/graphql';
-
 const config: {
   deploy: boolean;
   appId?: string;
   publicKey?: string;
-  faunaSecret?: string;
   topggCipher?: number;
   topggSecret?: string;
   sentry?: string;
@@ -24,7 +21,6 @@ const config: {
   deploy: false,
   appId: undefined,
   publicKey: undefined,
-  faunaSecret: undefined,
   topggCipher: undefined,
   topggSecret: undefined,
   sentry: undefined,
@@ -60,8 +56,6 @@ export async function initConfig(): Promise<void> {
     config.appId = Deno.env.get('APP_ID');
 
     config.publicKey = Deno.env.get('PUBLIC_KEY');
-
-    config.faunaSecret = Deno.env.get('FAUNA_SECRET');
 
     config.topggCipher = Number(Deno.env.get('TOPGG_WEBHOOK_CIPHER'));
     config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');

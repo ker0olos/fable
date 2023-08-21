@@ -1,25 +1,25 @@
-import { gql, request } from './graphql.ts';
-
-import config, { faunaUrl } from './config.ts';
+import config from './config.ts';
 
 import packs from './packs.ts';
 
 import { default as srch } from './search.ts';
 
-import user from './user.ts';
-import synthesis from './synthesis.ts';
-
+import i18n from './i18n.ts';
 import utils from './utils.ts';
+
+import user from './user.ts';
+
+import db from '../db/mod.ts';
 
 import * as discord from './discord.ts';
 
-import { Character, DisaggregatedCharacter, Schema } from './types.ts';
+import { Character, DisaggregatedCharacter } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
 
-export const PARTY_PROTECTION_PERIOD = 4;
+import type * as Schema from '../db/schema.ts';
 
-export const BOOST_FACTOR = 0.02;
+export const PARTY_PROTECTION_PERIOD = 4;
 
 function getInactiveDays(inventory?: Partial<Schema.Inventory>): number {
   const lastPull = inventory?.lastPull
@@ -31,7 +31,7 @@ function getInactiveDays(inventory?: Partial<Schema.Inventory>): number {
     : utils.diffInDays(new Date(), lastPull);
 }
 
-function getChances(character: Schema.Character): number {
+function getChances(character: Schema.Character, inactiveDays: number): number {
   let chance = 0;
 
   switch (character.rating) {
@@ -54,8 +54,6 @@ function getChances(character: Schema.Character): number {
       break;
   }
 
-  const inactiveDays = getInactiveDays(character.inventory);
-
   if (inactiveDays > 30) {
     chance += 90;
   } else if (inactiveDays >= 14) {
@@ -67,118 +65,25 @@ function getChances(character: Schema.Character): number {
   return Math.min(chance, 90);
 }
 
-async function getCooldown({ userId, guildId }: {
-  userId: string;
-  guildId: string;
-}): Promise<number> {
-  const query = gql`
-    query ($userId: String!, $guildId: String!) {
-      getUserInventory(userId: $userId, guildId: $guildId) {
-        stealTimestamp
-      }
-    }
-  `;
-
-  const { getUserInventory: { stealTimestamp } } = await request<{
-    getUserInventory: Schema.Inventory;
-  }>({
-    query,
-    url: faunaUrl,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-    },
-  });
-
-  const parsed = new Date(stealTimestamp ?? new Date());
-
-  return parsed.getTime();
-}
-
-function getSacrifices(characters: Schema.Character[], target: number): {
-  sum: number;
-  sacrifices: Schema.Character[];
-} {
-  if (characters.length === 0) {
-    return {
-      sum: 0,
-      sacrifices: [],
-    };
-  }
-
-  // create all possible ways to reach the exact target
-
-  const hashMap: Record<number, Schema.Character> = {};
-
-  const results = [];
-
-  for (let i = 0; i < characters.length; i++) {
-    const { rating } = characters[i];
-
-    if (hashMap[rating]) {
-      results.push([hashMap[rating], characters[i]]);
-    } else {
-      hashMap[target - rating] = characters[i];
-    }
-  }
-
-  // if there are possibilities
-  if (results.length > 0) {
-    return {
-      sum: target,
-      // pick the largest possibility
-      sacrifices: results.reduce((prev, next) =>
-        prev.length > next.length ? prev : next
-      ).sort((a, b) => b.rating - a.rating),
-    };
-  }
-
-  // fallback return the a mix of character from lowest to highest
-  // until you reach the closest you can to target
-
-  let curr = 0;
-
-  const sacrifices: Schema.Character[] = [];
-
-  for (
-    // 1 -> 5
-    const char of characters
-      .toSorted((a, b) => a.rating - b.rating)
-  ) {
-    if (curr + char.rating > target) {
-      break;
-    }
-
-    curr += char.rating;
-
-    sacrifices.push(char);
-  }
-
-  return {
-    sum: curr,
-    sacrifices: sacrifices
-      .sort((a, b) => b.rating - a.rating),
-  };
-}
-
-function pre({ token, userId, guildId, stars, search, id }: {
+function pre({ token, userId, guildId, search, id }: {
   token: string;
   userId: string;
   guildId: string;
-  stars: number;
   search?: string;
   id?: string;
 }): discord.Message {
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
+
   if (!config.stealing) {
-    throw new NonFetalError('Stealing is under maintenance, try again later!');
+    throw new NonFetalError(
+      i18n.get('maintenance-steal', locale),
+    );
   }
 
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
-    .then((results: (Character | DisaggregatedCharacter)[]) => {
+    .then(async (results: (Character | DisaggregatedCharacter)[]) => {
       if (
         !results.length ||
         packs.isDisabled(`${results[0].packId}:${results[0].id}`, guildId)
@@ -186,23 +91,39 @@ function pre({ token, userId, guildId, stars, search, id }: {
         throw new Error('404');
       }
 
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      const user = await db.getUser(userId);
+
+      const { inventory } = await db.getInventory(instance, user);
+
+      const cooldown = new Date(inventory.stealTimestamp ?? new Date())
+        .getTime();
+
+      if (cooldown > Date.now()) {
+        throw new NonFetalError(
+          i18n.get(
+            'steal-cooldown',
+            locale,
+            `<t:${Math.floor(cooldown / 1000).toString()}:R>`,
+          ),
+        );
+      }
+
       return Promise.all([
-        getCooldown({
-          userId,
-          guildId,
-        }),
         packs.aggregate<Character>({
           guildId,
           character: results[0],
           end: 1,
         }),
-        user.findCharacter({
-          guildId,
-          characterId: `${results[0].packId}:${results[0].id}`,
-        }),
+        db.findCharacters(
+          instance,
+          [`${results[0].packId}:${results[0].id}`],
+        ),
       ]);
     })
-    .then(([cooldown, character, existing]) => {
+    .then(async ([character, results]) => {
       const message = new discord.Message();
 
       const characterId = `${character.packId}:${character.id}`;
@@ -211,10 +132,12 @@ function pre({ token, userId, guildId, stars, search, id }: {
 
       const media = character.media?.edges?.[0]?.node;
 
+      const existing = results[0];
+
       if (
         (
-          existing &&
-          packs.isDisabled(existing.mediaId, guildId)
+          existing?.[0] &&
+          packs.isDisabled(existing[0].mediaId, guildId)
         ) ||
         (
           media &&
@@ -224,18 +147,10 @@ function pre({ token, userId, guildId, stars, search, id }: {
         throw new Error('404');
       }
 
-      if (cooldown > Date.now()) {
-        throw new NonFetalError(
-          `Steal is on cooldown, try again <t:${
-            Math.floor(cooldown / 1000).toString()
-          }:R>`,
-        );
-      }
-
-      if (!existing) {
+      if (!existing || !existing[0] || !existing[1]) {
         message.addEmbed(
           new discord.Embed().setDescription(
-            `**${characterName}** has not been found by anyone`,
+            i18n.get('character-hasnt-been-found', locale, characterName),
           ),
         );
 
@@ -249,25 +164,41 @@ function pre({ token, userId, guildId, stars, search, id }: {
         return message.patch(token);
       }
 
-      const party = [
-        existing.inventory?.party?.member1?.id,
-        existing.inventory?.party?.member2?.id,
-        existing.inventory?.party?.member3?.id,
-        existing.inventory?.party?.member4?.id,
-        existing.inventory?.party?.member5?.id,
-      ];
-
-      if (existing.user.id === userId) {
-        throw new NonFetalError('You can\'t steal from yourself!');
+      if (existing[1]?.id === userId) {
+        throw new NonFetalError(i18n.get('stealing-from-yourself', locale));
       }
 
-      if (party.includes(characterId)) {
-        const inactiveDays = getInactiveDays(existing.inventory);
+      const targetInventory = await db.getValue<Schema.Inventory>([
+        'inventories',
+        existing[0].inventory,
+      ]);
 
+      if (!targetInventory) {
+        throw new Error('');
+      }
+
+      const targetParty = await db.getUserParty(targetInventory);
+
+      const party = [
+        targetParty?.member1?.id,
+        targetParty?.member2?.id,
+        targetParty?.member3?.id,
+        targetParty?.member4?.id,
+        targetParty?.member5?.id,
+      ];
+
+      const inactiveDays = getInactiveDays(targetInventory);
+
+      if (party.includes(characterId)) {
         if (inactiveDays <= PARTY_PROTECTION_PERIOD) {
           message.addEmbed(
             new discord.Embed().setDescription(
-              `As part of <@${existing?.user.id}>'s party, **${characterName}** cannot be stolen while <@${existing?.user.id}> is still active`,
+              i18n.get(
+                'stealing-party-member',
+                locale,
+                `<@${existing[1].id}>`,
+                characterName,
+              ),
             ),
           );
 
@@ -276,7 +207,7 @@ function pre({ token, userId, guildId, stars, search, id }: {
             mode: 'thumbnail',
             description: false,
             media: { title: true },
-            existing: { rating: existing?.rating },
+            existing: { rating: existing[0].rating },
           }));
 
           return message.patch(token);
@@ -291,32 +222,29 @@ function pre({ token, userId, guildId, stars, search, id }: {
           description: false,
           media: { title: true },
           existing: {
-            mediaId: existing?.mediaId,
+            mediaId: existing[0].mediaId,
           },
         })
-          .setDescription(`<@${existing?.user.id}>`),
+          .setDescription(`<@${existing[1].id}>`),
       );
 
-      const chance = getChances(existing);
+      const chance = getChances(existing[0], inactiveDays);
 
       message.addEmbed(
         new discord.Embed().setDescription(
-          stars > 0
-            ? '_Continue to see your chance of success_'
-            : `Your chance of success is **${chance.toFixed(2)}%**`,
+          i18n.get('steal-chance', locale, chance.toFixed(2)),
         ),
       );
 
       return discord.Message.dialog({
         userId,
         message,
-        confirmText: stars > 0 ? 'Continue' : 'Attempt',
+        confirmText: i18n.get('attempt', locale),
         confirm: [
-          stars > 0 ? 'bsteal' : 'steal',
+          'steal',
           userId,
           characterId,
           `${chance}`,
-          `${stars}`,
         ],
       }).patch(token);
     })
@@ -325,7 +253,7 @@ function pre({ token, userId, guildId, stars, search, id }: {
         return await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
       }
@@ -358,175 +286,24 @@ function pre({ token, userId, guildId, stars, search, id }: {
   return loading;
 }
 
-function sacrifices({
-  token,
-  userId,
-  guildId,
-  characterId,
-  stars,
-  pre,
-}: {
-  token: string;
-  userId: string;
-  guildId: string;
-  stars: number;
-  characterId: string;
-  pre: number;
-}): discord.Message {
-  synthesis.getFilteredCharacters({ userId, guildId })
-    .then(async (characters) => {
-      const missing = 100 - pre;
-
-      const message = new discord.Message();
-
-      // makes sure that we don't sacrifice more characters than needed to get a 100% chance
-      stars = Math.min(Math.round(missing / BOOST_FACTOR), stars);
-
-      const { sacrifices, sum } = getSacrifices(characters, stars);
-
-      const boost = sum * BOOST_FACTOR;
-
-      // highlight the top characters
-      const highlights = sacrifices.slice(0, 5);
-
-      const highlightedCharacters = await packs.characters({
-        ids: highlights.map(({ id }) => id),
-        guildId,
-      });
-
-      if (!sacrifices.length) {
-        message.addEmbed(
-          new discord.Embed().setDescription(
-            '**You don\'t have any characters to sacrifice**',
-          ),
-        );
-      } else {
-        message.addEmbed(
-          new discord.Embed().setDescription(
-            `Sacrifice **${sacrifices.length}** characters?`,
-          ),
-        );
-
-        await Promise.all(highlights.map(async (existing) => {
-          const match = highlightedCharacters
-            .find((char) => existing.id === `${char.packId}:${char.id}`);
-
-          if (match) {
-            const character = await packs.aggregate<Character>({
-              character: match,
-              guildId,
-            });
-
-            message.addEmbed(
-              synthesis.characterPreview(character, existing),
-            );
-          }
-        }));
-
-        if (sacrifices.length - highlightedCharacters.length) {
-          message.addEmbed(
-            new discord.Embed().setDescription(
-              `_+${
-                sacrifices.length - highlightedCharacters.length
-              } others..._`,
-            ),
-          );
-        }
-      }
-
-      message.addEmbed(
-        new discord.Embed().setDescription(
-          `Your chance of success is **${(pre + boost).toFixed(2)}%**`,
-        ),
-      );
-
-      await discord.Message.dialog({
-        userId,
-        message,
-        confirmText: 'Attempt',
-        confirm: [
-          'steal',
-          userId,
-          characterId,
-          `${pre}`,
-          `${sum}`,
-        ],
-      })
-        .patch(token);
-    })
-    .catch(async (err) => {
-      if (!config.sentry) {
-        throw err;
-      }
-
-      const refId = utils.captureException(err);
-
-      await discord.Message.internal(refId).patch(token);
-    });
-
-  const loading = new discord.Message()
-    .addEmbed(
-      new discord.Embed().setImage(
-        { url: `${config.origin}/assets/spinner3.gif` },
-      ),
-    );
-
-  return loading;
-}
-
 function attempt({
   token,
   userId,
   guildId,
   characterId,
-  stars,
   pre,
 }: {
   token: string;
   userId: string;
   guildId: string;
   characterId: string;
-  stars: number;
   pre: number;
 }): discord.Message {
-  const mutation = gql`
-    mutation ($userId: String!, $guildId: String!, $characterId: String!, $sacrifices: [String!]!) {
-      stealCharacter(
-        userId: $userId
-        guildId: $guildId
-        characterId: $characterId
-        sacrifices: $sacrifices
-      ) {
-        ok
-        error
-        inventory {
-          stealTimestamp
-        }
-        character {
-          id
-          image
-          nickname
-          mediaId
-          rating
-          user {
-            id
-          }
-        }
-      }
-    }
-  `;
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
 
-  Promise.all([
-    packs.characters({ ids: [characterId], guildId }),
-    user.findCharacter({
-      guildId,
-      characterId,
-    }),
-    stars > 0
-      ? synthesis.getFilteredCharacters({ userId, guildId })
-      : Promise.resolve([]),
-  ])
-    .then(async ([results, existing, characters]) => {
+  packs.characters({ ids: [characterId], guildId })
+    .then(async (results) => {
       const message = new discord.Message();
 
       const character = await packs.aggregate<Character>({
@@ -537,176 +314,181 @@ function attempt({
 
       const characterName = packs.aliasToArray(character.name)[0];
 
-      if (!existing) {
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      const user = await db.getUser(userId);
+
+      const { inventory, inventoryCheck } = await db.getInventory(
+        instance,
+        user,
+      );
+
+      const cooldown = new Date(inventory.stealTimestamp ?? new Date())
+        .getTime();
+
+      if (cooldown > Date.now()) {
+        throw new NonFetalError(
+          i18n.get(
+            'steal-cooldown',
+            locale,
+            `<t:${Math.floor(cooldown / 1000).toString()}:R>`,
+          ),
+        );
+      }
+
+      const existing = (await db.findCharacters(
+        instance,
+        [`${results[0].packId}:${results[0].id}`],
+      ))?.[0];
+
+      if (!existing || !existing[0] || !existing[1]) {
         message.addEmbed(
           new discord.Embed().setDescription(
-            `**${characterName}** has not been found by anyone`,
+            i18n.get('character-hasnt-been-found', locale, characterName),
           ),
         );
 
         return message.patch(token);
       }
 
-      const chance = getChances(existing);
+      const targetInventory = await db.getValue<Schema.Inventory>([
+        'inventories',
+        existing[0].inventory,
+      ]);
 
-      const { sacrifices, sum } = getSacrifices(characters, stars);
+      if (!targetInventory) {
+        throw new Error('');
+      }
 
-      const boost = sum * BOOST_FACTOR;
+      const inactiveDays = getInactiveDays(targetInventory);
 
-      const final = chance + boost;
+      const chance = getChances(existing[0], inactiveDays);
 
-      // make sure that the chance the user confirmed to attempt
-      // was not altered since the initial steal dialog
-      if (pre > final) {
+      if (pre > chance) {
         throw new NonFetalError(
-          `Something happened and affected your chances of stealing **${characterName}**, try again to get up-to-date data!`,
+          i18n.get('steal-unexpected', locale, characterName),
         );
       }
 
-      const success = utils.getRandomFloat() <= (final / 100);
+      const success = utils.getRandomFloat() <= (chance / 100);
 
       // delay to build up anticipation
-      await utils.sleep(8);
+      await utils.sleep(6);
 
       // failed
       if (!success) {
-        const mutation = gql`
-          mutation ($userId: String!, $guildId: String!, $sacrifices: [String!]!) {
-            failSteal(userId: $userId, guildId: $guildId, sacrifices: $sacrifices) {
-              ok
-              inventory {
-                stealTimestamp
-              }
-            }
-          }
-        `;
-
-        const response = await request<{
-          failSteal: Schema.Mutation;
-        }>({
-          url: faunaUrl,
-          query: mutation,
-          headers: {
-            'authorization': `Bearer ${config.faunaSecret}`,
-          },
-          variables: {
-            userId,
-            guildId,
-            sacrifices: sacrifices.map(({ id }) => id),
-          },
-        });
-
-        if (!response.failSteal.ok) {
-          throw new Error('failSteal() failed');
-        }
-
-        message.addEmbed(
-          new discord.Embed().setDescription(
-            '**You Failed!**',
-          ),
+        const { stealTimestamp } = await db.failSteal(
+          inventory,
+          inventoryCheck,
         );
 
-        message.addEmbed(
-          new discord.Embed().setDescription(
-            `You can try again <t:${
-              utils.stealTimestamp(response.failSteal.inventory.stealTimestamp)
-            }:R>`,
-          ),
-        );
+        message
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get('you-failed', locale),
+            ),
+          )
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get(
+                'steal-try-again',
+                locale,
+                `<t:${utils.stealTimestamp(stealTimestamp)}:R>`,
+              ),
+            ),
+          );
 
         return message.patch(token);
       }
 
-      const response = await request<{
-        stealCharacter: Schema.Mutation;
-      }>({
-        url: faunaUrl,
-        query: mutation,
-        headers: {
-          'authorization': `Bearer ${config.faunaSecret}`,
-        },
-        variables: {
-          userId,
+      try {
+        const _ = await db.stealCharacter({
+          aInventoryCheck: inventoryCheck,
+          aInventory: inventory,
+          aUser: user,
           characterId,
-          guildId,
-          sacrifices: sacrifices.map(({ id }) => id),
-        },
-      });
+          instance,
+          bInventoryId: existing[0].inventory,
+        });
 
-      if (!response.stealCharacter.ok) {
-        switch (response.stealCharacter.error) {
-          case 'ON_COOLDOWN':
-            throw new NonFetalError(
-              `Steal is on cooldown, try again <t:${
-                utils.stealTimestamp(
-                  response.stealCharacter.inventory.stealTimestamp,
-                )
-              }:R>`,
-            );
-          case 'CHARACTER_NOT_FOUND':
-            throw new NonFetalError(
-              'Some of those characters were disabled or removed',
-            );
-          default:
-            throw new Error(response.stealCharacter.error);
-        }
-      }
-
-      message.addEmbed(new discord.Embed().setDescription('**You Succeed!**'));
-
-      message.addEmbed(
-        srch.characterEmbed(character, {
-          footer: false,
-          mode: 'thumbnail',
-          description: false,
-          media: { title: true },
-          existing: {
-            rating: existing?.rating,
-            mediaId: existing?.mediaId,
-          },
-        }).addField({
-          value: `${discord.emotes.add}`,
-        }),
-      );
-
-      message.addComponents([
-        new discord.Component()
-          .setLabel('/character')
-          .setId(`character`, characterId, '1'),
-        new discord.Component()
-          .setLabel('/like')
-          .setId(`like`, characterId),
-      ]);
-
-      message.patch(token);
-
-      return new discord.Message()
-        .setContent(`<@${existing?.user.id}>`)
-        .addEmbed(
+        message.addEmbed(
           new discord.Embed().setDescription(
-            `**${characterName}** was stolen from you!`,
+            i18n.get('you-succeeded', locale),
           ),
-        )
-        .addEmbed(
+        );
+
+        message.addEmbed(
           srch.characterEmbed(character, {
             footer: false,
             mode: 'thumbnail',
             description: false,
             media: { title: true },
             existing: {
-              rating: existing?.rating,
-              mediaId: existing?.mediaId,
+              rating: existing[0].rating,
+              mediaId: existing[0].mediaId,
             },
           }).addField({
-            value: `${discord.emotes.remove}`,
+            value: `${discord.emotes.add}`,
           }),
-        )
-        .addComponents([
+        );
+
+        message.addComponents([
           new discord.Component()
             .setLabel('/character')
             .setId(`character`, characterId, '1'),
-        ])
-        .followup(token);
+          new discord.Component()
+            .setLabel('/like')
+            .setId(`like`, characterId),
+        ]);
+
+        message.patch(token);
+
+        return new discord.Message()
+          .setContent(`<@${existing?.[1]?.id}>`)
+          .addEmbed(
+            new discord.Embed().setDescription(
+              i18n.get('stolen-from-you', locale, characterName),
+            ),
+          )
+          .addEmbed(
+            srch.characterEmbed(character, {
+              footer: false,
+              mode: 'thumbnail',
+              description: false,
+              media: { title: true },
+              existing: {
+                rating: existing?.[0]?.rating,
+                mediaId: existing?.[0]?.mediaId,
+              },
+            }).addField({
+              value: `${discord.emotes.remove}`,
+            }),
+          )
+          .addComponents([
+            new discord.Component()
+              .setLabel('/character')
+              .setId(`character`, characterId, '1'),
+          ])
+          .followup(token);
+      } catch (err) {
+        switch (err.message) {
+          case 'CHARACTER_NOT_FOUND':
+            throw new NonFetalError(
+              i18n.get('character-hasnt-been-found', locale, characterName),
+            );
+          case 'CHARACTER_NOT_OWNED':
+            throw new NonFetalError(
+              i18n.get(
+                'character-not-owned-by-you',
+                locale,
+                characterName,
+              ),
+            );
+          default:
+            throw err;
+        }
+      }
     })
     .catch(async (err) => {
       if (err instanceof NonFetalError) {
@@ -740,8 +522,8 @@ function attempt({
 const steal = {
   pre,
   attempt,
-  sacrifices,
   getChances,
+  getInactiveDays,
 };
 
 export default steal;

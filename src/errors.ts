@@ -1,22 +1,10 @@
 import utils from './utils.ts';
 
-export class GraphQLError extends Error {
-  constructor(
-    url: string,
-    query: string,
-    // deno-lint-ignore no-explicit-any
-    variables: any,
-    message: string,
-  ) {
-    super(message, {
-      cause: {
-        url,
-        query,
-        variables,
-      },
-    });
+export class KvError extends Error {
+  constructor(message: string) {
+    super(message);
 
-    this.name = 'GraphQLError';
+    this.name = 'KvError';
   }
 }
 

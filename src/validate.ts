@@ -4,7 +4,7 @@ import Ajv from 'ajv';
 
 import { prettify } from 'awesome-ajv';
 
-import { AssertionError } from '$std/testing/asserts.ts';
+import { AssertionError } from '$std/assert/mod.ts';
 
 import alias from '../json/alias.json' assert {
   type: 'json',

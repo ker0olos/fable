@@ -19,5 +19,4 @@ jobs:
         run: deno run -A update_topgg_stats.ts
         env:
           APP_ID: ${{ secrets.APP_ID }}
-          FAUNA_SECRET: ${{ secrets.FAUNA_SECRET }}
           TOPGG_TOKEN: ${{ secrets.TOPGG_TOKEN }}

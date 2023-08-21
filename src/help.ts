@@ -1,12 +1,11 @@
-import { COSTS } from '../models/add_tokens_to_user.ts';
-import { MAX_PULLS, RECHARGE_MINS } from '../models/get_user_inventory.ts';
-import { COOLDOWN_DAYS } from '../models/steal_character.ts';
-import { PARTY_PROTECTION_PERIOD } from './steal.ts';
-
 import i18n from './i18n.ts';
 import user from './user.ts';
 
 import * as discord from './discord.ts';
+
+import { COOLDOWN_DAYS, COSTS, MAX_PULLS, RECHARGE_MINS } from '../db/mod.ts';
+
+import { PARTY_PROTECTION_PERIOD } from './steal.ts';
 
 function pages(
   { userId, index }: { userId: string; index: number },
@@ -142,8 +141,6 @@ function pages(
               locale,
               COOLDOWN_DAYS,
             ),
-            '',
-            i18n.get('help-page4-steal-boost', locale),
             '',
             i18n.get('help-page4-footer', locale),
             discord.empty,

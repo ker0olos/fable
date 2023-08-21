@@ -8,9 +8,11 @@ import user from './user.ts';
 
 import * as discord from './discord.ts';
 
-import { gql, request } from './graphql.ts';
+import config from './config.ts';
 
-import config, { faunaUrl } from './config.ts';
+import db from '../db/mod.ts';
+
+import type * as Schema from '../db/schema.ts';
 
 import {
   Character,
@@ -19,7 +21,6 @@ import {
   Media,
   MediaFormat,
   MediaRelation,
-  Schema,
 } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
@@ -39,6 +40,18 @@ const musicUrlRegex = /youtube|spotify/;
 
 const externalUrlRegex =
   /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoons\.com|amazon\.com)[\S]*$/;
+
+const findCharacter = async (
+  guildId: string,
+  characterId: string,
+) => {
+  const guild = await db.getGuild(guildId);
+  const instance = await db.getInstance(guild);
+
+  const results = await db.findCharacters(instance, [characterId]);
+
+  return results[0];
+};
 
 function media(
   { token, id, search, debug, guildId }: {
@@ -269,11 +282,7 @@ function character(
           character: results[0],
           end: 4,
         }),
-        // find if the character is owned
-        user.findCharacter({
-          guildId,
-          characterId: `${results[0].packId}:${results[0].id}`,
-        }),
+        findCharacter(guildId, `${results[0].packId}:${results[0].id}`),
       ]);
     })
     .then(async ([character, existing]) => {
@@ -281,8 +290,8 @@ function character(
 
       if (
         (
-          existing &&
-          packs.isDisabled(existing.mediaId, guildId)
+          existing?.[0] &&
+          packs.isDisabled(existing[0].mediaId, guildId)
         ) ||
         (
           media &&
@@ -297,7 +306,10 @@ function character(
           .patch(token);
       }
 
-      const message = characterMessage(character, { existing });
+      const message = characterMessage(character, {
+        existing: existing?.[0],
+        userId: existing?.[1]?.id,
+      });
 
       message.insertComponents([
         new discord.Component()
@@ -399,6 +411,7 @@ function characterMessage(
 function characterEmbed(
   character: Character | DisaggregatedCharacter,
   options?: {
+    userId?: string;
     existing?: Partial<Schema.Character>;
     rating?: Rating | boolean;
     media?: {
@@ -447,12 +460,12 @@ function characterEmbed(
       const rating = new Rating({ stars: options.existing.rating });
 
       embed.setDescription(
-        options.existing.user?.id
-          ? `<@${options.existing.user.id}>\n\n${rating.emotes}`
+        options.userId
+          ? `<@${options.userId}>\n\n${rating.emotes}`
           : rating.emotes,
       );
-    } else if (options.existing.user?.id) {
-      embed.setDescription(`<@${options.existing.user.id}>`);
+    } else if (options.userId) {
+      embed.setDescription(`<@${options.userId}>`);
     }
   } else if (options?.rating) {
     if (typeof options.rating === 'boolean' && options.rating) {
@@ -614,10 +627,7 @@ async function mediaCharacters(
       end: 1,
     }),
     // find if the character is owned
-    user.findCharacter({
-      guildId,
-      characterId: `${node.packId}:${node.id}`,
-    }),
+    findCharacter(guildId, `${node.packId}:${node.id}`),
   ]);
 
   const message = characterMessage(character, {
@@ -626,7 +636,8 @@ async function mediaCharacters(
     description: true,
     externalLinks: true,
     footer: true,
-    existing,
+    existing: existing?.[0],
+    userId: existing?.[1]?.id,
   }).addComponents([
     new discord.Component()
       .setId('media', `${media.packId}:${media.id}`)
@@ -696,63 +707,44 @@ function mediaFound(
         ).map(({ node }) => node) ?? []),
       ];
 
-      const query = gql`
-        query ($guildId: String!, $mediaIds: [String!]) {
-          findMedia(guildId: $guildId, mediaIds: $mediaIds) {
-            id
-            mediaId
-            rating
-            user {
-              id
-            }
-          }
-        }
-      `;
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
 
-      const response = (await request<{
-        findMedia: Schema.Inventory['characters'];
-      }>({
-        url: faunaUrl,
-        query,
-        headers: {
-          'authorization': `Bearer ${config.faunaSecret}`,
-        },
-        variables: {
-          guildId,
-          mediaIds: media.map(({ packId, id }) => `${packId}:${id}`),
-        },
-      })).findMedia;
+      const characters = await db.findMediaCharacters(
+        instance,
+        media.map(({ packId, id }) => `${packId}:${id}`),
+      );
 
       const chunks = utils.chunks(
-        response.sort((a, b) => {
-          if (a.mediaId < b.mediaId) {
+        characters.sort((a, b) => {
+          if (a[0].mediaId < b[0].mediaId) {
             return -1;
           }
 
-          if (a.mediaId > b.mediaId) {
+          if (a[0].mediaId > b[0].mediaId) {
             return 1;
           }
 
-          return b.rating - a.rating;
+          return b[0].rating - a[0].rating;
         }),
         5,
       );
 
-      const characters = await packs.characters({
-        ids: chunks[index]?.map(({ id }) => id),
+      const _characters = await packs.characters({
+        ids: chunks[index]?.map(([{ id }]) => id),
         guildId,
       });
 
-      for (let i = 0; i < characters.length; i++) {
-        const char = characters[i];
+      for (let i = 0; i < _characters.length; i++) {
+        const char = _characters[i];
 
         // deno-lint-ignore no-non-null-assertion
-        const existing = chunks[index].find(({ id }) =>
+        const existing = chunks[index].find(([{ id }]) =>
           id === `${char.packId}:${char.id}`
         )!;
 
         const _media = media.find(({ packId, id }) =>
-          `${packId}:${id}` === existing.mediaId
+          `${packId}:${id}` === existing[0].mediaId
         );
 
         const mediaTitle = _media?.title
@@ -771,10 +763,11 @@ function mediaFound(
           continue;
         }
 
-        const name =
-          `${existing.rating}${discord.emotes.smolStar} ${`<@${existing.user.id}>`} ${
-            utils.wrap(packs.aliasToArray(char.name)[0])
-          }`;
+        const name = `${
+          existing[0].rating
+        }${discord.emotes.smolStar} ${`<@${existing[1]?.id}>`} ${
+          utils.wrap(packs.aliasToArray(char.name)[0])
+        }`;
 
         embed.addField({
           inline: false,

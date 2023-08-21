@@ -409,12 +409,6 @@ export const commands = [
         autocomplete: true,
         type: Type.STRING,
       }),
-      Option({
-        name: 'sacrifices',
-        description: '$steal-sacrifices-boost',
-        type: Type.INTEGER,
-        optional: true,
-      }),
     ],
   }),
   ...Command({

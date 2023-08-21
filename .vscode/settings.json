@@ -16,7 +16,7 @@
   //
   "deno.lint": true,
   "deno.enable": true,
-  "deno.unstable": false,
+  "deno.unstable": true,
   "deno.config": "deno.json",
   //
   "[typescript]": {

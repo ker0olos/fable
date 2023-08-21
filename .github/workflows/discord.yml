@@ -1,6 +1,11 @@
 name: discord
 
-on: [push]
+on: 
+  push:
+    branches: [main]
+  pull_request_review:
+    types: [submitted]
+    branches: [main]
 
 jobs:
   update-commands:
@@ -9,11 +14,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
+      
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
 
-      - if: ${{ github.ref != 'refs/heads/main' }}
+      - if: github.ref != 'refs/heads/main'
         name: Set environment to dummy
         run: echo "GUILD_ID=${{ secrets.DUMMY_GUILD }}" >> "$GITHUB_ENV"
 

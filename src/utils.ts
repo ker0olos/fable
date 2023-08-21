@@ -1,5 +1,7 @@
 import nacl from 'tweetnacl';
 
+import { chunk } from '$std/collections/chunk.ts';
+
 import {
   captureException as _captureException,
   init as initSentry,
@@ -13,7 +15,7 @@ import { distance as _distance } from 'levenshtein';
 
 import { proxy } from '../images-proxy/mod.ts';
 
-import { RECHARGE_MINS } from '../models/get_user_inventory.ts';
+import { RECHARGE_MINS } from '../db/mod.ts';
 
 const TEN_MIB = 1024 * 1024 * 10;
 
@@ -193,12 +195,12 @@ function comma(n: number): string {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function chunks<T>(a: Array<T>, size: number): T[][] {
-  return Array.from(
-    new Array(Math.ceil(a.length / size)),
-    (_, i) => a.slice(i * size, i * size + size),
-  );
-}
+// function chunks<T>(a: Array<T>, size: number): T[][] {
+//   return Array.from(
+//     new Array(Math.ceil(a.length / size)),
+//     (_, i) => a.slice(i * size, i * size + size),
+//   );
+// }
 
 function distance(a: string, b: string): number {
   return 100 -
@@ -327,6 +329,10 @@ function diffInDays(a: Date, b: Date): number {
   return Math.floor(Math.abs(a.getTime() - b.getTime()) / 3600000 / 24);
 }
 
+function diffInMinutes(a: Date, b: Date): number {
+  return Math.floor(Math.abs(a.getTime() - b.getTime()) / 60000);
+}
+
 const base64Encode = (base64: string): string => {
   const ENC = {
     '+': '-',
@@ -451,13 +457,14 @@ const utils = {
   capitalize,
   captureException,
   captureOutage,
-  chunks,
+  chunks: chunk,
   cipher,
   comma,
   compact,
   decipher,
   decodeDescription,
   diffInDays,
+  diffInMinutes,
   distance,
   fetchWithRetry,
   getRandomFloat,

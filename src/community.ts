@@ -1,18 +1,16 @@
-import { gql, request } from './graphql.ts';
-
-import config, { faunaUrl } from './config.ts';
-
 import * as discord from './discord.ts';
 
 import user from './user.ts';
 import packs from './packs.ts';
 import search from './search.ts';
 
+import db from '../db/mod.ts';
+
 import utils from './utils.ts';
 
 import validate, { purgeReservedProps } from './validate.ts';
 
-import type { Manifest, Pack, Schema } from './types.ts';
+import type { Manifest } from './types.ts';
 
 async function query(req: Request): Promise<Response> {
   const { error } = await utils.validateRequest(req, {
@@ -40,106 +38,7 @@ async function query(req: Request): Promise<Response> {
 
   const { id: userId } = await auth.json();
 
-  const query = gql`
-    query ($userId: String!) {
-      getPacksByUserId(userId: $userId) {
-        owner
-        version
-        added
-        updated
-        servers
-        approved
-        manifest {
-          id
-          title
-          description
-          author
-          image
-          url
-          webhookUrl
-          maintainers
-          conflicts
-          media {
-            new {
-              id
-              type
-              title {
-                english
-                romaji
-                native
-                alternative
-              }
-              format
-              description
-              popularity
-              images {
-                url
-                artist {
-                  username
-                  url
-                }
-              }
-              externalLinks {
-                url
-                site
-              }
-              trailer {
-                id
-                site
-              }
-              relations {
-                relation
-                mediaId
-              }
-              characters {
-                role
-                characterId
-              }
-            }
-          }
-          characters {
-            new {
-              id
-              name {
-                english
-                romaji
-                native
-                alternative
-              }
-              description
-              popularity
-              gender
-              age
-              images {
-                url
-                artist {
-                  username
-                  url
-                }
-              }
-              externalLinks {
-                url
-                site
-              }
-              media {
-                role
-                mediaId
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-
-  const response = (await request<{
-    getPacksByUserId: Pack[];
-  }>({
-    query,
-    url: faunaUrl,
-    headers: { 'authorization': `Bearer ${config.faunaSecret}` },
-    variables: { userId },
-  })).getPacksByUserId;
+  const response = await db.getPacksByUserId(userId);
 
   return utils.json({
     data: response,
@@ -187,31 +86,15 @@ async function publish(req: Request): Promise<Response> {
     });
   }
 
-  const mutation = gql`
-    mutation ($userId: String!, $manifest: ManifestInput!) {
-      publishPack(userId: $userId, manifest: $manifest) {
-        ok
-        error
-      }
-    }
-  `;
+  try {
+    const _ = await db.publishPack(userId, purgeReservedProps(manifest));
 
-  const response = await request<{
-    publishPack: Schema.Mutation;
-  }>({
-    url: faunaUrl,
-    query: mutation,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      manifest: purgeReservedProps(manifest),
-    },
-  });
-
-  if (!response.publishPack.ok) {
-    switch (response.publishPack.error) {
+    return new Response(undefined, {
+      status: 200,
+      statusText: 'OK',
+    });
+  } catch (err) {
+    switch (err.message) {
       case 'PERMISSION_DENIED':
         return utils.json({
           error: 'No permission to edit this pack',
@@ -228,11 +111,6 @@ async function publish(req: Request): Promise<Response> {
         });
     }
   }
-
-  return new Response(undefined, {
-    status: 200,
-    statusText: 'OK',
-  });
 }
 
 async function popularPacks(
@@ -242,68 +120,16 @@ async function popularPacks(
     index: number;
   },
 ): Promise<discord.Message> {
-  const query = gql`
-    query {
-      getMostInstalledPacks {
-        servers
-        approved
-        manifest {
-          id
-          title
-          description
-          author
-          image
-          url
-          maintainers
-          media {
-            new {
-              id
-            }
-          }
-          characters {
-            new {
-              id
-              name {
-                english
-                romaji
-                native
-                alternative
-              }
-              description
-              gender
-              age
-              images {
-                url
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-
   const locale = user.cachedUsers[userId]?.locale;
-
-  const response = (await request<{
-    getMostInstalledPacks: Pack[];
-  }>({
-    query,
-    url: faunaUrl,
-    headers: { 'authorization': `Bearer ${config.faunaSecret}` },
-  })).getMostInstalledPacks;
 
   const message = new discord.Message();
 
   const current = await packs.all({ guildId });
 
-  const pages = utils.chunks(
-    response
-      // filter out private packs
-      .filter(({ manifest }) => !manifest.private),
-    1,
-  );
+  const popularPacks = (await db.popularPacks())
+    .slice(0, 100);
 
-  const pack = pages[index ?? 0][0];
+  const pack = popularPacks[index ?? 0];
 
   const embed = new discord.Embed()
     .setTitle(`${index + 1}.`)
@@ -332,7 +158,7 @@ async function popularPacks(
     });
   }
 
-  if (current.some(({ ref }) => ref.manifest.id === pack.manifest.id)) {
+  if (current.some(({ manifest }) => manifest.id === pack.manifest.id)) {
     message.addComponents([
       new discord.Component()
         .setId('_installed')
@@ -351,7 +177,7 @@ async function popularPacks(
     index,
     message,
     type: 'popular',
-    next: index + 1 < pages.length,
+    next: index + 1 < popularPacks.length,
     locale,
   });
 }

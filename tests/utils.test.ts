@@ -304,6 +304,17 @@ Deno.test('diff days', async (test) => {
   });
 });
 
+Deno.test('diff mins', async (test) => {
+  await test.step('30 mins', () => {
+    const a = new Date();
+    const b = new Date();
+
+    b.setMinutes(b.getMinutes() - 30);
+
+    assertEquals(utils.diffInMinutes(a, b), 30);
+  });
+});
+
 Deno.test('cipher', () => {
   const token =
     'aW50ZXJhY3Rpb246MTA4NTI3MDUzMTA1OTc2NTI5ODowZGgxelpMVVBOZmxFcGFDOE9xc3V5RDdaQmdTUzlZT3Q1dzk0c250cVpoNDlheXJUSHFacjEzNjV2a28xMVFvbG9qOGRMRVVFWWtuQTNGaWVzbVY3ZGR0aTJIQ3plYUQ5em0xa2p3Sm5CU0w4cWNmWjlndlc4RWdsamJ0dFl2TQ';
