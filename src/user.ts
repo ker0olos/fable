@@ -1437,11 +1437,17 @@ function likeslist({
       });
 
       if (embed.getFieldsCount() <= 0) {
-        message.addEmbed(embed.setDescription(
-          `${nick ? `<@${userId}> doesn't` : 'You don\'t'} have any likes`,
-        ));
+        if (index > 0) {
+          embed.setDescription(
+            'This page is empty',
+          );
+        } else {
+          message.addEmbed(embed.setDescription(
+            `${nick ? `<@${userId}> doesn't` : 'You don\'t'} have any likes`,
+          ));
 
-        return message.patch(token);
+          return message.patch(token);
+        }
       }
 
       return discord.Message.page({
