@@ -72,9 +72,8 @@ function fakePool(
           rating: rating ??
             Rating.fromCharacter(node as AniListCharacter).stars,
           id: `${node.packId}:${node.id}`,
-          mediaId: `${
-            (node as AniListCharacter).media?.edges[0]?.node.packId
-          }:${(node as AniListCharacter).media?.edges[0]?.node.id}`,
+          mediaId: `${(node as AniListCharacter).media?.edges[0]?.node
+            .packId}:${(node as AniListCharacter).media?.edges[0]?.node.id}`,
         })),
       },
     });
