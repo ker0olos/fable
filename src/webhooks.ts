@@ -46,7 +46,7 @@ async function topgg(r: Request): Promise<Response> {
   const amount = data.isWeekend ? 2 : 1;
 
   try {
-    await db.addTokens(await db.getUser(data.user), amount);
+    await db.addTokens(await db.getUser(data.user), amount, true);
 
     const searchParams = new URLSearchParams(data.query);
 
