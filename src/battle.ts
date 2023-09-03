@@ -1,7 +1,5 @@
 import '#filter-boolean';
 
-import { gql, request } from './graphql.ts';
-
 import search, { idPrefix } from './search.ts';
 
 import _user from './user.ts';
@@ -9,15 +7,21 @@ import packs from './packs.ts';
 import utils from './utils.ts';
 import i18n from './i18n.ts';
 
+import db from '../db/mod.ts';
+
 import * as discord from './discord.ts';
 
 import * as dynImages from '../dyn-images/mod.ts';
 
-import config, { faunaUrl } from './config.ts';
+import config from './config.ts';
 
-import type { Character, Schema } from './types.ts';
+import * as Schema from '../db/schema.ts';
+
+import type { Character } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
+
+type Setup = Record<string, CharacterLive>;
 
 interface CharacterLive {
   name: string;
@@ -42,8 +46,6 @@ interface CharacterLive {
 
   userId: string;
 }
-
-type Setup = Record<string, CharacterLive>;
 
 const MAX_ROUNDS = 10;
 
@@ -72,36 +74,18 @@ async function updateStats(
 ): Promise<discord.Message> {
   const locale = _user.cachedUsers[userId]?.locale;
 
-  const existing = await _user.findCharacter({ guildId, characterId });
+  const guild = await db.getGuild(guildId);
+  const instance = await db.getInstance(guild);
+
+  const user = await db.getUser(userId);
+
+  const { inventory } = await db.getInventory(instance, user);
+
+  const [[existing]] = await db.findCharacters(instance, [characterId]);
 
   if (!existing) {
     throw new Error('404');
   }
-
-  const mutation = gql`
-    mutation(
-      $userId: String!
-      $guildId: String!
-      $characterId: String!
-      $unclaimed: Int!
-      $strength: Int!
-      $stamina: Int!
-      $agility: Int!
-    ) {
-      setCharacterStats(
-        userId: $userId
-        guildId: $guildId
-        characterId: $characterId
-        unclaimed: $unclaimed
-        strength: $strength
-        stamina: $stamina
-        agility: $agility
-      ) {
-        ok
-        error
-      }
-    }
-  `;
 
   let unclaimed = existing.combat?.stats?.unclaimed ??
     newUnclaimed(existing.rating);
@@ -154,40 +138,34 @@ async function updateStats(
     );
   }
 
-  const response = (await request<{
-    setCharacterStats: Schema.Mutation;
-  }>({
-    url: faunaUrl,
-    query: mutation,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
+  try {
+    const _ = await db.assignStats(
+      inventory,
       characterId,
       unclaimed,
       strength,
       stamina,
       agility,
-    },
-  })).setCharacterStats;
+    );
 
-  if (response.ok) {
     return battle.stats({
       token,
       character: `id=${characterId}`,
       userId,
       guildId,
     });
-  } else {
-    switch (response.error) {
+  } catch (err) {
+    switch (err.message) {
+      case 'CHARACTER_NOT_FOUND':
+        throw new NonFetalError(
+          i18n.get('character-hasnt-been-found', locale),
+        );
       case 'CHARACTER_NOT_OWNED':
         throw new NonFetalError(
           i18n.get('invalid-permission', locale),
         );
       default:
-        throw new Error(response.error);
+        throw err;
     }
   }
 }
@@ -212,7 +190,7 @@ function stats({ token, character, userId, guildId, distribution }: {
       ? { ids: [character.substring(idPrefix.length)], guildId }
       : { search: character, guildId },
   )
-    .then((results) => {
+    .then(async (results) => {
       if (!results.length) {
         throw new Error('404');
       }
@@ -221,22 +199,22 @@ function stats({ token, character, userId, guildId, distribution }: {
         throw new Error('404');
       }
 
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
       return Promise.all([
         packs.aggregate<Character>({
           guildId,
           character: results[0],
           end: 1,
         }),
-        _user.findCharacter({
-          guildId,
-          characterId: `${results[0].packId}:${results[0].id}`,
-        }),
+        db.findCharacters(instance, [`${results[0].packId}:${results[0].id}`]),
       ]);
     })
     .then(async ([character, existing]) => {
       const charId = `${character.packId}:${character.id}`;
 
-      if (!existing) {
+      if (!existing[0] || !existing[0][0] || !existing[0][1]) {
         const message = new discord.Message();
 
         const embed = search.characterEmbed(character, {
@@ -271,21 +249,21 @@ function stats({ token, character, userId, guildId, distribution }: {
       const embed = search.characterEmbed(character, {
         footer: false,
         existing: {
-          image: existing.image,
-          nickname: existing.nickname,
-          rating: existing.rating,
+          image: existing[0][0].image,
+          nickname: existing[0][0].nickname,
+          rating: existing[0][0].rating,
         },
         media: { title: false },
         description: false,
         mode: 'thumbnail',
       });
 
-      const unclaimed = existing.combat?.stats?.unclaimed ??
-        newUnclaimed(existing.rating);
+      const unclaimed = existing[0][0].combat?.stats?.unclaimed ??
+        newUnclaimed(existing[0][0].rating);
 
-      const strength = existing.combat?.stats?.strength ?? 0;
-      const stamina = existing.combat?.stats?.stamina ?? 0;
-      const agility = existing.combat?.stats?.agility ?? 0;
+      const strength = existing[0][0].combat?.stats?.strength ?? 0;
+      const stamina = existing[0][0].combat?.stats?.stamina ?? 0;
+      const agility = existing[0][0].combat?.stats?.agility ?? 0;
 
       embed
         .addField({
@@ -298,7 +276,7 @@ function stats({ token, character, userId, guildId, distribution }: {
           ].join('\n'),
         });
 
-      if (existing?.user.id === userId) {
+      if (existing[0]?.[1]?.id === userId) {
         message.addComponents([
           new discord.Component()
             .setLabel(`+1 ${i18n.get('str', locale)}`)
@@ -377,110 +355,42 @@ function experimental({ token, guildId, user, target }: {
 
   if (user.id === target.id) {
     throw new NonFetalError(
-      'You can\'t battle yourself',
+      i18n.get('battle-yourself', locale),
     );
   }
-
-  const query = gql`
-    query ($ids: [String!], $guildId: String!) {
-      getUsersInventories(usersIds: $ids, guildId: $guildId) {
-        party {
-          member1 {
-            id
-            mediaId
-            rating
-            nickname
-            image
-            combat {
-              stats {
-                strength
-                stamina
-                agility
-              }
-            }
-          }
-          member2 {
-            id
-            mediaId
-            rating
-            nickname
-            image
-            combat {
-              stats {
-                strength
-                stamina
-                agility
-              }
-            }
-          }
-          member3 {
-            id
-            mediaId
-            rating
-            nickname
-            image
-            combat {
-              stats {
-                strength
-                stamina
-                agility
-              }
-            }
-          }
-          member4 {
-            id
-            mediaId
-            rating
-            nickname
-            image
-            combat {
-              stats {
-                strength
-                stamina
-                agility
-              }
-            }
-          }
-          member5 {
-            id
-            mediaId
-            rating
-            nickname
-            image
-            combat {
-              stats {
-                strength
-                stamina
-                agility
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
 
   user.display_name ??= user.global_name ?? user.username;
   target.display_name ??= target.global_name ?? target.username;
 
-  request<{ getUsersInventories: Schema.Inventory[] }>({
-    query,
-    url: faunaUrl,
-    headers: { 'authorization': `Bearer ${config.faunaSecret}` },
-    variables: { ids: [user.id, target.id], guildId },
-  })
-    .then(async ({ getUsersInventories: [user1, user2] }) => {
+  Promise.resolve()
+    .then(async () => {
+      // TODO impl party synergy
+
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      const _user = await db.getUser(user.id);
+      const _target = await db.getUser(target.id);
+
+      const { inventory: userInventory } = await db.getInventory(
+        instance,
+        _user,
+      );
+
+      const { inventory: targetInventory } = await db.getInventory(
+        instance,
+        _target,
+      );
+
+      const userParty = await db.getUserParty(userInventory);
+      const targetParty = await db.getUserParty(targetInventory);
+
       const party1 = [
-        user1.party?.member1,
-        user1.party?.member2,
-        user1.party?.member3,
-        user1.party?.member4,
-        user1.party?.member5,
-        // { id: 'vtubers:gura' },
-        // { id: 'vtubers:calliope' },
-        // { id: 'vtubers:kiara' },
-        // { id: 'vtubers:ina' },
-        // { id: 'vtubers:watson' },
+        userParty?.member1,
+        userParty?.member2,
+        userParty?.member3,
+        userParty?.member4,
+        userParty?.member5,
       ].filter(Boolean);
 
       if (party1.length <= 0) {
@@ -488,16 +398,11 @@ function experimental({ token, guildId, user, target }: {
       }
 
       const party2 = [
-        user2.party?.member1,
-        user2.party?.member2,
-        user2.party?.member3,
-        user2.party?.member4,
-        user2.party?.member5,
-        // { id: 'vtubers:kronii' },
-        // { id: 'vtubers:mumei' },
-        // { id: 'vtubers:chaos' },
-        // { id: 'vtubers:fauna' },
-        // { id: 'vtubers:sana' },
+        targetParty?.member1,
+        targetParty?.member2,
+        targetParty?.member3,
+        targetParty?.member4,
+        targetParty?.member5,
       ].filter(Boolean);
 
       if (party2.length <= 0) {
@@ -533,16 +438,21 @@ function experimental({ token, guildId, user, target }: {
         const stamina = char.combat?.stats?.stamina ?? 0;
         const agility = char.combat?.stats?.agility ?? 0;
 
-        const hp = 15; // TODO experimental
+        // TODO experimental
+        const hp = strength + stamina + agility;
 
         setup[char.id] = {
+          userId: user.id,
+
           rating: char.rating,
           name: char.nickname ?? packs.aliasToArray(character.name)[0],
           image: char.image ?? character.images?.[0]?.url,
+
+          hp,
           strength,
           stamina,
           agility,
-          hp,
+
           curHp: hp,
           curSta: stamina,
 
@@ -551,8 +461,6 @@ function experimental({ token, guildId, user, target }: {
           damageTaken: 0,
           damageDone: 0,
           dodges: 0,
-
-          userId: user.id,
         };
       };
 
@@ -710,7 +618,7 @@ function experimental({ token, guildId, user, target }: {
             ? modParty1[Math.floor(Math.random() * modParty1.length)]
             : modParty2[Math.floor(Math.random() * modParty2.length)];
 
-          // if (enemy.curSta > 0 && enemy.agility >= character.strength) {
+          // TODO add counterattacking
           if (enemy.curSta > 0 && enemy.agility >= character.agility) {
             enemy.curSta = Math.max(enemy.curSta - 1, 0);
 

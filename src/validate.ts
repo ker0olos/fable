@@ -4,7 +4,7 @@ import Ajv from 'ajv';
 
 import { prettify } from 'awesome-ajv';
 
-import { AssertionError } from '$std/testing/asserts.ts';
+import { AssertionError } from '$std/assert/mod.ts';
 
 import alias from '../json/alias.json' assert {
   type: 'json',
@@ -80,10 +80,6 @@ export default (data: Manifest) => {
     return {
       errors: validate.errors,
     };
-  } else if (data.media?.new?.length && data.media.new.length > 16) {
-    return { errors: [`A single pack can't contain more than 16 media`] };
-  } else if (data.characters?.new?.length && data.characters.new.length > 128) {
-    return { errors: [`A single pack can't contain more than 128 characters`] };
   } else {
     return { errors: [] };
   }

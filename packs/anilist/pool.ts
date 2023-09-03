@@ -4,11 +4,11 @@ import utils from '../../src/utils.ts';
 
 import gacha from '../../src/gacha.ts';
 
-import { gql, request } from '../../src/graphql.ts';
-
 import Rating from '../../src/rating.ts';
 
 import { CharacterRole } from '../../src/types.ts';
+
+import { gql, request } from './graphql.ts';
 
 import { AniListCharacter, AniListMedia, Pool } from './types.ts';
 

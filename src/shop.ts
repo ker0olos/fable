@@ -1,17 +1,13 @@
-import { gql, request } from './graphql.ts';
-
 import user from './user.ts';
 
 import i18n from './i18n.ts';
 import utils from './utils.ts';
 
-import config, { faunaUrl } from './config.ts';
+import config from './config.ts';
 
 import * as discord from './discord.ts';
 
-import { Schema } from './types.ts';
-
-import { COSTS } from '../models/add_tokens_to_user.ts';
+import db, { COSTS } from '../db/mod.ts';
 
 export const voteComponent = (
   { token, guildId, locale }: {
@@ -65,43 +61,42 @@ async function confirmNormal({ token, userId, guildId, amount }: {
   guildId: string;
   amount: number;
 }): Promise<discord.Message> {
-  const mutation = gql`
-    mutation ($userId: String!, $guildId: String!, $amount: Int!) {
-      exchangeTokensForPulls(
-        userId: $userId
-        guildId: $guildId
-        amount: $amount
-      ) {
-        ok
-        error
-        user {
-          availableVotes
-        }
-      }
-    }
-  `;
-
   const locale = user.cachedUsers[userId]?.locale;
 
-  const { exchangeTokensForPulls } = await request<{
-    exchangeTokensForPulls: Schema.Mutation;
-  }>({
-    url: faunaUrl,
-    query: mutation,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-      amount,
-    },
-  });
+  const _user = await db.getUser(userId);
+  const guild = await db.getGuild(guildId);
+  const instance = await db.getInstance(guild);
 
-  if (!exchangeTokensForPulls.ok) {
-    switch (exchangeTokensForPulls.error) {
+  try {
+    await db.addPulls(instance, _user, amount);
+
+    const message = new discord.Message();
+
+    message
+      .addEmbed(new discord.Embed().setDescription(
+        i18n.get(
+          'you-bought-pulls',
+          locale,
+          amount,
+          amount > 1 ? i18n.get('pulls', locale) : i18n.get('pull', locale),
+          discord.emotes.add,
+        ),
+      ));
+
+    message.addComponents([
+      new discord.Component()
+        .setId('gacha', userId)
+        .setLabel('/gacha'),
+      new discord.Component()
+        .setId('q', userId)
+        .setLabel('/q'),
+    ]);
+
+    return message;
+  } catch (err) {
+    switch (err.message) {
       case 'INSUFFICIENT_TOKENS': {
-        const tokens = exchangeTokensForPulls.user.availableVotes || 0;
+        const tokens = _user.availableTokens ?? 0;
 
         const diff = amount - tokens;
 
@@ -126,33 +121,9 @@ async function confirmNormal({ token, userId, guildId, amount }: {
           ]);
       }
       default:
-        throw new Error(exchangeTokensForPulls.error);
+        throw err;
     }
   }
-
-  const message = new discord.Message();
-
-  message
-    .addEmbed(new discord.Embed().setDescription(
-      i18n.get(
-        'you-bought-pulls',
-        locale,
-        amount,
-        amount > 1 ? i18n.get('pulls', locale) : i18n.get('pull', locale),
-        discord.emotes.add,
-      ),
-    ));
-
-  message.addComponents([
-    new discord.Component()
-      .setId('gacha', userId)
-      .setLabel('/gacha'),
-    new discord.Component()
-      .setId('q', userId)
-      .setLabel('/q'),
-  ]);
-
-  return message;
 }
 
 function guaranteed({
@@ -208,36 +179,35 @@ async function confirmGuaranteed({
   guildId: string;
   stars: number;
 }): Promise<discord.Message> {
-  const mutation = gql`
-    mutation ($userId: String!, $stars: Int!) {
-      exchangeTokensForGuarantees(userId: $userId, guarantee: $stars) {
-        ok
-        error
-        user {
-          availableVotes
-        }
-      }
-    }
-  `;
-
   const locale = user.cachedUsers[userId]?.locale;
 
-  const { exchangeTokensForGuarantees } = await request<{
-    exchangeTokensForGuarantees: Schema.Mutation;
-  }>({
-    url: faunaUrl,
-    query: mutation,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      stars,
-    },
-  });
+  const _user = await db.getUser(userId);
 
-  if (!exchangeTokensForGuarantees.ok) {
-    switch (exchangeTokensForGuarantees.error) {
+  try {
+    const _ = await db.addGuarantee(_user, stars);
+
+    const message = new discord.Message();
+
+    message
+      .addEmbed(new discord.Embed().setDescription(
+        i18n.get(
+          'you-bought-guarantee',
+          locale,
+          stars,
+          discord.emotes.smolStar,
+          discord.emotes.add,
+        ),
+      ));
+
+    message.addComponents([
+      new discord.Component()
+        .setId('pull', userId, `${stars}`)
+        .setLabel(`/pull ${stars}`),
+    ]);
+
+    return message;
+  } catch (err) {
+    switch (err.message) {
       case 'INSUFFICIENT_TOKENS': {
         const cost = stars === 5
           ? COSTS.FIVE
@@ -245,7 +215,7 @@ async function confirmGuaranteed({
           ? COSTS.FOUR
           : COSTS.THREE;
 
-        const tokens = exchangeTokensForGuarantees.user.availableVotes || 0;
+        const tokens = _user.availableTokens ?? 0;
 
         const diff = cost - tokens;
 
@@ -270,30 +240,9 @@ async function confirmGuaranteed({
           ]);
       }
       default:
-        throw new Error(exchangeTokensForGuarantees.error);
+        throw err;
     }
   }
-
-  const message = new discord.Message();
-
-  message
-    .addEmbed(new discord.Embed().setDescription(
-      i18n.get(
-        'you-bought-guarantee',
-        locale,
-        stars,
-        discord.emotes.smolStar,
-        discord.emotes.add,
-      ),
-    ));
-
-  message.addComponents([
-    new discord.Component()
-      .setId('pull', userId, `${stars}`)
-      .setLabel(`/pull ${stars}`),
-  ]);
-
-  return message;
 }
 
 const shop = {

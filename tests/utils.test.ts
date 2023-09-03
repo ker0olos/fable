@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-non-null-assertion
 
-import { assert, assertEquals, assertThrows } from '$std/testing/asserts.ts';
+import { assert, assertEquals, assertThrows } from '$std/assert/mod.ts';
 
 import {
   // assertSpyCall,
@@ -301,6 +301,17 @@ Deno.test('diff days', async (test) => {
     b.setHours(b.getHours() - 48);
 
     assertEquals(utils.diffInDays(a, b), 2);
+  });
+});
+
+Deno.test('diff mins', async (test) => {
+  await test.step('30 mins', () => {
+    const a = new Date();
+    const b = new Date();
+
+    b.setMinutes(b.getMinutes() - 30);
+
+    assertEquals(utils.diffInMinutes(a, b), 30);
   });
 });
 

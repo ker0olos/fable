@@ -1,14 +1,14 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from '$std/testing/asserts.ts';
+import { assertEquals } from '$std/assert/mod.ts';
 
-import { stub } from '$std/testing/mock.ts';
-
-import utils from '../src/utils.ts';
+import { assertSpyCallArgs, stub } from '$std/testing/mock.ts';
 
 import shop from '../src/shop.ts';
 
 import config from '../src/config.ts';
+
+import db from '../db/mod.ts';
 
 Deno.test('/buy', async (test) => {
   await test.step('normal dialog', () => {
@@ -84,20 +84,28 @@ Deno.test('/buy', async (test) => {
   });
 
   await test.step('normal confirmed', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              exchangeTokensForPulls: {
-                ok: true,
-              },
-            },
-          }))),
-      } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addPullsStub = stub(
+      db,
+      'addPulls',
+      () => '_' as any,
     );
 
     try {
@@ -107,6 +115,12 @@ Deno.test('/buy', async (test) => {
         guildId: 'guild_id',
         amount: 1,
       });
+
+      assertSpyCallArgs(addPullsStub, 0, [
+        'instance',
+        'user',
+        1,
+      ]);
 
       assertEquals(message.json(), {
         type: 4,
@@ -136,25 +150,36 @@ Deno.test('/buy', async (test) => {
         },
       });
     } finally {
-      fetchStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addPullsStub.restore();
     }
   });
 
   await test.step('normal confirmed (plural)', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              exchangeTokensForPulls: {
-                ok: true,
-              },
-            },
-          }))),
-      } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addPullsStub = stub(
+      db,
+      'addPulls',
+      () => '_' as any,
     );
 
     try {
@@ -164,6 +189,12 @@ Deno.test('/buy', async (test) => {
         guildId: 'guild_id',
         amount: 5,
       });
+
+      assertSpyCallArgs(addPullsStub, 0, [
+        'instance',
+        'user',
+        5,
+      ]);
 
       assertEquals(message.json(), {
         type: 4,
@@ -193,29 +224,41 @@ Deno.test('/buy', async (test) => {
         },
       });
     } finally {
-      fetchStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addPullsStub.restore();
     }
   });
 
   await test.step('normal insufficient votes', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              exchangeTokensForPulls: {
-                ok: false,
-                error: 'INSUFFICIENT_TOKENS',
-                user: {
-                  availableVotes: 9,
-                },
-              },
-            },
-          }))),
-      } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () =>
+        ({
+          availableTokens: 9,
+        }) as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addPullsStub = stub(
+      db,
+      'addPulls',
+      () => {
+        throw new Error('INSUFFICIENT_TOKENS');
+      },
     );
 
     config.appId = 'app_id';
@@ -254,29 +297,41 @@ Deno.test('/buy', async (test) => {
       delete config.appId;
       delete config.topggCipher;
 
-      fetchStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addPullsStub.restore();
     }
   });
 
   await test.step('normal insufficient votes (plural)', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              exchangeTokensForPulls: {
-                ok: false,
-                error: 'INSUFFICIENT_TOKENS',
-                user: {
-                  availableVotes: 5,
-                },
-              },
-            },
-          }))),
-      } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () =>
+        ({
+          availableTokens: 5,
+        }) as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addPullsStub = stub(
+      db,
+      'addPulls',
+      () => {
+        throw new Error('INSUFFICIENT_TOKENS');
+      },
     );
 
     config.appId = 'app_id';
@@ -315,7 +370,10 @@ Deno.test('/buy', async (test) => {
       delete config.appId;
       delete config.topggCipher;
 
-      fetchStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addPullsStub.restore();
     }
   });
 
@@ -428,20 +486,28 @@ Deno.test('/buy', async (test) => {
   });
 
   await test.step('guaranteed 3* confirmed', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              exchangeTokensForGuarantees: {
-                ok: true,
-              },
-            },
-          }))),
-      } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addGuaranteeStub = stub(
+      db,
+      'addGuarantee',
+      () => '_' as any,
     );
 
     try {
@@ -451,6 +517,11 @@ Deno.test('/buy', async (test) => {
         guildId: 'guild_id',
         stars: 3,
       });
+
+      assertSpyCallArgs(addGuaranteeStub, 0, [
+        'user',
+        3,
+      ]);
 
       assertEquals(message.json(), {
         type: 4,
@@ -475,25 +546,36 @@ Deno.test('/buy', async (test) => {
         },
       });
     } finally {
-      fetchStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addGuaranteeStub.restore();
     }
   });
 
   await test.step('guaranteed 4* confirmed', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              exchangeTokensForGuarantees: {
-                ok: true,
-              },
-            },
-          }))),
-      } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addGuaranteeStub = stub(
+      db,
+      'addGuarantee',
+      () => '_' as any,
     );
 
     try {
@@ -503,6 +585,11 @@ Deno.test('/buy', async (test) => {
         guildId: 'guild_id',
         stars: 4,
       });
+
+      assertSpyCallArgs(addGuaranteeStub, 0, [
+        'user',
+        4,
+      ]);
 
       assertEquals(message.json(), {
         type: 4,
@@ -527,25 +614,36 @@ Deno.test('/buy', async (test) => {
         },
       });
     } finally {
-      fetchStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addGuaranteeStub.restore();
     }
   });
 
   await test.step('guaranteed 5* confirmed', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              exchangeTokensForGuarantees: {
-                ok: true,
-              },
-            },
-          }))),
-      } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addGuaranteeStub = stub(
+      db,
+      'addGuarantee',
+      () => '_' as any,
     );
 
     try {
@@ -555,6 +653,11 @@ Deno.test('/buy', async (test) => {
         guildId: 'guild_id',
         stars: 5,
       });
+
+      assertSpyCallArgs(addGuaranteeStub, 0, [
+        'user',
+        5,
+      ]);
 
       assertEquals(message.json(), {
         type: 4,
@@ -579,29 +682,41 @@ Deno.test('/buy', async (test) => {
         },
       });
     } finally {
-      fetchStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addGuaranteeStub.restore();
     }
   });
 
   await test.step('guaranteed insufficient votes', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              exchangeTokensForGuarantees: {
-                ok: false,
-                error: 'INSUFFICIENT_TOKENS',
-                user: {
-                  availableVotes: 11,
-                },
-              },
-            },
-          }))),
-      } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () =>
+        ({
+          availableTokens: 11,
+        }) as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addGuaranteeStub = stub(
+      db,
+      'addGuarantee',
+      () => {
+        throw new Error('INSUFFICIENT_TOKENS');
+      },
     );
 
     config.appId = 'app_id';
@@ -640,29 +755,41 @@ Deno.test('/buy', async (test) => {
       delete config.appId;
       delete config.topggCipher;
 
-      fetchStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addGuaranteeStub.restore();
     }
   });
 
   await test.step('guaranteed insufficient votes (plural)', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              exchangeTokensForGuarantees: {
-                ok: false,
-                error: 'INSUFFICIENT_TOKENS',
-                user: {
-                  availableVotes: 5,
-                },
-              },
-            },
-          }))),
-      } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () =>
+        ({
+          availableTokens: 5,
+        }) as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addGuaranteeStub = stub(
+      db,
+      'addGuarantee',
+      () => {
+        throw new Error('INSUFFICIENT_TOKENS');
+      },
     );
 
     config.appId = 'app_id';
@@ -701,7 +828,10 @@ Deno.test('/buy', async (test) => {
       delete config.appId;
       delete config.topggCipher;
 
-      fetchStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addGuaranteeStub.restore();
     }
   });
 });

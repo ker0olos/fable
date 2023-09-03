@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from '$std/testing/asserts.ts';
+import { assertEquals } from '$std/assert/mod.ts';
 
 import { returnsNext, stub } from '$std/testing/mock.ts';
 
@@ -30,6 +30,7 @@ Deno.test('init', async (test) => {
         false,
         false,
         false,
+        false,
       ]),
     );
 
@@ -42,7 +43,6 @@ Deno.test('init', async (test) => {
         'instatus_hook',
         'app_id',
         'public_key',
-        'fauna_secret',
         '123',
         'topgg_secret',
         'notice_message',
@@ -56,12 +56,12 @@ Deno.test('init', async (test) => {
         deploy: false,
         appId: 'app_id',
         publicKey: 'public_key',
-        faunaSecret: 'fauna_secret',
         sentry: 'sentry_dsn',
         instatus: 'instatus_hook',
         topggCipher: 123,
         topggSecret: 'topgg_secret',
         notice: 'notice_message',
+        global: true,
         gacha: true,
         trading: true,
         stealing: true,
@@ -102,6 +102,7 @@ Deno.test('init', async (test) => {
         true,
         true,
         true,
+        true,
       ]),
     );
 
@@ -114,10 +115,10 @@ Deno.test('init', async (test) => {
         'instatus_hook',
         'app_id',
         'public_key',
-        'fauna_secret',
         '123',
         'topgg_secret',
         'notice_message',
+        '0',
         '0',
         '0',
         '0',
@@ -134,13 +135,13 @@ Deno.test('init', async (test) => {
         deploy: true,
         appId: 'app_id',
         publicKey: 'public_key',
-        faunaSecret: 'fauna_secret',
         sentry: 'sentry_dsn',
         instatus: 'instatus_hook',
         topggCipher: 123,
         topggSecret: 'topgg_secret',
         notice: 'notice_message',
         gacha: false,
+        global: false,
         trading: false,
         stealing: false,
         synthesis: false,

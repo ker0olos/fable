@@ -1,6 +1,4 @@
-import utils from './utils.ts';
-
-import { GraphQLError } from './errors.ts';
+import utils from '../../src/utils.ts';
 
 // deno-lint-ignore no-explicit-any
 type Variables = { [key: string]: any };
@@ -66,5 +64,25 @@ export async function request<T = any, V = Variables>(
       variables,
       text,
     );
+  }
+}
+
+class GraphQLError extends Error {
+  constructor(
+    url: string,
+    query: string,
+    // deno-lint-ignore no-explicit-any
+    variables: any,
+    message: string,
+  ) {
+    super(message, {
+      cause: {
+        url,
+        query,
+        variables,
+      },
+    });
+
+    this.name = 'GraphQLError';
   }
 }

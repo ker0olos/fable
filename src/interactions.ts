@@ -21,6 +21,8 @@ import community from './community.ts';
 
 import config, { initConfig } from './config.ts';
 
+import db from '../db/mod.ts';
+
 import { NonFetalError, NoPermissionError } from './errors.ts';
 
 import type { Character, Media } from './types.ts';
@@ -88,6 +90,17 @@ export const handler = async (r: Request) => {
 
   if (type === discord.InteractionType.Ping) {
     return discord.Message.pong();
+  }
+
+  if (!config.global) {
+    return new discord.Message()
+      .setFlags(discord.MessageFlags.Ephemeral)
+      .addEmbed(
+        new discord.Embed().setDescription(
+          i18n.get('global-maintenance', locale),
+        ),
+      )
+      .send();
   }
 
   config.origin = origin;
@@ -259,7 +272,7 @@ export const handler = async (r: Request) => {
           const distance: Record<string, number> = {};
 
           // sort suggestion based on distance
-          list.forEach(({ ref: { manifest } }) => {
+          list.forEach(({ manifest }) => {
             const d = utils.distance(manifest.id, id);
 
             if (manifest.title) {
@@ -275,10 +288,10 @@ export const handler = async (r: Request) => {
           });
 
           list = list.sort((a, b) =>
-            distance[b.ref.manifest.id] - distance[a.ref.manifest.id]
+            distance[b.manifest.id] - distance[a.manifest.id]
           );
 
-          list?.forEach(({ ref: { manifest } }) => {
+          list?.forEach(({ manifest }) => {
             message.addSuggestions({
               name: `${manifest.title ?? manifest.id}`,
               value: manifest.id,
@@ -522,13 +535,9 @@ export const handler = async (r: Request) => {
           case 'steal': {
             const search = options['name'] as string;
 
-            const stars = options['sacrifices'] as number ?? 0;
-
             return steal.pre({
-              stars,
               token,
               guildId,
-
               userId: member.user.id,
               search,
               id: search.startsWith(idPrefix)
@@ -665,7 +674,7 @@ export const handler = async (r: Request) => {
                   guildId,
                 });
 
-                const pack = list.find(({ ref: { manifest } }) =>
+                const pack = list.find(({ manifest }) =>
                   manifest.id === options['id'] as string
                 );
 
@@ -1010,7 +1019,6 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
-          case 'bsteal':
           case 'steal': {
             // deno-lint-ignore no-non-null-assertion
             const userId = customValues![0];
@@ -1021,17 +1029,13 @@ export const handler = async (r: Request) => {
             // deno-lint-ignore no-non-null-assertion
             const chance = parseInt(customValues![2]);
 
-            // deno-lint-ignore no-non-null-assertion
-            const stars = Number(customValues![3]);
-
             if (userId === member.user.id) {
-              return steal[customType === 'bsteal' ? 'sacrifices' : 'attempt']({
+              return steal.attempt({
                 token,
                 guildId,
                 userId: member.user.id,
                 characterId,
                 pre: chance,
-                stars,
               })
                 .setType(discord.MessageType.Update)
                 .send();
@@ -1114,7 +1118,11 @@ export const handler = async (r: Request) => {
             const userId = customValues![1];
 
             if (userId === member.user.id) {
-              return (await packs.uninstall({ id, guildId }))
+              return (await packs.uninstall({
+                id,
+                guildId,
+                userId: member.user.id,
+              }))
                 .setType(discord.MessageType.Update)
                 .send();
             }
@@ -1218,14 +1226,20 @@ if (import.meta.main) {
     '/webhooks/topgg': webhooks.topgg,
     '/community/publish': community.publish,
     '/community': community.query,
-    '/invite': () =>
-      Response.redirect(
-        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,
-      ),
     '/external/*': utils.handleProxy,
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       baseUrl: import.meta.url,
     }),
+    //
+    '/stats': async () => {
+      return utils.json({
+        server_count: (await db.getValues({ prefix: ['guilds'] })).length,
+      }, { status: 200 });
+    },
+    '/invite': () =>
+      Response.redirect(
+        `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,
+      ),
     '/robots.txt': () => {
       return new Response(
         'User-agent: *\nDisallow: /',

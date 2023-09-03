@@ -1,18 +1,16 @@
 import { load as Dotenv } from '$std/dotenv/mod.ts';
 
-export const faunaUrl = 'https://graphql.us.fauna.com/graphql';
-
 const config: {
   deploy: boolean;
   appId?: string;
   publicKey?: string;
-  faunaSecret?: string;
   topggCipher?: number;
   topggSecret?: string;
   sentry?: string;
   instatus?: string;
   origin?: string;
   notice?: string;
+  global?: boolean;
   gacha?: boolean;
   trading?: boolean;
   stealing?: boolean;
@@ -23,13 +21,13 @@ const config: {
   deploy: false,
   appId: undefined,
   publicKey: undefined,
-  faunaSecret: undefined,
   topggCipher: undefined,
   topggSecret: undefined,
   sentry: undefined,
   instatus: undefined,
   origin: undefined,
   notice: undefined,
+  global: undefined,
   gacha: undefined,
   trading: undefined,
   stealing: undefined,
@@ -59,14 +57,15 @@ export async function initConfig(): Promise<void> {
 
     config.publicKey = Deno.env.get('PUBLIC_KEY');
 
-    config.faunaSecret = Deno.env.get('FAUNA_SECRET');
-
     config.topggCipher = Number(Deno.env.get('TOPGG_WEBHOOK_CIPHER'));
     config.topggSecret = Deno.env.get('TOPGG_WEBHOOK_SECRET');
 
     config.notice = Deno.env.get('NOTICE');
 
     // feature flags
+    config.global = !Deno.env.has('GLOBAL') ||
+      Deno.env.get('GLOBAL') === '1';
+
     config.gacha = !Deno.env.has('GACHA') ||
       Deno.env.get('GACHA') === '1';
 
