@@ -54,6 +54,7 @@
       "title": "conflicts",
       "type": "array",
       "description": "A list of characters/media that might conflict with your pack (All entities listed here will be entirely disabled).",
+      "maxItems": 10,
       "items": {
         "title": "conflict",
         "type": "string",
@@ -66,6 +67,7 @@
       "title": "maintainers",
       "type": "array",
       "description": "A list of discord ids with accesses to manage this pack",
+      "maxItems": 10,
       "items": {
         "title": "user",
         "type": "string",
@@ -78,6 +80,7 @@
       "type": "object",
       "description": "Media to add, disable or overwrite",
       "additionalProperties": false,
+      "maxProperties": 32,
       "properties": {
         "new": {
           "title": "new",
@@ -96,6 +99,7 @@
       "type": "object",
       "description": "Characters to add, disable or overwrite",
       "additionalProperties": false,
+      "maxProperties": 128,
       "properties": {
         "new": {
           "title": "new",
