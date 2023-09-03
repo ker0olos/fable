@@ -58,7 +58,7 @@ import {
   removePack,
 } from './addPack.ts';
 
-export const kv = await Deno.openKv('./migrate/test.db');
+export const kv = await Deno.openKv();
 
 // Helpers
 async function getValue<T>(key: Deno.KvKey): Promise<T | undefined> {
