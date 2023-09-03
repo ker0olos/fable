@@ -4,7 +4,7 @@ import { assertEquals } from '$std/assert/mod.ts';
 
 import { FakeTime } from '$std/testing/time.ts';
 
-import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
+import { returnsNext, stub } from '$std/testing/mock.ts';
 
 import utils from '../src/utils.ts';
 

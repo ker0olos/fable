@@ -14,7 +14,6 @@ import Rating from '../src/rating.ts';
 
 import gacha, { Pull } from '../src/gacha.ts';
 
-import user from '../src/user.ts';
 import utils from '../src/utils.ts';
 import packs from '../src/packs.ts';
 
