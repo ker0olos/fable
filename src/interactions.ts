@@ -93,9 +93,14 @@ export const handler = async (r: Request) => {
   }
 
   if (!config.global) {
-    throw new NonFetalError(
-      i18n.get('global-maintenance', locale),
-    );
+    return new discord.Message()
+      .setFlags(discord.MessageFlags.Ephemeral)
+      .addEmbed(
+        new discord.Embed().setDescription(
+          i18n.get('global-maintenance', locale),
+        ),
+      )
+      .send();
   }
 
   config.origin = origin;
