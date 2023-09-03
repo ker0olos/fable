@@ -1,5 +1,3 @@
-import { gql } from './graphql.ts';
-
 import config from './config.ts';
 
 import * as discord from './discord.ts';
@@ -11,30 +9,43 @@ import gacha from './gacha.ts';
 import i18n from './i18n.ts';
 import utils from './utils.ts';
 
-import { Character, Schema } from './types.ts';
+import db from '../db/mod.ts';
+
+import type { Character } from './types.ts';
+
+import type * as Schema from '../db/schema.ts';
 
 import { NonFetalError, PoolError } from './errors.ts';
 
 async function getFilteredCharacters(
   { userId, guildId }: { userId: string; guildId: string },
 ): Promise<Schema.Character[]> {
-  let { likes, party, characters } = await user.getUserCharacters({
-    userId,
-    guildId,
-  });
+  const user = await db.getUser(userId);
+  const guild = await db.getGuild(guildId);
+
+  const instance = await db.getInstance(guild);
+
+  const { inventory } = await db.getInventory(instance, user);
+
+  const likes = user.likes ?? [];
+
+  const [party, characters] = await Promise.all([
+    db.getUserParty(inventory),
+    db.getUserCharacters(inventory),
+  ]);
 
   const partyIds = [
-    party?.member1?.id,
-    party?.member2?.id,
-    party?.member3?.id,
-    party?.member4?.id,
-    party?.member5?.id,
+    party.member1?.id,
+    party.member2?.id,
+    party.member3?.id,
+    party.member4?.id,
+    party.member5?.id,
   ];
 
   const likesIds = likes
     ?.map(({ characterId, mediaId }) => characterId ?? mediaId);
 
-  characters = characters
+  return characters
     .filter(({ id, mediaId: _ }) =>
       // filter party members
       !partyIds.includes(id) &&
@@ -42,8 +53,6 @@ async function getFilteredCharacters(
       !likesIds?.some((likeId) => likeId === id)
       // !likesIds?.some((likeId) => likeId === id || likeId === mediaId)
     );
-
-  return characters;
 }
 
 function getSacrifices(
@@ -270,54 +279,17 @@ function confirmed({
   guildId: string;
   target: number;
 }): discord.Message {
-  const mutation = gql`
-    mutation (
-      $userId: String!
-      $guildId: String!
-      $characterId: String!
-      $mediaId: String!
-      $rating: Int!
-      $sacrifices: [String!]!
-    ) {
-      replaceCharacters(
-        userId: $userId
-        guildId: $guildId
-        characterId: $characterId
-        sacrifices: $sacrifices
-        mediaId: $mediaId
-        rating: $rating
-      ) {
-        ok
-        error
-        inventory {
-          availablePulls
-          rechargeTimestamp
-          user {
-            guarantees
-          }
-        }
-      }
-    }
-  `;
-
   const locale = user.cachedUsers[userId]?.locale;
 
   synthesis.getFilteredCharacters({ userId, guildId })
     .then(async (characters) => {
-      const sacrifices = getSacrifices(characters, target, locale)
-        .map(({ id }) => id);
+      const sacrifices = getSacrifices(characters, target, locale);
 
       const pull = await gacha.rngPull({
         userId,
         guildId,
         guarantee: target,
-        mutation: {
-          query: mutation,
-          name: 'replaceCharacters',
-        },
-        extra: {
-          sacrifices,
-        },
+        sacrifices,
       });
 
       return gacha.pullAnimation({

@@ -15,6 +15,14 @@
   "accept": "Aceptar",
   "decline": "Rechazar",
 
+  "homepage": "Homepage",
+
+  "assigned": "Assigned",
+  "unassigned": "Unassigned",
+
+  "installed": "Installed",
+  "uninstalled": "Uninstalled",
+
   "+1-pull": "_+1 tirada {0}_",
   "available-pull": "Tirada disponible",
   "available-pulls": "Tiradas disponibles",
@@ -37,14 +45,21 @@
 
   "you-empty-collection": "No tienes ningún personaje de {0}",
   "you-empty-media-collection": "No tienes ningún personaje de {0}",
+
+  "character-disabled": "This character was removed or disabled",
   "some-characters-disabled": "Algunos de estos personajes no existen o han sido desactivados",
+
+  "no-assigned-in-spot": "There was no character assigned to this spot of the party",
 
   "user-empty-collection": "{0} no tiene ningún personaje de {1}",
   "user-empty-media-collection": "{0} no tiene ningún personaje de {1}",
 
+  "you-empty-likeslist": "You don't have any likes",
+  "user-empty-likeslist": "{0} doesn't have any likes",
+
   "character-no-longer-owned": "Algunos de estos personajes han cambiado de dueño",
   "character-hasnt-been-found": "{0} aún no pertenece a nadie.",
-  "character-not-owned-by-you": "{0} pertenece a {1} y no puedes personalizarlo.",
+  "character-not-owned-by-you": "no puede personalizar {0}",
 
   "merge-sacrifice": "¿Sacrificar **{0}** personajes?",
   "merge-insufficient": "Sólo posees **{0} de 5** sacrificios necesarios para {1}",
@@ -75,19 +90,41 @@
   "give-sent-to": "¡Has enviado un regalo a {0}!",
   "give-received": "{0} te envió un regalo",
 
+  "attempt": "Attempt",
+  "stealing-from-yourself": "You can't steal from yourself!",
+  "stealing-party-member": "As part of {0}'s party, **{1}** cannot be stolen while {0} is still active",
+  "steal-chance": "Your chance of success is **{0}%**",
+  "stolen-from-you": "**{0}** was stolen from you!",
+  "you-succeeded": "**You Succeeded!**",
+  "you-failed": "**You Failed!**",
+  "steal-cooldown": "Steal is on cooldown, try again {0}",
+  "steal-try-again": "You can try again {0}",
+  "steal-unexpected": "Something happened and affected your chances of stealing **{0}**, Please try again!",
+
+  "global-maintenance": "Fable se maintenance en mantenimiento, reintentalo más tarde",
   "maintenance-gacha": "El gacha se encuentra en mantenimiento, reintentalo más tarde",
   "maintenance-merge": "Merge se encuentra en mantenimiento, reintentalo más tarde",
   "maintenance-trade": "Los intercambios se encuentran en mantenimiento, reintentalo más tarde",
-  "maintenance-combat": "Combat is under maintenance, try again later!",
+  "maintenance-steal": "Stealing is under maintenance, try again later!",
+  "maintenance-combat": "Combate se encuentra en mantenimiento, reintentalo más tarde",
+  "maintenance-packs": "Community Packs are under maintenance, try again later!",
 
   "gacha-no-more-pulls": "¡No te quedan tiradas!",
   "gacha-no-guarantees": "No posees ninguna tirada de {0}",
   "gacha-no-more-characters-left": "Ya no quedan personajes de {0}",
   "gacha-no-more-in-range": "Ya no quedan personajes con este grado de estrellas",
 
+  "uninstall-pack-confirmation": "**Are you sure you want to uninstall this pack?**\n\nUninstalling a pack will disable any characters your server members have from the pack, which may be met with negative reactions.",
+
+  "pack-doesnt-exist": "This pack doesn't exist",
+  "pack-is-private": "This pack is private and cannot be installed by you",
+  "pack-characters-disabled": "**All characters from this pack are now disabled**",
+
   "not-fit-for-combat": "El personaje debe aún ser encontrado y no se encuentra listo para el combate",
   "not-enough-unclaimed": "El personaje no tiene puntos restantes sin asignar",
   "incorrect-distribution": "¡Formato de distribución incorrecto!\n\n**Forma correcta:** FUE-RES-AGI\n**Ejemplo:** 1-2-3",
+
+  "battle-yourself": "You can't battle yourself",
 
   "str": "FUE",
   "sta": "RES",
@@ -129,7 +166,6 @@
   "help-page4-losing-protection": "__Los jugadores inactivos pierden su protección de equipo__ al cabo de **{0}** días.",
   "help-page4-steal-chance": "__Los personajes de grado más alto son más difíciles de robar.__ Los personajes 5{0}tienen una chance de éxito base de 1%.",
   "help-page4-cooldown": "__El robo tiene un enfriamiento de **{0}** días__ sin importar el resultado de tu intento.",
-  "help-page4-steal-boost": "__Puedes sacrificar personajes para obtener una pequeña bonificación__ a tu chance de éxito. Pierdes esos personajes sin importar el resultado.",
   "help-page4-footer": "> Mantenerse activo es la mejor defensa contra el robo.",
 
   "help-page10-title": "Combate",

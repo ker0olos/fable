@@ -1,52 +1,59 @@
 // deno-lint-ignore-file no-explicit-any
 
-import {
-  assertEquals,
-  assertRejects,
-  assertThrows,
-} from '$std/testing/asserts.ts';
+import { assertEquals, assertRejects, assertThrows } from '$std/assert/mod.ts';
 
 import { FakeTime } from '$std/testing/time.ts';
 
-import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
+import {
+  assertSpyCallArgs,
+  assertSpyCalls,
+  returnsNext,
+  stub,
+} from '$std/testing/mock.ts';
 
 import utils from '../src/utils.ts';
 
 import packs from '../src/packs.ts';
-import user from '../src/user.ts';
 import battle from '../src/battle.ts';
 
 import config from '../src/config.ts';
+
+import db from '../db/mod.ts';
 
 import { NonFetalError } from '../src/errors.ts';
 
 Deno.test('update stats', async (test) => {
   await test.step('reset', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () =>
-        Promise.resolve({
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                setCharacterStats: {
-                  ok: true,
-                },
-              },
-            }))),
-        } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
     );
 
-    const userStub = stub(
-      user,
-      'findCharacter',
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
       () =>
-        Promise.resolve({
+        [[{
           id: 'id:1',
-          user: { id: 'user_id' },
-          mediaId: 'media_id',
           rating: 4,
           combat: {
             stats: {
@@ -56,12 +63,16 @@ Deno.test('update stats', async (test) => {
               agility: 4,
             },
           },
-        }),
+        }]] as any,
+    );
+
+    const assignStatsStub = stub(
+      db,
+      'assignStats',
+      () => '_' as any,
     );
 
     const battleStub = stub(battle, 'stats', () => undefined as any);
-
-    config.faunaSecret = 'fauna_secret';
 
     try {
       await battle.updateStats({
@@ -72,67 +83,56 @@ Deno.test('update stats', async (test) => {
         type: 'reset',
       });
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://graphql.us.fauna.com/graphql',
-      );
-
-      assertEquals(
-        fetchStub.calls[0].args[1]?.headers?.entries,
-        new Headers({
-          accept: 'application/json',
-          authorization: 'Bearer fauna_secret',
-          'content-type': 'application/json',
-        }).entries,
-      );
-
-      assertEquals(
-        JSON.parse(fetchStub.calls[0].args[1]?.body as string).variables,
-        {
-          userId: 'user_id',
-          guildId: 'guild_id',
-          characterId: 'character_id',
-          unclaimed: 10,
-          strength: 0,
-          stamina: 0,
-          agility: 0,
-        },
-      );
+      assertSpyCallArgs(assignStatsStub, 0, [
+        'inventory',
+        'character_id',
+        10,
+        0,
+        0,
+        0,
+      ]);
     } finally {
-      delete config.faunaSecret;
-
-      fetchStub.restore();
-      userStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      findCharactersStub.restore();
+      assignStatsStub.restore();
       battleStub.restore();
     }
   });
 
   await test.step('strength', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () =>
-        Promise.resolve({
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                setCharacterStats: {
-                  ok: true,
-                },
-              },
-            }))),
-        } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
     );
 
-    const userStub = stub(
-      user,
-      'findCharacter',
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
       () =>
-        Promise.resolve({
+        [[{
           id: 'id:1',
-          user: { id: 'user_id' },
-          mediaId: 'media_id',
           rating: 4,
           combat: {
             stats: {
@@ -142,12 +142,16 @@ Deno.test('update stats', async (test) => {
               agility: 4,
             },
           },
-        }),
+        }]] as any,
+    );
+
+    const assignStatsStub = stub(
+      db,
+      'assignStats',
+      () => '_' as any,
     );
 
     const battleStub = stub(battle, 'stats', () => undefined as any);
-
-    config.faunaSecret = 'fauna_secret';
 
     try {
       await battle.updateStats({
@@ -158,67 +162,56 @@ Deno.test('update stats', async (test) => {
         type: 'str',
       });
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://graphql.us.fauna.com/graphql',
-      );
-
-      assertEquals(
-        fetchStub.calls[0].args[1]?.headers?.entries,
-        new Headers({
-          accept: 'application/json',
-          authorization: 'Bearer fauna_secret',
-          'content-type': 'application/json',
-        }).entries,
-      );
-
-      assertEquals(
-        JSON.parse(fetchStub.calls[0].args[1]?.body as string).variables,
-        {
-          userId: 'user_id',
-          guildId: 'guild_id',
-          characterId: 'character_id',
-          unclaimed: 0,
-          strength: 3,
-          stamina: 3,
-          agility: 4,
-        },
-      );
+      assertSpyCallArgs(assignStatsStub, 0, [
+        'inventory',
+        'character_id',
+        0,
+        3,
+        3,
+        4,
+      ]);
     } finally {
-      delete config.faunaSecret;
-
-      fetchStub.restore();
-      userStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      findCharactersStub.restore();
+      assignStatsStub.restore();
       battleStub.restore();
     }
   });
 
   await test.step('stamina', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () =>
-        Promise.resolve({
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                setCharacterStats: {
-                  ok: true,
-                },
-              },
-            }))),
-        } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
     );
 
-    const userStub = stub(
-      user,
-      'findCharacter',
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
       () =>
-        Promise.resolve({
+        [[{
           id: 'id:1',
-          user: { id: 'user_id' },
-          mediaId: 'media_id',
           rating: 4,
           combat: {
             stats: {
@@ -228,12 +221,16 @@ Deno.test('update stats', async (test) => {
               agility: 4,
             },
           },
-        }),
+        }]] as any,
+    );
+
+    const assignStatsStub = stub(
+      db,
+      'assignStats',
+      () => '_' as any,
     );
 
     const battleStub = stub(battle, 'stats', () => undefined as any);
-
-    config.faunaSecret = 'fauna_secret';
 
     try {
       await battle.updateStats({
@@ -244,67 +241,56 @@ Deno.test('update stats', async (test) => {
         type: 'sta',
       });
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://graphql.us.fauna.com/graphql',
-      );
-
-      assertEquals(
-        fetchStub.calls[0].args[1]?.headers?.entries,
-        new Headers({
-          accept: 'application/json',
-          authorization: 'Bearer fauna_secret',
-          'content-type': 'application/json',
-        }).entries,
-      );
-
-      assertEquals(
-        JSON.parse(fetchStub.calls[0].args[1]?.body as string).variables,
-        {
-          userId: 'user_id',
-          guildId: 'guild_id',
-          characterId: 'character_id',
-          unclaimed: 0,
-          strength: 2,
-          stamina: 4,
-          agility: 4,
-        },
-      );
+      assertSpyCallArgs(assignStatsStub, 0, [
+        'inventory',
+        'character_id',
+        0,
+        2,
+        4,
+        4,
+      ]);
     } finally {
-      delete config.faunaSecret;
-
-      fetchStub.restore();
-      userStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      findCharactersStub.restore();
+      assignStatsStub.restore();
       battleStub.restore();
     }
   });
 
   await test.step('agility', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () =>
-        Promise.resolve({
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                setCharacterStats: {
-                  ok: true,
-                },
-              },
-            }))),
-        } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
     );
 
-    const userStub = stub(
-      user,
-      'findCharacter',
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
       () =>
-        Promise.resolve({
+        [[{
           id: 'id:1',
-          user: { id: 'user_id' },
-          mediaId: 'media_id',
           rating: 4,
           combat: {
             stats: {
@@ -314,12 +300,16 @@ Deno.test('update stats', async (test) => {
               agility: 4,
             },
           },
-        }),
+        }]] as any,
+    );
+
+    const assignStatsStub = stub(
+      db,
+      'assignStats',
+      () => '_' as any,
     );
 
     const battleStub = stub(battle, 'stats', () => undefined as any);
-
-    config.faunaSecret = 'fauna_secret';
 
     try {
       await battle.updateStats({
@@ -330,67 +320,56 @@ Deno.test('update stats', async (test) => {
         type: 'agi',
       });
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://graphql.us.fauna.com/graphql',
-      );
-
-      assertEquals(
-        fetchStub.calls[0].args[1]?.headers?.entries,
-        new Headers({
-          accept: 'application/json',
-          authorization: 'Bearer fauna_secret',
-          'content-type': 'application/json',
-        }).entries,
-      );
-
-      assertEquals(
-        JSON.parse(fetchStub.calls[0].args[1]?.body as string).variables,
-        {
-          userId: 'user_id',
-          guildId: 'guild_id',
-          characterId: 'character_id',
-          unclaimed: 0,
-          strength: 2,
-          stamina: 3,
-          agility: 5,
-        },
-      );
+      assertSpyCallArgs(assignStatsStub, 0, [
+        'inventory',
+        'character_id',
+        0,
+        2,
+        3,
+        5,
+      ]);
     } finally {
-      delete config.faunaSecret;
-
-      fetchStub.restore();
-      userStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      findCharactersStub.restore();
+      assignStatsStub.restore();
       battleStub.restore();
     }
   });
 
   await test.step('distribution', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () =>
-        Promise.resolve({
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                setCharacterStats: {
-                  ok: true,
-                },
-              },
-            }))),
-        } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
     );
 
-    const userStub = stub(
-      user,
-      'findCharacter',
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
       () =>
-        Promise.resolve({
+        [[{
           id: 'id:1',
-          user: { id: 'user_id' },
-          mediaId: 'media_id',
           rating: 4,
           combat: {
             stats: {
@@ -400,12 +379,16 @@ Deno.test('update stats', async (test) => {
               agility: 4,
             },
           },
-        }),
+        }]] as any,
+    );
+
+    const assignStatsStub = stub(
+      db,
+      'assignStats',
+      () => '_' as any,
     );
 
     const battleStub = stub(battle, 'stats', () => undefined as any);
-
-    config.faunaSecret = 'fauna_secret';
 
     try {
       await battle.updateStats({
@@ -417,50 +400,56 @@ Deno.test('update stats', async (test) => {
         type: 'reset',
       });
 
-      assertEquals(
-        fetchStub.calls[0].args[0],
-        'https://graphql.us.fauna.com/graphql',
-      );
-
-      assertEquals(
-        fetchStub.calls[0].args[1]?.headers?.entries,
-        new Headers({
-          accept: 'application/json',
-          authorization: 'Bearer fauna_secret',
-          'content-type': 'application/json',
-        }).entries,
-      );
-
-      assertEquals(
-        JSON.parse(fetchStub.calls[0].args[1]?.body as string).variables,
-        {
-          userId: 'user_id',
-          guildId: 'guild_id',
-          characterId: 'character_id',
-          unclaimed: 4,
-          strength: 2,
-          stamina: 2,
-          agility: 2,
-        },
-      );
+      assertSpyCallArgs(assignStatsStub, 0, [
+        'inventory',
+        'character_id',
+        4,
+        2,
+        2,
+        2,
+      ]);
     } finally {
-      delete config.faunaSecret;
-
-      fetchStub.restore();
-      userStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      findCharactersStub.restore();
+      assignStatsStub.restore();
       battleStub.restore();
     }
   });
 
   await test.step('distribution with not enough points', async () => {
-    const userStub = stub(
-      user,
-      'findCharacter',
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
       () =>
-        Promise.resolve({
+        [[{
           id: 'id:1',
-          user: { id: 'user_id' },
-          mediaId: 'media_id',
           rating: 4,
           combat: {
             stats: {
@@ -470,12 +459,10 @@ Deno.test('update stats', async (test) => {
               agility: 4,
             },
           },
-        }),
+        }]] as any,
     );
 
     const battleStub = stub(battle, 'stats', () => undefined as any);
-
-    config.faunaSecret = 'fauna_secret';
 
     try {
       await assertRejects(
@@ -492,20 +479,46 @@ Deno.test('update stats', async (test) => {
         'Character doesn\'t have enough unclaimed points left',
       );
     } finally {
-      userStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      findCharactersStub.restore();
       battleStub.restore();
     }
   });
 
   await test.step('incorrect distribution format', async () => {
-    const userStub = stub(
-      user,
-      'findCharacter',
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
       () =>
-        Promise.resolve({
+        [[{
           id: 'id:1',
-          user: { id: 'user_id' },
-          mediaId: 'media_id',
           rating: 4,
           combat: {
             stats: {
@@ -515,12 +528,10 @@ Deno.test('update stats', async (test) => {
               agility: 4,
             },
           },
-        }),
+        }]] as any,
     );
 
     const battleStub = stub(battle, 'stats', () => undefined as any);
-
-    config.faunaSecret = 'fauna_secret';
 
     try {
       await assertRejects(
@@ -537,38 +548,46 @@ Deno.test('update stats', async (test) => {
         'Incorrect distribution format!\n\n**Correct:** STR-STA-AGI\n**Example:** 1-2-3',
       );
     } finally {
-      userStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      findCharactersStub.restore();
       battleStub.restore();
     }
   });
 
   await test.step('not owned', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () =>
-        Promise.resolve({
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                setCharacterStats: {
-                  ok: false,
-                  error: 'CHARACTER_NOT_OWNED',
-                },
-              },
-            }))),
-        } as any),
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
     );
 
-    const userStub = stub(
-      user,
-      'findCharacter',
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
       () =>
-        Promise.resolve({
+        [[{
           id: 'id:1',
-          user: { id: 'another_user_id' },
-          mediaId: 'media_id',
           rating: 4,
           combat: {
             stats: {
@@ -578,7 +597,15 @@ Deno.test('update stats', async (test) => {
               agility: 4,
             },
           },
-        }),
+        }]] as any,
+    );
+
+    const assignStatsStub = stub(
+      db,
+      'assignStats',
+      () => {
+        throw new Error('CHARACTER_NOT_OWNED');
+      },
     );
 
     const battleStub = stub(battle, 'stats', () => undefined as any);
@@ -597,31 +624,57 @@ Deno.test('update stats', async (test) => {
         'You don\'t have permission to complete this interaction!',
       );
     } finally {
-      fetchStub.restore();
-      userStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      findCharactersStub.restore();
+      assignStatsStub.restore();
       battleStub.restore();
     }
   });
 
   await test.step('not enough unclaimed', async () => {
-    const userStub = stub(
-      user,
-      'findCharacter',
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
       () =>
-        Promise.resolve({
+        [[{
           id: 'id:1',
-          user: { id: 'user_id' },
-          mediaId: 'media_id',
           rating: 4,
           combat: {
             stats: {
               unclaimed: 0,
-              strength: 1,
-              stamina: 1,
-              agility: 1,
+              strength: 0,
+              stamina: 0,
+              agility: 0,
             },
           },
-        }),
+        }]] as any,
     );
 
     const battleStub = stub(battle, 'stats', () => undefined as any);
@@ -640,7 +693,11 @@ Deno.test('update stats', async (test) => {
         'Character doesn\'t have enough unclaimed points left',
       );
     } finally {
-      userStub.restore();
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      findCharactersStub.restore();
       battleStub.restore();
     }
   });
@@ -679,14 +736,24 @@ Deno.test('/stats', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
-      'findCharacter',
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
       () =>
-        Promise.resolve({
+        [[{
           id: 'id:1',
-          user: { id: 'user_id' },
-          mediaId: 'media_id',
           rating: 4,
           combat: {
             stats: {
@@ -696,7 +763,7 @@ Deno.test('/stats', async (test) => {
               agility: 4,
             },
           },
-        }),
+        }, { id: 'user_id' }]] as any,
     );
 
     config.combat = true;
@@ -808,8 +875,11 @@ Deno.test('/stats', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
       fetchStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      findCharactersStub.restore();
     }
   });
 
@@ -845,16 +915,26 @@ Deno.test('/stats', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
-      'findCharacter',
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
       () =>
-        Promise.resolve({
+        [[{
           id: 'id:1',
-          user: { id: 'user_id' },
-          mediaId: 'media_id',
           rating: 4,
-        }),
+        }, { id: 'user_id' }]] as any,
     );
 
     config.combat = true;
@@ -966,8 +1046,11 @@ Deno.test('/stats', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
       fetchStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      findCharactersStub.restore();
     }
   });
 
@@ -1003,10 +1086,22 @@ Deno.test('/stats', async (test) => {
       ({ character }) => Promise.resolve(character),
     );
 
-    const userStub = stub(
-      user,
-      'findCharacter',
-      () => Promise.resolve(undefined),
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
+      () => [] as any,
     );
 
     config.combat = true;
@@ -1084,8 +1179,11 @@ Deno.test('/stats', async (test) => {
       timeStub.restore();
       characterStub.restore();
       aggregateStub.restore();
-      userStub.restore();
       fetchStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      findCharactersStub.restore();
     }
   });
 

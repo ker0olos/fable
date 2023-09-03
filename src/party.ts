@@ -1,25 +1,29 @@
 import '#filter-boolean';
 
-import { gql, request } from './graphql.ts';
+import config from './config.ts';
 
-import config, { faunaUrl } from './config.ts';
+import i18n from './i18n.ts';
+import utils from './utils.ts';
 
 import user from './user.ts';
 import packs from './packs.ts';
 
-import utils from './utils.ts';
-
 import Rating from './rating.ts';
 
-import * as discord from './discord.ts';
+import db from '../db/mod.ts';
 
 import { default as srch } from './search.ts';
 
-import { Character, Schema } from './types.ts';
+import * as discord from './discord.ts';
 
-async function embed({ guildId, party }: {
+import * as Schema from '../db/schema.ts';
+
+import type { Character } from './types.ts';
+
+async function embed({ guildId, party, locale }: {
   guildId: string;
-  party: Schema.Inventory['party'];
+  party: Schema.Party;
+  locale: discord.AvailableLocales;
 }): Promise<discord.Message> {
   const message = new discord.Message();
 
@@ -54,7 +58,9 @@ async function embed({ guildId, party }: {
 
   ids.forEach((characterId, i) => {
     if (!characterId) {
-      message.addEmbed(new discord.Embed().setDescription('Unassigned'));
+      message.addEmbed(new discord.Embed()
+        .setDescription(i18n.get('unassigned', locale)));
+
       return;
     }
 
@@ -76,7 +82,7 @@ async function embed({ guildId, party }: {
     ) {
       return message.addEmbed(
         new discord.Embed().setDescription(
-          'This character was removed or disabled',
+          i18n.get('character-disabled', locale),
         ),
       );
     }
@@ -109,9 +115,20 @@ function view({ token, userId, guildId }: {
   userId: string;
   guildId: string;
 }): discord.Message {
-  user.getUserCharacters({ userId, guildId })
-    .then(async ({ party }) => {
-      const message = await embed({ guildId, party });
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
+
+  Promise.resolve()
+    .then(async () => {
+      const user = await db.getUser(userId);
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      const { inventory } = await db.getInventory(instance, user);
+
+      const party = await db.getUserParty(inventory);
+
+      const message = await embed({ guildId, party, locale });
 
       return message.patch(token);
     })
@@ -150,28 +167,12 @@ function assign({
   search?: string;
   id?: string;
 }): discord.Message {
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
+
   packs
     .characters(id ? { ids: [id], guildId } : { search, guildId })
     .then(async (results) => {
-      const mutation = gql`
-        mutation ($userId: String!, $guildId: String!, $characterId: String!, $spot: Int) {
-          setCharacterToParty(userId: $userId, guildId: $guildId, characterId: $characterId, spot: $spot) {
-            ok
-            error
-            character {
-              id
-              mediaId
-              rating
-              image
-              nickname
-              user {
-                id
-              }
-            }
-          }
-        }
-      `;
-
       const character = await packs.aggregate<Character>({
         character: results[0],
         guildId,
@@ -192,30 +193,44 @@ function assign({
 
       const characterId = `${character.packId}:${character.id}`;
 
-      const response = (await request<{
-        setCharacterToParty: Schema.Mutation;
-      }>({
-        url: faunaUrl,
-        query: mutation,
-        headers: {
-          'authorization': `Bearer ${config.faunaSecret}`,
-        },
-        variables: {
-          userId,
-          guildId,
+      const user = await db.getUser(userId);
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      try {
+        const response = await db.assignCharacter(
+          user,
+          instance,
           characterId,
           spot,
-        },
-      })).setCharacterToParty;
+        );
 
-      if (!response.ok) {
+        return message
+          .addEmbed(new discord.Embed()
+            .setDescription(i18n.get('assigned', locale)))
+          .addEmbed(srch.characterEmbed(results[0], {
+            mode: 'thumbnail',
+            rating: new Rating({ stars: response.rating }),
+            description: true,
+            footer: false,
+            existing: {
+              image: response.image,
+              nickname: response.nickname,
+            },
+          }))
+          .addComponents([
+            new discord.Component()
+              .setLabel('/character')
+              .setId(`character`, characterId),
+          ]).patch(token);
+      } catch (err) {
         const names = packs.aliasToArray(results[0].name);
 
-        switch (response.error) {
+        switch (err.message) {
           case 'CHARACTER_NOT_FOUND': {
             return message.addEmbed(
               new discord.Embed().setDescription(
-                `${names[0]} hasn't been found by anyone yet`,
+                i18n.get('character-hasnt-been-found', locale, names[0]),
               ),
             ).addComponents([
               new discord.Component()
@@ -226,50 +241,28 @@ function assign({
           case 'CHARACTER_NOT_OWNED':
             return message.addEmbed(
               new discord.Embed().setDescription(
-                `${
-                  names[0]
-                } is owned by <@${response.character.user.id}> and cannot be assigned to your party`,
+                i18n.get(
+                  'character-not-owned-by-you',
+                  locale,
+                  names[0],
+                ),
               ),
             ).addComponents([
               new discord.Component()
                 .setLabel('/character')
-                .setId(
-                  `character`,
-                  response.character.id,
-                ),
+                .setId(`character`, characterId),
             ]).patch(token);
           default:
-            throw new Error(response.error);
+            throw err;
         }
       }
-
-      return message
-        .addEmbed(new discord.Embed().setDescription('Assigned'))
-        .addEmbed(srch.characterEmbed(results[0], {
-          mode: 'thumbnail',
-          rating: new Rating({ stars: response.character.rating }),
-          description: true,
-          footer: false,
-          existing: {
-            image: response.character.image,
-            nickname: response.character.nickname,
-          },
-        }))
-        .addComponents([
-          new discord.Component()
-            .setLabel('/character')
-            .setId(
-              `character`,
-              response.character.id,
-            ),
-        ]).patch(token);
     })
     .catch(async (err) => {
       if (err.message === '404') {
         await new discord.Message()
           .addEmbed(
             new discord.Embed().setDescription(
-              'Found _nothing_ matching that query!',
+              i18n.get('found-nothing', locale),
             ),
           ).patch(token);
       }
@@ -300,74 +293,18 @@ function swap({ token, a, b, userId, guildId }: {
   userId: string;
   guildId: string;
 }): discord.Message {
-  const mutation = gql`
-    mutation ($userId: String!, $guildId: String!, $a: Int!, $b: Int!) {
-      swapCharactersInParty(userId: $userId, guildId: $guildId, a: $a, b: $b) {
-        ok
-        inventory {
-          party {
-            member1 {
-              id
-              mediaId
-              rating
-              image
-              nickname
-            }
-            member2 {
-              id
-              mediaId
-              rating
-              image
-              nickname
-            }
-            member3 {
-              id
-              mediaId
-              rating
-              image
-              nickname
-            }
-            member4 {
-              id
-              mediaId
-              rating
-              image
-              nickname
-            }
-            member5 {
-              id
-              mediaId
-              rating
-              image
-              nickname
-            }
-          }
-        }
-      }
-    }
-  `;
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
 
-  request<{
-    swapCharactersInParty: Schema.Mutation;
-  }>({
-    url: faunaUrl,
-    query: mutation,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-      a,
-      b,
-    },
-  })
-    .then(async ({ swapCharactersInParty: response }) => {
-      if (!response.ok) {
-        throw new Error(response.error);
-      }
+  Promise.resolve()
+    .then(async () => {
+      const user = await db.getUser(userId);
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
 
-      return (await embed({ guildId, party: response.inventory.party }))
+      const party = await db.swapSpots(user, instance, a, b);
+
+      return (await embed({ guildId, party, locale }))
         .patch(token);
     })
     .catch(async (err) => {
@@ -396,65 +333,46 @@ function remove({ token, spot, userId, guildId }: {
   userId: string;
   guildId: string;
 }): discord.Message {
-  const mutation = gql`
-    mutation ($userId: String!, $guildId: String!, $spot: Int!) {
-      removeCharacterFromParty(userId: $userId, guildId: $guildId, spot: $spot) {
-        ok
-        character {
-          id
-          mediaId
-          rating
-          image
-          nickname
-        }
-      }
-    }
-  `;
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
 
-  request<{
-    removeCharacterFromParty: Schema.Mutation;
-  }>({
-    url: faunaUrl,
-    query: mutation,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-      spot,
-    },
-  })
-    .then(async ({ removeCharacterFromParty: response }) => {
-      if (!response.ok) {
-        throw new Error(response.error);
-      }
+  Promise.resolve()
+    .then(async () => {
+      const user = await db.getUser(userId);
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      const character = await db.unassignCharacter(
+        user,
+        instance,
+        spot,
+      );
 
       const message = new discord.Message();
 
-      if (!response.character) {
+      if (!character) {
         return message.addEmbed(
           new discord.Embed().setDescription(
-            'There was no character assigned to this spot of the party',
+            i18n.get('no-assigned-in-spot', locale),
           ),
         ).patch(token);
       }
 
       const characters = await packs.characters({
-        ids: [response.character.id],
+        ids: [character.id],
         guildId,
       });
 
       if (
         !characters.length ||
-        packs.isDisabled(response.character.id, guildId) ||
-        packs.isDisabled(response.character.mediaId, guildId)
+        packs.isDisabled(character.id, guildId) ||
+        packs.isDisabled(character.mediaId, guildId)
       ) {
         return message
           .addEmbed(new discord.Embed().setDescription(`Removed #${spot}`))
           .addEmbed(
             new discord.Embed().setDescription(
-              'This character was removed or disabled',
+              i18n.get('character-disabled', locale),
             ),
           ).patch(token);
       }
@@ -463,21 +381,18 @@ function remove({ token, spot, userId, guildId }: {
         .addEmbed(new discord.Embed().setDescription('Removed'))
         .addEmbed(srch.characterEmbed(characters[0], {
           mode: 'thumbnail',
-          rating: new Rating({ stars: response.character.rating }),
+          rating: new Rating({ stars: character.rating }),
           description: true,
           footer: false,
           existing: {
-            image: response.character.image,
-            nickname: response.character.nickname,
+            image: character.image,
+            nickname: character.nickname,
           },
         }))
         .addComponents([
           new discord.Component()
             .setLabel('/character')
-            .setId(
-              `character`,
-              response.character.id,
-            ),
+            .setId(`character`, character.id),
         ]).patch(token);
     })
     .catch(async (err) => {

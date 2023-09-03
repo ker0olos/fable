@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from '$std/testing/asserts.ts';
+import { assertEquals } from '$std/assert/mod.ts';
 
 import { assertSpyCall, spy, stub } from '$std/testing/mock.ts';
 
@@ -24,6 +24,8 @@ import community from '../src/community.ts';
 
 import steal from '../src/steal.ts';
 import battle from '../src/battle.ts';
+
+config.global = true;
 
 Deno.test('media components', async () => {
   const body = JSON.stringify({
@@ -2636,8 +2638,6 @@ Deno.test('steal components', async (test) => {
           userId: 'user_id',
           characterId: 'character_id',
           guildId: 'guild_id',
-
-          stars: NaN,
           pre: 40,
         }],
       });
@@ -2647,96 +2647,6 @@ Deno.test('steal components', async (test) => {
       delete config.publicKey;
 
       tradeStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-
-  await test.step('stars', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Component,
-      guild_id: 'guild_id',
-
-      member: {
-        user: {
-          id: 'user_id',
-        },
-      },
-      data: {
-        custom_id: 'bsteal=user_id=character_id=40=5',
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const setTypeSpy = spy(() => ({
-      send: () => true,
-    }));
-
-    const stealStub = stub(steal, 'sacrifices', () =>
-      ({
-        setType: setTypeSpy,
-      }) as any);
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.Update],
-      });
-
-      assertSpyCall(stealStub, 0, {
-        args: [{
-          token: 'token',
-          userId: 'user_id',
-          characterId: 'character_id',
-          guildId: 'guild_id',
-
-          stars: 5,
-          pre: 40,
-        }],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      stealStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
@@ -3007,7 +2917,7 @@ Deno.test('community packs popular', async (test) => {
 Deno.test('community packs install', async (test) => {
   await test.step('normal', async () => {
     const pack = {
-      ref: { manifest: { id: 'pack_id' } },
+      id: 'pack_id',
     };
 
     const body = JSON.stringify({
@@ -3033,7 +2943,7 @@ Deno.test('community packs install', async (test) => {
       body,
     } as any));
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
+    const listStub = stub(packs, 'all', () => Promise.resolve([pack as any]));
 
     const packsStub = stub(packs, 'install', () =>
       ({
@@ -3096,7 +3006,7 @@ Deno.test('community packs install', async (test) => {
 Deno.test('community packs uninstall', async (test) => {
   await test.step('normal', async () => {
     const pack = {
-      ref: { manifest: { id: 'pack_id' } },
+      id: 'pack_id',
     };
 
     const body = JSON.stringify({
@@ -3126,7 +3036,7 @@ Deno.test('community packs uninstall', async (test) => {
       send: () => true,
     }));
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
+    const listStub = stub(packs, 'all', () => Promise.resolve([pack as any]));
 
     const packsStub = stub(packs, 'uninstall', () =>
       ({
@@ -3167,6 +3077,7 @@ Deno.test('community packs uninstall', async (test) => {
 
       assertSpyCall(packsStub, 0, {
         args: [{
+          userId: 'user_id',
           guildId: 'guild_id',
           id: 'pack_id',
         }],
@@ -3186,7 +3097,7 @@ Deno.test('community packs uninstall', async (test) => {
 
   await test.step('no permission', async () => {
     const pack = {
-      ref: { manifest: { id: 'pack_id' } },
+      id: 'pack_id',
     };
 
     const body = JSON.stringify({
@@ -3216,7 +3127,7 @@ Deno.test('community packs uninstall', async (test) => {
       send: () => true,
     }));
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([pack]));
+    const listStub = stub(packs, 'all', () => Promise.resolve([pack as any]));
 
     const packsStub = stub(packs, 'uninstall', () =>
       ({

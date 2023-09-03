@@ -1,17 +1,23 @@
-import { gql, request } from './graphql.ts';
+import '#filter-boolean';
 
 import utils, { ImageSize } from './utils.ts';
 
 import Rating from './rating.ts';
 
-import config, { faunaUrl } from './config.ts';
+import config from './config.ts';
+
+import i18n from './i18n.ts';
 
 import user from './user.ts';
 import search from './search.ts';
 
+import db from '../db/mod.ts';
+
 import packs from './packs.ts';
 
 import * as discord from './discord.ts';
+
+import * as Schema from '../db/schema.ts';
 
 import {
   Character,
@@ -19,16 +25,12 @@ import {
   DisaggregatedCharacter,
   Media,
   MediaRelation,
-  Schema,
 } from './types.ts';
 
-import { NonFetalError, NoPullsError, PoolError } from './errors.ts';
-import i18n from './i18n.ts';
+import { KvError, NonFetalError, NoPullsError, PoolError } from './errors.ts';
 
 export type Pull = {
   index?: number;
-  remaining?: number;
-  guarantees?: number[];
   character: Character;
   media: Media;
   rating: Rating;
@@ -167,18 +169,16 @@ async function guaranteedPool(
 }
 
 async function rngPull(
-  { guildId, userId, guarantee, mutation, extra }: {
+  {
+    guildId,
+    userId,
+    guarantee,
+    sacrifices,
+  }: {
     guildId: string;
     userId?: string;
     guarantee?: number;
-    mutation?: {
-      name: string;
-      query: string;
-    };
-    extra?: {
-      // deno-lint-ignore no-explicit-any
-      [key: string]: any;
-    };
+    sacrifices?: Schema.Character[];
   },
 ): Promise<Pull> {
   const { pool, validate } = typeof guarantee === 'number'
@@ -190,7 +190,10 @@ async function rngPull(
       guildId,
     });
 
-  let inventory: Schema.Inventory | undefined = undefined;
+  // let _user: Schema.User | undefined = undefined;
+
+  // let inventory: Schema.Inventory | undefined = undefined;
+  // let inventoryStamp: string | null = null;
 
   let rating: Rating | undefined = undefined;
   let character: Character | undefined = undefined;
@@ -236,76 +239,26 @@ async function rngPull(
 
     // add character to user's inventory
     if (userId) {
-      const locale = user.cachedUsers[userId]?.locale ??
-        user.cachedGuilds[guildId]?.locale;
-
-      const _mutation = mutation?.query ?? gql`
-        mutation (
-          $userId: String!
-          $guildId: String!
-          $characterId: String!
-          $mediaId: String!
-          $guaranteed: Boolean!
-          $rating: Int!
-        ) {
-          addCharacterToInventory(
-            userId: $userId
-            guildId: $guildId
-            characterId: $characterId
-            mediaId: $mediaId
-            guaranteed: $guaranteed,
-            rating: $rating
-          ) {
-            ok
-            error
-            inventory {
-              availablePulls
-              rechargeTimestamp
-              user {
-                guarantees
-              }
-            }
-          }
-        }
-      `;
-
-      const response = (await request<{
-        [key: string]: Schema.Mutation;
-      }>({
-        url: faunaUrl,
-        query: _mutation,
-        headers: {
-          'authorization': `Bearer ${config.faunaSecret}`,
-        },
-        variables: {
-          userId,
-          guildId,
+      try {
+        const response = await db.addCharacter({
           characterId,
+          guildId,
+          userId,
           mediaId: `${edge.node.packId}:${edge.node.id}`,
           guaranteed: typeof guarantee === 'number',
           rating: rating.stars,
-          ...extra,
-        },
-      }))[mutation?.name ?? 'addCharacterToInventory'];
+          sacrifices,
+        });
 
-      if (response.ok) {
-        inventory = response.inventory;
-      } else {
-        switch (response.error) {
-          case 'NO_GUARANTEES':
-            throw new Error('403');
-          case 'NO_PULLS_AVAILABLE':
-            throw new NoPullsError(response.inventory.rechargeTimestamp);
-          case 'CHARACTER_NOT_OWNED':
-            throw new NonFetalError(
-              i18n.get('character-no-longer-owned', locale),
-            );
-          // duplicate character
-          case 'CHARACTER_EXISTS':
-            continue;
-          default:
-            throw new Error(response.error);
+        if (!response?.ok) {
+          continue;
         }
+      } catch (err) {
+        if (err instanceof KvError) {
+          continue;
+        }
+
+        throw err;
       }
     }
 
@@ -322,14 +275,12 @@ async function rngPull(
   return {
     rating,
     character,
-    remaining: inventory?.availablePulls,
-    guarantees: inventory?.user?.guarantees,
     media: await packs.aggregate<Media>({ media, guildId }),
   };
 }
 
 async function pullAnimation(
-  { token, userId, guildId, quiet, mention, components, guarantee, pull }: {
+  { token, userId, guildId, quiet, mention, components, pull }: {
     token: string;
     pull: Pull;
     userId?: string;
@@ -337,7 +288,6 @@ async function pullAnimation(
     quiet?: boolean;
     mention?: boolean;
     components?: boolean;
-    guarantee?: number;
   },
 ): Promise<void> {
   components ??= true;
@@ -408,27 +358,13 @@ async function pullAnimation(
   });
 
   if (components && userId) {
-    if (
-      typeof guarantee === 'number' &&
-      pull.guarantees?.length &&
-      pull.remaining
-    ) {
-      const next = pull.guarantees?.sort((a, b) => b - a)[0];
+    const component = new discord.Component()
+      .setId(quiet ? 'q' : 'gacha', userId)
+      .setLabel(`/${quiet ? 'q' : 'gacha'}`);
 
-      message.addComponents([
-        new discord.Component()
-          .setId('pull', userId, `${next}`)
-          .setLabel(`/pull ${next}`),
-      ]);
-    } else {
-      const component = new discord.Component()
-        .setId(quiet ? 'q' : 'gacha', userId)
-        .setLabel(`/${quiet ? 'q' : 'gacha'}`);
-
-      message.addComponents([
-        component,
-      ]);
-    }
+    message.addComponents([
+      component,
+    ]);
   }
 
   message.addComponents([
@@ -448,15 +384,18 @@ async function pullAnimation(
 
   await message.patch(token);
 
-  if (guildId) {
+  if (guildId && userId) {
     const pings: string[] = [];
 
-    const inventories = await user.getActiveInventories(guildId);
+    const guild = await db.getGuild(guildId);
+    const instance = await db.getInstance(guild);
+
+    const inventories = await db.getInstanceInventories(instance);
 
     const background =
       pull.character.media?.edges?.[0].role === CharacterRole.Background;
 
-    inventories.forEach(({ user }) => {
+    inventories.forEach(([, user]) => {
       if (
         user.id !== userId &&
         (
@@ -464,7 +403,8 @@ async function pullAnimation(
             .includes(characterId) ||
           (
             !background &&
-            user.likes?.map(({ mediaId }) => mediaId).filter(Boolean)
+            user.likes?.map(({ mediaId }) => mediaId)
+              .filter(Boolean)
               .some((id) => mediaIds.includes(id))
           )
         )
@@ -475,6 +415,7 @@ async function pullAnimation(
 
     if (pings.length) {
       const embed = search.characterEmbed(pull.character, {
+        userId,
         mode: 'thumbnail',
         rating: false,
         description: false,
@@ -482,7 +423,6 @@ async function pullAnimation(
         media: { title: true },
         existing: {
           rating: pull.rating.stars,
-          user: { id: userId },
         },
       });
 
@@ -524,7 +464,6 @@ function start(
         token,
         userId,
         guildId,
-        guarantee,
         mention,
         quiet,
         pull,

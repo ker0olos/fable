@@ -2,8 +2,12 @@ name: deno
 
 on: 
   push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   pull_request_review:
     types: [submitted]
+    branches: [main]
 
 jobs:
   fmt:
@@ -33,17 +37,17 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno test --config deno.json --allow-all --coverage=cov_profile
+      - run: deno test --unstable --config deno.json -A --coverage=cov_profile
       - run: deno coverage cov_profile --lcov --output=lcov.info
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   deploy:
-    name: deploy
-    needs: [test]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    needs:
+      - test
     permissions:
       id-token: write
       contents: read
@@ -51,16 +55,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
-      # NOTE: this is used since we need to wait for
-      # fauna.yml to update the schema and models
-      # and github doesn't support waiting for ouside jobs
-      - name: Wait for other jobs to succeed
-        uses: lewagon/wait-on-check-action@v1.3.1
-        with:
-          ref: ${{ github.ref }}
-          check-name: 'update-models'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      
       - uses: denoland/deployctl@v1
         with:
           project: ${{ secrets.DENO_ID }}

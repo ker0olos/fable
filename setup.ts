@@ -19,18 +19,12 @@ const GUILD_ID = await $.prompt(
   'Enter a discord server id (https://github.com/ker0olos/fable/wiki/Get-Server-ID): ',
 );
 
-const FAUNA_SECRET = await $.prompt(
-  'Enter a FaunaDB auth key (https://github.com/ker0olos/fable/wiki/FaunaDB): ',
-  { mask: true },
-);
-
 await Deno.writeTextFile(
   '.env',
   `APP_ID=${APP_ID}
 PUBLIC_KEY=${PUBLIC_KEY}
 BOT_TOKEN=${BOT_TOKEN}
-GUILD_ID=${GUILD_ID}
-FAUNA_SECRET=${FAUNA_SECRET}`,
+GUILD_ID=${GUILD_ID}`,
 );
 
 await $.confirm({
@@ -43,10 +37,10 @@ Did you invite the bot to your server using the url above?`,
 let pb = $.progress('Install Developer Tools');
 
 try {
-  await $`npm i -g fauna-shell ngrok concurrently node-jq`.quiet();
+  await $`npm i -g ngrok concurrently node-jq`.quiet();
 } catch {
   console.error(
-    red('Error running: npm i -g fauna-shell ngrok concurrently node-jq'),
+    red('Error running: npm i -g ngrok concurrently node-jq'),
   );
   Deno.exit(1);
 } finally {
@@ -63,34 +57,6 @@ try {
 } finally {
   pb.finish();
 }
-
-pb = $.progress('Updating GraphQL Schema');
-
-try {
-  await $`deno run -A update_schema.ts`.quiet();
-} catch {
-  console.error(red('Error running: deno run -A update_schema.ts`'));
-  Deno.exit(1);
-} finally {
-  pb.finish();
-}
-
-pb = $.progress('Updating Database Models');
-
-try {
-  await $`deno run -A update_models.ts`.quiet();
-} catch {
-  console.error(red('Error running: deno run -A update_models.ts`'));
-  Deno.exit(1);
-} finally {
-  pb.finish();
-}
-
-console.log(
-  `\nYou are required to run ${
-    green('"deno task fauna"')
-  } each time you make changes inside the "models" directory`,
-);
 
 console.log(
   `\nYou are required to run ${

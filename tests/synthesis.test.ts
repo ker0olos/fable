@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals, assertRejects } from '$std/testing/asserts.ts';
+import { assertEquals, assertRejects } from '$std/assert/mod.ts';
 
 import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
 
@@ -10,7 +10,6 @@ import { FakeTime } from '$std/testing/time.ts';
 
 import utils from '../src/utils.ts';
 
-import user from '../src/user.ts';
 import packs from '../src/packs.ts';
 import gacha from '../src/gacha.ts';
 
@@ -20,7 +19,9 @@ import Rating from '../src/rating.ts';
 
 import synthesis from '../src/synthesis.ts';
 
-import { CharacterRole, MediaFormat, MediaType, Schema } from '../src/types.ts';
+import db from '../db/mod.ts';
+
+import { CharacterRole, MediaFormat, MediaType } from '../src/types.ts';
 
 import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
@@ -28,14 +29,12 @@ import { NonFetalError, PoolError } from '../src/errors.ts';
 
 Deno.test('auto synthesize', async (test) => {
   await test.step('5 ones', async (test) => {
-    const characters: Schema.Character[] = Array(25).fill({}).map((_, i) => ({
+    const characters = Array(25).fill({}).map((_, i) => ({
       rating: 1,
       id: `id:${i}`,
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
     }));
 
-    const sacrifices = synthesis.getSacrifices(characters, 2);
+    const sacrifices = synthesis.getSacrifices(characters as any, 2);
 
     assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 5);
     assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
@@ -47,14 +46,12 @@ Deno.test('auto synthesize', async (test) => {
   });
 
   await test.step('25 ones', async (test) => {
-    const characters: Schema.Character[] = Array(50).fill({}).map((_, i) => ({
+    const characters = Array(50).fill({}).map((_, i) => ({
       rating: 1,
       id: `id:${i}`,
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
     }));
 
-    const sacrifices = synthesis.getSacrifices(characters, 3);
+    const sacrifices = synthesis.getSacrifices(characters as any, 3);
 
     assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 25);
     assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
@@ -66,14 +63,14 @@ Deno.test('auto synthesize', async (test) => {
   });
 
   await test.step('5 twos', async (test) => {
-    const characters: Schema.Character[] = Array(25).fill({}).map((_, i) => ({
+    const characters = Array(25).fill({}).map((_, i) => ({
       rating: 2,
       id: `id:${i}`,
       mediaId: 'media_id',
       user: { id: 'user_id' },
     }));
 
-    const sacrifices = synthesis.getSacrifices(characters, 3);
+    const sacrifices = synthesis.getSacrifices(characters as any, 3);
 
     assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
     assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 5);
@@ -85,7 +82,7 @@ Deno.test('auto synthesize', async (test) => {
   });
 
   await test.step('20 ones + 1 two', async (test) => {
-    const characters: Schema.Character[] = Array(20).fill({}).map((_, i) => ({
+    const characters = Array(20).fill({}).map((_, i) => ({
       rating: 1,
       id: `id:${i}`,
       mediaId: 'media_id',
@@ -99,7 +96,7 @@ Deno.test('auto synthesize', async (test) => {
       }],
     );
 
-    const sacrifices = synthesis.getSacrifices(characters, 3);
+    const sacrifices = synthesis.getSacrifices(characters as any, 3);
 
     assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 20);
     assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 1);
@@ -111,7 +108,7 @@ Deno.test('auto synthesize', async (test) => {
   });
 
   await test.step('625 ones', async (test) => {
-    const characters: Schema.Character[] = Array(625).fill({}).map((
+    const characters = Array(625).fill({}).map((
       _,
       i,
     ) => ({
@@ -128,7 +125,7 @@ Deno.test('auto synthesize', async (test) => {
       }],
     );
 
-    const sacrifices = synthesis.getSacrifices(characters, 5);
+    const sacrifices = synthesis.getSacrifices(characters as any, 5);
 
     assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 625);
     assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
@@ -140,7 +137,7 @@ Deno.test('auto synthesize', async (test) => {
   });
 
   await test.step('500 ones + 5 threes', async (test) => {
-    const characters: Schema.Character[] = Array(500).fill({}).map((
+    const characters = Array(500).fill({}).map((
       _,
       i,
     ) => ({
@@ -160,7 +157,7 @@ Deno.test('auto synthesize', async (test) => {
       })),
     );
 
-    const sacrifices = synthesis.getSacrifices(characters, 5);
+    const sacrifices = synthesis.getSacrifices(characters as any, 5);
 
     assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 500);
     assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
@@ -172,7 +169,7 @@ Deno.test('auto synthesize', async (test) => {
   });
 
   await test.step('5 fours', async (test) => {
-    const characters: Schema.Character[] = Array(25).fill({}).map((
+    const characters = Array(25).fill({}).map((
       _,
       i,
     ) => ({
@@ -182,7 +179,7 @@ Deno.test('auto synthesize', async (test) => {
       user: { id: 'user_id' },
     }));
 
-    const sacrifices = synthesis.getSacrifices(characters, 5);
+    const sacrifices = synthesis.getSacrifices(characters as any, 5);
 
     assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
     assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
@@ -194,14 +191,14 @@ Deno.test('auto synthesize', async (test) => {
   });
 
   await test.step('5 fives', async () => {
-    const characters: Schema.Character[] = Array(25).fill({}).map((_, i) => ({
+    const characters = Array(25).fill({}).map((_, i) => ({
       rating: 5,
       id: `id:${i}`,
       mediaId: 'media_id',
       user: { id: 'user_id' },
     }));
 
-    const sacrifices = synthesis.getSacrifices(characters, 5);
+    const sacrifices = synthesis.getSacrifices(characters as any, 5);
 
     assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
     assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
@@ -213,7 +210,7 @@ Deno.test('auto synthesize', async (test) => {
   });
 
   await test.step('4 fours + 1 five', async () => {
-    const characters: Schema.Character[] = Array(4).fill({}).map((_, i) => ({
+    const characters = Array(4).fill({}).map((_, i) => ({
       rating: 4,
       id: `id:${i}`,
       mediaId: 'media_id',
@@ -227,7 +224,7 @@ Deno.test('auto synthesize', async (test) => {
       user: { id: 'user_id' },
     });
 
-    const sacrifices = synthesis.getSacrifices(characters, 5);
+    const sacrifices = synthesis.getSacrifices(characters as any, 5);
 
     assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
     assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
@@ -239,7 +236,7 @@ Deno.test('auto synthesize', async (test) => {
   });
 
   await test.step('4 fives + 1 four', async () => {
-    const characters: Schema.Character[] = Array(4).fill({}).map((_, i) => ({
+    const characters = Array(4).fill({}).map((_, i) => ({
       rating: 5,
       id: `id:${i}`,
       mediaId: 'media_id',
@@ -253,7 +250,7 @@ Deno.test('auto synthesize', async (test) => {
       user: { id: 'user_id' },
     });
 
-    const sacrifices = synthesis.getSacrifices(characters, 5);
+    const sacrifices = synthesis.getSacrifices(characters as any, 5);
 
     await assertSnapshot(test, sacrifices);
   });
@@ -310,27 +307,34 @@ Deno.test('synthesis confirmed', async (test) => {
               },
             }))),
         } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                replaceCharacters: {
-                  ok: true,
-                },
-              },
-            }))),
-        },
         undefined,
         undefined,
         undefined,
       ] as any),
     );
 
-    const userStub = stub(
-      user,
-      'getActiveInventories',
-      () => Promise.resolve([]),
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInstanceInventoriesStub = stub(
+      db,
+      'getInstanceInventories',
+      () => [] as any,
+    );
+
+    const addCharacterStub = stub(
+      db,
+      'addCharacter',
+      () => ({ ok: true }) as any,
     );
 
     const gachaStub = stub(gacha, 'guaranteedPool', () =>
@@ -345,36 +349,26 @@ Deno.test('synthesis confirmed', async (test) => {
       () =>
         Promise.resolve([
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:1',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:2',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:3',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:4',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:5',
             rating: 1,
           },
-        ]),
+        ] as any),
     );
 
     config.appId = 'app_id';
@@ -405,18 +399,16 @@ Deno.test('synthesis confirmed', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 3);
-
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[1].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -435,18 +427,16 @@ Deno.test('synthesis confirmed', async (test) => {
 
       await timeStub.nextAsync();
 
-      assertSpyCalls(fetchStub, 4);
-
       assertEquals(
-        fetchStub.calls[3].args[0],
+        fetchStub.calls[2].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -464,18 +454,16 @@ Deno.test('synthesis confirmed', async (test) => {
 
       await timeStub.nextAsync();
 
-      assertSpyCalls(fetchStub, 5);
-
       assertEquals(
-        fetchStub.calls[4].args[0],
+        fetchStub.calls[3].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[4].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[4].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -519,9 +507,13 @@ Deno.test('synthesis confirmed', async (test) => {
 
       fetchStub.restore();
       synthesisStub.restore();
-      userStub.restore();
       gachaStub.restore();
       timeStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInstanceInventoriesStub.restore();
+      addCharacterStub.restore();
     }
   });
 
@@ -575,17 +567,6 @@ Deno.test('synthesis confirmed', async (test) => {
               },
             }))),
         } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                replaceCharacters: {
-                  ok: true,
-                },
-              },
-            }))),
-        },
         undefined,
         undefined,
         undefined,
@@ -593,16 +574,32 @@ Deno.test('synthesis confirmed', async (test) => {
       ] as any),
     );
 
-    const userStub = stub(
-      user,
-      'getActiveInventories',
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInstanceInventoriesStub = stub(
+      db,
+      'getInstanceInventories',
       () =>
-        Promise.resolve([{
-          user: {
-            id: 'another_user_id',
-            likes: [{ characterId: 'anilist:1' }],
-          },
-        } as Schema.Inventory]),
+        [[{}, {
+          id: 'another_user_id',
+          likes: [{ characterId: 'anilist:1' }],
+        }]] as any,
+    );
+
+    const addCharacterStub = stub(
+      db,
+      'addCharacter',
+      () => ({ ok: true }) as any,
     );
 
     const gachaStub = stub(gacha, 'guaranteedPool', () =>
@@ -617,36 +614,26 @@ Deno.test('synthesis confirmed', async (test) => {
       () =>
         Promise.resolve([
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:1',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:2',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:3',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:4',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:5',
             rating: 1,
           },
-        ]),
+        ] as any),
     );
 
     config.appId = 'app_id';
@@ -676,18 +663,16 @@ Deno.test('synthesis confirmed', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 3);
-
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[1].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -706,18 +691,16 @@ Deno.test('synthesis confirmed', async (test) => {
 
       await timeStub.nextAsync();
 
-      assertSpyCalls(fetchStub, 4);
-
       assertEquals(
-        fetchStub.calls[3].args[0],
+        fetchStub.calls[2].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -735,18 +718,16 @@ Deno.test('synthesis confirmed', async (test) => {
 
       await timeStub.nextAsync();
 
-      assertSpyCalls(fetchStub, 5);
-
       assertEquals(
-        fetchStub.calls[4].args[0],
+        fetchStub.calls[3].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[4].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[3].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[4].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[3].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -785,18 +766,16 @@ Deno.test('synthesis confirmed', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 6);
-
       assertEquals(
-        fetchStub.calls[5].args[0],
+        fetchStub.calls[4].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token',
       );
 
-      assertEquals(fetchStub.calls[5].args[1]?.method, 'POST');
+      assertEquals(fetchStub.calls[4].args[1]?.method, 'POST');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[5].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[4].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -828,184 +807,13 @@ Deno.test('synthesis confirmed', async (test) => {
 
       fetchStub.restore();
       synthesisStub.restore();
-      userStub.restore();
       gachaStub.restore();
       timeStub.restore();
-    }
-  });
 
-  await test.step('characters changed hands', async () => {
-    const media: AniListMedia = {
-      id: '2',
-      packId: 'anilist',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      popularity: 150_000,
-      title: {
-        english: 'title',
-      },
-      coverImage: {
-        extraLarge: 'media_image_url',
-      },
-    };
-
-    const character: AniListCharacter = {
-      id: '1',
-      packId: 'anilist',
-      name: {
-        full: 'name',
-      },
-      image: {
-        large: 'character_image_url',
-      },
-      media: {
-        edges: [{
-          characterRole: CharacterRole.Supporting,
-          node: media,
-        }],
-      },
-    };
-
-    const timeStub = new FakeTime();
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                Page: {
-                  characters: [character],
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                replaceCharacters: {
-                  ok: false,
-                  error: 'CHARACTER_NOT_OWNED',
-                },
-              },
-            }))),
-        },
-        undefined,
-        undefined,
-      ] as any),
-    );
-
-    const gachaStub = stub(gacha, 'guaranteedPool', () =>
-      Promise.resolve({
-        pool: [{ id: 'anilist:1', mediaId: 'anilist:2', rating: 1 }],
-        validate: () => true,
-      }));
-
-    const synthesisStub = stub(
-      synthesis,
-      'getFilteredCharacters',
-      () =>
-        Promise.resolve([
-          {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
-            id: 'anilist:1',
-            rating: 1,
-          },
-          {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
-            id: 'anilist:2',
-            rating: 1,
-          },
-          {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
-            id: 'anilist:3',
-            rating: 1,
-          },
-          {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
-            id: 'anilist:4',
-            rating: 1,
-          },
-          {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
-            id: 'anilist:5',
-            rating: 1,
-          },
-        ]),
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = synthesis.confirmed({
-        token: 'test_token',
-        userId: 'user_id',
-        guildId: 'guild_id',
-
-        target: 2,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [],
-          embeds: [{
-            type: 'rich',
-            image: {
-              url: 'http://localhost:8000/assets/spinner.gif',
-            },
-          }],
-        },
-      });
-
-      await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 3);
-
-      assertEquals(
-        fetchStub.calls[2].args[0],
-        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
-      );
-
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
-
-      assertEquals(
-        JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
-            'payload_json',
-          ) as any,
-        ),
-        {
-          embeds: [
-            {
-              type: 'rich',
-              description: 'Some of those characters changed hands',
-            },
-          ],
-          components: [],
-          attachments: [],
-        },
-      );
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
-      synthesisStub.restore();
-      gachaStub.restore();
-      timeStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInstanceInventoriesStub.restore();
+      addCharacterStub.restore();
     }
   });
 
@@ -1020,30 +828,22 @@ Deno.test('synthesis confirmed', async (test) => {
       () =>
         Promise.resolve([
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:1',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:2',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:3',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:4',
             rating: 1,
           },
-        ]),
+        ] as any),
     );
 
     config.appId = 'app_id';
@@ -1133,36 +933,26 @@ Deno.test('synthesis confirmed', async (test) => {
       () =>
         Promise.resolve([
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:1',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:2',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:3',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:4',
             rating: 1,
           },
           {
-            mediaId: 'media_id',
-            user: { id: 'user_id' },
             id: 'anilist:5',
             rating: 1,
           },
-        ]),
+        ] as any),
     );
 
     config.appId = 'app_id';
@@ -1327,39 +1117,6 @@ Deno.test('/synthesis', async (test) => {
           text: (() =>
             Promise.resolve(JSON.stringify({
               data: {
-                getUserInventory: {
-                  user: {},
-                  characters: [
-                    {
-                      id: 'anilist:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:2',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:3',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:4',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:5',
-                      rating: 1,
-                    },
-                  ],
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
                 Page: {
                   characters,
                 },
@@ -1368,6 +1125,64 @@ Deno.test('/synthesis', async (test) => {
         } as any,
         undefined,
       ]),
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const getUserPartyStub = stub(
+      db,
+      'getUserParty',
+      () => ({}) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          {
+            id: 'anilist:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:2',
+            rating: 1,
+          },
+          {
+            id: 'anilist:3',
+            rating: 1,
+          },
+          {
+            id: 'anilist:4',
+            rating: 1,
+          },
+          {
+            id: 'anilist:5',
+            rating: 1,
+          },
+        ] as any,
     );
 
     const listStub = stub(
@@ -1387,7 +1202,6 @@ Deno.test('/synthesis', async (test) => {
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-
         target: 2,
       });
 
@@ -1407,18 +1221,16 @@ Deno.test('/synthesis', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 3);
-
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[1].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1508,6 +1320,13 @@ Deno.test('/synthesis', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      getUserPartyStub.restore();
+      getUserCharactersStub.restore();
     }
   });
 
@@ -1571,49 +1390,6 @@ Deno.test('/synthesis', async (test) => {
           text: (() =>
             Promise.resolve(JSON.stringify({
               data: {
-                getUserInventory: {
-                  user: {},
-                  characters: [
-                    {
-                      image: 'custom_image_url',
-                      nickname: 'nickname 1',
-                      id: 'anilist:1',
-                      rating: 1,
-                    },
-                    {
-                      image: 'custom_image_url',
-                      nickname: 'nickname 2',
-                      id: 'anilist:2',
-                      rating: 1,
-                    },
-                    {
-                      image: 'custom_image_url',
-                      nickname: 'nickname 3',
-                      id: 'anilist:3',
-                      rating: 1,
-                    },
-                    {
-                      image: 'custom_image_url',
-                      nickname: 'nickname 4',
-                      id: 'anilist:4',
-                      rating: 1,
-                    },
-                    {
-                      image: 'custom_image_url',
-                      nickname: 'nickname 5',
-                      id: 'anilist:5',
-                      rating: 1,
-                    },
-                  ],
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
                 Page: {
                   characters,
                 },
@@ -1622,6 +1398,74 @@ Deno.test('/synthesis', async (test) => {
         } as any,
         undefined,
       ]),
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const getUserPartyStub = stub(
+      db,
+      'getUserParty',
+      () => ({}) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          {
+            image: 'custom_image_url',
+            nickname: 'nickname 1',
+            id: 'anilist:1',
+            rating: 1,
+          },
+          {
+            image: 'custom_image_url',
+            nickname: 'nickname 2',
+            id: 'anilist:2',
+            rating: 1,
+          },
+          {
+            image: 'custom_image_url',
+            nickname: 'nickname 3',
+            id: 'anilist:3',
+            rating: 1,
+          },
+          {
+            image: 'custom_image_url',
+            nickname: 'nickname 4',
+            id: 'anilist:4',
+            rating: 1,
+          },
+          {
+            image: 'custom_image_url',
+            nickname: 'nickname 5',
+            id: 'anilist:5',
+            rating: 1,
+          },
+        ] as any,
     );
 
     const listStub = stub(
@@ -1661,18 +1505,16 @@ Deno.test('/synthesis', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 3);
-
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[1].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1752,6 +1594,13 @@ Deno.test('/synthesis', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      getUserPartyStub.restore();
+      getUserCharactersStub.restore();
     }
   });
 
@@ -1815,39 +1664,6 @@ Deno.test('/synthesis', async (test) => {
           text: (() =>
             Promise.resolve(JSON.stringify({
               data: {
-                getUserInventory: {
-                  user: {},
-                  characters: [
-                    {
-                      id: 'anilist:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:2',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:3',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:4',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:5',
-                      rating: 1,
-                    },
-                  ],
-                },
-              },
-            }))),
-        } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
                 Page: {
                   characters,
                 },
@@ -1856,6 +1672,64 @@ Deno.test('/synthesis', async (test) => {
         } as any,
         undefined,
       ]),
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const getUserPartyStub = stub(
+      db,
+      'getUserParty',
+      () => ({}) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          {
+            id: 'anilist:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:2',
+            rating: 1,
+          },
+          {
+            id: 'anilist:3',
+            rating: 1,
+          },
+          {
+            id: 'anilist:4',
+            rating: 1,
+          },
+          {
+            id: 'anilist:5',
+            rating: 1,
+          },
+        ] as any,
     );
 
     const listStub = stub(
@@ -1899,18 +1773,16 @@ Deno.test('/synthesis', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 3);
-
       assertEquals(
-        fetchStub.calls[2].args[0],
+        fetchStub.calls[1].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[2].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[2].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1975,6 +1847,13 @@ Deno.test('/synthesis', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      getUserPartyStub.restore();
+      getUserCharactersStub.restore();
     }
   });
 
@@ -1983,83 +1862,108 @@ Deno.test('/synthesis', async (test) => {
       utils,
       'fetchWithRetry',
       returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                getUserInventory: {
-                  party: {
-                    member1: {
-                      id: 'anilist:1',
-                    },
-                    member2: {
-                      id: 'anilist:2',
-                    },
-                    member3: {
-                      id: 'anilist:3',
-                    },
-                    member4: {
-                      id: 'anilist:4',
-                    },
-                    member5: {
-                      id: 'anilist:5',
-                    },
-                  },
-                  user: {},
-                  characters: [
-                    {
-                      id: 'anilist:1',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:2',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:3',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:4',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:5',
-                      mediaId: 'pack-id:2',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:6',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:7',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:8',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:9',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                  ],
-                },
-              },
-            }))),
-        } as any,
         undefined,
-      ]),
+      ] as any),
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const getUserPartyStub = stub(
+      db,
+      'getUserParty',
+      () =>
+        ({
+          member1: {
+            id: 'anilist:1',
+          },
+          member2: {
+            id: 'anilist:2',
+          },
+          member3: {
+            id: 'anilist:3',
+          },
+          member4: {
+            id: 'anilist:4',
+          },
+          member5: {
+            id: 'anilist:5',
+          },
+        }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          {
+            id: 'anilist:1',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:2',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:3',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:4',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:5',
+            mediaId: 'pack-id:2',
+            rating: 1,
+          },
+          {
+            id: 'anilist:6',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:7',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:8',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:9',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+        ] as any,
     );
 
     const listStub = stub(
@@ -2088,82 +1992,115 @@ Deno.test('/synthesis', async (test) => {
 
       fetchStub.restore();
       listStub.restore();
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      getUserPartyStub.restore();
+      getUserCharactersStub.restore();
     }
   });
 
-  await test.step('filter (characters)', async () => {
+  await test.step('filter (liked characters)', async () => {
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
       returnsNext([
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                getUserInventory: {
-                  user: {
-                    likes: [
-                      { characterId: 'anilist:1' },
-                      { characterId: 'anilist:2' },
-                      { characterId: 'anilist:3' },
-                      { characterId: 'anilist:4' },
-                      { characterId: 'anilist:5' },
-                    ],
-                  },
-                  characters: [
-                    {
-                      id: 'anilist:1',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:2',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:3',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:4',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:5',
-                      mediaId: 'pack-id:2',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:6',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:7',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:8',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                    {
-                      id: 'anilist:9',
-                      mediaId: 'pack-id:1',
-                      rating: 1,
-                    },
-                  ],
-                },
-              },
-            }))),
-        } as any,
         undefined,
-      ]),
+      ] as any),
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () =>
+        ({
+          likes: [
+            { characterId: 'anilist:1' },
+            { characterId: 'anilist:2' },
+            { characterId: 'anilist:3' },
+            { characterId: 'anilist:4' },
+            { characterId: 'anilist:5' },
+          ],
+        }) as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const getUserPartyStub = stub(
+      db,
+      'getUserParty',
+      () => ({}) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          {
+            id: 'anilist:1',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:2',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:3',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:4',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:5',
+            mediaId: 'pack-id:2',
+            rating: 1,
+          },
+          {
+            id: 'anilist:6',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:7',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:8',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+          {
+            id: 'anilist:9',
+            mediaId: 'pack-id:1',
+            rating: 1,
+          },
+        ] as any,
     );
 
     const listStub = stub(
@@ -2192,108 +2129,15 @@ Deno.test('/synthesis', async (test) => {
 
       fetchStub.restore();
       listStub.restore();
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      getUserPartyStub.restore();
+      getUserCharactersStub.restore();
     }
   });
-
-  // await test.step('filter (media)', async () => {
-  //   const fetchStub = stub(
-  //     utils,
-  //     'fetchWithRetry',
-  //     returnsNext([
-  //       {
-  //         ok: true,
-  //         text: (() =>
-  //           Promise.resolve(JSON.stringify({
-  //             data: {
-  //               getUserInventory: {
-  //                 user: {
-  //                   likes: [
-  //                     { mediaId: 'pack-id:1' },
-  //                   ],
-  //                 },
-  //                 characters: [
-  //                   {
-  //                     id: 'anilist:1',
-  //                     mediaId: 'pack-id:1',
-  //                     rating: 1,
-  //                   },
-  //                   {
-  //                     id: 'anilist:2',
-  //                     mediaId: 'pack-id:1',
-  //                     rating: 1,
-  //                   },
-  //                   {
-  //                     id: 'anilist:3',
-  //                     mediaId: 'pack-id:1',
-  //                     rating: 1,
-  //                   },
-  //                   {
-  //                     id: 'anilist:4',
-  //                     mediaId: 'pack-id:1',
-  //                     rating: 1,
-  //                   },
-  //                   {
-  //                     id: 'anilist:5',
-  //                     mediaId: 'pack-id:1',
-  //                     rating: 1,
-  //                   },
-  //                   {
-  //                     id: 'anilist:6',
-  //                     mediaId: 'pack-id:2',
-  //                     rating: 1,
-  //                   },
-  //                   {
-  //                     id: 'anilist:7',
-  //                     mediaId: 'pack-id:2',
-  //                     rating: 1,
-  //                   },
-  //                   {
-  //                     id: 'anilist:8',
-  //                     mediaId: 'pack-id:2',
-  //                     rating: 1,
-  //                   },
-  //                   {
-  //                     id: 'anilist:9',
-  //                     mediaId: 'pack-id:2',
-  //                     rating: 1,
-  //                   },
-  //                 ],
-  //               },
-  //             },
-  //           }))),
-  //       } as any,
-  //       undefined,
-  //     ]),
-  //   );
-
-  //   const listStub = stub(
-  //     packs,
-  //     'all',
-  //     () => Promise.resolve([]),
-  //   );
-
-  //   config.synthesis = true;
-
-  //   try {
-  //     await assertRejects(
-  //       () =>
-  //         synthesis.synthesize({
-  //           token: 'test_token',
-  //           userId: 'user_id',
-  //           guildId: 'guild_id',
-
-  //           target: 2,
-  //         }),
-  //       NonFetalError,
-  //       'You only have **4 out the 5** sacrifices needed for 2<:smolstar:1107503653956374638>',
-  //     );
-  //   } finally {
-  //     delete config.appId;
-
-  //     fetchStub.restore();
-  //     listStub.restore();
-  //   }
-  // });
 
   await test.step('not enough', async () => {
     const fetchStub = stub(
@@ -2314,6 +2158,42 @@ Deno.test('/synthesis', async (test) => {
         } as any,
         undefined,
       ]),
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const getUserPartyStub = stub(
+      db,
+      'getUserParty',
+      () => ({}) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () => [] as any,
     );
 
     const listStub = stub(
@@ -2342,6 +2222,13 @@ Deno.test('/synthesis', async (test) => {
 
       fetchStub.restore();
       listStub.restore();
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      getUserPartyStub.restore();
+      getUserCharactersStub.restore();
     }
   });
 

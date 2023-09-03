@@ -12,12 +12,14 @@ import * as _anilist from '../packs/anilist/index.ts';
 
 import * as discord from './discord.ts';
 
-import { gql, request } from './graphql.ts';
-
 import user from './user.ts';
 import utils from './utils.ts';
 
-import config, { faunaUrl } from './config.ts';
+import i18n from './i18n.ts';
+
+import config from './config.ts';
+
+import db from '../db/mod.ts';
 
 import Rating from './rating.ts';
 
@@ -31,15 +33,14 @@ import {
   Media,
   MediaFormat,
   MediaRelation,
-  Pack,
-  PackInstall,
   Pool,
-  Schema,
 } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
 
-import { AniListMedia } from '../packs/anilist/types.ts';
+import type { AniListMedia } from '../packs/anilist/types.ts';
+
+import type { Pack } from '../db/schema.ts';
 
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
@@ -50,7 +51,7 @@ type AnilistSearchOptions = {
 };
 
 const cachedGuilds: Record<string, {
-  packs: PackInstall[];
+  packs: Pack[];
   disables: string[];
 }> = {};
 
@@ -76,100 +77,10 @@ const packs = {
 
 async function all(
   { guildId, filter }: { guildId?: string; filter?: boolean },
-): Promise<(PackInstall[])> {
-  const query = gql`
-    query ($guildId: String!) {
-      getGuildInstance(guildId: $guildId) {
-        packs {
-          by
-          ref {
-            approved
-            manifest {
-              id
-              title
-              description
-              author
-              image
-              url
-              conflicts
-              media {
-                new {
-                  id
-                  type
-                  title {
-                    english
-                    romaji
-                    native
-                    alternative
-                  }
-                  format
-                  description
-                  popularity
-                  images {
-                    url
-                    artist {
-                      username
-                      url
-                    }
-                  }
-                  externalLinks {
-                    url
-                    site
-                  }
-                  trailer {
-                    id
-                    site
-                  }
-                  relations {
-                    relation
-                    mediaId
-                  }
-                  characters {
-                    role
-                    characterId
-                  }
-                }
-              }
-              characters {
-                new {
-                  id
-                  name {
-                    english
-                    romaji
-                    native
-                    alternative
-                  }
-                  description
-                  popularity
-                  gender
-                  age
-                  images {
-                    url
-                    artist {
-                      username
-                      url
-                    }
-                  }
-                  externalLinks {
-                    url
-                    site
-                  }
-                  media {
-                    role
-                    mediaId
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-
-  const builtins = [
-    { ref: { manifest: anilistManifest } },
-    { ref: { manifest: vtubersManifest } },
+): Promise<(Pack[])> {
+  const builtins: Pack[] = [
+    { manifest: anilistManifest, _id: '_' },
+    { manifest: vtubersManifest, _id: '_' },
   ];
 
   if (!guildId || !config.communityPacks) {
@@ -188,31 +99,27 @@ async function all(
     return [...builtins, ...packs.cachedGuilds[guildId].packs];
   }
 
-  const response = (await request<{
-    getGuildInstance: { packs: { ref: Pack }[] };
-  }>({
-    query,
-    url: faunaUrl,
-    headers: { 'authorization': `Bearer ${config.faunaSecret}` },
-    variables: { guildId },
-  })).getGuildInstance;
+  const guild = await db.getGuild(guildId);
+  const instance = await db.getInstance(guild);
+
+  const _packs = await db.getInstancePacks(instance);
 
   packs.cachedGuilds[guildId] = {
-    packs: response.packs,
+    packs: _packs,
     disables: Array.from(
       new Set(
-        response.packs
-          .map((pack) => pack.ref.manifest.conflicts ?? [])
+        _packs
+          .map((pack) => pack.manifest.conflicts ?? [])
           .flat(),
       ),
     ),
   };
 
   if (filter) {
-    return response.packs;
+    return _packs;
   }
 
-  return [...builtins, ...response.packs];
+  return [...builtins, ..._packs];
 }
 
 function isDisabled(id: string, guildId: string): boolean {
@@ -228,23 +135,25 @@ function isDisabled(id: string, guildId: string): boolean {
   return disables.includes(id);
 }
 
-function packEmbed(pack: PackInstall): discord.Embed {
+function packEmbed(pack: Pack): discord.Embed {
   const embed = new discord.Embed()
-    .setFooter({ text: pack.ref.manifest.author })
-    .setDescription(pack.ref.manifest.description)
+    .setFooter({ text: pack.manifest.author })
+    .setDescription(pack.manifest.description)
     .setThumbnail({
-      url: pack.ref.manifest.image,
+      url: pack.manifest.image,
       default: false,
       proxy: false,
     })
-    .setTitle(pack.ref.manifest.title ?? pack.ref.manifest.id);
+    .setTitle(pack.manifest.title ?? pack.manifest.id);
 
   return embed;
 }
 
 function uninstallDialog(
-  { pack, userId }: { pack: PackInstall; userId: string },
+  { pack, userId }: { pack: Pack; userId: string },
 ): discord.Message {
+  const locale = user.cachedUsers[userId]?.locale;
+
   const message = new discord.Message()
     .addEmbed(packEmbed(pack));
 
@@ -252,9 +161,8 @@ function uninstallDialog(
     userId,
     message,
     type: 'uninstall',
-    confirm: discord.join(pack.ref.manifest.id, userId),
-    description:
-      `**Are you sure you want to uninstall this pack?**\n\nUninstalling a pack will disable any characters your server members have from the pack, which may be met with negative reactions.`,
+    confirm: discord.join(pack.manifest.id, userId),
+    description: i18n.get('uninstall-pack-confirmation', locale),
   });
 }
 
@@ -265,20 +173,20 @@ async function pages(
     userId: string;
   },
 ): Promise<discord.Message> {
+  const locale = user.cachedUsers[userId]?.locale;
+
   if (!config.communityPacks) {
     throw new NonFetalError(
-      'Community Packs are under maintenance, try again later!',
+      i18n.get('maintenance-packs', locale),
     );
   }
-
-  const locale = user.cachedUsers[userId]?.locale;
 
   const list = (await packs.all({ guildId })).toReversed();
 
   const pack = list[index];
 
   if (!pack) {
-    throw new NonFetalError('This pack doesn\'t exist');
+    throw new NonFetalError(i18n.get('pack-doesnt-exist', locale));
   }
 
   const embed = packEmbed(pack);
@@ -286,11 +194,11 @@ async function pages(
   const message = new discord.Message()
     .addEmbed(embed);
 
-  if (pack.ref.manifest.url) {
+  if (pack.manifest.url) {
     message.addComponents([
       new discord.Component()
-        .setLabel('Homepage')
-        .setUrl(pack.ref.manifest.url),
+        .setLabel(i18n.get('homepage', locale))
+        .setUrl(pack.manifest.url),
     ]);
   }
 
@@ -307,136 +215,107 @@ async function pages(
 async function install(
   { id, guildId, userId }: { id: string; guildId: string; userId: string },
 ): Promise<discord.Message> {
+  const locale = user.cachedUsers[userId]?.locale;
+
   if (!config.communityPacks) {
     throw new NonFetalError(
-      'Community Packs are under maintenance, try again later!',
+      i18n.get('maintenance-packs', locale),
     );
   }
 
-  const mutation = gql`
-    mutation ($userId: String!, $guildId: String!, $packId: String!) {
-      addPackToInstance(userId: $userId, guildId: $guildId, packId: $packId) {
-        ok
-        error
-        install {
-          ref {
-            manifest {
-              id
-              title
-              description
-              author
-              image
-              url
-            }
-          }
-        }
-      }
-    }
-  `;
+  const guild = await db.getGuild(guildId);
+  const instance = await db.getInstance(guild);
 
-  const response = (await request<{
-    addPackToInstance: Schema.Mutation;
-  }>({
-    url: faunaUrl,
-    query: mutation,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      userId,
-      guildId,
-      packId: id,
-    },
-  })).addPackToInstance;
+  try {
+    const pack = await db.addPack(instance, userId, id);
 
-  if (response.ok) {
     // clear guild cache after uninstall
     delete cachedGuilds[guildId];
 
     const message = new discord.Message()
-      .addEmbed(new discord.Embed().setDescription('Installed'))
-      .addEmbed(packEmbed(response.install));
+      .addEmbed(new discord.Embed().setDescription(
+        i18n.get('installed', locale),
+      ))
+      .addEmbed(packEmbed(pack));
 
     return message;
-  } else {
-    switch (response.error) {
+  } catch (err) {
+    switch (err.message) {
       case 'PACK_PRIVATE':
         throw new NonFetalError(
-          'This pack is private and cannot be installed by you',
+          i18n.get('pack-is-private', locale),
         );
       case 'PACK_NOT_FOUND':
         throw new Error('404');
       default:
-        throw new Error(response.error);
+        throw err;
     }
   }
 }
 
 async function uninstall(
-  { guildId, id }: { guildId: string; id: string },
+  { guildId, userId, id }: { guildId: string; userId: string; id: string },
 ): Promise<discord.Message> {
+  const locale = user.cachedUsers[userId]?.locale;
+
   if (!config.communityPacks) {
     throw new NonFetalError(
-      'Community Packs are under maintenance, try again later!',
+      i18n.get('maintenance-packs', locale),
     );
   }
 
-  const message = new discord.Message();
+  const guild = await db.getGuild(guildId);
+  const instance = await db.getInstance(guild);
 
-  const mutation = gql`
-    mutation ($guildId: String!, $packId: String!) {
-      removePackFromInstance(guildId: $guildId, packId: $packId) {
-        ok
-        error
-        uninstall {
-          manifest {
-            id
-            title
-            description
-            author
-            image
-            url
-          }
-        }
-      }
-    }
-  `;
+  try {
+    const pack = await db.removePack(instance, id);
 
-  const response = (await request<{
-    removePackFromInstance: Schema.Mutation;
-  }>({
-    url: faunaUrl,
-    query: mutation,
-    headers: {
-      'authorization': `Bearer ${config.faunaSecret}`,
-    },
-    variables: {
-      guildId,
-      packId: id,
-    },
-  })).removePackFromInstance;
-
-  if (response.ok) {
     // clear guild cache after uninstall
     delete cachedGuilds[guildId];
 
-    return message
-      .addEmbed(new discord.Embed().setDescription('Uninstalled'))
+    const message = new discord.Message()
+      .addEmbed(new discord.Embed().setDescription(
+        i18n.get('uninstalled', locale),
+      ))
       .addEmbed(
         new discord.Embed().setDescription(
-          '**All characters from this pack are now disabled**',
+          i18n.get('pack-characters-disabled', locale),
         ),
       )
-      .addEmbed(packEmbed({ ref: response.uninstall }));
-  } else {
-    switch (response.error) {
+      .addEmbed(packEmbed(pack));
+
+    return message;
+  } catch (err) {
+    switch (err.message) {
       case 'PACK_NOT_FOUND':
       case 'PACK_NOT_INSTALLED':
         throw new Error('404');
       default:
-        throw new Error(response.error);
+        throw err;
     }
   }
+
+  // if (response.ok) {
+  //   // clear guild cache after uninstall
+  //   delete cachedGuilds[guildId];
+
+  //   return new discord.Message()
+  //     .addEmbed(new discord.Embed().setDescription('Uninstalled'))
+  //     .addEmbed(
+  //       new discord.Embed().setDescription(
+  //         '**All characters from this pack are now disabled**',
+  //       ),
+  //     )
+  //     .addEmbed(packEmbed({ ref: response.uninstall }));
+  // } else {
+  //   switch (response.error) {
+  //     case 'PACK_NOT_FOUND':
+  //     case 'PACK_NOT_INSTALLED':
+  //       throw new Error('404');
+  //     default:
+  //       throw new Error(response.error);
+  //   }
+  // }
 }
 
 function parseId(
@@ -484,10 +363,10 @@ async function findById<T>(
         anilistIds.push(n);
       }
     } else {
-      const pack = list.find(({ ref: { manifest } }) => manifest.id === packId);
+      const pack = list.find(({ manifest }) => manifest.id === packId);
 
       // search for the id in packs
-      const match = (pack?.ref?.manifest[key]?.new as Array<
+      const match = (pack?.manifest[key]?.new as Array<
         DisaggregatedCharacter | DisaggregatedMedia
       >)?.find((m) => m.id === id);
 
@@ -546,7 +425,7 @@ async function searchMany<
   for (
     const pack of [
       anilistPack,
-      ...list.map(({ ref: { manifest } }) => manifest),
+      ...list.map(({ manifest }) => manifest),
     ]
   ) {
     for (const item of pack[key]?.new ?? []) {
@@ -877,7 +756,7 @@ async function pool({ guildId, range, role, stars }: {
     pool = anilist[JSON.stringify(range)][role ?? 'ALL'];
   }
 
-  await Promise.all(list.map(async ({ ref: { manifest } }) => {
+  await Promise.all(list.map(async ({ manifest }) => {
     if (manifest.characters && Array.isArray(manifest.characters.new)) {
       const characters = await Promise.all(
         manifest.characters.new.map(async (char) => {
