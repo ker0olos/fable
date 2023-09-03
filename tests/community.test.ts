@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from '$std/testing/asserts.ts';
+import { assertEquals } from '$std/assert/mod.ts';
 
 import {
   assertSpyCall,
@@ -15,7 +15,9 @@ import utils from '../src/utils.ts';
 import packs from '../src/packs.ts';
 import community from '../src/community.ts';
 
-import type { DisaggregatedCharacter, Pack } from '../src/types.ts';
+import db from '../db/mod.ts';
+
+import type { DisaggregatedCharacter } from '../src/types.ts';
 
 Deno.test('/', async (test) => {
   await test.step('normal', async () => {
@@ -30,21 +32,14 @@ Deno.test('/', async (test) => {
               id: 'user_id',
             })),
         } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                getPacksByUserId: [{
-                  manifest: { id: 'pack_id' },
-                }],
-              },
-            }))),
-        } as any,
       ]),
     );
 
-    config.faunaSecret = 'fauna_secret';
+    const getPacksByUserIdStub = stub(
+      db,
+      'getPacksByUserId',
+      () => [] as any,
+    );
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -53,8 +48,6 @@ Deno.test('/', async (test) => {
       });
 
       const response = await community.query(request);
-
-      assertSpyCalls(fetchStub, 2);
 
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
@@ -67,35 +60,16 @@ Deno.test('/', async (test) => {
       });
 
       assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://graphql.us.fauna.com/graphql',
-      );
-
-      assertEquals(
-        fetchStub.calls[1].args[1]?.headers?.entries,
-        new Headers({
-          accept: 'application/json',
-          authorization: 'Bearer fauna_secret',
-          'content-type': 'application/json',
-        }).entries,
-      );
-
-      assertEquals(
-        JSON.parse(fetchStub.calls[1].args[1]?.body as string).variables,
-        { userId: 'user_id' },
+        getPacksByUserIdStub.calls[0].args[0],
+        'user_id',
       );
 
       assertEquals(response.ok, true);
       assertEquals(response.status, 200);
       assertEquals(response.statusText, 'OK');
-
-      assertEquals(await response.json(), {
-        data: [{ manifest: { id: 'pack_id' } }],
-      });
     } finally {
-      delete config.faunaSecret;
-
       fetchStub.restore();
+      getPacksByUserIdStub.restore();
     }
   });
 
@@ -115,8 +89,6 @@ Deno.test('/', async (test) => {
         } as any,
       ]),
     );
-
-    config.faunaSecret = 'fauna_secret';
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -146,8 +118,6 @@ Deno.test('/', async (test) => {
         error: 'invalid access token',
       });
     } finally {
-      delete config.faunaSecret;
-
       fetchStub.restore();
     }
   });
@@ -166,36 +136,23 @@ Deno.test('/publish', async (test) => {
               id: 'user_id',
             })),
         } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                publishPack: {
-                  ok: true,
-                },
-              },
-            }))),
-        } as any,
       ]),
     );
 
-    config.faunaSecret = 'fauna_secret';
+    const publishPackStub = stub(
+      db,
+      'publishPack',
+      () => [] as any,
+    );
 
     try {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
         headers: { 'authorization': 'Bearer token' },
-        body: JSON.stringify({
-          manifest: {
-            id: 'pack_id',
-          },
-        }),
+        body: JSON.stringify({ manifest: { id: 'pack_id' } }),
       });
 
       const response = await community.publish(request);
-
-      assertSpyCalls(fetchStub, 2);
 
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
@@ -208,36 +165,18 @@ Deno.test('/publish', async (test) => {
       });
 
       assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://graphql.us.fauna.com/graphql',
+        publishPackStub.calls[0].args[0],
+        'user_id',
       );
 
-      assertEquals(
-        fetchStub.calls[1].args[1]?.headers?.entries,
-        new Headers({
-          accept: 'application/json',
-          authorization: 'Bearer fauna_secret',
-          'content-type': 'application/json',
-        }).entries,
-      );
-
-      assertEquals(
-        JSON.parse(fetchStub.calls[1].args[1]?.body as string).variables,
-        {
-          manifest: {
-            id: 'pack_id',
-          },
-          userId: 'user_id',
-        },
-      );
+      assertEquals(publishPackStub.calls[0].args[1], { id: 'pack_id' });
 
       assertEquals(response.ok, true);
       assertEquals(response.status, 200);
       assertEquals(response.statusText, 'OK');
     } finally {
-      delete config.faunaSecret;
-
       fetchStub.restore();
+      publishPackStub.restore();
     }
   });
 
@@ -355,22 +294,16 @@ Deno.test('/publish', async (test) => {
               id: 'user_id',
             })),
         } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                publishPack: {
-                  ok: false,
-                  error: 'PERMISSION_DENIED',
-                },
-              },
-            }))),
-        } as any,
       ]),
     );
 
-    config.faunaSecret = 'fauna_secret';
+    const publishPackStub = stub(
+      db,
+      'publishPack',
+      () => {
+        throw new Error('PERMISSION_DENIED');
+      },
+    );
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -385,8 +318,6 @@ Deno.test('/publish', async (test) => {
 
       const response = await community.publish(request);
 
-      assertSpyCalls(fetchStub, 2);
-
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
           method: 'GET',
@@ -398,28 +329,11 @@ Deno.test('/publish', async (test) => {
       });
 
       assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://graphql.us.fauna.com/graphql',
+        publishPackStub.calls[0].args[0],
+        'user_id',
       );
 
-      assertEquals(
-        fetchStub.calls[1].args[1]?.headers?.entries,
-        new Headers({
-          accept: 'application/json',
-          authorization: 'Bearer fauna_secret',
-          'content-type': 'application/json',
-        }).entries,
-      );
-
-      assertEquals(
-        JSON.parse(fetchStub.calls[1].args[1]?.body as string).variables,
-        {
-          manifest: {
-            id: 'pack_id',
-          },
-          userId: 'user_id',
-        },
-      );
+      assertEquals(publishPackStub.calls[0].args[1], { id: 'pack_id' });
 
       assertEquals(response.ok, false);
       assertEquals(response.status, 403);
@@ -429,9 +343,8 @@ Deno.test('/publish', async (test) => {
         error: 'No permission to edit this pack',
       });
     } finally {
-      delete config.faunaSecret;
-
       fetchStub.restore();
+      publishPackStub.restore();
     }
   });
 
@@ -447,36 +360,25 @@ Deno.test('/publish', async (test) => {
               id: 'user_id',
             })),
         } as any,
-        {
-          ok: true,
-          text: (() =>
-            Promise.resolve(JSON.stringify({
-              data: {
-                publishPack: {
-                  ok: false,
-                },
-              },
-            }))),
-        } as any,
       ]),
     );
 
-    config.faunaSecret = 'fauna_secret';
+    const publishPackStub = stub(
+      db,
+      'publishPack',
+      () => {
+        throw new Error();
+      },
+    );
 
     try {
       const request = new Request('http://localhost:8000', {
         method: 'POST',
         headers: { 'authorization': 'Bearer token' },
-        body: JSON.stringify({
-          manifest: {
-            id: 'pack_id',
-          },
-        }),
+        body: JSON.stringify({ manifest: { id: 'pack_id' } }),
       });
 
       const response = await community.publish(request);
-
-      assertSpyCalls(fetchStub, 2);
 
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
@@ -489,28 +391,11 @@ Deno.test('/publish', async (test) => {
       });
 
       assertEquals(
-        fetchStub.calls[1].args[0],
-        'https://graphql.us.fauna.com/graphql',
+        publishPackStub.calls[0].args[0],
+        'user_id',
       );
 
-      assertEquals(
-        fetchStub.calls[1].args[1]?.headers?.entries,
-        new Headers({
-          accept: 'application/json',
-          authorization: 'Bearer fauna_secret',
-          'content-type': 'application/json',
-        }).entries,
-      );
-
-      assertEquals(
-        JSON.parse(fetchStub.calls[1].args[1]?.body as string).variables,
-        {
-          manifest: {
-            id: 'pack_id',
-          },
-          userId: 'user_id',
-        },
-      );
+      assertEquals(publishPackStub.calls[0].args[1], { id: 'pack_id' });
 
       assertEquals(response.ok, false);
       assertEquals(response.status, 501);
@@ -520,9 +405,8 @@ Deno.test('/publish', async (test) => {
         error: 'Internal Server Error',
       });
     } finally {
-      delete config.faunaSecret;
-
       fetchStub.restore();
+      publishPackStub.restore();
     }
   });
 });
@@ -543,7 +427,7 @@ Deno.test('/popular', async (test) => {
       gender: 'male',
     };
 
-    const manifest: Pack = {
+    const manifest = {
       servers: 2000,
       manifest: {
         id: 'pack-id',
@@ -553,18 +437,10 @@ Deno.test('/popular', async (test) => {
       },
     };
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              getMostInstalledPacks: [manifest],
-            },
-          }))),
-      } as any),
+    const popularPacksStub = stub(
+      db,
+      'popularPacks',
+      () => Promise.resolve([manifest]) as any,
     );
 
     const listStub = stub(
@@ -650,37 +526,29 @@ Deno.test('/popular', async (test) => {
       delete config.appId;
       delete config.origin;
 
-      fetchStub.restore();
+      popularPacksStub.restore();
       listStub.restore();
     }
   });
 
   await test.step('installed', async () => {
-    const manifest: Pack = {
+    const manifest = {
       servers: 2000,
       manifest: {
         id: 'pack-id',
       },
     };
 
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              getMostInstalledPacks: [manifest],
-            },
-          }))),
-      } as any),
+    const popularPacksStub = stub(
+      db,
+      'popularPacks',
+      () => Promise.resolve([manifest]) as any,
     );
 
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: manifest }]),
+      () => Promise.resolve([{ manifest: manifest.manifest }] as any),
     );
 
     config.appId = 'app_id';
@@ -731,95 +599,7 @@ Deno.test('/popular', async (test) => {
       delete config.appId;
       delete config.origin;
 
-      fetchStub.restore();
-      listStub.restore();
-    }
-  });
-
-  await test.step('filter', async () => {
-    const manifest: Pack = {
-      servers: 2000,
-      manifest: {
-        id: 'pack-id',
-        private: true,
-      },
-    };
-
-    const manifest2: Pack = {
-      servers: 1,
-      manifest: {
-        id: 'pack-id2',
-      },
-    };
-
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              getMostInstalledPacks: [manifest, manifest2],
-            },
-          }))),
-      } as any),
-    );
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    config.appId = 'app_id';
-    config.origin = 'http://localhost:8000';
-
-    try {
-      const message = await community.popularPacks({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        index: 0,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  custom_id: '_',
-                  disabled: true,
-                  label: '1',
-                  style: 2,
-                  type: 2,
-                },
-                {
-                  custom_id: 'install=pack-id2',
-                  label: 'Install',
-                  style: 2,
-                  type: 2,
-                },
-              ],
-            },
-          ],
-          embeds: [
-            {
-              description: '**pack-id2**\nin 1 servers\n\n',
-              title: '1.',
-              type: 'rich',
-            },
-          ],
-        },
-      });
-    } finally {
-      delete config.appId;
-      delete config.origin;
-
-      fetchStub.restore();
+      popularPacksStub.restore();
       listStub.restore();
     }
   });

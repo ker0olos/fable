@@ -4,43 +4,23 @@ snapshot[`auto synthesize > 5 ones 1`] = `
 [
   {
     id: "id:0",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:1",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:2",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:3",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:4",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
 ]
 `;
@@ -49,203 +29,103 @@ snapshot[`auto synthesize > 25 ones 1`] = `
 [
   {
     id: "id:0",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:1",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:2",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:3",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:4",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:5",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:6",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:7",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:8",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:9",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:10",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:11",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:12",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:13",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:14",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:15",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:16",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:17",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:18",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:19",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:20",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:21",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:22",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:23",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
   {
     id: "id:24",
-    mediaId: "media_id",
     rating: 1,
-    user: {
-      id: "user_id",
-    },
   },
 ]
 `;

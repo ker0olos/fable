@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from '$std/testing/asserts.ts';
+import { assertEquals } from '$std/assert/mod.ts';
 
 import { assertSpyCall, spy, stub } from '$std/testing/mock.ts';
 
@@ -29,6 +29,8 @@ import community from '../src/community.ts';
 import { NonFetalError, NoPermissionError } from '../src/errors.ts';
 
 import type { Manifest } from '../src/types.ts';
+
+config.global = true;
 
 Deno.test('search command handlers', async (test) => {
   await test.step('search', async () => {
@@ -3844,7 +3846,6 @@ Deno.test('steal command handlers', async (test) => {
           guildId: 'guild_id',
           search: 'character',
           id: undefined,
-          stars: 0,
         }],
       });
 
@@ -3940,7 +3941,6 @@ Deno.test('steal command handlers', async (test) => {
           guildId: 'guild_id',
           search: 'id=character_id',
           id: 'character_id',
-          stars: 0,
         }],
       });
 
@@ -7139,10 +7139,7 @@ Deno.test('community packs command handlers', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () =>
-        Promise.resolve([
-          { ref: { manifest } },
-        ]),
+      () => Promise.resolve([{ manifest } as any]),
     );
 
     config.publicKey = 'publicKey';

@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-non-null-assertion
 
-import { assert, assertEquals, assertThrows } from '$std/testing/asserts.ts';
+import { assert, assertEquals, assertThrows } from '$std/assert/mod.ts';
 
 import {
   // assertSpyCall,

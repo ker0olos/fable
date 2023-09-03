@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { assertEquals } from '$std/testing/asserts.ts';
+import { assertEquals } from '$std/assert/mod.ts';
 
 import { assertSpyCall, stub } from '$std/testing/mock.ts';
 
@@ -14,6 +14,8 @@ import { handler } from '../src/interactions.ts';
 import packs from '../src/packs.ts';
 
 import { MediaFormat } from '../src/types.ts';
+
+config.global = true;
 
 Deno.test('media suggestions', async (test) => {
   await test.step('search', async () => {
@@ -2986,13 +2988,11 @@ Deno.test('community packs', async (test) => {
       () =>
         Promise.resolve([
           {
-            ref: {
-              manifest: {
-                id: 'id',
-                title: 'title',
-              },
+            manifest: {
+              id: 'id',
+              title: 'title',
             },
-          },
+          } as any,
         ]),
     );
 
@@ -3097,29 +3097,23 @@ Deno.test('community packs', async (test) => {
       () =>
         Promise.resolve([
           {
-            ref: {
-              manifest: {
-                id: 'id535245',
-                title: 'title',
-              },
+            manifest: {
+              id: 'id535245',
+              title: 'title',
             },
-          },
+          } as any,
           {
-            ref: {
-              manifest: {
-                id: 'id998943894',
-                title: 'name',
-              },
+            manifest: {
+              id: 'id998943894',
+              title: 'name',
             },
-          },
+          } as any,
           {
-            ref: {
-              manifest: {
-                id: 'id424535',
-                title: 'alias',
-              },
+            manifest: {
+              id: 'id424535',
+              title: 'alias',
             },
-          },
+          } as any,
         ]),
     );
 
@@ -3234,26 +3228,14 @@ Deno.test('community packs', async (test) => {
       () =>
         Promise.resolve([
           {
-            ref: {
-              manifest: {
-                id: 'name',
-              },
-            },
-          },
+            manifest: { id: 'name' },
+          } as any,
           {
-            ref: {
-              manifest: {
-                id: 'title',
-              },
-            },
-          },
+            manifest: { id: 'title' },
+          } as any,
           {
-            ref: {
-              manifest: {
-                id: 'alias',
-              },
-            },
-          },
+            manifest: { id: 'alias' },
+          } as any,
         ]),
     );
 

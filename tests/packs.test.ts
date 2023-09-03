@@ -5,7 +5,7 @@ import {
   assertEquals,
   assertObjectMatch,
   assertRejects,
-} from '$std/testing/asserts.ts';
+} from '$std/assert/mod.ts';
 
 import { assertSpyCalls, stub } from '$std/testing/mock.ts';
 
@@ -19,12 +19,15 @@ import packs from '../src/packs.ts';
 
 import config from '../src/config.ts';
 
+import db from '../db/mod.ts';
+
+import * as Schema from '../db/schema.ts';
+
 import {
   Character,
   CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
-  Manifest,
   Media,
   MediaFormat,
   MediaRelation,
@@ -43,7 +46,7 @@ Deno.test('list', async (test) => {
 
     assertEquals(list.length, 2);
 
-    assertValidManifest(pack.ref.manifest);
+    assertValidManifest(pack.manifest);
 
     await assertSnapshot(test, pack);
   });
@@ -55,7 +58,7 @@ Deno.test('list', async (test) => {
 
     assertEquals(list.length, 2);
 
-    assertValidManifest(pack.ref.manifest);
+    assertValidManifest(pack.manifest);
 
     await assertSnapshot(test, pack);
   });
@@ -70,7 +73,7 @@ Deno.test('list', async (test) => {
 Deno.test('reserved ids', async () => {
   const list = await packs.all({});
 
-  list.forEach(({ ref: { manifest } }) => {
+  list.forEach(({ manifest }) => {
     assertEquals(validate(manifest), {
       errors: [`${manifest.id} is a reserved id`],
     });
@@ -109,10 +112,10 @@ Deno.test('disabled', async (test) => {
   });
 
   await test.step('none', () => {
-    const manifest: Manifest = { id: 'pack-id' };
+    const pack: Schema.Pack = { _id: '_', manifest: { id: 'pack-id' } };
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -122,370 +125,6 @@ Deno.test('disabled', async (test) => {
     }
   });
 });
-
-// Deno.test('disabled relations', async (test) => {
-//   await test.step('disabled anilist media relations', async () => {
-//     const media: AniListMedia = {
-//       id: '1',
-//       type: MediaType.Anime,
-//       format: MediaFormat.TV,
-//       title: {
-//         english: 'title',
-//       },
-//       relations: {
-//         edges: [{
-//           relationType: MediaRelation.Contains,
-//           node: {
-//             id: '2',
-//             type: MediaType.Anime,
-//             format: MediaFormat.TV,
-//             title: {
-//               english: 'title 2',
-//             },
-//           },
-//         }],
-//       },
-//     };
-
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       conflicts: ['anilist:2'],
-//     };
-
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () => Promise.resolve([{ ref: { manifest } }]),
-//     );
-
-//     packs.cachedGuilds = {
-//       'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
-//     };
-
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Media>({
-//           guildId: 'guild_id',
-//           media: anilist.transform<Media>({ item: media }),
-//         }))
-//           .relations?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
-
-//   await test.step('disabled anilist media characters', async () => {
-//     const media: AniListMedia = {
-//       id: '1',
-//       type: MediaType.Anime,
-//       format: MediaFormat.TV,
-//       title: {
-//         english: 'title',
-//       },
-//       characters: {
-//         pageInfo: {
-//           hasNextPage: false,
-//         },
-//         edges: [{
-//           role: CharacterRole.Main,
-//           node: {
-//             id: '2',
-//             name: {
-//               full: 'name',
-//             },
-//           },
-//         }],
-//       },
-//     };
-
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       conflicts: ['anilist:2'],
-//     };
-
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () => Promise.resolve([{ ref: { manifest } }]),
-//     );
-
-//     packs.cachedGuilds = {
-//       'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
-//     };
-
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Media>({
-//           guildId: 'guild_id',
-//           media: anilist.transform<Media>({ item: media }),
-//         }))
-//           .characters?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
-
-//   await test.step('disabled anilist character media', async () => {
-//     const character: AniListCharacter = {
-//       id: '1',
-//       name: {
-//         full: 'name',
-//       },
-//       media: {
-//         edges: [{
-//           characterRole: CharacterRole.Main,
-//           node: {
-//             id: '2',
-//             type: MediaType.Anime,
-//             format: MediaFormat.TV,
-//             title: {
-//               english: 'title',
-//             },
-//           },
-//         }],
-//       },
-//     };
-
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       conflicts: ['anilist:2'],
-//     };
-
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () => Promise.resolve([{ ref: { manifest } }]),
-//     );
-
-//     packs.cachedGuilds = {
-//       'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
-//     };
-
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Character>({
-//           guildId: 'guild_id',
-//           character: anilist.transform<Character>({ item: character }),
-//         }))
-//           .media?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
-
-//   await test.step('disabled packs media relations', async () => {
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       media: {
-//         new: [{
-//           id: '1',
-//           packId: 'pack-id',
-//           type: MediaType.Anime,
-//           format: MediaFormat.TV,
-//           title: {
-//             english: 'title 1',
-//           },
-//           relations: [{
-//             mediaId: '2',
-//             relation: MediaRelation.Contains,
-//           }],
-//         }, {
-//           id: '2',
-//           packId: 'pack-id',
-//           type: MediaType.Anime,
-//           format: MediaFormat.TV,
-//           title: {
-//             english: 'title 2',
-//           },
-//           relations: [{
-//             mediaId: '1',
-//             relation: MediaRelation.Parent,
-//           }],
-//         }],
-//       },
-//     };
-
-//     const manifest2: Manifest = {
-//       id: 'pack2',
-//       conflicts: ['pack-id:2'],
-//     };
-
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () =>
-//         Promise.resolve([
-//           { ref: { manifest } },
-//           { ref: { manifest: manifest2 } },
-//         ]),
-//     );
-
-//     packs.cachedGuilds = {
-//       'guild_id': {
-//         packs: [{ ref: { manifest } }, { ref: { manifest: manifest2 } }],
-//         disables: [],
-//       },
-//     };
-
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Media>({
-//           guildId: 'guild_id',
-//           // deno-lint-ignore no-non-null-assertion
-//           media: manifest.media!.new![0],
-//         }))
-//           .relations?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
-
-//   await test.step('disabled packs media characters', async () => {
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       media: {
-//         new: [{
-//           id: '1',
-//           packId: 'pack-id',
-//           type: MediaType.Anime,
-//           format: MediaFormat.TV,
-//           title: {
-//             english: 'title',
-//           },
-//           characters: [{
-//             characterId: '2',
-//             role: CharacterRole.Main,
-//           }],
-//         }],
-//       },
-//       characters: {
-//         new: [{
-//           id: '2',
-//           packId: 'pack-id',
-//           name: {
-//             english: 'name',
-//           },
-//         }],
-//       },
-//     };
-
-//     const manifest2: Manifest = {
-//       id: 'pack2',
-//       conflicts: ['pack-id:2'],
-//     };
-
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () =>
-//         Promise.resolve([
-//           { ref: { manifest } },
-//           { ref: { manifest: manifest2 } },
-//         ]),
-//     );
-
-//     packs.cachedGuilds = {
-//       'guild_id': {
-//         packs: [{ ref: { manifest } }, { ref: { manifest: manifest2 } }],
-//         disables: [],
-//       },
-//     };
-
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Media>({
-//           guildId: 'guild_id',
-//           // deno-lint-ignore no-non-null-assertion
-//           media: manifest.media!.new![0],
-//         }))
-//           .characters?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
-
-//   await test.step('disabled packs character media', async () => {
-//     const manifest: Manifest = {
-//       id: 'pack-id',
-//       characters: {
-//         new: [{
-//           id: '1',
-//           packId: 'pack-id',
-//           name: {
-//             english: 'name',
-//           },
-//           media: [{
-//             mediaId: '2',
-//             role: CharacterRole.Main,
-//           }],
-//         }],
-//       },
-//       media: {
-//         new: [{
-//           id: '2',
-//           packId: 'pack-id',
-//           type: MediaType.Anime,
-//           format: MediaFormat.TV,
-//           title: {
-//             english: 'title',
-//           },
-//         }],
-//       },
-//     };
-
-//     const manifest2: Manifest = {
-//       id: 'pack2',
-//       conflicts: ['pack-id:2'],
-//     };
-
-//     const listStub = stub(
-//       packs,
-//       'all',
-//       () =>
-//         Promise.resolve([
-//           { ref: { manifest } },
-//           { ref: { manifest: manifest2 } },
-//         ]),
-//     );
-
-//     packs.cachedGuilds = {
-//       'guild_id': {
-//         packs: [{ ref: { manifest } }, { ref: { manifest: manifest2 } }],
-//         disables: [],
-//       },
-//     };
-
-//     try {
-//       assertEquals(
-//         (await packs.aggregate<Character>({
-//           guildId: 'guild_id',
-//           // deno-lint-ignore no-non-null-assertion
-//           character: manifest.characters!.new![0],
-//         }))
-//           .media?.edges.length,
-//         0,
-//       );
-//     } finally {
-//       packs.cachedGuilds = {};
-//       listStub.restore();
-//     }
-//   });
-// });
 
 Deno.test('search many', async (test) => {
   await test.step('sort by match percentage', async () => {
@@ -707,17 +346,20 @@ Deno.test('search for media', async (test) => {
       },
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [{
-          id: '1',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'pack-id media',
-          },
-        }],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [{
+            id: '1',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            title: {
+              english: 'pack-id media',
+            },
+          }],
+        },
       },
     };
 
@@ -740,7 +382,7 @@ Deno.test('search for media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -772,17 +414,20 @@ Deno.test('search for media', async (test) => {
       },
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [{
-          id: '1',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'pack-id media',
-          },
-        }],
+    const pack: Schema.Pack = {
+      _id: 'pack',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [{
+            id: '1',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            title: {
+              english: 'pack-id media',
+            },
+          }],
+        },
       },
     };
 
@@ -805,11 +450,11 @@ Deno.test('search for media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -1135,15 +780,18 @@ Deno.test('search for characters', async (test) => {
       },
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      characters: {
-        new: [{
-          id: '1',
-          name: {
-            english: 'pack-id character',
-          },
-        }],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        characters: {
+          new: [{
+            id: '1',
+            name: {
+              english: 'pack-id character',
+            },
+          }],
+        },
       },
     };
 
@@ -1166,7 +814,7 @@ Deno.test('search for characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -1201,15 +849,18 @@ Deno.test('search for characters', async (test) => {
       },
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      characters: {
-        new: [{
-          id: '1',
-          name: {
-            english: 'pack-id character',
-          },
-        }],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        characters: {
+          new: [{
+            id: '1',
+            name: {
+              english: 'pack-id character',
+            },
+          }],
+        },
       },
     };
 
@@ -1232,11 +883,11 @@ Deno.test('search for characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -1247,7 +898,7 @@ Deno.test('search for characters', async (test) => {
 
       assertEquals(results.length, 1);
 
-      assertEquals(results[0], manifest.characters?.new?.[0]);
+      assertEquals(results[0], pack.manifest.characters?.new?.[0]);
 
       assertEquals(results[0].id, '1');
       assertEquals(results[0].packId, 'pack-id');
@@ -1698,29 +1349,32 @@ Deno.test('media character', async (test) => {
   });
 
   await test.step('pack', async () => {
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [{
-          id: '1',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'title',
-          },
-          characters: [{
-            role: CharacterRole.Main,
-            characterId: '2',
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [{
+            id: '1',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            title: {
+              english: 'title',
+            },
+            characters: [{
+              role: CharacterRole.Main,
+              characterId: '2',
+            }],
           }],
-        }],
-      },
-      characters: {
-        new: [{
-          id: '2',
-          name: {
-            english: 'name',
-          },
-        }],
+        },
+        characters: {
+          new: [{
+            id: '2',
+            name: {
+              english: 'name',
+            },
+          }],
+        },
       },
     };
 
@@ -1733,11 +1387,11 @@ Deno.test('media character', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -1793,18 +1447,21 @@ Deno.test('media character', async (test) => {
   });
 
   await test.step('pack with no characters', async () => {
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [{
-          id: '1',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'title',
-          },
-          characters: [],
-        }],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [{
+            id: '1',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            title: {
+              english: 'title',
+            },
+            characters: [],
+          }],
+        },
       },
     };
 
@@ -1817,11 +1474,11 @@ Deno.test('media character', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -2007,13 +1664,16 @@ Deno.test('aggregate media', async (test) => {
       }],
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [parent],
-      },
-      characters: {
-        new: [character],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [parent],
+        },
+        characters: {
+          new: [character],
+        },
       },
     };
 
@@ -2026,11 +1686,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -2198,10 +1858,13 @@ Deno.test('aggregate media', async (test) => {
       },
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [media],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [media],
+        },
       },
     };
 
@@ -2230,11 +1893,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -2305,15 +1968,18 @@ Deno.test('aggregate media', async (test) => {
       }],
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      characters: {
-        new: [{
-          id: '1',
-          name: {
-            english: 'character name',
-          },
-        }],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        characters: {
+          new: [{
+            id: '1',
+            name: {
+              english: 'character name',
+            },
+          }],
+        },
       },
     };
 
@@ -2326,11 +1992,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -2383,13 +2049,16 @@ Deno.test('aggregate media', async (test) => {
       }],
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [],
-      },
-      characters: {
-        new: [],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [],
+        },
+        characters: {
+          new: [],
+        },
       },
     };
 
@@ -2413,11 +2082,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -2470,10 +2139,13 @@ Deno.test('aggregate media', async (test) => {
       },
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [parent, spinoff],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [parent, spinoff],
+        },
       },
     };
 
@@ -2503,11 +2175,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -2577,10 +2249,13 @@ Deno.test('aggregate media', async (test) => {
       }],
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [spinoff],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [spinoff],
+        },
       },
     };
 
@@ -2607,11 +2282,11 @@ Deno.test('aggregate media', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -2883,10 +2558,13 @@ Deno.test('aggregate characters', async (test) => {
       }],
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [media],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [media],
+        },
       },
     };
 
@@ -2899,11 +2577,11 @@ Deno.test('aggregate characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -3065,10 +2743,13 @@ Deno.test('aggregate characters', async (test) => {
       }],
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [media],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [media],
+        },
       },
     };
 
@@ -3081,11 +2762,11 @@ Deno.test('aggregate characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -3152,13 +2833,16 @@ Deno.test('aggregate characters', async (test) => {
       }],
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [],
-      },
-      characters: {
-        new: [],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [],
+        },
+        characters: {
+          new: [],
+        },
       },
     };
 
@@ -3182,11 +2866,11 @@ Deno.test('aggregate characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -3231,24 +2915,27 @@ Deno.test('aggregate characters', async (test) => {
       }],
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [{
-          id: '1',
-          type: MediaType.Anime,
-          format: MediaFormat.TV,
-          title: {
-            english: 'media 1',
-          },
-        }, {
-          id: '2',
-          type: MediaType.Manga,
-          format: MediaFormat.Manga,
-          title: {
-            english: 'media 2',
-          },
-        }],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [{
+            id: '1',
+            type: MediaType.Anime,
+            format: MediaFormat.TV,
+            title: {
+              english: 'media 1',
+            },
+          }, {
+            id: '2',
+            type: MediaType.Manga,
+            format: MediaFormat.Manga,
+            title: {
+              english: 'media 2',
+            },
+          }],
+        },
       },
     };
 
@@ -3261,11 +2948,11 @@ Deno.test('aggregate characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -3342,10 +3029,13 @@ Deno.test('aggregate characters', async (test) => {
       }],
     };
 
-    const manifest: Manifest = {
-      id: 'pack-id',
-      media: {
-        new: [media],
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        media: {
+          new: [media],
+        },
       },
     };
 
@@ -3358,11 +3048,11 @@ Deno.test('aggregate characters', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ ref: { manifest } }], disables: [] },
+      'guild_id': { packs: [pack], disables: [] },
     };
 
     try {
@@ -3536,17 +3226,20 @@ Deno.test('titles to array', async (test) => {
 
 Deno.test('/community', async (test) => {
   await test.step('normal', async () => {
-    const manifest: Manifest = {
-      author: 'author',
-      id: 'pack_id',
-      description: 'description',
-      image: 'image',
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        author: 'author',
+        id: 'pack_id',
+        description: 'description',
+        image: 'image',
+      },
     };
 
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }, { ref: { manifest } }]),
+      () => Promise.resolve([pack, pack]),
     );
 
     config.communityPacks = true;
@@ -3626,15 +3319,18 @@ Deno.test('/community', async (test) => {
   });
 
   await test.step('use title and id ', async () => {
-    const manifest: Manifest = {
-      id: 'pack-id',
-      title: 'Title',
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        title: 'Title',
+      },
     };
 
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     config.communityPacks = true;
@@ -3689,15 +3385,18 @@ Deno.test('/community', async (test) => {
   });
 
   await test.step('homepage url', async () => {
-    const manifest: Manifest = {
-      id: 'pack-id',
-      url: 'https://example.org',
+    const pack: Schema.Pack = {
+      _id: '_',
+      manifest: {
+        id: 'pack-id',
+        url: 'https://example.org',
+      },
     };
 
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ ref: { manifest } }]),
+      () => Promise.resolve([pack]),
     );
 
     config.communityPacks = true;
@@ -3806,31 +3505,32 @@ Deno.test('/community', async (test) => {
 
 Deno.test('/packs install', async (test) => {
   await test.step('normal', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              addPackToInstance: {
-                ok: true,
-                install: {
-                  ref: {
-                    manifest: {
-                      author: 'author',
-                      id: 'pack_id',
-                      description: 'description',
-                      url: 'url',
-                      image: 'image',
-                    },
-                  },
-                },
-              },
-            },
-          }))),
-      } as any),
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addPackStub = stub(
+      db,
+      'addPack',
+      () =>
+        Promise.resolve({
+          _id: '_',
+          manifest: {
+            author: 'author',
+            id: 'pack_id',
+            description: 'description',
+            url: 'url',
+            image: 'image',
+          },
+        }),
     );
 
     config.appId = 'app_id';
@@ -3873,7 +3573,103 @@ Deno.test('/packs install', async (test) => {
       delete config.appId;
       delete config.origin;
 
-      fetchStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addPackStub.restore();
+    }
+  });
+
+  await test.step('private pack', async () => {
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addPackStub = stub(
+      db,
+      'addPack',
+      () => {
+        throw new Error('PACK_PRIVATE');
+      },
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+    config.communityPacks = true;
+
+    try {
+      await assertRejects(
+        async () =>
+          await packs.install({
+            id: 'pack_id',
+            guildId: 'guild_id',
+            userId: 'user_id',
+          }),
+        NonFetalError,
+        'This pack is private and cannot be installed by you',
+      );
+    } finally {
+      delete config.communityPacks;
+      delete config.appId;
+      delete config.origin;
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addPackStub.restore();
+    }
+  });
+
+  await test.step('not found', async () => {
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addPackStub = stub(
+      db,
+      'addPack',
+      () => {
+        throw new Error('PACK_NOT_FOUND');
+      },
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+    config.communityPacks = true;
+
+    try {
+      await assertRejects(
+        async () =>
+          await packs.install({
+            id: 'pack_id',
+            guildId: 'guild_id',
+            userId: 'user_id',
+          }),
+        Error,
+        '404',
+      );
+    } finally {
+      delete config.communityPacks;
+      delete config.appId;
+      delete config.origin;
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addPackStub.restore();
     }
   });
 
@@ -3893,29 +3689,32 @@ Deno.test('/packs install', async (test) => {
 
 Deno.test('/packs uninstall', async (test) => {
   await test.step('normal', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              removePackFromInstance: {
-                ok: true,
-                uninstall: {
-                  manifest: {
-                    author: 'author',
-                    id: 'pack_id',
-                    description: 'description',
-                    url: 'url',
-                    image: 'image',
-                  },
-                },
-              },
-            },
-          }))),
-      } as any),
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const removePackStub = stub(
+      db,
+      'removePack',
+      () =>
+        Promise.resolve({
+          _id: '_',
+          manifest: {
+            author: 'author',
+            id: 'pack_id',
+            description: 'description',
+            url: 'url',
+            image: 'image',
+          },
+        }),
     );
 
     config.appId = 'app_id';
@@ -3926,6 +3725,7 @@ Deno.test('/packs uninstall', async (test) => {
       const message = await packs.uninstall({
         id: 'pack_id',
         guildId: 'guild_id',
+        userId: 'user_id',
       });
 
       assertEquals(message.json(), {
@@ -3961,7 +3761,9 @@ Deno.test('/packs uninstall', async (test) => {
       delete config.appId;
       delete config.origin;
 
-      fetchStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      removePackStub.restore();
     }
   });
 
@@ -3972,8 +3774,9 @@ Deno.test('/packs uninstall', async (test) => {
       await assertRejects(
         () =>
           packs.uninstall({
-            guildId: 'guild_id',
             id: 'pack_id',
+            guildId: 'guild_id',
+            userId: 'user_id',
           }),
         NonFetalError,
         'Community Packs are under maintenance, try again later!',
@@ -3984,21 +3787,24 @@ Deno.test('/packs uninstall', async (test) => {
   });
 
   await test.step('not found', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              removePackFromInstance: {
-                ok: false,
-                error: 'PACK_NOT_FOUND',
-              },
-            },
-          }))),
-      } as any),
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const removePackStub = stub(
+      db,
+      'removePack',
+      () => {
+        throw new Error('PACK_NOT_FOUND');
+      },
     );
 
     config.appId = 'app_id';
@@ -4011,6 +3817,7 @@ Deno.test('/packs uninstall', async (test) => {
           await packs.uninstall({
             id: 'pack_id',
             guildId: 'guild_id',
+            userId: 'user_id',
           }),
         Error,
         '404',
@@ -4020,26 +3827,31 @@ Deno.test('/packs uninstall', async (test) => {
       delete config.appId;
       delete config.origin;
 
-      fetchStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      removePackStub.restore();
     }
   });
 
   await test.step('not installed', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              removePackFromInstance: {
-                ok: false,
-                error: 'PACK_NOT_INSTALLED',
-              },
-            },
-          }))),
-      } as any),
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const removePackStub = stub(
+      db,
+      'removePack',
+      () => {
+        throw new Error('PACK_NOT_INSTALLED');
+      },
     );
 
     config.appId = 'app_id';
@@ -4052,6 +3864,7 @@ Deno.test('/packs uninstall', async (test) => {
           await packs.uninstall({
             id: 'pack_id',
             guildId: 'guild_id',
+            userId: 'user_id',
           }),
         Error,
         '404',
@@ -4061,7 +3874,9 @@ Deno.test('/packs uninstall', async (test) => {
       delete config.appId;
       delete config.origin;
 
-      fetchStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      removePackStub.restore();
     }
   });
 });

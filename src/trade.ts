@@ -152,6 +152,7 @@ function pre({ token, userId, guildId, targetId, give, take }: {
       );
 
       const giveCollection = await db.getUserCharacters(userInventory);
+
       const takeCollection = take.length
         ? await db.getUserCharacters(targetInventory)
         : undefined;
@@ -673,7 +674,7 @@ function accepted({
 
         return newMessage.followup(token);
       } catch (err) {
-        switch (err) {
+        switch (err.message) {
           case 'CHARACTER_IN_PARTY':
             throw new NonFetalError(
               i18n.get('trade-party-members', locale ?? guildLocale),
