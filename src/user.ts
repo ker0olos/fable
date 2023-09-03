@@ -1076,13 +1076,19 @@ function likeslist({
       });
 
       if (embed.getFieldsCount() <= 0) {
-        message.addEmbed(embed.setDescription(
-          nick
-            ? i18n.get('user-empty-likeslist', locale, `<@${userId}>`)
-            : i18n.get('you-empty-likeslist', locale),
-        ));
+        if (index > 0) {
+          embed.setDescription(
+            'This page is empty',
+          );
+        } else {
+          message.addEmbed(embed.setDescription(
+            nick
+              ? i18n.get('user-empty-likeslist', locale, `<@${userId}>`)
+              : i18n.get('you-empty-likeslist', locale),
+          ));
 
-        return message.patch(token);
+          return message.patch(token);
+        }
       }
 
       return discord.Message.page({
