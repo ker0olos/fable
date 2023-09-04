@@ -199,7 +199,7 @@ export async function tradeCharacters(
     await Promise.all(ops.map((op) => op.commit()));
 
     // TODO update once Deploy KV atomic ops limit
-    res = { ok: true };
+    return (res = { ok: true });
   }
 
   throw new KvError('failed to trade characters');
