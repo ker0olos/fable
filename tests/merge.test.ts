@@ -17,7 +17,7 @@ import config from '../src/config.ts';
 
 import Rating from '../src/rating.ts';
 
-import synthesis from '../src/synthesis.ts';
+import merge from '../src/merge.ts';
 
 import db from '../db/mod.ts';
 
@@ -27,82 +27,168 @@ import { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 import { NonFetalError, PoolError } from '../src/errors.ts';
 
-Deno.test('auto synthesize', async (test) => {
+Deno.test('auto merge', async (test) => {
   await test.step('5 ones', async (test) => {
     const characters = Array(25).fill({}).map((_, i) => ({
-      rating: 1,
-      id: `id:${i}`,
+      value: {
+        rating: 1,
+        id: `id:${i}`,
+      },
     }));
 
-    const sacrifices = synthesis.getSacrifices(characters as any, 2);
+    const [sacrifices] = merge.getSacrifices(characters as any, 'target', 2);
 
-    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 5);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      5,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      0,
+    );
 
     await assertSnapshot(test, sacrifices);
   });
 
   await test.step('25 ones', async (test) => {
-    const characters = Array(50).fill({}).map((_, i) => ({
-      rating: 1,
-      id: `id:${i}`,
+    const characters = Array(25).fill({}).map((_, i) => ({
+      value: {
+        rating: 1,
+        id: `id:${i}`,
+      },
     }));
 
-    const sacrifices = synthesis.getSacrifices(characters as any, 3);
+    const [sacrifices] = merge.getSacrifices(characters as any, 'target', 3);
 
-    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 25);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      25,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      0,
+    );
 
     await assertSnapshot(test, sacrifices);
   });
 
   await test.step('5 twos', async (test) => {
     const characters = Array(25).fill({}).map((_, i) => ({
-      rating: 2,
-      id: `id:${i}`,
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
+      value: {
+        rating: 2,
+        id: `id:${i}`,
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      },
     }));
 
-    const sacrifices = synthesis.getSacrifices(characters as any, 3);
+    const [sacrifices] = merge.getSacrifices(characters as any, 'target', 3);
 
-    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 5);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      5,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      0,
+    );
 
     await assertSnapshot(test, sacrifices);
   });
 
   await test.step('20 ones + 1 two', async (test) => {
     const characters = Array(20).fill({}).map((_, i) => ({
-      rating: 1,
-      id: `id:${i}`,
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
-    })).concat(
-      [{
-        rating: 2,
-        id: `id:20`,
+      value: {
+        rating: 1,
+        id: `id:${i}`,
         mediaId: 'media_id',
         user: { id: 'user_id' },
+      },
+    })).concat(
+      [{
+        value: {
+          rating: 2,
+          id: `id:20`,
+          mediaId: 'media_id',
+          user: { id: 'user_id' },
+        },
       }],
     );
 
-    const sacrifices = synthesis.getSacrifices(characters as any, 3);
+    const [sacrifices] = merge.getSacrifices(characters as any, 'target', 3);
 
-    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 20);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 1);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      20,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      1,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      0,
+    );
 
     await assertSnapshot(test, sacrifices);
   });
@@ -112,26 +198,49 @@ Deno.test('auto synthesize', async (test) => {
       _,
       i,
     ) => ({
-      rating: 1,
-      id: `id:${i}`,
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
-    })).concat(
-      [{
-        rating: 4,
-        id: `id:20`,
+      value: {
+        rating: 1,
+        id: `id:${i}`,
         mediaId: 'media_id',
         user: { id: 'user_id' },
+      },
+    })).concat(
+      [{
+        value: {
+          rating: 4,
+          id: `id:20`,
+          mediaId: 'media_id',
+          user: { id: 'user_id' },
+        },
       }],
     );
 
-    const sacrifices = synthesis.getSacrifices(characters as any, 5);
+    const [sacrifices] = merge.getSacrifices(characters as any, 'target', 5);
 
-    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 625);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      625,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      0,
+    );
 
     await assertSnapshot(test, sacrifices);
   });
@@ -141,29 +250,52 @@ Deno.test('auto synthesize', async (test) => {
       _,
       i,
     ) => ({
-      rating: 1,
-      id: `id:${i}`,
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
+      value: {
+        rating: 1,
+        id: `id:${i}`,
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      },
     })).concat(
       Array(25).fill({}).map((
         _,
         i,
       ) => ({
-        rating: 3,
-        id: `id:${i}`,
-        mediaId: 'media_id',
-        user: { id: 'user_id' },
+        value: {
+          rating: 3,
+          id: `id:${i}`,
+          mediaId: 'media_id',
+          user: { id: 'user_id' },
+        },
       })),
     );
 
-    const sacrifices = synthesis.getSacrifices(characters as any, 5);
+    const [sacrifices] = merge.getSacrifices(characters as any, 'target', 5);
 
-    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 500);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 5);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      500,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      5,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      0,
+    );
 
     await assertSnapshot(test, sacrifices);
   });
@@ -173,84 +305,262 @@ Deno.test('auto synthesize', async (test) => {
       _,
       i,
     ) => ({
-      rating: 4,
-      id: `id:${i}`,
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
+      value: {
+        rating: 4,
+        id: `id:${i}`,
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      },
     }));
 
-    const sacrifices = synthesis.getSacrifices(characters as any, 5);
+    const [sacrifices] = merge.getSacrifices(characters as any, 'target', 5);
 
-    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 5);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 0);
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      5,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      0,
+    );
 
     await assertSnapshot(test, sacrifices);
   });
 
   await test.step('5 fives', async () => {
     const characters = Array(25).fill({}).map((_, i) => ({
-      rating: 5,
-      id: `id:${i}`,
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
+      value: {
+        rating: 5,
+        id: `id:${i}`,
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      },
     }));
 
-    const sacrifices = synthesis.getSacrifices(characters as any, 5);
+    const [sacrifices] = merge.getSacrifices(characters as any, 'target', 5);
 
-    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 5);
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      5,
+    );
 
     await assertSnapshot(test, sacrifices);
   });
 
   await test.step('4 fours + 1 five', async () => {
     const characters = Array(4).fill({}).map((_, i) => ({
-      rating: 4,
-      id: `id:${i}`,
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
+      value: {
+        rating: 4,
+        id: `id:${i}`,
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      },
     }));
 
     characters.push({
-      rating: 5,
-      id: 'id:4',
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
+      value: {
+        rating: 5,
+        id: 'id:4',
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      },
     });
 
-    const sacrifices = synthesis.getSacrifices(characters as any, 5);
+    const [sacrifices] = merge.getSacrifices(characters as any, 'target', 5);
 
-    assertEquals(sacrifices.filter(({ rating }) => rating === 1).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 2).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 3).length, 0);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 4).length, 4);
-    assertEquals(sacrifices.filter(({ rating }) => rating === 5).length, 1);
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      4,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      1,
+    );
 
     await assertSnapshot(test, sacrifices);
   });
 
   await test.step('4 fives + 1 four', async () => {
     const characters = Array(4).fill({}).map((_, i) => ({
-      rating: 5,
-      id: `id:${i}`,
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
+      value: {
+        rating: 5,
+        id: `id:${i}`,
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      },
     }));
 
     characters.push({
-      rating: 4,
-      id: 'id:4',
-      mediaId: 'media_id',
-      user: { id: 'user_id' },
+      value: {
+        rating: 4,
+        id: 'id:4',
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      },
     });
 
-    const sacrifices = synthesis.getSacrifices(characters as any, 5);
+    const [sacrifices] = merge.getSacrifices(characters as any, 'target', 5);
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      1,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      4,
+    );
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('min', async (test) => {
+    const characters = Array(25).fill({}).map((_, i) => ({
+      value: {
+        rating: 1,
+        id: `id:${i}`,
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      },
+    }));
+
+    const [sacrifices, target] = merge.getSacrifices(characters as any, 'min');
+
+    assertEquals(target, 2);
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      5,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      0,
+    );
+
+    await assertSnapshot(test, sacrifices);
+  });
+
+  await test.step('max', async (test) => {
+    const characters = Array(25).fill({}).map((_, i) => ({
+      value: {
+        rating: 1,
+        id: `id:${i}`,
+        mediaId: 'media_id',
+        user: { id: 'user_id' },
+      },
+    }));
+
+    const [sacrifices, target] = merge.getSacrifices(characters as any, 'max');
+
+    assertEquals(target, 3);
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 1).length,
+      25,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 2).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 3).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 4).length,
+      0,
+    );
+
+    assertEquals(
+      sacrifices.filter(({ value: char }) => char.rating === 5).length,
+      0,
+    );
 
     await assertSnapshot(test, sacrifices);
   });
@@ -344,29 +654,39 @@ Deno.test('synthesis confirmed', async (test) => {
       }));
 
     const synthesisStub = stub(
-      synthesis,
+      merge,
       'getFilteredCharacters',
       () =>
         Promise.resolve([
           {
-            id: 'anilist:1',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:2',
-            rating: 1,
+            value: {
+              id: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            rating: 1,
+            value: {
+              id: 'anilist:3',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:4',
-            rating: 1,
+            value: {
+              id: 'anilist:4',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:5',
-            rating: 1,
+            value: {
+              id: 'anilist:5',
+              rating: 1,
+            },
           },
         ] as any),
     );
@@ -375,7 +695,7 @@ Deno.test('synthesis confirmed', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.confirmed({
+      const message = merge.confirmed({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -609,29 +929,39 @@ Deno.test('synthesis confirmed', async (test) => {
       }));
 
     const synthesisStub = stub(
-      synthesis,
+      merge,
       'getFilteredCharacters',
       () =>
         Promise.resolve([
           {
-            id: 'anilist:1',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:2',
-            rating: 1,
+            value: {
+              id: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            rating: 1,
+            value: {
+              id: 'anilist:3',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:4',
-            rating: 1,
+            value: {
+              id: 'anilist:4',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:5',
-            rating: 1,
+            value: {
+              id: 'anilist:5',
+              rating: 1,
+            },
           },
         ] as any),
     );
@@ -640,7 +970,7 @@ Deno.test('synthesis confirmed', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.confirmed({
+      const message = merge.confirmed({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -786,7 +1116,8 @@ Deno.test('synthesis confirmed', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '<@user_id>',
+              description:
+                '<@user_id>\n\n<:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
               fields: [
                 {
                   name: 'title',
@@ -823,25 +1154,33 @@ Deno.test('synthesis confirmed', async (test) => {
     const fetchStub = stub(utils, 'fetchWithRetry', () => undefined as any);
 
     const synthesisStub = stub(
-      synthesis,
+      merge,
       'getFilteredCharacters',
       () =>
         Promise.resolve([
           {
-            id: 'anilist:1',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:2',
-            rating: 1,
+            value: {
+              id: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            rating: 1,
+            value: {
+              id: 'anilist:3',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:4',
-            rating: 1,
+            value: {
+              id: 'anilist:4',
+              rating: 1,
+            },
           },
         ] as any),
     );
@@ -850,7 +1189,7 @@ Deno.test('synthesis confirmed', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.confirmed({
+      const message = merge.confirmed({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -928,29 +1267,39 @@ Deno.test('synthesis confirmed', async (test) => {
     );
 
     const synthesisStub = stub(
-      synthesis,
+      merge,
       'getFilteredCharacters',
       () =>
         Promise.resolve([
           {
-            id: 'anilist:1',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:2',
-            rating: 1,
+            value: {
+              id: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            rating: 1,
+            value: {
+              id: 'anilist:3',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:4',
-            rating: 1,
+            value: {
+              id: 'anilist:4',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:5',
-            rating: 1,
+            value: {
+              id: 'anilist:5',
+              rating: 1,
+            },
           },
         ] as any),
     );
@@ -959,7 +1308,7 @@ Deno.test('synthesis confirmed', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = synthesis.confirmed({
+      const message = merge.confirmed({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -1020,7 +1369,7 @@ Deno.test('synthesis confirmed', async (test) => {
   });
 });
 
-Deno.test('/synthesis', async (test) => {
+Deno.test('/merge', async (test) => {
   await test.step('normal', async () => {
     const characters: AniListCharacter[] = [
       {
@@ -1163,24 +1512,34 @@ Deno.test('/synthesis', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:2',
-            rating: 1,
+            value: {
+              id: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            rating: 1,
+            value: {
+              id: 'anilist:3',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:4',
-            rating: 1,
+            value: {
+              id: 'anilist:4',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:5',
-            rating: 1,
+            value: {
+              id: 'anilist:5',
+              rating: 1,
+            },
           },
         ] as any,
     );
@@ -1198,10 +1557,11 @@ Deno.test('/synthesis', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await synthesis.synthesize({
+      const message = await merge.synthesize({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
+        mode: 'target',
         target: 2,
       });
 
@@ -1436,34 +1796,44 @@ Deno.test('/synthesis', async (test) => {
       () =>
         [
           {
-            image: 'custom_image_url',
-            nickname: 'nickname 1',
-            id: 'anilist:1',
-            rating: 1,
+            value: {
+              image: 'custom_image_url',
+              nickname: 'nickname 1',
+              id: 'anilist:1',
+              rating: 1,
+            },
           },
           {
-            image: 'custom_image_url',
-            nickname: 'nickname 2',
-            id: 'anilist:2',
-            rating: 1,
+            value: {
+              image: 'custom_image_url',
+              nickname: 'nickname 2',
+              id: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            image: 'custom_image_url',
-            nickname: 'nickname 3',
-            id: 'anilist:3',
-            rating: 1,
+            value: {
+              image: 'custom_image_url',
+              nickname: 'nickname 3',
+              id: 'anilist:3',
+              rating: 1,
+            },
           },
           {
-            image: 'custom_image_url',
-            nickname: 'nickname 4',
-            id: 'anilist:4',
-            rating: 1,
+            value: {
+              image: 'custom_image_url',
+              nickname: 'nickname 4',
+              id: 'anilist:4',
+              rating: 1,
+            },
           },
           {
-            image: 'custom_image_url',
-            nickname: 'nickname 5',
-            id: 'anilist:5',
-            rating: 1,
+            value: {
+              image: 'custom_image_url',
+              nickname: 'nickname 5',
+              id: 'anilist:5',
+              rating: 1,
+            },
           },
         ] as any,
     );
@@ -1481,11 +1851,11 @@ Deno.test('/synthesis', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = await synthesis.synthesize({
+      const message = await merge.synthesize({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-
+        mode: 'target',
         target: 2,
       });
 
@@ -1710,24 +2080,34 @@ Deno.test('/synthesis', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:2',
-            rating: 1,
+            value: {
+              id: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            rating: 1,
+            value: {
+              id: 'anilist:3',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:4',
-            rating: 1,
+            value: {
+              id: 'anilist:4',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:5',
-            rating: 1,
+            value: {
+              id: 'anilist:5',
+              rating: 1,
+            },
           },
         ] as any,
     );
@@ -1749,11 +2129,11 @@ Deno.test('/synthesis', async (test) => {
     config.synthesis = true;
 
     try {
-      const message = await synthesis.synthesize({
+      const message = await merge.synthesize({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
-
+        mode: 'target',
         target: 2,
       });
 
@@ -1919,49 +2299,67 @@ Deno.test('/synthesis', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:2',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:2',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:4',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:4',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:5',
-            mediaId: 'pack-id:2',
-            rating: 1,
+            value: {
+              id: 'anilist:5',
+              mediaId: 'pack-id:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:6',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:6',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:7',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:7',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:8',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:8',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:9',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:9',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
         ] as any,
     );
@@ -1977,11 +2375,11 @@ Deno.test('/synthesis', async (test) => {
     try {
       await assertRejects(
         () =>
-          synthesis.synthesize({
+          merge.synthesize({
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
-
+            mode: 'target',
             target: 2,
           }),
         NonFetalError,
@@ -2056,49 +2454,67 @@ Deno.test('/synthesis', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:2',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:2',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:4',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:4',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:5',
-            mediaId: 'pack-id:2',
-            rating: 1,
+            value: {
+              id: 'anilist:5',
+              mediaId: 'pack-id:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:6',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:6',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:7',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:7',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:8',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:8',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:9',
-            mediaId: 'pack-id:1',
-            rating: 1,
+            value: {
+              id: 'anilist:9',
+              mediaId: 'pack-id:1',
+              rating: 1,
+            },
           },
         ] as any,
     );
@@ -2114,11 +2530,11 @@ Deno.test('/synthesis', async (test) => {
     try {
       await assertRejects(
         () =>
-          synthesis.synthesize({
+          merge.synthesize({
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
-
+            mode: 'target',
             target: 2,
           }),
         NonFetalError,
@@ -2207,11 +2623,11 @@ Deno.test('/synthesis', async (test) => {
     try {
       await assertRejects(
         () =>
-          synthesis.synthesize({
+          merge.synthesize({
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
-
+            mode: 'target',
             target: 5,
           }),
         NonFetalError,
@@ -2238,11 +2654,11 @@ Deno.test('/synthesis', async (test) => {
     try {
       await assertRejects(
         () =>
-          synthesis.synthesize({
+          merge.synthesize({
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
-
+            mode: 'target',
             target: 2,
           }),
         NonFetalError,

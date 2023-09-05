@@ -178,7 +178,7 @@ async function rngPull(
     guildId: string;
     userId?: string;
     guarantee?: number;
-    sacrifices?: Schema.Character[];
+    sacrifices?: Deno.KvEntry<Schema.Character>[];
   },
 ): Promise<Pull> {
   const { pool, validate } = typeof guarantee === 'number'
@@ -384,40 +384,38 @@ async function pullAnimation(
 
   await message.patch(token);
 
-  if (guildId && userId) {
-    const pings: string[] = [];
+  const background =
+    pull.character.media?.edges?.[0].role === CharacterRole.Background;
+
+  if (guildId && userId && !background) {
+    const pings = new Set<string>();
 
     const guild = await db.getGuild(guildId);
     const instance = await db.getInstance(guild);
 
     const inventories = await db.getInstanceInventories(instance);
 
-    const background =
-      pull.character.media?.edges?.[0].role === CharacterRole.Background;
-
     inventories.forEach(([, user]) => {
       if (
         user.id !== userId &&
         (
-          user.likes?.map(({ characterId }) => characterId).filter(Boolean)
+          user.likes?.map(({ characterId }) => characterId)
+            .filter(Boolean)
             .includes(characterId) ||
-          (
-            !background &&
-            user.likes?.map(({ mediaId }) => mediaId)
-              .filter(Boolean)
-              .some((id) => mediaIds.includes(id))
-          )
+          user.likes?.map(({ mediaId }) => mediaId)
+            .filter(Boolean)
+            .some((id) => mediaIds.includes(id))
         )
       ) {
-        pings.push(`<@${user.id}>`);
+        pings.add(`<@${user.id}>`);
       }
     });
 
-    if (pings.length) {
+    if (pings.size > 0) {
       const embed = search.characterEmbed(pull.character, {
         userId,
         mode: 'thumbnail',
-        rating: false,
+        rating: true,
         description: false,
         footer: true,
         media: { title: true },
@@ -428,7 +426,7 @@ async function pullAnimation(
 
       await new discord.Message()
         .addEmbed(embed)
-        .setContent(pings.join(' '))
+        .setContent(Array.from(pings).join(' '))
         .followup(token);
     }
   }

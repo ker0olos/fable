@@ -523,6 +523,7 @@ snapshot[`/help 8`] = `
 
 - \`/collection stars\` \`/coll stars\` \`/mm stars\`: _view user stars_
 - \`/collection media\` \`/coll media\` \`/mm media\`: _view user characters in a specific series_
+- \`/collection sum\` \`/coll sum\` \`/mm sum\`: _view the sum numbers of a user collection_
 
 - \`/steal\`: _steal a character from another user_
 - \`/trade\` \`/offer\`: _trade characters with another user_
@@ -584,6 +585,9 @@ snapshot[`/help 9`] = `
 
 - \`/buy normal\` \`/shop normal\`: _use tokens to buy normal pulls_
 - \`/buy guaranteed\` \`/shop guaranteed\`: _use tokens to buy pulls with a specific guaranteed rating_
+
+- \`/automerge min\`: _merge your characters together to pull the highest rating possible_
+- \`/automerge max\`: _merge your characters together to pull the lowest rating possible_
 
 - \`/packs\`: _list all the packs on a server_
 

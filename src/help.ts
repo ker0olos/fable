@@ -285,6 +285,9 @@ function pages(
             `- \`/collection media\` \`/coll media\` \`/mm media\`: _${
               i18n.get('/coll media', locale)
             }_`,
+            `- \`/collection sum\` \`/coll sum\` \`/mm sum\`: _${
+              i18n.get('/coll sum', locale)
+            }_`,
             '',
             `- \`/steal\`: _${i18n.get('/steal', locale)}_`,
             `- \`/trade\` \`/offer\`: _${i18n.get('/trade', locale)}_`,
@@ -316,6 +319,9 @@ function pages(
             `- \`/buy guaranteed\` \`/shop guaranteed\`: _${
               i18n.get('/buy guaranteed', locale)
             }_`,
+            '',
+            `- \`/automerge min\`: _${i18n.get('/automerge min', locale)}_`,
+            `- \`/automerge max\`: _${i18n.get('/automerge max', locale)}_`,
             '',
             `- \`/packs\`: _${i18n.get('/packs', locale)}_`,
             '',

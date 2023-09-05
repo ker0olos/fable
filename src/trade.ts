@@ -151,10 +151,12 @@ function pre({ token, userId, guildId, targetId, give, take }: {
         target,
       );
 
-      const giveCollection = await db.getUserCharacters(userInventory);
+      const giveCollection = (await db.getUserCharacters(userInventory))
+        .map(({ value }) => value);
 
       const takeCollection = take.length
-        ? await db.getUserCharacters(targetInventory)
+        ? (await db.getUserCharacters(targetInventory))
+          .map(({ value }) => value)
         : undefined;
 
       const giveEmbeds = giveCharacters.map((character) => {

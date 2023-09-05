@@ -19,7 +19,7 @@ import { NonFetalError, PoolError } from './errors.ts';
 
 async function getFilteredCharacters(
   { userId, guildId }: { userId: string; guildId: string },
-): Promise<Schema.Character[]> {
+): Promise<Deno.KvEntry<Schema.Character>[]> {
   const user = await db.getUser(userId);
   const guild = await db.getGuild(guildId);
 
@@ -46,25 +46,29 @@ async function getFilteredCharacters(
     ?.map(({ characterId, mediaId }) => characterId ?? mediaId);
 
   return characters
-    .filter(({ id, mediaId: _ }) =>
-      // filter party members
-      !partyIds.includes(id) &&
-      // filter liked characters
-      !likesIds?.some((likeId) => likeId === id)
-      // !likesIds?.some((likeId) => likeId === id || likeId === mediaId)
-    );
+    .filter((char) => {
+      const { id } = char.value;
+
+      return (
+        // filter party members
+        !partyIds.includes(id) &&
+        // filter liked characters
+        !likesIds?.some((likeId) => likeId === id)
+      );
+    });
 }
 
 function getSacrifices(
-  characters: Schema.Character[],
-  target: number,
+  characters: Deno.KvEntry<Schema.Character>[],
+  mode: 'target' | 'min' | 'max',
+  target?: number,
   locale?: discord.AvailableLocales,
-): Schema.Character[] {
+): [Deno.KvEntry<Schema.Character>[], number] {
   // I'm sure there is a faster way to do this with just math
   // but i am not smart enough to figure it out
   // the important thing is that all the tests pass
 
-  const split: Record<number, Schema.Character[]> = {
+  const split: Record<number, Deno.KvEntry<Schema.Character>[]> = {
     1: [],
     2: [],
     3: [],
@@ -74,14 +78,12 @@ function getSacrifices(
 
   // separate each rating into its own array
   characters
-    .toSorted((a, b) => a.rating - b.rating)
+    .toSorted((a, b) => a.value.rating - b.value.rating)
     .forEach((char) => {
-      if (char.rating < target || target === 5) {
-        split[char.rating === 5 ? 4 : char.rating].push(char);
-      }
+      split[char.value.rating === 5 ? 4 : char.value.rating].push(char);
     });
 
-  const possibilities: Record<number, Schema.Character[][]> = {
+  const possibilities: Record<number, Deno.KvEntry<Schema.Character>[][]> = {
     1: [],
     2: [],
     3: [],
@@ -89,10 +91,10 @@ function getSacrifices(
     5: [],
   };
 
-  for (let i = 1; i <= target; i++) {
+  [1, 2, 3, 4, 5].forEach((i) => {
     // break if target is possible
-    if (possibilities[target].length) {
-      break;
+    if (target && possibilities[target].length) {
+      return;
     }
 
     if (i > 1) {
@@ -114,9 +116,40 @@ function getSacrifices(
 
     // add the current ratings to the possibilities list
     possibilities[i].push(...split[i].map((c) => [c]));
+  });
+
+  switch (mode) {
+    case 'min':
+      [5, 4, 3, 2].forEach((n) => {
+        const index = possibilities[n].findIndex((t) => t.length >= 5);
+
+        if (index > -1) {
+          target = n;
+        }
+      });
+      break;
+    case 'max':
+      [2, 3, 4, 5].forEach((n) => {
+        const index = possibilities[n].findIndex((t) => t.length >= 5);
+
+        if (index > -1) {
+          target = n;
+        }
+      });
+      break;
+    default:
+      break;
   }
 
-  if (!possibilities[target].length) {
+  if (!target) {
+    throw new NonFetalError(
+      i18n.get('merge-not-possible', locale),
+    );
+  }
+
+  const index = possibilities[target].findIndex((t) => t.length >= 5);
+
+  if (index === -1) {
     throw new NonFetalError(
       i18n.get(
         'merge-insufficient',
@@ -127,7 +160,7 @@ function getSacrifices(
     );
   }
 
-  return possibilities[target][0];
+  return [possibilities[target][index], target];
 }
 
 function characterPreview(
@@ -162,11 +195,12 @@ function characterPreview(
   return embed;
 }
 
-async function synthesize({ token, userId, guildId, target }: {
+async function synthesize({ token, userId, guildId, mode, target }: {
   token: string;
   userId: string;
   guildId: string;
-  target: number;
+  mode: 'target' | 'min' | 'max';
+  target?: number;
 }): Promise<discord.Message> {
   const locale = user.cachedUsers[userId]?.locale;
 
@@ -178,18 +212,22 @@ async function synthesize({ token, userId, guildId, target }: {
 
   const characters = await synthesis.getFilteredCharacters({ userId, guildId });
 
-  const sacrifices: Schema.Character[] = getSacrifices(
+  let [sacrifices, _target] = getSacrifices(
     characters,
+    mode,
     target,
     locale,
-  ).sort((a, b) => b.rating - a.rating);
+  );
+
+  sacrifices = sacrifices
+    .sort((a, b) => b.value.rating - a.value.rating);
 
   // highlight the top characters
   const highlights = sacrifices
     .slice(0, 5);
 
   packs.characters({
-    ids: highlights.map(({ id }) => id),
+    ids: highlights.map(({ value: char }) => char.id),
     guildId,
   })
     .then(async (highlightedCharacters) => {
@@ -201,7 +239,9 @@ async function synthesize({ token, userId, guildId, target }: {
 
       for (const existing of highlights) {
         const index = highlightedCharacters
-          .findIndex((char) => existing.id === `${char.packId}:${char.id}`);
+          .findIndex((char) =>
+            existing.value.id === `${char.packId}:${char.id}`
+          );
 
         if (index > -1) {
           const character = await packs.aggregate<Character>({
@@ -213,7 +253,7 @@ async function synthesize({ token, userId, guildId, target }: {
 
           if (
             packs.isDisabled(`${character.packId}:${character.id}`, guildId) ||
-            (packs.isDisabled(existing.mediaId, guildId)) ||
+            (packs.isDisabled(existing.value.mediaId, guildId)) ||
             (media && packs.isDisabled(`${media.packId}:${media.id}`, guildId))
           ) {
             highlightedCharacters.splice(index, 1);
@@ -221,7 +261,7 @@ async function synthesize({ token, userId, guildId, target }: {
           }
 
           message.addEmbed(
-            synthesis.characterPreview(character, existing),
+            synthesis.characterPreview(character, existing.value),
           );
         }
       }
@@ -237,7 +277,7 @@ async function synthesize({ token, userId, guildId, target }: {
       await discord.Message.dialog({
         userId,
         message,
-        confirm: ['synthesis', userId, `${target}`],
+        confirm: ['synthesis', userId, `${_target}`],
         locale,
       })
         .patch(token);
@@ -283,7 +323,7 @@ function confirmed({
 
   synthesis.getFilteredCharacters({ userId, guildId })
     .then(async (characters) => {
-      const sacrifices = getSacrifices(characters, target, locale);
+      const [sacrifices] = getSacrifices(characters, 'target', target, locale);
 
       const pull = await gacha.rngPull({
         userId,
