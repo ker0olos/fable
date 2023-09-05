@@ -35,6 +35,8 @@
   "tokens": "tokens",
   "pull": "pull",
   "pulls": "pulls",
+  "character": "character",
+  "characters": "characters",
   "thanks-for-voting": "Thanks for voting, {0}, you gained {1} {2}.",
 
   "spent-tokens-normal": "You want to spent **{0} {1}** {2}?",

@@ -1,5 +1,3 @@
-// deno-lint-ignore-file prefer-ascii
-
 import '#filter-boolean';
 
 import config from './config.ts';
@@ -963,7 +961,7 @@ function sum({
   guildId: string;
   nick?: boolean;
 }): discord.Message {
-  // const locale = cachedUsers[userId]?.locale;
+  const locale = cachedUsers[userId]?.locale;
 
   Promise.resolve()
     .then(async () => {
@@ -992,7 +990,7 @@ function sum({
         inventory.party?.member5,
       ];
 
-      const sum = {
+      const sum: Record<number, number> = {
         1: 0,
         2: 0,
         3: 0,
@@ -1000,7 +998,7 @@ function sum({
         5: 0,
       };
 
-      const sumProtected = {
+      const sumProtected: Record<number, number> = {
         1: 0,
         2: 0,
         3: 0,
@@ -1009,30 +1007,30 @@ function sum({
       };
 
       characters.forEach((char) => {
+        sum[char.rating as keyof typeof sum] += 1;
+
         if (likes.includes(char.id) || party.includes(char._id)) {
           sumProtected[char.rating as keyof typeof sum] += 1;
         }
-
-        sum[char.rating as keyof typeof sum] += 1;
       });
 
-      embed.setDescription(`
-1${discord.emotes.smolStar} — **${sum[1]} characters** — ${
-        sumProtected[1]
-      } ${discord.emotes.liked}(${sum[1] - sumProtected[1]})
-2${discord.emotes.smolStar} — **${sum[2]} characters** — ${
-        sumProtected[2]
-      } ${discord.emotes.liked}(${sum[2] - sumProtected[2]})
-3${discord.emotes.smolStar} — **${sum[3]} characters** — ${
-        sumProtected[3]
-      } ${discord.emotes.liked}(${sum[3] - sumProtected[3]})
-4${discord.emotes.smolStar} — **${sum[4]} characters** — ${
-        sumProtected[4]
-      } ${discord.emotes.liked}(${sum[4] - sumProtected[4]})
-5${discord.emotes.smolStar} — **${sum[5]} characters** — ${
-        sumProtected[5]
-      } ${discord.emotes.liked}(${sum[5] - sumProtected[5]})
-      `);
+      const description: string[] = [];
+
+      [1, 2, 3, 4, 5].forEach(
+        (n) =>
+          description.push(
+            // deno-lint-ignore prefer-ascii
+            `${n}${discord.emotes.smolStar} — **${sum[n]} ${sum[n] === 1
+                ? i18n.get('character', locale)
+                : i18n.get('characters', locale)
+              // deno-lint-ignore prefer-ascii
+            }** — ${sumProtected[n]} ${discord.emotes.liked}(${
+              sum[n] - sumProtected[n]
+            })`,
+          ),
+      );
+
+      embed.setDescription(description.join('\n'));
 
       return message.patch(token);
     })

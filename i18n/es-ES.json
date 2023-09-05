@@ -35,6 +35,8 @@
   "tokens": "tokens",
   "pull": "tirada",
   "pulls": "tiradas",
+  "character": "character",
+  "characters": "characters",
   "thanks-for-voting": "Gracias por votar, {0}, obtuviste {1} {2}.",
 
   "spent-tokens-normal": "¿Quieres gastar **{0} {1}** {2}?",

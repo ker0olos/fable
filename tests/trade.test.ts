@@ -1604,14 +1604,18 @@ Deno.test('/give', async (test) => {
       returnsNext([
         [
           {
-            id: 'id:1',
-            mediaId: 'media_id',
-            rating: 2,
+            value: {
+              id: 'id:1',
+              mediaId: 'media_id',
+              rating: 2,
+            },
           },
           {
-            id: 'id:2',
-            mediaId: 'media_id',
-            rating: 2,
+            value: {
+              id: 'id:2',
+              mediaId: 'media_id',
+              rating: 2,
+            },
           },
         ] as any,
         [] as any,
@@ -2061,14 +2065,18 @@ Deno.test('/give', async (test) => {
       returnsNext([
         [
           {
-            id: 'id:1',
-            mediaId: 'media_id',
-            rating: 2,
+            value: {
+              id: 'id:1',
+              mediaId: 'media_id',
+              rating: 2,
+            },
           },
           {
-            id: 'id:2',
-            mediaId: 'media_id',
-            rating: 2,
+            value: {
+              id: 'id:2',
+              mediaId: 'media_id',
+              rating: 2,
+            },
           },
         ] as any,
         [] as any,
@@ -2265,16 +2273,20 @@ Deno.test('/trade', async (test) => {
       returnsNext([
         [
           {
-            id: 'id:1',
-            mediaId: 'media_id',
-            rating: 2,
+            value: {
+              id: 'id:1',
+              mediaId: 'media_id',
+              rating: 2,
+            },
           },
         ] as any,
         [
           {
-            id: 'id:1',
-            mediaId: 'media_id',
-            rating: 2,
+            value: {
+              id: 'id:1',
+              mediaId: 'media_id',
+              rating: 2,
+            },
           },
         ] as any,
       ]),
@@ -2510,16 +2522,20 @@ Deno.test('/trade', async (test) => {
       returnsNext([
         [
           {
-            id: 'id:1',
-            mediaId: 'media_id',
-            rating: 2,
+            value: {
+              id: 'id:1',
+              mediaId: 'media_id',
+              rating: 2,
+            },
           },
         ] as any,
         [
           {
-            id: 'id:1',
-            mediaId: 'media_id',
-            rating: 2,
+            value: {
+              id: 'id:1',
+              mediaId: 'media_id',
+              rating: 2,
+            },
           },
         ] as any,
       ]),
@@ -2756,9 +2772,11 @@ Deno.test('/trade', async (test) => {
       returnsNext([
         [
           {
-            id: 'id:1',
-            mediaId: 'media_id',
-            rating: 2,
+            value: {
+              id: 'id:1',
+              mediaId: 'media_id',
+              rating: 2,
+            },
           },
         ] as any,
         [] as any,
@@ -2933,16 +2951,20 @@ Deno.test('/trade', async (test) => {
       returnsNext([
         [
           {
-            id: 'id:1',
-            mediaId: 'media_id',
-            rating: 2,
+            value: {
+              id: 'id:1',
+              mediaId: 'media_id',
+              rating: 2,
+            },
           },
         ] as any,
         [
           {
-            id: 'id:1',
-            mediaId: 'media_id',
-            rating: 2,
+            value: {
+              id: 'id:1',
+              mediaId: 'media_id',
+              rating: 2,
+            },
           },
         ] as any,
       ]),

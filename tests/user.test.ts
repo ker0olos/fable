@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any
+// deno-lint-ignore-file no-explicit-any prefer-ascii
 
 import { assertEquals } from '$std/assert/mod.ts';
 
@@ -3054,34 +3054,46 @@ Deno.test('/collection stars', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            mediaId: 'anilist:2',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              mediaId: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            mediaId: 'anilist:4',
-            rating: 2,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'anilist:4',
+              rating: 2,
+            },
           },
           {
-            id: 'anilist:5',
-            mediaId: 'anilist:6',
-            rating: 3,
+            value: {
+              id: 'anilist:5',
+              mediaId: 'anilist:6',
+              rating: 3,
+            },
           },
           {
-            id: 'anilist:7',
-            mediaId: 'anilist:8',
-            rating: 4,
+            value: {
+              id: 'anilist:7',
+              mediaId: 'anilist:8',
+              rating: 4,
+            },
           },
           {
-            id: 'anilist:9',
-            mediaId: 'anilist:10',
-            rating: 5,
+            value: {
+              id: 'anilist:9',
+              mediaId: 'anilist:10',
+              rating: 5,
+            },
           },
           {
-            id: 'anilist:11',
-            mediaId: 'anilist:12',
-            rating: 1,
+            value: {
+              id: 'anilist:11',
+              mediaId: 'anilist:12',
+              rating: 1,
+            },
           },
         ] as any,
     );
@@ -3384,40 +3396,52 @@ Deno.test('/collection stars', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            mediaId: 'anilist:2',
-            nickname: 'nickname 1',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              mediaId: 'anilist:2',
+              nickname: 'nickname 1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            mediaId: 'anilist:4',
-            nickname: 'nickname 2',
-            rating: 2,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'anilist:4',
+              nickname: 'nickname 2',
+              rating: 2,
+            },
           },
           {
-            id: 'anilist:5',
-            mediaId: 'anilist:6',
-            nickname: 'nickname 3',
-            rating: 3,
+            value: {
+              id: 'anilist:5',
+              mediaId: 'anilist:6',
+              nickname: 'nickname 3',
+              rating: 3,
+            },
           },
           {
-            id: 'anilist:7',
-            mediaId: 'anilist:8',
-            nickname: 'nickname 4',
-            rating: 4,
+            value: {
+              id: 'anilist:7',
+              mediaId: 'anilist:8',
+              nickname: 'nickname 4',
+              rating: 4,
+            },
           },
           {
-            id: 'anilist:9',
-            mediaId: 'anilist:10',
-            nickname: 'nickname 5',
-            rating: 5,
+            value: {
+              id: 'anilist:9',
+              mediaId: 'anilist:10',
+              nickname: 'nickname 5',
+              rating: 5,
+            },
           },
           {
-            id: 'anilist:11',
-            mediaId: 'anilist:12',
-            nickname: 'nickname 6',
-            rating: 1,
+            value: {
+              id: 'anilist:11',
+              mediaId: 'anilist:12',
+              nickname: 'nickname 6',
+              rating: 1,
+            },
           },
         ] as any,
     );
@@ -3725,34 +3749,46 @@ Deno.test('/collection stars', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            mediaId: 'anilist:2',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              mediaId: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            mediaId: 'anilist:4',
-            rating: 2,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'anilist:4',
+              rating: 2,
+            },
           },
           {
-            id: 'anilist:5',
-            mediaId: 'anilist:6',
-            rating: 3,
+            value: {
+              id: 'anilist:5',
+              mediaId: 'anilist:6',
+              rating: 3,
+            },
           },
           {
-            id: 'anilist:7',
-            mediaId: 'anilist:8',
-            rating: 4,
+            value: {
+              id: 'anilist:7',
+              mediaId: 'anilist:8',
+              rating: 4,
+            },
           },
           {
-            id: 'anilist:9',
-            mediaId: 'anilist:10',
-            rating: 5,
+            value: {
+              id: 'anilist:9',
+              mediaId: 'anilist:10',
+              rating: 5,
+            },
           },
           {
-            id: 'anilist:11',
-            mediaId: 'anilist:12',
-            rating: 1,
+            value: {
+              id: 'anilist:11',
+              mediaId: 'anilist:12',
+              rating: 1,
+            },
           },
         ] as any,
     );
@@ -3985,15 +4021,19 @@ Deno.test('/collection stars', async (test) => {
       () =>
         [
           {
-            _id: '1',
-            id: 'anilist:1',
-            mediaId: 'anilist:0',
-            rating: 1,
+            value: {
+              _id: '1',
+              id: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:2',
-            mediaId: 'anilist:0',
-            rating: 1,
+            value: {
+              id: 'anilist:2',
+              mediaId: 'anilist:0',
+              rating: 1,
+            },
           },
         ] as any,
     );
@@ -4222,14 +4262,18 @@ Deno.test('/collection stars', async (test) => {
       () =>
         [
           {
-            id: 'anilist:3',
-            mediaId: 'anilist:1',
-            rating: 1,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'anilist:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:4',
-            mediaId: 'anilist:2',
-            rating: 2,
+            value: {
+              id: 'anilist:4',
+              mediaId: 'anilist:2',
+              rating: 2,
+            },
           },
         ] as any,
     );
@@ -4454,14 +4498,18 @@ Deno.test('/collection stars', async (test) => {
       () =>
         [
           {
-            id: 'anilist:3',
-            mediaId: 'anilist:1',
-            rating: 1,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'anilist:1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:4',
-            mediaId: 'anilist:2',
-            rating: 2,
+            value: {
+              id: 'anilist:4',
+              mediaId: 'anilist:2',
+              rating: 2,
+            },
           },
         ] as any,
     );
@@ -4471,6 +4519,7 @@ Deno.test('/collection stars', async (test) => {
       'all',
       () => Promise.resolve([]),
     );
+
     const isDisabledStub = stub(
       packs,
       'isDisabled',
@@ -4930,14 +4979,18 @@ Deno.test('/collection media', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            mediaId: 'anilist:2',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              mediaId: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            mediaId: 'anilist:4',
-            rating: 2,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'anilist:4',
+              rating: 2,
+            },
           },
         ] as any,
     );
@@ -5159,16 +5212,20 @@ Deno.test('/collection media', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            mediaId: 'anilist:2',
-            nickname: 'nickname 1',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              mediaId: 'anilist:2',
+              nickname: 'nickname 1',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            mediaId: 'anilist:4',
-            nickname: 'nickname 2',
-            rating: 2,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'anilist:4',
+              nickname: 'nickname 2',
+              rating: 2,
+            },
           },
         ] as any,
     );
@@ -5410,19 +5467,25 @@ Deno.test('/collection media', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            mediaId: 'anilist:4',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              mediaId: 'anilist:4',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:2',
-            mediaId: 'anilist:5',
-            rating: 2,
+            value: {
+              id: 'anilist:2',
+              mediaId: 'anilist:5',
+              rating: 2,
+            },
           },
           {
-            id: 'anilist:3',
-            mediaId: 'anilist:4',
-            rating: 4,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'anilist:4',
+              rating: 4,
+            },
           },
         ] as any,
     );
@@ -5654,14 +5717,18 @@ Deno.test('/collection media', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            mediaId: 'anilist:2',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              mediaId: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            mediaId: 'anilist:4',
-            rating: 2,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'anilist:4',
+              rating: 2,
+            },
           },
         ] as any,
     );
@@ -5856,14 +5923,18 @@ Deno.test('/collection media', async (test) => {
       () =>
         [
           {
-            id: 'anilist:1',
-            mediaId: 'anilist:2',
-            rating: 1,
+            value: {
+              id: 'anilist:1',
+              mediaId: 'anilist:2',
+              rating: 1,
+            },
           },
           {
-            id: 'anilist:3',
-            mediaId: 'anilist:4',
-            rating: 2,
+            value: {
+              id: 'anilist:3',
+              mediaId: 'anilist:4',
+              rating: 2,
+            },
           },
         ] as any,
     );
@@ -6305,6 +6376,447 @@ Deno.test('/collection media', async (test) => {
             {
               type: 'rich',
               description: 'You don\'t have any characters from title 1',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      getUserCharactersStub.restore();
+    }
+  });
+});
+
+Deno.test('/collection sum', async (test) => {
+  await test.step('normal', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({
+        likes: [],
+      } as any),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () =>
+        ({
+          inventory: {
+            party: {},
+          },
+        }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          {
+            value: {
+              _id: '1',
+              id: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 1,
+            },
+          },
+        ] as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.sum({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      const t = [
+        '1<:smolstar:1107503653956374638> — **1 character** — 0 <:liked:1110491720375873567>(1)',
+        '2<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '3<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '4<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '5<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+      ];
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: t.join('\n'),
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      getUserCharactersStub.restore();
+    }
+  });
+
+  await test.step('with likes', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({
+        likes: [
+          { characterId: 'anilist:1' },
+        ],
+      } as any),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () =>
+        ({
+          inventory: {
+            party: {},
+          },
+        }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          {
+            value: {
+              _id: '1',
+              id: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 1,
+            },
+          },
+          {
+            value: {
+              _id: '2',
+              id: 'anilist:2',
+              mediaId: 'anilist:0',
+              rating: 1,
+            },
+          },
+        ] as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.sum({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      const t = [
+        '1<:smolstar:1107503653956374638> — **2 characters** — 1 <:liked:1110491720375873567>(1)',
+        '2<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '3<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '4<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '5<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+      ];
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: t.join('\n'),
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      timeStub.restore();
+      fetchStub.restore();
+      listStub.restore();
+      isDisabledStub.restore();
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      getUserCharactersStub.restore();
+    }
+  });
+
+  await test.step('with likes and party', async () => {
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => ({
+        likes: [
+          { characterId: 'anilist:2' },
+        ],
+      } as any),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () =>
+        ({
+          inventory: {
+            party: {
+              member1: '1',
+            },
+          },
+        }) as any,
+    );
+
+    const getUserCharactersStub = stub(
+      db,
+      'getUserCharacters',
+      () =>
+        [
+          {
+            value: {
+              _id: '1',
+              id: 'anilist:1',
+              mediaId: 'anilist:0',
+              rating: 1,
+            },
+          },
+          {
+            value: {
+              _id: '2',
+              id: 'anilist:2',
+              mediaId: 'anilist:0',
+              rating: 1,
+            },
+          },
+        ] as any,
+    );
+
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    const isDisabledStub = stub(packs, 'isDisabled', () => false);
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = user.sum({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      const t = [
+        '1<:smolstar:1107503653956374638> — **2 characters** — 2 <:liked:1110491720375873567>(0)',
+        '2<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '3<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '4<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+        '5<:smolstar:1107503653956374638> — **0 characters** — 0 <:liked:1110491720375873567>(0)',
+      ];
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: t.join('\n'),
             },
           ],
         },
@@ -8949,17 +9461,17 @@ Deno.test('/logs', async (test) => {
       'getUserCharacters',
       () =>
         [
-          { id: 'anilist:1', rating: 4 },
-          { id: 'anilist:2', rating: 4 },
-          { id: 'anilist:3', rating: 4 },
-          { id: 'anilist:4', rating: 4 },
-          { id: 'anilist:5', rating: 4 },
-          { id: 'anilist:6', rating: 4 },
-          { id: 'anilist:7', rating: 4 },
-          { id: 'anilist:8', rating: 4 },
-          { id: 'anilist:9', rating: 4 },
-          { id: 'anilist:10', rating: 4 },
-          { id: 'anilist:11', rating: 4 },
+          { value: { id: 'anilist:1', rating: 4 } },
+          { value: { id: 'anilist:2', rating: 4 } },
+          { value: { id: 'anilist:3', rating: 4 } },
+          { value: { id: 'anilist:4', rating: 4 } },
+          { value: { id: 'anilist:5', rating: 4 } },
+          { value: { id: 'anilist:6', rating: 4 } },
+          { value: { id: 'anilist:7', rating: 4 } },
+          { value: { id: 'anilist:8', rating: 4 } },
+          { value: { id: 'anilist:9', rating: 4 } },
+          { value: { id: 'anilist:10', rating: 4 } },
+          { value: { id: 'anilist:11', rating: 4 } },
         ] as any,
     );
 
@@ -9169,17 +9681,17 @@ Deno.test('/logs', async (test) => {
       'getUserCharacters',
       () =>
         [
-          { id: 'anilist:1', nickname: 'nickname 1', rating: 4 },
-          { id: 'anilist:2', nickname: 'nickname 2', rating: 4 },
-          { id: 'anilist:3', nickname: 'nickname 3', rating: 4 },
-          { id: 'anilist:4', nickname: 'nickname 4', rating: 4 },
-          { id: 'anilist:5', nickname: 'nickname 5', rating: 4 },
-          { id: 'anilist:6', nickname: 'nickname 6', rating: 4 },
-          { id: 'anilist:7', nickname: 'nickname 7', rating: 4 },
-          { id: 'anilist:8', nickname: 'nickname 8', rating: 4 },
-          { id: 'anilist:9', nickname: 'nickname 9', rating: 4 },
-          { id: 'anilist:10', nickname: 'nickname 10', rating: 4 },
-          { id: 'anilist:11', nickname: 'nickname 11', rating: 4 },
+          { value: { id: 'anilist:1', nickname: 'nickname 1', rating: 4 } },
+          { value: { id: 'anilist:2', nickname: 'nickname 2', rating: 4 } },
+          { value: { id: 'anilist:3', nickname: 'nickname 3', rating: 4 } },
+          { value: { id: 'anilist:4', nickname: 'nickname 4', rating: 4 } },
+          { value: { id: 'anilist:5', nickname: 'nickname 5', rating: 4 } },
+          { value: { id: 'anilist:6', nickname: 'nickname 6', rating: 4 } },
+          { value: { id: 'anilist:7', nickname: 'nickname 7', rating: 4 } },
+          { value: { id: 'anilist:8', nickname: 'nickname 8', rating: 4 } },
+          { value: { id: 'anilist:9', nickname: 'nickname 9', rating: 4 } },
+          { value: { id: 'anilist:10', nickname: 'nickname 10', rating: 4 } },
+          { value: { id: 'anilist:11', nickname: 'nickname 11', rating: 4 } },
         ] as any,
     );
 

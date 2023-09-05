@@ -19,7 +19,7 @@ import help from '../src/help.ts';
 import trade from '../src/trade.ts';
 import shop from '../src/shop.ts';
 
-import synthesis from '../src/synthesis.ts';
+import merge from '../src/merge.ts';
 import community from '../src/community.ts';
 
 import steal from '../src/steal.ts';
@@ -2412,7 +2412,7 @@ Deno.test('synthesis components', async (test) => {
       send: () => true,
     }));
 
-    const synthesisStub = stub(synthesis, 'confirmed', () =>
+    const synthesisStub = stub(merge, 'confirmed', () =>
       ({
         setType: setTypeSpy,
       }) as any);
