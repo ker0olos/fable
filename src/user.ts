@@ -1,3 +1,5 @@
+// deno-lint-ignore-file prefer-ascii
+
 import '#filter-boolean';
 
 import config from './config.ts';
@@ -949,6 +951,109 @@ function list({
   return loading;
 }
 
+function sum({
+  token,
+  userId,
+  guildId,
+  // nick,
+}: {
+  token: string;
+  userId: string;
+  guildId: string;
+  nick?: boolean;
+}): discord.Message {
+  // const locale = cachedUsers[userId]?.locale;
+
+  Promise.resolve()
+    .then(async () => {
+      const user = await db.getUser(userId);
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      const { inventory } = await db.getInventory(instance, user);
+
+      const likes = (user.likes ?? [])
+        .map(({ characterId }) => characterId);
+
+      const characters = await db.getUserCharacters(inventory);
+
+      const embed = new discord.Embed();
+
+      const message = new discord.Message()
+        .addEmbed(embed);
+
+      const party = [
+        inventory.party?.member1,
+        inventory.party?.member2,
+        inventory.party?.member3,
+        inventory.party?.member4,
+        inventory.party?.member5,
+      ];
+
+      const sum = {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+      };
+
+      const sumProtected = {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+      };
+
+      characters.forEach((char) => {
+        if (likes.includes(char.id) || party.includes(char._id)) {
+          sumProtected[char.rating as keyof typeof sum] += 1;
+        }
+
+        sum[char.rating as keyof typeof sum] += 1;
+      });
+
+      embed.setDescription(`
+1${discord.emotes.smolStar} — **${sum[1]} characters** — ${
+        sumProtected[1]
+      } ${discord.emotes.liked}(${sum[1] - sumProtected[1]})
+2${discord.emotes.smolStar} — **${sum[2]} characters** — ${
+        sumProtected[2]
+      } ${discord.emotes.liked}(${sum[2] - sumProtected[2]})
+3${discord.emotes.smolStar} — **${sum[3]} characters** — ${
+        sumProtected[3]
+      } ${discord.emotes.liked}(${sum[3] - sumProtected[3]})
+4${discord.emotes.smolStar} — **${sum[4]} characters** — ${
+        sumProtected[4]
+      } ${discord.emotes.liked}(${sum[4] - sumProtected[4]})
+5${discord.emotes.smolStar} — **${sum[5]} characters** — ${
+        sumProtected[5]
+      } ${discord.emotes.liked}(${sum[5] - sumProtected[5]})
+      `);
+
+      return message.patch(token);
+    })
+    .catch(async (err) => {
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner.gif` },
+      ),
+    );
+
+  return loading;
+}
+
 function likeslist({
   token,
   userId,
@@ -1222,6 +1327,7 @@ const user = {
   likeall,
   likeslist,
   list,
+  sum,
   logs,
   nick,
   now,

@@ -21,22 +21,13 @@ enum CommandType {
   'USER' = 2,
 }
 
-const spots = [{
-  name: '1',
-  value: 1,
-}, {
-  name: '2',
-  value: 2,
-}, {
-  name: '3',
-  value: 3,
-}, {
-  name: '4',
-  value: 4,
-}, {
-  name: '5',
-  value: 5,
-}];
+const spots = [
+  { name: '1', value: 1 },
+  { name: '2', value: 2 },
+  { name: '3', value: 3 },
+  { name: '4', value: 4 },
+  { name: '5', value: 5 },
+];
 
 enum Type {
   'SUB_COMMAND' = 1,
@@ -100,9 +91,6 @@ const Command = ({
   // deno-lint-ignore no-explicit-any
   const transformOption: any = (option: Option) => ({
     name: option.name,
-    // name: option.name && option.name in EN
-    //   ? EN[option.name as keyof typeof EN]
-    //   : option.name,
     description: option.description && option.description in EN
       ? EN[option.description as keyof typeof EN]
       : option.description,
@@ -112,7 +100,6 @@ const Command = ({
     required: !option.optional,
     min_value: option.min_value,
     max_value: option.max_value,
-    // name_localizations:
     description_localizations: {
       'es-ES': option.description && option.description in ES
         ? ES[option.description as keyof typeof ES]
@@ -741,6 +728,20 @@ export const commands = [
             type: Type.STRING,
             autocomplete: true,
           }),
+          Option({
+            name: 'user',
+            description: '$user-list',
+            type: Type.USER,
+            optional: true,
+          }),
+        ],
+      }),
+      Option({
+        name: 'sum',
+        description: '/coll sum',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
           Option({
             name: 'user',
             description: '$user-list',

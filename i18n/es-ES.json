@@ -221,6 +221,7 @@
 
   "/coll stars": "visualiza tus personajes de un grado concreto",
   "/coll media": "visualiza tus personajes de una serie específica",
+  "/coll sum": "view the sum numbers of a user collection",
 
   "/steal": "roba un personaje a otro usuario",
   "/trade": "intercambia personajes con otro usuario",
