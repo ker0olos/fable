@@ -32,7 +32,7 @@ export async function addCharacter(
     guaranteed: boolean;
     userId: string;
     guildId: string;
-    sacrifices?: Schema.Character[];
+    sacrifices?: Deno.KvEntry<Schema.Character>[];
   },
 ): Promise<{ ok: boolean }> {
   let res = { ok: false }, retires = 0;
@@ -74,10 +74,11 @@ export async function addCharacter(
     };
 
     if (sacrifices?.length) {
-      for (const char of sacrifices) {
+      for (const { key, value: char, versionstamp } of sacrifices) {
         // TODO update once Deploy KV atomic ops limit
         ops.push(
           kv.atomic()
+            .check({ key, versionstamp })
             .delete(['characters', char._id])
             .delete([
               ...charactersByInstancePrefix(inventory.instance),
@@ -121,7 +122,13 @@ export async function addCharacter(
     inventory.rechargeTimestamp ??= new Date().toISOString();
 
     // TODO update once Deploy KV atomic ops limit
-    await Promise.all(ops.map((op) => op.commit()));
+    const opsResults = await Promise.all(
+      ops.map((op) => op.commit()),
+    );
+
+    if (opsResults.some((result) => !result.ok)) {
+      throw new Error('failed to sacrifice characters');
+    }
 
     res = await kv.atomic()
       .check(inventoryCheck)

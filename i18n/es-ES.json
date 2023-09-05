@@ -63,6 +63,7 @@
 
   "merge-sacrifice": "¿Sacrificar **{0}** personajes?",
   "merge-insufficient": "Sólo posees **{0} de 5** sacrificios necesarios para {1}",
+  "merge-not-possible": "You don't have enough characters to perform any merge",
 
   "nickname-reset": "El apodo de {0} ha sido reseteado",
   "nickname-changed": "El apodo de {0} ha cambiado ha **{1}**",
@@ -212,7 +213,11 @@
   "/now": "comprueba lo que puedes hacer ahora mismo",
   "/search": "busca una serie específica",
   "/character": "busca un personaje específico",
+
   "/merge": "combina personajes para obtener uno nuevo",
+
+  "/automerge min": "merge your characters together to pull the highest rating possible",
+  "/automerge max": "merge your characters together to pull the lowest rating possible",
 
   "/party view": "visualiza tu equipo actual",
   "/party assign": "asigna personajes a tu equipo",

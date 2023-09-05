@@ -754,7 +754,8 @@ function list({
 
       const { inventory } = await db.getInventory(instance, user);
 
-      let characters = await db.getUserCharacters(inventory);
+      let characters = (await db.getUserCharacters(inventory))
+        .map(({ value }) => value);
 
       const embed = new discord.Embed();
 
@@ -975,7 +976,8 @@ function sum({
       const likes = (user.likes ?? [])
         .map(({ characterId }) => characterId);
 
-      const characters = await db.getUserCharacters(inventory);
+      const characters = (await db.getUserCharacters(inventory))
+        .map(({ value }) => value);
 
       const embed = new discord.Embed();
 
@@ -1250,9 +1252,9 @@ function logs({
 
       const { inventory } = await db.getInventory(instance, user);
 
-      let characters = await db.getUserCharacters(inventory);
-
-      characters = characters.slice(-10);
+      const characters = (await db.getUserCharacters(inventory))
+        .slice(-10)
+        .map(({ value }) => value);
 
       const names: string[] = [];
 

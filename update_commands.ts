@@ -558,6 +558,36 @@ export const commands = [
         choices: spots.slice(1).toReversed(),
         type: Type.INTEGER,
       }),
+      // Option({
+      //   name: 'min',
+      //   description: '/merge min',
+      //   type: Type.SUB_COMMAND,
+      //   optional: true,
+      // }),
+      // Option({
+      //   name: 'max',
+      //   description: '/merge max',
+      //   type: Type.SUB_COMMAND,
+      //   optional: true,
+      // }),
+    ],
+  }),
+  ...Command({
+    name: 'automerge',
+    description: '/automerge',
+    options: [
+      Option({
+        name: 'min',
+        description: '/automerge min',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+      Option({
+        name: 'max',
+        description: '/automerge max',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
     ],
   }),
   ...Command({

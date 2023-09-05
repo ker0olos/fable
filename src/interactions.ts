@@ -14,7 +14,7 @@ import shop from './shop.ts';
 import battle from './battle.ts';
 import help from './help.ts';
 
-import synthesis from './synthesis.ts';
+import merge from './merge.ts';
 
 import webhooks from './webhooks.ts';
 import community from './community.ts';
@@ -620,13 +620,29 @@ export const handler = async (r: Request) => {
           case 'merge': {
             const target = options['target'] as number;
 
-            return (await synthesis.synthesize({
+            return (await merge.synthesize({
               token,
-              target,
               guildId,
-
               userId: member.user.id,
+              mode: 'target',
+              target,
             })).send();
+          }
+          case 'automerge': {
+            // deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'min':
+              case 'max':
+                return (await merge.synthesize({
+                  token,
+                  guildId,
+                  userId: member.user.id,
+                  mode: subcommand,
+                })).send();
+              default:
+                break;
+            }
+            break;
           }
           case 'shop':
           case 'buy': {
@@ -1014,7 +1030,7 @@ export const handler = async (r: Request) => {
             const target = parseInt(customValues![1]);
 
             if (userId === member.user.id) {
-              return synthesis.confirmed({
+              return merge.confirmed({
                 token,
                 target,
                 guildId,

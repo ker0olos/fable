@@ -22,7 +22,7 @@ import shop from '../src/shop.ts';
 import battle from '../src/battle.ts';
 import help from '../src/help.ts';
 
-import synthesis from '../src/synthesis.ts';
+import merge from '../src/merge.ts';
 
 import community from '../src/community.ts';
 
@@ -2241,6 +2241,178 @@ Deno.test('collection command handlers', async (test) => {
           nick: true,
           id: undefined,
           index: 0,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      userStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('collection sum', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'collection',
+        options: [{
+          type: 1,
+          name: 'sum',
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const userStub = stub(user, 'sum', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(userStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'user_id',
+          guildId: 'guild_id',
+          nick: false,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      userStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('collection sum (another user)', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'collection',
+        options: [{
+          type: 1,
+          name: 'sum',
+          options: [{
+            name: 'user',
+            value: 'another_user_id',
+          }],
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const userStub = stub(user, 'sum', () => ({
+      send: () => true,
+    } as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(userStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'another_user_id',
+          guildId: 'guild_id',
+          nick: true,
         }],
       });
 
@@ -6561,21 +6733,20 @@ Deno.test('image command handlers', async (test) => {
   });
 });
 
-Deno.test('synthesize command handlers', async (test) => {
-  await test.step('synthesize', async () => {
+Deno.test('merge/automerge command handlers', async (test) => {
+  await test.step('merge', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-
       member: {
         user: {
           id: 'user_id',
         },
       },
       data: {
-        name: 'synthesize',
+        name: 'merge',
         options: [
           {
             name: 'target',
@@ -6592,7 +6763,7 @@ Deno.test('synthesize command handlers', async (test) => {
       body,
     } as any));
 
-    const synthesisStub = stub(synthesis, 'synthesize', () => ({
+    const synthesisStub = stub(merge, 'synthesize', () => ({
       send: () => true,
     } as any));
 
@@ -6636,6 +6807,7 @@ Deno.test('synthesize command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          mode: 'target',
           target: 4,
         }],
       });
@@ -6651,20 +6823,19 @@ Deno.test('synthesize command handlers', async (test) => {
     }
   });
 
-  await test.step('merge', async () => {
+  await test.step('synthesize', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-
       member: {
         user: {
           id: 'user_id',
         },
       },
       data: {
-        name: 'merge',
+        name: 'synthesize',
         options: [
           {
             name: 'target',
@@ -6681,7 +6852,7 @@ Deno.test('synthesize command handlers', async (test) => {
       body,
     } as any));
 
-    const synthesisStub = stub(synthesis, 'synthesize', () => ({
+    const synthesisStub = stub(merge, 'synthesize', () => ({
       send: () => true,
     } as any));
 
@@ -6725,7 +6896,184 @@ Deno.test('synthesize command handlers', async (test) => {
           token: 'token',
           userId: 'user_id',
           guildId: 'guild_id',
+          mode: 'target',
           target: 5,
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.trading;
+      delete config.publicKey;
+
+      synthesisStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('automerge min', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'automerge',
+        options: [
+          {
+            type: 1,
+            name: 'min',
+          },
+        ],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const synthesisStub = stub(merge, 'synthesize', () => ({
+      send: () => true,
+    } as any));
+
+    config.synthesis = true;
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(synthesisStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'user_id',
+          guildId: 'guild_id',
+          mode: 'min',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.trading;
+      delete config.publicKey;
+
+      synthesisStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('automerge min', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'automerge',
+        options: [
+          {
+            type: 1,
+            name: 'max',
+          },
+        ],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const synthesisStub = stub(merge, 'synthesize', () => ({
+      send: () => true,
+    } as any));
+
+    config.synthesis = true;
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(synthesisStub, 0, {
+        args: [{
+          token: 'token',
+          userId: 'user_id',
+          guildId: 'guild_id',
+          mode: 'max',
         }],
       });
 
@@ -6746,14 +7094,13 @@ Deno.test('synthesize command handlers', async (test) => {
       token: 'token',
       type: discord.InteractionType.Command,
       guild_id: 'guild_id',
-
       member: {
         user: {
           id: 'user_id',
         },
       },
       data: {
-        name: 'synthesize',
+        name: 'merge',
         options: [
           {
             name: 'target',

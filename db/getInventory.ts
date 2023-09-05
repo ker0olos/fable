@@ -284,8 +284,8 @@ export async function getInstanceInventories(
 
 export async function getUserCharacters(
   inventory: Schema.Inventory,
-): Promise<Schema.Character[]> {
-  const characters = await db.getValues<Schema.Character>(
+): Promise<Deno.KvEntry<Schema.Character>[]> {
+  const characters = await db.getValuesAndTimestamps<Schema.Character>(
     { prefix: charactersByInventoryPrefix(inventory._id) },
   );
 

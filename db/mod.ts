@@ -60,7 +60,6 @@ import {
 
 export const kv = await Deno.openKv();
 
-// Helpers
 async function getValue<T>(key: Deno.KvKey): Promise<T | undefined> {
   const res = await kv.get<T>(key);
 
@@ -89,6 +88,20 @@ async function getValues<T>(
   return values;
 }
 
+async function getValuesAndTimestamps<T>(
+  selector: Deno.KvListSelector,
+): Promise<Deno.KvEntry<T>[]> {
+  const values = [];
+
+  const iter = kv.list<T>(selector);
+
+  for await (const value of iter) {
+    values.push(value);
+  }
+
+  return values;
+}
+
 async function getManyValues<T>(
   keys: Deno.KvKey[],
 ): Promise<(T | undefined)[]> {
@@ -107,6 +120,7 @@ const db = {
   getValue,
   getValues,
   getValueAndTimestamp,
+  getValuesAndTimestamps,
   getManyValues,
   //
   getGuild,
