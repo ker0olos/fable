@@ -586,8 +586,8 @@ snapshot[`/help 9`] = `
 - \`/buy normal\` \`/shop normal\`: _use tokens to buy normal pulls_
 - \`/buy guaranteed\` \`/shop guaranteed\`: _use tokens to buy pulls with a specific guaranteed rating_
 
-- \`/automerge min\`: _merge your characters together to pull the highest rating possible_
-- \`/automerge max\`: _merge your characters together to pull the lowest rating possible_
+- \`/automerge min\`: _merge your characters together to pull the lowest rating possible_
+- \`/automerge max\`: _merge your characters together to pull the highest rating possible_
 
 - \`/packs\`: _list all the packs on a server_
 
