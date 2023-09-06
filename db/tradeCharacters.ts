@@ -288,15 +288,9 @@ export async function stealCharacter(
       ],
       character,
     )
-    .delete(
-      [
-        ...charactersByInventoryPrefix(aInventory._id),
-        character._id,
-      ],
-    )
     .set(
       [
-        ...charactersByInventoryPrefix(bInventory._id),
+        ...charactersByInventoryPrefix(aInventory._id),
         character._id,
       ],
       character,
@@ -307,6 +301,13 @@ export async function stealCharacter(
         character._id,
       ],
       character,
+    )
+    //
+    .delete(
+      [
+        ...charactersByInventoryPrefix(bInventory._id),
+        character._id,
+      ],
     )
     //
     .commit();

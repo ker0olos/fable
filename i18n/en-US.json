@@ -218,8 +218,8 @@
 
   "/merge": "merge characters together to pull a new character",
 
-  "/automerge min": "merge your characters together to pull the highest rating possible",
-  "/automerge max": "merge your characters together to pull the lowest rating possible",
+  "/automerge max": "merge your characters together to pull the highest rating possible",
+  "/automerge min": "merge your characters together to pull the lowest rating possible",
 
   "/party view": "view your current party",
   "/party assign": "assign a character to your party",

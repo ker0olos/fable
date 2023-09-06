@@ -1829,9 +1829,9 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "merge your characters together to pull the highest rating possible",
+        description: "merge your characters together to pull the lowest rating possible",
         description_localizations: {
-          "es-ES": "merge your characters together to pull the highest rating possible",
+          "es-ES": "merge your characters together to pull the lowest rating possible",
         },
         max_value: undefined,
         min_value: undefined,
@@ -1843,9 +1843,9 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "merge your characters together to pull the lowest rating possible",
+        description: "merge your characters together to pull the highest rating possible",
         description_localizations: {
-          "es-ES": "merge your characters together to pull the lowest rating possible",
+          "es-ES": "merge your characters together to pull the highest rating possible",
         },
         max_value: undefined,
         min_value: undefined,
