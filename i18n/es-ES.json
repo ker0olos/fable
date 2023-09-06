@@ -218,8 +218,8 @@
 
   "/merge": "combina personajes para obtener uno nuevo",
 
-  "/automerge min": "merge your characters together to pull the highest rating possible",
-  "/automerge max": "merge your characters together to pull the lowest rating possible",
+  "/automerge min": "merge your characters together to pull the lowest rating possible",
+  "/automerge max": "merge your characters together to pull the highest rating possible",
 
   "/party view": "visualiza tu equipo actual",
   "/party assign": "asigna personajes a tu equipo",
