@@ -1831,7 +1831,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "merge your characters together to pull the lowest rating possible",
         description_localizations: {
-          "es-ES": "merge your characters together to pull the lowest rating possible",
+          "es-ES": "haz una combinación de personajes del nivel más bajo posible",
         },
         max_value: undefined,
         min_value: undefined,
@@ -1845,7 +1845,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "merge your characters together to pull the highest rating possible",
         description_localizations: {
-          "es-ES": "merge your characters together to pull the highest rating possible",
+          "es-ES": "haz una combinación de personajes del nivel más alto posible",
         },
         max_value: undefined,
         min_value: undefined,
