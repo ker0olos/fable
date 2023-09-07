@@ -15,13 +15,13 @@
   "accept": "Aceptar",
   "decline": "Rechazar",
 
-  "homepage": "Homepage",
+  "homepage": "Inicio",
 
-  "assigned": "Assigned",
-  "unassigned": "Unassigned",
+  "assigned": "Asignado",
+  "unassigned": "Desasignado",
 
-  "installed": "Installed",
-  "uninstalled": "Uninstalled",
+  "installed": "Instalado",
+  "uninstalled": "Desinstalado",
 
   "+1-pull": "_+1 tirada {0}_",
   "available-pull": "Tirada disponible",
@@ -35,8 +35,8 @@
   "tokens": "tokens",
   "pull": "tirada",
   "pulls": "tiradas",
-  "character": "character",
-  "characters": "characters",
+  "character": "personaje",
+  "characters": "personajes",
   "thanks-for-voting": "Gracias por votar, {0}, obtuviste {1} {2}.",
 
   "spent-tokens-normal": "¿Quieres gastar **{0} {1}** {2}?",
@@ -48,16 +48,16 @@
   "you-empty-collection": "No tienes ningún personaje de {0}",
   "you-empty-media-collection": "No tienes ningún personaje de {0}",
 
-  "character-disabled": "This character was removed or disabled",
+  "character-disabled": "Este personaje ha sido eliminado o desactivado",
   "some-characters-disabled": "Algunos de estos personajes no existen o han sido desactivados",
 
-  "no-assigned-in-spot": "There was no character assigned to this spot of the party",
+  "no-assigned-in-spot": "No hay un personaje asignado en ese espacio del equipo",
 
   "user-empty-collection": "{0} no tiene ningún personaje de {1}",
   "user-empty-media-collection": "{0} no tiene ningún personaje de {1}",
 
-  "you-empty-likeslist": "You don't have any likes",
-  "user-empty-likeslist": "{0} doesn't have any likes",
+  "you-empty-likeslist": "No posees ningun like",
+  "user-empty-likeslist": "{0} no posee ningun like",
 
   "character-no-longer-owned": "Algunos de estos personajes han cambiado de dueño",
   "character-hasnt-been-found": "{0} aún no pertenece a nadie.",
@@ -65,7 +65,7 @@
 
   "merge-sacrifice": "¿Sacrificar **{0}** personajes?",
   "merge-insufficient": "Sólo posees **{0} de 5** sacrificios necesarios para {1}",
-  "merge-not-possible": "You don't have enough characters to perform any merge",
+  "merge-not-possible": "No posees suficientes personajes para ninguna combinación",
 
   "nickname-reset": "El apodo de {0} ha sido reseteado",
   "nickname-changed": "El apodo de {0} ha cambiado ha **{1}**",
@@ -93,41 +93,41 @@
   "give-sent-to": "¡Has enviado un regalo a {0}!",
   "give-received": "{0} te envió un regalo",
 
-  "attempt": "Attempt",
-  "stealing-from-yourself": "You can't steal from yourself!",
-  "stealing-party-member": "As part of {0}'s party, **{1}** cannot be stolen while {0} is still active",
-  "steal-chance": "Your chance of success is **{0}%**",
-  "stolen-from-you": "**{0}** was stolen from you!",
-  "you-succeeded": "**You Succeeded!**",
-  "you-failed": "**You Failed!**",
-  "steal-cooldown": "Steal is on cooldown, try again {0}",
-  "steal-try-again": "You can try again {0}",
-  "steal-unexpected": "Something happened and affected your chances of stealing **{0}**, Please try again!",
+  "attempt": "Intentar",
+  "stealing-from-yourself": "¡No puedes robarte a tí mismo!",
+  "stealing-party-member": "Al ser miembro del equipo de {0}, **{1}** no puede ser robado mientras {0} siga activo/a",
+  "steal-chance": "Tu chance de éxito es de **{0}%**",
+  "stolen-from-you": "¡Te han robado a **{0}**!",
+  "you-succeeded": "**¡Lo lograste!**",
+  "you-failed": "**¡Fallaste!**",
+  "steal-cooldown": "Steal está en enfriamiento, inténtalo {0}",
+  "steal-try-again": "Puedes volver a intentar {0}",
+  "steal-unexpected": "Algo sucedió y afectó tus chances de robar a **{0}**. Por favor intenta de nuevo.",
 
-  "global-maintenance": "Fable se maintenance en mantenimiento, reintentalo más tarde",
-  "maintenance-gacha": "El gacha se encuentra en mantenimiento, reintentalo más tarde",
-  "maintenance-merge": "Merge se encuentra en mantenimiento, reintentalo más tarde",
-  "maintenance-trade": "Los intercambios se encuentran en mantenimiento, reintentalo más tarde",
-  "maintenance-steal": "Stealing is under maintenance, try again later!",
-  "maintenance-combat": "Combate se encuentra en mantenimiento, reintentalo más tarde",
-  "maintenance-packs": "Community Packs are under maintenance, try again later!",
+  "global-maintenance": "Fable se encuentra en mantenimiento, reinténtalo más tarde",
+  "maintenance-gacha": "El gacha se encuentra en mantenimiento, reinténtalo más tarde",
+  "maintenance-merge": "Merge se encuentra en mantenimiento, reinténtalo más tarde",
+  "maintenance-trade": "Los intercambios se encuentran en mantenimiento, reinténtalo más tarde",
+  "maintenance-steal": "Los robos se encuentran en mantemiento, reinténtalo más tarde",
+  "maintenance-combat": "El combate se encuentra en mantenimiento, reinténtalo más tarde",
+  "maintenance-packs": "Los packs de la comunidad se encuentran en mantenimiento, reinténtalo más tarde",
 
   "gacha-no-more-pulls": "¡No te quedan tiradas!",
   "gacha-no-guarantees": "No posees ninguna tirada de {0}",
   "gacha-no-more-characters-left": "Ya no quedan personajes de {0}",
   "gacha-no-more-in-range": "Ya no quedan personajes con este grado de estrellas",
 
-  "uninstall-pack-confirmation": "**Are you sure you want to uninstall this pack?**\n\nUninstalling a pack will disable any characters your server members have from the pack, which may be met with negative reactions.",
+  "uninstall-pack-confirmation": "**¿Seguro que quieres desinstalar este pack?**\n\nDesinstalar un pack desactivará cualquier personaje del pack que los miembros de tu servidor posean, lo que puede generar descontento.",
 
-  "pack-doesnt-exist": "This pack doesn't exist",
-  "pack-is-private": "This pack is private and cannot be installed by you",
-  "pack-characters-disabled": "**All characters from this pack are now disabled**",
+  "pack-doesnt-exist": "Este pack no existe",
+  "pack-is-private": "Este pack es privado y no puedes instalarlo",
+  "pack-characters-disabled": "**Todos los personajes de este pack han sido deshabilitados**",
 
   "not-fit-for-combat": "El personaje debe aún ser encontrado y no se encuentra listo para el combate",
   "not-enough-unclaimed": "El personaje no tiene puntos restantes sin asignar",
   "incorrect-distribution": "¡Formato de distribución incorrecto!\n\n**Forma correcta:** FUE-RES-AGI\n**Ejemplo:** 1-2-3",
 
-  "battle-yourself": "You can't battle yourself",
+  "battle-yourself": "No puedes combatirte a ti mismo",
 
   "str": "FUE",
   "sta": "RES",
@@ -140,7 +140,7 @@
   "reset": "Reiniciar",
 
   "help-page1-before-anything": "Antes de nada: Necesitarás personajes.",
-  "help-page1-you-get-n-every-t": "__Obtienes una tirada (pull) gratis cada {0} minutes (hasta un máximo de {1})__. Utiliza `/now` para comprobar cuantas tiradas tienes y cuánto falta para tu siguiente tirada gratis.",
+  "help-page1-you-get-n-every-t": "__Obtienes una tirada (pull) gratis cada {0} minutos (hasta un máximo de {1})__. Utiliza `/now` para comprobar cuantas tiradas tienes y cuánto falta para tu siguiente tirada gratis.",
   "help-page1-characters-are-exclusive": "__Los personajes son exclusivos__, una vez que un jugador los obtiene, nadie más puede encontrarlos en el gacha.",
   "help-page1-characters-vary": "__Los personajes varían entre un grado de 1{0}y 5{0}__ El grado de un personaje está basado en su popularidad (y no se puede aumentar).",
   "help-page1-gacha-rates": "__Las probabilidades del gacha dependen de múltiples factores__, pero en general la chance de que aparezca un 5{0}es igual o menos de un 1%.",
@@ -218,8 +218,8 @@
 
   "/merge": "combina personajes para obtener uno nuevo",
 
-  "/automerge min": "merge your characters together to pull the lowest rating possible",
-  "/automerge max": "merge your characters together to pull the highest rating possible",
+  "/automerge min": "haz una combinación de personajes del nivel más bajo posible",
+  "/automerge max": "haz una combinación de personajes del nivel más alto posible",
 
   "/party view": "visualiza tu equipo actual",
   "/party assign": "asigna personajes a tu equipo",
@@ -228,7 +228,7 @@
 
   "/coll stars": "visualiza tus personajes de un grado concreto",
   "/coll media": "visualiza tus personajes de una serie específica",
-  "/coll sum": "view the sum numbers of a user collection",
+  "/coll sum": "visualiza la suma total de la colección de un usuario",
 
   "/steal": "roba un personaje a otro usuario",
   "/trade": "intercambia personajes con otro usuario",
@@ -253,7 +253,7 @@
   "/community install": "instala un pack de la comunidad",
   "/community uninstall": "desinstala un pack de la comunidad",
 
-  "/stats": "manage your characters stat points and skills",
+  "/stats": "administra las estadísticas y habilidades de tus personajes",
 
   "/experimental battle": "prueba el nuevo combate (próximamente implementado) en una simulación de batalla contra otro usuario",
 
