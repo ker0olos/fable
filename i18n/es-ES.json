@@ -140,7 +140,7 @@
   "reset": "Reiniciar",
 
   "help-page1-before-anything": "Antes de nada: Necesitarás personajes.",
-  "help-page1-you-get-n-every-t": "__Obtienes una tirada (pull) gratis cada {0} minutes (hasta un máximo de {1})__. Utiliza `/now` para comprobar cuantas tiradas tienes y cuánto falta para tu siguiente tirada gratis.",
+  "help-page1-you-get-n-every-t": "__Obtienes una tirada (pull) gratis cada {0} minutos (hasta un máximo de {1})__. Utiliza `/now` para comprobar cuantas tiradas tienes y cuánto falta para tu siguiente tirada gratis.",
   "help-page1-characters-are-exclusive": "__Los personajes son exclusivos__, una vez que un jugador los obtiene, nadie más puede encontrarlos en el gacha.",
   "help-page1-characters-vary": "__Los personajes varían entre un grado de 1{0}y 5{0}__ El grado de un personaje está basado en su popularidad (y no se puede aumentar).",
   "help-page1-gacha-rates": "__Las probabilidades del gacha dependen de múltiples factores__, pero en general la chance de que aparezca un 5{0}es igual o menos de un 1%.",
@@ -218,8 +218,8 @@
 
   "/merge": "combina personajes para obtener uno nuevo",
 
-  "/automerge min": "merge your characters together to pull the lowest rating possible",
-  "/automerge max": "merge your characters together to pull the highest rating possible",
+  "/automerge min": "haz una combinación de personajes del nivel más bajo posible",
+  "/automerge max": "haz una combinación de personajes del nivel más alto posible",
 
   "/party view": "visualiza tu equipo actual",
   "/party assign": "asigna personajes a tu equipo",
