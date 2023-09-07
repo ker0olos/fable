@@ -2901,7 +2901,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "view the sum numbers of a user collection",
         description_localizations: {
-          "es-ES": "view the sum numbers of a user collection",
+          "es-ES": "visualiza la suma total de la colección de un usuario",
         },
         max_value: undefined,
         min_value: undefined,
@@ -3049,7 +3049,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "view the sum numbers of a user collection",
         description_localizations: {
-          "es-ES": "view the sum numbers of a user collection",
+          "es-ES": "visualiza la suma total de la colección de un usuario",
         },
         max_value: undefined,
         min_value: undefined,
@@ -3197,7 +3197,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "view the sum numbers of a user collection",
         description_localizations: {
-          "es-ES": "view the sum numbers of a user collection",
+          "es-ES": "visualiza la suma total de la colección de un usuario",
         },
         max_value: undefined,
         min_value: undefined,
@@ -3323,7 +3323,7 @@ snapshot[`commands 1`] = `
     default_member_permissions: undefined,
     description: "manage your characters stat points and skills",
     description_localizations: {
-      "es-ES": "manage your characters stat points and skills",
+      "es-ES": "administra las estadísticas y habilidades de tus personajes",
     },
     dm_permission: false,
     name: "stats",
