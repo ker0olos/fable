@@ -1,5 +1,8 @@
 /// <reference lib="deno.unstable" />
 
+// deno-lint-ignore no-external-import
+import { batchedAtomic } from 'https://raw.githubusercontent.com/kitsonk/kv-toolbox/main/batchedAtomic.ts';
+
 import { ulid } from 'ulid';
 
 import {
@@ -35,12 +38,10 @@ export async function addCharacter(
     sacrifices?: Deno.KvEntry<Schema.Character>[];
   },
 ): Promise<{ ok: boolean }> {
-  let res = { ok: false }, retires = 0;
+  let res: { ok: boolean }[] = [], retires = 0;
 
-  while (!res.ok && retires < 5) {
-    // TODO update once Deploy KV atomic ops limit
-    // const op = kv.atomic();
-    const ops: Deno.AtomicOperation[] = [];
+  while (retires < 5) {
+    const op = batchedAtomic(kv);
 
     const guild = await db.getGuild(guildId);
     const instance = await db.getInstance(guild);
@@ -75,27 +76,24 @@ export async function addCharacter(
 
     if (sacrifices?.length) {
       for (const { key, value: char, versionstamp } of sacrifices) {
-        // TODO update once Deploy KV atomic ops limit
-        ops.push(
-          kv.atomic()
-            .check({ key, versionstamp })
-            .delete(['characters', char._id])
-            .delete([
-              ...charactersByInstancePrefix(inventory.instance),
-              char.id,
-            ])
-            .delete([
-              ...charactersByInventoryPrefix(inventory._id),
-              char._id,
-            ])
-            .delete([
-              ...charactersByMediaIdPrefix(
-                inventory.instance,
-                newCharacter.mediaId,
-              ),
-              char._id,
-            ]),
-        );
+        op
+          .check({ key, versionstamp })
+          .delete(['characters', char._id])
+          .delete([
+            ...charactersByInstancePrefix(inventory.instance),
+            char.id,
+          ])
+          .delete([
+            ...charactersByInventoryPrefix(inventory._id),
+            char._id,
+          ])
+          .delete([
+            ...charactersByMediaIdPrefix(
+              inventory.instance,
+              newCharacter.mediaId,
+            ),
+            char._id,
+          ]);
       }
     } else if (guaranteed) {
       // deno-lint-ignore no-non-null-assertion
@@ -121,16 +119,7 @@ export async function addCharacter(
     inventory.lastPull = new Date().toISOString();
     inventory.rechargeTimestamp ??= new Date().toISOString();
 
-    // TODO update once Deploy KV atomic ops limit
-    const opsResults = await Promise.all(
-      ops.map((op) => op.commit()),
-    );
-
-    if (opsResults.some((result) => !result.ok)) {
-      throw new Error('failed to sacrifice characters');
-    }
-
-    res = await kv.atomic()
+    res = await op
       .check(inventoryCheck)
       .check({
         versionstamp: null,
@@ -173,7 +162,7 @@ export async function addCharacter(
       .set(inventoriesByUser(inventory.instance, user._id), inventory)
       .commit();
 
-    if (res.ok) {
+    if (res.every(({ ok }) => ok)) {
       return { ok: true };
     }
 
