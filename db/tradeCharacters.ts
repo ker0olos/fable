@@ -37,7 +37,6 @@ export async function tradeCharacters(
     takeIds: string[];
   },
 ): Promise<{ ok: boolean }> {
-  // deno-lint-ignore prefer-const
   let res: { ok: boolean }[] = [], retires = 0;
 
   while (retires < 5) {
