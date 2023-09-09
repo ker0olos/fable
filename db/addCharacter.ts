@@ -1,5 +1,8 @@
 /// <reference lib="deno.unstable" />
 
+// deno-lint-ignore no-external-import
+import { Semaphore } from 'https://deno.land/x/semaphore@v1.1.2/semaphore.ts';
+
 import { ulid } from 'ulid';
 
 import {
@@ -15,6 +18,8 @@ import db, { kv } from './mod.ts';
 import { KvError, NoPullsError } from '../src/errors.ts';
 
 import type * as Schema from './schema.ts';
+
+const sem = new Semaphore(20);
 
 export async function addCharacter(
   {
@@ -123,11 +128,23 @@ export async function addCharacter(
 
     // TODO update once Deploy KV atomic ops limit
     const opsResults = await Promise.all(
-      ops.map((op) => op.commit()),
+      ops.map((op) =>
+        (async () => {
+          const release = await sem.acquire();
+
+          const res = await op.commit();
+
+          release();
+
+          return res;
+        })()
+      ),
     );
 
     if (opsResults.some((result) => !result.ok)) {
-      throw new Error('failed to sacrifice characters');
+      // throw new Error('failed to sacrifice characters');
+      retires += 1;
+      continue;
     }
 
     res = await kv.atomic()
