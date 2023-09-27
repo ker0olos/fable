@@ -763,11 +763,9 @@ function mediaFound(
           continue;
         }
 
-        const name = `${
-          existing[0].rating
-        }${discord.emotes.smolStar} ${`<@${existing[1]?.id}>`} ${
-          utils.wrap(packs.aliasToArray(char.name)[0])
-        }`;
+        const name = `${existing[0].rating}${discord.emotes.smolStar} ${`<@${
+          existing[1]?.id
+        }>`} ${utils.wrap(packs.aliasToArray(char.name)[0])}`;
 
         embed.addField({
           inline: false,

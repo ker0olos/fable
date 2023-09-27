@@ -11,7 +11,6 @@ if (import.meta.main) {
     throw new Error('TOPGG_TOKEN is not defined');
   }
 
-  // deno-lint-ignore camelcase
   const { server_count }: { server_count: number } =
     await (await fetch('https://fable.deno.dev/stats')).json();
 
