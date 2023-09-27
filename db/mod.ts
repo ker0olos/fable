@@ -58,20 +58,7 @@ import {
   removePack,
 } from './addPack.ts';
 
-//
-// import { load as Dotenv } from '$std/dotenv/mod.ts';
-
-// await Dotenv({
-//   export: true,
-//   defaultsPath: '.env.example',
-//   allowEmptyValues: true,
-//   examplePath: null,
-// });
-//
-
-export const kv = await Deno.openKv(
-  // 'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect',
-);
+export const kv = await Deno.openKv();
 
 async function getValue<T>(key: Deno.KvKey): Promise<T | undefined> {
   const res = await kv.get<T>(key);
