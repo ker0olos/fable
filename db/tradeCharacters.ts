@@ -37,7 +37,7 @@ export async function tradeCharacters(
   let retires = 0;
 
   while (retires < 5) {
-    const op = kv.atomic();
+    const ops: Deno.AtomicOperation[] = [];
 
     const [giveCharacters, takeCharacters] = await Promise.all([
       db.getManyValues<Schema.Character>(
@@ -98,41 +98,43 @@ export async function tradeCharacters(
       // deno-lint-ignore no-non-null-assertion
       character!.inventory = bInventory._id;
 
-      op
-        // deno-lint-ignore no-non-null-assertion
-        .set(['characters', character!._id], character)
-        .set(
-          [
-            ...charactersByInstancePrefix(instance._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!.id,
-          ],
-          character,
-        )
-        .delete(
-          [
-            ...charactersByInventoryPrefix(aInventory._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-        )
-        .set(
-          [
-            ...charactersByInventoryPrefix(bInventory._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-          character,
-        )
-        .set(
-          [
-            // deno-lint-ignore no-non-null-assertion
-            ...charactersByMediaIdPrefix(instance._id, character!.mediaId),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-          character,
-        );
+      ops.push(
+        kv.atomic()
+          // deno-lint-ignore no-non-null-assertion
+          .set(['characters', character!._id], character)
+          .set(
+            [
+              ...charactersByInstancePrefix(instance._id),
+              // deno-lint-ignore no-non-null-assertion
+              character!.id,
+            ],
+            character,
+          )
+          .delete(
+            [
+              ...charactersByInventoryPrefix(aInventory._id),
+              // deno-lint-ignore no-non-null-assertion
+              character!._id,
+            ],
+          )
+          .set(
+            [
+              ...charactersByInventoryPrefix(bInventory._id),
+              // deno-lint-ignore no-non-null-assertion
+              character!._id,
+            ],
+            character,
+          )
+          .set(
+            [
+              // deno-lint-ignore no-non-null-assertion
+              ...charactersByMediaIdPrefix(instance._id, character!.mediaId),
+              // deno-lint-ignore no-non-null-assertion
+              character!._id,
+            ],
+            character,
+          ),
+      );
     });
 
     takeCharacters.forEach((character) => {
@@ -141,46 +143,48 @@ export async function tradeCharacters(
       // deno-lint-ignore no-non-null-assertion
       character!.inventory = aInventory._id;
 
-      op
-        // deno-lint-ignore no-non-null-assertion
-        .set(['characters', character!._id], character)
-        .set(
-          [
-            ...charactersByInstancePrefix(instance._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!.id,
-          ],
-          character,
-        )
-        .delete(
-          [
-            ...charactersByInventoryPrefix(bInventory._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-        )
-        .set(
-          [
-            ...charactersByInventoryPrefix(aInventory._id),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-          character,
-        )
-        .set(
-          [
-            // deno-lint-ignore no-non-null-assertion
-            ...charactersByMediaIdPrefix(instance._id, character!.mediaId),
-            // deno-lint-ignore no-non-null-assertion
-            character!._id,
-          ],
-          character,
-        );
+      ops.push(
+        kv.atomic()
+          // deno-lint-ignore no-non-null-assertion
+          .set(['characters', character!._id], character)
+          .set(
+            [
+              ...charactersByInstancePrefix(instance._id),
+              // deno-lint-ignore no-non-null-assertion
+              character!.id,
+            ],
+            character,
+          )
+          .delete(
+            [
+              ...charactersByInventoryPrefix(bInventory._id),
+              // deno-lint-ignore no-non-null-assertion
+              character!._id,
+            ],
+          )
+          .set(
+            [
+              ...charactersByInventoryPrefix(aInventory._id),
+              // deno-lint-ignore no-non-null-assertion
+              character!._id,
+            ],
+            character,
+          )
+          .set(
+            [
+              // deno-lint-ignore no-non-null-assertion
+              ...charactersByMediaIdPrefix(instance._id, character!.mediaId),
+              // deno-lint-ignore no-non-null-assertion
+              character!._id,
+            ],
+            character,
+          ),
+      );
     });
 
-    const res = await op.commit();
+    const res = await Promise.all(ops.map((op) => op.commit()));
 
-    if (res.ok) {
+    if (res.every(({ ok }) => ok)) {
       return { ok: true };
     }
 

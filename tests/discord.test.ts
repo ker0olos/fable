@@ -1002,10 +1002,8 @@ Deno.test('emotes', async (test) => {
       const id = /<.*:.*:(.*)>/.exec(tag);
 
       const response = await fetch(
-        `https://cdn.discordapp.com/emojis/${
-          id
-            ?.[1]
-        }.webp?size=44&quality=lossless`,
+        `https://cdn.discordapp.com/emojis/${id
+          ?.[1]}.webp?size=44&quality=lossless`,
       );
 
       assertEquals(response.status, 200);
