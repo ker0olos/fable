@@ -58,6 +58,8 @@ import {
   removePack,
 } from './addPack.ts';
 
+import { createVoteRef, resolveVoteRef } from './voteRef.ts';
+
 export const kv = await Deno.openKv();
 
 async function getValue<T>(key: Deno.KvKey): Promise<T | undefined> {
@@ -165,6 +167,9 @@ const db = {
   popularPacks,
   publishPack,
   removePack,
+  //
+  createVoteRef,
+  resolveVoteRef,
 };
 
 export { COOLDOWN_DAYS, COSTS, MAX_NEW_PULLS, MAX_PULLS, RECHARGE_MINS };

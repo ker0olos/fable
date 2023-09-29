@@ -33,6 +33,24 @@ function getRandomFloat(): number {
   return randomInt / 2 ** 32;
 }
 
+function nanoid(size = 16): string {
+  return crypto.getRandomValues(new Uint8Array(size)).reduce((id, byte) => {
+    byte &= 63;
+    if (byte < 36) {
+      // `0-9a-z`
+      id += byte.toString(36);
+    } else if (byte < 62) {
+      // `A-Z`
+      id += (byte - 26).toString(36).toLowerCase();
+    } else if (byte > 62) {
+      id += '-';
+    } else {
+      id += '_';
+    }
+    return id;
+  }, '');
+}
+
 // function randomPortions(
 //   min: number,
 //   max: number,
@@ -333,57 +351,6 @@ function diffInMinutes(a: Date, b: Date): number {
   return Math.floor(Math.abs(a.getTime() - b.getTime()) / 60000);
 }
 
-const base64Encode = (base64: string): string => {
-  const ENC = {
-    '+': '-',
-    '/': '_',
-  };
-
-  return base64
-    .replace(/[+/]/g, (m) => ENC[m as keyof typeof ENC]);
-};
-
-const base64Decode = (safe: string): string => {
-  const DEC = {
-    '-': '+',
-    '_': '/',
-    '.': '=',
-  };
-
-  return safe
-    .replace(/[-_.]/g, (m) => DEC[m as keyof typeof DEC]);
-};
-
-function cipher(str: string, secret: number): string {
-  let b = '';
-
-  for (let i = 0; i < str.length; i++) {
-    let code = str.charCodeAt(i);
-
-    code = code + secret;
-
-    b += String.fromCharCode(code);
-  }
-
-  return base64Encode(btoa(b));
-}
-
-function decipher(a: string, secret: number): string {
-  let str = '';
-
-  const b = atob(base64Decode(a));
-
-  for (let i = 0; i < b.length; i++) {
-    let code = b.charCodeAt(i);
-
-    code = code - secret;
-
-    str += String.fromCharCode(code);
-  }
-
-  return str;
-}
-
 function captureException(err: Error, opts?: {
   // deno-lint-ignore no-explicit-any
   extra?: any;
@@ -454,14 +421,13 @@ function captureOutage(id: string): Promise<Response> {
 }
 
 const utils = {
+  // randomPortions,
   capitalize,
   captureException,
   captureOutage,
   chunks: chunk,
-  cipher,
   comma,
   compact,
-  decipher,
   decodeDescription,
   diffInDays,
   diffInMinutes,
@@ -472,8 +438,8 @@ const utils = {
   hexToInt,
   initSentry,
   json,
+  nanoid,
   parseInt: _parseInt,
-  // randomPortions,
   readJson,
   rechargeTimestamp,
   rng,

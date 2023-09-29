@@ -51,18 +51,18 @@ async function topgg(r: Request): Promise<Response> {
     const searchParams = new URLSearchParams(data.query);
 
     // patch /now to confirm vote
-    if (searchParams.has('ref') && searchParams.has('gid')) {
+    if (searchParams.has('ref')) {
       (async () => {
-        // deno-lint-ignore no-non-null-assertion
-        const guildId = searchParams.get('gid')!;
+        const resolved = await db.resolveVoteRef({
+          // deno-lint-ignore no-non-null-assertion
+          ref: searchParams.get('ref')!,
+        });
 
-        // decipher the interaction token
-        const token = utils.decipher(
-          // deno-lint-ignore no-non-null-assertion
-          searchParams.get('ref')!,
-          // deno-lint-ignore no-non-null-assertion
-          config.topggCipher!,
-        );
+        if (!resolved) {
+          return;
+        }
+
+        const { token, guildId } = resolved;
 
         const locale = user.cachedUsers[data.user]?.locale ??
           user.cachedGuilds[guildId]?.locale;

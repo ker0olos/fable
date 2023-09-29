@@ -2,6 +2,8 @@
 
 import { assertEquals } from '$std/assert/mod.ts';
 
+import { FakeTime } from '$std/testing/time.ts';
+
 import { assertSpyCall, assertSpyCalls, spy, stub } from '$std/testing/mock.ts';
 
 import utils from '../src/utils.ts';
@@ -112,20 +114,18 @@ Deno.test('topgg', async (test) => {
   });
 
   await test.step('patch /now', async () => {
+    const timeStub = new FakeTime();
+
+    const resolveVoteRef = stub(
+      db,
+      'resolveVoteRef',
+      () => ({ guildId: 'guild_id', token: 'token' }) as any,
+    );
+
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              addTokensToUser: {
-                ok: true,
-              },
-            },
-          }))),
-      } as any),
+      () => (undefined as any),
     );
 
     const addTokensStub = stub(
@@ -156,18 +156,13 @@ Deno.test('topgg', async (test) => {
     );
 
     config.appId = 'app_id';
-    config.topggCipher = 12;
     config.topggSecret = 'x'.repeat(32);
 
     try {
-      const token = 'bj7!Qrw@BXL9QCQtt!4h2PZNvnke5ZPe';
-
-      const cipher = utils.cipher(token, config.topggCipher);
-
       const request = new Request('http://localhost:8000', {
         method: 'POST',
         body: JSON.stringify({
-          query: `?ref=${cipher}&gid=query_guild_id`,
+          query: `?ref=fake_ref`,
           isWeekend: false,
           user: 'user_id',
           type: 'upvote',
@@ -187,10 +182,12 @@ Deno.test('topgg', async (test) => {
         1,
       );
 
+      await timeStub.runMicrotasks();
+
       assertSpyCall(userStub, 0, {
         args: [{
-          token,
-          guildId: 'query_guild_id',
+          token: 'token',
+          guildId: 'guild_id',
           userId: 'user_id',
         }],
       });
@@ -200,12 +197,12 @@ Deno.test('topgg', async (test) => {
       });
 
       assertSpyCall(patchStub, 0, {
-        args: [token],
+        args: ['token'],
       });
 
       assertEquals(
         fetchStub.calls[0].args[0],
-        `https://discord.com/api/v10/webhooks/app_id/${token}`,
+        `https://discord.com/api/v10/webhooks/app_id/token`,
       );
 
       assertEquals(fetchStub.calls[0].args[1]?.method, 'POST');
@@ -233,9 +230,10 @@ Deno.test('topgg', async (test) => {
       );
     } finally {
       delete config.appId;
-      delete config.topggCipher;
       delete config.topggSecret;
 
+      timeStub.restore();
+      resolveVoteRef.restore();
       fetchStub.restore();
       addTokensStub.restore();
       getUserStub.restore();

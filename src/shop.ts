@@ -1,7 +1,6 @@
 import user from './user.ts';
 
 import i18n from './i18n.ts';
-import utils from './utils.ts';
 
 import config from './config.ts';
 
@@ -9,20 +8,21 @@ import * as discord from './discord.ts';
 
 import db, { COSTS } from '../db/mod.ts';
 
-export const voteComponent = (
+export const voteComponent = async (
   { token, guildId, locale }: {
     token: string;
     guildId: string;
     locale?: discord.AvailableLocales;
   },
-) =>
-  new discord.Component()
+) => {
+  const ref = await db.createVoteRef({ token, guildId });
+
+  return new discord.Component()
     .setLabel(i18n.get('vote', locale))
     .setUrl(
-      `https://top.gg/bot/${config.appId}/vote?ref=${
-        // deno-lint-ignore no-non-null-assertion
-        utils.cipher(token, config.topggCipher!)}&gid=${guildId}`,
+      `https://top.gg/bot/${config.appId}/vote?ref=${ref}`,
     );
+};
 
 function normal(
   { userId, amount }: { userId: string; amount: number },
@@ -113,7 +113,7 @@ async function confirmNormal({ token, userId, guildId, amount }: {
               ),
             ))
           .addComponents([
-            voteComponent({
+            await voteComponent({
               token,
               guildId,
               locale,
@@ -232,7 +232,7 @@ async function confirmGuaranteed({
               ),
             ))
           .addComponents([
-            voteComponent({
+            await voteComponent({
               token,
               guildId,
               locale,
