@@ -167,11 +167,7 @@ async function now({
 
   if (!user.lastVote || voting.canVote) {
     message.addComponents([
-      voteComponent({
-        token,
-        guildId,
-        locale,
-      }),
+      await voteComponent({ token, guildId, locale }),
     ]);
   }
 

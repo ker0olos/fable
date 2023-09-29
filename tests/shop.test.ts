@@ -261,8 +261,13 @@ Deno.test('/buy', async (test) => {
       },
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 123;
 
     try {
       const message = await shop.confirmNormal({
@@ -283,7 +288,7 @@ Deno.test('/buy', async (test) => {
                 label: 'Vote',
                 type: 2,
                 style: 5,
-                url: 'https://top.gg/bot/app_id/vote?ref=7-rm4Ok=&gid=guild_id',
+                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
               },
             ],
           }],
@@ -295,12 +300,12 @@ Deno.test('/buy', async (test) => {
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       addPullsStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -334,8 +339,13 @@ Deno.test('/buy', async (test) => {
       },
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 123;
 
     try {
       const message = await shop.confirmNormal({
@@ -356,7 +366,7 @@ Deno.test('/buy', async (test) => {
                 label: 'Vote',
                 type: 2,
                 style: 5,
-                url: 'https://top.gg/bot/app_id/vote?ref=7-rm4Ok=&gid=guild_id',
+                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
               },
             ],
           }],
@@ -368,12 +378,12 @@ Deno.test('/buy', async (test) => {
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       addPullsStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -719,8 +729,13 @@ Deno.test('/buy', async (test) => {
       },
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 123;
 
     try {
       const message = await shop.confirmGuaranteed({
@@ -741,7 +756,7 @@ Deno.test('/buy', async (test) => {
                 label: 'Vote',
                 type: 2,
                 style: 5,
-                url: 'https://top.gg/bot/app_id/vote?ref=7-rm4Ok=&gid=guild_id',
+                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
               },
             ],
           }],
@@ -753,12 +768,12 @@ Deno.test('/buy', async (test) => {
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       addGuaranteeStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -792,8 +807,13 @@ Deno.test('/buy', async (test) => {
       },
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 123;
 
     try {
       const message = await shop.confirmGuaranteed({
@@ -814,7 +834,7 @@ Deno.test('/buy', async (test) => {
                 label: 'Vote',
                 type: 2,
                 style: 5,
-                url: 'https://top.gg/bot/app_id/vote?ref=7-rm4Ok=&gid=guild_id',
+                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
               },
             ],
           }],
@@ -826,12 +846,12 @@ Deno.test('/buy', async (test) => {
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       addGuaranteeStub.restore();
+      createVoteRefStub.restore();
     }
   });
 });

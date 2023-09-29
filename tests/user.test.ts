@@ -57,8 +57,13 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 12;
 
     try {
       const message = await user.now({
@@ -119,8 +124,7 @@ Deno.test('/now', async (test) => {
                   label: 'Vote',
                   style: 5,
                   type: 2,
-                  url:
-                    'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+                  url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
                 },
               ],
               type: 1,
@@ -130,12 +134,12 @@ Deno.test('/now', async (test) => {
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargePullsStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -173,8 +177,13 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 12;
 
     try {
       const message = await user.now({
@@ -229,19 +238,19 @@ Deno.test('/now', async (test) => {
               label: 'Vote',
               style: 5,
               type: 2,
-              url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
             }],
           }],
         },
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargePullsStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -279,8 +288,13 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 12;
 
     try {
       const message = await user.now({
@@ -338,19 +352,19 @@ Deno.test('/now', async (test) => {
               label: 'Vote',
               style: 5,
               type: 2,
-              url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
             }],
           }],
         },
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargePullsStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -392,8 +406,13 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 12;
 
     try {
       const message = await user.now({
@@ -450,19 +469,19 @@ Deno.test('/now', async (test) => {
               label: 'Vote',
               style: 5,
               type: 2,
-              url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
             }],
           }],
         },
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargePullsStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -504,8 +523,13 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 12;
 
     try {
       const message = await user.now({
@@ -561,19 +585,19 @@ Deno.test('/now', async (test) => {
               label: 'Vote',
               style: 5,
               type: 2,
-              url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
             }],
           }],
         },
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargePullsStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -615,8 +639,13 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 12;
 
     try {
       const message = await user.now({
@@ -686,7 +715,7 @@ Deno.test('/now', async (test) => {
                 label: 'Vote',
                 style: 5,
                 type: 2,
-                url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
               },
             ],
           }],
@@ -694,12 +723,12 @@ Deno.test('/now', async (test) => {
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargePullsStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -741,8 +770,13 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 12;
 
     try {
       const message = await user.now({
@@ -812,7 +846,7 @@ Deno.test('/now', async (test) => {
                 label: 'Vote',
                 style: 5,
                 type: 2,
-                url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
               },
             ],
           }],
@@ -820,12 +854,12 @@ Deno.test('/now', async (test) => {
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargePullsStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -868,8 +902,13 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 12;
 
     try {
       const message = await user.now({
@@ -940,7 +979,7 @@ Deno.test('/now', async (test) => {
                 label: 'Vote',
                 style: 5,
                 type: 2,
-                url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
               },
             ],
           }],
@@ -948,12 +987,12 @@ Deno.test('/now', async (test) => {
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargePullsStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -995,8 +1034,13 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 12;
 
     try {
       const message = await user.now({
@@ -1062,7 +1106,7 @@ Deno.test('/now', async (test) => {
                 label: 'Vote',
                 style: 5,
                 type: 2,
-                url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
               },
             ],
           }],
@@ -1070,13 +1114,13 @@ Deno.test('/now', async (test) => {
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargePullsStub.restore();
       timeStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
@@ -1114,8 +1158,13 @@ Deno.test('/now', async (test) => {
         }) as any,
     );
 
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
     config.appId = 'app_id';
-    config.topggCipher = 12;
 
     config.notice = '**test**\\n_message_';
 
@@ -1176,20 +1225,21 @@ Deno.test('/now', async (test) => {
               label: 'Vote',
               style: 5,
               type: 2,
-              url: 'https://top.gg/bot/app_id/vote?ref=gHt3cXo=&gid=guild_id',
+              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
             }],
           }],
         },
       });
     } finally {
       delete config.appId;
-      delete config.topggCipher;
+
       delete config.notice;
 
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
       rechargePullsStub.restore();
+      createVoteRefStub.restore();
     }
   });
 
