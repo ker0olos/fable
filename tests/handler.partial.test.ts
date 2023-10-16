@@ -1937,7 +1937,118 @@ Deno.test('character suggestions', async (test) => {
       guild_id: 'guild_id',
 
       data: {
-        name: 'offer',
+        name: 'give',
+        options: [{
+          name: 'give',
+          value: 'give',
+          focused: true,
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const searchStub = stub(packs, 'searchMany', () =>
+      Promise.resolve([{
+        id: 'id',
+        packId: 'packId',
+        name: {
+          english: 'english name',
+        },
+        media: {
+          edges: [{
+            node: {
+              id: 'id',
+              title: {
+                english: 'anime title',
+              },
+            },
+          }],
+        },
+      }] as any));
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(searchStub, 0, {
+        args: [{
+          key: 'characters',
+          search: 'give',
+          guildId: 'guild_id',
+          threshold: 65,
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'english name (anime title)',
+            value: 'id=packId:id',
+          }],
+        },
+      });
+    } finally {
+      delete config.publicKey;
+
+      searchStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('gift', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Partial,
+      guild_id: 'guild_id',
+
+      data: {
+        name: 'gift',
         options: [{
           name: 'give',
           value: 'give',
