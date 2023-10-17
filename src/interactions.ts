@@ -190,6 +190,7 @@ export const handler = async (r: Request) => {
             'party',
             'team',
             'give',
+            'gift',
             'trade',
             'offer',
             'steal',
