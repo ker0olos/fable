@@ -299,15 +299,11 @@ __Every character gets a starting amount of unclaimed stat points__ based on the
 
 __You can distribute those unclaimed points in 3 different base stats:__ strength, stamina, and agility.
 
-__Strength is the damage__ the character does when they land a hit.
+__Strength is damage__, the damage you can potentially do to your enemy.
 
-__Agility is for dodging__ attacks if your agility is higher than your enemy they can't hit you.
+__Agility is defense__, minimize the damage your enemy can do.
 
-__Stamina is depleted__ every time your character attacks or dodges, if a character fully runs out of stamina they can no longer attack and all attack on them hit automatically.
-
-> Finding a good balance between all 3 stats is the most recommended route.
-
-__**NOTE: Combat is currently experimental and subject to change**__
+__Stamina is health points__, allows you to take more hits and survive longer in battle
 ​",
         type: "rich",
       },
@@ -454,8 +450,6 @@ snapshot[`/help 7`] = `
           name: "Roadmap",
         },
         description: "__**Releasing in the near future (~3 months)**__
-
-**[Battles](https://github.com/ker0olos/fable/issues/74)**
 
 **[Leveling Up Characters](https://github.com/ker0olos/fable/issues/64)**
 

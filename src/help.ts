@@ -160,10 +160,6 @@ function pages(
             i18n.get('help-page10-agility', locale),
             '',
             i18n.get('help-page10-stamina', locale),
-            '',
-            i18n.get('help-page10-footer', locale),
-            '',
-            i18n.get('help-page10-disclaimer', locale),
             discord.empty,
           ].join('\n')),
       ),
@@ -220,9 +216,6 @@ function pages(
       ),
     new discord.Message()
       .addComponents([
-        // new discord.Component()
-        //   .setLabel('Full Roadmap')
-        //   .setUrl('https://github.com/ker0olos/fable/issues/1'),
         new discord.Component()
           .setLabel('GitHub')
           .setUrl('https://github.com/ker0olos/fable'),
@@ -238,8 +231,6 @@ function pages(
           .setAuthor({ name: i18n.get('help-page6-title', locale) })
           .setDescription([
             i18n.get('help-page6-release', locale),
-            '',
-            '**[Battles](https://github.com/ker0olos/fable/issues/74)**',
             '',
             '**[Leveling Up Characters](https://github.com/ker0olos/fable/issues/64)**',
             '',

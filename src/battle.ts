@@ -227,8 +227,6 @@ function v2({ token, guildId, user, target }: {
   return loading;
 }
 
-const battle = {
-  v2,
-};
+const battle = { v2 };
 
 export default battle;

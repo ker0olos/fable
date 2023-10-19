@@ -741,10 +741,10 @@ export const handler = async (r: Request) => {
               userId: member.user.id,
             }).send();
           }
-          case 'experimental': {
+          case 'battle': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'battle': {
+              case 'friend': {
                 const targetId = options['versus'] as string;
 
                 return battle.v2({

@@ -7867,7 +7867,7 @@ Deno.test('battle', async () => {
       },
     },
     data: {
-      name: 'experimental',
+      name: 'battle',
       resolved: {
         users: {
           'another_user_id': {
@@ -7877,7 +7877,7 @@ Deno.test('battle', async () => {
       },
       options: [{
         type: 1,
-        name: `battle`,
+        name: `friend`,
         options: [
           {
             name: 'versus',

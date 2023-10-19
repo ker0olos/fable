@@ -175,13 +175,9 @@
   "help-page10-starting-points": "__Every character gets a starting amount of unclaimed stat points__ based on their star rating.",
   "help-page10-distribution": "__You can distribute those unclaimed points in 3 different base stats:__ strength, stamina, and agility.",
 
-  "help-page10-strength": "__Strength is the damage__ the character does when they land a hit.",
-  "help-page10-agility": "__Agility is for dodging__ attacks if your agility is higher than your enemy they can't hit you.",
-  "help-page10-stamina": "__Stamina is depleted__ every time your character attacks or dodges, if a character fully runs out of stamina they can no longer attack and all attack on them hit automatically.",
-
-  "help-page10-footer": "> Finding a good balance between all 3 stats is the most recommended route.",
-
-  "help-page10-disclaimer": "__**NOTE: Combat is currently experimental and subject to change**__",
+  "help-page10-strength": "__Strength is damage__, the damage you can potentially do to your enemy.",
+  "help-page10-agility": "__Agility is defense__, minimize the damage your enemy can do.",
+  "help-page10-stamina": "__Stamina is health points__, allows you to take more hits and survive longer in battle",
 
   "help-page5-title": "Shop",
   "help-page5-shop": "The shop is a way to purchase extra pulls and guaranteed pulls.",
@@ -254,7 +250,7 @@
 
   "/stats": "manage your characters stat points and skills",
 
-  "/experimental battle": "try the new upcoming combat in a mock battle against another user",
+  "/battle friend": "Battle against another player to test your party",
 
   "/help": "need more information? we got you",
 
