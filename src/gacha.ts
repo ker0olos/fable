@@ -397,11 +397,11 @@ async function pullAnimation(
       if (
         user.id !== userId &&
         (
-          user.likes?.map(({ characterId }) => characterId)
-            .filter(Boolean)
+          (user.likes?.map(({ characterId }) => characterId)
+            .filter(Boolean) as string[])
             .includes(characterId) ||
-          user.likes?.map(({ mediaId }) => mediaId)
-            .filter(Boolean)
+          (user.likes?.map(({ mediaId }) => mediaId)
+            .filter(Boolean) as string[])
             .some((id) => mediaIds.includes(id))
         )
       ) {

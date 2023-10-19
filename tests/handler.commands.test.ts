@@ -19,6 +19,7 @@ import packs from '../src/packs.ts';
 import trade from '../src/trade.ts';
 import steal from '../src/steal.ts';
 import shop from '../src/shop.ts';
+import stats from '../src/stats.ts';
 import battle from '../src/battle.ts';
 import help from '../src/help.ts';
 
@@ -7705,7 +7706,7 @@ Deno.test('stats', async (test) => {
       body,
     } as any));
 
-    const battleStub = stub(battle, 'stats', () =>
+    const statsStub = stub(stats, 'view', () =>
       ({
         send: () => true,
       }) as any);
@@ -7744,7 +7745,7 @@ Deno.test('stats', async (test) => {
         }],
       });
 
-      assertSpyCall(battleStub, 0, {
+      assertSpyCall(statsStub, 0, {
         args: [{
           token: 'token',
           guildId: 'guild_id',
@@ -7758,7 +7759,7 @@ Deno.test('stats', async (test) => {
     } finally {
       delete config.publicKey;
 
-      battleStub.restore();
+      statsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
@@ -7794,7 +7795,7 @@ Deno.test('stats', async (test) => {
       body,
     } as any));
 
-    const battleStub = stub(battle, 'stats', () =>
+    const statsStub = stub(stats, 'view', () =>
       ({
         send: () => true,
       }) as any);
@@ -7833,7 +7834,7 @@ Deno.test('stats', async (test) => {
         }],
       });
 
-      assertSpyCall(battleStub, 0, {
+      assertSpyCall(statsStub, 0, {
         args: [{
           token: 'token',
           guildId: 'guild_id',
@@ -7847,7 +7848,7 @@ Deno.test('stats', async (test) => {
     } finally {
       delete config.publicKey;
 
-      battleStub.restore();
+      statsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
@@ -7894,7 +7895,7 @@ Deno.test('battle', async () => {
     body,
   } as any));
 
-  const battleStub = stub(battle, 'experimental', () =>
+  const battleStub = stub(battle, 'v2', () =>
     ({
       send: () => true,
     }) as any);

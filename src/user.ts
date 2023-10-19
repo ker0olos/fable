@@ -1094,7 +1094,7 @@ function likeslist({
       const results = await db.findCharacters(
         instance,
         likes.map(({ characterId }) => characterId)
-          .filter(Boolean),
+          .filter(Boolean) as string[],
       );
 
       // filter out characters that are owned by the user
@@ -1110,12 +1110,12 @@ function likeslist({
         await packs.characters({
           guildId,
           ids: chunks[index]?.map(({ characterId }) => characterId)
-            .filter(Boolean),
+            .filter(Boolean) as string[],
         }),
         await packs.media({
           guildId,
           ids: chunks[index]?.map(({ mediaId }) => mediaId)
-            .filter(Boolean),
+            .filter(Boolean) as string[],
         }),
       ]);
 

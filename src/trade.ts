@@ -178,14 +178,14 @@ function pre({ token, userId, guildId, targetId, give, take }: {
 
       const _giveParty = await db.getUserParty(userInventory);
 
-      const giveParty: string[] = [
+      const giveParty: string[] = ([
         _giveParty?.member1?.id,
         _giveParty?.member2?.id,
         _giveParty?.member3?.id,
         _giveParty?.member4?.id,
         _giveParty?.member5?.id,
       ]
-        .filter(Boolean)
+        .filter(Boolean) as string[])
         .filter((id) => giveIds.includes(id));
 
       const giveFilter = giveParty.length
@@ -236,14 +236,14 @@ function pre({ token, userId, guildId, targetId, give, take }: {
 
         const _takeParty = await db.getUserParty(targetInventory);
 
-        const takeParty: string[] = [
+        const takeParty: string[] = ([
           _takeParty?.member1?.id,
           _takeParty?.member2?.id,
           _takeParty?.member3?.id,
           _takeParty?.member4?.id,
           _takeParty?.member5?.id,
         ]
-          .filter(Boolean)
+          .filter(Boolean) as string[])
           .filter((id) => takeIds.includes(id));
 
         const takeFilter = takeParty.length
