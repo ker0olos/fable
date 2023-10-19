@@ -100,8 +100,6 @@ function pages(
               '',
               i18n.get('help-page3-party-presets-disclaimer', locale),
               '',
-              i18n.get('help-page3-party-synergy', locale),
-              '',
               i18n.get('help-page3-party-view', locale),
               '',
               i18n.get('help-page3-party-assign-1', locale),

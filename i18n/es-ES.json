@@ -156,7 +156,6 @@
 
   "help-page3-party-required": "Necesitarás un equipo (party) para el combate",
   "help-page3-party-presets-disclaimer": "__No puedes tener más de un equipo__ o guardar tu equipo actual o cambiar entre guardados.",
-  "help-page3-party-synergy": "__Tu equipo rendirá mejor mientras más se relacionen sus integrantes__. Esto se llama sinergia, cinco integrantes de un mismo anime son mejores que cinco integrantes de diferente procedencia.",
   "help-page3-party-view": "`/party view` para ver tu equipo actual.",
   "help-page3-party-assign-1": "`/party assign name: spot:` para asignar un personaje que poseas a tu equipo,",
   "help-page3-party-assign-2": "dejar el `spot:` vacío lo asignará al primer puesto vacío o reemplazará el último puesto.",

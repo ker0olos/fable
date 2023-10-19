@@ -11,6 +11,7 @@ import gacha from './gacha.ts';
 import trade from './trade.ts';
 import steal from './steal.ts';
 import shop from './shop.ts';
+import stats from './stats.ts';
 import battle from './battle.ts';
 import help from './help.ts';
 
@@ -732,7 +733,7 @@ export const handler = async (r: Request) => {
 
             const distribution = options['distribution'] as string;
 
-            return battle.stats({
+            return stats.view({
               token,
               guildId,
               character,
@@ -746,7 +747,7 @@ export const handler = async (r: Request) => {
               case 'battle': {
                 const targetId = options['versus'] as string;
 
-                return battle.experimental({
+                return battle.v2({
                   token,
                   guildId,
                   user: member.user,
@@ -1084,7 +1085,7 @@ export const handler = async (r: Request) => {
                 case 'sta':
                 case 'agi':
                 case 'reset':
-                  return (await battle.updateStats({
+                  return (await stats.update({
                     type,
                     token,
                     guildId,

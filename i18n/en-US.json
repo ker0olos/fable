@@ -156,7 +156,6 @@
 
   "help-page3-party-required": "You will need a party to use combat features",
   "help-page3-party-presets-disclaimer": "__You can't have more than 1 party__ or save your current party to a preset and switch between presets.",
-  "help-page3-party-synergy": "__The more your party members are familiar with each other the better they preform__. This is called synergy, five party members from the same anime are better than 5 members from a mix of different media.",
   "help-page3-party-view": "`/party view` to see your current party.",
   "help-page3-party-assign-1": "`/party assign name: spot:` to assign a character you have to your party,",
   "help-page3-party-assign-2": "leaving the `spot:` empty will assign the character to the first empty spot or override the last spot.",
