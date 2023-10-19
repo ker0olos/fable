@@ -848,6 +848,7 @@ export const commands = [
   }),
   ...Command({
     name: 'battle',
+    description: 'battle/combat commands',
     options: [
       Option({
         name: 'friend',
