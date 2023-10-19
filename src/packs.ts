@@ -1,5 +1,3 @@
-import '#filter-boolean';
-
 import _anilistManifest from '../packs/anilist/manifest.json' assert {
   type: 'json',
 };

@@ -1,5 +1,3 @@
-import '#filter-boolean';
-
 import search, { idPrefix } from './search.ts';
 
 import packs from './packs.ts';

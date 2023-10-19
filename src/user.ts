@@ -1,5 +1,3 @@
-import '#filter-boolean';
-
 import config from './config.ts';
 
 import db, { COSTS } from '../db/mod.ts';

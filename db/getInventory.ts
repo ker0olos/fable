@@ -1,7 +1,5 @@
 /// <reference lib="deno.unstable" />
 
-import '#filter-boolean';
-
 import { ulid } from 'ulid';
 
 import {
