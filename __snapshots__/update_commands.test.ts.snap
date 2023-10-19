@@ -3361,23 +3361,23 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "experimental ephemeral temporary commands",
+    description: "battle/combat commands",
     description_localizations: {
       "es-ES": undefined,
     },
     dm_permission: false,
-    name: "experimental",
+    name: "battle",
     options: [
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "try the new upcoming combat in a mock battle against another user",
+        description: "Battle against another player to test your party",
         description_localizations: {
-          "es-ES": "prueba el nuevo combate (próximamente implementado) en una simulación de batalla contra otro usuario",
+          "es-ES": "Battle against another player to test your party",
         },
         max_value: undefined,
         min_value: undefined,
-        name: "battle",
+        name: "friend",
         options: [
           {
             autocomplete: undefined,

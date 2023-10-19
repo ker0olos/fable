@@ -1,7 +1,5 @@
 /// <reference lib="deno.unstable" />
 
-import '#filter-boolean';
-
 import { ulid } from 'ulid';
 
 import {
@@ -126,7 +124,7 @@ export async function getInstancePacks(
   const ids = instance.packs.map(({ pack }) => ['packs', pack]);
 
   const packs = (await db.getManyValues<Schema.Pack>(ids))
-    .filter(Boolean);
+    .filter(Boolean) as Schema.Pack[];
 
   return packs;
 }

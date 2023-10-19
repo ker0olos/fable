@@ -23,7 +23,7 @@ import merge from '../src/merge.ts';
 import community from '../src/community.ts';
 
 import steal from '../src/steal.ts';
-import battle from '../src/battle.ts';
+import stats from '../src/stats.ts';
 
 config.global = true;
 
@@ -3233,7 +3233,7 @@ Deno.test('stats components', async (test) => {
       send: () => true,
     }));
 
-    const battleStub = stub(battle, 'updateStats', () =>
+    const statsStub = stub(stats, 'update', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -3273,7 +3273,7 @@ Deno.test('stats components', async (test) => {
         args: [discord.MessageType.Update],
       });
 
-      assertSpyCall(battleStub, 0, {
+      assertSpyCall(statsStub, 0, {
         args: [{
           token: 'token',
           userId: 'user_id',
@@ -3287,7 +3287,7 @@ Deno.test('stats components', async (test) => {
     } finally {
       delete config.publicKey;
 
-      battleStub.restore();
+      statsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
@@ -3320,7 +3320,7 @@ Deno.test('stats components', async (test) => {
       send: () => true,
     }));
 
-    const battleStub = stub(battle, 'updateStats', () =>
+    const statsStub = stub(stats, 'update', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -3360,7 +3360,7 @@ Deno.test('stats components', async (test) => {
         args: [discord.MessageType.Update],
       });
 
-      assertSpyCall(battleStub, 0, {
+      assertSpyCall(statsStub, 0, {
         args: [{
           token: 'token',
           userId: 'user_id',
@@ -3374,7 +3374,7 @@ Deno.test('stats components', async (test) => {
     } finally {
       delete config.publicKey;
 
-      battleStub.restore();
+      statsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
@@ -3407,7 +3407,7 @@ Deno.test('stats components', async (test) => {
       send: () => true,
     }));
 
-    const battleStub = stub(battle, 'updateStats', () =>
+    const statsStub = stub(stats, 'update', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -3447,7 +3447,7 @@ Deno.test('stats components', async (test) => {
         args: [discord.MessageType.Update],
       });
 
-      assertSpyCall(battleStub, 0, {
+      assertSpyCall(statsStub, 0, {
         args: [{
           token: 'token',
           userId: 'user_id',
@@ -3461,7 +3461,7 @@ Deno.test('stats components', async (test) => {
     } finally {
       delete config.publicKey;
 
-      battleStub.restore();
+      statsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
@@ -3494,7 +3494,7 @@ Deno.test('stats components', async (test) => {
       send: () => true,
     }));
 
-    const battleStub = stub(battle, 'updateStats', () =>
+    const statsStub = stub(stats, 'update', () =>
       ({
         setType: setTypeSpy,
       }) as any);
@@ -3534,7 +3534,7 @@ Deno.test('stats components', async (test) => {
         args: [discord.MessageType.Update],
       });
 
-      assertSpyCall(battleStub, 0, {
+      assertSpyCall(statsStub, 0, {
         args: [{
           token: 'token',
           userId: 'user_id',
@@ -3548,7 +3548,7 @@ Deno.test('stats components', async (test) => {
     } finally {
       delete config.publicKey;
 
-      battleStub.restore();
+      statsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }

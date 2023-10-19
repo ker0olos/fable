@@ -846,14 +846,13 @@ export const commands = [
       }),
     ],
   }),
-  // experimental ephemeral temporary
   ...Command({
-    name: 'experimental',
-    description: 'experimental ephemeral temporary commands',
+    name: 'battle',
+    description: 'battle/combat commands',
     options: [
       Option({
-        name: 'battle',
-        description: '/experimental battle',
+        name: 'friend',
+        description: '/battle friend',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
