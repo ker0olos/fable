@@ -61,12 +61,13 @@ const getEmbed = (message: discord.Message, {
 };
 
 function attack(char: CharacterLive, target: CharacterLive): void {
-  // dodge chance
-  if (Math.random() > target.agility / 100) {
-    const damage = char.strength;
-    target.hp -= damage;
-  } else {
-    // missed
+  const damage = Math.max(char.strength - target.agility, 1);
+
+  target.hp = Math.max(target.hp - damage, 0);
+
+  if (target.hp <= 0) {
+    // killed
+    // console.log(`${target.name} has been defeated!`);
   }
 }
 
@@ -158,17 +159,17 @@ function v2({ token, guildId, user, target }: {
         const message = new discord.Message();
 
         getEmbed(message, {
-          percent: (userStats.hp / userStats.stamina) * 100,
           // deno-lint-ignore no-non-null-assertion
           user: user.display_name!,
           character: userCharacter,
+          percent: (userStats.hp / userStats.stamina) * 100,
         });
 
         getEmbed(message, {
-          percent: (targetStats.hp / targetStats.stamina) * 100,
           // deno-lint-ignore no-non-null-assertion
           user: target.display_name!,
           character: targetCharacter,
+          percent: (targetStats.hp / targetStats.stamina) * 100,
         });
 
         if (userStats.hp <= 0) {
