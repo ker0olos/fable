@@ -24,51 +24,66 @@ type CharacterLive = {
   hp: number;
 };
 
+const T = 2;
+
 const getStats = (char: Schema.Character): CharacterLive => {
   return {
     agility: char.combat?.stats?.agility ?? 0,
-    strength: char.combat?.stats?.strength ?? 0,
-    stamina: char.combat?.stats?.stamina ?? 100,
-    hp: char.combat?.stats?.stamina ?? 100,
+    strength: char.combat?.stats?.strength ?? 1,
+    stamina: char.combat?.stats?.stamina ?? 1,
+    hp: char.combat?.stats?.stamina ?? 1,
   };
 };
 
 const getEmbed = (message: discord.Message, {
-  user,
   character,
-  percent,
+  stats,
+  damage,
+  state,
+  color,
 }: {
-  user: string;
   character: Character | DisaggregatedCharacter;
-  percent: number;
+  stats: CharacterLive;
+  damage?: number;
+  state?: string;
+  color?: string;
 }) => {
+  damage = damage || 0;
+
   const uuid = crypto.randomUUID();
 
+  let _state = state ?? discord.empty;
+
+  if (damage > 0) {
+    _state = `-${damage}`;
+  }
+
   const embed = new discord.Embed()
+    .setColor(damage > 0 ? '#DE2626' : color)
     .setThumbnail({ url: character.images?.[0]?.url })
     .setImage({ url: `attachment://${uuid}.png` })
     .setDescription(
-      `${user}\n## ${packs.aliasToArray(character.name)[0]}`,
+      `## ${
+        packs.aliasToArray(character.name)[0]
+      }\n_${_state}_\n${stats.hp}/${stats.stamina}`,
     );
+
+  const percent = Math.round((stats.hp / stats.stamina) * 100);
+  const _damage = Math.round((damage / stats.stamina) * 100);
 
   message.addAttachment({
     type: 'image/png',
-    arrayBuffer: dynImages.probability(percent).buffer,
+    arrayBuffer: dynImages.hp(percent, _damage).buffer,
     filename: `${uuid}.png`,
   });
 
   message.addEmbed(embed);
 };
 
-function attack(char: CharacterLive, target: CharacterLive): void {
+function attack(char: CharacterLive, target: CharacterLive): number {
   const damage = Math.max(char.strength - target.agility, 1);
-
   target.hp = Math.max(target.hp - damage, 0);
-
-  if (target.hp <= 0) {
-    // killed
-    // console.log(`${target.name} has been defeated!`);
-  }
+  return damage;
 }
 
 function v2({ token, guildId, user, target }: {
@@ -149,55 +164,100 @@ function v2({ token, guildId, user, target }: {
         throw new NonFetalError('Some characters are disabled or removed');
       }
 
-      const setup = [getStats(party1[0]), getStats(party2[0])];
+      const setup = [
+        getStats(party1[0]),
+        getStats(party2[0]),
+      ];
 
       const [userStats, targetStats] = setup;
 
       let initiative = 0;
 
+      let message = new discord.Message();
+
+      // getEmbed(message, { character: userCharacter, stats: userStats });
+      // getEmbed(message, { character: targetCharacter, stats: targetStats });
+
+      // await message.patch(token);
+
       while (true) {
-        const message = new discord.Message();
-
-        getEmbed(message, {
-          // deno-lint-ignore no-non-null-assertion
-          user: user.display_name!,
-          character: userCharacter,
-          percent: (userStats.hp / userStats.stamina) * 100,
-        });
-
-        getEmbed(message, {
-          // deno-lint-ignore no-non-null-assertion
-          user: target.display_name!,
-          character: targetCharacter,
-          percent: (targetStats.hp / targetStats.stamina) * 100,
-        });
-
-        if (userStats.hp <= 0) {
-          message.addEmbed(
-            new discord.Embed()
-              .setTitle(`${target.display_name} Wins`),
-          );
-        } else if (targetStats.hp <= 0) {
-          message.addEmbed(
-            new discord.Embed()
-              .setTitle(`${user.display_name} Wins`),
-          );
-        }
-
-        await message.patch(token);
-
         if (userStats.hp <= 0 || targetStats.hp <= 0) {
           break;
         }
 
-        await utils.sleep(1);
-
+        // switch initiative
         initiative = initiative === 0 ? 1 : 0;
 
-        if (initiative === 0) {
-          attack(userStats, targetStats);
-        } else {
-          attack(targetStats, userStats);
+        const [attacker, defender] = initiative === 0
+          ? [userCharacter, targetCharacter]
+          : [targetCharacter, userCharacter];
+
+        const [attackerStats, defenderStats] = initiative === 0
+          ? [userStats, targetStats]
+          : [targetStats, userStats];
+
+        message = new discord.Message();
+
+        const stateUX = [
+          () =>
+            getEmbed(message, {
+              color: '#5d56c7',
+              character: attacker,
+              stats: attackerStats,
+              state: i18n.get('attacking', locale),
+            }),
+          () =>
+            getEmbed(message, { character: defender, stats: defenderStats }),
+        ];
+
+        if (initiative === 1) {
+          stateUX.reverse();
+        }
+
+        stateUX.forEach((func) => func());
+
+        await utils.sleep(T);
+        await message.patch(token);
+
+        const damage = attack(attackerStats, defenderStats);
+
+        message = new discord.Message();
+
+        const damageUX = [
+          () =>
+            getEmbed(message, { character: attacker, stats: attackerStats }),
+          () =>
+            getEmbed(message, {
+              character: defender,
+              stats: defenderStats,
+              damage,
+            }),
+        ];
+
+        if (initiative === 1) {
+          damageUX.reverse();
+        }
+
+        damageUX.forEach((func) => func());
+
+        await utils.sleep(T);
+        await message.patch(token);
+
+        if (userStats.hp <= 0 || targetStats.hp <= 0) {
+          message = new discord.Message();
+
+          getEmbed(message, { character: userCharacter, stats: userStats });
+          getEmbed(message, { character: targetCharacter, stats: targetStats });
+
+          message.addEmbed(
+            new discord.Embed()
+              .setTitle(
+                `${(userStats.hp <= 0 ? target : user).display_name} Won`,
+              ),
+          );
+
+          await utils.sleep(T);
+          await message.patch(token);
         }
       }
     })

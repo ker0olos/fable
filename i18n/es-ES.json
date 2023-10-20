@@ -139,6 +139,8 @@
   "agility": "Agilidad",
   "reset": "Reiniciar",
 
+  "attacking": "Attacking",
+
   "help-page1-before-anything": "Antes de nada: Necesitarás personajes.",
   "help-page1-you-get-n-every-t": "__Obtienes una tirada (pull) gratis cada {0} minutos (hasta un máximo de {1})__. Utiliza `/now` para comprobar cuantas tiradas tienes y cuánto falta para tu siguiente tirada gratis.",
   "help-page1-characters-are-exclusive": "__Los personajes son exclusivos__, una vez que un jugador los obtiene, nadie más puede encontrarlos en el gacha.",

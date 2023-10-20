@@ -139,6 +139,8 @@
   "agility": "Agility",
   "reset": "Reset",
 
+  "attacking": "Attacking",
+
   "help-page1-before-anything": "Before anything: You will need characters.",
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",
   "help-page1-characters-are-exclusive": "__Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.",
