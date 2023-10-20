@@ -398,11 +398,11 @@ async function pullAnimation(
         user.id !== userId &&
         (
           (user.likes?.map(({ characterId }) => characterId)
-            .filter(Boolean) as string[])
-            .includes(characterId) ||
+            ?.filter(Boolean) as string[])
+            ?.includes(characterId) ||
           (user.likes?.map(({ mediaId }) => mediaId)
-            .filter(Boolean) as string[])
-            .some((id) => mediaIds.includes(id))
+            ?.filter(Boolean) as string[])
+            ?.some((id) => mediaIds.includes(id))
         )
       ) {
         pings.add(`<@${user.id}>`);
