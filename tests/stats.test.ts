@@ -14,7 +14,7 @@ import {
 import utils from '../src/utils.ts';
 
 import packs from '../src/packs.ts';
-import battle from '../src/battle.ts';
+import stats from '../src/stats.ts';
 
 import config from '../src/config.ts';
 
@@ -72,10 +72,10 @@ Deno.test('update stats', async (test) => {
       () => '_' as any,
     );
 
-    const battleStub = stub(battle, 'stats', () => undefined as any);
+    const statsStub = stub(stats, 'view', () => undefined as any);
 
     try {
-      await battle.updateStats({
+      await stats.update({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -98,7 +98,7 @@ Deno.test('update stats', async (test) => {
       getInventoryStub.restore();
       findCharactersStub.restore();
       assignStatsStub.restore();
-      battleStub.restore();
+      statsStub.restore();
     }
   });
 
@@ -151,10 +151,10 @@ Deno.test('update stats', async (test) => {
       () => '_' as any,
     );
 
-    const battleStub = stub(battle, 'stats', () => undefined as any);
+    const statsStub = stub(stats, 'view', () => undefined as any);
 
     try {
-      await battle.updateStats({
+      await stats.update({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -177,7 +177,7 @@ Deno.test('update stats', async (test) => {
       getInventoryStub.restore();
       findCharactersStub.restore();
       assignStatsStub.restore();
-      battleStub.restore();
+      statsStub.restore();
     }
   });
 
@@ -230,10 +230,10 @@ Deno.test('update stats', async (test) => {
       () => '_' as any,
     );
 
-    const battleStub = stub(battle, 'stats', () => undefined as any);
+    const statsStub = stub(stats, 'view', () => undefined as any);
 
     try {
-      await battle.updateStats({
+      await stats.update({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -256,7 +256,7 @@ Deno.test('update stats', async (test) => {
       getInventoryStub.restore();
       findCharactersStub.restore();
       assignStatsStub.restore();
-      battleStub.restore();
+      statsStub.restore();
     }
   });
 
@@ -309,10 +309,10 @@ Deno.test('update stats', async (test) => {
       () => '_' as any,
     );
 
-    const battleStub = stub(battle, 'stats', () => undefined as any);
+    const statsStub = stub(stats, 'view', () => undefined as any);
 
     try {
-      await battle.updateStats({
+      await stats.update({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -335,7 +335,7 @@ Deno.test('update stats', async (test) => {
       getInventoryStub.restore();
       findCharactersStub.restore();
       assignStatsStub.restore();
-      battleStub.restore();
+      statsStub.restore();
     }
   });
 
@@ -388,10 +388,10 @@ Deno.test('update stats', async (test) => {
       () => '_' as any,
     );
 
-    const battleStub = stub(battle, 'stats', () => undefined as any);
+    const statsStub = stub(stats, 'view', () => undefined as any);
 
     try {
-      await battle.updateStats({
+      await stats.update({
         token: 'test_token',
         userId: 'user_id',
         guildId: 'guild_id',
@@ -415,7 +415,7 @@ Deno.test('update stats', async (test) => {
       getInventoryStub.restore();
       findCharactersStub.restore();
       assignStatsStub.restore();
-      battleStub.restore();
+      statsStub.restore();
     }
   });
 
@@ -462,12 +462,12 @@ Deno.test('update stats', async (test) => {
         }]] as any,
     );
 
-    const battleStub = stub(battle, 'stats', () => undefined as any);
+    const statsStub = stub(stats, 'view', () => undefined as any);
 
     try {
       await assertRejects(
         () =>
-          battle.updateStats({
+          stats.update({
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
@@ -484,7 +484,7 @@ Deno.test('update stats', async (test) => {
       getInstanceStub.restore();
       getInventoryStub.restore();
       findCharactersStub.restore();
-      battleStub.restore();
+      statsStub.restore();
     }
   });
 
@@ -531,12 +531,12 @@ Deno.test('update stats', async (test) => {
         }]] as any,
     );
 
-    const battleStub = stub(battle, 'stats', () => undefined as any);
+    const statsStub = stub(stats, 'view', () => undefined as any);
 
     try {
       await assertRejects(
         () =>
-          battle.updateStats({
+          stats.update({
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
@@ -553,7 +553,7 @@ Deno.test('update stats', async (test) => {
       getInstanceStub.restore();
       getInventoryStub.restore();
       findCharactersStub.restore();
-      battleStub.restore();
+      statsStub.restore();
     }
   });
 
@@ -608,12 +608,12 @@ Deno.test('update stats', async (test) => {
       },
     );
 
-    const battleStub = stub(battle, 'stats', () => undefined as any);
+    const statsStub = stub(stats, 'view', () => undefined as any);
 
     try {
       await assertRejects(
         () =>
-          battle.updateStats({
+          stats.update({
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
@@ -630,7 +630,7 @@ Deno.test('update stats', async (test) => {
       getInventoryStub.restore();
       findCharactersStub.restore();
       assignStatsStub.restore();
-      battleStub.restore();
+      statsStub.restore();
     }
   });
 
@@ -677,12 +677,12 @@ Deno.test('update stats', async (test) => {
         }]] as any,
     );
 
-    const battleStub = stub(battle, 'stats', () => undefined as any);
+    const statsStub = stub(stats, 'view', () => undefined as any);
 
     try {
       await assertRejects(
         () =>
-          battle.updateStats({
+          stats.update({
             token: 'test_token',
             userId: 'user_id',
             guildId: 'guild_id',
@@ -698,7 +698,7 @@ Deno.test('update stats', async (test) => {
       getInstanceStub.restore();
       getInventoryStub.restore();
       findCharactersStub.restore();
-      battleStub.restore();
+      statsStub.restore();
     }
   });
 });
@@ -771,7 +771,7 @@ Deno.test('/stats', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = battle.stats({
+      const message = stats.view({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
@@ -942,7 +942,7 @@ Deno.test('/stats', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = battle.stats({
+      const message = stats.view({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
@@ -1109,7 +1109,7 @@ Deno.test('/stats', async (test) => {
     config.origin = 'http://localhost:8000';
 
     try {
-      const message = battle.stats({
+      const message = stats.view({
         userId: 'user_id',
         guildId: 'guild_id',
         token: 'test_token',
@@ -1193,7 +1193,7 @@ Deno.test('/stats', async (test) => {
     try {
       assertThrows(
         () =>
-          battle.stats({
+          stats.view({
             userId: 'user_id',
             guildId: 'guild_id',
             token: 'test_token',

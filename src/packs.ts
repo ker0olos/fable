@@ -1,5 +1,3 @@
-import '#filter-boolean';
-
 import _anilistManifest from '../packs/anilist/manifest.json' assert {
   type: 'json',
 };
@@ -781,7 +779,11 @@ async function pool({ guildId, range, role, stars }: {
         }),
       );
 
-      pool = pool.concat(characters.filter(Boolean));
+      pool = pool.concat(characters.filter(Boolean) as {
+        id: string;
+        mediaId: string;
+        rating: number;
+      }[]);
     }
   }));
 

@@ -156,7 +156,6 @@
 
   "help-page3-party-required": "Necesitarás un equipo (party) para el combate",
   "help-page3-party-presets-disclaimer": "__No puedes tener más de un equipo__ o guardar tu equipo actual o cambiar entre guardados.",
-  "help-page3-party-synergy": "__Tu equipo rendirá mejor mientras más se relacionen sus integrantes__. Esto se llama sinergia, cinco integrantes de un mismo anime son mejores que cinco integrantes de diferente procedencia.",
   "help-page3-party-view": "`/party view` para ver tu equipo actual.",
   "help-page3-party-assign-1": "`/party assign name: spot:` para asignar un personaje que poseas a tu equipo,",
   "help-page3-party-assign-2": "dejar el `spot:` vacío lo asignará al primer puesto vacío o reemplazará el último puesto.",
@@ -176,13 +175,9 @@
   "help-page10-starting-points": "__Cada personaje comienza con una cantidad de puntos sin asignar__ basados en su grado de estrellas.",
   "help-page10-distribution": "__Puedes distribuir esos puntos sin asignar en 3 estadísticas base diferentes:__ fuerza, resistencia, y agilidad.",
 
-  "help-page10-strength": "__La Fuerza es el daño__ que el personaje hará al golpear.",
-  "help-page10-agility": "__La Agilidad es para esquivar__ ataques. Si es más alta que la de tu enemigo no podrá golpearte.",
-  "help-page10-stamina": "__La Resistencia es la energía necesaria__ cada vez que tu personaje ataca o esquiva. Si un personaje se queda sin resistencia ya no podrá atacar y todos los ataques le golpearán.",
-
-  "help-page10-footer": "> Encontrar un balance entre las 3 estadísticas es lo recomendado.",
-
-  "help-page10-disclaimer": "__**NOTA: El Combate aún está en prueba, las mecánicas podrían cambiar en cualquier momento.**__",
+  "help-page10-strength": "__Strength is damage__, the damage you can potentially do to your enemy.",
+  "help-page10-agility": "__Agility is defense__, minimize the damage your enemy can do.",
+  "help-page10-stamina": "__Stamina is health points__, allows you to take more hits and survive longer in battle",
 
   "help-page5-title": "Tienda",
   "help-page5-shop": "La tienda es una forma de comprar tiradas extra y tiradas garantizadas.",
@@ -255,7 +250,7 @@
 
   "/stats": "administra las estadísticas y habilidades de tus personajes",
 
-  "/experimental battle": "prueba el nuevo combate (próximamente implementado) en una simulación de batalla contra otro usuario",
+  "/battle friend": "Battle against another player to test your party",
 
   "/help": "¿Necesitas más información? No te preocupes",
 

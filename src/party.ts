@@ -1,5 +1,3 @@
-import '#filter-boolean';
-
 import config from './config.ts';
 
 import i18n from './i18n.ts';
@@ -52,8 +50,8 @@ async function embed({ guildId, party, locale }: {
   ];
 
   const [media, characters] = await Promise.all([
-    packs.media({ ids: mediaIds.filter(Boolean), guildId }),
-    packs.characters({ ids: ids.filter(Boolean), guildId }),
+    packs.media({ ids: mediaIds.filter(Boolean) as string[], guildId }),
+    packs.characters({ ids: ids.filter(Boolean) as string[], guildId }),
   ]);
 
   ids.forEach((characterId, i) => {
@@ -97,12 +95,15 @@ async function embed({ guildId, party, locale }: {
         image: members[i]?.image,
         nickname: members[i]?.nickname,
       },
-    })
-      .setFooter({
+    });
+
+    if (i === 0) {
+      embed.setColor('#D1B72C').setFooter({
         text: `${members[i]?.combat?.stats?.strength ?? 0}-${
           members[i]?.combat?.stats?.stamina ?? 0
         }-${members[i]?.combat?.stats?.agility ?? 0}`,
       });
+    }
 
     message.addEmbed(embed);
   });

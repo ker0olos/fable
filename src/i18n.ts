@@ -1,5 +1,3 @@
-import '#filter-boolean';
-
 import { AvailableLocales } from './discord.ts';
 
 import EN from '../i18n/en-US.json' assert { type: 'json' };
