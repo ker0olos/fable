@@ -250,7 +250,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
-              color: 13743916,
+              color: 16692480,
               footer: { text: '1-2-3' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -539,7 +539,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%201?size=thumbnail',
               },
-              color: 13743916,
+              color: 16692480,
               footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -808,7 +808,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
-              color: 13743916,
+              color: 16692480,
               footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -1069,7 +1069,7 @@ Deno.test('/party view', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
-              color: 13743916,
+              color: 16692480,
               footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -2173,7 +2173,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/?size=thumbnail',
               },
-              color: 13743916,
+              color: 16692480,
               footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
@@ -2456,7 +2456,7 @@ Deno.test('/party swap', async (test) => {
               thumbnail: {
                 url: 'http://localhost:8000/external/image%201?size=thumbnail',
               },
-              color: 13743916,
+              color: 16692480,
               footer: { text: '0-0-0' },
               description:
                 '<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',

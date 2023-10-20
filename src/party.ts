@@ -98,7 +98,7 @@ async function embed({ guildId, party, locale }: {
     });
 
     if (i === 0) {
-      embed.setColor('#D1B72C').setFooter({
+      embed.setColor('#FEB500').setFooter({
         text: `${members[i]?.combat?.stats?.strength ?? 0}-${
           members[i]?.combat?.stats?.stamina ?? 0
         }-${members[i]?.combat?.stats?.agility ?? 0}`,
