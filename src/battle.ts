@@ -12,7 +12,6 @@ import * as discord from './discord.ts';
 import config from './config.ts';
 
 import gacha from './gacha.ts';
-import search from './search.ts';
 
 import * as Schema from '../db/schema.ts';
 
@@ -114,8 +113,8 @@ function challengeTower({ token, guildId, userId }: {
         guildId,
       });
 
-      let character: Character | undefined = undefined;
-      let media: Media | undefined = undefined;
+      let enemyCharacter: Character | undefined = undefined;
+      let enemyMedia: Media | undefined = undefined;
 
       while (pool.length > 0) {
         const i = Math.floor(random.nextFloat() * pool.length);
@@ -153,67 +152,74 @@ function challengeTower({ token, guildId, userId }: {
           continue;
         }
 
-        media = edge.node;
-        character = candidate;
+        enemyMedia = edge.node;
+        enemyCharacter = candidate;
 
         break;
       }
 
-      if (!character || !media) {
+      if (!enemyCharacter || !enemyMedia) {
         throw new PoolError();
       }
 
-      // TODO
-      const message = new discord.Message();
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
 
-      const embed = search.characterEmbed(character, {
-        mode: 'thumbnail',
-        description: false,
-        footer: false,
-        rating: true,
-        media: { title: true },
+      const _user = await db.getUser(userId);
+
+      const { inventory } = await db.getInventory(instance, _user);
+
+      const party = await db.getUserParty(inventory);
+
+      const party1 = [
+        party?.member1,
+        party?.member2,
+        party?.member3,
+        party?.member4,
+        party?.member5,
+      ].filter(Boolean) as Schema.Character[];
+
+      if (party1.length <= 0) {
+        throw new NonFetalError(i18n.get('your-party-empty', locale));
+      }
+
+      const characters = await packs.characters({
+        guildId,
+        ids: [party1[0].id],
       });
 
-      message.addEmbed(embed);
+      const mainCharacter = characters.find(({ packId, id }) =>
+        party1[0].id === `${packId}:${id}`
+      );
 
-      await message.patch(token);
-      //
+      if (!mainCharacter) {
+        throw new NonFetalError(i18n.get('character-disabled', locale));
+      }
 
-      // const guild = await db.getGuild(guildId);
-      // const instance = await db.getInstance(guild);
+      const mainCharacterStats = getStats(party1[0]);
 
-      // const _user = await db.getUser(user.id);
-
-      // const { inventory } = await db.getInventory(instance, _user);
-
-      // const party = await db.getUserParty(inventory);
-
-      // const party1 = [
-      //   party?.member1,
-      //   party?.member2,
-      //   party?.member3,
-      //   party?.member4,
-      //   party?.member5,
-      // ].filter(Boolean) as Schema.Character[];
-
-      // if (party1.length <= 0) {
-      //   throw new NonFetalError(i18n.get('your-party-empty', locale));
-      // }
-
-      // const characters = await packs.characters({
-      //   guildId,
-      //   ids: [party1[0].id],
-      // });
-
-      // const mainCharacter = characters.find(({ packId, id }) =>
-      //   party1[0].id === `${packId}:${id}`
-      // );
-
-      // if (!mainCharacter) {
-      //   throw new NonFetalError(i18n.get('character-disabled', locale));
-      // }
-
-      // const mainCharacterStats = getStats(party1[0]);
+      if (
+        await _1v1Combat({
+          token,
+          locale,
+          userId,
+          targetName: packs.aliasToArray(enemyCharacter.name)[0],
+          character1: mainCharacter,
+          character2: enemyCharacter,
+          character1Existing: party1[0],
+          character1Stats: mainCharacterStats,
+          character2Stats: { // TODO random stats based on floor difficulty
+            agility: 0,
+            hp: 5,
+            stamina: 5,
+            strength: 10,
+          },
+        })
+      ) {
+        // TODO user won
+      } else {
+        // TODO user lost
+      }
     })
     .catch(async (err) => {
       if (err instanceof NonFetalError) {
@@ -375,7 +381,7 @@ async function _1v1Combat(
     character1: Character | DisaggregatedCharacter;
     character2: Character | DisaggregatedCharacter;
     character1Existing: Schema.Character;
-    character2Existing: Schema.Character;
+    character2Existing?: Schema.Character;
     character1Stats: CharacterLive;
     character2Stats: CharacterLive;
     userId: string;
@@ -383,7 +389,7 @@ async function _1v1Combat(
     targetName?: string;
     locale: discord.AvailableLocales;
   },
-): Promise<void> {
+): Promise<boolean> {
   let initiative = 0;
 
   let message = new discord.Message();
@@ -402,7 +408,7 @@ async function _1v1Combat(
 
   while (true) {
     if (character1Stats.hp <= 0 || character2Stats.hp <= 0) {
-      break;
+      return character1Stats.hp > 0;
     }
 
     // switch initiative
