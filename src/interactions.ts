@@ -755,7 +755,7 @@ export const handler = async (r: Request) => {
               case 'friend': {
                 const targetId = options['versus'] as string;
 
-                return battle.v2({
+                return battle.challengeFriend({
                   token,
                   guildId,
                   userId: member.user.id,

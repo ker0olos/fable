@@ -40,6 +40,7 @@ const getStats = (char: Schema.Character): CharacterLive => {
 
 const getEmbed = (message: discord.Message, {
   character,
+  existing,
   stats,
   damage,
   state,
@@ -47,6 +48,7 @@ const getEmbed = (message: discord.Message, {
 }: {
   character: Character | DisaggregatedCharacter;
   stats: CharacterLive;
+  existing?: Schema.Character;
   damage?: number;
   state?: string;
   color?: string;
@@ -63,11 +65,11 @@ const getEmbed = (message: discord.Message, {
 
   const embed = new discord.Embed()
     .setColor(damage > 0 ? '#DE2626' : color)
-    .setThumbnail({ url: character.images?.[0]?.url })
+    .setThumbnail({ url: existing?.image ?? character.images?.[0]?.url })
     .setImage({ url: `attachment://${uuid}.png` })
     .setDescription(
       `## ${
-        packs.aliasToArray(character.name)[0]
+        existing?.nickname ?? packs.aliasToArray(character.name)[0]
       }\n_${_state}_\n${stats.hp}/${stats.stamina}`,
     );
 
@@ -239,7 +241,7 @@ function challengeTower({ token, guildId, userId }: {
   return loading;
 }
 
-function v2({ token, guildId, userId, targetId }: {
+function challengeFriend({ token, guildId, userId, targetId }: {
   token: string;
   guildId: string;
   userId: string;
@@ -316,102 +318,18 @@ function v2({ token, guildId, userId, targetId }: {
         throw new NonFetalError(i18n.get('some-characters-disabled', locale));
       }
 
-      const setup = [
-        getStats(party1[0]),
-        getStats(party2[0]),
-      ];
-
-      const [userStats, targetStats] = setup;
-
-      let initiative = 0;
-
-      let message = new discord.Message();
-
-      // getEmbed(message, { character: userCharacter, stats: userStats });
-      // getEmbed(message, { character: targetCharacter, stats: targetStats });
-
-      // await message.patch(token);
-
-      while (true) {
-        if (userStats.hp <= 0 || targetStats.hp <= 0) {
-          break;
-        }
-
-        // switch initiative
-        initiative = initiative === 0 ? 1 : 0;
-
-        const [attacker, defender] = initiative === 0
-          ? [userCharacter, targetCharacter]
-          : [targetCharacter, userCharacter];
-
-        const [attackerStats, defenderStats] = initiative === 0
-          ? [userStats, targetStats]
-          : [targetStats, userStats];
-
-        message = new discord.Message();
-
-        const stateUX = [
-          () =>
-            getEmbed(message, {
-              color: '#5d56c7',
-              character: attacker,
-              stats: attackerStats,
-              state: i18n.get('attacking', locale),
-            }),
-          () =>
-            getEmbed(message, { character: defender, stats: defenderStats }),
-        ];
-
-        if (initiative === 1) {
-          stateUX.reverse();
-        }
-
-        stateUX.forEach((func) => func());
-
-        await utils.sleep(T);
-        await message.patch(token);
-
-        const damage = attack(attackerStats, defenderStats);
-
-        message = new discord.Message();
-
-        const damageUX = [
-          () =>
-            getEmbed(message, { character: attacker, stats: attackerStats }),
-          () =>
-            getEmbed(message, {
-              character: defender,
-              stats: defenderStats,
-              damage,
-            }),
-        ];
-
-        if (initiative === 1) {
-          damageUX.reverse();
-        }
-
-        damageUX.forEach((func) => func());
-
-        await utils.sleep(T);
-        await message.patch(token);
-
-        if (userStats.hp <= 0 || targetStats.hp <= 0) {
-          message = new discord.Message();
-
-          getEmbed(message, { character: userCharacter, stats: userStats });
-          getEmbed(message, { character: targetCharacter, stats: targetStats });
-
-          message.addEmbed(
-            new discord.Embed()
-              .setDescription(
-                `### <@${userStats.hp <= 0 ? targetId : userId}> Won`,
-              ),
-          );
-
-          await utils.sleep(T);
-          await message.patch(token);
-        }
-      }
+      await _1v1Combat({
+        token,
+        locale,
+        userId,
+        targetId,
+        character1: userCharacter,
+        character2: targetCharacter,
+        character1Existing: party1[0],
+        character2Existing: party2[0],
+        character1Stats: getStats(party1[0]),
+        character2Stats: getStats(party2[0]),
+      });
     })
     .catch(async (err) => {
       if (err instanceof NonFetalError) {
@@ -439,8 +357,160 @@ function v2({ token, guildId, userId, targetId }: {
   return loading;
 }
 
+async function _1v1Combat(
+  {
+    token,
+    character1,
+    character2,
+    character1Existing,
+    character2Existing,
+    character1Stats,
+    character2Stats,
+    userId,
+    targetId,
+    targetName,
+    locale,
+  }: {
+    token: string;
+    character1: Character | DisaggregatedCharacter;
+    character2: Character | DisaggregatedCharacter;
+    character1Existing: Schema.Character;
+    character2Existing: Schema.Character;
+    character1Stats: CharacterLive;
+    character2Stats: CharacterLive;
+    userId: string;
+    targetId?: string;
+    targetName?: string;
+    locale: discord.AvailableLocales;
+  },
+): Promise<void> {
+  let initiative = 0;
+
+  let message = new discord.Message();
+
+  // getEmbed(message, {
+  //   character: character1,
+  //   existing: character1Existing,
+  //   stats: character1Stats
+  // });
+  // getEmbed(message, {
+  //   character: character2,
+  //   existing: character2Existing,
+  //   stats: character2Stats
+  // });
+  // await message.patch(token);
+
+  while (true) {
+    if (character1Stats.hp <= 0 || character2Stats.hp <= 0) {
+      break;
+    }
+
+    // switch initiative
+    initiative = initiative === 0 ? 1 : 0;
+
+    const [attacker, defender] = initiative === 0
+      ? [character1, character2]
+      : [character2, character1];
+
+    const [attackerExisting, defenderExisting] = initiative === 0
+      ? [character1Existing, character2Existing]
+      : [character2Existing, character1Existing];
+
+    const [attackerStats, defenderStats] = initiative === 0
+      ? [character1Stats, character2Stats]
+      : [character2Stats, character1Stats];
+
+    message = new discord.Message();
+
+    const stateUX = [
+      () =>
+        getEmbed(message, {
+          color: '#5d56c7',
+          character: attacker,
+          existing: attackerExisting,
+          stats: attackerStats,
+          state: i18n.get('attacking', locale),
+        }),
+      () =>
+        getEmbed(message, {
+          character: defender,
+          existing: defenderExisting,
+          stats: defenderStats,
+        }),
+    ];
+
+    if (initiative === 1) {
+      stateUX.reverse();
+    }
+
+    stateUX.forEach((func) => func());
+
+    await utils.sleep(T);
+    await message.patch(token);
+
+    const damage = attack(attackerStats, defenderStats);
+
+    message = new discord.Message();
+
+    const damageUX = [
+      () =>
+        getEmbed(message, {
+          character: attacker,
+          existing: attackerExisting,
+          stats: attackerStats,
+        }),
+      () =>
+        getEmbed(message, {
+          character: defender,
+          existing: defenderExisting,
+          stats: defenderStats,
+          damage,
+        }),
+    ];
+
+    if (initiative === 1) {
+      damageUX.reverse();
+    }
+
+    damageUX.forEach((func) => func());
+
+    await utils.sleep(T);
+    await message.patch(token);
+
+    if (character1Stats.hp <= 0 || character2Stats.hp <= 0) {
+      message = new discord.Message();
+
+      getEmbed(message, {
+        character: character1,
+        existing: character1Existing,
+        stats: character1Stats,
+      });
+
+      getEmbed(message, {
+        character: character2,
+        existing: character2Existing,
+        stats: character2Stats,
+      });
+
+      message.addEmbed(
+        new discord.Embed()
+          .setDescription(
+            `### ${
+              character1Stats.hp <= 0
+                ? (targetName ?? `<@${targetId}>`)
+                : `<@${userId}>`
+            } ${i18n.get('won', locale)}`,
+          ),
+      );
+
+      await utils.sleep(T);
+      await message.patch(token);
+    }
+  }
+}
+
 const battle = {
-  v2,
+  challengeFriend,
   challengeTower,
 };
 
