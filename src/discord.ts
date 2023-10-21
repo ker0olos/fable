@@ -731,6 +731,13 @@ export class Message {
     return this;
   }
 
+  clearEmbedsAndAttachments(): Message {
+    this.#files = [];
+    this.#data.embeds = [];
+    this.#data.attachments = [];
+    return this;
+  }
+
   clearAttachments(): Message {
     this.#files = [];
     this.#data.attachments = [];

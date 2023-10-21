@@ -353,6 +353,121 @@ Deno.test('components', async (test) => {
   });
 });
 
+Deno.test('attachments', async (test) => {
+  await test.step('add', () => {
+    const message = new discord.Message();
+
+    message
+      .addAttachment({
+        type: 'image/png',
+        arrayBuffer: new ArrayBuffer(8),
+        filename: 'file.test',
+      });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        attachments: [
+          {
+            filename: 'file.test',
+            id: '0',
+          },
+        ],
+        components: [],
+        embeds: [],
+      },
+    });
+  });
+
+  await test.step('clear', () => {
+    const message = new discord.Message();
+
+    const embed = new discord.Embed();
+
+    embed.setTitle('abc');
+
+    message
+      .addAttachment({
+        type: 'image/png',
+        arrayBuffer: new ArrayBuffer(8),
+        filename: 'file.test',
+      });
+
+    message.addEmbed(embed);
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{
+          filename: 'file.test',
+          id: '0',
+        }],
+        embeds: [{
+          title: 'abc',
+          type: 'rich',
+        }],
+      },
+    });
+
+    message.clearAttachments();
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        components: [],
+        attachments: [],
+        embeds: [{
+          title: 'abc',
+          type: 'rich',
+        }],
+      },
+    });
+  });
+
+  await test.step('clear and clear embeds', () => {
+    const message = new discord.Message();
+    const embed = new discord.Embed();
+
+    embed.setTitle('abc');
+
+    message
+      .addAttachment({
+        type: 'image/png',
+        arrayBuffer: new ArrayBuffer(8),
+        filename: 'file.test',
+      });
+
+    message.addEmbed(embed);
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        components: [],
+        attachments: [{
+          filename: 'file.test',
+          id: '0',
+        }],
+        embeds: [{
+          title: 'abc',
+          type: 'rich',
+        }],
+      },
+    });
+
+    message.clearEmbedsAndAttachments();
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        attachments: [],
+        components: [],
+        embeds: [],
+      },
+    });
+  });
+});
+
 Deno.test('suggestions', async (test) => {
   await test.step('normal', () => {
     const message = new discord.Message();

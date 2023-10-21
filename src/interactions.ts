@@ -76,7 +76,6 @@ export const handler = async (r: Request) => {
     focused,
     member,
     options,
-    resolved,
     subcommand,
     customType,
     customValues,
@@ -1104,6 +1103,28 @@ export const handler = async (r: Request) => {
                 default:
                   break;
               }
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'sbattle': {
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![1];
+
+            if (userId === member.user.id) {
+              battle.skipBattle(id);
+
+              return new discord.Message()
+                .setType(discord.MessageType.Update)
+                .addEmbed(
+                  new discord.Embed().setImage(
+                    { url: `${config.origin}/assets/spinner3.gif` },
+                  ),
+                )
+                .send();
             }
 
             throw new NoPermissionError();

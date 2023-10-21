@@ -19,6 +19,10 @@ import { NonFetalError, PoolError } from './errors.ts';
 
 import type { Character, DisaggregatedCharacter, Media } from './types.ts';
 
+type BattleData = {
+  skipped: boolean;
+};
+
 type CharacterLive = {
   strength: Readonly<number>;
   stamina: Readonly<number>;
@@ -26,7 +30,11 @@ type CharacterLive = {
   hp: number;
 };
 
-const T = 2;
+// 2 seconds
+const MESSAGE_DELAY = 2;
+
+// 3 minutes
+const MAX_TIME = 3 * 60 * 1000;
 
 const getStats = (char: Schema.Character): CharacterLive => {
   return {
@@ -37,7 +45,7 @@ const getStats = (char: Schema.Character): CharacterLive => {
   };
 };
 
-const getEmbed = (message: discord.Message, {
+const addEmbed = (message: discord.Message, {
   character,
   existing,
   stats,
@@ -199,7 +207,7 @@ function challengeTower({ token, guildId, userId }: {
       const mainCharacterStats = getStats(party1[0]);
 
       if (
-        await _1v1Combat({
+        await startCombat({
           token,
           locale,
           userId,
@@ -324,7 +332,7 @@ function challengeFriend({ token, guildId, userId, targetId }: {
         throw new NonFetalError(i18n.get('some-characters-disabled', locale));
       }
 
-      await _1v1Combat({
+      await startCombat({
         token,
         locale,
         userId,
@@ -363,7 +371,7 @@ function challengeFriend({ token, guildId, userId, targetId }: {
   return loading;
 }
 
-async function _1v1Combat(
+async function startCombat(
   {
     token,
     character1,
@@ -392,19 +400,24 @@ async function _1v1Combat(
 ): Promise<boolean> {
   let initiative = 0;
 
-  let message = new discord.Message();
+  const message = new discord.Message();
 
-  // getEmbed(message, {
-  //   character: character1,
-  //   existing: character1Existing,
-  //   stats: character1Stats
-  // });
-  // getEmbed(message, {
-  //   character: character2,
-  //   existing: character2Existing,
-  //   stats: character2Stats
-  // });
-  // await message.patch(token);
+  const battleId = utils.nanoid(5);
+  const battleKey = ['active_battle', battleId];
+
+  // add battle to db to allow skip functionality
+  db.setValue(battleKey, {
+    skipped: false,
+  } as BattleData, { expireIn: MAX_TIME });
+
+  // skip button
+  message.addComponents([
+    new discord.Component()
+      .setId(discord.join('sbattle', battleId, userId))
+      .setLabel('Skip'),
+  ]);
+
+  const data = () => db.getValue<BattleData>(battleKey);
 
   while (true) {
     if (character1Stats.hp <= 0 || character2Stats.hp <= 0) {
@@ -412,6 +425,7 @@ async function _1v1Combat(
     }
 
     // switch initiative
+
     initiative = initiative === 0 ? 1 : 0;
 
     const [attacker, defender] = initiative === 0
@@ -426,11 +440,13 @@ async function _1v1Combat(
       ? [character1Stats, character2Stats]
       : [character2Stats, character1Stats];
 
-    message = new discord.Message();
+    // state message
+
+    message.clearEmbedsAndAttachments();
 
     const stateUX = [
       () =>
-        getEmbed(message, {
+        addEmbed(message, {
           color: '#5d56c7',
           character: attacker,
           existing: attackerExisting,
@@ -438,7 +454,7 @@ async function _1v1Combat(
           state: i18n.get('attacking', locale),
         }),
       () =>
-        getEmbed(message, {
+        addEmbed(message, {
           character: defender,
           existing: defenderExisting,
           stats: defenderStats,
@@ -451,22 +467,24 @@ async function _1v1Combat(
 
     stateUX.forEach((func) => func());
 
-    await utils.sleep(T);
-    await message.patch(token);
+    !(await data())?.skipped && await utils.sleep(MESSAGE_DELAY);
+    !(await data())?.skipped && await message.patch(token);
 
     const damage = attack(attackerStats, defenderStats);
 
-    message = new discord.Message();
+    // damage message
+
+    message.clearEmbedsAndAttachments();
 
     const damageUX = [
       () =>
-        getEmbed(message, {
+        addEmbed(message, {
           character: attacker,
           existing: attackerExisting,
           stats: attackerStats,
         }),
       () =>
-        getEmbed(message, {
+        addEmbed(message, {
           character: defender,
           existing: defenderExisting,
           stats: defenderStats,
@@ -480,19 +498,21 @@ async function _1v1Combat(
 
     damageUX.forEach((func) => func());
 
-    await utils.sleep(T);
-    await message.patch(token);
+    !(await data())?.skipped && await utils.sleep(MESSAGE_DELAY);
+    !(await data())?.skipped && await message.patch(token);
+
+    // battle end message (if hp <= 0)
 
     if (character1Stats.hp <= 0 || character2Stats.hp <= 0) {
-      message = new discord.Message();
+      const message = new discord.Message();
 
-      getEmbed(message, {
+      addEmbed(message, {
         character: character1,
         existing: character1Existing,
         stats: character1Stats,
       });
 
-      getEmbed(message, {
+      addEmbed(message, {
         character: character2,
         existing: character2Existing,
         stats: character2Stats,
@@ -509,15 +529,24 @@ async function _1v1Combat(
           ),
       );
 
-      await utils.sleep(T);
+      !(await data())?.skipped && await utils.sleep(MESSAGE_DELAY);
       await message.patch(token);
     }
   }
 }
 
+async function skipBattle(battleId: string): Promise<void> {
+  const battleKey = ['active_battle', battleId];
+
+  await db.setValue(battleKey, {
+    skipped: true,
+  } as BattleData, { expireIn: MAX_TIME });
+}
+
 const battle = {
   challengeFriend,
   challengeTower,
+  skipBattle,
 };
 
 export default battle;

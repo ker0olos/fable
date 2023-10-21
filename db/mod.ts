@@ -76,6 +76,18 @@ export const kv = await Deno.openKv(
   // 'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect',
 );
 
+async function setValue<T>(
+  key: Deno.KvKey,
+  value: unknown,
+  options?: {
+    expireIn?: number | undefined;
+  },
+): Promise<boolean> {
+  const res = await kv.set(key, value, options);
+
+  return res.ok;
+}
+
 async function getValue<T>(key: Deno.KvKey): Promise<T | undefined> {
   const res = await kv.get<T>(key);
 
@@ -133,6 +145,7 @@ async function getManyValues<T>(
 }
 
 const db = {
+  setValue,
   getValue,
   getValues,
   getValueAndTimestamp,
