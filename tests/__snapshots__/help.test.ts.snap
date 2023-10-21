@@ -295,9 +295,9 @@ snapshot[`/help 5`] = `
         },
         description: "Prepare your characters for combat using \`/stats\`
 
-__Every character gets a starting amount of unclaimed stat points__ based on their star rating.
+__Every character gets a starting amount of stat points__ based on their star rating.
 
-__You can distribute those unclaimed points in 3 different base stats:__ strength, stamina, and agility.
+__You can distribute those points in 3 different base stats:__ strength, stamina, and agility.
 
 __Strength is damage__, the damage you can potentially do to your enemy.
 

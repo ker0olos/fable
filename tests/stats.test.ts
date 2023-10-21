@@ -822,11 +822,11 @@ Deno.test('/stats', async (test) => {
               fields: [
                 {
                   name: 'full name',
-                  value: '\u200B',
+                  value: 'Level 1\n0/10',
                 },
                 {
                   name: 'Stats',
-                  value: 'Unclaimed: 0\nStrength: 2\nStamina: 3\nAgility: 4',
+                  value: 'Unused: 0\nStrength: 2\nStamina: 3\nAgility: 4',
                 },
               ],
             },
@@ -993,11 +993,11 @@ Deno.test('/stats', async (test) => {
               fields: [
                 {
                   name: 'full name',
-                  value: '\u200B',
+                  value: 'Level 1\n0/10',
                 },
                 {
                   name: 'Stats',
-                  value: 'Unclaimed: 12\nStrength: 0\nStamina: 0\nAgility: 0',
+                  value: 'Unused: 12\nStrength: 0\nStamina: 0\nAgility: 0',
                 },
               ],
             },

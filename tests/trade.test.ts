@@ -1688,7 +1688,7 @@ Deno.test('/give', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name\n\u200B',
+                  name: 'full name',
                   value: '\u200B',
                 },
                 {
@@ -1706,7 +1706,7 @@ Deno.test('/give', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name 2\n\u200B',
+                  name: 'full name 2',
                   value: '\u200B',
                 },
                 {
@@ -1940,7 +1940,7 @@ Deno.test('/give', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name\n\u200B',
+                  name: 'full name',
                   value: '\u200B',
                 },
               ],
@@ -1958,7 +1958,7 @@ Deno.test('/give', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name 2\n\u200B',
+                  name: 'full name 2',
                   value: '\u200B',
                 },
               ],
@@ -2157,7 +2157,7 @@ Deno.test('/give', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name\n\u200B',
+                  name: 'full name',
                   value: '\u200B',
                 },
               ],
@@ -2175,7 +2175,7 @@ Deno.test('/give', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name 2\n\u200B',
+                  name: 'full name 2',
                   value: '\u200B',
                 },
               ],
@@ -2359,7 +2359,7 @@ Deno.test('/trade', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name\n\u200B',
+                  name: 'full name',
                   value: '\u200B',
                 },
                 {
@@ -2377,7 +2377,7 @@ Deno.test('/trade', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name\n\u200B',
+                  name: 'full name',
                   value: '\u200B',
                 },
                 {
@@ -2609,7 +2609,7 @@ Deno.test('/trade', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name\n\u200B',
+                  name: 'full name',
                   value: '\u200B',
                 },
                 {
@@ -2627,7 +2627,7 @@ Deno.test('/trade', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name\n\u200B',
+                  name: 'full name',
                   value: '\u200B',
                 },
                 {
@@ -2855,7 +2855,7 @@ Deno.test('/trade', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name\n\u200B',
+                  name: 'full name',
                   value: '\u200B',
                 },
               ],
@@ -3044,7 +3044,7 @@ Deno.test('/trade', async (test) => {
               },
               fields: [
                 {
-                  name: 'full name\n\u200B',
+                  name: 'full name',
                   value: '\u200B',
                 },
               ],
