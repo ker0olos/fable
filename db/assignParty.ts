@@ -31,6 +31,22 @@ export async function assignCharacter(
 
   inventory.party ??= {};
 
+  // remove character from party
+  // if they already are in it
+  [
+    inventory.party.member1,
+    inventory.party.member2,
+    inventory.party.member3,
+    inventory.party.member4,
+    inventory.party.member5,
+  ].forEach((id, i) => {
+    type T = keyof typeof inventory.party;
+    if (character._id === id) {
+      // deno-lint-ignore no-non-null-assertion
+      delete inventory.party![`member${i + 1}` as T];
+    }
+  });
+
   if (typeof spot === 'number' && spot >= 1 && spot <= 5) {
     switch (spot) {
       case 1:
