@@ -748,7 +748,7 @@ export const handler = async (r: Request) => {
                 return battle.challengeTower({
                   token,
                   guildId,
-                  user: member.user,
+                  userId: member.user.id,
                 })
                   .send();
               }
@@ -758,9 +758,8 @@ export const handler = async (r: Request) => {
                 return battle.v2({
                   token,
                   guildId,
-                  user: member.user,
-                  // deno-lint-ignore no-non-null-assertion
-                  target: resolved!.users![targetId],
+                  userId: member.user.id,
+                  targetId: targetId,
                 })
                   .send();
               }

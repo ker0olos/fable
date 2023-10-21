@@ -12,7 +12,6 @@ import * as discord from './discord.ts';
 import config from './config.ts';
 
 import gacha from './gacha.ts';
-import Rating from './rating.ts';
 import search from './search.ts';
 
 import * as Schema from '../db/schema.ts';
@@ -90,20 +89,18 @@ function attack(char: CharacterLive, target: CharacterLive): number {
   return damage;
 }
 
-function challengeTower({ token, guildId, user }: {
+function challengeTower({ token, guildId, userId }: {
   token: string;
   guildId: string;
-  user: discord.User;
+  userId: string;
 }): discord.Message {
-  const locale = _user.cachedUsers[user.id]?.locale;
+  const locale = _user.cachedUsers[userId]?.locale;
 
   if (!config.combat) {
     throw new NonFetalError(
       i18n.get('maintenance-combat', locale),
     );
   }
-
-  // user.display_name ??= user.global_name ?? user.username;
 
   Promise.resolve()
     .then(async () => {
@@ -133,7 +130,6 @@ function challengeTower({ token, guildId, user }: {
           continue;
         }
 
-        // aggregate will filter out any disabled media
         const candidate = await packs.aggregate<Character>({
           guildId,
           character: results[0],
@@ -146,18 +142,12 @@ function challengeTower({ token, guildId, user }: {
           continue;
         }
 
-        if (packs.isDisabled(`${edge.node.packId}:${edge.node.id}`, guildId)) {
-          continue;
-        }
-
         // avoid default images in battle tower
         if (!edge.node.images?.length) {
           continue;
         }
 
-        const rating = Rating.fromCharacter(candidate);
-
-        if (rating.stars < 1) {
+        if (packs.isDisabled(`${edge.node.packId}:${edge.node.id}`, guildId)) {
           continue;
         }
 
@@ -249,13 +239,13 @@ function challengeTower({ token, guildId, user }: {
   return loading;
 }
 
-function v2({ token, guildId, user, target }: {
+function v2({ token, guildId, userId, targetId }: {
   token: string;
   guildId: string;
-  user: discord.User;
-  target: discord.User;
+  userId: string;
+  targetId: string;
 }): discord.Message {
-  const locale = _user.cachedUsers[user.id]?.locale;
+  const locale = _user.cachedUsers[userId]?.locale;
 
   if (!config.combat) {
     throw new NonFetalError(
@@ -263,14 +253,11 @@ function v2({ token, guildId, user, target }: {
     );
   }
 
-  if (user.id === target.id) {
+  if (userId === targetId) {
     throw new NonFetalError(
       i18n.get('battle-yourself', locale),
     );
   }
-
-  user.display_name ??= user.global_name ?? user.username;
-  target.display_name ??= target.global_name ?? target.username;
 
   Promise.resolve()
     .then(async () => {
@@ -278,8 +265,8 @@ function v2({ token, guildId, user, target }: {
       const instance = await db.getInstance(guild);
 
       const [_user, _target] = [
-        await db.getUser(user.id),
-        await db.getUser(target.id),
+        await db.getUser(userId),
+        await db.getUser(targetId),
       ];
 
       const [{ inventory: userInventory }, { inventory: targetInventory }] = [
@@ -312,7 +299,7 @@ function v2({ token, guildId, user, target }: {
         throw new NonFetalError(i18n.get('your-party-empty', locale));
       } else if (party2.length <= 0) {
         throw new NonFetalError(
-          i18n.get('user-party-empty', locale, `<@${target.id}>'s`),
+          i18n.get('user-party-empty', locale, `<@${targetId}>'s`),
         );
       }
 
@@ -416,8 +403,8 @@ function v2({ token, guildId, user, target }: {
 
           message.addEmbed(
             new discord.Embed()
-              .setTitle(
-                `${(userStats.hp <= 0 ? target : user).display_name} Won`,
+              .setDescription(
+                `### <@${userStats.hp <= 0 ? targetId : userId}> Won`,
               ),
           );
 
