@@ -66,9 +66,7 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
   pool: Awaited<ReturnType<typeof packs.pool>>;
   validate: (character: Character | DisaggregatedCharacter) => boolean;
 }> {
-  const { value: range } = utils.rng(
-    gacha.variables.ranges,
-  );
+  const { value: range } = utils.rng(gacha.variables.ranges);
 
   const { value: role } = range[0] <= lowest
     // include all roles in the pool
@@ -126,13 +124,18 @@ async function rangePool({ guildId }: { guildId: string }): Promise<{
   };
 }
 
-async function guaranteedPool(
-  { guildId, guarantee }: { guildId: string; guarantee: number },
+export async function guaranteedPool(
+  { guildId, seed, guarantee }: {
+    guildId: string;
+    seed?: string;
+    guarantee: number;
+  },
 ): Promise<{
   pool: Awaited<ReturnType<typeof packs.pool>>;
   validate: (character: Character | DisaggregatedCharacter) => boolean;
 }> {
   const pool = await packs.pool({
+    seed,
     stars: guarantee,
     guildId,
   });
@@ -180,13 +183,8 @@ async function rngPull(
   },
 ): Promise<Pull> {
   const { pool, validate } = typeof guarantee === 'number'
-    ? await gacha.guaranteedPool({
-      guildId,
-      guarantee,
-    })
-    : await gacha.rangePool({
-      guildId,
-    });
+    ? await gacha.guaranteedPool({ guildId, guarantee })
+    : await gacha.rangePool({ guildId });
 
   // let _user: Schema.User | undefined = undefined;
 

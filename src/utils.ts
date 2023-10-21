@@ -28,6 +28,24 @@ export enum ImageSize {
   Large = 'large',
 }
 
+class LehmerRNG {
+  private seed: number;
+
+  constructor(seed: string) {
+    this.seed = 2166136261;
+    for (let i = 0; i < seed.length; i++) {
+      this.seed ^= seed.charCodeAt(i);
+      this.seed *= 16777619;
+    }
+    this.seed = this.seed >>> 0;
+  }
+
+  nextFloat(): number {
+    this.seed = (this.seed * 16807) % 2147483647;
+    return this.seed / 2147483647;
+  }
+}
+
 function getRandomFloat(): number {
   const randomInt = crypto.getRandomValues(new Uint32Array(1))[0];
   return randomInt / 2 ** 32;
@@ -86,13 +104,15 @@ function hexToInt(hex?: string): number | undefined {
   return parseInt(`${R}${G}${B}`, 16);
 }
 
-function shuffle<T>(array: T[]): void {
+function shuffle<T>(array: T[], seed?: string): void {
+  const rng = seed ? () => new LehmerRNG(seed).nextFloat() : Math.random;
+
   for (
     let i = 0, length = array.length, swap = 0, temp = null;
     i < length;
     i++
   ) {
-    swap = Math.floor(Math.random() * (i + 1));
+    swap = Math.floor(rng() * (i + 1));
     temp = array[swap];
     array[swap] = array[i];
     array[i] = temp;
@@ -421,6 +441,7 @@ function captureOutage(id: string): Promise<Response> {
 }
 
 const utils = {
+  LehmerRNG,
   // randomPortions,
   capitalize,
   captureException,

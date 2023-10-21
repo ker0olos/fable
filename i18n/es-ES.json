@@ -123,6 +123,9 @@
   "pack-is-private": "Este pack es privado y no puedes instalarlo",
   "pack-characters-disabled": "**Todos los personajes de este pack han sido deshabilitados**",
 
+  "your-party-empty": "Your party is empty",
+  "user-party-empty": "{0} party is empty",
+
   "not-fit-for-combat": "El personaje debe aún ser encontrado y no se encuentra listo para el combate",
   "not-enough-unclaimed": "El personaje no tiene puntos restantes sin asignar",
   "incorrect-distribution": "¡Formato de distribución incorrecto!\n\n**Forma correcta:** FUE-RES-AGI\n**Ejemplo:** 1-2-3",

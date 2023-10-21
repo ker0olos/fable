@@ -11,11 +11,15 @@ import * as discord from './discord.ts';
 
 import config from './config.ts';
 
+import gacha from './gacha.ts';
+import Rating from './rating.ts';
+import search from './search.ts';
+
 import * as Schema from '../db/schema.ts';
 
-import { NonFetalError } from './errors.ts';
+import { NonFetalError, PoolError } from './errors.ts';
 
-import type { Character, DisaggregatedCharacter } from './types.ts';
+import type { Character, DisaggregatedCharacter, Media } from './types.ts';
 
 type CharacterLive = {
   strength: Readonly<number>;
@@ -86,6 +90,165 @@ function attack(char: CharacterLive, target: CharacterLive): number {
   return damage;
 }
 
+function challengeTower({ token, guildId, user }: {
+  token: string;
+  guildId: string;
+  user: discord.User;
+}): discord.Message {
+  const locale = _user.cachedUsers[user.id]?.locale;
+
+  if (!config.combat) {
+    throw new NonFetalError(
+      i18n.get('maintenance-combat', locale),
+    );
+  }
+
+  // user.display_name ??= user.global_name ?? user.username;
+
+  Promise.resolve()
+    .then(async () => {
+      const random = new utils.LehmerRNG(guildId);
+
+      const { pool, validate } = await gacha.guaranteedPool({
+        seed: guildId,
+        guarantee: 5, // TODO based on floor
+        guildId,
+      });
+
+      let character: Character | undefined = undefined;
+      let media: Media | undefined = undefined;
+
+      while (pool.length > 0) {
+        const i = Math.floor(random.nextFloat() * pool.length);
+
+        const characterId = pool.splice(i, 1)[0].id;
+
+        if (packs.isDisabled(characterId, guildId)) {
+          continue;
+        }
+
+        const results = await packs.characters({ guildId, ids: [characterId] });
+
+        if (!results.length || !validate(results[0])) {
+          continue;
+        }
+
+        // aggregate will filter out any disabled media
+        const candidate = await packs.aggregate<Character>({
+          guildId,
+          character: results[0],
+          end: 1,
+        });
+
+        const edge = candidate.media?.edges?.[0];
+
+        if (!edge || !validate(candidate)) {
+          continue;
+        }
+
+        if (packs.isDisabled(`${edge.node.packId}:${edge.node.id}`, guildId)) {
+          continue;
+        }
+
+        // avoid default images in battle tower
+        if (!edge.node.images?.length) {
+          continue;
+        }
+
+        const rating = Rating.fromCharacter(candidate);
+
+        if (rating.stars < 1) {
+          continue;
+        }
+
+        media = edge.node;
+        character = candidate;
+
+        break;
+      }
+
+      if (!character || !media) {
+        throw new PoolError();
+      }
+
+      // TODO
+      const message = new discord.Message();
+
+      const embed = search.characterEmbed(character, {
+        mode: 'thumbnail',
+        description: false,
+        footer: false,
+        rating: true,
+        media: { title: true },
+      });
+
+      message.addEmbed(embed);
+
+      await message.patch(token);
+      //
+
+      // const guild = await db.getGuild(guildId);
+      // const instance = await db.getInstance(guild);
+
+      // const _user = await db.getUser(user.id);
+
+      // const { inventory } = await db.getInventory(instance, _user);
+
+      // const party = await db.getUserParty(inventory);
+
+      // const party1 = [
+      //   party?.member1,
+      //   party?.member2,
+      //   party?.member3,
+      //   party?.member4,
+      //   party?.member5,
+      // ].filter(Boolean) as Schema.Character[];
+
+      // if (party1.length <= 0) {
+      //   throw new NonFetalError(i18n.get('your-party-empty', locale));
+      // }
+
+      // const characters = await packs.characters({
+      //   guildId,
+      //   ids: [party1[0].id],
+      // });
+
+      // const mainCharacter = characters.find(({ packId, id }) =>
+      //   party1[0].id === `${packId}:${id}`
+      // );
+
+      // if (!mainCharacter) {
+      //   throw new NonFetalError(i18n.get('character-disabled', locale));
+      // }
+
+      // const mainCharacterStats = getStats(party1[0]);
+    })
+    .catch(async (err) => {
+      if (err instanceof NonFetalError) {
+        return await new discord.Message()
+          .addEmbed(new discord.Embed().setDescription(err.message))
+          .patch(token);
+      }
+
+      if (!config.sentry) {
+        throw err;
+      }
+
+      const refId = utils.captureException(err);
+
+      await discord.Message.internal(refId).patch(token);
+    });
+
+  const loading = new discord.Message()
+    .addEmbed(
+      new discord.Embed().setImage(
+        { url: `${config.origin}/assets/spinner3.gif` },
+      ),
+    );
+
+  return loading;
+}
+
 function v2({ token, guildId, user, target }: {
   token: string;
   guildId: string;
@@ -146,9 +309,11 @@ function v2({ token, guildId, user, target }: {
       ].filter(Boolean) as Schema.Character[];
 
       if (party1.length <= 0) {
-        throw new NonFetalError('Your party is empty');
+        throw new NonFetalError(i18n.get('your-party-empty', locale));
       } else if (party2.length <= 0) {
-        throw new NonFetalError(`<@${target.id}>'s party is empty`);
+        throw new NonFetalError(
+          i18n.get('user-party-empty', locale, `<@${target.id}>'s`),
+        );
       }
 
       const [characters] = await Promise.all([
@@ -161,7 +326,7 @@ function v2({ token, guildId, user, target }: {
       ];
 
       if (!userCharacter || !targetCharacter) {
-        throw new NonFetalError('Some characters are disabled or removed');
+        throw new NonFetalError(i18n.get('some-characters-disabled', locale));
       }
 
       const setup = [
@@ -287,6 +452,9 @@ function v2({ token, guildId, user, target }: {
   return loading;
 }
 
-const battle = { v2 };
+const battle = {
+  v2,
+  challengeTower,
+};
 
 export default battle;

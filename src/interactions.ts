@@ -744,6 +744,14 @@ export const handler = async (r: Request) => {
           case 'battle': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
+              case 'tower': {
+                return battle.challengeTower({
+                  token,
+                  guildId,
+                  user: member.user,
+                })
+                  .send();
+              }
               case 'friend': {
                 const targetId = options['versus'] as string;
 

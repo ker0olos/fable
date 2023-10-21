@@ -863,6 +863,12 @@ export const commands = [
           }),
         ],
       }),
+      Option({
+        name: 'tower',
+        description: '/battle tower',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
     ],
   }),
 ];

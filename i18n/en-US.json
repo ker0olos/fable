@@ -123,6 +123,9 @@
   "pack-is-private": "This pack is private and cannot be installed by you",
   "pack-characters-disabled": "**All characters from this pack are now disabled**",
 
+  "your-party-empty": "Your party is empty",
+  "user-party-empty": "{0} party is empty",
+
   "not-fit-for-combat": "Character is yet to be found and isn't combat ready",
   "not-enough-unclaimed": "Character doesn't have enough unclaimed points left",
   "incorrect-distribution": "Incorrect distribution format!\n\n**Correct:** STR-STA-AGI\n**Example:** 1-2-3",
