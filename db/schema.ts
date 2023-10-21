@@ -65,6 +65,9 @@ export interface Pack extends Collection {
 }
 
 export interface CharacterCombat {
+  exp?: number;
+  level?: number;
+  skillPoints?: number;
   stats?: CharacterStats;
 }
 

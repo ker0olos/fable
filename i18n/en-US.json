@@ -129,11 +129,14 @@
 
   "battle-yourself": "You can't battle yourself",
 
+  "level": "Level",
+
   "str": "STR",
   "sta": "STA",
   "agi": "AGI",
 
-  "unclaimed": "Unclaimed",
+  "stats": "Stats",
+  "unclaimed": "Unused",
   "strength": "Strength",
   "stamina": "Stamina",
   "agility": "Agility",
@@ -174,8 +177,8 @@
 
   "help-page10-title": "Combat",
   "help-page10-combat": "Prepare your characters for combat using `/stats`",
-  "help-page10-starting-points": "__Every character gets a starting amount of unclaimed stat points__ based on their star rating.",
-  "help-page10-distribution": "__You can distribute those unclaimed points in 3 different base stats:__ strength, stamina, and agility.",
+  "help-page10-starting-points": "__Every character gets a starting amount of stat points__ based on their star rating.",
+  "help-page10-distribution": "__You can distribute those points in 3 different base stats:__ strength, stamina, and agility.",
 
   "help-page10-strength": "__Strength is damage__, the damage you can potentially do to your enemy.",
   "help-page10-agility": "__Agility is defense__, minimize the damage your enemy can do.",

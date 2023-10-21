@@ -129,10 +129,13 @@
 
   "battle-yourself": "No puedes combatirte a ti mismo",
 
+  "level": "Level",
+
   "str": "FUE",
   "sta": "RES",
   "agi": "AGI",
 
+  "stats": "Stats",
   "unclaimed": "Sin Asignar",
   "strength": "Fuerza",
   "stamina": "Resistencia",

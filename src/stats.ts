@@ -5,11 +5,13 @@ import packs from './packs.ts';
 import utils from './utils.ts';
 import i18n from './i18n.ts';
 
-import db from '../db/mod.ts';
-
 import * as discord from './discord.ts';
 
 import config from './config.ts';
+
+import db from '../db/mod.ts';
+
+import { experienceToNextLevel } from '../db/gainExp.ts';
 
 import type { Character } from './types.ts';
 
@@ -18,6 +20,61 @@ import { NonFetalError } from './errors.ts';
 const newUnclaimed = (rating: number): number => {
   return 3 * rating;
 };
+
+// async function gainExp(
+//   { token, characterId, userId, guildId, gainExp }: {
+//     token: string;
+//     characterId: string;
+//     guildId: string;
+//     userId: string;
+//     gainExp: number;
+//   },
+// ): Promise<discord.Message> {
+//   const locale = _user.cachedUsers[userId]?.locale;
+
+//   const guild = await db.getGuild(guildId);
+//   const instance = await db.getInstance(guild);
+
+//   const user = await db.getUser(userId);
+
+//   const { inventory } = await db.getInventory(instance, user);
+
+//   const [[existing], __user] = await db.findCharacters(instance, [
+//     characterId,
+//   ]);
+
+//   if (!existing) {
+//     throw new Error('404');
+//   }
+
+//   try {
+//     const _ = await db.gainExp(
+//       inventory,
+//       characterId,
+//       gainExp,
+//     );
+
+//     return stats.view({
+//       token,
+//       character: `id=${characterId}`,
+//       userId,
+//       guildId,
+//     });
+//   } catch (err) {
+//     switch (err.message) {
+//       case 'CHARACTER_NOT_FOUND':
+//         throw new NonFetalError(
+//           i18n.get('character-hasnt-been-found', locale),
+//         );
+//       case 'CHARACTER_NOT_OWNED':
+//         throw new NonFetalError(
+//           i18n.get('invalid-permission', locale),
+//         );
+//       default:
+//         throw err;
+//     }
+//   }
+// }
 
 async function update(
   { token, type, distribution, characterId, userId, guildId }: {
@@ -203,18 +260,6 @@ function view({ token, character, userId, guildId, distribution }: {
 
       const message = new discord.Message();
 
-      const embed = search.characterEmbed(character, {
-        footer: false,
-        existing: {
-          image: existing[0][0].image,
-          nickname: existing[0][0].nickname,
-          rating: existing[0][0].rating,
-        },
-        media: { title: false },
-        description: false,
-        mode: 'thumbnail',
-      });
-
       const unclaimed = existing[0][0].combat?.stats?.unclaimed ??
         newUnclaimed(existing[0][0].rating);
 
@@ -222,9 +267,26 @@ function view({ token, character, userId, guildId, distribution }: {
       const stamina = existing[0][0].combat?.stats?.stamina ?? 0;
       const agility = existing[0][0].combat?.stats?.agility ?? 0;
 
+      const exp = existing[0][0].combat?.exp ?? 0;
+      const level = existing[0][0].combat?.level ?? 1;
+      const expToLevel = experienceToNextLevel(level);
+
+      const embed = search.characterEmbed(character, {
+        footer: false,
+        existing: {
+          image: existing[0][0].image,
+          nickname: existing[0][0].nickname,
+          rating: existing[0][0].rating,
+        },
+        suffix: `${i18n.get('level', locale)} ${level}\n${exp}/${expToLevel}`,
+        media: { title: false },
+        description: false,
+        mode: 'thumbnail',
+      });
+
       embed
         .addField({
-          name: 'Stats',
+          name: i18n.get('stats', locale),
           value: [
             `${i18n.get('unclaimed', locale)}: ${unclaimed}`,
             `${i18n.get('strength', locale)}: ${strength}`,
@@ -299,6 +361,7 @@ function view({ token, character, userId, guildId, distribution }: {
 const stats = {
   view,
   update,
+  // gainExp,
 };
 
 export default stats;

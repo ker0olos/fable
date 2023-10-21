@@ -50,6 +50,8 @@ import {
 
 import { assignStats } from './assignStats.ts';
 
+import { gainExp, MAX_LEVEL } from './gainExp.ts';
+
 import {
   addPack,
   getPacksByUserId,
@@ -174,6 +176,8 @@ const db = {
   //
   assignStats,
   //
+  gainExp,
+  //
   addPack,
   getPacksByUserId,
   popularPacks,
@@ -184,6 +188,13 @@ const db = {
   resolveVoteRef,
 };
 
-export { COOLDOWN_DAYS, COSTS, MAX_NEW_PULLS, MAX_PULLS, RECHARGE_MINS };
+export {
+  COOLDOWN_DAYS,
+  COSTS,
+  MAX_LEVEL,
+  MAX_NEW_PULLS,
+  MAX_PULLS,
+  RECHARGE_MINS,
+};
 
 export default db;
