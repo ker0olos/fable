@@ -21,7 +21,7 @@
   "tasks": {
     "discord": "deno run -A update_commands.ts",
     "start": "deno run --unstable --watch -A src/interactions.ts",
-    "tunnel": "concurrently \"deno task start\" \"ngrok http 127.0.0.1:8000\" \"sleep 1 && deno task tunnel_url\"",
+    "tunnel": "concurrently \"deno task start\" \"ngrok http 127.0.0.1:8000\" \"sleep 2 && deno task tunnel_url\"",
     "tunnel_url": "curl -Ss http://localhost:4040/api/tunnels | jq -C \".tunnels[0].public_url\"",
     "udd": "deno run -A https://deno.land/x/udd/main.ts deno.json"
   },
