@@ -414,7 +414,7 @@ async function startCombat(
   message.addComponents([
     new discord.Component()
       .setId(discord.join('sbattle', battleId, userId))
-      .setLabel('Skip'),
+      .setLabel(i18n.get('skip', locale)),
   ]);
 
   const data = () => db.getValue<BattleData>(battleKey);
