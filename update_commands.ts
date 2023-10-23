@@ -847,6 +847,10 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'Battle',
+    type: CommandType.USER,
+  }),
+  ...Command({
     name: 'battle',
     description: 'battle/combat commands',
     options: [

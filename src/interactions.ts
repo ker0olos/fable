@@ -751,8 +751,10 @@ export const handler = async (r: Request) => {
                 })
                   .send();
               }
+              default:
               case 'friend': {
-                const targetId = options['versus'] as string;
+                const targetId = options['versus'] as string ??
+                  options['user'] as string;
 
                 return battle.challengeFriend({
                   token,
@@ -762,8 +764,6 @@ export const handler = async (r: Request) => {
                 })
                   .send();
               }
-              default:
-                break;
             }
             break;
           }
