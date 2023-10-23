@@ -231,6 +231,42 @@ function challengeTower({ token, guildId, userId }: {
     .then(async () => {
       const random = new utils.LehmerRNG(guildId);
 
+      const guild = await db.getGuild(guildId);
+      const instance = await db.getInstance(guild);
+
+      const _user = await db.getUser(userId);
+
+      const { inventory } = await db.getInventory(instance, _user);
+
+      const party = await db.getUserParty(inventory);
+
+      const party1 = [
+        party?.member1,
+        party?.member2,
+        party?.member3,
+        party?.member4,
+        party?.member5,
+      ].filter(Boolean) as Schema.Character[];
+
+      if (party1.length <= 0) {
+        throw new NonFetalError(i18n.get('your-party-empty', locale));
+      }
+
+      const characters = await packs.characters({
+        guildId,
+        ids: [party1[0].id],
+      });
+
+      const userCharacter = characters.find(({ packId, id }) =>
+        party1[0].id === `${packId}:${id}`
+      );
+
+      if (!userCharacter) {
+        throw new NonFetalError(i18n.get('character-disabled', locale));
+      }
+
+      const userCharacterStats = getStats(party1[0]);
+
       const { pool, validate } = await gacha.guaranteedPool({
         seed: guildId,
         guarantee: 5, // TODO based on floor
@@ -280,42 +316,6 @@ function challengeTower({ token, guildId, userId }: {
       if (!enemyCharacter) {
         throw new PoolError();
       }
-
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
-
-      const _user = await db.getUser(userId);
-
-      const { inventory } = await db.getInventory(instance, _user);
-
-      const party = await db.getUserParty(inventory);
-
-      const party1 = [
-        party?.member1,
-        party?.member2,
-        party?.member3,
-        party?.member4,
-        party?.member5,
-      ].filter(Boolean) as Schema.Character[];
-
-      if (party1.length <= 0) {
-        throw new NonFetalError(i18n.get('your-party-empty', locale));
-      }
-
-      const characters = await packs.characters({
-        guildId,
-        ids: [party1[0].id],
-      });
-
-      const userCharacter = characters.find(({ packId, id }) =>
-        party1[0].id === `${packId}:${id}`
-      );
-
-      if (!userCharacter) {
-        throw new NonFetalError(i18n.get('character-disabled', locale));
-      }
-
-      const userCharacterStats = getStats(party1[0]);
 
       const [userWon, _lastMessage] = await startCombat({
         token,

@@ -33,6 +33,15 @@ export interface Inventory extends Collection {
   lastPull?: string;
   rechargeTimestamp?: string;
   stealTimestamp?: string;
+
+  floorsCleared?: number;
+
+  //
+  availableSweeps?: number;
+  sweepsTimestamp?: string;
+  lastSweep?: string;
+  //
+
   party?: {
     member1?: string;
     member2?: string;

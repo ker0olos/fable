@@ -21,6 +21,7 @@ import steal from '../src/steal.ts';
 import shop from '../src/shop.ts';
 import stats from '../src/stats.ts';
 import battle from '../src/battle.ts';
+import tower from '../src/tower.ts';
 import help from '../src/help.ts';
 
 import merge from '../src/merge.ts';
@@ -7883,7 +7884,7 @@ Deno.test('battle', async (test) => {
       body,
     } as any));
 
-    const battleStub = stub(battle, 'challengeTower', () =>
+    const battleStub = stub(tower, 'view', () =>
       ({
         send: () => true,
       }) as any);
@@ -7980,7 +7981,7 @@ Deno.test('battle', async (test) => {
       body,
     } as any));
 
-    const battleStub = stub(battle, 'v2', () =>
+    const battleStub = stub(battle, 'challengeFriend', () =>
       ({
         send: () => true,
       }) as any);

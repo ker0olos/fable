@@ -13,6 +13,7 @@ import steal from './steal.ts';
 import shop from './shop.ts';
 import stats from './stats.ts';
 import battle from './battle.ts';
+import tower from './tower.ts';
 import help from './help.ts';
 
 import merge from './merge.ts';
@@ -744,7 +745,7 @@ export const handler = async (r: Request) => {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               case 'tower': {
-                return battle.challengeTower({
+                return tower.view({
                   token,
                   guildId,
                   userId: member.user.id,
