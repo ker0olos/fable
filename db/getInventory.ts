@@ -267,10 +267,26 @@ export async function rechargePulls(
 
 export async function getInstanceInventories(
   instance: Schema.Instance,
+  lastActive = 14,
 ): Promise<[Schema.Inventory, Schema.User][]> {
-  const inventories = await db.getValues<Schema.Inventory>(
+  const now = new Date();
+  const lastActiveThreshold = new Date(now.setDate(now.getDate() - lastActive));
+
+  let inventories = await db.getValues<Schema.Inventory>(
     { prefix: inventoriesByInstance(instance._id) },
   );
+
+  inventories = inventories.filter((inv) => {
+    if (!inv.lastPull) {
+      return false;
+    }
+
+    if (new Date(inv.lastPull).getTime() <= lastActiveThreshold.getTime()) {
+      return false;
+    }
+
+    return true;
+  });
 
   const users = await db.getManyValues<Schema.User>(
     inventories.map(({ user }) => ['users', user]),
