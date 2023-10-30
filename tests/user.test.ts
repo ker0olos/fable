@@ -44,9 +44,9 @@ Deno.test('/now', async (test) => {
       () => 'instance' as any,
     );
 
-    const rechargePullsStub = stub(
+    const rechargeConsumablesStub = stub(
       db,
-      'rechargePulls',
+      'rechargeConsumables',
       () =>
         ({
           inventory: {
@@ -88,12 +88,12 @@ Deno.test('/now', async (test) => {
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[0],
+        rechargeConsumablesStub.calls[0].args[0],
         'instance' as any,
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[1],
+        rechargeConsumablesStub.calls[0].args[1],
         'user' as any,
       );
 
@@ -138,7 +138,7 @@ Deno.test('/now', async (test) => {
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
-      rechargePullsStub.restore();
+      rechargeConsumablesStub.restore();
       createVoteRefStub.restore();
     }
   });
@@ -164,9 +164,9 @@ Deno.test('/now', async (test) => {
       () => 'instance' as any,
     );
 
-    const rechargePullsStub = stub(
+    const rechargeConsumablesStub = stub(
       db,
-      'rechargePulls',
+      'rechargeConsumables',
       () =>
         ({
           inventory: {
@@ -208,12 +208,12 @@ Deno.test('/now', async (test) => {
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[0],
+        rechargeConsumablesStub.calls[0].args[0],
         'instance' as any,
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[1],
+        rechargeConsumablesStub.calls[0].args[1],
         'user' as any,
       );
 
@@ -249,7 +249,7 @@ Deno.test('/now', async (test) => {
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
-      rechargePullsStub.restore();
+      rechargeConsumablesStub.restore();
       createVoteRefStub.restore();
     }
   });
@@ -275,9 +275,9 @@ Deno.test('/now', async (test) => {
       () => 'instance' as any,
     );
 
-    const rechargePullsStub = stub(
+    const rechargeConsumablesStub = stub(
       db,
-      'rechargePulls',
+      'rechargeConsumables',
       () =>
         ({
           inventory: {
@@ -320,12 +320,12 @@ Deno.test('/now', async (test) => {
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[0],
+        rechargeConsumablesStub.calls[0].args[0],
         'instance' as any,
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[1],
+        rechargeConsumablesStub.calls[0].args[1],
         'user' as any,
       );
 
@@ -363,7 +363,248 @@ Deno.test('/now', async (test) => {
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
-      rechargePullsStub.restore();
+      rechargeConsumablesStub.restore();
+      createVoteRefStub.restore();
+    }
+  });
+
+  await test.step('with sweeps', async () => {
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const rechargeConsumablesStub = stub(
+      db,
+      'rechargeConsumables',
+      () =>
+        ({
+          inventory: {
+            availablePulls: 5,
+            stealTimestamp: null,
+            rechargeTimestamp: null,
+            availableSweeps: 5,
+            lastSweep: new Date().toISOString(),
+          },
+        }) as any,
+    );
+
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
+    config.appId = 'app_id';
+
+    try {
+      const message = await user.now({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(
+        getUserStub.calls[0].args[0],
+        'user_id',
+      );
+
+      assertEquals(
+        getGuildStub.calls[0].args[0],
+        'guild_id',
+      );
+
+      assertEquals(
+        getInstanceStub.calls[0].args[0],
+        'guild' as any,
+      );
+
+      assertEquals(
+        rechargeConsumablesStub.calls[0].args[0],
+        'instance' as any,
+      );
+
+      assertEquals(
+        rechargeConsumablesStub.calls[0].args[1],
+        'user' as any,
+      );
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: '**5**',
+              footer: {
+                text: 'Available Pulls',
+              },
+              description: undefined,
+            },
+            {
+              type: 'rich',
+              title: '**5**',
+              footer: {
+                text: 'Available Sweeps',
+              },
+            },
+          ],
+          components: [
+            {
+              components: [
+                {
+                  custom_id: 'gacha=user_id',
+                  label: '/gacha',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  label: 'Vote',
+                  style: 5,
+                  type: 2,
+                  url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
+                },
+              ],
+              type: 1,
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.appId;
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      rechargeConsumablesStub.restore();
+      createVoteRefStub.restore();
+    }
+  });
+
+  await test.step('no sweeps', async () => {
+    const time = new Date('2023-02-05T03:21:46.253Z');
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const rechargeConsumablesStub = stub(
+      db,
+      'rechargeConsumables',
+      () =>
+        ({
+          inventory: {
+            availablePulls: 0,
+            availableSweeps: 0,
+            stealTimestamp: null,
+            rechargeTimestamp: time.toISOString(),
+            sweepsTimestamp: time.toISOString(),
+          },
+        }) as any,
+    );
+
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
+    config.appId = 'app_id';
+
+    try {
+      const message = await user.now({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(
+        getUserStub.calls[0].args[0],
+        'user_id',
+      );
+
+      assertEquals(
+        getGuildStub.calls[0].args[0],
+        'guild_id',
+      );
+
+      assertEquals(
+        getInstanceStub.calls[0].args[0],
+        'guild' as any,
+      );
+
+      assertEquals(
+        rechargeConsumablesStub.calls[0].args[0],
+        'instance' as any,
+      );
+
+      assertEquals(
+        rechargeConsumablesStub.calls[0].args[1],
+        'user' as any,
+      );
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              title: '**0**',
+              footer: {
+                text: 'Available Pulls',
+              },
+              description: undefined,
+            },
+            { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
+            { type: 'rich', description: '_+1 sweep <t:1675581706:R>_' },
+          ],
+          components: [{
+            type: 1,
+            components: [{
+              label: 'Vote',
+              style: 5,
+              type: 2,
+              url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
+            }],
+          }],
+        },
+      });
+    } finally {
+      delete config.appId;
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      rechargeConsumablesStub.restore();
       createVoteRefStub.restore();
     }
   });
@@ -393,9 +634,9 @@ Deno.test('/now', async (test) => {
       () => 'instance' as any,
     );
 
-    const rechargePullsStub = stub(
+    const rechargeConsumablesStub = stub(
       db,
-      'rechargePulls',
+      'rechargeConsumables',
       () =>
         ({
           inventory: {
@@ -437,7 +678,7 @@ Deno.test('/now', async (test) => {
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[0],
+        rechargeConsumablesStub.calls[0].args[0],
         'instance' as any,
       );
 
@@ -480,7 +721,7 @@ Deno.test('/now', async (test) => {
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
-      rechargePullsStub.restore();
+      rechargeConsumablesStub.restore();
       createVoteRefStub.restore();
     }
   });
@@ -510,9 +751,9 @@ Deno.test('/now', async (test) => {
       () => 'instance' as any,
     );
 
-    const rechargePullsStub = stub(
+    const rechargeConsumablesStub = stub(
       db,
-      'rechargePulls',
+      'rechargeConsumables',
       () =>
         ({
           inventory: {
@@ -554,7 +795,7 @@ Deno.test('/now', async (test) => {
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[0],
+        rechargeConsumablesStub.calls[0].args[0],
         'instance' as any,
       );
       assertEquals(message.json(), {
@@ -596,7 +837,7 @@ Deno.test('/now', async (test) => {
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
-      rechargePullsStub.restore();
+      rechargeConsumablesStub.restore();
       createVoteRefStub.restore();
     }
   });
@@ -626,9 +867,9 @@ Deno.test('/now', async (test) => {
       () => 'instance' as any,
     );
 
-    const rechargePullsStub = stub(
+    const rechargeConsumablesStub = stub(
       db,
-      'rechargePulls',
+      'rechargeConsumables',
       () =>
         ({
           inventory: {
@@ -670,7 +911,7 @@ Deno.test('/now', async (test) => {
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[0],
+        rechargeConsumablesStub.calls[0].args[0],
         'instance' as any,
       );
 
@@ -727,7 +968,7 @@ Deno.test('/now', async (test) => {
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
-      rechargePullsStub.restore();
+      rechargeConsumablesStub.restore();
       createVoteRefStub.restore();
     }
   });
@@ -757,9 +998,9 @@ Deno.test('/now', async (test) => {
       () => 'instance' as any,
     );
 
-    const rechargePullsStub = stub(
+    const rechargeConsumablesStub = stub(
       db,
-      'rechargePulls',
+      'rechargeConsumables',
       () =>
         ({
           inventory: {
@@ -801,7 +1042,7 @@ Deno.test('/now', async (test) => {
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[0],
+        rechargeConsumablesStub.calls[0].args[0],
         'instance' as any,
       );
 
@@ -858,7 +1099,7 @@ Deno.test('/now', async (test) => {
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
-      rechargePullsStub.restore();
+      rechargeConsumablesStub.restore();
       createVoteRefStub.restore();
     }
   });
@@ -889,9 +1130,9 @@ Deno.test('/now', async (test) => {
       () => 'instance' as any,
     );
 
-    const rechargePullsStub = stub(
+    const rechargeConsumablesStub = stub(
       db,
-      'rechargePulls',
+      'rechargeConsumables',
       () =>
         ({
           inventory: {
@@ -933,7 +1174,7 @@ Deno.test('/now', async (test) => {
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[0],
+        rechargeConsumablesStub.calls[0].args[0],
         'instance' as any,
       );
 
@@ -991,7 +1232,7 @@ Deno.test('/now', async (test) => {
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
-      rechargePullsStub.restore();
+      rechargeConsumablesStub.restore();
       createVoteRefStub.restore();
     }
   });
@@ -1021,9 +1262,9 @@ Deno.test('/now', async (test) => {
       () => 'instance' as any,
     );
 
-    const rechargePullsStub = stub(
+    const rechargeConsumablesStub = stub(
       db,
-      'rechargePulls',
+      'rechargeConsumables',
       () =>
         ({
           inventory: {
@@ -1065,12 +1306,12 @@ Deno.test('/now', async (test) => {
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[0],
+        rechargeConsumablesStub.calls[0].args[0],
         'instance' as any,
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[1],
+        rechargeConsumablesStub.calls[0].args[1],
         'user' as any,
       );
 
@@ -1118,7 +1359,7 @@ Deno.test('/now', async (test) => {
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
-      rechargePullsStub.restore();
+      rechargeConsumablesStub.restore();
       timeStub.restore();
       createVoteRefStub.restore();
     }
@@ -1145,9 +1386,9 @@ Deno.test('/now', async (test) => {
       () => 'instance' as any,
     );
 
-    const rechargePullsStub = stub(
+    const rechargeConsumablesStub = stub(
       db,
-      'rechargePulls',
+      'rechargeConsumables',
       () =>
         ({
           inventory: {
@@ -1191,12 +1432,12 @@ Deno.test('/now', async (test) => {
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[0],
+        rechargeConsumablesStub.calls[0].args[0],
         'instance' as any,
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[1],
+        rechargeConsumablesStub.calls[0].args[1],
         'user' as any,
       );
 
@@ -1238,7 +1479,7 @@ Deno.test('/now', async (test) => {
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
-      rechargePullsStub.restore();
+      rechargeConsumablesStub.restore();
       createVoteRefStub.restore();
     }
   });
@@ -1270,9 +1511,9 @@ Deno.test('/now', async (test) => {
       () => 'instance' as any,
     );
 
-    const rechargePullsStub = stub(
+    const rechargeConsumablesStub = stub(
       db,
-      'rechargePulls',
+      'rechargeConsumables',
       () =>
         ({
           inventory: {
@@ -1306,7 +1547,7 @@ Deno.test('/now', async (test) => {
       );
 
       assertEquals(
-        rechargePullsStub.calls[0].args[0],
+        rechargeConsumablesStub.calls[0].args[0],
         'instance' as any,
       );
 
@@ -1345,7 +1586,7 @@ Deno.test('/now', async (test) => {
       getUserStub.restore();
       getGuildStub.restore();
       getInstanceStub.restore();
-      rechargePullsStub.restore();
+      rechargeConsumablesStub.restore();
     }
   });
 });

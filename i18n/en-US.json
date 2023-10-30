@@ -24,8 +24,11 @@
   "uninstalled": "Uninstalled",
 
   "+1-pull": "_+1 pull {0}_",
+  "+1-sweep": "_+1 sweep {0}_",
   "available-pull": "Available Pull",
   "available-pulls": "Available Pulls",
+  "available-sweep": "Available Sweep",
+  "available-sweeps": "Available Sweeps",
   "daily-token": "Daily Token",
   "daily-tokens": "Daily Tokens",
   "can-vote-again": "_Can vote again {0}_",
@@ -38,6 +41,18 @@
   "character": "character",
   "characters": "characters",
   "thanks-for-voting": "Thanks for voting, {0}, you gained {1} {2}.",
+
+  "skip": "Skip",
+  "attacking": "Attacking",
+  "won": "Won",
+
+  "sweep": "Sweep",
+  "floor": "Floor",
+  "challenge": "Challenge",
+
+  "undiscovered": "Undiscovered",
+  "cleared": "Cleared",
+  "current": "Current",
 
   "spent-tokens-normal": "You want to spent **{0} {1}** {2}?",
   "spent-tokens-guaranteed": "You want to spent **{0} tokens** {1} for a **{2}**{3}?",
@@ -144,19 +159,6 @@
   "stamina": "Stamina",
   "agility": "Agility",
   "reset": "Reset",
-
-  "skip": "Skip",
-
-  "attacking": "Attacking",
-  "won": "Won",
-
-  "floor": "Floor",
-  "sweep": "Sweep",
-  "challenge": "Challenge",
-
-  "undiscovered": "Undiscovered",
-  "cleared": "Cleared",
-  "current": "Current",
 
   "help-page1-before-anything": "Before anything: You will need characters.",
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",

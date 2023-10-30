@@ -314,3 +314,18 @@ Deno.test('diff mins', async (test) => {
     assertEquals(utils.diffInMinutes(a, b), 30);
   });
 });
+
+Deno.test('is within last 14 days', () => {
+  const now = new Date();
+
+  const thirteenDaysAgo = new Date();
+  thirteenDaysAgo.setDate(now.getDate() - 13);
+
+  const fifteenDaysAgo = new Date();
+  fifteenDaysAgo.setDate(now.getDate() - 15);
+
+  assertEquals(utils.isWithin14Days(now), true);
+
+  assertEquals(utils.isWithin14Days(thirteenDaysAgo), true);
+  assertEquals(utils.isWithin14Days(fifteenDaysAgo), false);
+});

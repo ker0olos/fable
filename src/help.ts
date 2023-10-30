@@ -3,7 +3,12 @@ import user from './user.ts';
 
 import * as discord from './discord.ts';
 
-import { COOLDOWN_DAYS, COSTS, MAX_PULLS, RECHARGE_MINS } from '../db/mod.ts';
+import {
+  COOLDOWN_DAYS,
+  COSTS,
+  MAX_PULLS,
+  RECHARGE_SWEEPS_MINS,
+} from '../db/mod.ts';
 
 import { PARTY_PROTECTION_PERIOD } from './steal.ts';
 
@@ -32,7 +37,7 @@ function pages(
             i18n.get(
               'help-page1-you-get-n-every-t',
               locale,
-              RECHARGE_MINS,
+              RECHARGE_SWEEPS_MINS,
               MAX_PULLS,
             ),
             '',
@@ -184,7 +189,7 @@ function pages(
             '',
             i18n.get('help-page5-voting-weekends', locale),
             '',
-            i18n.get('help-page5-buy-normal', locale, RECHARGE_MINS),
+            i18n.get('help-page5-buy-normal', locale, RECHARGE_SWEEPS_MINS),
             '',
             i18n.get('help-page5-buy-guaranteed', locale),
             '',

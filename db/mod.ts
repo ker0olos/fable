@@ -14,7 +14,8 @@ import {
   MAX_NEW_PULLS,
   MAX_PULLS,
   RECHARGE_MINS,
-  rechargePulls,
+  RECHARGE_SWEEPS_MINS,
+  rechargeConsumables,
 } from './getInventory.ts';
 
 import { addCharacter } from './addCharacter.ts';
@@ -51,6 +52,8 @@ import {
 import { assignStats } from './assignStats.ts';
 
 import { gainExp, MAX_LEVEL } from './gainExp.ts';
+
+import { consumeSweep } from './consumeSweep.ts';
 
 import {
   addPack,
@@ -160,7 +163,7 @@ const db = {
   getUser,
   getUserCharacters,
   getUserParty,
-  rechargePulls,
+  rechargeConsumables,
   //
   addCharacter,
   //
@@ -190,6 +193,7 @@ const db = {
   assignStats,
   //
   gainExp,
+  consumeSweep,
   //
   addPack,
   getPacksByUserId,
@@ -208,6 +212,7 @@ export {
   MAX_NEW_PULLS,
   MAX_PULLS,
   RECHARGE_MINS,
+  RECHARGE_SWEEPS_MINS,
 };
 
 export default db;

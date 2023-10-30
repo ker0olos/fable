@@ -19,8 +19,13 @@ import { KvError } from '../src/errors.ts';
 import type * as Schema from './schema.ts';
 
 export const MAX_PULLS = 5;
+export const MAX_SWEEPS = 5;
+
 export const MAX_NEW_PULLS = 10;
+export const MAX_NEW_SWEEPS = MAX_SWEEPS;
+
 export const RECHARGE_MINS = 30;
+export const RECHARGE_SWEEPS_MINS = 240;
 
 export async function getUser(userId: string): Promise<Schema.User> {
   const response = await db.getValue<Schema.User>(usersByDiscordId(userId));
@@ -183,7 +188,7 @@ export async function getInventory(
   throw new KvError('failed to insert inventory');
 }
 
-export async function rechargePulls(
+export async function rechargeConsumables(
   instance: Schema.Instance,
   user: Schema.User,
   commit = true,
@@ -191,47 +196,55 @@ export async function rechargePulls(
   inventory: Schema.Inventory;
   inventoryCheck: Deno.AtomicCheck;
 }> {
-  let res = { ok: false }, retires = 0;
+  let res = { ok: false }, retries = 0;
 
-  while (!res.ok && retires < 5) {
-    const { inventory, inventoryCheck } = await db.getInventory(
-      instance,
-      user,
-    );
+  while (!res.ok && retries < 5) {
+    const { inventory, inventoryCheck } = await db.getInventory(instance, user);
 
-    const rechargeTimestamp = inventory.rechargeTimestamp
-      ? new Date(inventory.rechargeTimestamp)
-      : new Date();
+    const sweepsTimestamp = new Date(inventory.sweepsTimestamp ?? Date.now());
+    const pullsTimestamp = new Date(inventory.rechargeTimestamp ?? Date.now());
 
     const currentPulls = inventory.availablePulls;
+    const currentSweeps = inventory.availableSweeps ?? MAX_NEW_SWEEPS;
 
     const newPulls = Math.max(
       0,
       Math.min(
         MAX_PULLS - currentPulls,
         Math.trunc(
-          utils.diffInMinutes(rechargeTimestamp, new Date()) / RECHARGE_MINS,
+          utils.diffInMinutes(pullsTimestamp, new Date()) / RECHARGE_MINS,
+        ),
+      ),
+    );
+    const newSweeps = Math.max(
+      0,
+      Math.min(
+        MAX_SWEEPS - currentSweeps,
+        Math.trunc(
+          utils.diffInMinutes(sweepsTimestamp, new Date()) /
+            RECHARGE_SWEEPS_MINS,
         ),
       ),
     );
 
-    if (newPulls === currentPulls) {
+    if (newPulls === currentPulls && newSweeps === currentSweeps) {
       return { inventory, inventoryCheck };
     }
 
     const rechargedPulls = currentPulls + newPulls;
+    const rechargedSweeps = currentSweeps + newSweeps;
 
     inventory.availablePulls = Math.min(99, rechargedPulls);
+    inventory.availableSweeps = Math.min(MAX_SWEEPS, rechargedSweeps);
 
-    if (rechargedPulls >= MAX_PULLS) {
-      inventory.rechargeTimestamp = undefined;
-    } else {
-      rechargeTimestamp.setMinutes(
-        rechargeTimestamp.getMinutes() + (newPulls * RECHARGE_MINS),
-      );
-
-      inventory.rechargeTimestamp = rechargeTimestamp.toISOString();
-    }
+    inventory.rechargeTimestamp = rechargedPulls >= MAX_PULLS
+      ? undefined
+      : new Date(pullsTimestamp.getTime() + (newPulls * RECHARGE_MINS))
+        .toISOString();
+    inventory.sweepsTimestamp = rechargedSweeps >= MAX_SWEEPS
+      ? undefined
+      : new Date(sweepsTimestamp.getTime() + (newSweeps * RECHARGE_SWEEPS_MINS))
+        .toISOString();
 
     if (!commit) {
       return { inventory, inventoryCheck };
@@ -239,10 +252,8 @@ export async function rechargePulls(
 
     res = await kv.atomic()
       .check(inventoryCheck)
-      //
       .set(['inventories', inventory._id], inventory)
       .set(inventoriesByUser(inventory.instance, inventory._id), inventory)
-      //
       .commit();
 
     if (res.ok) {
@@ -250,16 +261,12 @@ export async function rechargePulls(
         inventory,
         inventoryCheck: {
           key: inventoryCheck.key,
-          // TODO doesn't work
-          // as workaround we avoid committing new changes
-          // when we need to use the version stamp after recharging pulls
-          // addCharacter() & addPulls()
           versionstamp: (res as Deno.KvCommitResult).versionstamp,
         },
       };
     }
 
-    retires += 1;
+    retries += 1;
   }
 
   throw new KvError('failed to update inventory');
@@ -267,11 +274,7 @@ export async function rechargePulls(
 
 export async function getInstanceInventories(
   instance: Schema.Instance,
-  lastActive = 14,
 ): Promise<[Schema.Inventory, Schema.User][]> {
-  const now = new Date();
-  const lastActiveThreshold = new Date(now.setDate(now.getDate() - lastActive));
-
   let inventories = await db.getValues<Schema.Inventory>(
     { prefix: inventoriesByInstance(instance._id) },
   );
@@ -281,7 +284,7 @@ export async function getInstanceInventories(
       return false;
     }
 
-    if (new Date(inv.lastPull).getTime() <= lastActiveThreshold.getTime()) {
+    if (!utils.isWithin14Days(new Date(inv.lastPull))) {
       return false;
     }
 

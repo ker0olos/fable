@@ -15,7 +15,7 @@ import { distance as _distance } from 'levenshtein';
 
 import { proxy } from '../images-proxy/mod.ts';
 
-import { RECHARGE_MINS } from '../db/mod.ts';
+import { RECHARGE_MINS, RECHARGE_SWEEPS_MINS } from '../db/mod.ts';
 
 const TEN_MIB = 1024 * 1024 * 10;
 
@@ -340,6 +340,17 @@ function rechargeTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
+function rechargeSweepTimestamp(v?: string): string {
+  const parsed = new Date(v ?? new Date());
+
+  parsed.setMinutes(parsed.getMinutes() + RECHARGE_SWEEPS_MINS);
+
+  const ts = parsed.getTime();
+
+  // discord uses seconds not milliseconds
+  return Math.floor(ts / 1000).toString();
+}
+
 function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
   const parsed = new Date(v ?? new Date());
 
@@ -440,9 +451,16 @@ function captureOutage(id: string): Promise<Response> {
   );
 }
 
+function isWithin14Days(date: Date): boolean {
+  const fourteenDaysAgo = new Date();
+  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+  return date >= fourteenDaysAgo;
+}
+
 const utils = {
   LehmerRNG,
   // randomPortions,
+  isWithin14Days,
   capitalize,
   captureException,
   captureOutage,
@@ -463,6 +481,7 @@ const utils = {
   parseInt: _parseInt,
   readJson,
   rechargeTimestamp,
+  rechargeSweepTimestamp,
   rng,
   serve,
   serveStatic,

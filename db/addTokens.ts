@@ -61,7 +61,7 @@ export async function addPulls(
   let res = { ok: false }, retires = 0;
 
   while (!res.ok && retires < 5) {
-    const { inventory, inventoryCheck } = await db.rechargePulls(
+    const { inventory, inventoryCheck } = await db.rechargeConsumables(
       instance,
       user,
       false,

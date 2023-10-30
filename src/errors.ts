@@ -37,6 +37,17 @@ export class NoPullsError extends Error {
   }
 }
 
+export class NoSweepsError extends NoPullsError {
+  constructor(sweepsTimestamp?: string) {
+    super('NO_SWEEPS_AVAILABLE');
+
+    this.name = 'NoSweepsError';
+    this.rechargeTimestamp = utils.rechargeSweepTimestamp(
+      sweepsTimestamp,
+    );
+  }
+}
+
 export class PoolError extends Error {
   constructor() {
     super(
