@@ -473,6 +473,12 @@ Deno.test('/now', async (test) => {
                   type: 2,
                 },
                 {
+                  custom_id: 'tsweep=user_id',
+                  label: '/sweep',
+                  style: 2,
+                  type: 2,
+                },
+                {
                   label: 'Vote',
                   style: 5,
                   type: 2,

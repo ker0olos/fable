@@ -148,6 +148,7 @@ async function getManyValues<T>(
 }
 
 const db = {
+  kv,
   setValue,
   getValue,
   getValues,

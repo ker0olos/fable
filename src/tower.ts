@@ -4,7 +4,7 @@ import packs from './packs.ts';
 import utils from './utils.ts';
 import i18n from './i18n.ts';
 
-import db, { kv } from '../db/mod.ts';
+import db from '../db/mod.ts';
 
 import * as discord from './discord.ts';
 
@@ -218,7 +218,7 @@ function sweep({ token, guildId, userId }: {
         ids: party1.map(({ id }) => id),
       });
 
-      const op = kv.atomic();
+      const op = db.kv.atomic();
 
       // consume a sweep from inventory
       db.consumeSweep({ op, inventory, inventoryCheck });
@@ -242,8 +242,8 @@ function sweep({ token, guildId, userId }: {
               'leveled-up',
               locale,
               party1[index].nickname ??
-                packs.aliasToArray(characters[0].name)[0],
-              levelUp === 1 ? '' : ` ${levelUp}x `,
+                packs.aliasToArray(characters[index].name)[0],
+              levelUp === 1 ? ' ' : ` ${levelUp}x `,
               statPoints,
               skillPoints,
             );
@@ -252,7 +252,7 @@ function sweep({ token, guildId, userId }: {
               'exp-gained',
               locale,
               party1[index].nickname ??
-                packs.aliasToArray(characters[0].name)[0],
+                packs.aliasToArray(characters[index].name)[0],
               exp,
               expToLevel,
             );
@@ -344,7 +344,7 @@ async function onSuccess(
     locale: discord.AvailableLocales;
   },
 ): Promise<void> {
-  const op = kv.atomic();
+  const op = db.kv.atomic();
 
   const floor = db.clearFloor(op, inventory);
 
@@ -370,8 +370,9 @@ async function onSuccess(
         return i18n.get(
           'leveled-up',
           locale,
-          party[index].nickname ?? packs.aliasToArray(characters[0].name)[0],
-          levelUp === 1 ? '' : ` ${levelUp}x `,
+          party[index].nickname ??
+            packs.aliasToArray(characters[index].name)[0],
+          levelUp === 1 ? ' ' : ` ${levelUp}x `,
           statPoints,
           skillPoints,
         );

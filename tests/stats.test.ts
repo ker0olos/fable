@@ -764,6 +764,9 @@ Deno.test('/stats', async (test) => {
           id: 'id:1',
           rating: 4,
           combat: {
+            level: 2,
+            exp: 10,
+            skillPoints: 6,
             stats: {
               unclaimed: 0,
               strength: 2,
@@ -830,11 +833,12 @@ Deno.test('/stats', async (test) => {
               fields: [
                 {
                   name: 'full name',
-                  value: 'Level 1\n0/10',
+                  value: 'Level 2\n10/20',
                 },
                 {
                   name: 'Stats',
-                  value: 'Unused: 0\nStrength: 2\nStamina: 3\nAgility: 4',
+                  value:
+                    'Skill Points: 6\nStat Points: 0\nStrength: 2\nStamina: 3\nAgility: 4',
                 },
               ],
             },
@@ -1005,7 +1009,8 @@ Deno.test('/stats', async (test) => {
                 },
                 {
                   name: 'Stats',
-                  value: 'Unused: 12\nStrength: 0\nStamina: 0\nAgility: 0',
+                  value:
+                    'Skill Points: 0\nStat Points: 12\nStrength: 0\nStamina: 0\nAgility: 0',
                 },
               ],
             },
