@@ -10,7 +10,7 @@ import * as discord from './discord.ts';
 
 import config from './config.ts';
 
-import { NonFetalError } from './errors.ts';
+import { NonFetalError, NoSweepsError } from './errors.ts';
 
 import type * as Schema from '../db/schema.ts';
 
@@ -220,8 +220,31 @@ function sweep({ token, guildId, userId }: {
 
       const op = db.kv.atomic();
 
-      // consume a sweep from inventory
-      db.consumeSweep({ op, inventory, inventoryCheck });
+      try {
+        // consume a sweep from inventory
+        db.consumeSweep({ op, inventory, inventoryCheck });
+      } catch (err) {
+        if (err instanceof NoSweepsError) {
+          return await new discord.Message()
+            .addEmbed(
+              new discord.Embed()
+                .setDescription(i18n.get('combat-no-more-sweeps', locale)),
+            )
+            .addEmbed(
+              new discord.Embed()
+                .setDescription(
+                  i18n.get(
+                    '+1-sweep',
+                    locale,
+                    `<t:${err.rechargeTimestamp}:R>`,
+                  ),
+                ),
+            )
+            .patch(token);
+        } else {
+          throw err;
+        }
+      }
 
       // deno-lint-ignore no-non-null-assertion
       const expGained = getFloorExp(inventory.floorsCleared!);
@@ -282,6 +305,8 @@ function sweep({ token, guildId, userId }: {
 
         retires += 1;
       }
+
+      throw new Error('failed to update inventory');
     })
     .catch(async (err) => {
       if (err instanceof NonFetalError) {

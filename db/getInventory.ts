@@ -239,11 +239,14 @@ export async function rechargeConsumables(
 
     inventory.rechargeTimestamp = rechargedPulls >= MAX_PULLS
       ? undefined
-      : new Date(pullsTimestamp.getTime() + (newPulls * RECHARGE_MINS))
+      : new Date(pullsTimestamp.getTime() + (newPulls * RECHARGE_MINS * 60000))
         .toISOString();
+
     inventory.sweepsTimestamp = rechargedSweeps >= MAX_SWEEPS
       ? undefined
-      : new Date(sweepsTimestamp.getTime() + (newSweeps * RECHARGE_SWEEPS_MINS))
+      : new Date(
+        sweepsTimestamp.getTime() + (newSweeps * RECHARGE_SWEEPS_MINS * 60000),
+      )
         .toISOString();
 
     if (!commit) {

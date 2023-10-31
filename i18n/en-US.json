@@ -133,6 +133,8 @@
   "gacha-no-more-characters-left": "There are no more {0}characters left",
   "gacha-no-more-in-range": "There are no more characters left in this range",
 
+  "combat-no-more-sweeps": "You don't have any more sweeps!",
+
   "uninstall-pack-confirmation": "**Are you sure you want to uninstall this pack?**\n\nUninstalling a pack will disable any characters your server members have from the pack, which may be met with negative reactions.",
 
   "pack-doesnt-exist": "This pack doesn't exist",
