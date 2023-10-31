@@ -33,7 +33,7 @@ export function consumeSweep(
   },
 ): void {
   // deno-lint-ignore no-non-null-assertion
-  if (!inventory.floorsCleared || inventory.availableSweeps! <= 0) {
+  if (inventory.availableSweeps! <= 0) {
     throw new NoSweepsError(inventory.sweepsTimestamp);
   }
 

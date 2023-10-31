@@ -18,6 +18,8 @@ import { MediaType } from '../src/types.ts';
 
 import type { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
+import { NoSweepsError } from '../src/errors.ts';
+
 Deno.test('experience to next level', () => {
   assertEquals(experienceToNextLevel(1), 10);
   assertEquals(experienceToNextLevel(2), 20);
@@ -1460,6 +1462,255 @@ Deno.test('/sweep', async (test) => {
                 'name 3 leveled up and gained 3 stat points and 1 skill points.\n' +
                 'name 4 leveled up and gained 3 stat points and 1 skill points.\n' +
                 'name 5 leveled up and gained 3 stat points and 1 skill points.',
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.combat;
+
+      timeStub.restore();
+      fetchStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getUserStub.restore();
+      getInventoryStub.restore();
+      getUserPartyStub.restore();
+      consumeSweepStub.restore();
+      atomicStub.restore();
+    }
+  });
+
+  await test.step('no sweeps available', async () => {
+    const timeStub = new FakeTime('2011/1/25 00:00 UTC');
+
+    const media: AniListMedia[] = [
+      {
+        id: '0',
+        type: MediaType.Anime,
+        title: {
+          english: 'title',
+        },
+      },
+    ];
+
+    const characters: AniListCharacter[] = [
+      {
+        id: '1',
+        name: {
+          full: 'name 1',
+        },
+      },
+      {
+        id: '2',
+        name: {
+          full: 'name 2',
+        },
+      },
+      {
+        id: '3',
+        name: {
+          full: 'name 3',
+        },
+      },
+      {
+        id: '4',
+        name: {
+          full: 'name 4',
+        },
+      },
+      {
+        id: '5',
+        name: {
+          full: 'name 5',
+        },
+      },
+    ];
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      returnsNext([
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        {
+          ok: true,
+          text: (() =>
+            Promise.resolve(JSON.stringify({
+              data: {
+                Page: {
+                  media,
+                  characters,
+                },
+              },
+            }))),
+        } as any,
+        undefined,
+      ]),
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const date = new Date();
+
+    date.setHours(date.getHours() - 2);
+
+    const consumeSweepStub = stub(
+      db,
+      'consumeSweep',
+      () => {
+        throw new NoSweepsError(date.toISOString());
+      },
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'rechargeConsumables',
+      () =>
+        ({
+          inventory: {
+            floorsCleared: 1,
+          },
+        }) as any,
+    );
+
+    const getUserPartyStub = stub(
+      db,
+      'getUserParty',
+      () =>
+        ({
+          member1: {
+            id: 'anilist:1',
+            mediaId: 'anilist:0',
+            rating: 1,
+            combat: {},
+          },
+          member2: {
+            id: 'anilist:2',
+            mediaId: 'anilist:0',
+            rating: 1,
+            combat: {},
+          },
+          member3: {
+            id: 'anilist:3',
+            mediaId: 'anilist:0',
+            rating: 1,
+            combat: {
+              stats: {},
+            },
+          },
+          member4: {
+            id: 'anilist:4',
+            mediaId: 'anilist:0',
+            rating: 1,
+            combat: {
+              stats: {},
+            },
+          },
+          member5: {
+            id: 'anilist:5',
+            mediaId: 'anilist:0',
+            rating: 1,
+            combat: {
+              stats: {},
+            },
+          },
+        }) as any,
+    );
+
+    const t = {
+      set: () => t,
+      commit: () => ({ ok: true }),
+    };
+
+    const atomicStub = stub(
+      db.kv,
+      'atomic',
+      () => t as any,
+    );
+
+    config.combat = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await tower.sweep({
+        token: 'test_token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 2);
+
+      assertEquals(
+        fetchStub.calls[1].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          components: [],
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'You don\'t have any more sweeps!',
+            },
+            {
+              type: 'rich',
+              description: '_+1 sweep <t:1295920800:R>_',
             },
           ],
         },
