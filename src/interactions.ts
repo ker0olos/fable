@@ -768,6 +768,14 @@ export const handler = async (r: Request) => {
             }
             break;
           }
+          case 'sweep': {
+            return tower.sweep({
+              token,
+              guildId,
+              userId: member.user.id,
+            })
+              .send();
+          }
           case 'logs': {
             const userId = options['user'] as string ?? member.user.id;
 
@@ -1140,7 +1148,7 @@ export const handler = async (r: Request) => {
                 guildId,
                 userId: member.user.id,
               })
-                .setType(discord.MessageType.Update)
+                .setType(discord.MessageType.New)
                 .send();
             }
 

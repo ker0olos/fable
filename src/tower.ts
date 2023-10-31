@@ -197,6 +197,12 @@ function sweep({ token, guildId, userId }: {
         false,
       );
 
+      if (!inventory.floorsCleared) {
+        throw new NonFetalError(
+          i18n.get('no-cleared-floors', locale),
+        );
+      }
+
       const party = await db.getUserParty(inventory);
 
       const party1 = [
@@ -321,7 +327,7 @@ async function onFail(
   message.addComponents([
     new discord.Component()
       .setId(discord.join('tsweep', userId))
-      .setLabel(i18n.get('sweep', locale)),
+      .setLabel(`/sweep`),
   ]);
 
   await message.patch(token);

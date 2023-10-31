@@ -168,6 +168,16 @@ async function now({
     ]);
   }
 
+  // deno-lint-ignore no-non-null-assertion
+  if (availableSweeps! > 0) {
+    message.addComponents([
+      // `/sweep` shortcut
+      new discord.Component()
+        .setId('tsweep', userId)
+        .setLabel('/sweep'),
+    ]);
+  }
+
   if (user.availableTokens && user.availableTokens >= COSTS.FIVE) {
     // `/buy guaranteed` 5 shortcut
     message.addComponents([
