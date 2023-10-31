@@ -877,7 +877,7 @@ export const commands = [
   }),
   ...Command({
     name: 'sweep',
-    description: 'Sweep your current battle tower floor',
+    description: '/sweep',
   }),
 ];
 

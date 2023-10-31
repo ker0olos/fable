@@ -207,6 +207,9 @@
   "help-page10-agility": "__Agility is defense__, minimize the damage your enemy can do.",
   "help-page10-stamina": "__Stamina is health points__, allows you to take more hits and survive longer in battle",
 
+  "help-page10-tower": "Use `/battle tower` to climb the tower, each server has a unique tower and unique enemies and weakness.",
+  "help-page10-sweep": "> Level up your characters and gain extra stat points by `/sweep`ing the same floor a few times.",
+
   "help-page5-title": "Shop",
   "help-page5-shop": "The shop is a way to purchase extra pulls and guaranteed pulls.",
   "help-page5-daily-tokens": "__You get 1 daily token every day__, automatically added after your first `/gacha` of the day.",
@@ -279,6 +282,8 @@
   "/stats": "manage your characters stat points and skills",
 
   "/battle friend": "Battle against another player to test your party",
+  "/battle tower": "Climb the tower to glory and become a fable",
+  "/sweep": "Sweep your current battle tower floor for exp",
 
   "/help": "need more information? we got you",
 

@@ -3411,9 +3411,9 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "/battle tower",
+        description: "Climb the tower to glory and become a fable",
         description_localizations: {
-          "es-ES": undefined,
+          "es-ES": "Climb the tower to glory and become a fable",
         },
         max_value: undefined,
         min_value: undefined,
@@ -3427,9 +3427,9 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "Sweep your current battle tower floor",
+    description: "Sweep your current battle tower floor for exp",
     description_localizations: {
-      "es-ES": undefined,
+      "es-ES": "Sweep your current battle tower floor for exp",
     },
     dm_permission: false,
     name: "sweep",

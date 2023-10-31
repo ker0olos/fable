@@ -304,6 +304,10 @@ __Strength is damage__, the damage you can potentially do to your enemy.
 __Agility is defense__, minimize the damage your enemy can do.
 
 __Stamina is health points__, allows you to take more hits and survive longer in battle
+
+Use \`/battle tower\` to climb the tower, each server has a unique tower and unique enemies and weakness.
+
+> Level up your characters and gain extra stat points by \`/sweep\`ing the same floor a few times.
 ​",
         type: "rich",
       },
@@ -451,9 +455,9 @@ snapshot[`/help 7`] = `
         },
         description: "__**Releasing in the near future (~3 months)**__
 
-**[Leveling Up Characters](https://github.com/ker0olos/fable/issues/64)**
+**[Classes And Skills](https://github.com/ker0olos/fable/issues/64)**
 
-**[Player vs. Environment](https://github.com/ker0olos/fable/issues/58)**
+**[Server vs. Server](https://github.com/ker0olos/fable/issues/65)**
 ",
         type: "rich",
       },
@@ -519,7 +523,10 @@ snapshot[`/help 8`] = `
 
 - \`/steal\`: _steal a character from another user_
 - \`/trade\` \`/offer\`: _trade characters with another user_
-- \`/give\` \`/gift\`: _give characters to another user_",
+- \`/give\` \`/gift\`: _give characters to another user_
+
+- \`/battle tower\`: _Climb the tower to glory and become a fable_
+- \`/sweep\`: _Sweep your current battle tower floor for exp_",
         type: "rich",
       },
     ],
