@@ -294,8 +294,6 @@ function challengeTower({ token, guildId, userId }: {
 
   Promise.resolve()
     .then(async () => {
-      const random = new utils.LehmerRNG(guildId);
-
       const guild = await db.getGuild(guildId);
       const instance = await db.getInstance(guild);
 
@@ -304,6 +302,10 @@ function challengeTower({ token, guildId, userId }: {
       const { inventory } = await db.getInventory(instance, _user);
 
       const floor = (inventory.floorsCleared ?? 0) + 1;
+
+      const seed = `${guildId}${floor}`;
+
+      const random = new utils.LehmerRNG(seed);
 
       const party = await db.getUserParty(inventory);
 
@@ -335,7 +337,7 @@ function challengeTower({ token, guildId, userId }: {
       const userCharacterStats = getStats(party1[0]);
 
       const { pool, validate } = await gacha.guaranteedPool({
-        seed: guildId,
+        seed,
         guarantee: getEnemyRating(floor),
         guildId,
       });
@@ -384,7 +386,7 @@ function challengeTower({ token, guildId, userId }: {
         throw new PoolError();
       }
 
-      const enemyStats: CharacterLive = getEnemyStats(floor, guildId);
+      const enemyStats: CharacterLive = getEnemyStats(floor, seed);
 
       const [userWon, _lastMessage] = await startCombat({
         token,
