@@ -14,13 +14,21 @@ import {
 import utils from '../src/utils.ts';
 
 import packs from '../src/packs.ts';
-import stats from '../src/stats.ts';
+import stats, { newUnclaimed } from '../src/stats.ts';
 
 import config from '../src/config.ts';
 
 import db from '../db/mod.ts';
 
 import { NonFetalError } from '../src/errors.ts';
+
+Deno.test('test new unclaimed stats', () => {
+  assertEquals(newUnclaimed(1), 3);
+  assertEquals(newUnclaimed(2), 6);
+  assertEquals(newUnclaimed(3), 9);
+  assertEquals(newUnclaimed(4), 12);
+  assertEquals(newUnclaimed(5), 15);
+});
 
 Deno.test('update stats', async (test) => {
   await test.step('reset', async () => {

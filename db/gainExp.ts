@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 /// <reference lib="deno.unstable" />
 
 import {
@@ -6,44 +8,47 @@ import {
   charactersByMediaIdPrefix,
 } from './indices.ts';
 
-import db, { kv } from './mod.ts';
+import { newUnclaimed } from '../src/stats.ts';
 
 import type * as Schema from './schema.ts';
-
-import { KvError } from '../src/errors.ts';
 
 export const MAX_LEVEL = 10;
 
 export const experienceToNextLevel = (level: number): number => {
-  return level * level * 10;
+  return level * 10;
 };
 
-export async function gainExp(
+type Status = {
+  levelUp: number;
+  skillPoints: number;
+  statPoints: number;
+  exp: number;
+  expToLevel: number;
+};
+
+export function gainExp(
+  op: Deno.AtomicOperation,
   inventory: Schema.Inventory,
-  characterId: string,
+  character: Schema.Character,
   gainExp: number,
-): Promise<Schema.Character> {
-  const character = await db.getValue<Schema.Character>([
-    ...charactersByInstancePrefix(inventory.instance),
-    characterId,
-  ]);
-
-  if (!character) {
-    throw new Error('CHARACTER_NOT_FOUND');
-  }
-
-  if (character.inventory !== inventory._id) {
-    throw new Error('CHARACTER_NOT_OWNED');
-  }
+): Status {
+  const status: Status = {
+    levelUp: 0,
+    skillPoints: 0,
+    statPoints: 0,
+    exp: 0,
+    expToLevel: 0,
+  };
 
   character.combat ??= {};
 
   character.combat.level ??= 1;
   character.combat.exp ??= 0;
   character.combat.skillPoints ??= 0;
+  character.combat.stats ??= { unclaimed: newUnclaimed(character.rating) };
 
   if (character.combat.level >= MAX_LEVEL) {
-    return character;
+    return status;
   }
 
   character.combat.exp += gainExp;
@@ -51,22 +56,42 @@ export async function gainExp(
   while (
     character.combat.exp >= experienceToNextLevel(character.combat.level)
   ) {
+    character.combat.exp -= experienceToNextLevel(character.combat.level);
+
     character.combat.level += 1;
     character.combat.skillPoints += 1;
+    character.combat.stats!.unclaimed! += 3;
 
-    character.combat.exp -= experienceToNextLevel(character.combat.level);
+    status.levelUp += 1;
+    status.skillPoints += 1;
+    status.statPoints += 3;
 
     // extra skill points based on level
     if (character.combat.level >= 10) {
       character.combat.skillPoints += 1;
+      status.skillPoints += 1;
+
+      character.combat.stats!.unclaimed! += 3 * 2;
+      status.statPoints += 3 * 2;
     } else if (character.combat.level >= 20) {
       character.combat.skillPoints += 2;
+      status.skillPoints += 2;
+
+      character.combat.stats!.unclaimed! += 3 * 3;
+      status.statPoints += 3 * 3;
     } else if (character.combat.level >= 40) {
       character.combat.skillPoints += 3;
+      status.skillPoints += 3;
+
+      character.combat.stats!.unclaimed! += 3 * 5;
+      status.statPoints += 3 * 5;
     }
   }
 
-  const update = await kv.atomic()
+  status.exp = character.combat.exp;
+  status.expToLevel = experienceToNextLevel(character.combat.level);
+
+  op
     .set(['characters', character._id], character)
     .set(
       [
@@ -91,12 +116,7 @@ export async function gainExp(
         character._id,
       ],
       character,
-    )
-    .commit();
+    );
 
-  if (update.ok) {
-    return character;
-  }
-
-  throw new KvError('failed to update character');
+  return status;
 }

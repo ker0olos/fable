@@ -6,12 +6,52 @@ import { FakeTime } from '$std/testing/time.ts';
 
 import { assertSpyCalls, stub } from '$std/testing/mock.ts';
 
-import tower, { MAX_FLOORS } from '../src/tower.ts';
+import tower, { getFloorExp, MAX_FLOORS } from '../src/tower.ts';
 
 import config from '../src/config.ts';
 
 import db from '../db/mod.ts';
 import utils from '../src/utils.ts';
+import { experienceToNextLevel } from '../db/gainExp.ts';
+
+Deno.test('experience to next level', () => {
+  assertEquals(experienceToNextLevel(1), 10);
+  assertEquals(experienceToNextLevel(2), 20);
+  assertEquals(experienceToNextLevel(10), 100);
+  assertEquals(experienceToNextLevel(20), 200);
+});
+
+Deno.test('exp gained amount floors 1-10', () => {
+  assertEquals(getFloorExp(1), 1);
+  assertEquals(getFloorExp(2), 1);
+  assertEquals(getFloorExp(3), 1);
+  assertEquals(getFloorExp(4), 1);
+
+  assertEquals(getFloorExp(5), 2);
+
+  assertEquals(getFloorExp(6), 1.5);
+  assertEquals(getFloorExp(7), 1.5);
+  assertEquals(getFloorExp(8), 1.5);
+  assertEquals(getFloorExp(9), 1.5);
+
+  assertEquals(getFloorExp(10), 3);
+});
+
+Deno.test('exp gained amount floors 11-20', () => {
+  assertEquals(getFloorExp(11), 2);
+  assertEquals(getFloorExp(12), 2);
+  assertEquals(getFloorExp(13), 2);
+  assertEquals(getFloorExp(14), 2);
+
+  assertEquals(getFloorExp(15), 4);
+
+  assertEquals(getFloorExp(16), 3);
+  assertEquals(getFloorExp(17), 3);
+  assertEquals(getFloorExp(18), 3);
+  assertEquals(getFloorExp(19), 3);
+
+  assertEquals(getFloorExp(20), 6);
+});
 
 Deno.test('/tower view', async (test) => {
   await test.step('no floor cleared', async () => {

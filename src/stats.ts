@@ -17,64 +17,9 @@ import type { Character } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
 
-const newUnclaimed = (rating: number): number => {
+export const newUnclaimed = (rating: number): number => {
   return 3 * rating;
 };
-
-// async function gainExp(
-//   { token, characterId, userId, guildId, gainExp }: {
-//     token: string;
-//     characterId: string;
-//     guildId: string;
-//     userId: string;
-//     gainExp: number;
-//   },
-// ): Promise<discord.Message> {
-//   const locale = _user.cachedUsers[userId]?.locale;
-
-//   const guild = await db.getGuild(guildId);
-//   const instance = await db.getInstance(guild);
-
-//   const user = await db.getUser(userId);
-
-//   const { inventory } = await db.getInventory(instance, user);
-
-//   const [[existing], __user] = await db.findCharacters(instance, [
-//     characterId,
-//   ]);
-
-//   if (!existing) {
-//     throw new Error('404');
-//   }
-
-//   try {
-//     const _ = await db.gainExp(
-//       inventory,
-//       characterId,
-//       gainExp,
-//     );
-
-//     return stats.view({
-//       token,
-//       character: `id=${characterId}`,
-//       userId,
-//       guildId,
-//     });
-//   } catch (err) {
-//     switch (err.message) {
-//       case 'CHARACTER_NOT_FOUND':
-//         throw new NonFetalError(
-//           i18n.get('character-hasnt-been-found', locale),
-//         );
-//       case 'CHARACTER_NOT_OWNED':
-//         throw new NonFetalError(
-//           i18n.get('invalid-permission', locale),
-//         );
-//       default:
-//         throw err;
-//     }
-//   }
-// }
 
 async function update(
   { token, type, distribution, characterId, userId, guildId }: {
@@ -361,7 +306,6 @@ function view({ token, character, userId, guildId, distribution }: {
 const stats = {
   view,
   update,
-  // gainExp,
 };
 
 export default stats;

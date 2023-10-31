@@ -47,8 +47,9 @@
   "attacking": "Attacking",
   "won": "Won",
 
-  "floor": "Floor",
   "sweep": "Sweep",
+  "floor": "Floor",
+  "next-floor": "Next Floor",
   "challenge": "Challenge",
 
   "undiscovered": "Undiscovered",
@@ -114,8 +115,8 @@
   "stealing-party-member": "Al ser miembro del equipo de {0}, **{1}** no puede ser robado mientras {0} siga activo/a",
   "steal-chance": "Tu chance de éxito es de **{0}%**",
   "stolen-from-you": "¡Te han robado a **{0}**!",
-  "you-succeeded": "**¡Lo lograste!**",
-  "you-failed": "**¡Fallaste!**",
+  "you-succeeded": "**¡Lo lograste**",
+  "you-failed": "**¡Fallaste**",
   "steal-cooldown": "Steal está en enfriamiento, inténtalo {0}",
   "steal-try-again": "Puedes volver a intentar {0}",
   "steal-unexpected": "Algo sucedió y afectó tus chances de robar a **{0}**. Por favor intenta de nuevo.",
@@ -148,8 +149,6 @@
 
   "battle-yourself": "No puedes combatirte a ti mismo",
 
-  "level": "Level",
-
   "str": "FUE",
   "sta": "RES",
   "agi": "AGI",
@@ -160,6 +159,12 @@
   "stamina": "Resistencia",
   "agility": "Agilidad",
   "reset": "Reiniciar",
+
+  "level": "Level",
+
+  "tower-fail": "Sweep the previous floor to gain more exp to level up your party then try again!",
+  "leveled-up": "{0} leveled up{1}and gained {2} stat points and {3} skill points.",
+  "exp-gained": "{0} {1}/{2} exp",
 
   "help-page1-before-anything": "Antes de nada: Necesitarás personajes.",
   "help-page1-you-get-n-every-t": "__Obtienes una tirada (pull) gratis cada {0} minutos (hasta un máximo de {1})__. Utiliza `/now` para comprobar cuantas tiradas tienes y cuánto falta para tu siguiente tirada gratis.",

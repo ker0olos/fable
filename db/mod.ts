@@ -53,7 +53,7 @@ import { assignStats } from './assignStats.ts';
 
 import { gainExp, MAX_LEVEL } from './gainExp.ts';
 
-import { consumeSweep } from './consumeSweep.ts';
+import { clearFloor, consumeSweep } from './consumeSweep.ts';
 
 import {
   addPack,
@@ -194,6 +194,7 @@ const db = {
   //
   gainExp,
   consumeSweep,
+  clearFloor,
   //
   addPack,
   getPacksByUserId,

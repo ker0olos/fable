@@ -69,27 +69,6 @@ function nanoid(size = 16): string {
   }, '');
 }
 
-// function randomPortions(
-//   min: number,
-//   max: number,
-//   length: number,
-//   sum: number,
-// ): number[] {
-//   return Array.from({ length }, (_, i) => {
-//     const smin = (length - i - 1) * min;
-//     const smax = (length - i - 1) * max;
-
-//     const offset = Math.max(sum - smax, min);
-//     const random = 1 + Math.min(sum - offset, max - offset, sum - smin - min);
-
-//     const value = Math.floor(Math.random() * random + offset);
-
-//     sum -= value;
-
-//     return value;
-//   });
-// }
-
 function hexToInt(hex?: string): number | undefined {
   if (!hex) {
     return;
@@ -459,7 +438,6 @@ function isWithin14Days(date: Date): boolean {
 
 const utils = {
   LehmerRNG,
-  // randomPortions,
   isWithin14Days,
   capitalize,
   captureException,

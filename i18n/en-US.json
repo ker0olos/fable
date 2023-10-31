@@ -48,6 +48,7 @@
 
   "sweep": "Sweep",
   "floor": "Floor",
+  "next-floor": "Next Floor",
   "challenge": "Challenge",
 
   "undiscovered": "Undiscovered",
@@ -113,8 +114,8 @@
   "stealing-party-member": "As part of {0}'s party, **{1}** cannot be stolen while {0} is still active",
   "steal-chance": "Your chance of success is **{0}%**",
   "stolen-from-you": "**{0}** was stolen from you!",
-  "you-succeeded": "**You Succeeded!**",
-  "you-failed": "**You Failed!**",
+  "you-succeeded": "**You Succeeded**",
+  "you-failed": "**You Failed**",
   "steal-cooldown": "Steal is on cooldown, try again {0}",
   "steal-try-again": "You can try again {0}",
   "steal-unexpected": "Something happened and affected your chances of stealing **{0}**, Please try again!",
@@ -147,8 +148,6 @@
 
   "battle-yourself": "You can't battle yourself",
 
-  "level": "Level",
-
   "str": "STR",
   "sta": "STA",
   "agi": "AGI",
@@ -159,6 +158,12 @@
   "stamina": "Stamina",
   "agility": "Agility",
   "reset": "Reset",
+
+  "level": "Level",
+
+  "tower-fail": "Sweep the previous floor to gain more exp to level up your party then try again!",
+  "leveled-up": "{0} leveled up{1}and gained {2} stat points and {3} skill points.",
+  "exp-gained": "{0} {1}/{2} exp",
 
   "help-page1-before-anything": "Before anything: You will need characters.",
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",

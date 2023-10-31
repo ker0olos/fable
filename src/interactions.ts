@@ -1130,6 +1130,38 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
+          case 'tsweep': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            if (userId === member.user.id) {
+              return tower.sweep({
+                token,
+                guildId,
+                userId: member.user.id,
+              })
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'tchallenge': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            if (userId === member.user.id) {
+              return battle.challengeTower({
+                token,
+                guildId,
+                userId: member.user.id,
+              })
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
           case 'packs': {
             // deno-lint-ignore no-non-null-assertion
             const index = parseInt(customValues![1]);

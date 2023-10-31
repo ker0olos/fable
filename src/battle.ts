@@ -12,8 +12,11 @@ import * as discord from './discord.ts';
 import config from './config.ts';
 
 import gacha from './gacha.ts';
+import tower from './tower.ts';
 
 import * as Schema from '../db/schema.ts';
+
+import { newUnclaimed } from './stats.ts';
 
 import { NonFetalError, PoolError } from './errors.ts';
 
@@ -34,6 +37,9 @@ const MESSAGE_DELAY = 2;
 // 3 minutes
 const MAX_TIME = 3 * 60 * 1000;
 
+// const BOSS_MULTIPLIER = 1.5;
+// const MINIBOSS_MULTIPLIER = 1.25;
+
 const getStats = (char: Schema.Character): CharacterLive => {
   return {
     agility: char.combat?.stats?.agility ?? 0,
@@ -41,6 +47,65 @@ const getStats = (char: Schema.Character): CharacterLive => {
     stamina: char.combat?.stats?.stamina ?? 1,
     hp: char.combat?.stats?.stamina ?? 1,
   };
+};
+
+export const getEnemyRating = (floor: number): number => {
+  switch (floor % 10) {
+    case 1:
+    case 2:
+    case 3:
+      return 1;
+    case 4:
+    case 6:
+      return 2;
+    case 7:
+    case 8:
+    case 9:
+      return 3;
+    case 5:
+      return 4;
+    case 0:
+      return 5;
+    default:
+      throw new Error('');
+  }
+};
+
+const getEnemyStats = (floor: number, seed: string): CharacterLive => {
+  const rng = new utils.LehmerRNG(seed);
+
+  const totalStats = newUnclaimed(getEnemyRating(floor));
+
+  const stats: CharacterLive = { agility: 0, strength: 0, stamina: 0, hp: 0 };
+
+  for (let i = 0; i < totalStats; i++) {
+    const rand = Math.floor(rng.nextFloat() * 3);
+
+    if (rand === 0) {
+      stats.agility += 1;
+    } else if (rand === 1) {
+      stats.strength += 1;
+    } else {
+      stats.stamina += 1;
+    }
+  }
+
+  const multiplier = 0.5;
+  const base = floor;
+
+  stats.stamina = stats.hp = Math.round(
+    stats.stamina * Math.pow(base, multiplier),
+  );
+
+  stats.strength = Math.round(
+    stats.strength * Math.pow(base, multiplier),
+  );
+
+  stats.agility = Math.round(
+    stats.agility * Math.pow(base, multiplier),
+  );
+
+  return stats;
 };
 
 const addEmbed = (message: discord.Message, {
@@ -238,6 +303,8 @@ function challengeTower({ token, guildId, userId }: {
 
       const { inventory } = await db.getInventory(instance, _user);
 
+      const floor = (inventory.floorsCleared ?? 0) + 1;
+
       const party = await db.getUserParty(inventory);
 
       const party1 = [
@@ -269,7 +336,7 @@ function challengeTower({ token, guildId, userId }: {
 
       const { pool, validate } = await gacha.guaranteedPool({
         seed: guildId,
-        guarantee: 5, // TODO based on floor
+        guarantee: getEnemyRating(floor),
         guildId,
       });
 
@@ -317,6 +384,8 @@ function challengeTower({ token, guildId, userId }: {
         throw new PoolError();
       }
 
+      const enemyStats: CharacterLive = getEnemyStats(floor, guildId);
+
       const [userWon, _lastMessage] = await startCombat({
         token,
         locale,
@@ -327,18 +396,26 @@ function challengeTower({ token, guildId, userId }: {
         character1Existing: party1[0],
         character2Existing: undefined,
         character1Stats: userCharacterStats,
-        character2Stats: { // TODO random stats based on floor difficulty
-          agility: 0,
-          hp: 5,
-          stamina: 5,
-          strength: 10,
-        },
+        character2Stats: enemyStats,
       });
 
       if (userWon) {
-        // TODO user won
+        tower.onSuccess({
+          token,
+          userId,
+          guildId,
+          message: _lastMessage,
+          party: party1,
+          inventory,
+          locale,
+        });
       } else {
-        // TODO user lost
+        tower.onFail({
+          token,
+          message: _lastMessage,
+          userId,
+          locale,
+        });
       }
     })
     .catch(async (err) => {
