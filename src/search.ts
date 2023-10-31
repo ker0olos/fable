@@ -506,11 +506,10 @@ function characterEmbed(
     }
   } else {
     embed.addField({
-      name:
-        !description || !options.description ||
+      name: !description || !options.description ||
           (options.description && options.mode === 'thumbnail')
-          ? `${aliasWrapped}`
-          : `${aliasWrapped}\n${discord.empty}`,
+        ? `${aliasWrapped}`
+        : `${aliasWrapped}\n${discord.empty}`,
       value: options.description ? description : options.suffix,
     });
   }
