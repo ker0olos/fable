@@ -93,8 +93,11 @@ const getEnemyStats = (floor: number, seed: string): CharacterLive => {
   const multiplier = 0.5;
   const base = floor;
 
-  stats.stamina = stats.hp = Math.round(
-    stats.stamina * Math.pow(base, multiplier),
+  stats.stamina = stats.hp = Math.max(
+    Math.round(
+      stats.stamina * Math.pow(base, multiplier),
+    ),
+    1,
   );
 
   stats.strength = Math.round(
