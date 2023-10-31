@@ -847,6 +847,10 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'Battle',
+    type: CommandType.USER,
+  }),
+  ...Command({
     name: 'battle',
     description: 'battle/combat commands',
     options: [
@@ -863,7 +867,17 @@ export const commands = [
           }),
         ],
       }),
+      Option({
+        name: 'tower',
+        description: '/battle tower',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
     ],
+  }),
+  ...Command({
+    name: 'sweep',
+    description: '/sweep',
   }),
 ];
 

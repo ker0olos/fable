@@ -3361,6 +3361,17 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: undefined,
+    description_localizations: {
+      "es-ES": undefined,
+    },
+    dm_permission: false,
+    name: "Battle",
+    options: undefined,
+    type: 2,
+  },
+  {
+    default_member_permissions: undefined,
     description: "battle/combat commands",
     description_localizations: {
       "es-ES": undefined,
@@ -3397,7 +3408,32 @@ snapshot[`commands 1`] = `
         required: false,
         type: 1,
       },
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "Climb the tower to glory and become a fable",
+        description_localizations: {
+          "es-ES": "Climb the tower to glory and become a fable",
+        },
+        max_value: undefined,
+        min_value: undefined,
+        name: "tower",
+        options: undefined,
+        required: false,
+        type: 1,
+      },
     ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
+    description: "Sweep your current battle tower floor for exp",
+    description_localizations: {
+      "es-ES": "Sweep your current battle tower floor for exp",
+    },
+    dm_permission: false,
+    name: "sweep",
+    options: undefined,
     type: undefined,
   },
 ]

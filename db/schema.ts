@@ -33,6 +33,12 @@ export interface Inventory extends Collection {
   lastPull?: string;
   rechargeTimestamp?: string;
   stealTimestamp?: string;
+
+  floorsCleared?: number;
+  availableSweeps?: number;
+  sweepsTimestamp?: string;
+  lastSweep?: string;
+
   party?: {
     member1?: string;
     member2?: string;
@@ -65,6 +71,9 @@ export interface Pack extends Collection {
 }
 
 export interface CharacterCombat {
+  exp?: number;
+  level?: number;
+  skillPoints?: number;
   stats?: CharacterStats;
 }
 

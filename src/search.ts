@@ -413,6 +413,7 @@ function characterEmbed(
   options?: {
     userId?: string;
     existing?: Partial<Schema.Character>;
+    suffix?: string;
     rating?: Rating | boolean;
     media?: {
       title?: boolean | string;
@@ -505,11 +506,11 @@ function characterEmbed(
     }
   } else {
     embed.addField({
-      name:
-        !description || (options.description && options.mode === 'thumbnail')
-          ? `${aliasWrapped}`
-          : `${aliasWrapped}\n${discord.empty}`,
-      value: options.description ? description : undefined,
+      name: !description || !options.description ||
+          (options.description && options.mode === 'thumbnail')
+        ? `${aliasWrapped}`
+        : `${aliasWrapped}\n${discord.empty}`,
+      value: options.description ? description : options.suffix,
     });
   }
 

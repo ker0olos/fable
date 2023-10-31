@@ -47,13 +47,21 @@ async function now({
   const guild = await db.getGuild(guildId);
   const instance = await db.getInstance(guild);
 
-  const { inventory } = await db.rechargePulls(instance, user);
+  const { inventory } = await db.rechargeConsumables(instance, user);
 
-  const { availablePulls, stealTimestamp, rechargeTimestamp } = inventory;
+  const {
+    availablePulls,
+    sweepsTimestamp,
+    availableSweeps,
+    stealTimestamp,
+    rechargeTimestamp,
+    lastSweep,
+  } = inventory;
 
   const message = new discord.Message();
 
   const recharge = utils.rechargeTimestamp(rechargeTimestamp);
+  const sweepsRecharge = utils.rechargeSweepTimestamp(sweepsTimestamp);
 
   const voting = utils.votingTimestamp(user.lastVote);
 
@@ -74,6 +82,18 @@ async function now({
           : i18n.get('available-pulls', locale),
       }),
   );
+
+  if (lastSweep && utils.isWithin14Days(new Date(lastSweep))) {
+    message.addEmbed(
+      new discord.Embed()
+        .setTitle(`**${availableSweeps}**`)
+        .setFooter({
+          text: availableSweeps === 1
+            ? i18n.get('available-sweep', locale)
+            : i18n.get('available-sweeps', locale),
+        }),
+    );
+  }
 
   if (user.availableTokens) {
     message.addEmbed(
@@ -98,6 +118,16 @@ async function now({
     message.addEmbed(
       new discord.Embed()
         .setDescription(i18n.get('+1-pull', locale, `<t:${recharge}:R>`)),
+    );
+  }
+
+  // deno-lint-ignore no-non-null-assertion
+  if (availableSweeps! < 5) {
+    message.addEmbed(
+      new discord.Embed()
+        .setDescription(
+          i18n.get('+1-sweep', locale, `<t:${sweepsRecharge}:R>`),
+        ),
     );
   }
 
@@ -135,6 +165,16 @@ async function now({
       new discord.Component()
         .setId('gacha', userId)
         .setLabel('/gacha'),
+    ]);
+  }
+
+  // deno-lint-ignore no-non-null-assertion
+  if (availableSweeps! > 0) {
+    message.addComponents([
+      // `/sweep` shortcut
+      new discord.Component()
+        .setId('tsweep', userId)
+        .setLabel('/sweep'),
     ]);
   }
 

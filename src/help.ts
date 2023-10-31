@@ -3,7 +3,12 @@ import user from './user.ts';
 
 import * as discord from './discord.ts';
 
-import { COOLDOWN_DAYS, COSTS, MAX_PULLS, RECHARGE_MINS } from '../db/mod.ts';
+import {
+  COOLDOWN_DAYS,
+  COSTS,
+  MAX_PULLS,
+  RECHARGE_SWEEPS_MINS,
+} from '../db/mod.ts';
 
 import { PARTY_PROTECTION_PERIOD } from './steal.ts';
 
@@ -32,7 +37,7 @@ function pages(
             i18n.get(
               'help-page1-you-get-n-every-t',
               locale,
-              RECHARGE_MINS,
+              RECHARGE_SWEEPS_MINS,
               MAX_PULLS,
             ),
             '',
@@ -160,6 +165,10 @@ function pages(
             i18n.get('help-page10-agility', locale),
             '',
             i18n.get('help-page10-stamina', locale),
+            '',
+            i18n.get('help-page10-tower', locale),
+            '',
+            i18n.get('help-page10-sweep', locale),
             discord.empty,
           ].join('\n')),
       ),
@@ -184,7 +193,7 @@ function pages(
             '',
             i18n.get('help-page5-voting-weekends', locale),
             '',
-            i18n.get('help-page5-buy-normal', locale, RECHARGE_MINS),
+            i18n.get('help-page5-buy-normal', locale, RECHARGE_SWEEPS_MINS),
             '',
             i18n.get('help-page5-buy-guaranteed', locale),
             '',
@@ -232,9 +241,9 @@ function pages(
           .setDescription([
             i18n.get('help-page6-release', locale),
             '',
-            '**[Leveling Up Characters](https://github.com/ker0olos/fable/issues/64)**',
+            '**[Classes And Skills](https://github.com/ker0olos/fable/issues/64)**',
             '',
-            '**[Player vs. Environment](https://github.com/ker0olos/fable/issues/58)**',
+            '**[Server vs. Server](https://github.com/ker0olos/fable/issues/65)**',
             '',
           ].join('\n')),
       ),
@@ -281,6 +290,9 @@ function pages(
             `- \`/steal\`: _${i18n.get('/steal', locale)}_`,
             `- \`/trade\` \`/offer\`: _${i18n.get('/trade', locale)}_`,
             `- \`/give\` \`/gift\`: _${i18n.get('/give', locale)}_`,
+            '',
+            `- \`/battle tower\`: _${i18n.get('/battle tower', locale)}_`,
+            `- \`/sweep\`: _${i18n.get('/sweep', locale)}_`,
           ].join('\n')),
       ),
     new discord.Message()

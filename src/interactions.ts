@@ -13,6 +13,7 @@ import steal from './steal.ts';
 import shop from './shop.ts';
 import stats from './stats.ts';
 import battle from './battle.ts';
+import tower from './tower.ts';
 import help from './help.ts';
 
 import merge from './merge.ts';
@@ -76,7 +77,6 @@ export const handler = async (r: Request) => {
     focused,
     member,
     options,
-    resolved,
     subcommand,
     customType,
     customValues,
@@ -744,22 +744,37 @@ export const handler = async (r: Request) => {
           case 'battle': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'friend': {
-                const targetId = options['versus'] as string;
-
-                return battle.v2({
+              case 'tower': {
+                return tower.view({
                   token,
                   guildId,
-                  user: member.user,
-                  // deno-lint-ignore no-non-null-assertion
-                  target: resolved!.users![targetId],
+                  userId: member.user.id,
                 })
                   .send();
               }
               default:
-                break;
+              case 'friend': {
+                const targetId = options['versus'] as string ??
+                  options['user'] as string;
+
+                return battle.challengeFriend({
+                  token,
+                  guildId,
+                  userId: member.user.id,
+                  targetId: targetId,
+                })
+                  .send();
+              }
             }
             break;
+          }
+          case 'sweep': {
+            return tower.sweep({
+              token,
+              guildId,
+              userId: member.user.id,
+            })
+              .send();
           }
           case 'logs': {
             const userId = options['user'] as string ?? member.user.id;
@@ -1097,6 +1112,60 @@ export const handler = async (r: Request) => {
                 default:
                   break;
               }
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'sbattle': {
+            // deno-lint-ignore no-non-null-assertion
+            const id = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![1];
+
+            if (userId === member.user.id) {
+              battle.skipBattle(id);
+
+              return new discord.Message()
+                .setType(discord.MessageType.Update)
+                .addEmbed(
+                  new discord.Embed().setImage(
+                    { url: `${config.origin}/assets/spinner3.gif` },
+                  ),
+                )
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'tsweep': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            if (userId === member.user.id) {
+              return tower.sweep({
+                token,
+                guildId,
+                userId: member.user.id,
+              })
+                .setType(discord.MessageType.New)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'tchallenge': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            if (userId === member.user.id) {
+              return battle.challengeTower({
+                token,
+                guildId,
+                userId: member.user.id,
+              })
+                .setType(discord.MessageType.Update)
+                .send();
             }
 
             throw new NoPermissionError();

@@ -14,13 +14,21 @@ import {
 import utils from '../src/utils.ts';
 
 import packs from '../src/packs.ts';
-import stats from '../src/stats.ts';
+import stats, { newUnclaimed } from '../src/stats.ts';
 
 import config from '../src/config.ts';
 
 import db from '../db/mod.ts';
 
 import { NonFetalError } from '../src/errors.ts';
+
+Deno.test('test new unclaimed stats', () => {
+  assertEquals(newUnclaimed(1), 3);
+  assertEquals(newUnclaimed(2), 6);
+  assertEquals(newUnclaimed(3), 9);
+  assertEquals(newUnclaimed(4), 12);
+  assertEquals(newUnclaimed(5), 15);
+});
 
 Deno.test('update stats', async (test) => {
   await test.step('reset', async () => {
@@ -756,6 +764,9 @@ Deno.test('/stats', async (test) => {
           id: 'id:1',
           rating: 4,
           combat: {
+            level: 2,
+            exp: 10,
+            skillPoints: 6,
             stats: {
               unclaimed: 0,
               strength: 2,
@@ -822,11 +833,12 @@ Deno.test('/stats', async (test) => {
               fields: [
                 {
                   name: 'full name',
-                  value: '\u200B',
+                  value: 'Level 2\n10/20',
                 },
                 {
                   name: 'Stats',
-                  value: 'Unclaimed: 0\nStrength: 2\nStamina: 3\nAgility: 4',
+                  value:
+                    'Skill Points: 6\nStat Points: 0\nStrength: 2\nStamina: 3\nAgility: 4',
                 },
               ],
             },
@@ -993,11 +1005,12 @@ Deno.test('/stats', async (test) => {
               fields: [
                 {
                   name: 'full name',
-                  value: '\u200B',
+                  value: 'Level 1\n0/10',
                 },
                 {
                   name: 'Stats',
-                  value: 'Unclaimed: 12\nStrength: 0\nStamina: 0\nAgility: 0',
+                  value:
+                    'Skill Points: 0\nStat Points: 12\nStrength: 0\nStamina: 0\nAgility: 0',
                 },
               ],
             },

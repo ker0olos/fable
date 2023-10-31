@@ -24,8 +24,11 @@
   "uninstalled": "Uninstalled",
 
   "+1-pull": "_+1 pull {0}_",
+  "+1-sweep": "_+1 sweep {0}_",
   "available-pull": "Available Pull",
   "available-pulls": "Available Pulls",
+  "available-sweep": "Available Sweep",
+  "available-sweeps": "Available Sweeps",
   "daily-token": "Daily Token",
   "daily-tokens": "Daily Tokens",
   "can-vote-again": "_Can vote again {0}_",
@@ -38,6 +41,19 @@
   "character": "character",
   "characters": "characters",
   "thanks-for-voting": "Thanks for voting, {0}, you gained {1} {2}.",
+
+  "skip": "Skip",
+  "attacking": "Attacking",
+  "won": "Won",
+
+  "sweep": "Sweep",
+  "floor": "Floor",
+  "next-floor": "Next Floor",
+  "challenge": "Challenge",
+
+  "undiscovered": "Undiscovered",
+  "cleared": "Cleared",
+  "current": "Current",
 
   "spent-tokens-normal": "You want to spent **{0} {1}** {2}?",
   "spent-tokens-guaranteed": "You want to spent **{0} tokens** {1} for a **{2}**{3}?",
@@ -98,8 +114,8 @@
   "stealing-party-member": "As part of {0}'s party, **{1}** cannot be stolen while {0} is still active",
   "steal-chance": "Your chance of success is **{0}%**",
   "stolen-from-you": "**{0}** was stolen from you!",
-  "you-succeeded": "**You Succeeded!**",
-  "you-failed": "**You Failed!**",
+  "you-succeeded": "**You Succeeded**",
+  "you-failed": "**You Failed**",
   "steal-cooldown": "Steal is on cooldown, try again {0}",
   "steal-try-again": "You can try again {0}",
   "steal-unexpected": "Something happened and affected your chances of stealing **{0}**, Please try again!",
@@ -123,6 +139,9 @@
   "pack-is-private": "This pack is private and cannot be installed by you",
   "pack-characters-disabled": "**All characters from this pack are now disabled**",
 
+  "your-party-empty": "Your party is empty",
+  "user-party-empty": "{0} party is empty",
+
   "not-fit-for-combat": "Character is yet to be found and isn't combat ready",
   "not-enough-unclaimed": "Character doesn't have enough unclaimed points left",
   "incorrect-distribution": "Incorrect distribution format!\n\n**Correct:** STR-STA-AGI\n**Example:** 1-2-3",
@@ -133,13 +152,20 @@
   "sta": "STA",
   "agi": "AGI",
 
-  "unclaimed": "Unclaimed",
+  "stats": "Stats",
+  "skill-points": "Skill Points",
+  "stat-points": "Stat Points",
   "strength": "Strength",
   "stamina": "Stamina",
   "agility": "Agility",
   "reset": "Reset",
 
-  "attacking": "Attacking",
+  "level": "Level",
+
+  "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
+  "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
+  "leveled-up": "{0} leveled up{1}and gained {2} stat points and {3} skill points.",
+  "exp-gained": "{0} {1}/{2} exp",
 
   "help-page1-before-anything": "Before anything: You will need characters.",
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",
@@ -174,12 +200,15 @@
 
   "help-page10-title": "Combat",
   "help-page10-combat": "Prepare your characters for combat using `/stats`",
-  "help-page10-starting-points": "__Every character gets a starting amount of unclaimed stat points__ based on their star rating.",
-  "help-page10-distribution": "__You can distribute those unclaimed points in 3 different base stats:__ strength, stamina, and agility.",
+  "help-page10-starting-points": "__Every character gets a starting amount of stat points__ based on their star rating.",
+  "help-page10-distribution": "__You can distribute those points in 3 different base stats:__ strength, stamina, and agility.",
 
   "help-page10-strength": "__Strength is damage__, the damage you can potentially do to your enemy.",
   "help-page10-agility": "__Agility is defense__, minimize the damage your enemy can do.",
   "help-page10-stamina": "__Stamina is health points__, allows you to take more hits and survive longer in battle",
+
+  "help-page10-tower": "Use `/battle tower` to climb the tower, each server has a unique tower and unique enemies and weakness.",
+  "help-page10-sweep": "> Level up your characters and gain extra stat points by `/sweep`ing the same floor a few times.",
 
   "help-page5-title": "Shop",
   "help-page5-shop": "The shop is a way to purchase extra pulls and guaranteed pulls.",
@@ -253,6 +282,8 @@
   "/stats": "manage your characters stat points and skills",
 
   "/battle friend": "Battle against another player to test your party",
+  "/battle tower": "Climb the tower to glory and become a fable",
+  "/sweep": "Sweep your current battle tower floor for exp",
 
   "/help": "need more information? we got you",
 

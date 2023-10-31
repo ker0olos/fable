@@ -3767,7 +3767,7 @@ Deno.test('character embed', async (test) => {
       assertEquals(embed.json(), {
         fields: [
           {
-            name: 'full name\n\u200B',
+            name: 'full name',
             value: '\u200B',
           },
         ],
@@ -3815,7 +3815,7 @@ Deno.test('character embed', async (test) => {
       assertEquals(embed.json(), {
         fields: [
           {
-            name: 'nickname\n\u200B',
+            name: 'nickname',
             value: '\u200B',
           },
         ],
@@ -3856,7 +3856,7 @@ Deno.test('character embed', async (test) => {
       assertEquals(embed.json(), {
         fields: [
           {
-            name: 'full name\n\u200B',
+            name: 'full name',
             value: '\u200B',
           },
         ],

@@ -598,7 +598,7 @@ Deno.test('attempt', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**You Succeeded!**',
+              description: '**You Succeeded**',
             },
             {
               type: 'rich',
@@ -854,7 +854,7 @@ Deno.test('attempt', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '**You Failed!**',
+              description: '**You Failed**',
             },
             {
               type: 'rich',

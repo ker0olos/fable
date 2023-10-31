@@ -49,7 +49,7 @@ snapshot[`/help 1`] = `
         },
         description: "Before anything: You will need characters.
 
-__You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.
+__You get a free pull every 240 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.
 
 __Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.
 
@@ -295,15 +295,19 @@ snapshot[`/help 5`] = `
         },
         description: "Prepare your characters for combat using \`/stats\`
 
-__Every character gets a starting amount of unclaimed stat points__ based on their star rating.
+__Every character gets a starting amount of stat points__ based on their star rating.
 
-__You can distribute those unclaimed points in 3 different base stats:__ strength, stamina, and agility.
+__You can distribute those points in 3 different base stats:__ strength, stamina, and agility.
 
 __Strength is damage__, the damage you can potentially do to your enemy.
 
 __Agility is defense__, minimize the damage your enemy can do.
 
 __Stamina is health points__, allows you to take more hits and survive longer in battle
+
+Use \`/battle tower\` to climb the tower, each server has a unique tower and unique enemies and weakness.
+
+> Level up your characters and gain extra stat points by \`/sweep\`ing the same floor a few times.
 ​",
         type: "rich",
       },
@@ -368,7 +372,7 @@ __Voting for Fable on Top.gg awards 1 token__, you can vote once every 12 hours.
 
 __Voting on weekends awards 2 tokens__ (_Fridays, Saturdays and Sundays_).
 
-\`/buy normal\` gets you extra pulls, they are the exact same as the ones you get every 30 minutes.
+\`/buy normal\` gets you extra pulls, they are the exact same as the ones you get every 240 minutes.
 
 \`/buy guaranteed\` guarantees you get a character from one specific star rating.
 
@@ -451,9 +455,9 @@ snapshot[`/help 7`] = `
         },
         description: "__**Releasing in the near future (~3 months)**__
 
-**[Leveling Up Characters](https://github.com/ker0olos/fable/issues/64)**
+**[Classes And Skills](https://github.com/ker0olos/fable/issues/64)**
 
-**[Player vs. Environment](https://github.com/ker0olos/fable/issues/58)**
+**[Server vs. Server](https://github.com/ker0olos/fable/issues/65)**
 ",
         type: "rich",
       },
@@ -519,7 +523,10 @@ snapshot[`/help 8`] = `
 
 - \`/steal\`: _steal a character from another user_
 - \`/trade\` \`/offer\`: _trade characters with another user_
-- \`/give\` \`/gift\`: _give characters to another user_",
+- \`/give\` \`/gift\`: _give characters to another user_
+
+- \`/battle tower\`: _Climb the tower to glory and become a fable_
+- \`/sweep\`: _Sweep your current battle tower floor for exp_",
         type: "rich",
       },
     ],

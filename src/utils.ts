@@ -15,7 +15,7 @@ import { distance as _distance } from 'levenshtein';
 
 import { proxy } from '../images-proxy/mod.ts';
 
-import { RECHARGE_MINS } from '../db/mod.ts';
+import { RECHARGE_MINS, RECHARGE_SWEEPS_MINS } from '../db/mod.ts';
 
 const TEN_MIB = 1024 * 1024 * 10;
 
@@ -26,6 +26,24 @@ export enum ImageSize {
   Thumbnail = 'thumbnail',
   Medium = 'medium',
   Large = 'large',
+}
+
+class LehmerRNG {
+  private seed: number;
+
+  constructor(seed: string) {
+    this.seed = 2166136261;
+    for (let i = 0; i < seed.length; i++) {
+      this.seed ^= seed.charCodeAt(i);
+      this.seed *= 16777619;
+    }
+    this.seed = this.seed >>> 0;
+  }
+
+  nextFloat(): number {
+    this.seed = (this.seed * 16807) % 2147483647;
+    return this.seed / 2147483647;
+  }
 }
 
 function getRandomFloat(): number {
@@ -51,27 +69,6 @@ function nanoid(size = 16): string {
   }, '');
 }
 
-// function randomPortions(
-//   min: number,
-//   max: number,
-//   length: number,
-//   sum: number,
-// ): number[] {
-//   return Array.from({ length }, (_, i) => {
-//     const smin = (length - i - 1) * min;
-//     const smax = (length - i - 1) * max;
-
-//     const offset = Math.max(sum - smax, min);
-//     const random = 1 + Math.min(sum - offset, max - offset, sum - smin - min);
-
-//     const value = Math.floor(Math.random() * random + offset);
-
-//     sum -= value;
-
-//     return value;
-//   });
-// }
-
 function hexToInt(hex?: string): number | undefined {
   if (!hex) {
     return;
@@ -86,13 +83,15 @@ function hexToInt(hex?: string): number | undefined {
   return parseInt(`${R}${G}${B}`, 16);
 }
 
-function shuffle<T>(array: T[]): void {
+function shuffle<T>(array: T[], seed?: string): void {
+  const rng = seed ? () => new LehmerRNG(seed).nextFloat() : Math.random;
+
   for (
     let i = 0, length = array.length, swap = 0, temp = null;
     i < length;
     i++
   ) {
-    swap = Math.floor(Math.random() * (i + 1));
+    swap = Math.floor(rng() * (i + 1));
     temp = array[swap];
     array[swap] = array[i];
     array[i] = temp;
@@ -320,6 +319,17 @@ function rechargeTimestamp(v?: string): string {
   return Math.floor(ts / 1000).toString();
 }
 
+function rechargeSweepTimestamp(v?: string): string {
+  const parsed = new Date(v ?? new Date());
+
+  parsed.setMinutes(parsed.getMinutes() + RECHARGE_SWEEPS_MINS);
+
+  const ts = parsed.getTime();
+
+  // discord uses seconds not milliseconds
+  return Math.floor(ts / 1000).toString();
+}
+
 function votingTimestamp(v?: string): { canVote: boolean; timeLeft: string } {
   const parsed = new Date(v ?? new Date());
 
@@ -420,8 +430,15 @@ function captureOutage(id: string): Promise<Response> {
   );
 }
 
+function isWithin14Days(date: Date): boolean {
+  const fourteenDaysAgo = new Date();
+  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+  return date >= fourteenDaysAgo;
+}
+
 const utils = {
-  // randomPortions,
+  LehmerRNG,
+  isWithin14Days,
   capitalize,
   captureException,
   captureOutage,
@@ -442,6 +459,7 @@ const utils = {
   parseInt: _parseInt,
   readJson,
   rechargeTimestamp,
+  rechargeSweepTimestamp,
   rng,
   serve,
   serveStatic,

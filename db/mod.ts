@@ -14,7 +14,8 @@ import {
   MAX_NEW_PULLS,
   MAX_PULLS,
   RECHARGE_MINS,
-  rechargePulls,
+  RECHARGE_SWEEPS_MINS,
+  rechargeConsumables,
 } from './getInventory.ts';
 
 import { addCharacter } from './addCharacter.ts';
@@ -50,6 +51,10 @@ import {
 
 import { assignStats } from './assignStats.ts';
 
+import { gainExp, MAX_LEVEL } from './gainExp.ts';
+
+import { clearFloor, consumeSweep } from './consumeSweep.ts';
+
 import {
   addPack,
   getPacksByUserId,
@@ -73,6 +78,18 @@ import { createVoteRef, resolveVoteRef } from './voteRef.ts';
 export const kv = await Deno.openKv(
   // 'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect',
 );
+
+async function setValue<T>(
+  key: Deno.KvKey,
+  value: unknown,
+  options?: {
+    expireIn?: number | undefined;
+  },
+): Promise<boolean> {
+  const res = await kv.set(key, value, options);
+
+  return res.ok;
+}
 
 async function getValue<T>(key: Deno.KvKey): Promise<T | undefined> {
   const res = await kv.get<T>(key);
@@ -131,6 +148,8 @@ async function getManyValues<T>(
 }
 
 const db = {
+  kv,
+  setValue,
   getValue,
   getValues,
   getValueAndTimestamp,
@@ -145,7 +164,7 @@ const db = {
   getUser,
   getUserCharacters,
   getUserParty,
-  rechargePulls,
+  rechargeConsumables,
   //
   addCharacter,
   //
@@ -174,6 +193,10 @@ const db = {
   //
   assignStats,
   //
+  gainExp,
+  consumeSweep,
+  clearFloor,
+  //
   addPack,
   getPacksByUserId,
   popularPacks,
@@ -184,6 +207,14 @@ const db = {
   resolveVoteRef,
 };
 
-export { COOLDOWN_DAYS, COSTS, MAX_NEW_PULLS, MAX_PULLS, RECHARGE_MINS };
+export {
+  COOLDOWN_DAYS,
+  COSTS,
+  MAX_LEVEL,
+  MAX_NEW_PULLS,
+  MAX_PULLS,
+  RECHARGE_MINS,
+  RECHARGE_SWEEPS_MINS,
+};
 
 export default db;

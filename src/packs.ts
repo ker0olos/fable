@@ -733,8 +733,9 @@ async function aggregate<T>({ media, character, start, end, guildId }: {
   throw new Error();
 }
 
-async function pool({ guildId, range, role, stars }: {
+async function pool({ guildId, seed, range, role, stars }: {
   guildId: string;
+  seed?: string;
   range?: number[];
   role?: CharacterRole;
   stars?: number;
@@ -790,7 +791,7 @@ async function pool({ guildId, range, role, stars }: {
   const occurrences: Record<string, boolean> = {};
 
   // shuffle here is to ensure that occurrences are randomly ordered
-  utils.shuffle(pool);
+  utils.shuffle(pool, seed);
 
   return pool.filter(({ mediaId, rating }) => {
     if (typeof stars === 'number' && rating !== stars) {

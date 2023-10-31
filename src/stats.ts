@@ -5,17 +5,19 @@ import packs from './packs.ts';
 import utils from './utils.ts';
 import i18n from './i18n.ts';
 
-import db from '../db/mod.ts';
-
 import * as discord from './discord.ts';
 
 import config from './config.ts';
+
+import db from '../db/mod.ts';
+
+import { experienceToNextLevel } from '../db/gainExp.ts';
 
 import type { Character } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
 
-const newUnclaimed = (rating: number): number => {
+export const newUnclaimed = (rating: number): number => {
   return 3 * rating;
 };
 
@@ -203,17 +205,8 @@ function view({ token, character, userId, guildId, distribution }: {
 
       const message = new discord.Message();
 
-      const embed = search.characterEmbed(character, {
-        footer: false,
-        existing: {
-          image: existing[0][0].image,
-          nickname: existing[0][0].nickname,
-          rating: existing[0][0].rating,
-        },
-        media: { title: false },
-        description: false,
-        mode: 'thumbnail',
-      });
+      const skillPoints = existing[0][0].combat?.skillPoints ??
+        0;
 
       const unclaimed = existing[0][0].combat?.stats?.unclaimed ??
         newUnclaimed(existing[0][0].rating);
@@ -222,11 +215,29 @@ function view({ token, character, userId, guildId, distribution }: {
       const stamina = existing[0][0].combat?.stats?.stamina ?? 0;
       const agility = existing[0][0].combat?.stats?.agility ?? 0;
 
+      const exp = existing[0][0].combat?.exp ?? 0;
+      const level = existing[0][0].combat?.level ?? 1;
+      const expToLevel = experienceToNextLevel(level);
+
+      const embed = search.characterEmbed(character, {
+        footer: false,
+        existing: {
+          image: existing[0][0].image,
+          nickname: existing[0][0].nickname,
+          rating: existing[0][0].rating,
+        },
+        suffix: `${i18n.get('level', locale)} ${level}\n${exp}/${expToLevel}`,
+        media: { title: false },
+        description: false,
+        mode: 'thumbnail',
+      });
+
       embed
         .addField({
-          name: 'Stats',
+          name: i18n.get('stats', locale),
           value: [
-            `${i18n.get('unclaimed', locale)}: ${unclaimed}`,
+            `${i18n.get('skill-points', locale)}: ${skillPoints}`,
+            `${i18n.get('stat-points', locale)}: ${unclaimed}`,
             `${i18n.get('strength', locale)}: ${strength}`,
             `${i18n.get('stamina', locale)}: ${stamina}`,
             `${i18n.get('agility', locale)}: ${agility}`,

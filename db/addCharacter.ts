@@ -45,7 +45,7 @@ export async function addCharacter(
 
     const user = await db.getUser(userId);
 
-    const { inventory, inventoryCheck } = await db.rechargePulls(
+    const { inventory, inventoryCheck } = await db.rechargeConsumables(
       instance,
       user,
       false,
