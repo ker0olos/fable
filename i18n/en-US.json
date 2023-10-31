@@ -153,7 +153,8 @@
   "agi": "AGI",
 
   "stats": "Stats",
-  "unclaimed": "Unused",
+  "skill-points": "Skill Points",
+  "stat-points": "Stat Points",
   "strength": "Strength",
   "stamina": "Stamina",
   "agility": "Agility",

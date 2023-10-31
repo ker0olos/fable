@@ -154,7 +154,8 @@
   "agi": "AGI",
 
   "stats": "Stats",
-  "unclaimed": "Sin Asignar",
+  "skill-points": "Skill Points",
+  "stat-points": "Stat Points",
   "strength": "Fuerza",
   "stamina": "Resistencia",
   "agility": "Agilidad",

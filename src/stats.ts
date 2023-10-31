@@ -205,6 +205,9 @@ function view({ token, character, userId, guildId, distribution }: {
 
       const message = new discord.Message();
 
+      const skillPoints = existing[0][0].combat?.skillPoints ??
+        0;
+
       const unclaimed = existing[0][0].combat?.stats?.unclaimed ??
         newUnclaimed(existing[0][0].rating);
 
@@ -233,7 +236,8 @@ function view({ token, character, userId, guildId, distribution }: {
         .addField({
           name: i18n.get('stats', locale),
           value: [
-            `${i18n.get('unclaimed', locale)}: ${unclaimed}`,
+            `${i18n.get('skill-points', locale)}: ${skillPoints}`,
+            `${i18n.get('stat-points', locale)}: ${unclaimed}`,
             `${i18n.get('strength', locale)}: ${strength}`,
             `${i18n.get('stamina', locale)}: ${stamina}`,
             `${i18n.get('agility', locale)}: ${agility}`,
