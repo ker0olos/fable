@@ -25,7 +25,7 @@ export const MAX_NEW_PULLS = 10;
 export const MAX_NEW_SWEEPS = MAX_SWEEPS;
 
 export const RECHARGE_MINS = 30;
-export const RECHARGE_SWEEPS_MINS = 240;
+export const RECHARGE_SWEEPS_MINS = 120;
 
 export async function getUser(userId: string): Promise<Schema.User> {
   const response = await db.getValue<Schema.User>(usersByDiscordId(userId));
