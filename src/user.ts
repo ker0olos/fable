@@ -63,6 +63,9 @@ async function now({
   const recharge = utils.rechargeTimestamp(rechargeTimestamp);
   const sweepsRecharge = utils.rechargeSweepTimestamp(sweepsTimestamp);
 
+  const showSweeps = typeof lastSweep === 'string' &&
+    utils.isWithin14Days(new Date(lastSweep));
+
   const voting = utils.votingTimestamp(user.lastVote);
 
   const guarantees = Array.from(new Set(user.guarantees ?? []))
@@ -83,7 +86,7 @@ async function now({
       }),
   );
 
-  if (lastSweep && utils.isWithin14Days(new Date(lastSweep))) {
+  if (showSweeps) {
     message.addEmbed(
       new discord.Embed()
         .setTitle(`**${availableSweeps}**`)
@@ -122,7 +125,7 @@ async function now({
   }
 
   // deno-lint-ignore no-non-null-assertion
-  if (availableSweeps! < 5) {
+  if (showSweeps && availableSweeps! < 5) {
     message.addEmbed(
       new discord.Embed()
         .setDescription(

@@ -102,7 +102,7 @@ function getMessage(
   // sweep button
   message.addComponents([
     new discord.Component()
-      .setId(discord.join('tsweep', userId))
+      .setId('tsweep')
       .setLabel(i18n.get('sweep', locale))
       .setDisabled(cleared <= 0),
   ]);
@@ -110,7 +110,7 @@ function getMessage(
   // challenge button
   message.addComponents([
     new discord.Component()
-      .setId(discord.join('tchallenge', userId))
+      .setId('tchallenge', userId)
       .setLabel(i18n.get('challenge', locale))
       .setDisabled(MAX_FLOORS <= cleared),
   ]);
@@ -254,11 +254,11 @@ function sweep({ token, guildId, userId }: {
           op,
           inventory,
           character,
-          index === 0 ? expGained * 0.5 : expGained * 0.25,
+          index === 0 ? expGained : expGained * 0.5,
         )
       );
 
-      const statusString = status.map(
+      const statusText = status.map(
         ({ levelUp, skillPoints, statPoints, exp, expToLevel }, index) => {
           if (levelUp >= 1) {
             return i18n.get(
@@ -297,8 +297,15 @@ function sweep({ token, guildId, userId }: {
                 // deno-lint-ignore no-non-null-assertion
                 `${i18n.get('floor', locale)} ${inventory.floorsCleared!}`,
               )
-              .setDescription(statusString),
+              .setDescription(statusText),
           );
+
+          // sweep button
+          message.addComponents([
+            new discord.Component()
+              .setId('tsweep')
+              .setLabel(`/sweep`),
+          ]);
 
           return await message.patch(token);
         }
@@ -335,7 +342,7 @@ function sweep({ token, guildId, userId }: {
 }
 
 async function onFail(
-  { token, userId, message, locale }: {
+  { token, message, locale }: {
     token: string;
     userId: string;
     message: discord.Message;
@@ -351,7 +358,7 @@ async function onFail(
   // sweep button
   message.addComponents([
     new discord.Component()
-      .setId(discord.join('tsweep', userId))
+      .setId('tsweep')
       .setLabel(`/sweep`),
   ]);
 
@@ -389,7 +396,7 @@ async function onSuccess(
     ids: party.map(({ id }) => id),
   });
 
-  const statusString = status.map(
+  const statusText = status.map(
     ({ levelUp, skillPoints, statPoints }, index) => {
       if (levelUp >= 1) {
         return i18n.get(
@@ -416,7 +423,7 @@ async function onSuccess(
       message.addEmbed(
         new discord.Embed()
           .setTitle(i18n.get('you-succeeded', locale))
-          .setDescription(statusString),
+          .setDescription(statusText),
       );
 
       // next floor challenge button

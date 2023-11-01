@@ -166,8 +166,8 @@
 
   "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
   "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
-  "leveled-up": "{0} leveled up{1}and gained {2} stat points and {3} skill points.",
-  "exp-gained": "{0} {1}/{2} exp",
+  "leveled-up": "**{0}** leveled up{1}and gained {2} stat points and {3} skill points.",
+  "exp-gained": "**{0}** {1}/{2} EXP",
 
   "help-page1-before-anything": "Before anything: You will need characters.",
   "help-page1-you-get-n-every-t": "__You get a free pull every {0} minutes (maxed at {1} pulls)__. Use `/now` to check how many pulls you have and how much time is left until your next free pull.",

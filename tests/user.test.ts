@@ -533,6 +533,7 @@ Deno.test('/now', async (test) => {
             stealTimestamp: null,
             rechargeTimestamp: time.toISOString(),
             sweepsTimestamp: time.toISOString(),
+            lastSweep: new Date().toISOString(),
           },
         }) as any,
     );
@@ -590,8 +591,15 @@ Deno.test('/now', async (test) => {
               },
               description: undefined,
             },
+            {
+              type: 'rich',
+              title: '**0**',
+              footer: {
+                text: 'Available Sweeps',
+              },
+            },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
-            { type: 'rich', description: '_+1 sweep <t:1675581706:R>_' },
+            { type: 'rich', description: '_+1 sweep <t:1675574506:R>_' },
           ],
           components: [{
             type: 1,
