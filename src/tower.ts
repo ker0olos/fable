@@ -254,7 +254,7 @@ function sweep({ token, guildId, userId }: {
           op,
           inventory,
           character,
-          index === 0 ? expGained * 0.5 : expGained * 0.25,
+          index === 0 ? expGained : expGained * 0.5,
         )
       );
 
