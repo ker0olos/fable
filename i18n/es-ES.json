@@ -167,8 +167,8 @@
 
   "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
   "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
-  "leveled-up": "{0} leveled up{1}and gained {2} stat points and {3} skill points.",
-  "exp-gained": "{0} {1}/{2} exp",
+  "leveled-up": "**{0}** leveled up{1}and gained {2} stat points and {3} skill points.",
+  "exp-gained": "**{0}** {1}/{2} EXP",
 
   "help-page1-before-anything": "Antes de nada: Necesitarás personajes.",
   "help-page1-you-get-n-every-t": "__Obtienes una tirada (pull) gratis cada {0} minutos (hasta un máximo de {1})__. Utiliza `/now` para comprobar cuantas tiradas tienes y cuánto falta para tu siguiente tirada gratis.",

@@ -159,7 +159,7 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep=user_id',
+                  custom_id: 'tsweep',
                   disabled: true,
                   label: 'Sweep',
                   style: 2,
@@ -291,7 +291,7 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep=user_id',
+                  custom_id: 'tsweep',
                   disabled: false,
                   label: 'Sweep',
                   style: 2,
@@ -423,7 +423,7 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep=user_id',
+                  custom_id: 'tsweep',
                   disabled: false,
                   label: 'Sweep',
                   style: 2,
@@ -555,7 +555,7 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep=user_id',
+                  custom_id: 'tsweep',
                   disabled: false,
                   label: 'Sweep',
                   style: 2,
@@ -687,7 +687,7 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep=user_id',
+                  custom_id: 'tsweep',
                   disabled: false,
                   label: 'Sweep',
                   style: 2,
@@ -819,7 +819,7 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep=user_id',
+                  custom_id: 'tsweep',
                   disabled: false,
                   label: 'Sweep',
                   style: 2,
@@ -951,7 +951,7 @@ Deno.test('/tower view', async (test) => {
               type: 1,
               components: [
                 {
-                  custom_id: 'tsweep=user_id',
+                  custom_id: 'tsweep',
                   disabled: false,
                   label: 'Sweep',
                   style: 2,
@@ -1197,17 +1197,29 @@ Deno.test('/sweep', async (test) => {
           ) as any,
         ),
         {
-          components: [],
           attachments: [],
           embeds: [
             {
               type: 'rich',
               title: 'Floor 1',
-              description: 'name 1 0.5/10 exp\n' +
-                'name 2 0.25/10 exp\n' +
-                'name 3 0.25/10 exp\n' +
-                'name 4 0.25/10 exp\n' +
-                'name 5 0.25/10 exp',
+              description: '**name 1** 1/10 EXP\n' +
+                '**name 2** 0.5/10 EXP\n' +
+                '**name 3** 0.5/10 EXP\n' +
+                '**name 4** 0.5/10 EXP\n' +
+                '**name 5** 0.5/10 EXP',
+            },
+          ],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'tsweep',
+                  label: '/sweep',
+                  style: 2,
+                  type: 2,
+                },
+              ],
             },
           ],
         },
@@ -1450,18 +1462,30 @@ Deno.test('/sweep', async (test) => {
           ) as any,
         ),
         {
-          components: [],
           attachments: [],
           embeds: [
             {
               type: 'rich',
               title: 'Floor 1',
               description:
-                'name 1 leveled up 2x and gained 6 stat points and 2 skill points.\n' +
-                'name 2 leveled up and gained 3 stat points and 1 skill points.\n' +
-                'name 3 leveled up and gained 3 stat points and 1 skill points.\n' +
-                'name 4 leveled up and gained 3 stat points and 1 skill points.\n' +
-                'name 5 leveled up and gained 3 stat points and 1 skill points.',
+                '**name 1** leveled up 2x and gained 6 stat points and 2 skill points.\n' +
+                '**name 2** leveled up and gained 3 stat points and 1 skill points.\n' +
+                '**name 3** leveled up and gained 3 stat points and 1 skill points.\n' +
+                '**name 4** leveled up and gained 3 stat points and 1 skill points.\n' +
+                '**name 5** leveled up and gained 3 stat points and 1 skill points.',
+            },
+          ],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'tsweep',
+                  label: '/sweep',
+                  style: 2,
+                  type: 2,
+                },
+              ],
             },
           ],
         },
@@ -1710,7 +1734,7 @@ Deno.test('/sweep', async (test) => {
             },
             {
               type: 'rich',
-              description: '_+1 sweep <t:1295920800:R>_',
+              description: '_+1 sweep <t:1295913600:R>_',
             },
           ],
         },

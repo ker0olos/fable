@@ -49,7 +49,7 @@ snapshot[`/help 1`] = `
         },
         description: "Before anything: You will need characters.
 
-__You get a free pull every 240 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.
+__You get a free pull every 30 minutes (maxed at 5 pulls)__. Use \`/now\` to check how many pulls you have and how much time is left until your next free pull.
 
 __Characters are exclusive__, once a player on this server finds a character, no one else can find that character in gacha again.
 
@@ -372,7 +372,7 @@ __Voting for Fable on Top.gg awards 1 token__, you can vote once every 12 hours.
 
 __Voting on weekends awards 2 tokens__ (_Fridays, Saturdays and Sundays_).
 
-\`/buy normal\` gets you extra pulls, they are the exact same as the ones you get every 240 minutes.
+\`/buy normal\` gets you extra pulls, they are the exact same as the ones you get every 30 minutes.
 
 \`/buy guaranteed\` guarantees you get a character from one specific star rating.
 
