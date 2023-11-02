@@ -78,7 +78,7 @@ async function update(
       break;
   }
 
-  if (distribution && /\d-\d-\d/.test(distribution)) {
+  if (distribution && /\d+-\d+-\d+/.test(distribution)) {
     const [str, sta, agi] = distribution.split('-')
       .map((n) => parseInt(n));
 
