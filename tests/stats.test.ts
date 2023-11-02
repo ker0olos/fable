@@ -427,6 +427,86 @@ Deno.test('update stats', async (test) => {
     }
   });
 
+  await test.step('distribution', async () => {
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const getInventoryStub = stub(
+      db,
+      'getInventory',
+      () => ({ inventory: 'inventory' }) as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
+      () =>
+        [[{
+          id: 'id:1',
+          rating: 4,
+          combat: {
+            stats: {
+              unclaimed: 15,
+              strength: 0,
+              stamina: 0,
+              agility: 0,
+            },
+          },
+        }]] as any,
+    );
+
+    const assignStatsStub = stub(
+      db,
+      'assignStats',
+      () => '_' as any,
+    );
+
+    const statsStub = stub(stats, 'view', () => undefined as any);
+
+    try {
+      await stats.update({
+        token: 'test_token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        characterId: 'character_id',
+        distribution: '0-10-5',
+        type: 'reset',
+      });
+
+      assertSpyCallArgs(assignStatsStub, 0, [
+        'inventory',
+        'character_id',
+        0,
+        0,
+        10,
+        5,
+      ]);
+    } finally {
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInventoryStub.restore();
+      findCharactersStub.restore();
+      assignStatsStub.restore();
+      statsStub.restore();
+    }
+  });
+
   await test.step('distribution with not enough points', async () => {
     const getUserStub = stub(
       db,
