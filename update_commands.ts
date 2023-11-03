@@ -837,6 +837,32 @@ export const commands = [
       }),
     ],
   }),
+  // ...Command({
+  //   name: 'acquire',
+  //   description: 'acquire character skills',
+  //   options: [
+  //     Option({
+  //       name: 'skill',
+  //       description: '/acquire skill',
+  //       type: Type.SUB_COMMAND,
+  //       optional: true,
+  //       options: [
+  //         Option({
+  //           name: 'character',
+  //           description: '$character-name',
+  //           autocomplete: true,
+  //           type: Type.STRING,
+  //         }),
+  //         Option({
+  //           name: 'name',
+  //           autocomplete: true,
+  //           description: '$skill-name',
+  //           type: Type.STRING,
+  //         }),
+  //       ],
+  //     }),
+  //   ],
+  // }),
   ...Command({
     name: 'Battle',
     type: CommandType.USER,
@@ -844,6 +870,7 @@ export const commands = [
   ...Command({
     name: 'battle',
     description: 'battle/combat commands',
+    aliases: ['bt'],
     options: [
       Option({
         name: 'friend',
@@ -864,6 +891,12 @@ export const commands = [
         type: Type.SUB_COMMAND,
         optional: true,
       }),
+      // Option({
+      //   name: 'skills',
+      //   description: '/battle skills',
+      //   type: Type.SUB_COMMAND,
+      //   optional: true,
+      // }),
     ],
   }),
   ...Command({

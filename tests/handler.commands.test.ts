@@ -7857,7 +7857,7 @@ Deno.test('stats', async (test) => {
 });
 
 Deno.test('battle', async (test) => {
-  await test.step('tower', async () => {
+  await test.step('battle tower', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -7941,7 +7941,7 @@ Deno.test('battle', async (test) => {
     }
   });
 
-  await test.step('friend', async () => {
+  await test.step('battle friend', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -7954,6 +7954,188 @@ Deno.test('battle', async (test) => {
       },
       data: {
         name: 'battle',
+        resolved: {
+          users: {
+            'another_user_id': {
+              id: 'another_user_id',
+            },
+          },
+        },
+        options: [{
+          type: 1,
+          name: `friend`,
+          options: [
+            {
+              name: 'versus',
+              value: 'another_user_id',
+            },
+          ],
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const battleStub = stub(battle, 'challengeFriend', () =>
+      ({
+        send: () => true,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(battleStub, 0, {
+        args: [{
+          token: 'token',
+          guildId: 'guild_id',
+          userId: 'user_id',
+          targetId: 'another_user_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      battleStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('bt tower', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'bt',
+        options: [{
+          type: 1,
+          name: `tower`,
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const battleStub = stub(tower, 'view', () =>
+      ({
+        send: () => true,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(battleStub, 0, {
+        args: [{
+          token: 'token',
+          guildId: 'guild_id',
+          userId: 'user_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      battleStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('bt friend', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'bt',
         resolved: {
           users: {
             'another_user_id': {

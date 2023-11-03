@@ -741,6 +741,7 @@ export const handler = async (r: Request) => {
               userId: member.user.id,
             }).send();
           }
+          case 'bt':
           case 'battle': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {

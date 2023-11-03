@@ -342,7 +342,7 @@ function sweep({ token, guildId, userId }: {
 }
 
 async function onFail(
-  { token, message, locale }: {
+  { token, userId, message, locale }: {
     token: string;
     userId: string;
     message: discord.Message;
@@ -360,6 +360,13 @@ async function onFail(
     new discord.Component()
       .setId('tsweep')
       .setLabel(`/sweep`),
+  ]);
+
+  // try again button
+  message.addComponents([
+    new discord.Component()
+      .setId(discord.join('tchallenge', userId))
+      .setLabel(i18n.get('try-again', locale)),
   ]);
 
   await message.patch(token);
