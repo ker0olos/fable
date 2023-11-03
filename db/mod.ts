@@ -97,10 +97,11 @@ async function getValueAndTimestamp<T>(
 
 async function getValues<T>(
   selector: Deno.KvListSelector,
+  _kv?: Deno.Kv,
 ): Promise<T[]> {
   const values = [];
 
-  const iter = kv.list<T>(selector);
+  const iter = (_kv ?? kv).list<T>(selector);
 
   for await (const { value } of iter) {
     values.push(value);

@@ -1318,12 +1318,6 @@ if (import.meta.main) {
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       baseUrl: import.meta.url,
     }),
-    //
-    '/stats': async () => {
-      return utils.json({
-        server_count: (await db.getValues({ prefix: ['guilds'] })).length,
-      }, { status: 200 });
-    },
     '/invite': () =>
       Response.redirect(
         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,
