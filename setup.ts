@@ -50,9 +50,9 @@ try {
 pb = $.progress('Updating Discord Slash Commands');
 
 try {
-  await $`deno run -A update_commands.ts`.quiet();
+  await $`deno task discord`.quiet();
 } catch {
-  console.error(red('Error running: deno run -A update_commands.ts`'));
+  console.error(red('Error running: deno task discord`'));
   Deno.exit(1);
 } finally {
   pb.finish();
