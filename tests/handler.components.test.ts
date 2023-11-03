@@ -24,7 +24,9 @@ import community from '../src/community.ts';
 
 import steal from '../src/steal.ts';
 import stats from '../src/stats.ts';
+import skills from '../src/skills.ts';
 import battle from '../src/battle.ts';
+import tower from '../src/tower.ts';
 
 config.global = true;
 
@@ -3904,6 +3906,83 @@ Deno.test('battle components', async (test) => {
     } finally {
       delete config.publicKey;
 
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('skills components', async (test) => {
+  await test.step('page 1', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'skills==1',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const setTypeSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const battleStub = stub(skills, 'all', () =>
+      ({
+        setType: setTypeSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(battleStub, 0, {
+        args: [1, undefined],
+      });
+    } finally {
+      delete config.publicKey;
+
+      battleStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }

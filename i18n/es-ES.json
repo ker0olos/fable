@@ -49,6 +49,7 @@
 
   "sweep": "Sweep",
   "floor": "Floor",
+  "try-again": "Try Again",
   "next-floor": "Next Floor",
   "challenge": "Challenge",
 
@@ -156,6 +157,7 @@
   "agi": "AGI",
 
   "stats": "Stats",
+  "skill-point": "Skill Point",
   "skill-points": "Skill Points",
   "stat-points": "Stat Points",
   "strength": "Fuerza",
@@ -163,11 +165,12 @@
   "agility": "Agilidad",
   "reset": "Reiniciar",
 
+  "lvl": "LVL",
   "level": "Level",
 
   "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
   "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
-  "leveled-up": "**{0}** leveled up{1}and gained {2} stat points and {3} skill points.",
+  "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
   "exp-gained": "**{0}** {1}/{2} EXP",
 
   "help-page1-before-anything": "Antes de nada: Necesitarás personajes.",
@@ -286,13 +289,18 @@
 
   "/battle friend": "Battle against another player to test your party",
   "/battle tower": "Climb the tower to glory and become a fable",
+
   "/sweep": "Sweep your current battle tower floor for exp",
+
+  "/skills showall": "Show all available skills and their details",
+  "/skills acquire": "Teach a character a battle skill",
 
   "/help": "¿Necesitas más información? No te preocupes",
 
   "$debug": "muestra los datos para nerds",
   "$media-title": "el título de la serie",
   "$character-name": "el nombre del personaje",
+  "$skill-name": "the name of the required skill",
   "$media-characters": "muestra los personajes de la serie",
   "$user-list": "el usuario de la lista",
   "$user-party": "el usuario del equipo",
@@ -333,5 +341,10 @@
   "$help-page-roadmap": "Futuro del bot",
   "$help-page-essential-commands": "Comandos Esenciales",
   "$help-page-other-commands": "Otros Comandos",
-  "$help-page-admin-commands": "Comandos de Administrador"
+  "$help-page-admin-commands": "Comandos de Administrador",
+
+  "crit": "Critical Hits",
+  "crit-desc": "The art of performing traditional critical hits",
+  "crit-chance": "Crit Chance",
+  "crit-damage": "Crit Damage"
 }

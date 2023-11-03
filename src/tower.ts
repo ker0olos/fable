@@ -6,6 +6,8 @@ import i18n from './i18n.ts';
 
 import db from '../db/mod.ts';
 
+import skills from './skills.ts';
+
 import * as discord from './discord.ts';
 
 import config from './config.ts';
@@ -268,7 +270,10 @@ function sweep({ token, guildId, userId }: {
                 packs.aliasToArray(characters[index].name)[0],
               levelUp === 1 ? ' ' : ` ${levelUp}x `,
               statPoints,
+              i18n.get('stat-points').toLowerCase(),
               skillPoints,
+              i18n.get(skillPoints === 1 ? 'skill-point' : 'skill-points')
+                .toLowerCase(),
             );
           } else {
             return i18n.get(

@@ -16,7 +16,7 @@ jobs:
           deno-version: v1.x
 
       - name: Update top.gg stats
-        run: deno run -A --unstable update_topgg_stats.ts
+        run: deno run -A update_topgg_stats.ts
         env:
           APP_ID: ${{ secrets.APP_ID }}
           TOPGG_TOKEN: ${{ secrets.TOPGG_TOKEN }}

@@ -3361,6 +3361,32 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
+    description: "characters skill management",
+    description_localizations: {
+      "es-ES": undefined,
+    },
+    dm_permission: false,
+    name: "skills",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "Show all available skills and their details",
+        description_localizations: {
+          "es-ES": "Show all available skills and their details",
+        },
+        max_value: undefined,
+        min_value: undefined,
+        name: "showall",
+        options: undefined,
+        required: false,
+        type: 1,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
     description: undefined,
     description_localizations: {
       "es-ES": undefined,
@@ -3378,6 +3404,61 @@ snapshot[`commands 1`] = `
     },
     dm_permission: false,
     name: "battle",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "Battle against another player to test your party",
+        description_localizations: {
+          "es-ES": "Battle against another player to test your party",
+        },
+        max_value: undefined,
+        min_value: undefined,
+        name: "friend",
+        options: [
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "the user to battle against",
+            description_localizations: {
+              "es-ES": "el usuario contra el que pelearás",
+            },
+            max_value: undefined,
+            min_value: undefined,
+            name: "versus",
+            options: undefined,
+            required: true,
+            type: 6,
+          },
+        ],
+        required: false,
+        type: 1,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "Climb the tower to glory and become a fable",
+        description_localizations: {
+          "es-ES": "Climb the tower to glory and become a fable",
+        },
+        max_value: undefined,
+        min_value: undefined,
+        name: "tower",
+        options: undefined,
+        required: false,
+        type: 1,
+      },
+    ],
+    type: undefined,
+  },
+  {
+    default_member_permissions: undefined,
+    description: "battle/combat commands",
+    description_localizations: {
+      "es-ES": undefined,
+    },
+    dm_permission: false,
+    name: "bt",
     options: [
       {
         autocomplete: undefined,

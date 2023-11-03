@@ -236,7 +236,12 @@ function view({ token, character, userId, guildId, distribution }: {
         .addField({
           name: i18n.get('stats', locale),
           value: [
-            `${i18n.get('skill-points', locale)}: ${skillPoints}`,
+            `${
+              i18n.get(
+                skillPoints === 1 ? 'skill-point' : 'skill-points',
+                locale,
+              )
+            }: ${skillPoints}`,
             `${i18n.get('stat-points', locale)}: ${unclaimed}`,
             `${i18n.get('strength', locale)}: ${strength}`,
             `${i18n.get('stamina', locale)}: ${stamina}`,

@@ -22,14 +22,9 @@ import { NonFetalError, PoolError } from './errors.ts';
 
 import type { Character, DisaggregatedCharacter } from './types.ts';
 
-type BattleData = { playing: boolean };
+import type { CharacterLive } from '../db/schema.ts';
 
-type CharacterLive = {
-  strength: Readonly<number>;
-  stamina: Readonly<number>;
-  agility: Readonly<number>;
-  hp: number;
-};
+type BattleData = { playing: boolean };
 
 // 2 seconds
 const MESSAGE_DELAY = 2;

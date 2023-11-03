@@ -12,6 +12,7 @@ import trade from './trade.ts';
 import steal from './steal.ts';
 import shop from './shop.ts';
 import stats from './stats.ts';
+import skills from './skills.ts';
 import battle from './battle.ts';
 import tower from './tower.ts';
 import help from './help.ts';
@@ -22,8 +23,6 @@ import webhooks from './webhooks.ts';
 import community from './community.ts';
 
 import config, { initConfig } from './config.ts';
-
-import db from '../db/mod.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
 
@@ -741,6 +740,16 @@ export const handler = async (r: Request) => {
               userId: member.user.id,
             }).send();
           }
+          case 'skills': {
+            // deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'showall':
+                return skills.all(0, locale).send();
+              default:
+                break;
+            }
+            break;
+          }
           case 'bt':
           case 'battle': {
             //deno-lint-ignore no-non-null-assertion
@@ -1138,6 +1147,14 @@ export const handler = async (r: Request) => {
             }
 
             throw new NoPermissionError();
+          }
+          case 'skills': {
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            return skills.all(index, locale)
+              .setType(discord.MessageType.Update)
+              .send();
           }
           case 'tsweep': {
             return tower.sweep({

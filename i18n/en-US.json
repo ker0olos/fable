@@ -49,6 +49,7 @@
   "sweep": "Sweep",
   "floor": "Floor",
   "next-floor": "Next Floor",
+  "try-again": "Try Again",
   "challenge": "Challenge",
 
   "undiscovered": "Undiscovered",
@@ -155,6 +156,7 @@
   "agi": "AGI",
 
   "stats": "Stats",
+  "skill-point": "Skill Point",
   "skill-points": "Skill Points",
   "stat-points": "Stat Points",
   "strength": "Strength",
@@ -162,11 +164,12 @@
   "agility": "Agility",
   "reset": "Reset",
 
+  "lvl": "LVL",
   "level": "Level",
 
   "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
   "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
-  "leveled-up": "**{0}** leveled up{1}and gained {2} stat points and {3} skill points.",
+  "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
   "exp-gained": "**{0}** {1}/{2} EXP",
 
   "help-page1-before-anything": "Before anything: You will need characters.",
@@ -285,13 +288,18 @@
 
   "/battle friend": "Battle against another player to test your party",
   "/battle tower": "Climb the tower to glory and become a fable",
+
   "/sweep": "Sweep your current battle tower floor for exp",
+
+  "/skills showall": "Show all available skills and their details",
+  "/skills acquire": "Teach a character a battle skill",
 
   "/help": "need more information? we got you",
 
   "$debug": "display the nerdy stuff",
   "$media-title": "the title of the series",
   "$character-name": "the name of the character",
+  "$skill-name": "the name of the required skill",
   "$media-characters": "view the characters from the series",
   "$user-list": "the user of the list",
   "$user-party": "the user of the party",
@@ -332,5 +340,10 @@
   "$help-page-roadmap": "Roadmap",
   "$help-page-essential-commands": "Essential Commands",
   "$help-page-other-commands": "Other Commands",
-  "$help-page-admin-commands": "Admin Commands"
+  "$help-page-admin-commands": "Admin Commands",
+
+  "crit": "Critical Hits",
+  "crit-desc": "The art of performing traditional critical hits",
+  "crit-chance": "Crit Chance",
+  "crit-damage": "Crit Damage"
 }
