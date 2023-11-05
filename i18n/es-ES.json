@@ -167,6 +167,17 @@
 
   "lvl": "LVL",
   "level": "Level",
+  "max": "MAX",
+
+  "acquire-skill": "Acquire Skill",
+  "skill-acquired": "Skill Acquired",
+
+  "upgrade-skill": "Upgrade Skill",
+  "skill-upgraded": "Skill Upgraded",
+
+  "costs-n-points": "Costs {0} {1}",
+  "character-not-enough-skill-points": "Character doesn't have enough skill points left",
+  "skill-is-maxed": "Skill is maxed",
 
   "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
   "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
@@ -294,6 +305,7 @@
 
   "/skills showall": "Show all available skills and their details",
   "/skills acquire": "Teach a character a battle skill",
+  "/skills upgrade": "Upgrade a character's battle skill",
 
   "/help": "¿Necesitas más información? No te preocupes",
 

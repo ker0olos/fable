@@ -2,7 +2,8 @@
   "files.exclude": {
     ".git": true,
     "**/build": true,
-    "**/target": true
+    "**/target": true,
+    "**/__snapshots__": true
   },
   "editor.tabSize": 2,
   "editor.formatOnSave": true,

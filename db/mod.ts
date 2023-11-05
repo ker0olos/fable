@@ -50,6 +50,7 @@ import {
 } from './assignParty.ts';
 
 import { assignStats } from './assignStats.ts';
+import { acquireSkill } from './acquireSkill.ts';
 
 import { gainExp, MAX_LEVEL } from './gainExp.ts';
 
@@ -183,6 +184,7 @@ const db = {
   unassignCharacter,
   //
   assignStats,
+  acquireSkill,
   //
   gainExp,
   consumeSweep,

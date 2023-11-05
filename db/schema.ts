@@ -78,7 +78,7 @@ export interface CharacterCombat {
 
   skillPoints?: number;
   skillSlots?: number;
-  skills?: AcquiredCharacterSkill[];
+  skills?: Record<string, number>;
 
   stats?: CharacterStats;
 }

@@ -64,6 +64,7 @@ export const emotes = {
   currentFloor: '<:currentfloor:1128724907245711452>',
   clearedFloor: '<:clearedfloor:1131872032456446053>',
   undiscoveredFloor: '<:undiscoveredfloor:1128724910609551481>',
+  rightArrow: '<:rarrow:1170533290105655428>',
 };
 
 export const join = (...args: string[]): string => {

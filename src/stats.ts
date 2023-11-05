@@ -13,8 +13,6 @@ import db from '../db/mod.ts';
 
 import { experienceToNextLevel } from '../db/gainExp.ts';
 
-import type { Character } from './types.ts';
-
 import { NonFetalError } from './errors.ts';
 
 export const newUnclaimed = (rating: number): number => {
@@ -117,7 +115,7 @@ async function update(
     switch (err.message) {
       case 'CHARACTER_NOT_FOUND':
         throw new NonFetalError(
-          i18n.get('character-hasnt-been-found', locale),
+          i18n.get('character-hasnt-been-found', locale, 'Character'),
         );
       case 'CHARACTER_NOT_OWNED':
         throw new NonFetalError(
@@ -162,11 +160,7 @@ function view({ token, character, userId, guildId, distribution }: {
       const instance = await db.getInstance(guild);
 
       return Promise.all([
-        packs.aggregate<Character>({
-          guildId,
-          character: results[0],
-          end: 1,
-        }),
+        results[0],
         db.findCharacters(instance, [`${results[0].packId}:${results[0].id}`]),
       ]);
     })
@@ -193,6 +187,32 @@ function view({ token, character, userId, guildId, distribution }: {
       }
 
       if (distribution) {
+        if (existing[0][1]?.id !== userId) {
+          const message = new discord.Message();
+
+          const embed = search.characterEmbed(character, {
+            mode: 'thumbnail',
+            media: { title: false },
+            description: false,
+            footer: false,
+            userId: existing[0][1]?.id,
+            existing: { rating: existing[0][0].rating },
+          });
+
+          message.addEmbed(
+            new discord.Embed()
+              .setDescription(i18n.get(
+                'character-not-owned-by-you',
+                locale,
+                packs.aliasToArray(character.name)[0],
+              )),
+          );
+
+          message.addEmbed(embed);
+
+          return await message.patch(token);
+        }
+
         return await update({
           token,
           type: 'reset',

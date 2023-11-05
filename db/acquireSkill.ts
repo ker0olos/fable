@@ -12,14 +12,11 @@ import type * as Schema from './schema.ts';
 
 import { KvError } from '../src/errors.ts';
 
-export async function assignStats(
+export async function acquireSkill(
   inventory: Schema.Inventory,
   characterId: string,
-  unclaimed?: number,
-  strength?: number,
-  stamina?: number,
-  agility?: number,
-): Promise<Schema.Character> {
+  skill: Schema.CharacterSkill,
+): Promise<number> {
   let retires = 0;
 
   while (retires < 5) {
@@ -39,22 +36,26 @@ export async function assignStats(
     }
 
     character.combat ??= {};
-    character.combat.stats ??= {};
+    character.combat.skillPoints ??= 0;
+    character.combat.skills ??= {};
 
-    if (typeof unclaimed === 'number') {
-      character.combat.stats.unclaimed = unclaimed;
+    character.combat.skillPoints -= skill.cost;
+
+    if (character.combat.skillPoints < 0) {
+      throw new Error('NOT_ENOUGH_SKILL_POINTS');
     }
 
-    if (typeof strength === 'number') {
-      character.combat.stats.strength = strength;
-    }
+    if (typeof character.combat.skills[skill.key] !== 'number') {
+      character.combat.skills[skill.key] = 1;
+    } else {
+      const maxed =
+        skill.stats[0].scale.length <= character.combat.skills[skill.key];
 
-    if (typeof stamina === 'number') {
-      character.combat.stats.stamina = stamina;
-    }
+      if (maxed) {
+        throw new Error('SKILL_MAXED');
+      }
 
-    if (typeof agility === 'number') {
-      character.combat.stats.agility = agility;
+      character.combat.skills[skill.key] += 1;
     }
 
     const update = await kv.atomic()
@@ -87,7 +88,7 @@ export async function assignStats(
       .commit();
 
     if (update.ok) {
-      return character;
+      return character.combat.skills[skill.key];
     }
 
     retires += 1;

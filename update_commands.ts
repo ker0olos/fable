@@ -847,6 +847,46 @@ export const commands = [
         type: Type.SUB_COMMAND,
         optional: true,
       }),
+      Option({
+        name: 'acquire',
+        description: '/skills acquire',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'character',
+            description: '$character-name',
+            autocomplete: true,
+            type: Type.STRING,
+          }),
+          Option({
+            name: 'skill',
+            autocomplete: true,
+            description: '$skill-name',
+            type: Type.STRING,
+          }),
+        ],
+      }),
+      Option({
+        name: 'upgrade',
+        description: '/skills upgrade',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'character',
+            description: '$character-name',
+            autocomplete: true,
+            type: Type.STRING,
+          }),
+          Option({
+            name: 'skill',
+            autocomplete: true,
+            description: '$skill-name',
+            type: Type.STRING,
+          }),
+        ],
+      }),
     ],
   }),
   ...Command({

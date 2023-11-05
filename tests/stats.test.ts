@@ -1147,7 +1147,7 @@ Deno.test('/stats', async (test) => {
     }
   });
 
-  await test.step('not found', async () => {
+  await test.step('not fit for combat (not owned)', async () => {
     const characterStub = stub(
       packs,
       'characters',
@@ -1260,6 +1260,141 @@ Deno.test('/stats', async (test) => {
               footer: {
                 text: 'Character is yet to be found and isn\'t combat ready',
               },
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.combat;
+
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      fetchStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      findCharactersStub.restore();
+    }
+  });
+
+  await test.step('not owned by you (when distribution is defined)', async () => {
+    const characterStub = stub(
+      packs,
+      'characters',
+      returnsNext([
+        Promise.resolve([{
+          id: '1',
+          packId: 'id',
+          name: {
+            english: 'full name',
+          },
+          images: [{
+            url: 'image_url',
+          }],
+        }]),
+      ]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
+      () => [[{ rating: 1 }, { id: 'another_user_id' }]] as any,
+    );
+
+    config.combat = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = stats.view({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        character: 'character_id',
+        distribution: '1-2-3',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description: 'full name is not owned by you',
+            },
+            {
+              type: 'rich',
+              description:
+                '<@another_user_id>\n\n<:star:1061016362832642098><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906><:no_star:1109377526662434906>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name',
+                  value: '\u200B',
+                },
+              ],
             },
           ],
         },

@@ -200,7 +200,11 @@ export const handler = async (r: Request) => {
             'like',
             'unlike',
             'stats',
-          ].includes(name)
+          ].includes(name) || (
+            // deno-lint-ignore no-non-null-assertion
+            name === 'skills' && ['acquire', 'upgrade'].includes(subcommand!) &&
+            focused === 'character'
+          )
         ) {
           // deno-lint-ignore no-non-null-assertion
           const name = options[focused!] as string;
@@ -296,6 +300,51 @@ export const handler = async (r: Request) => {
             message.addSuggestions({
               name: `${manifest.title ?? manifest.id}`,
               value: manifest.id,
+            });
+          });
+
+          return message.send();
+        }
+
+        // suggest acquirable character skills
+        if (
+          // deno-lint-ignore no-non-null-assertion
+          name === 'skills' && ['acquire', 'upgrade'].includes(subcommand!) &&
+          focused === 'skill'
+        ) {
+          // deno-lint-ignore no-non-null-assertion
+          const name = options[focused!] as string;
+
+          const message = new discord.Message(
+            discord.MessageType.Suggestions,
+          );
+
+          const distance: Record<string, number> = {};
+
+          let _skills = Object.values(skills.skills);
+
+          // sort suggestion based on distance
+          _skills.forEach((skill) => {
+            const skillName = i18n.get(skill.key, locale);
+
+            const d = utils.distance(skill.key, name);
+            const d2 = utils.distance(skillName, name);
+
+            if (d > d2) {
+              distance[skill.key] = d2;
+            } else {
+              distance[skill.key] = d;
+            }
+          });
+
+          _skills = _skills.sort((a, b) => distance[b.key] - distance[a.key]);
+
+          _skills?.forEach((skill) => {
+            const skillName = i18n.get(skill.key, locale);
+
+            message.addSuggestions({
+              name: skillName,
+              value: skill.key,
             });
           });
 
@@ -745,6 +794,19 @@ export const handler = async (r: Request) => {
             switch (subcommand!) {
               case 'showall':
                 return skills.all(0, locale).send();
+              case 'upgrade':
+              case 'acquire': {
+                const skillKey = options['skill'] as string;
+                const character = options['character'] as string;
+
+                return skills.preAcquire({
+                  token,
+                  skillKey,
+                  guildId,
+                  character,
+                  userId: member.user.id,
+                }).send();
+              }
               default:
                 break;
             }
@@ -1122,6 +1184,29 @@ export const handler = async (r: Request) => {
                 default:
                   break;
               }
+            }
+
+            throw new NoPermissionError();
+          }
+          case 'cacquire': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const characterId = customValues![1];
+
+            // deno-lint-ignore no-non-null-assertion
+            const skillKey = customValues![2];
+
+            if (userId === member.user.id) {
+              return (await skills.acquire({
+                guildId,
+                characterId,
+                userId,
+                skillKey,
+              }))
+                .setType(discord.MessageType.Update)
+                .send();
             }
 
             throw new NoPermissionError();
