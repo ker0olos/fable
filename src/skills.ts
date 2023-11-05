@@ -179,13 +179,13 @@ function preAcquire(
 
       const skill = skills[skillKey];
 
-      const existingSkillLevel = existing[0].combat?.skills?.[skill.key];
+      const existingSkill = existing[0].combat?.skills?.[skill.key];
 
-      const maxed = skill.stats[0].scale.length <= (existingSkillLevel || 0);
+      const maxed = skill.stats[0].scale.length <= (existingSkill?.level ?? 1);
 
       const formatted = format(skill, locale, {
         maxed,
-        lvl: existingSkillLevel ? existingSkillLevel + 1 : 1,
+        lvl: existingSkill?.level ? existingSkill.level + 1 : 1,
       });
 
       message.addEmbed(
@@ -206,7 +206,7 @@ function preAcquire(
         new discord.Embed()
           .setTitle(
             i18n.get(
-              existingSkillLevel ? 'upgrade-skill' : 'acquire-skill',
+              existingSkill?.level ? 'upgrade-skill' : 'acquire-skill',
               locale,
             ),
           )
@@ -293,14 +293,14 @@ async function acquire(
 
     const skill = skills[skillKey];
 
-    const existingSkillLevel = await db.acquireSkill(
+    const existingSkill = await db.acquireSkill(
       inventory,
       characterId,
       skill,
     );
 
     const formatted = format(skill, locale, {
-      lvl: existingSkillLevel,
+      lvl: existingSkill.level,
     });
 
     return new discord.Message()
@@ -308,7 +308,7 @@ async function acquire(
         new discord.Embed()
           .setTitle(
             i18n.get(
-              existingSkillLevel > 1 ? 'skill-upgraded' : 'skill-acquired',
+              existingSkill.level > 1 ? 'skill-upgraded' : 'skill-acquired',
               locale,
             ),
           ),

@@ -259,14 +259,14 @@ function view({ token, character, userId, guildId, distribution }: {
         embed
           .addField({
             name: i18n.get('skills', locale),
-            value: _skills.map(([key, lvl]) => {
+            value: _skills.map(([key, s]) => {
               const skill = skills.skills[key];
 
-              const maxed = skill.stats[0].scale.length <= lvl;
+              const maxed = skill.stats[0].scale.length <= s.level;
 
               return `${i18n.get(skill.key, locale)} (${
                 i18n.get('lvl', locale)
-              } ${maxed ? i18n.get('max', locale) : lvl})`;
+              } ${maxed ? i18n.get('max', locale) : s.level})`;
             }).join('\n'),
           });
       }

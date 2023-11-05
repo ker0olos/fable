@@ -16,7 +16,7 @@ export async function acquireSkill(
   inventory: Schema.Inventory,
   characterId: string,
   skill: Schema.CharacterSkill,
-): Promise<number> {
+): Promise<Schema.AcquiredCharacterSkill> {
   let retires = 0;
 
   while (retires < 5) {
@@ -46,16 +46,16 @@ export async function acquireSkill(
     }
 
     if (typeof character.combat.skills[skill.key] !== 'number') {
-      character.combat.skills[skill.key] = 1;
+      character.combat.skills[skill.key] = { level: 1 };
     } else {
       const maxed =
-        skill.stats[0].scale.length <= character.combat.skills[skill.key];
+        skill.stats[0].scale.length <= character.combat.skills[skill.key].level;
 
       if (maxed) {
         throw new Error('SKILL_MAXED');
       }
 
-      character.combat.skills[skill.key] += 1;
+      character.combat.skills[skill.key].level += 1;
     }
 
     const update = await kv.atomic()

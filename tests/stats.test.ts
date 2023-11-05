@@ -1031,7 +1031,7 @@ Deno.test('/stats', async (test) => {
             exp: 10,
             skillPoints: 6,
             skills: {
-              'crit': 2,
+              'crit': { level: 2 },
             },
             stats: {
               unclaimed: 0,

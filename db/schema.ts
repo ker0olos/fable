@@ -78,13 +78,12 @@ export interface CharacterCombat {
 
   skillPoints?: number;
   skillSlots?: number;
-  skills?: Record<string, number>;
+  skills?: Record<string, AcquiredCharacterSkill>;
 
   stats?: CharacterStats;
 }
 
 export interface AcquiredCharacterSkill {
-  key: string;
   level: number;
 }
 

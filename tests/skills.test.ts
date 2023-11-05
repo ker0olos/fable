@@ -313,7 +313,7 @@ Deno.test('/skills acquire', async (test) => {
         [[{
           combat: {
             skills: {
-              'crit': 1,
+              'crit': { level: 1 },
             },
           },
         }, { id: 'user_id' }]] as any,
@@ -503,7 +503,7 @@ Deno.test('/skills acquire', async (test) => {
         [[{
           combat: {
             skills: {
-              'crit': 3,
+              'crit': { level: 3 },
             },
           },
         }, { id: 'user_id' }]] as any,
@@ -1050,7 +1050,7 @@ Deno.test('acquire skill', async (test) => {
     const acquireSkillStub = stub(
       db,
       'acquireSkill',
-      () => 1 as any,
+      () => ({ level: 1 }) as any,
     );
 
     try {
@@ -1129,7 +1129,7 @@ Deno.test('acquire skill', async (test) => {
     const acquireSkillStub = stub(
       db,
       'acquireSkill',
-      () => 2 as any,
+      () => ({ level: 2 }) as any,
     );
 
     try {
