@@ -157,6 +157,7 @@
   "agi": "AGI",
 
   "stats": "Stats",
+  "skills": "Skills",
   "skill-point": "Skill Point",
   "skill-points": "Skill Points",
   "stat-points": "Stat Points",
@@ -355,8 +356,8 @@
   "$help-page-other-commands": "Otros Comandos",
   "$help-page-admin-commands": "Comandos de Administrador",
 
-  "crit": "Critical Hits",
-  "crit-desc": "The art of performing traditional critical hits",
+  "crit": "Critical Hit",
+  "crit-desc": "The art of performing traditional critical hit",
   "crit-chance": "Crit Chance",
   "crit-damage": "Crit Damage"
 }

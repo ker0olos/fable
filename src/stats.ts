@@ -3,11 +3,12 @@ import search, { idPrefix } from './search.ts';
 import _user from './user.ts';
 import packs from './packs.ts';
 import utils from './utils.ts';
+import config from './config.ts';
 import i18n from './i18n.ts';
 
-import * as discord from './discord.ts';
+import skills from './skills.ts';
 
-import config from './config.ts';
+import * as discord from './discord.ts';
 
 import db from '../db/mod.ts';
 
@@ -239,6 +240,8 @@ function view({ token, character, userId, guildId, distribution }: {
       const level = existing[0][0].combat?.level ?? 1;
       const expToLevel = experienceToNextLevel(level);
 
+      const _skills = Object.entries(existing[0][0].combat?.skills ?? {});
+
       const embed = search.characterEmbed(character, {
         footer: false,
         existing: {
@@ -251,6 +254,22 @@ function view({ token, character, userId, guildId, distribution }: {
         description: false,
         mode: 'thumbnail',
       });
+
+      if (_skills.length) {
+        embed
+          .addField({
+            name: i18n.get('skills', locale),
+            value: _skills.map(([key, lvl]) => {
+              const skill = skills.skills[key];
+
+              const maxed = skill.stats[0].scale.length <= lvl;
+
+              return `${i18n.get(skill.key, locale)} (${
+                i18n.get('lvl', locale)
+              } ${maxed ? i18n.get('max', locale) : lvl})`;
+            }).join('\n'),
+          });
+      }
 
       embed
         .addField({

@@ -975,6 +975,196 @@ Deno.test('/stats', async (test) => {
     }
   });
 
+  await test.step('skills', async () => {
+    const characterStub = stub(
+      packs,
+      'characters',
+      returnsNext([
+        Promise.resolve([{
+          id: '1',
+          packId: 'id',
+          name: {
+            english: 'full name',
+          },
+          images: [{
+            url: 'image_url',
+          }],
+        }]),
+      ]),
+    );
+
+    const timeStub = new FakeTime();
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      () => undefined as any,
+    );
+
+    const aggregateStub = stub(
+      packs,
+      'aggregate',
+      ({ character }) => Promise.resolve(character),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const findCharactersStub = stub(
+      db,
+      'findCharacters',
+      () =>
+        [[{
+          id: 'id:1',
+          rating: 4,
+          combat: {
+            level: 2,
+            exp: 10,
+            skillPoints: 6,
+            skills: {
+              'crit': 2,
+            },
+            stats: {
+              unclaimed: 0,
+              strength: 2,
+              stamina: 3,
+              agility: 4,
+            },
+          },
+        }, { id: 'user_id' }]] as any,
+    );
+
+    config.combat = true;
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = stats.view({
+        userId: 'user_id',
+        guildId: 'guild_id',
+        token: 'test_token',
+        character: 'character_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            image: {
+              url: 'http://localhost:8000/assets/spinner3.gif',
+            },
+          }],
+        },
+      });
+
+      await timeStub.runMicrotasks();
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertEquals(
+        fetchStub.calls[0].args[0],
+        'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
+      );
+
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
+
+      assertEquals(
+        JSON.parse(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
+            'payload_json',
+          ) as any,
+        ),
+        {
+          attachments: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                '<:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:star:1061016362832642098><:no_star:1109377526662434906>',
+              thumbnail: {
+                url: 'http://localhost:8000/external/image_url?size=thumbnail',
+              },
+              fields: [
+                {
+                  name: 'full name',
+                  value: 'Level 2\n10/20',
+                },
+                {
+                  name: 'Skills',
+                  value: 'Critical Hit (LVL 2)',
+                },
+                {
+                  name: 'Stats',
+                  value:
+                    'Skill Points: 6\nStat Points: 0\nStrength: 2\nStamina: 3\nAgility: 4',
+                },
+              ],
+            },
+          ],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'stats=str=user_id=id:1',
+                  disabled: true,
+                  label: '+1 STR',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'stats=sta=user_id=id:1',
+                  disabled: true,
+                  label: '+1 STA',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'stats=agi=user_id=id:1',
+                  disabled: true,
+                  label: '+1 AGI',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'stats=reset=user_id=id:1',
+                  label: 'Reset',
+                  style: 2,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+        },
+      );
+    } finally {
+      delete config.appId;
+      delete config.origin;
+      delete config.combat;
+
+      timeStub.restore();
+      characterStub.restore();
+      aggregateStub.restore();
+      fetchStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      findCharactersStub.restore();
+    }
+  });
+
   await test.step('empty', async () => {
     const characterStub = stub(
       packs,
