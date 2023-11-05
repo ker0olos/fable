@@ -6,8 +6,6 @@ import i18n from './i18n.ts';
 
 import db from '../db/mod.ts';
 
-import skills from './skills.ts';
-
 import * as discord from './discord.ts';
 
 import config from './config.ts';
@@ -215,9 +213,13 @@ function sweep({ token, guildId, userId }: {
         party?.member5,
       ].filter(Boolean) as Schema.Character[];
 
-      const characters = await packs.characters({
+      const _characters = await packs.characters({
         guildId,
         ids: party1.map(({ id }) => id),
+      });
+
+      const characters = party1.map(({ id }) => {
+        return _characters.find((c) => id === `${c.packId}:${c.id}`);
       });
 
       const op = db.kv.atomic();
@@ -267,7 +269,8 @@ function sweep({ token, guildId, userId }: {
               'leveled-up',
               locale,
               party1[index].nickname ??
-                packs.aliasToArray(characters[index].name)[0],
+                // deno-lint-ignore no-non-null-assertion
+                packs.aliasToArray(characters[index]!.name)[0],
               levelUp === 1 ? ' ' : ` ${levelUp}x `,
               statPoints,
               i18n.get('stat-points').toLowerCase(),
@@ -280,7 +283,8 @@ function sweep({ token, guildId, userId }: {
               'exp-gained',
               locale,
               party1[index].nickname ??
-                packs.aliasToArray(characters[index].name)[0],
+                // deno-lint-ignore no-non-null-assertion
+                packs.aliasToArray(characters[index]!.name)[0],
               exp,
               expToLevel,
             );
@@ -403,9 +407,13 @@ async function onSuccess(
     )
   );
 
-  const characters = await packs.characters({
+  const _characters = await packs.characters({
     guildId,
     ids: party.map(({ id }) => id),
+  });
+
+  const characters = party.map(({ id }) => {
+    return _characters.find((c) => id === `${c.packId}:${c.id}`);
   });
 
   const statusText = status.map(
@@ -415,7 +423,8 @@ async function onSuccess(
           'leveled-up',
           locale,
           party[index].nickname ??
-            packs.aliasToArray(characters[index].name)[0],
+            // deno-lint-ignore no-non-null-assertion
+            packs.aliasToArray(characters[index]!.name)[0],
           levelUp === 1 ? ' ' : ` ${levelUp}x `,
           statPoints,
           skillPoints,

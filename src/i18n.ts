@@ -21,6 +21,8 @@ function get(
       break;
   }
 
+  value ??= key;
+
   if (args?.length) {
     value = value.replaceAll(
       /{(\d+)}/g,
