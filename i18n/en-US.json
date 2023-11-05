@@ -304,8 +304,8 @@
   "/sweep": "Sweep your current battle tower floor for exp",
 
   "/skills showall": "Show all available skills and their details",
-  "/skills acquire": "Teach a character a battle skill",
-  "/skills upgrade": "Upgrade a character's battle skill",
+  "/skills acquire": "Teach a character a skill",
+  "/skills upgrade": "Upgrade a character's skill",
 
   "/help": "need more information? we got you",
 

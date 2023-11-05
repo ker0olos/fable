@@ -3385,9 +3385,9 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Teach a character a battle skill",
+        description: "Teach a character a skill",
         description_localizations: {
-          "es-ES": "Teach a character a battle skill",
+          "es-ES": "Teach a character a skill",
         },
         max_value: undefined,
         min_value: undefined,
@@ -3428,9 +3428,9 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "Upgrade a character's battle skill",
+        description: "Upgrade a character's skill",
         description_localizations: {
-          "es-ES": "Upgrade a character's battle skill",
+          "es-ES": "Upgrade a character's skill",
         },
         max_value: undefined,
         min_value: undefined,
