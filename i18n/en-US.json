@@ -47,6 +47,7 @@
   "won": "Won",
 
   "sweep": "Sweep",
+  "sweeps": "Sweeps",
   "floor": "Floor",
   "next-floor": "Next Floor",
   "try-again": "Try Again",
@@ -289,6 +290,8 @@
 
   "/buy normal": "use tokens to buy normal pulls",
   "/buy guaranteed": "use tokens to buy pulls with a specific guaranteed rating",
+  "/buy sweeps": "use tokens to buy tower sweeps",
+
   "/packs": "list all the packs on a server",
   "/logs": "list user last few found characters",
 
@@ -330,6 +333,7 @@
   "$new-nick": "new nickname",
 
   "$buy-normal-amount": "the amount of pulls you want to buy",
+  "$buy-sweeps-amount": "the amount of sweeps you want to buy",
   "$buy-guaranteed-stars": "the star rating you want to buy",
 
   "$party-spot": "the spot where you want this character",

@@ -104,16 +104,7 @@ export async function addCharacter(
       inventory.availablePulls = inventory.availablePulls - 1;
     }
 
-    if (new Date() >= new Date(user.dailyTimestamp ?? new Date())) {
-      const newDailyTimestamp = new Date();
-
-      user.dailyTimestamp = (
-        newDailyTimestamp.setDate(newDailyTimestamp.getDate() + 1),
-          newDailyTimestamp.toISOString()
-      );
-
-      user.availableTokens = (user.availableTokens ?? 0) + 1;
-    }
+    db.checkDailyTimestamp(user);
 
     inventory.lastPull = new Date().toISOString();
     inventory.rechargeTimestamp ??= new Date().toISOString();

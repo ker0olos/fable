@@ -628,6 +628,21 @@ export const commands = [
           }),
         ],
       }),
+      Option({
+        name: 'sweeps',
+        description: '/buy sweeps',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            min_value: 1,
+            max_value: 99,
+            name: 'amount',
+            description: '$buy-sweeps-amount',
+            type: Type.INTEGER,
+          }),
+        ],
+      }),
     ],
   }),
   // party management

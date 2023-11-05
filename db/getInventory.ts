@@ -27,6 +27,19 @@ export const MAX_NEW_SWEEPS = MAX_SWEEPS;
 export const RECHARGE_MINS = 30;
 export const RECHARGE_SWEEPS_MINS = 120;
 
+export function checkDailyTimestamp(user: Schema.User): void {
+  if (new Date() >= new Date(user.dailyTimestamp ?? new Date())) {
+    const newDailyTimestamp = new Date();
+
+    user.dailyTimestamp = (
+      newDailyTimestamp.setDate(newDailyTimestamp.getDate() + 1),
+        newDailyTimestamp.toISOString()
+    );
+
+    user.availableTokens = (user.availableTokens ?? 0) + 1;
+  }
+}
+
 export async function getUser(userId: string): Promise<Schema.User> {
   const response = await db.getValue<Schema.User>(usersByDiscordId(userId));
 
@@ -235,7 +248,7 @@ export async function rechargeConsumables(
     const rechargedSweeps = currentSweeps + newSweeps;
 
     inventory.availablePulls = Math.min(99, rechargedPulls);
-    inventory.availableSweeps = Math.min(MAX_SWEEPS, rechargedSweeps);
+    inventory.availableSweeps = Math.min(99, rechargedSweeps);
 
     inventory.rechargeTimestamp = rechargedPulls >= MAX_PULLS
       ? undefined

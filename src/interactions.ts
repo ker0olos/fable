@@ -708,6 +708,11 @@ export const handler = async (r: Request) => {
                   userId: member.user.id,
                   amount: options['amount'] as number,
                 }).send();
+              case 'sweeps':
+                return shop.sweeps({
+                  userId: member.user.id,
+                  amount: options['amount'] as number,
+                }).send();
               default:
                 break;
             }
@@ -1038,6 +1043,15 @@ export const handler = async (r: Request) => {
                     guildId,
                     userId: member.user.id,
                     stars: value,
+                  }))
+                    .setType(discord.MessageType.Update)
+                    .send();
+                case 'sweeps':
+                  return (await shop.confirmSweeps({
+                    token,
+                    guildId,
+                    userId: member.user.id,
+                    amount: value,
                   }))
                     .setType(discord.MessageType.Update)
                     .send();

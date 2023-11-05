@@ -1,14 +1,16 @@
 /// <reference lib="deno.unstable" />
 
-import { inventoriesByUser } from './indices.ts';
+import { inventoriesByUser, usersByDiscordId } from './indices.ts';
 
 import { NoSweepsError } from '../src/errors.ts';
 
-import type { Inventory } from './schema.ts';
+import type * as Schema from './schema.ts';
+
+import db from './mod.ts';
 
 export function clearFloor(
   op: Deno.AtomicOperation,
-  inventory: Inventory,
+  inventory: Schema.Inventory,
 ): number {
   inventory.floorsCleared ??= 0;
 
@@ -24,11 +26,13 @@ export function clearFloor(
 export function consumeSweep(
   {
     op,
+    user,
     inventory,
     inventoryCheck,
   }: {
     op: Deno.AtomicOperation;
-    inventory: Inventory;
+    inventory: Schema.Inventory;
+    user: Schema.User;
     inventoryCheck: Deno.AtomicCheck;
   },
 ): void {
@@ -43,8 +47,13 @@ export function consumeSweep(
   inventory.lastSweep = new Date().toISOString();
   inventory.sweepsTimestamp ??= new Date().toISOString();
 
+  db.checkDailyTimestamp(user);
+
   op
     .check(inventoryCheck)
+    //
+    .set(['users', user._id], user)
+    .set(usersByDiscordId(user.id), user)
     //
     .set(['inventories', inventory._id], inventory)
     .set(inventoriesByUser(inventory.instance, inventory.user), inventory);

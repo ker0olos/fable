@@ -226,7 +226,7 @@ function sweep({ token, guildId, userId }: {
 
       try {
         // consume a sweep from inventory
-        db.consumeSweep({ op, inventory, inventoryCheck });
+        db.consumeSweep({ op, user, inventory, inventoryCheck });
       } catch (err) {
         if (err instanceof NoSweepsError) {
           return await new discord.Message()

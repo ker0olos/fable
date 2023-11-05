@@ -48,6 +48,7 @@
   "won": "Won",
 
   "sweep": "Sweep",
+  "sweeps": "Sweeps",
   "floor": "Floor",
   "try-again": "Try Again",
   "next-floor": "Next Floor",
@@ -290,6 +291,8 @@
 
   "/buy normal": "usa tokens para comprar tiradas normales",
   "/buy guaranteed": "usa tokens para comprar tiradas de un grado garantizado",
+  "/buy sweeps": "use tokens to buy tower sweeps",
+
   "/packs": "muestra todos los packs del servidor",
   "/logs": "muestra los últimos personajes obtenidos",
 
@@ -331,6 +334,7 @@
   "$new-nick": "nuevo apodo",
 
   "$buy-normal-amount": "la cantidad de tiradas a comprar",
+  "$buy-sweeps-amount": "the amount of sweeps you want to buy",
   "$buy-guaranteed-stars": "el grado de estrellas a comprar",
 
   "$party-spot": "el puesto en el que quieres a este personaje",

@@ -2,7 +2,7 @@
 
 import { inventoriesByUser, usersByDiscordId } from './indices.ts';
 
-import db, { kv, MAX_PULLS } from './mod.ts';
+import db, { kv, MAX_PULLS, MAX_SWEEPS } from './mod.ts';
 
 import { KvError } from '../src/errors.ts';
 
@@ -125,4 +125,63 @@ export async function addGuarantee(
   }
 
   throw new KvError('failed to update user');
+}
+
+export async function addSweeps(
+  instance: Schema.Instance,
+  user: Schema.User,
+  amount: number,
+): Promise<Schema.Inventory> {
+  user.availableTokens ??= 0;
+
+  if (amount > user.availableTokens) {
+    throw new Error('INSUFFICIENT_TOKENS');
+  }
+
+  user.availableTokens = user.availableTokens - amount;
+
+  let res = { ok: false }, retires = 0;
+
+  while (!res.ok && retires < 5) {
+    const { inventory, inventoryCheck } = await db.rechargeConsumables(
+      instance,
+      user,
+      false,
+    );
+
+    console.log(inventory.availableSweeps, amount);
+
+    inventory.availableSweeps = Math.min(
+      99,
+      // deno-lint-ignore no-non-null-assertion
+      inventory.availableSweeps! + amount,
+    );
+
+    console.log(inventory.availableSweeps);
+
+    if (inventory.availableSweeps >= MAX_SWEEPS) {
+      inventory.sweepsTimestamp = undefined;
+    }
+
+    console.log(inventory.sweepsTimestamp);
+
+    res = await kv.atomic()
+      .check(inventoryCheck)
+      //
+      .set(['inventories', inventory._id], inventory)
+      .set(inventoriesByUser(inventory.instance, user._id), inventory)
+      //
+      .set(['users', user._id], user)
+      .set(usersByDiscordId(user.id), user)
+      //
+      .commit();
+
+    if (res.ok) {
+      return inventory;
+    }
+
+    retires += 1;
+  }
+
+  throw new KvError('failed to update inventory');
 }

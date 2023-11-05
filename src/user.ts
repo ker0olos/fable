@@ -172,7 +172,7 @@ async function now({
   }
 
   // deno-lint-ignore no-non-null-assertion
-  if (availableSweeps! > 0) {
+  if (showSweeps && availableSweeps! > 0) {
     message.addComponents([
       // `/sweep` shortcut
       new discord.Component()
