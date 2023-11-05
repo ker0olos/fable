@@ -3732,7 +3732,7 @@ Deno.test('skills', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'Critical Hits',
+            name: 'Critical Hit',
             value: 'crit',
           }],
         },
@@ -3818,7 +3818,7 @@ Deno.test('skills', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'Critical Hits',
+            name: 'Critical Hit',
             value: 'crit',
           }],
         },

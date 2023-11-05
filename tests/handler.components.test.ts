@@ -26,7 +26,6 @@ import steal from '../src/steal.ts';
 import stats from '../src/stats.ts';
 import skills from '../src/skills.ts';
 import battle from '../src/battle.ts';
-import tower from '../src/tower.ts';
 
 config.global = true;
 

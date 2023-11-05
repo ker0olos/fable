@@ -30,8 +30,8 @@ Deno.test('/skills showall', async (test) => {
         embeds: [{
           type: 'rich',
           description: [
-            `**Critical Hits** (3 Skill Points)`,
-            `The art of performing traditional critical hits`,
+            `**Critical Hit** (3 Skill Points)`,
+            `The art of performing a traditional critical hit`,
             `1. _Crit Chance (0.5%, 5%, 15%)_`,
             `2. _Crit Damage (30%, 45%, 60%)_`,
           ].join('\n'),
@@ -221,8 +221,8 @@ Deno.test('/skills acquire', async (test) => {
             {
               type: 'rich',
               description: [
-                `**Critical Hits** **(LVL 1)**`,
-                `The art of performing traditional critical hits`,
+                `**Critical Hit** **(LVL 1)**`,
+                `The art of performing a traditional critical hit`,
                 `1. _Crit Chance (0.5%)_`,
                 `2. _Crit Damage (30%)_`,
               ].join('\n'),
@@ -411,8 +411,8 @@ Deno.test('/skills acquire', async (test) => {
             {
               type: 'rich',
               description: [
-                `**Critical Hits** **(LVL 1 <:rarrow:1170533290105655428> LVL 2)**`,
-                `The art of performing traditional critical hits`,
+                `**Critical Hit** **(LVL 1 <:rarrow:1170533290105655428> LVL 2)**`,
+                `The art of performing a traditional critical hit`,
                 `1. _Crit Chance (0.5% <:rarrow:1170533290105655428> 5%)_`,
                 `2. _Crit Damage (30% <:rarrow:1170533290105655428> 45%)_`,
               ].join('\n'),
@@ -583,8 +583,8 @@ Deno.test('/skills acquire', async (test) => {
             {
               type: 'rich',
               description: [
-                `**Critical Hits** **(LVL MAX)**`,
-                `The art of performing traditional critical hits`,
+                `**Critical Hit** **(LVL MAX)**`,
+                `The art of performing a traditional critical hit`,
                 `1. _Crit Chance (15%)_`,
                 `2. _Crit Damage (60%)_`,
               ].join('\n'),
@@ -1082,8 +1082,8 @@ Deno.test('acquire skill', async (test) => {
               {
                 type: 'rich',
                 description: [
-                  `**Critical Hits** **(LVL 1)**`,
-                  `The art of performing traditional critical hits`,
+                  `**Critical Hit** **(LVL 1)**`,
+                  `The art of performing a traditional critical hit`,
                   `1. _Crit Chance (0.5%)_`,
                   `2. _Crit Damage (30%)_`,
                 ].join('\n'),
@@ -1161,8 +1161,8 @@ Deno.test('acquire skill', async (test) => {
               {
                 type: 'rich',
                 description: [
-                  `**Critical Hits** **(LVL 1 <:rarrow:1170533290105655428> LVL 2)**`,
-                  `The art of performing traditional critical hits`,
+                  `**Critical Hit** **(LVL 1 <:rarrow:1170533290105655428> LVL 2)**`,
+                  `The art of performing a traditional critical hit`,
                   `1. _Crit Chance (0.5% <:rarrow:1170533290105655428> 5%)_`,
                   `2. _Crit Damage (30% <:rarrow:1170533290105655428> 45%)_`,
                 ].join('\n'),

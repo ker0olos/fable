@@ -1,0 +1,33 @@
+export const snapshot = {};
+
+snapshot[`all skills 1`] = `
+{
+  crit: {
+    activation: [Function: activation],
+    activationTurn: "enemy",
+    cost: 3,
+    descKey: "crit-desc",
+    key: "crit",
+    stats: [
+      {
+        key: "crit-chance",
+        scale: [
+          0.5,
+          5,
+          15,
+        ],
+        suffix: "%",
+      },
+      {
+        key: "crit-damage",
+        scale: [
+          30,
+          45,
+          60,
+        ],
+        suffix: "%",
+      },
+    ],
+  },
+}
+`;
