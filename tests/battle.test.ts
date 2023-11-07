@@ -44,11 +44,11 @@ Deno.test('test enemy skill slots floors 1-10', () => {
   assertEquals(getEnemySkillSlots(3), 0);
   assertEquals(getEnemySkillSlots(4), 0);
 
-  assertEquals(getEnemySkillSlots(5), 1);
-  assertEquals(getEnemySkillSlots(6), 1);
-  assertEquals(getEnemySkillSlots(7), 1);
-  assertEquals(getEnemySkillSlots(8), 1);
-  assertEquals(getEnemySkillSlots(9), 1);
+  assertEquals(getEnemySkillSlots(5), 0);
+  assertEquals(getEnemySkillSlots(6), 0);
+  assertEquals(getEnemySkillSlots(7), 0);
+  assertEquals(getEnemySkillSlots(8), 0);
+  assertEquals(getEnemySkillSlots(9), 0);
 
   assertEquals(getEnemySkillSlots(10), 1);
 });

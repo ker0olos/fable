@@ -20,8 +20,8 @@ import type { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 import { NoSweepsError } from '../src/errors.ts';
 
-Deno.test('max floors',  () => {
-  assertEquals(MAX_FLOORS, 20)
+Deno.test('max floors', () => {
+  assertEquals(MAX_FLOORS, 20);
 });
 
 Deno.test('experience to next level', () => {
@@ -678,11 +678,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:undiscoveredfloor:1128724910609551481> Floor 10 - Undiscovered',
-                '<:currentfloor:1128724907245711452> Floor 9 - Current',
-                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
+                '<:undiscoveredfloor:1128724910609551481> Floor 20 - Undiscovered',
+                '<:currentfloor:1128724907245711452> Floor 19 - Current',
+                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
               ].join('\n'),
             },
           ],
@@ -810,11 +810,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:currentfloor:1128724907245711452> Floor 10 - Current',
-                '<:clearedfloor:1131872032456446053> Floor 9 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
+                '<:currentfloor:1128724907245711452> Floor 20 - Current',
+                '<:clearedfloor:1131872032456446053> Floor 19 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
               ].join('\n'),
             },
           ],
@@ -942,11 +942,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:clearedfloor:1131872032456446053> Floor 10 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 9 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 20 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 19 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
               ].join('\n'),
             },
           ],
