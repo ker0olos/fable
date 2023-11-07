@@ -34,9 +34,9 @@ export async function tradeCharacters(
     takeIds: string[];
   },
 ): Promise<{ ok: boolean }> {
-  let retires = 0;
+  let retries = 0;
 
-  while (retires < 5) {
+  while (retries < 5) {
     const ops: Deno.AtomicOperation[] = [];
 
     const [giveCharacters, takeCharacters] = await Promise.all([
@@ -188,7 +188,7 @@ export async function tradeCharacters(
       return { ok: true };
     }
 
-    retires += 1;
+    retries += 1;
   }
 
   throw new KvError('failed to trade characters');
@@ -250,59 +250,65 @@ export async function stealCharacter(
     bInventory.party.member5 = undefined;
   }
 
+  let retries = 0;
+
   const stealTimestamp = new Date();
 
   stealTimestamp.setDate(stealTimestamp.getDate() + COOLDOWN_DAYS);
 
   aInventory.stealTimestamp = stealTimestamp.toISOString();
 
-  const update = await kv.atomic()
-    .check(aInventoryCheck)
-    .check({
-      key: ['inventories', bInventoryId],
-      versionstamp: bInventoryMaybe.versionstamp,
-    })
-    //
-    .set(['inventories', aInventory._id], aInventory)
-    .set(inventoriesByUser(instance._id, aUser._id), aInventory)
-    //
-    .set(['inventories', bInventory._id], bInventory)
-    .set(inventoriesByUser(instance._id, bInventory.user), bInventory)
-    //
-    .set(['characters', character._id], character)
-    .set(
-      [
-        ...charactersByInstancePrefix(instance._id),
-        character.id,
-      ],
-      character,
-    )
-    .set(
-      [
-        ...charactersByInventoryPrefix(aInventory._id),
-        character._id,
-      ],
-      character,
-    )
-    .set(
-      [
-        ...charactersByMediaIdPrefix(instance._id, character.mediaId),
-        character._id,
-      ],
-      character,
-    )
-    //
-    .delete(
-      [
-        ...charactersByInventoryPrefix(bInventory._id),
-        character._id,
-      ],
-    )
-    //
-    .commit();
+  while (retries < 5) {
+    const update = await kv.atomic()
+      .check(aInventoryCheck)
+      .check({
+        key: ['inventories', bInventoryId],
+        versionstamp: bInventoryMaybe.versionstamp,
+      })
+      //
+      .set(['inventories', aInventory._id], aInventory)
+      .set(inventoriesByUser(instance._id, aUser._id), aInventory)
+      //
+      .set(['inventories', bInventory._id], bInventory)
+      .set(inventoriesByUser(instance._id, bInventory.user), bInventory)
+      //
+      .set(['characters', character._id], character)
+      .set(
+        [
+          ...charactersByInstancePrefix(instance._id),
+          character.id,
+        ],
+        character,
+      )
+      .set(
+        [
+          ...charactersByInventoryPrefix(aInventory._id),
+          character._id,
+        ],
+        character,
+      )
+      .set(
+        [
+          ...charactersByMediaIdPrefix(instance._id, character.mediaId),
+          character._id,
+        ],
+        character,
+      )
+      //
+      .delete(
+        [
+          ...charactersByInventoryPrefix(bInventory._id),
+          character._id,
+        ],
+      )
+      //
+      .commit();
 
-  if (update.ok) {
-    return character;
+    if (update.ok) {
+      return character;
+    }
+
+    retries += 1;
   }
 
   throw new KvError('failed to update character');
@@ -312,22 +318,28 @@ export async function failSteal(
   inventory: Schema.Inventory,
   inventoryCheck: Deno.AtomicCheck,
 ): Promise<Schema.Inventory> {
+  let retries = 0;
+
   const stealTimestamp = new Date();
 
   stealTimestamp.setDate(stealTimestamp.getDate() + COOLDOWN_DAYS);
 
   inventory.stealTimestamp = stealTimestamp.toISOString();
 
-  const update = await kv.atomic()
-    .check(inventoryCheck)
-    //
-    .set(['inventories', inventory._id], inventory)
-    .set(inventoriesByUser(inventory.instance, inventory.user), inventory)
-    //
-    .commit();
+  while (retries < 5) {
+    const update = await kv.atomic()
+      .check(inventoryCheck)
+      //
+      .set(['inventories', inventory._id], inventory)
+      .set(inventoriesByUser(inventory.instance, inventory.user), inventory)
+      //
+      .commit();
 
-  if (update.ok) {
-    return inventory;
+    if (update.ok) {
+      return inventory;
+    }
+
+    retries += 1;
   }
 
   throw new KvError('failed to update inventory');

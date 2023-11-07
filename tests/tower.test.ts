@@ -1612,20 +1612,14 @@ Deno.test('/sweep', async (test) => {
 
     date.setHours(date.getHours() - 2);
 
-    const consumeSweepStub = stub(
-      db,
-      'consumeSweep',
-      () => {
-        throw new NoSweepsError(date.toISOString());
-      },
-    );
-
     const getInventoryStub = stub(
       db,
       'rechargeConsumables',
       () =>
         ({
           inventory: {
+            availableSweeps: 0,
+            sweepsTimestamp: date.toISOString(),
             floorsCleared: 1,
           },
         }) as any,
@@ -1713,18 +1707,18 @@ Deno.test('/sweep', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 2);
+      assertSpyCalls(fetchStub, 1);
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1756,7 +1750,6 @@ Deno.test('/sweep', async (test) => {
       getUserStub.restore();
       getInventoryStub.restore();
       getUserPartyStub.restore();
-      consumeSweepStub.restore();
       atomicStub.restore();
     }
   });

@@ -20,9 +20,9 @@ export async function assignStats(
   stamina?: number,
   agility?: number,
 ): Promise<Schema.Character> {
-  let retires = 0;
+  let retries = 0;
 
-  while (retires < 5) {
+  while (retries < 5) {
     const response = await db.getValueAndTimestamp<Schema.Character>([
       ...charactersByInstancePrefix(inventory.instance),
       characterId,
@@ -90,7 +90,7 @@ export async function assignStats(
       return character;
     }
 
-    retires += 1;
+    retries += 1;
   }
 
   throw new KvError('failed to update character');

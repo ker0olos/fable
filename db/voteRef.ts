@@ -19,11 +19,11 @@ export async function resolveVoteRef(
 export async function createVoteRef(
   { token, guildId }: { token: string; guildId: string },
 ): Promise<string> {
-  let retires = 0;
+  let retries = 0;
 
   const ref = utils.nanoid(4);
 
-  while (retires < 5) {
+  while (retries < 5) {
     const insert = await kv.atomic()
       .set(['vote_ref', ref], { token, guildId }, {
         expireIn: 5 * 60 * 1000, // 5 minutes
@@ -34,7 +34,7 @@ export async function createVoteRef(
       return ref;
     }
 
-    retires += 1;
+    retries += 1;
   }
 
   throw new KvError('failed to add character');

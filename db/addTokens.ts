@@ -27,9 +27,9 @@ export async function addTokens(
     user.lastVote = new Date().toISOString();
   }
 
-  let res = { ok: false }, retires = 0;
+  let res = { ok: false }, retries = 0;
 
-  while (!res.ok && retires < 5) {
+  while (!res.ok && retries < 5) {
     res = await kv.atomic()
       .set(['users', user._id], user)
       .set(usersByDiscordId(user.id), user)
@@ -39,7 +39,7 @@ export async function addTokens(
       return user;
     }
 
-    retires += 1;
+    retries += 1;
   }
 
   throw new KvError('failed to update user');
@@ -58,9 +58,9 @@ export async function addPulls(
 
   user.availableTokens = user.availableTokens - amount;
 
-  let res = { ok: false }, retires = 0;
+  let res = { ok: false }, retries = 0;
 
-  while (!res.ok && retires < 5) {
+  while (!res.ok && retries < 5) {
     const { inventory, inventoryCheck } = await db.rechargeConsumables(
       instance,
       user,
@@ -88,7 +88,7 @@ export async function addPulls(
       return inventory;
     }
 
-    retires += 1;
+    retries += 1;
   }
 
   throw new KvError('failed to update inventory');
@@ -140,9 +140,9 @@ export async function addSweeps(
 
   user.availableTokens = user.availableTokens - amount;
 
-  let res = { ok: false }, retires = 0;
+  let res = { ok: false }, retries = 0;
 
-  while (!res.ok && retires < 5) {
+  while (!res.ok && retries < 5) {
     const { inventory, inventoryCheck } = await db.rechargeConsumables(
       instance,
       user,
@@ -176,7 +176,7 @@ export async function addSweeps(
       return inventory;
     }
 
-    retires += 1;
+    retries += 1;
   }
 
   throw new KvError('failed to update inventory');

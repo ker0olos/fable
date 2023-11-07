@@ -2,8 +2,6 @@
 
 import { inventoriesByUser, usersByDiscordId } from './indices.ts';
 
-import { NoSweepsError } from '../src/errors.ts';
-
 import type * as Schema from './schema.ts';
 
 import db from './mod.ts';
@@ -36,11 +34,6 @@ export function consumeSweep(
     inventoryCheck: Deno.AtomicCheck;
   },
 ): void {
-  // deno-lint-ignore no-non-null-assertion
-  if (inventory.availableSweeps! <= 0) {
-    throw new NoSweepsError(inventory.sweepsTimestamp);
-  }
-
   // deno-lint-ignore no-non-null-assertion
   inventory.availableSweeps = inventory.availableSweeps! - 1;
 
