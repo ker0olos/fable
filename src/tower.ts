@@ -14,7 +14,7 @@ import { NonFetalError, NoSweepsError } from './errors.ts';
 
 import type * as Schema from '../db/schema.ts';
 
-export const MAX_FLOORS = 10;
+export const MAX_FLOORS = 20;
 
 const calculateMultipleOfTen = (num: number): number => {
   return Math.max(1, num % 10 === 0 ? num / 10 : Math.floor(num / 10) + 1);

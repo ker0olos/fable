@@ -20,6 +20,10 @@ import type { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
 import { NoSweepsError } from '../src/errors.ts';
 
+Deno.test('max floors',  () => {
+  assertEquals(MAX_FLOORS, 20)
+});
+
 Deno.test('experience to next level', () => {
   assertEquals(experienceToNextLevel(1), 10);
   assertEquals(experienceToNextLevel(2), 20);
