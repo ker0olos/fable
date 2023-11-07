@@ -5,7 +5,7 @@ snapshot[`all skills > snapshot 1`] = `
   crit: {
     activation: [Function: activation],
     activationTurn: "user",
-    cost: 3,
+    cost: 2,
     descKey: "crit-desc",
     key: "crit",
     stats: [
@@ -29,5 +29,71 @@ snapshot[`all skills > snapshot 1`] = `
       },
     ],
   },
+  dodge: {
+    activation: [Function: activation],
+    activationTurn: "enemy",
+    cost: 3,
+    descKey: "dodge-desc",
+    key: "dodge",
+    stats: [
+      {
+        key: "dodge-chance",
+        scale: [
+          0.5,
+          5,
+          15,
+        ],
+        suffix: "%",
+      },
+    ],
+  },
+}
+`;
+
+snapshot[`/skills showall > page 0 1`] = `
+{
+  data: {
+    attachments: [],
+    components: [
+      {
+        components: [
+          {
+            custom_id: "skills==0=prev",
+            label: "Prev",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "_",
+            disabled: true,
+            label: "1/1",
+            style: 2,
+            type: 2,
+          },
+          {
+            custom_id: "skills==0=next",
+            label: "Next",
+            style: 2,
+            type: 2,
+          },
+        ],
+        type: 1,
+      },
+    ],
+    embeds: [
+      {
+        description: "**Critical Hit** (2 Skill Points)
+The art of performing the traditional critical hit.
+1. _Crit Chance (0.5%, 5%, 15%)_
+2. _Crit Damage (30%, 45%, 60%)_
+
+**Dodge** (3 Skill Points)
+Like the wind in the air, or something.
+1. _Dodge Chance (0.5%, 5%, 15%)_",
+        type: "rich",
+      },
+    ],
+  },
+  type: 4,
 }
 `;

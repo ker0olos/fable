@@ -65,7 +65,7 @@ Deno.test('test enemy skill slots floors 11-20', () => {
   assertEquals(getEnemySkillSlots(18), 1);
   assertEquals(getEnemySkillSlots(19), 1);
 
-  assertEquals(getEnemySkillSlots(20), 1);
+  assertEquals(getEnemySkillSlots(20), 2);
 });
 
 Deno.test('test enemy skill levels floors 1-10', () => {

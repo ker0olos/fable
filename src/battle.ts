@@ -193,6 +193,7 @@ function attack(
 ): SkillOutput {
   let damage = 0;
 
+  // activate character skills
   Object.entries(char.skills).map(([key, s]) => {
     const skill = skills.skills[key];
 
@@ -206,6 +207,19 @@ function attack(
   });
 
   damage += Math.max(char.strength - target.agility, 1);
+
+  // activate enemy/target skills
+  Object.entries(target.skills).map(([key, s]) => {
+    const skill = skills.skills[key];
+
+    if (skill.activationTurn === 'enemy') {
+      const outcome = skill.activation(char, target, s.level);
+
+      if (outcome.dodge) {
+        damage = 0;
+      }
+    }
+  });
 
   target.hp = Math.max(target.hp - damage, 0);
 

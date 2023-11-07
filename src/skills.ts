@@ -18,18 +18,18 @@ import type { CharacterSkill, SkillOutput } from './types.ts';
 
 const skills: Record<string, CharacterSkill> = {
   'crit': {
-    cost: 3,
+    cost: 2,
     key: 'crit',
     descKey: 'crit-desc',
     activationTurn: 'user',
-    activation: function (_char, _target, lvl): SkillOutput {
+    activation: function (char, _target, lvl): SkillOutput {
       const [critChance, critDamageMultiplier] = this.stats;
 
       const isCrit = Math.random() * 100 <= critChance.scale[lvl - 1];
 
       if (isCrit) {
         return {
-          damage: _char.strength * (critDamageMultiplier.scale[lvl - 1] / 100),
+          damage: char.strength * (critDamageMultiplier.scale[lvl - 1] / 100),
         };
       }
 
@@ -42,6 +42,30 @@ const skills: Record<string, CharacterSkill> = {
     }, {
       key: 'crit-damage',
       scale: [30, 45, 60],
+      suffix: '%',
+    }],
+  },
+  'dodge': {
+    cost: 3,
+    key: 'dodge',
+    descKey: 'dodge-desc',
+    activationTurn: 'enemy',
+    activation: function (_char, _target, lvl): SkillOutput {
+      const [dodgeChance] = this.stats;
+
+      const isDodged = Math.random() * 100 <= dodgeChance.scale[lvl - 1];
+
+      if (isDodged) {
+        return {
+          dodge: true,
+        };
+      }
+
+      return {};
+    },
+    stats: [{
+      key: 'dodge-chance',
+      scale: [0.5, 5, 15],
       suffix: '%',
     }],
   },

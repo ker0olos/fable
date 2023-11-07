@@ -20,82 +20,136 @@ Deno.test('all skills', async (test) => {
     await assertSnapshot(test, skills.skills);
   });
 
-  await test.step('crits', () => {
-    const critSkill = skills.skills['crit'];
+  await test.step('crits', async (test) => {
+    await test.step('hit', () => {
+      const critSkill = skills.skills['crit'];
 
-    const randomStub = stub(Math, 'random', () => 0);
+      const randomStub = stub(Math, 'random', () => 0);
 
-    try {
-      const output = critSkill.activation(
-        {
-          hp: 1,
-          strength: 5,
-          agility: 1,
-          stamina: 1,
-          skills: {},
-        },
-        {
-          hp: 1,
-          strength: 1,
-          agility: 1,
-          stamina: 1,
-          skills: {},
-        },
-        1,
-      );
+      try {
+        const output = critSkill.activation(
+          {
+            hp: 1,
+            strength: 5,
+            agility: 1,
+            stamina: 1,
+            skills: {},
+          },
+          {
+            hp: 1,
+            strength: 1,
+            agility: 1,
+            stamina: 1,
+            skills: {},
+          },
+          1,
+        );
 
-      assertEquals(output.damage, 5 * 0.3);
-    } finally {
-      randomStub.restore();
-    }
+        assertEquals(output.damage, 5 * 0.3);
+      } finally {
+        randomStub.restore();
+      }
+    });
+
+    await test.step('miss', () => {
+      const critSkill = skills.skills['crit'];
+
+      const randomStub = stub(Math, 'random', () => 1);
+
+      try {
+        const output = critSkill.activation(
+          {
+            hp: 1,
+            strength: 5,
+            agility: 1,
+            stamina: 1,
+            skills: {},
+          },
+          {
+            hp: 1,
+            strength: 1,
+            agility: 1,
+            stamina: 1,
+            skills: {},
+          },
+          1,
+        );
+
+        assertEquals(output.damage, undefined);
+      } finally {
+        randomStub.restore();
+      }
+    });
+  });
+
+  await test.step('dodge', async (test) => {
+    await test.step('hit', () => {
+      const critSkill = skills.skills['dodge'];
+
+      const randomStub = stub(Math, 'random', () => 0);
+
+      try {
+        const output = critSkill.activation(
+          {
+            hp: 1,
+            strength: 5,
+            agility: 1,
+            stamina: 1,
+            skills: {},
+          },
+          {
+            hp: 1,
+            strength: 1,
+            agility: 1,
+            stamina: 1,
+            skills: {},
+          },
+          1,
+        );
+
+        assertEquals(output.dodge, true);
+      } finally {
+        randomStub.restore();
+      }
+    });
+
+    await test.step('miss', () => {
+      const critSkill = skills.skills['dodge'];
+
+      const randomStub = stub(Math, 'random', () => 1);
+
+      try {
+        const output = critSkill.activation(
+          {
+            hp: 1,
+            strength: 5,
+            agility: 1,
+            stamina: 1,
+            skills: {},
+          },
+          {
+            hp: 1,
+            strength: 1,
+            agility: 1,
+            stamina: 1,
+            skills: {},
+          },
+          1,
+        );
+
+        assertEquals(output.dodge, undefined);
+      } finally {
+        randomStub.restore();
+      }
+    });
   });
 });
 
 Deno.test('/skills showall', async (test) => {
-  await test.step('page 0', () => {
+  await test.step('page 0', async (test) => {
     const message = skills.all(0);
 
-    assertEquals(message.json(), {
-      type: 4,
-      data: {
-        attachments: [],
-        embeds: [{
-          type: 'rich',
-          description: [
-            `**Critical Hit** (3 Skill Points)`,
-            `The art of performing a traditional critical hit`,
-            `1. _Crit Chance (0.5%, 5%, 15%)_`,
-            `2. _Crit Damage (30%, 45%, 60%)_`,
-          ].join('\n'),
-        }],
-        components: [
-          {
-            type: 1,
-            components: [
-              {
-                custom_id: 'skills==0=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '1/1',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'skills==0=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-            ],
-          },
-        ],
-      },
-    });
+    await assertSnapshot(test, message.json());
   });
 });
 
@@ -254,14 +308,14 @@ Deno.test('/skills acquire', async (test) => {
               type: 'rich',
               description: [
                 `**Critical Hit** **(LVL 1)**`,
-                `The art of performing a traditional critical hit`,
+                `The art of performing the traditional critical hit.`,
                 `1. _Crit Chance (0.5%)_`,
                 `2. _Crit Damage (30%)_`,
               ].join('\n'),
             },
             {
               type: 'rich',
-              description: 'Costs 3 Skill Points',
+              description: 'Costs 2 Skill Points',
               title: 'Acquire Skill',
             },
           ],
@@ -444,14 +498,14 @@ Deno.test('/skills acquire', async (test) => {
               type: 'rich',
               description: [
                 `**Critical Hit** **(LVL 1 <:rarrow:1170533290105655428> LVL 2)**`,
-                `The art of performing a traditional critical hit`,
+                `The art of performing the traditional critical hit.`,
                 `1. _Crit Chance (0.5% <:rarrow:1170533290105655428> 5%)_`,
                 `2. _Crit Damage (30% <:rarrow:1170533290105655428> 45%)_`,
               ].join('\n'),
             },
             {
               type: 'rich',
-              description: 'Costs 3 Skill Points',
+              description: 'Costs 2 Skill Points',
               title: 'Upgrade Skill',
             },
           ],
@@ -616,7 +670,7 @@ Deno.test('/skills acquire', async (test) => {
               type: 'rich',
               description: [
                 `**Critical Hit** **(LVL MAX)**`,
-                `The art of performing a traditional critical hit`,
+                `The art of performing the traditional critical hit.`,
                 `1. _Crit Chance (15%)_`,
                 `2. _Crit Damage (60%)_`,
               ].join('\n'),
@@ -1115,7 +1169,7 @@ Deno.test('acquire skill', async (test) => {
                 type: 'rich',
                 description: [
                   `**Critical Hit** **(LVL 1)**`,
-                  `The art of performing a traditional critical hit`,
+                  `The art of performing the traditional critical hit.`,
                   `1. _Crit Chance (0.5%)_`,
                   `2. _Crit Damage (30%)_`,
                 ].join('\n'),
@@ -1194,7 +1248,7 @@ Deno.test('acquire skill', async (test) => {
                 type: 'rich',
                 description: [
                   `**Critical Hit** **(LVL 1 <:rarrow:1170533290105655428> LVL 2)**`,
-                  `The art of performing a traditional critical hit`,
+                  `The art of performing the traditional critical hit.`,
                   `1. _Crit Chance (0.5% <:rarrow:1170533290105655428> 5%)_`,
                   `2. _Crit Damage (30% <:rarrow:1170533290105655428> 45%)_`,
                 ].join('\n'),

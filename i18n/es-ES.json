@@ -361,7 +361,11 @@
   "$help-page-admin-commands": "Comandos de Administrador",
 
   "crit": "Critical Hit",
-  "crit-desc": "The art of performing traditional critical hit",
+  "crit-desc": "The art of performing the traditional critical hit.",
   "crit-chance": "Crit Chance",
-  "crit-damage": "Crit Damage"
+  "crit-damage": "Crit Damage",
+
+  "dodge": "Dodge",
+  "dodge-desc": "Like the wind in the air, or something.",
+  "dodge-chance": "Dodge Chance"
 }

@@ -173,6 +173,7 @@ export type CharacterLive = {
 };
 
 export interface SkillOutput {
+  dodge?: boolean;
   damage?: number;
 }
 
@@ -182,7 +183,7 @@ export interface CharacterSkill {
 
   cost: number;
 
-  activationTurn: 'user' | 'enmey';
+  activationTurn: 'user' | 'enemy';
   activation: (
     char: CharacterLive,
     target: CharacterLive,
