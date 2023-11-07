@@ -46,7 +46,24 @@ async function topgg(r: Request): Promise<Response> {
   const amount = data.isWeekend ? 2 : 1;
 
   try {
-    await db.addTokens(await db.getUser(data.user), amount, true);
+    const twelveHoursAgo = new Date();
+
+    const _user = await db.getUser(data.user);
+
+    twelveHoursAgo.setHours(twelveHoursAgo.getHours() - 12);
+
+    // workaround top.gg sending double events
+    if (_user.lastVote) {
+      const twelveHours = new Date(_user.lastVote);
+
+      twelveHours.setHours(twelveHours.getHours() + 12);
+
+      if (twelveHours > new Date()) {
+        return utils.json({ status: 200 });
+      }
+    }
+
+    await db.addTokens(_user, amount, true);
 
     const searchParams = new URLSearchParams(data.query);
 

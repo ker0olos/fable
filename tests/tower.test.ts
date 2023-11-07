@@ -18,8 +18,6 @@ import { MediaType } from '../src/types.ts';
 
 import type { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
-import { NoSweepsError } from '../src/errors.ts';
-
 Deno.test('max floors', () => {
   assertEquals(MAX_FLOORS, 20);
 });
