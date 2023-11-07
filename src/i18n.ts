@@ -3,8 +3,10 @@ import { AvailableLocales } from './discord.ts';
 import EN from '../i18n/en-US.json' assert { type: 'json' };
 import ES from '../i18n/es-ES.json' assert { type: 'json' };
 
+export type Keys = keyof typeof EN;
+
 function get(
-  key: keyof typeof EN,
+  key: Keys,
   locale: AvailableLocales = 'en-US',
   ...args: (string | number)[]
 ): string {
@@ -18,6 +20,8 @@ function get(
       value = EN[key];
       break;
   }
+
+  value ??= key;
 
   if (args?.length) {
     value = value.replaceAll(

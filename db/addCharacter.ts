@@ -35,9 +35,9 @@ export async function addCharacter(
     sacrifices?: Deno.KvEntry<Schema.Character>[];
   },
 ): Promise<{ ok: boolean }> {
-  let retires = 0;
+  let retries = 0;
 
-  while (retires < 5) {
+  while (retries < 5) {
     const ops: Deno.AtomicOperation[] = [];
 
     const guild = await db.getGuild(guildId);
@@ -104,16 +104,7 @@ export async function addCharacter(
       inventory.availablePulls = inventory.availablePulls - 1;
     }
 
-    if (new Date() >= new Date(user.dailyTimestamp ?? new Date())) {
-      const newDailyTimestamp = new Date();
-
-      user.dailyTimestamp = (
-        newDailyTimestamp.setDate(newDailyTimestamp.getDate() + 1),
-          newDailyTimestamp.toISOString()
-      );
-
-      user.availableTokens = (user.availableTokens ?? 0) + 1;
-    }
+    db.checkDailyTimestamp(user);
 
     inventory.lastPull = new Date().toISOString();
     inventory.rechargeTimestamp ??= new Date().toISOString();
@@ -171,7 +162,7 @@ export async function addCharacter(
       return { ok: true };
     }
 
-    retires += 1;
+    retries += 1;
   }
 
   throw new KvError('failed to add character');

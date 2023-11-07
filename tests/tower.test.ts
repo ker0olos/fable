@@ -18,7 +18,9 @@ import { MediaType } from '../src/types.ts';
 
 import type { AniListCharacter, AniListMedia } from '../packs/anilist/types.ts';
 
-import { NoSweepsError } from '../src/errors.ts';
+Deno.test('max floors', () => {
+  assertEquals(MAX_FLOORS, 20);
+});
 
 Deno.test('experience to next level', () => {
   assertEquals(experienceToNextLevel(1), 10);
@@ -674,11 +676,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:undiscoveredfloor:1128724910609551481> Floor 10 - Undiscovered',
-                '<:currentfloor:1128724907245711452> Floor 9 - Current',
-                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
+                '<:undiscoveredfloor:1128724910609551481> Floor 20 - Undiscovered',
+                '<:currentfloor:1128724907245711452> Floor 19 - Current',
+                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
               ].join('\n'),
             },
           ],
@@ -806,11 +808,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:currentfloor:1128724907245711452> Floor 10 - Current',
-                '<:clearedfloor:1131872032456446053> Floor 9 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
+                '<:currentfloor:1128724907245711452> Floor 20 - Current',
+                '<:clearedfloor:1131872032456446053> Floor 19 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
               ].join('\n'),
             },
           ],
@@ -938,11 +940,11 @@ Deno.test('/tower view', async (test) => {
             {
               type: 'rich',
               description: [
-                '<:clearedfloor:1131872032456446053> Floor 10 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 9 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 8 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 7 - Cleared',
-                '<:clearedfloor:1131872032456446053> Floor 6 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 20 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 19 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 18 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 17 - Cleared',
+                '<:clearedfloor:1131872032456446053> Floor 16 - Cleared',
               ].join('\n'),
             },
           ],
@@ -1469,10 +1471,10 @@ Deno.test('/sweep', async (test) => {
               title: 'Floor 1',
               description:
                 '**name 1** leveled up 2x and gained 6 stat points and 2 skill points.\n' +
-                '**name 2** leveled up and gained 3 stat points and 1 skill points.\n' +
-                '**name 3** leveled up and gained 3 stat points and 1 skill points.\n' +
-                '**name 4** leveled up and gained 3 stat points and 1 skill points.\n' +
-                '**name 5** leveled up and gained 3 stat points and 1 skill points.',
+                '**name 2** leveled up and gained 3 stat points and 1 skill point.\n' +
+                '**name 3** leveled up and gained 3 stat points and 1 skill point.\n' +
+                '**name 4** leveled up and gained 3 stat points and 1 skill point.\n' +
+                '**name 5** leveled up and gained 3 stat points and 1 skill point.',
             },
           ],
           components: [
@@ -1608,20 +1610,14 @@ Deno.test('/sweep', async (test) => {
 
     date.setHours(date.getHours() - 2);
 
-    const consumeSweepStub = stub(
-      db,
-      'consumeSweep',
-      () => {
-        throw new NoSweepsError(date.toISOString());
-      },
-    );
-
     const getInventoryStub = stub(
       db,
       'rechargeConsumables',
       () =>
         ({
           inventory: {
+            availableSweeps: 0,
+            sweepsTimestamp: date.toISOString(),
             floorsCleared: 1,
           },
         }) as any,
@@ -1709,18 +1705,18 @@ Deno.test('/sweep', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 2);
+      assertSpyCalls(fetchStub, 1);
 
       assertEquals(
-        fetchStub.calls[1].args[0],
+        fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
       );
 
-      assertEquals(fetchStub.calls[1].args[1]?.method, 'PATCH');
+      assertEquals(fetchStub.calls[0].args[1]?.method, 'PATCH');
 
       assertEquals(
         JSON.parse(
-          (fetchStub.calls[1].args[1]?.body as FormData)?.get(
+          (fetchStub.calls[0].args[1]?.body as FormData)?.get(
             'payload_json',
           ) as any,
         ),
@@ -1752,7 +1748,6 @@ Deno.test('/sweep', async (test) => {
       getUserStub.restore();
       getInventoryStub.restore();
       getUserPartyStub.restore();
-      consumeSweepStub.restore();
       atomicStub.restore();
     }
   });

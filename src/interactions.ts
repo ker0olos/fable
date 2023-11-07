@@ -12,6 +12,7 @@ import trade from './trade.ts';
 import steal from './steal.ts';
 import shop from './shop.ts';
 import stats from './stats.ts';
+import skills from './skills.ts';
 import battle from './battle.ts';
 import tower from './tower.ts';
 import help from './help.ts';
@@ -22,8 +23,6 @@ import webhooks from './webhooks.ts';
 import community from './community.ts';
 
 import config, { initConfig } from './config.ts';
-
-import db from '../db/mod.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
 
@@ -201,7 +200,11 @@ export const handler = async (r: Request) => {
             'like',
             'unlike',
             'stats',
-          ].includes(name)
+          ].includes(name) || (
+            // deno-lint-ignore no-non-null-assertion
+            name === 'skills' && ['acquire', 'upgrade'].includes(subcommand!) &&
+            focused === 'character'
+          )
         ) {
           // deno-lint-ignore no-non-null-assertion
           const name = options[focused!] as string;
@@ -297,6 +300,51 @@ export const handler = async (r: Request) => {
             message.addSuggestions({
               name: `${manifest.title ?? manifest.id}`,
               value: manifest.id,
+            });
+          });
+
+          return message.send();
+        }
+
+        // suggest acquirable character skills
+        if (
+          // deno-lint-ignore no-non-null-assertion
+          name === 'skills' && ['acquire', 'upgrade'].includes(subcommand!) &&
+          focused === 'skill'
+        ) {
+          // deno-lint-ignore no-non-null-assertion
+          const name = options[focused!] as string;
+
+          const message = new discord.Message(
+            discord.MessageType.Suggestions,
+          );
+
+          const distance: Record<string, number> = {};
+
+          let _skills = Object.values(skills.skills);
+
+          // sort suggestion based on distance
+          _skills.forEach((skill) => {
+            const skillName = i18n.get(skill.key, locale);
+
+            const d = utils.distance(skill.key, name);
+            const d2 = utils.distance(skillName, name);
+
+            if (d > d2) {
+              distance[skill.key] = d2;
+            } else {
+              distance[skill.key] = d;
+            }
+          });
+
+          _skills = _skills.sort((a, b) => distance[b.key] - distance[a.key]);
+
+          _skills?.forEach((skill) => {
+            const skillName = i18n.get(skill.key, locale);
+
+            message.addSuggestions({
+              name: skillName,
+              value: skill.key,
             });
           });
 
@@ -660,6 +708,11 @@ export const handler = async (r: Request) => {
                   userId: member.user.id,
                   amount: options['amount'] as number,
                 }).send();
+              case 'sweeps':
+                return shop.sweeps({
+                  userId: member.user.id,
+                  amount: options['amount'] as number,
+                }).send();
               default:
                 break;
             }
@@ -741,6 +794,30 @@ export const handler = async (r: Request) => {
               userId: member.user.id,
             }).send();
           }
+          case 'skills': {
+            // deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'showall':
+                return skills.all(0, locale).send();
+              case 'upgrade':
+              case 'acquire': {
+                const skillKey = options['skill'] as string;
+                const character = options['character'] as string;
+
+                return skills.preAcquire({
+                  token,
+                  skillKey,
+                  guildId,
+                  character,
+                  userId: member.user.id,
+                }).send();
+              }
+              default:
+                break;
+            }
+            break;
+          }
+          case 'bt':
           case 'battle': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
@@ -969,6 +1046,15 @@ export const handler = async (r: Request) => {
                   }))
                     .setType(discord.MessageType.Update)
                     .send();
+                case 'sweeps':
+                  return (await shop.confirmSweeps({
+                    token,
+                    guildId,
+                    userId: member.user.id,
+                    amount: value,
+                  }))
+                    .setType(discord.MessageType.Update)
+                    .send();
                 case 'normal':
                   return (await shop.confirmNormal({
                     token,
@@ -1116,6 +1202,29 @@ export const handler = async (r: Request) => {
 
             throw new NoPermissionError();
           }
+          case 'cacquire': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            // deno-lint-ignore no-non-null-assertion
+            const characterId = customValues![1];
+
+            // deno-lint-ignore no-non-null-assertion
+            const skillKey = customValues![2];
+
+            if (userId === member.user.id) {
+              return (await skills.acquire({
+                guildId,
+                characterId,
+                userId,
+                skillKey,
+              }))
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
+          }
           case 'sbattle': {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
@@ -1137,6 +1246,14 @@ export const handler = async (r: Request) => {
             }
 
             throw new NoPermissionError();
+          }
+          case 'skills': {
+            // deno-lint-ignore no-non-null-assertion
+            const index = parseInt(customValues![1]);
+
+            return skills.all(index, locale)
+              .setType(discord.MessageType.Update)
+              .send();
           }
           case 'tsweep': {
             return tower.sweep({
@@ -1318,12 +1435,6 @@ if (import.meta.main) {
     '/assets/:filename+': utils.serveStatic('../assets/public', {
       baseUrl: import.meta.url,
     }),
-    //
-    '/stats': async () => {
-      return utils.json({
-        server_count: (await db.getValues({ prefix: ['guilds'] })).length,
-      }, { status: 200 });
-    },
     '/invite': () =>
       Response.redirect(
         `https://discord.com/api/oauth2/authorize?client_id=${config.appId}&scope=applications.commands`,

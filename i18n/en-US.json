@@ -47,8 +47,10 @@
   "won": "Won",
 
   "sweep": "Sweep",
+  "sweeps": "Sweeps",
   "floor": "Floor",
   "next-floor": "Next Floor",
+  "try-again": "Try Again",
   "challenge": "Challenge",
 
   "undiscovered": "Undiscovered",
@@ -155,6 +157,8 @@
   "agi": "AGI",
 
   "stats": "Stats",
+  "skills": "Skills",
+  "skill-point": "Skill Point",
   "skill-points": "Skill Points",
   "stat-points": "Stat Points",
   "strength": "Strength",
@@ -162,11 +166,23 @@
   "agility": "Agility",
   "reset": "Reset",
 
+  "lvl": "LVL",
   "level": "Level",
+  "max": "MAX",
+
+  "acquire-skill": "Acquire Skill",
+  "skill-acquired": "Skill Acquired",
+
+  "upgrade-skill": "Upgrade Skill",
+  "skill-upgraded": "Skill Upgraded",
+
+  "costs-n-points": "Costs {0} {1}",
+  "character-not-enough-skill-points": "Character doesn't have enough skill points left",
+  "skill-is-maxed": "Skill is maxed",
 
   "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
   "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
-  "leveled-up": "**{0}** leveled up{1}and gained {2} stat points and {3} skill points.",
+  "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
   "exp-gained": "**{0}** {1}/{2} EXP",
 
   "help-page1-before-anything": "Before anything: You will need characters.",
@@ -274,6 +290,8 @@
 
   "/buy normal": "use tokens to buy normal pulls",
   "/buy guaranteed": "use tokens to buy pulls with a specific guaranteed rating",
+  "/buy sweeps": "use tokens to buy tower sweeps",
+
   "/packs": "list all the packs on a server",
   "/logs": "list user last few found characters",
 
@@ -285,13 +303,19 @@
 
   "/battle friend": "Battle against another player to test your party",
   "/battle tower": "Climb the tower to glory and become a fable",
+
   "/sweep": "Sweep your current battle tower floor for exp",
+
+  "/skills showall": "Show all available skills and their details",
+  "/skills acquire": "Teach a character a skill",
+  "/skills upgrade": "Upgrade a character's skill",
 
   "/help": "need more information? we got you",
 
   "$debug": "display the nerdy stuff",
   "$media-title": "the title of the series",
   "$character-name": "the name of the character",
+  "$skill-name": "the name of the required skill",
   "$media-characters": "view the characters from the series",
   "$user-list": "the user of the list",
   "$user-party": "the user of the party",
@@ -309,6 +333,7 @@
   "$new-nick": "new nickname",
 
   "$buy-normal-amount": "the amount of pulls you want to buy",
+  "$buy-sweeps-amount": "the amount of sweeps you want to buy",
   "$buy-guaranteed-stars": "the star rating you want to buy",
 
   "$party-spot": "the spot where you want this character",
@@ -332,5 +357,14 @@
   "$help-page-roadmap": "Roadmap",
   "$help-page-essential-commands": "Essential Commands",
   "$help-page-other-commands": "Other Commands",
-  "$help-page-admin-commands": "Admin Commands"
+  "$help-page-admin-commands": "Admin Commands",
+
+  "crit": "Critical Hit",
+  "crit-desc": "The art of performing the traditional critical hit.",
+  "crit-chance": "Crit Chance",
+  "crit-damage": "Crit Damage",
+
+  "dodge": "Dodge",
+  "dodge-desc": "Like the wind in the air, or something.",
+  "dodge-chance": "Dodge Chance"
 }

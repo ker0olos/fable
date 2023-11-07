@@ -1,3 +1,7 @@
+import type { Keys } from '../src/i18n.ts';
+
+import type { AcquiredCharacterSkill } from '../db/schema.ts';
+
 export type Modify<T, R> = Omit<T, keyof R> & R;
 
 export enum MediaType {
@@ -156,4 +160,42 @@ export interface Manifest {
   characters?: {
     new?: DisaggregatedCharacter[];
   };
+}
+
+// Combat
+
+export type CharacterLive = {
+  skills: Record<string, AcquiredCharacterSkill>;
+  strength: Readonly<number>;
+  stamina: Readonly<number>;
+  agility: Readonly<number>;
+  hp: number;
+};
+
+export interface SkillOutput {
+  dodge?: boolean;
+  damage?: number;
+}
+
+export interface CharacterSkill {
+  key: Keys;
+  descKey: Keys;
+
+  cost: number;
+
+  activationTurn: 'user' | 'enemy';
+  activation: (
+    char: CharacterLive,
+    target: CharacterLive,
+    lvl: number,
+  ) => SkillOutput;
+
+  stats: CharacterAdditionalStat[];
+}
+
+export interface CharacterAdditionalStat {
+  key: Keys;
+  scale: number[];
+  prefix?: string;
+  suffix?: string;
 }

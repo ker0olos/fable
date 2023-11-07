@@ -854,4 +854,368 @@ Deno.test('/buy', async (test) => {
       createVoteRefStub.restore();
     }
   });
+
+  await test.step('sweep dialog', () => {
+    const message = shop.sweeps({
+      userId: 'user_id',
+      amount: 1,
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        attachments: [],
+        components: [{
+          type: 1,
+          components: [
+            {
+              custom_id: 'buy=sweeps=user_id=1',
+              label: 'Confirm',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'cancel=user_id',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
+            },
+          ],
+        }],
+        embeds: [{
+          type: 'rich',
+          description:
+            'You want to spent **1 token** <:remove:1099004424111792158>?',
+        }],
+      },
+    });
+  });
+
+  await test.step('sweep dialog (plural)', () => {
+    const message = shop.sweeps({
+      userId: 'user_id',
+      amount: 4,
+    });
+
+    assertEquals(message.json(), {
+      type: 4,
+      data: {
+        attachments: [],
+        components: [{
+          type: 1,
+          components: [
+            {
+              custom_id: 'buy=sweeps=user_id=4',
+              label: 'Confirm',
+              style: 2,
+              type: 2,
+            },
+            {
+              custom_id: 'cancel=user_id',
+              label: 'Cancel',
+              style: 4,
+              type: 2,
+            },
+          ],
+        }],
+        embeds: [{
+          type: 'rich',
+          description:
+            'You want to spent **4 tokens** <:remove:1099004424111792158>?',
+        }],
+      },
+    });
+  });
+
+  await test.step('sweep confirmed', async () => {
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addPullsStub = stub(
+      db,
+      'addSweeps',
+      () => '_' as any,
+    );
+
+    try {
+      const message = await shop.confirmSweeps({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        amount: 1,
+      });
+
+      assertSpyCallArgs(addPullsStub, 0, [
+        'instance',
+        'user',
+        1,
+      ]);
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'tsweep=user_id',
+                label: '/sweep',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description: 'You bought **1** sweep <:add:1099004747123523644>',
+          }],
+        },
+      });
+    } finally {
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addPullsStub.restore();
+    }
+  });
+
+  await test.step('sweep confirmed (plural)', async () => {
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () => 'user' as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addPullsStub = stub(
+      db,
+      'addSweeps',
+      () => '_' as any,
+    );
+
+    try {
+      const message = await shop.confirmSweeps({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        amount: 4,
+      });
+
+      assertSpyCallArgs(addPullsStub, 0, [
+        'instance',
+        'user',
+        4,
+      ]);
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                custom_id: 'tsweep=user_id',
+                label: '/sweep',
+                style: 2,
+                type: 2,
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description: 'You bought **4** sweeps <:add:1099004747123523644>',
+          }],
+        },
+      });
+    } finally {
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addPullsStub.restore();
+    }
+  });
+
+  await test.step('sweep insufficient votes', async () => {
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () =>
+        ({
+          availableTokens: 9,
+        }) as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addPullsStub = stub(
+      db,
+      'addSweeps',
+      () => {
+        throw new Error('INSUFFICIENT_TOKENS');
+      },
+    );
+
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
+    config.appId = 'app_id';
+
+    try {
+      const message = await shop.confirmSweeps({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        amount: 10,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                label: 'Vote',
+                type: 2,
+                style: 5,
+                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description: 'You need **1 more token** before you can do this.',
+          }],
+        },
+      });
+    } finally {
+      delete config.appId;
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addPullsStub.restore();
+      createVoteRefStub.restore();
+    }
+  });
+
+  await test.step('sweep insufficient votes (plural)', async () => {
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () =>
+        ({
+          availableTokens: 5,
+        }) as any,
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const addPullsStub = stub(
+      db,
+      'addSweeps',
+      () => {
+        throw new Error('INSUFFICIENT_TOKENS');
+      },
+    );
+
+    const createVoteRefStub = stub(
+      db,
+      'createVoteRef',
+      () => Promise.resolve('fake_ref'),
+    );
+
+    config.appId = 'app_id';
+
+    try {
+      const message = await shop.confirmSweeps({
+        token: 'token',
+        userId: 'user_id',
+        guildId: 'guild_id',
+        amount: 10,
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [{
+            type: 1,
+            components: [
+              {
+                label: 'Vote',
+                type: 2,
+                style: 5,
+                url: 'https://top.gg/bot/app_id/vote?ref=fake_ref',
+              },
+            ],
+          }],
+          embeds: [{
+            type: 'rich',
+            description: 'You need **5 more tokens** before you can do this.',
+          }],
+        },
+      });
+    } finally {
+      delete config.appId;
+
+      getUserStub.restore();
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      addPullsStub.restore();
+      createVoteRefStub.restore();
+    }
+  });
 });

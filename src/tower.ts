@@ -10,11 +10,11 @@ import * as discord from './discord.ts';
 
 import config from './config.ts';
 
-import { NonFetalError, NoSweepsError } from './errors.ts';
+import { NonFetalError } from './errors.ts';
 
 import type * as Schema from '../db/schema.ts';
 
-export const MAX_FLOORS = 10;
+export const MAX_FLOORS = 20;
 
 const calculateMultipleOfTen = (num: number): number => {
   return Math.max(1, num % 10 === 0 ? num / 10 : Math.floor(num / 10) + 1);
@@ -186,45 +186,28 @@ function sweep({ token, guildId, userId }: {
 
   Promise.resolve()
     .then(async () => {
-      const guild = await db.getGuild(guildId);
-      const instance = await db.getInstance(guild);
+      let retires = 0;
 
-      const user = await db.getUser(userId);
+      while (retires < 5) {
+        const guild = await db.getGuild(guildId);
+        const instance = await db.getInstance(guild);
 
-      const { inventory, inventoryCheck } = await db.rechargeConsumables(
-        instance,
-        user,
-        false,
-      );
+        const user = await db.getUser(userId);
 
-      if (!inventory.floorsCleared) {
-        throw new NonFetalError(
-          i18n.get('no-cleared-floors', locale),
+        const { inventory, inventoryCheck } = await db.rechargeConsumables(
+          instance,
+          user,
+          false,
         );
-      }
 
-      const party = await db.getUserParty(inventory);
+        if (!inventory.floorsCleared) {
+          throw new NonFetalError(
+            i18n.get('no-cleared-floors', locale),
+          );
+        }
 
-      const party1 = [
-        party?.member1,
-        party?.member2,
-        party?.member3,
-        party?.member4,
-        party?.member5,
-      ].filter(Boolean) as Schema.Character[];
-
-      const characters = await packs.characters({
-        guildId,
-        ids: party1.map(({ id }) => id),
-      });
-
-      const op = db.kv.atomic();
-
-      try {
-        // consume a sweep from inventory
-        db.consumeSweep({ op, inventory, inventoryCheck });
-      } catch (err) {
-        if (err instanceof NoSweepsError) {
+        // deno-lint-ignore no-non-null-assertion
+        if (inventory.availableSweeps! <= 0) {
           return await new discord.Message()
             .addEmbed(
               new discord.Embed()
@@ -236,60 +219,84 @@ function sweep({ token, guildId, userId }: {
                   i18n.get(
                     '+1-sweep',
                     locale,
-                    `<t:${err.rechargeTimestamp}:R>`,
+                    `<t:${
+                      utils.rechargeSweepTimestamp(inventory.sweepsTimestamp)
+                    }:R>`,
                   ),
                 ),
             )
             .patch(token);
-        } else {
-          throw err;
         }
-      }
 
-      // deno-lint-ignore no-non-null-assertion
-      const expGained = getFloorExp(inventory.floorsCleared!);
+        const party = await db.getUserParty(inventory);
 
-      const status = party1.map((character, index) =>
-        db.gainExp(
-          op,
-          inventory,
-          character,
-          index === 0 ? expGained : expGained * 0.5,
-        )
-      );
+        const party1 = [
+          party?.member1,
+          party?.member2,
+          party?.member3,
+          party?.member4,
+          party?.member5,
+        ].filter(Boolean) as Schema.Character[];
 
-      const statusText = status.map(
-        ({ levelUp, skillPoints, statPoints, exp, expToLevel }, index) => {
-          if (levelUp >= 1) {
-            return i18n.get(
-              'leveled-up',
-              locale,
-              party1[index].nickname ??
-                packs.aliasToArray(characters[index].name)[0],
-              levelUp === 1 ? ' ' : ` ${levelUp}x `,
-              statPoints,
-              skillPoints,
-            );
-          } else {
-            return i18n.get(
-              'exp-gained',
-              locale,
-              party1[index].nickname ??
-                packs.aliasToArray(characters[index].name)[0],
-              exp,
-              expToLevel,
-            );
-          }
-        },
-      ).join('\n');
+        const op = db.kv.atomic();
 
-      let retires = 0;
+        db.consumeSweep({ op, user, inventory, inventoryCheck });
 
-      while (retires < 5) {
+        // deno-lint-ignore no-non-null-assertion
+        const expGained = getFloorExp(inventory.floorsCleared!);
+
+        const status = party1.map((character, index) =>
+          db.gainExp(
+            op,
+            inventory,
+            character,
+            index === 0 ? expGained : expGained * 0.5,
+          )
+        );
+
         const update = await op.commit();
 
         if (update.ok) {
           const message = new discord.Message();
+
+          const _characters = await packs.characters({
+            guildId,
+            ids: party1.map(({ id }) => id),
+          });
+
+          const characters = party1.map(({ id }) => {
+            return _characters.find((c) => id === `${c.packId}:${c.id}`);
+          });
+
+          const statusText = status.map(
+            ({ levelUp, skillPoints, statPoints, exp, expToLevel }, index) => {
+              if (levelUp >= 1) {
+                return i18n.get(
+                  'leveled-up',
+                  locale,
+                  party1[index].nickname ??
+                    // deno-lint-ignore no-non-null-assertion
+                    packs.aliasToArray(characters[index]!.name)[0],
+                  levelUp === 1 ? ' ' : ` ${levelUp}x `,
+                  statPoints,
+                  i18n.get('stat-points').toLowerCase(),
+                  skillPoints,
+                  i18n.get(skillPoints === 1 ? 'skill-point' : 'skill-points')
+                    .toLowerCase(),
+                );
+              } else {
+                return i18n.get(
+                  'exp-gained',
+                  locale,
+                  party1[index].nickname ??
+                    // deno-lint-ignore no-non-null-assertion
+                    packs.aliasToArray(characters[index]!.name)[0],
+                  exp,
+                  expToLevel,
+                );
+              }
+            },
+          ).join('\n');
 
           message.addEmbed(
             new discord.Embed()
@@ -342,7 +349,7 @@ function sweep({ token, guildId, userId }: {
 }
 
 async function onFail(
-  { token, message, locale }: {
+  { token, userId, message, locale }: {
     token: string;
     userId: string;
     message: discord.Message;
@@ -360,6 +367,13 @@ async function onFail(
     new discord.Component()
       .setId('tsweep')
       .setLabel(`/sweep`),
+  ]);
+
+  // try again button
+  message.addComponents([
+    new discord.Component()
+      .setId(discord.join('tchallenge', userId))
+      .setLabel(i18n.get('try-again', locale)),
   ]);
 
   await message.patch(token);
@@ -391,9 +405,13 @@ async function onSuccess(
     )
   );
 
-  const characters = await packs.characters({
+  const _characters = await packs.characters({
     guildId,
     ids: party.map(({ id }) => id),
+  });
+
+  const characters = party.map(({ id }) => {
+    return _characters.find((c) => id === `${c.packId}:${c.id}`);
   });
 
   const statusText = status.map(
@@ -403,7 +421,8 @@ async function onSuccess(
           'leveled-up',
           locale,
           party[index].nickname ??
-            packs.aliasToArray(characters[index].name)[0],
+            // deno-lint-ignore no-non-null-assertion
+            packs.aliasToArray(characters[index]!.name)[0],
           levelUp === 1 ? ' ' : ` ${levelUp}x `,
           statPoints,
           skillPoints,

@@ -48,7 +48,9 @@
   "won": "Won",
 
   "sweep": "Sweep",
+  "sweeps": "Sweeps",
   "floor": "Floor",
+  "try-again": "Try Again",
   "next-floor": "Next Floor",
   "challenge": "Challenge",
 
@@ -156,6 +158,8 @@
   "agi": "AGI",
 
   "stats": "Stats",
+  "skills": "Skills",
+  "skill-point": "Skill Point",
   "skill-points": "Skill Points",
   "stat-points": "Stat Points",
   "strength": "Fuerza",
@@ -163,11 +167,23 @@
   "agility": "Agilidad",
   "reset": "Reiniciar",
 
+  "lvl": "LVL",
   "level": "Level",
+  "max": "MAX",
+
+  "acquire-skill": "Acquire Skill",
+  "skill-acquired": "Skill Acquired",
+
+  "upgrade-skill": "Upgrade Skill",
+  "skill-upgraded": "Skill Upgraded",
+
+  "costs-n-points": "Costs {0} {1}",
+  "character-not-enough-skill-points": "Character doesn't have enough skill points left",
+  "skill-is-maxed": "Skill is maxed",
 
   "no-cleared-floors": "Clear at least 1 floor of `/battle tower` first",
   "tower-fail": "`/sweep` the previous floor to gain more exp to level up your party then try again!",
-  "leveled-up": "**{0}** leveled up{1}and gained {2} stat points and {3} skill points.",
+  "leveled-up": "**{0}** leveled up{1}and gained {2} {3} and {4} {5}.",
   "exp-gained": "**{0}** {1}/{2} EXP",
 
   "help-page1-before-anything": "Antes de nada: Necesitarás personajes.",
@@ -275,6 +291,8 @@
 
   "/buy normal": "usa tokens para comprar tiradas normales",
   "/buy guaranteed": "usa tokens para comprar tiradas de un grado garantizado",
+  "/buy sweeps": "use tokens to buy tower sweeps",
+
   "/packs": "muestra todos los packs del servidor",
   "/logs": "muestra los últimos personajes obtenidos",
 
@@ -286,13 +304,19 @@
 
   "/battle friend": "Battle against another player to test your party",
   "/battle tower": "Climb the tower to glory and become a fable",
+
   "/sweep": "Sweep your current battle tower floor for exp",
+
+  "/skills showall": "Show all available skills and their details",
+  "/skills acquire": "Teach a character a skill",
+  "/skills upgrade": "Upgrade a character's skill",
 
   "/help": "¿Necesitas más información? No te preocupes",
 
   "$debug": "muestra los datos para nerds",
   "$media-title": "el título de la serie",
   "$character-name": "el nombre del personaje",
+  "$skill-name": "the name of the required skill",
   "$media-characters": "muestra los personajes de la serie",
   "$user-list": "el usuario de la lista",
   "$user-party": "el usuario del equipo",
@@ -310,6 +334,7 @@
   "$new-nick": "nuevo apodo",
 
   "$buy-normal-amount": "la cantidad de tiradas a comprar",
+  "$buy-sweeps-amount": "the amount of sweeps you want to buy",
   "$buy-guaranteed-stars": "el grado de estrellas a comprar",
 
   "$party-spot": "el puesto en el que quieres a este personaje",
@@ -333,5 +358,14 @@
   "$help-page-roadmap": "Futuro del bot",
   "$help-page-essential-commands": "Comandos Esenciales",
   "$help-page-other-commands": "Otros Comandos",
-  "$help-page-admin-commands": "Comandos de Administrador"
+  "$help-page-admin-commands": "Comandos de Administrador",
+
+  "crit": "Critical Hit",
+  "crit-desc": "The art of performing the traditional critical hit.",
+  "crit-chance": "Crit Chance",
+  "crit-damage": "Crit Damage",
+
+  "dodge": "Dodge",
+  "dodge-desc": "Like the wind in the air, or something.",
+  "dodge-chance": "Dodge Chance"
 }

@@ -3,6 +3,7 @@
 import utils from '../src/utils.ts';
 
 import {
+  checkDailyTimestamp,
   getGuild,
   getInstance,
   getInstanceInventories,
@@ -13,6 +14,7 @@ import {
   getUserParty,
   MAX_NEW_PULLS,
   MAX_PULLS,
+  MAX_SWEEPS,
   RECHARGE_MINS,
   RECHARGE_SWEEPS_MINS,
   rechargeConsumables,
@@ -34,7 +36,13 @@ import {
   tradeCharacters,
 } from './tradeCharacters.ts';
 
-import { addGuarantee, addPulls, addTokens, COSTS } from './addTokens.ts';
+import {
+  addGuarantee,
+  addPulls,
+  addSweeps,
+  addTokens,
+  COSTS,
+} from './addTokens.ts';
 
 import {
   setCharacterImage,
@@ -50,6 +58,7 @@ import {
 } from './assignParty.ts';
 
 import { assignStats } from './assignStats.ts';
+import { acquireSkill } from './acquireSkill.ts';
 
 import { gainExp, MAX_LEVEL } from './gainExp.ts';
 
@@ -64,16 +73,6 @@ import {
 } from './addPack.ts';
 
 import { createVoteRef, resolveVoteRef } from './voteRef.ts';
-
-// import { load as Dotenv } from '$std/dotenv/mod.ts';
-
-// // load .env file
-// await Dotenv({
-//   export: true,
-//   defaultsPath: '.env.example',
-//   allowEmptyValues: true,
-//   examplePath: null,
-// });
 
 export const kv = await Deno.openKv(
   // 'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect',
@@ -107,10 +106,11 @@ async function getValueAndTimestamp<T>(
 
 async function getValues<T>(
   selector: Deno.KvListSelector,
+  _kv?: Deno.Kv,
 ): Promise<T[]> {
   const values = [];
 
-  const iter = kv.list<T>(selector);
+  const iter = (_kv ?? kv).list<T>(selector);
 
   for await (const { value } of iter) {
     values.push(value);
@@ -165,6 +165,7 @@ const db = {
   getUserCharacters,
   getUserParty,
   rechargeConsumables,
+  checkDailyTimestamp,
   //
   addCharacter,
   //
@@ -186,12 +187,14 @@ const db = {
   addTokens,
   addGuarantee,
   addPulls,
+  addSweeps,
   //
   assignCharacter,
   swapSpots,
   unassignCharacter,
   //
   assignStats,
+  acquireSkill,
   //
   gainExp,
   consumeSweep,
@@ -213,6 +216,7 @@ export {
   MAX_LEVEL,
   MAX_NEW_PULLS,
   MAX_PULLS,
+  MAX_SWEEPS,
   RECHARGE_MINS,
   RECHARGE_SWEEPS_MINS,
 };

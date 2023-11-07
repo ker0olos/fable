@@ -1,20 +1,11 @@
 // deno-lint-ignore-file camelcase
 
-import { load as Dotenv } from '$std/dotenv/mod.ts';
-
 import { green } from '$std/fmt/colors.ts';
 
 import { AvailableLocales } from './src/discord.ts';
 
 import EN from './i18n/en-US.json' assert { type: 'json' };
 import ES from './i18n/es-ES.json' assert { type: 'json' };
-
-await Dotenv({
-  export: true,
-  defaultsPath: '.env.example',
-  allowEmptyValues: true,
-  examplePath: null,
-});
 
 enum CommandType {
   'CHAT' = 1,
@@ -637,6 +628,21 @@ export const commands = [
           }),
         ],
       }),
+      Option({
+        name: 'sweeps',
+        description: '/buy sweeps',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            min_value: 1,
+            max_value: 99,
+            name: 'amount',
+            description: '$buy-sweeps-amount',
+            type: Type.INTEGER,
+          }),
+        ],
+      }),
     ],
   }),
   // party management
@@ -847,12 +853,65 @@ export const commands = [
     ],
   }),
   ...Command({
+    name: 'skills',
+    description: 'characters skill management',
+    options: [
+      Option({
+        name: 'showall',
+        description: '/skills showall',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+      Option({
+        name: 'acquire',
+        description: '/skills acquire',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'character',
+            description: '$character-name',
+            autocomplete: true,
+            type: Type.STRING,
+          }),
+          Option({
+            name: 'skill',
+            autocomplete: true,
+            description: '$skill-name',
+            type: Type.STRING,
+          }),
+        ],
+      }),
+      Option({
+        name: 'upgrade',
+        description: '/skills upgrade',
+        type: Type.SUB_COMMAND,
+        optional: true,
+        options: [
+          Option({
+            name: 'character',
+            description: '$character-name',
+            autocomplete: true,
+            type: Type.STRING,
+          }),
+          Option({
+            name: 'skill',
+            autocomplete: true,
+            description: '$skill-name',
+            type: Type.STRING,
+          }),
+        ],
+      }),
+    ],
+  }),
+  ...Command({
     name: 'Battle',
     type: CommandType.USER,
   }),
   ...Command({
     name: 'battle',
     description: 'battle/combat commands',
+    aliases: ['bt'],
     options: [
       Option({
         name: 'friend',

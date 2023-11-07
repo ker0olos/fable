@@ -1,4 +1,4 @@
-import { Manifest } from '../src/types.ts';
+import type { Manifest } from '../src/types.ts';
 
 interface Collection {
   _id: string;
@@ -70,10 +70,18 @@ export interface Pack extends Collection {
   approved?: boolean;
 }
 
+export interface AcquiredCharacterSkill {
+  level: number;
+}
+
 export interface CharacterCombat {
   exp?: number;
   level?: number;
+
   skillPoints?: number;
+  skillSlots?: number;
+  skills?: Record<string, AcquiredCharacterSkill>;
+
   stats?: CharacterStats;
 }
 

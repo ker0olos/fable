@@ -3,17 +3,16 @@ import search, { idPrefix } from './search.ts';
 import _user from './user.ts';
 import packs from './packs.ts';
 import utils from './utils.ts';
+import config from './config.ts';
 import i18n from './i18n.ts';
 
-import * as discord from './discord.ts';
+import skills from './skills.ts';
 
-import config from './config.ts';
+import * as discord from './discord.ts';
 
 import db from '../db/mod.ts';
 
 import { experienceToNextLevel } from '../db/gainExp.ts';
-
-import type { Character } from './types.ts';
 
 import { NonFetalError } from './errors.ts';
 
@@ -117,7 +116,7 @@ async function update(
     switch (err.message) {
       case 'CHARACTER_NOT_FOUND':
         throw new NonFetalError(
-          i18n.get('character-hasnt-been-found', locale),
+          i18n.get('character-hasnt-been-found', locale, 'Character'),
         );
       case 'CHARACTER_NOT_OWNED':
         throw new NonFetalError(
@@ -162,11 +161,7 @@ function view({ token, character, userId, guildId, distribution }: {
       const instance = await db.getInstance(guild);
 
       return Promise.all([
-        packs.aggregate<Character>({
-          guildId,
-          character: results[0],
-          end: 1,
-        }),
+        results[0],
         db.findCharacters(instance, [`${results[0].packId}:${results[0].id}`]),
       ]);
     })
@@ -193,6 +188,32 @@ function view({ token, character, userId, guildId, distribution }: {
       }
 
       if (distribution) {
+        if (existing[0][1]?.id !== userId) {
+          const message = new discord.Message();
+
+          const embed = search.characterEmbed(character, {
+            mode: 'thumbnail',
+            media: { title: false },
+            description: false,
+            footer: false,
+            userId: existing[0][1]?.id,
+            existing: { rating: existing[0][0].rating },
+          });
+
+          message.addEmbed(
+            new discord.Embed()
+              .setDescription(i18n.get(
+                'character-not-owned-by-you',
+                locale,
+                packs.aliasToArray(character.name)[0],
+              )),
+          );
+
+          message.addEmbed(embed);
+
+          return await message.patch(token);
+        }
+
         return await update({
           token,
           type: 'reset',
@@ -219,6 +240,8 @@ function view({ token, character, userId, guildId, distribution }: {
       const level = existing[0][0].combat?.level ?? 1;
       const expToLevel = experienceToNextLevel(level);
 
+      const _skills = Object.entries(existing[0][0].combat?.skills ?? {});
+
       const embed = search.characterEmbed(character, {
         footer: false,
         existing: {
@@ -232,11 +255,32 @@ function view({ token, character, userId, guildId, distribution }: {
         mode: 'thumbnail',
       });
 
+      if (_skills.length) {
+        embed
+          .addField({
+            name: i18n.get('skills', locale),
+            value: _skills.map(([key, s]) => {
+              const skill = skills.skills[key];
+
+              const maxed = skill.stats[0].scale.length <= s.level;
+
+              return `${i18n.get(skill.key, locale)} (${
+                i18n.get('lvl', locale)
+              } ${maxed ? i18n.get('max', locale) : s.level})`;
+            }).join('\n'),
+          });
+      }
+
       embed
         .addField({
           name: i18n.get('stats', locale),
           value: [
-            `${i18n.get('skill-points', locale)}: ${skillPoints}`,
+            `${
+              i18n.get(
+                skillPoints === 1 ? 'skill-point' : 'skill-points',
+                locale,
+              )
+            }: ${skillPoints}`,
             `${i18n.get('stat-points', locale)}: ${unclaimed}`,
             `${i18n.get('strength', locale)}: ${strength}`,
             `${i18n.get('stamina', locale)}: ${stamina}`,

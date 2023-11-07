@@ -18,6 +18,10 @@ import db from '../db/mod.ts';
 
 Deno.test('topgg', async (test) => {
   await test.step('normal', async () => {
+    const date = new Date();
+
+    date.setHours(date.getHours() - 12);
+
     const addTokensStub = stub(
       db,
       'addTokens',
@@ -27,7 +31,10 @@ Deno.test('topgg', async (test) => {
     const getUserStub = stub(
       db,
       'getUser',
-      () => undefined as any,
+      () =>
+        ({
+          lastVote: date.toISOString(),
+        }) as any,
     );
 
     config.topggSecret = 'x'.repeat(32);
@@ -66,6 +73,10 @@ Deno.test('topgg', async (test) => {
   });
 
   await test.step('weekend', async () => {
+    const date = new Date();
+
+    date.setHours(date.getHours() - 20);
+
     const addTokensStub = stub(
       db,
       'addTokens',
@@ -75,7 +86,10 @@ Deno.test('topgg', async (test) => {
     const getUserStub = stub(
       db,
       'getUser',
-      () => undefined as any,
+      () =>
+        ({
+          lastVote: date.toISOString(),
+        }) as any,
     );
 
     config.topggSecret = 'x'.repeat(32);
@@ -116,6 +130,10 @@ Deno.test('topgg', async (test) => {
   await test.step('patch /now', async () => {
     const timeStub = new FakeTime();
 
+    const date = new Date();
+
+    date.setHours(date.getHours() - 12);
+
     const resolveVoteRef = stub(
       db,
       'resolveVoteRef',
@@ -137,7 +155,10 @@ Deno.test('topgg', async (test) => {
     const getUserStub = stub(
       db,
       'getUser',
-      () => undefined as any,
+      () =>
+        ({
+          lastVote: date.toISOString(),
+        }) as any,
     );
 
     const patchStub = spy(() => true);
@@ -238,6 +259,58 @@ Deno.test('topgg', async (test) => {
       addTokensStub.restore();
       getUserStub.restore();
       userStub.restore();
+    }
+  });
+
+  await test.step('voted less than 12 hours ago', async () => {
+    const date = new Date();
+
+    date.setHours(date.getHours() - 10);
+
+    const addTokensStub = stub(
+      db,
+      'addTokens',
+      () => undefined as any,
+    );
+
+    const getUserStub = stub(
+      db,
+      'getUser',
+      () =>
+        ({
+          lastVote: date.toISOString(),
+        }) as any,
+    );
+
+    config.topggSecret = 'x'.repeat(32);
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        method: 'POST',
+        body: JSON.stringify({
+          isWeekend: false,
+          user: 'user_id',
+          type: 'upvote',
+        }),
+        headers: { 'Authorization': config.topggSecret },
+      });
+
+      const response = await webhooks.topgg(request);
+
+      assertEquals(
+        getUserStub.calls[0].args[0],
+        'user_id',
+      );
+
+      assertSpyCalls(addTokensStub, 0);
+
+      assertEquals(response.status, 200);
+      assertEquals(response.statusText, 'OK');
+    } finally {
+      delete config.topggSecret;
+
+      addTokensStub.restore();
+      getUserStub.restore();
     }
   });
 

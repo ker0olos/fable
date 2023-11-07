@@ -1,5 +1,3 @@
-import { load as Dotenv } from '$std/dotenv/mod.ts';
-
 const config: {
   deploy: boolean;
   appId?: string;
@@ -39,14 +37,6 @@ export async function initConfig(): Promise<void> {
 
   if (query?.state === 'granted') {
     config.deploy = !!Deno.env.get('DENO_DEPLOYMENT_ID');
-
-    // load .env file
-    await Dotenv({
-      export: true,
-      defaultsPath: '.env.example',
-      allowEmptyValues: true,
-      examplePath: null,
-    });
 
     config.sentry = Deno.env.get('SENTRY_DSN');
     config.instatus = Deno.env.get('INSTATUS_WEBHOOK');
