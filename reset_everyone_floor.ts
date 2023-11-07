@@ -9,12 +9,36 @@ if (import.meta.main) {
 
   const inventories = kv.list({ prefix: ['inventories'] });
 
+  const inventoriesByInstance = kv.list({
+    prefix: ['inventories_by_instance_user'],
+  });
+
   const op = kv.atomic();
 
   for await (const { key } of inventories) {
+    const existing = await kv.get<Inventory>(key);
+    if (!existing.value) {
+      throw new Error('');
+    }
     op.set(key, {
+      ...existing.value,
       floorsCleared: undefined,
-    } as Partial<Inventory>);
+      lastSweep: undefined,
+      availableSweeps: undefined,
+    } as Inventory);
+  }
+
+  for await (const { key } of inventoriesByInstance) {
+    const existing = await kv.get<Inventory>(key);
+    if (!existing.value) {
+      throw new Error('');
+    }
+    op.set(key, {
+      ...existing.value,
+      floorsCleared: undefined,
+      lastSweep: undefined,
+      availableSweeps: undefined,
+    } as Inventory);
   }
 
   const update = await op.commit();

@@ -149,15 +149,11 @@ export async function addSweeps(
       false,
     );
 
-    console.log(inventory.availableSweeps, amount);
-
     inventory.availableSweeps = Math.min(
       99,
       // deno-lint-ignore no-non-null-assertion
       inventory.availableSweeps! + amount,
     );
-
-    console.log(inventory.availableSweeps);
 
     if (inventory.availableSweeps >= MAX_SWEEPS) {
       inventory.sweepsTimestamp = undefined;

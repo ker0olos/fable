@@ -13,6 +13,7 @@ import config from './config.ts';
 
 import gacha from './gacha.ts';
 import tower from './tower.ts';
+import skills from './skills.ts';
 
 import * as Schema from '../db/schema.ts';
 
@@ -20,9 +21,12 @@ import { newUnclaimed } from './stats.ts';
 
 import { NonFetalError, PoolError } from './errors.ts';
 
-import type { Character, DisaggregatedCharacter } from './types.ts';
-
-import type { CharacterLive } from '../db/schema.ts';
+import type {
+  Character,
+  CharacterLive,
+  DisaggregatedCharacter,
+  SkillOutput,
+} from './types.ts';
 
 type BattleData = { playing: boolean };
 
@@ -31,18 +35,6 @@ const MESSAGE_DELAY = 2;
 
 // 3 minutes
 const MAX_TIME = 3 * 60 * 1000;
-
-// const BOSS_MULTIPLIER = 1.5;
-// const MINIBOSS_MULTIPLIER = 1.25;
-
-const getStats = (char: Schema.Character): CharacterLive => {
-  return {
-    agility: char.combat?.stats?.agility ?? 0,
-    strength: char.combat?.stats?.strength ?? 1,
-    stamina: char.combat?.stats?.stamina ?? 1,
-    hp: char.combat?.stats?.stamina ?? 1,
-  };
-};
 
 export const getEnemyRating = (floor: number): number => {
   switch (floor % 10) {
@@ -66,12 +58,54 @@ export const getEnemyRating = (floor: number): number => {
   }
 };
 
+export const getEnemySkillSlots = (floor: number): number => {
+  const skillsPool = Object.keys(skills.skills);
+  return Math.min(Math.floor(floor / 10), skillsPool.length);
+};
+
+export const getEnemyMaxSkillLevel = (floor: number): number => {
+  return Math.max(Math.floor(floor / 5), 1);
+};
+
+const getStats = (char: Schema.Character): CharacterLive => {
+  return {
+    skills: char.combat?.skills ?? {},
+    agility: char.combat?.stats?.agility ?? 0,
+    strength: char.combat?.stats?.strength ?? 1,
+    stamina: char.combat?.stats?.stamina ?? 1,
+    hp: char.combat?.stats?.stamina ?? 1,
+  };
+};
+
 const getEnemyStats = (floor: number, seed: string): CharacterLive => {
   const rng = new utils.LehmerRNG(seed);
+  const skillRng = new utils.LehmerRNG(seed);
 
   const totalStats = newUnclaimed(getEnemyRating(floor));
 
-  const stats: CharacterLive = { agility: 0, strength: 0, stamina: 0, hp: 0 };
+  const _skills: CharacterLive['skills'] = {};
+
+  const skillsPool = Object.values(skills.skills);
+  const skillsSlots = getEnemySkillSlots(floor);
+  const maxSkillLevel = getEnemyMaxSkillLevel(floor);
+
+  for (let i = 0; i < skillsSlots; i++) {
+    const randomSkill = skillsPool[
+      Math.floor(skillRng.nextFloat() * skillsPool.length)
+    ];
+
+    _skills[randomSkill.key] = {
+      level: Math.min(maxSkillLevel, randomSkill.stats[0].scale.length),
+    };
+  }
+
+  const stats: CharacterLive = {
+    skills: _skills,
+    agility: 0,
+    strength: 0,
+    stamina: 0,
+    hp: 0,
+  };
 
   for (let i = 0; i < totalStats; i++) {
     const rand = Math.floor(rng.nextFloat() * 3);
@@ -153,12 +187,29 @@ const addEmbed = (message: discord.Message, {
   message.addEmbed(embed);
 };
 
-function attack(char: CharacterLive, target: CharacterLive): number {
-  const damage = Math.max(char.strength - target.agility, 1);
+function attack(
+  char: CharacterLive,
+  target: CharacterLive,
+): SkillOutput {
+  let damage = 0;
+
+  Object.entries(char.skills).map(([key, s]) => {
+    const skill = skills.skills[key];
+
+    if (skill.activationTurn === 'user') {
+      const outcome = skill.activation(char, target, s.level);
+
+      if (outcome.damage) {
+        damage += Math.round(outcome.damage);
+      }
+    }
+  });
+
+  damage += Math.max(char.strength - target.agility, 1);
 
   target.hp = Math.max(target.hp - damage, 0);
 
-  return damage;
+  return { damage };
 }
 
 function challengeFriend({ token, guildId, userId, targetId }: {
@@ -390,6 +441,7 @@ function challengeTower({ token, guildId, userId }: {
         token,
         locale,
         userId,
+        title: `${i18n.get('floor', locale)} ${floor}`,
         targetName: packs.aliasToArray(enemyCharacter.name)[0],
         character1: userCharacter,
         character2: enemyCharacter,
@@ -447,6 +499,7 @@ function challengeTower({ token, guildId, userId }: {
 async function startCombat(
   {
     token,
+    title,
     character1,
     character2,
     character1Existing,
@@ -459,6 +512,7 @@ async function startCombat(
     locale,
   }: {
     token: string;
+    title?: string;
     character1: Character | DisaggregatedCharacter;
     character2: Character | DisaggregatedCharacter;
     character1Existing: Schema.Character;
@@ -513,6 +567,12 @@ async function startCombat(
 
     message.clearEmbedsAndAttachments();
 
+    if (title) {
+      message.addEmbed(
+        new discord.Embed().setTitle(title),
+      );
+    }
+
     const stateUX = [
       () =>
         addEmbed(message, {
@@ -539,11 +599,17 @@ async function startCombat(
     (await data())?.playing && await utils.sleep(MESSAGE_DELAY);
     (await data())?.playing && await message.patch(token);
 
-    const damage = attack(attackerStats, defenderStats);
+    const { damage } = attack(attackerStats, defenderStats);
 
     // damage message
 
     message.clearEmbedsAndAttachments();
+
+    if (title) {
+      message.addEmbed(
+        new discord.Embed().setTitle(title),
+      );
+    }
 
     const damageUX = [
       () =>
@@ -573,19 +639,27 @@ async function startCombat(
     // battle end message (if hp <= 0)
 
     if (character1Stats.hp <= 0 || character2Stats.hp <= 0) {
-      const message = new discord.Message();
+      // const message = new discord.Message();
 
-      addEmbed(message, {
-        character: character1,
-        existing: character1Existing,
-        stats: character1Stats,
-      });
+      // if (title) {
+      //   message.addEmbed(
+      //     new discord.Embed().setTitle(title),
+      //   );
+      // }
 
-      addEmbed(message, {
-        character: character2,
-        existing: character2Existing,
-        stats: character2Stats,
-      });
+      // addEmbed(message, {
+      //   character: character1,
+      //   existing: character1Existing,
+      //   stats: character1Stats,
+      // });
+
+      // addEmbed(message, {
+      //   character: character2,
+      //   existing: character2Existing,
+      //   stats: character2Stats,
+      // });
+
+      message.clearComponents();
 
       message.addEmbed(
         new discord.Embed()

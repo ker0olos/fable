@@ -8,14 +8,16 @@ import {
 
 import db, { kv } from './mod.ts';
 
+import { KvError } from '../src/errors.ts';
+
 import type * as Schema from './schema.ts';
 
-import { KvError } from '../src/errors.ts';
+import type { CharacterSkill } from '../src/types.ts';
 
 export async function acquireSkill(
   inventory: Schema.Inventory,
   characterId: string,
-  skill: Schema.CharacterSkill,
+  skill: CharacterSkill,
 ): Promise<Schema.AcquiredCharacterSkill> {
   let retires = 0;
 
@@ -45,7 +47,7 @@ export async function acquireSkill(
       throw new Error('NOT_ENOUGH_SKILL_POINTS');
     }
 
-    if (typeof character.combat.skills[skill.key] !== 'number') {
+    if (typeof character.combat.skills[skill.key]?.level !== 'number') {
       character.combat.skills[skill.key] = { level: 1 };
     } else {
       const maxed =

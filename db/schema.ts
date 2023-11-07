@@ -1,7 +1,5 @@
 import type { Manifest } from '../src/types.ts';
 
-import type { Keys } from '../src/i18n.ts';
-
 interface Collection {
   _id: string;
 }
@@ -72,6 +70,10 @@ export interface Pack extends Collection {
   approved?: boolean;
 }
 
+export interface AcquiredCharacterSkill {
+  level: number;
+}
+
 export interface CharacterCombat {
   exp?: number;
   level?: number;
@@ -83,42 +85,12 @@ export interface CharacterCombat {
   stats?: CharacterStats;
 }
 
-export interface AcquiredCharacterSkill {
-  level: number;
-}
-
-export interface CharacterSkill {
-  key: Keys;
-  descKey: Keys;
-
-  cost: number;
-
-  activationTurn: 'user' | 'enemy';
-  activation: (user: CharacterLive, enemy: CharacterLive) => void;
-
-  stats: CharacterAdditionalStat[];
-}
-
-export interface CharacterAdditionalStat {
-  key: Keys;
-  scale: number[];
-  prefix?: string;
-  suffix?: string;
-}
-
 export interface CharacterStats {
   unclaimed?: number;
   strength?: number;
   stamina?: number;
   agility?: number;
 }
-
-export type CharacterLive = {
-  strength: Readonly<number>;
-  stamina: Readonly<number>;
-  agility: Readonly<number>;
-  hp: number;
-};
 
 export interface Like {
   mediaId?: string;

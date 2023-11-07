@@ -14,15 +14,27 @@ import * as discord from './discord.ts';
 
 import { NonFetalError } from './errors.ts';
 
-import type * as Schema from '../db/schema.ts';
+import type { CharacterSkill, SkillOutput } from './types.ts';
 
-const skills: Record<string, Schema.CharacterSkill> = {
+const skills: Record<string, CharacterSkill> = {
   'crit': {
     cost: 3,
     key: 'crit',
     descKey: 'crit-desc',
-    activationTurn: 'enemy',
-    activation: (_user, _enemy) => null,
+    activationTurn: 'user',
+    activation: function (_char, _target, lvl): SkillOutput {
+      const [critChance, critDamageMultiplier] = this.stats;
+
+      const isCrit = Math.random() * 100 <= critChance.scale[lvl - 1];
+
+      if (isCrit) {
+        return {
+          damage: _char.strength * (critDamageMultiplier.scale[lvl - 1] / 100),
+        };
+      }
+
+      return {};
+    },
     stats: [{
       key: 'crit-chance',
       scale: [0.5, 5, 15],
@@ -36,7 +48,7 @@ const skills: Record<string, Schema.CharacterSkill> = {
 };
 
 const format = (
-  skill: Schema.CharacterSkill,
+  skill: CharacterSkill,
   locale?: discord.AvailableLocales,
   options?: {
     maxed?: boolean;

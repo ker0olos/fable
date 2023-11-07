@@ -745,6 +745,11 @@ export class Message {
     return this;
   }
 
+  clearComponents(): Message {
+    this.#data.components = [];
+    return this;
+  }
+
   addEmbed(embed: Embed): Message {
     // discord allows up to 10 embeds
     if (this.#data.embeds.length < 10) {

@@ -16,7 +16,39 @@ import { type Character, CharacterRole, MediaType } from '../src/types.ts';
 import { NonFetalError } from '../src/errors.ts';
 
 Deno.test('all skills', async (test) => {
-  await assertSnapshot(test, skills.skills);
+  await test.step('snapshot', async (test) => {
+    await assertSnapshot(test, skills.skills);
+  });
+
+  await test.step('crits', () => {
+    const critSkill = skills.skills['crit'];
+
+    const randomStub = stub(Math, 'random', () => 0);
+
+    try {
+      const output = critSkill.activation(
+        {
+          hp: 1,
+          strength: 5,
+          agility: 1,
+          stamina: 1,
+          skills: {},
+        },
+        {
+          hp: 1,
+          strength: 1,
+          agility: 1,
+          stamina: 1,
+          skills: {},
+        },
+        1,
+      );
+
+      assertEquals(output.damage, 5 * 0.3);
+    } finally {
+      randomStub.restore();
+    }
+  });
 });
 
 Deno.test('/skills showall', async (test) => {
