@@ -1730,7 +1730,7 @@ Deno.test('/sweep', async (test) => {
             },
             {
               type: 'rich',
-              description: '_+5 sweep <t:1295910000:R>_',
+              description: '_+5 sweeps <t:1295910000:R>_',
             },
           ],
         },

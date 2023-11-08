@@ -239,10 +239,12 @@ export async function rechargeConsumables(
     //     ),
     //   ),
     // );
-    const newSweeps =
+    const newSweeps = Math.min(
+      MAX_SWEEPS - currentSweeps,
       utils.diffInMinutes(sweepsTimestamp, new Date()) >= RECHARGE_SWEEPS_MINS
-        ? MAX_SWEEPS
-        : 0;
+        ? MAX_SWEEPS - currentSweeps
+        : 0,
+    );
 
     if (newPulls === currentPulls && newSweeps === currentSweeps) {
       return { inventory, inventoryCheck };
