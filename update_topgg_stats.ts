@@ -33,7 +33,7 @@ if (import.meta.main) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        serverCount,
+        server_count: serverCount,
       }),
     },
   );
