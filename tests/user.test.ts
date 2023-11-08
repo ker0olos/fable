@@ -599,7 +599,7 @@ Deno.test('/now', async (test) => {
               },
             },
             { type: 'rich', description: '_+1 pull <t:1675569106:R>_' },
-            { type: 'rich', description: '_+1 sweep <t:1675574506:R>_' },
+            { type: 'rich', description: '_+5 sweep <t:1675570906:R>_' },
           ],
           components: [{
             type: 1,
