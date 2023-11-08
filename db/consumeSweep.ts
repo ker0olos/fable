@@ -11,7 +11,6 @@ export function clearFloor(
   inventory: Schema.Inventory,
 ): number {
   inventory.floorsCleared ??= 0;
-
   inventory.floorsCleared += 1;
 
   op

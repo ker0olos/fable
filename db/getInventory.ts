@@ -25,7 +25,7 @@ export const MAX_NEW_PULLS = 10;
 export const MAX_NEW_SWEEPS = MAX_SWEEPS;
 
 export const RECHARGE_MINS = 30;
-export const RECHARGE_SWEEPS_MINS = 120;
+export const RECHARGE_SWEEPS_MINS = 60;
 
 export function checkDailyTimestamp(user: Schema.User): void {
   if (new Date() >= new Date(user.dailyTimestamp ?? new Date())) {
@@ -229,16 +229,20 @@ export async function rechargeConsumables(
         ),
       ),
     );
-    const newSweeps = Math.max(
-      0,
-      Math.min(
-        MAX_SWEEPS - currentSweeps,
-        Math.trunc(
-          utils.diffInMinutes(sweepsTimestamp, new Date()) /
-            RECHARGE_SWEEPS_MINS,
-        ),
-      ),
-    );
+    // const newSweeps = Math.max(
+    //   0,
+    //   Math.min(
+    //     MAX_SWEEPS - currentSweeps,
+    //     Math.trunc(
+    //       utils.diffInMinutes(sweepsTimestamp, new Date()) /
+    //         RECHARGE_SWEEPS_MINS,
+    //     ),
+    //   ),
+    // );
+    const newSweeps =
+      utils.diffInMinutes(sweepsTimestamp, new Date()) >= RECHARGE_SWEEPS_MINS
+        ? MAX_SWEEPS
+        : 0;
 
     if (newPulls === currentPulls && newSweeps === currentSweeps) {
       return { inventory, inventoryCheck };
