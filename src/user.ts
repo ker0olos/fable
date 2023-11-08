@@ -1,6 +1,6 @@
 import config from './config.ts';
 
-import db, { COSTS } from '../db/mod.ts';
+import db, { COSTS, MAX_PULLS, MAX_SWEEPS } from '../db/mod.ts';
 
 import i18n from './i18n.ts';
 import utils from './utils.ts';
@@ -117,7 +117,7 @@ async function now({
     );
   }
 
-  if (availablePulls < 5) {
+  if (availablePulls < MAX_PULLS) {
     message.addEmbed(
       new discord.Embed()
         .setDescription(i18n.get('+1-pull', locale, `<t:${recharge}:R>`)),
@@ -125,7 +125,7 @@ async function now({
   }
 
   // deno-lint-ignore no-non-null-assertion
-  if (showSweeps && availableSweeps! < 5) {
+  if (showSweeps && availableSweeps! < MAX_SWEEPS) {
     message.addEmbed(
       new discord.Embed()
         .setDescription(
