@@ -44,17 +44,18 @@ export async function publishPack(
     !pack.manifest.maintainers?.includes(userDiscordId)
   ) {
     throw new Error('PERMISSION_DENIED');
-  } else {
-    pack = {
-      manifest,
-      _id: ulid(),
-      added: new Date().toISOString(),
-      owner: userDiscordId,
-    };
   }
+
+  pack ??= {
+    manifest,
+    _id: ulid(),
+    added: new Date().toISOString(),
+    owner: userDiscordId,
+  };
 
   pack.version = (pack.version ?? 0) + 1;
   pack.updated = new Date().toISOString();
+  pack.manifest = manifest;
 
   const insert = await kv.atomic()
     //
