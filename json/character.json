@@ -61,7 +61,7 @@
           },
           "url": {
             "type": "string",
-            "pattern": "^(https:\\/\\/)?(www\\.)?(youtube\\.com|twitch\\.tv|crunchyroll\\.com|tapas\\.io|webtoons\\.com|amazon\\.com)[\\S]*$",
+            "pattern": "^(https:\\/\\/)?(www\\.)?(youtube\\.com|twitch\\.tv|netflix\\.com|crunchyroll\\.com|tapas\\.io|webtoons\\.com|amazon\\.com)[\\S]*$",
             "description": "The full url of the site"
           }
         }
