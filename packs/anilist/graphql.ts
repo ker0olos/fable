@@ -21,6 +21,8 @@ export async function request<T = any, V = Variables>(
     variables?: V | undefined;
   },
 ): Promise<T> {
+  let retries = 0;
+
   const options: {
     method: string;
     headers: Headers;
@@ -37,34 +39,48 @@ export async function request<T = any, V = Variables>(
   options.headers.append('Content-Type', 'application/json');
   options.headers.append('Accept', 'application/json');
 
-  const response = await utils.fetchWithRetry(url, options);
+  while (retries < 3) {
+    const response = await utils.fetchWithRetry(url, options);
 
-  const text = await response.text();
+    const text = await response.text();
 
-  try {
-    const json = JSON.parse(text);
+    try {
+      const json = JSON.parse(text);
 
-    if (json.errors?.length) {
-      throw new Error(json.errors[0].message);
+      if (json.error?.status === 500) {
+        retries += 1;
+        continue;
+      }
+
+      if (json.errors?.length) {
+        throw new Error(json.errors[0].message);
+      }
+
+      if (!response.ok) {
+        throw new Error(text);
+      }
+
+      return json.data;
+    } catch (err) {
+      if (err.message.includes('Not Found')) {
+        throw new Error('404');
+      }
+
+      throw new GraphQLError(
+        url,
+        query,
+        variables,
+        text,
+      );
     }
-
-    if (!response.ok) {
-      throw new Error(text);
-    }
-
-    return json.data;
-  } catch (err) {
-    if (err.message.includes('Not Found')) {
-      throw new Error('404');
-    }
-
-    throw new GraphQLError(
-      url,
-      query,
-      variables,
-      text,
-    );
   }
+
+  throw new GraphQLError(
+    url,
+    query,
+    variables,
+    '',
+  );
 }
 
 class GraphQLError extends Error {
