@@ -725,6 +725,10 @@ cute...",
               mediaId: "hologen2",
               relation: "CONTAINS",
             },
+            {
+              mediaId: "hologamers",
+              relation: "CONTAINS",
+            },
           ],
           title: {
             english: "Hololive",
