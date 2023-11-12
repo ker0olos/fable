@@ -111,11 +111,11 @@ function fetchWithRetry(
     fetch(input, init)
       .then((result) => resolve(result))
       .catch(async (err) => {
-        if (n >= 2) {
+        if (n > 3) {
           return reject(err);
         }
 
-        await sleep(0.5);
+        await sleep(0.5 * n);
 
         fetchWithRetry(input, init, n + 1)
           .then(resolve)

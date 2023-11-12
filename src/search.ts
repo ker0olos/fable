@@ -39,7 +39,7 @@ export const relationFilter = [
 const musicUrlRegex = /youtube|spotify/;
 
 const externalUrlRegex =
-  /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|crunchyroll\.com|tapas\.io|webtoons\.com|amazon\.com)[\S]*$/;
+  /^(https:\/\/)?(www\.)?(youtube\.com|twitch\.tv|netflix\\.com|crunchyroll\.com|tapas\.io|webtoons\.com|amazon\.com)[\S]*$/;
 
 const findCharacter = async (
   guildId: string,
