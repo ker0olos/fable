@@ -67,10 +67,12 @@ export type CharacterMediaEdge = { node: Media; role?: CharacterRole };
 
 export interface Media {
   id: string;
-  packId?: string;
-  type: MediaType;
-  format?: MediaFormat;
   title: Alias;
+  type: MediaType;
+  packId?: string;
+  added?: string;
+  updated?: string;
+  format?: MediaFormat;
   description?: string;
   popularity?: number;
   images?: Image[];
@@ -105,6 +107,8 @@ export interface Character {
   id: string;
   name: Alias;
   packId?: string;
+  added?: string;
+  updated?: string;
   description?: string;
   popularity?: number;
   gender?: string;
