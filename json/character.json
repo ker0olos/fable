@@ -12,6 +12,14 @@
       "minLength": 1,
       "maxLength": 20
     },
+    "added": {
+      "title": "added",
+      "type": "string"
+    },
+    "updated": {
+      "title": "added",
+      "type": "string"
+    },
     "name": {
       "title": "name",
       "description": "The name of the character",
