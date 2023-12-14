@@ -13,12 +13,15 @@ import { gql, request } from './graphql.ts';
 import { AniListCharacter, AniListMedia, Pool } from './types.ts';
 
 const filepath = './pool.json';
+const directorypath = './directory.json';
 
 const url = 'https://graphql.anilist.co';
 
 const dirname = new URL('.', import.meta.url).pathname;
 
 const ranges = Object.values(gacha.variables.ranges);
+
+const directory: Record<string, { id: string }> = {};
 
 // (see https://github.com/ker0olos/fable/issues/9)
 // (see https://github.com/ker0olos/fable/issues/45)
@@ -65,6 +68,10 @@ async function queryMedia(
             }
             nodes {
               id # character id
+              name {
+                full
+                native
+              }
               media(sort: POPULARITY_DESC) {
                 edges {
                   characterRole # actual role
@@ -73,6 +80,11 @@ async function queryMedia(
                     id
                     popularity
                     isAdult
+                    title {
+                      english
+                      native
+                      romaji
+                    }
                   }
                 }
               }
@@ -113,6 +125,10 @@ async function queryCharacters(
           }
           nodes {
             id # character id
+            name {
+              full
+              native
+            }
             media(sort: POPULARITY_DESC) {
               edges {
                 characterRole # actual role
@@ -121,6 +137,11 @@ async function queryCharacters(
                   id
                   popularity
                   isAdult
+                  title {
+                      english
+                      native
+                      romaji
+                    }
                 }
               }
             }
@@ -190,12 +211,19 @@ for (const range of ranges) {
               });
 
             nodes.forEach((character) => {
+              let name = character.name?.full ?? character.name?.native;
+
               const media = character.media?.edges[0];
 
-              const mediaId = `anilist:${media?.node.id}`;
+              const id = `anilist:${character.id}`;
 
               if (media && !media.node.isAdult) {
-                const id = `anilist:${character.id}`;
+                const mediaId = `anilist:${media.node.id}`;
+
+                name = `${name} (${
+                  media.node.title.english ?? media.node.title.romaji ??
+                    media.node.title.native
+                })`;
 
                 const rating = new Rating({
                   role: media.characterRole,
@@ -209,6 +237,7 @@ for (const range of ranges) {
                 ) {
                   characters.ALL.push({ id, mediaId, rating });
                   characters[media.characterRole].push({ id, mediaId, rating });
+                  directory[name] = { id };
                 }
               }
             });
@@ -270,6 +299,11 @@ for (const range of ranges) {
 await Deno.writeTextFile(
   join(dirname, filepath),
   JSON.stringify(cache),
+);
+
+await Deno.writeTextFile(
+  join(dirname, directorypath),
+  JSON.stringify(directory),
 );
 
 let totalCharacters = 0;
