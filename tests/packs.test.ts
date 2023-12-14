@@ -165,8 +165,7 @@ Deno.test('search many', async (test) => {
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
-      const matches = await packs.searchMany<Media>({
-        key: 'media',
+      const matches = await packs.searchManyMedia({
         search: 'aa',
         threshold: 0,
         guildId: 'guild_id',
@@ -239,8 +238,7 @@ Deno.test('search many', async (test) => {
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
-      const matches = await packs.searchMany<Media>({
-        key: 'media',
+      const matches = await packs.searchManyMedia({
         search: 'aa',
         threshold: 0,
         guildId: 'guild_id',
@@ -314,8 +312,7 @@ Deno.test('search many', async (test) => {
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
     try {
-      const matches = await packs.searchMany<Media>({
-        key: 'media',
+      const matches = await packs.searchManyMedia({
         search: 'aa',
         threshold: 100,
         guildId: 'guild_id',
@@ -3474,7 +3471,7 @@ Deno.test('/community', async (test) => {
             index: 0,
           }),
         NonFetalError,
-        'This pack doesn\'t exist',
+        "This pack doesn't exist",
       );
     } finally {
       delete config.communityPacks;

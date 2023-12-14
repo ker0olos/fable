@@ -155,9 +155,8 @@ export const handler = async (r: Request) => {
             discord.MessageType.Suggestions,
           );
 
-          const results = await packs.searchMany<Media>({
+          const results = await packs.searchManyMedia({
             guildId,
-            key: 'media',
             search: title,
             threshold: 45,
           });
@@ -213,10 +212,9 @@ export const handler = async (r: Request) => {
             discord.MessageType.Suggestions,
           );
 
-          const results = await packs.searchMany<Character>({
+          const results = await packs.searchManyCharacters({
             guildId,
             threshold: 65,
-            key: 'characters',
             search: name,
           }).then((characters) =>
             Promise.all(

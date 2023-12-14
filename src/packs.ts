@@ -68,7 +68,10 @@ const packs = {
   packEmbed,
   pages,
   pool,
-  searchMany,
+  searchManyCharacters,
+  searchManyMedia,
+  searchOneCharacter,
+  searchOneMedia,
   uninstall,
   uninstallDialog,
 };
@@ -392,14 +395,12 @@ async function findById<T>(
   return results;
 }
 
-async function searchMany<
-  T extends (Media | DisaggregatedMedia | Character | DisaggregatedCharacter),
+async function searchManyCharacters<
+  T extends (Character | DisaggregatedCharacter),
 >(
-  { key, search, guildId, anilistOptions, threshold }: {
-    key: 'media' | 'characters';
+  { search, guildId, threshold }: {
     search: string;
     guildId: string;
-    anilistOptions?: AnilistSearchOptions;
     threshold?: number;
   },
 ): Promise<T[]> {
@@ -411,8 +412,8 @@ async function searchMany<
 
   const anilistPack: Manifest = {
     id: 'anilist',
-    [key]: {
-      new: (await _anilist[key]({ search, ...anilistOptions })).map((item) =>
+    characters: {
+      new: (await _anilist.characters({ search })).map((item) =>
         _anilist.transform({ item })
       ),
     },
@@ -426,9 +427,9 @@ async function searchMany<
       ...list.map(({ manifest }) => manifest),
     ]
   ) {
-    for (const item of pack[key]?.new ?? []) {
+    for (const item of pack.characters!.new ?? []) {
       const all = packs.aliasToArray(
-        'name' in item ? item.name : item.title,
+        item.name,
       ).map((alias) => utils.distance(search, alias));
 
       if (!all.length) {
@@ -466,18 +467,105 @@ async function searchMany<
   return output;
 }
 
-async function searchOne<
-  T extends (Media | DisaggregatedMedia | Character | DisaggregatedCharacter),
+async function searchOneCharacter<
+  T extends (Character | DisaggregatedCharacter),
 >(
-  { key, search, guildId, anilistOptions }: {
-    key: 'media' | 'characters';
+  { search, guildId }: {
+    search: string;
+    guildId: string;
+  },
+): Promise<T | undefined> {
+  const possibilities = await searchManyCharacters<T>({
+    search,
+    guildId,
+  });
+
+  return possibilities?.[0];
+}
+
+async function searchManyMedia<
+  T extends (Media | DisaggregatedMedia),
+>(
+  { search, guildId, threshold, anilistOptions }: {
+    search: string;
+    guildId: string;
+    threshold?: number;
+    anilistOptions?: AnilistSearchOptions;
+  },
+): Promise<T[]> {
+  threshold = threshold ?? 65;
+
+  const percentages: Set<number> = new Set();
+
+  const possibilities: { [percentage: number]: T[] } = {};
+
+  const anilistPack: Manifest = {
+    id: 'anilist',
+    media: {
+      new: (await _anilist.media({ search, ...anilistOptions })).map((item) =>
+        _anilist.transform({ item })
+      ),
+    },
+  };
+
+  const list = await packs.all({ guildId });
+
+  for (
+    const pack of [
+      anilistPack,
+      ...list.map(({ manifest }) => manifest),
+    ]
+  ) {
+    for (const item of pack.media!.new ?? []) {
+      const all = packs.aliasToArray(
+        item.title,
+      ).map((alias) => utils.distance(search, alias));
+
+      if (!all.length) {
+        return [];
+      }
+
+      const percentage = Math.max(...all);
+
+      if (percentage < threshold) {
+        continue;
+      }
+
+      if (!possibilities[percentage]) {
+        possibilities[percentage] = (percentages.add(percentage), []);
+      }
+
+      possibilities[percentage]
+        .push((item.packId = pack.id, item) as T);
+    }
+  }
+
+  const sorted = [...percentages]
+    .sort((a, b) => b - a);
+
+  let output: T[] = [];
+
+  for (const i of sorted) {
+    output = output.concat(
+      possibilities[i].sort((a, b) =>
+        (b.popularity || 0) - (a.popularity || 0)
+      ),
+    );
+  }
+
+  return output;
+}
+
+async function searchOneMedia<
+  T extends (Media | DisaggregatedMedia),
+>(
+  { search, guildId, anilistOptions }: {
     search: string;
     guildId: string;
     anilistOptions?: AnilistSearchOptions;
   },
 ): Promise<T | undefined> {
-  const possibilities = await searchMany<T>({
-    key,
+  const possibilities = await searchManyMedia<T>({
     search,
     guildId,
     anilistOptions,
@@ -507,8 +595,8 @@ async function media({ ids, search, guildId, anilistOptions }: {
 
     return Object.values(results);
   } else if (search) {
-    const match: Media | DisaggregatedMedia | undefined = await searchOne(
-      { key: 'media', search, guildId, anilistOptions },
+    const match = await searchOneMedia(
+      { search, guildId, anilistOptions },
     );
 
     return match ? [match] : [];
@@ -536,10 +624,9 @@ async function characters({ ids, search, guildId }: {
 
     return Object.values(results);
   } else if (search) {
-    const match: Character | DisaggregatedCharacter | undefined =
-      await searchOne(
-        { key: 'characters', search, guildId },
-      );
+    const match = await searchOneCharacter(
+      { search, guildId },
+    );
 
     return match ? [match] : [];
   } else {

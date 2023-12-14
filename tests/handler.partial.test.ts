@@ -42,7 +42,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -85,7 +85,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -145,7 +144,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -188,7 +187,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -248,7 +246,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -291,7 +289,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -351,7 +348,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -394,7 +391,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -454,7 +450,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -497,7 +493,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -557,7 +552,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -600,7 +595,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -660,7 +654,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -703,7 +697,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -763,7 +756,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -806,7 +799,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -866,7 +858,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -909,7 +901,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -973,7 +964,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -1016,7 +1007,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -1080,7 +1070,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -1123,7 +1113,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -1187,7 +1176,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -1230,7 +1219,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -1290,7 +1278,7 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
+    const searchStub = stub(packs, 'searchManyMedia', () =>
       Promise.resolve([{
         id: 'id',
         packId: 'packId',
@@ -1332,7 +1320,6 @@ Deno.test('media suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'media',
           search: 'title',
           guildId: 'guild_id',
           threshold: 45,
@@ -1393,24 +1380,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -1445,7 +1436,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
@@ -1505,24 +1495,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -1557,7 +1551,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
@@ -1617,24 +1610,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -1669,7 +1666,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'give',
           guildId: 'guild_id',
           threshold: 65,
@@ -1731,24 +1727,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -1783,7 +1783,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'take',
           guildId: 'guild_id',
           threshold: 65,
@@ -1842,24 +1841,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -1894,7 +1897,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'give',
           guildId: 'guild_id',
           threshold: 65,
@@ -1953,24 +1955,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -2005,7 +2011,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'give',
           guildId: 'guild_id',
           threshold: 65,
@@ -2064,24 +2069,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -2116,7 +2125,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'give',
           guildId: 'guild_id',
           threshold: 65,
@@ -2175,24 +2183,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -2227,7 +2239,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
@@ -2286,24 +2297,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -2338,7 +2353,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
@@ -2398,24 +2412,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -2450,7 +2468,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
@@ -2509,24 +2526,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -2561,7 +2582,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
@@ -2620,14 +2640,18 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-      }] as any));
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -2662,7 +2686,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
@@ -2725,24 +2748,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -2777,7 +2804,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
@@ -2840,24 +2866,28 @@ Deno.test('character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -2892,7 +2922,6 @@ Deno.test('character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
@@ -2963,24 +2992,28 @@ Deno.test('party assign character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -3015,7 +3048,6 @@ Deno.test('party assign character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
@@ -3084,24 +3116,28 @@ Deno.test('party assign character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -3136,7 +3172,6 @@ Deno.test('party assign character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
@@ -3205,24 +3240,28 @@ Deno.test('party assign character suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchMany', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        name: {
-          english: 'english name',
-        },
-        media: {
-          edges: [{
-            node: {
-              id: 'id',
-              title: {
-                english: 'anime title',
+    const searchStub = stub(
+      packs,
+      'searchManyCharacters',
+      () =>
+        Promise.resolve([{
+          id: 'id',
+          packId: 'packId',
+          name: {
+            english: 'english name',
+          },
+          media: {
+            edges: [{
+              node: {
+                id: 'id',
+                title: {
+                  english: 'anime title',
+                },
               },
-            },
-          }],
-        },
-      }] as any));
+            }],
+          },
+        }] as any),
+    );
 
     config.publicKey = 'publicKey';
 
@@ -3257,7 +3296,6 @@ Deno.test('party assign character suggestions', async (test) => {
 
       assertSpyCall(searchStub, 0, {
         args: [{
-          key: 'characters',
           search: 'name',
           guildId: 'guild_id',
           threshold: 65,
