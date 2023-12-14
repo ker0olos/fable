@@ -29,22 +29,22 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: anilist-search-directory
-          path: packs/anilist/directory.json
+          name: anilist-searching-directories
+          path: packs/anilist/*_directory.json
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.PAT }}
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          title: '[bot] Updated "anilist/pool.json" & "anilist/directory.json"'
-          commit-message: "[bot] Updated `anilist/pool.json` & `anilist/directory.json`"
+          title: '[bot] Updated "anilist/*.json"'
+          commit-message: "[bot] Updated `anilist/*.json`"
           branch: update-anilist-pool
           delete-branch: true
           body: |
             This PR is auto-generated
 
             1. Updated the pool cache for each possible gacha query (See #9 #45)
-            2. Updated the search directory for every character above `1000` popularity (See #282)
+            2. Updated the searching directories for every character and media above `1000` in popularity (See #282)
           labels: |
             anilist
