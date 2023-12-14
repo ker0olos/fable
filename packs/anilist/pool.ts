@@ -12,8 +12,10 @@ import { gql, request } from './graphql.ts';
 
 import { AniListCharacter, AniListMedia, Pool } from './types.ts';
 
-const filepath = './pool.json';
-const directorypath = './directory.json';
+const poolPath = './pool.json';
+
+const charactersDirectoryPath = './characters_directory.json';
+const mediaDirectoryPath = './media_directory.json';
 
 const url = 'https://graphql.anilist.co';
 
@@ -21,7 +23,15 @@ const dirname = new URL('.', import.meta.url).pathname;
 
 const ranges = Object.values(gacha.variables.ranges);
 
-const directory: Record<string, { id: string }> = {};
+const charactersDirectory: Record<
+  string,
+  { id: string; mediaTitle?: string; popularity?: number }
+> = {};
+
+const mediaDirectory: Record<
+  string,
+  { id: string; popularity?: number }
+> = {};
 
 // (see https://github.com/ker0olos/fable/issues/9)
 // (see https://github.com/ker0olos/fable/issues/45)
@@ -211,7 +221,7 @@ for (const range of ranges) {
               });
 
             nodes.forEach((character) => {
-              let name = character.name?.full ?? character.name?.native;
+              const name = character.name?.full ?? character.name?.native;
 
               const media = character.media?.edges[0];
 
@@ -219,11 +229,6 @@ for (const range of ranges) {
 
               if (media && !media.node.isAdult) {
                 const mediaId = `anilist:${media.node.id}`;
-
-                name = `${name} (${
-                  media.node.title.english ?? media.node.title.romaji ??
-                    media.node.title.native
-                })`;
 
                 const rating = new Rating({
                   role: media.characterRole,
@@ -235,9 +240,25 @@ for (const range of ranges) {
                   media.node.popularity >= range[0] &&
                   (isNaN(range[1]) || media.node.popularity <= range[1])
                 ) {
+                  const mediaTitle = media.node.title.english ??
+                    media.node.title.romaji ??
+                    media.node.title.native;
+
                   characters.ALL.push({ id, mediaId, rating });
                   characters[media.characterRole].push({ id, mediaId, rating });
-                  directory[name] = { id };
+
+                  if (mediaTitle) {
+                    mediaDirectory[mediaTitle] = {
+                      id: media?.node?.id,
+                      popularity: media?.node.popularity,
+                    };
+                  }
+
+                  charactersDirectory[name] = {
+                    id,
+                    mediaTitle,
+                    popularity: media?.node.popularity,
+                  };
                 }
               }
             });
@@ -297,13 +318,18 @@ for (const range of ranges) {
 }
 
 await Deno.writeTextFile(
-  join(dirname, filepath),
+  join(dirname, poolPath),
   JSON.stringify(cache),
 );
 
 await Deno.writeTextFile(
-  join(dirname, directorypath),
-  JSON.stringify(directory),
+  join(dirname, charactersDirectoryPath),
+  JSON.stringify(charactersDirectory),
+);
+
+await Deno.writeTextFile(
+  join(dirname, mediaDirectoryPath),
+  JSON.stringify(mediaDirectory),
 );
 
 let totalCharacters = 0;
