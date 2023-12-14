@@ -16,31 +16,35 @@ jobs:
           submodules: recursive
           token: ${{ secrets.PAT }}
           repository: ker0olos/fable
-      
+
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno run -A --unstable packs/anilist/pool.ts
-    
+      - run: deno run -A packs/anilist/pool.ts
+
       - uses: actions/upload-artifact@v3
         with:
           name: anilist-pool
           path: packs/anilist/pool.json
-          
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: anilist-search-directory
+          path: packs/anilist/directory.json
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.PAT }}
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          title: 'Updated "anilist/pool.json"'
-          commit-message: '[bot] Updated "anilist/pool.json"'
+          title: '[bot] Updated "anilist/pool.json" & "anilist/directory.json"'
+          commit-message: "[bot] Updated `anilist/pool.json` & `anilist/directory.json`"
           branch: update-anilist-pool
           delete-branch: true
           body: |
             This PR is auto-generated
 
-            Updated the pool cache for each possible gacha query
-
-            (See #9 #45)
+            1. Updated the pool cache for each possible gacha query (See #9 #45)
+            2. Updated the search directory for every character above `1000` popularity (See #282)
           labels: |
             anilist
