@@ -21,7 +21,7 @@
   "unstable": ["kv"],
   "tasks": {
     "discord": "deno run -A --env update_commands.ts",
-    "start": "deno run --unstable-hmr --env -A src/interactions.ts",
+    "start": "deno run --watch --env -A src/interactions.ts",
     "tunnel": "concurrently \"deno task start\" \"ngrok http 127.0.0.1:8000\" \"deno task tunnel_url\"",
     "tunnel_url": "timeout 300 bash -c 'until echo > /dev/tcp/localhost/4040; do sleep 1; done' && curl -Ss http://localhost:4040/api/tunnels | jq -C \".tunnels[0].public_url\"",
     "udd": "deno run -A https://deno.land/x/udd/main.ts deno.json"
