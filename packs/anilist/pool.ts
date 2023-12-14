@@ -254,11 +254,13 @@ for (const range of ranges) {
                     };
                   }
 
-                  charactersDirectory[id] = {
-                    name,
-                    mediaTitle,
-                    popularity: media?.node.popularity,
-                  };
+                  if (name) {
+                    charactersDirectory[id] = {
+                      name,
+                      mediaTitle,
+                      popularity: media?.node.popularity,
+                    };
+                  }
                 }
               }
             });

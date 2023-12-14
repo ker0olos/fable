@@ -45,6 +45,6 @@ jobs:
             This PR is auto-generated
 
             1. Updated the pool cache for each possible gacha query (See #9 #45)
-            2. Updated the searching directories for every character and media above `1000` in popularity (See #282)
+            2. Updated the searching directories for every character and media above `1000` in popularity (See #283)
           labels: |
             anilist

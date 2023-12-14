@@ -243,10 +243,10 @@ function decodeDescription(s?: string): string | undefined {
 
   s = s.replaceAll('&lt;', '<');
   s = s.replaceAll('&gt;', '>');
-  s = s.replaceAll('&#039;', '\'');
+  s = s.replaceAll('&#039;', "'");
   s = s.replaceAll('&quot;', '"');
-  s = s.replaceAll('&apos;', '\'');
-  s = s.replaceAll('&rsquo;', '\'');
+  s = s.replaceAll('&apos;', "'");
+  s = s.replaceAll('&rsquo;', "'");
   s = s.replaceAll('&mdash;', '-');
   s = s.replaceAll('&amp;', '&');
 
