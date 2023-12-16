@@ -1333,7 +1333,7 @@ Deno.test('attempt', async (test) => {
           attachments: [],
           embeds: [{
             type: 'rich',
-            description: 'full name hasn\'t been found by anyone yet',
+            description: "full name hasn't been found by anyone yet",
           }],
         },
       );
@@ -1507,7 +1507,7 @@ Deno.test('attempt', async (test) => {
           attachments: [],
           embeds: [{
             type: 'rich',
-            description: 'full name hasn\'t been found by anyone yet',
+            description: "full name hasn't been found by anyone yet",
           }],
         },
       );
@@ -1673,7 +1673,7 @@ Deno.test('attempt', async (test) => {
           attachments: [],
           embeds: [
             {
-              description: 'full name hasn\'t been found by anyone yet',
+              description: "full name hasn't been found by anyone yet",
               type: 'rich',
             },
           ],
@@ -2402,7 +2402,7 @@ Deno.test('/steal', async (test) => {
             {
               type: 'rich',
               description:
-                'As part of <@another_user_id>\'s party, **full name** cannot be stolen while <@another_user_id> is still active',
+                "As part of <@another_user_id>'s party, **full name** cannot be stolen while <@another_user_id> is still active",
             },
             {
               type: 'rich',
@@ -2584,7 +2584,7 @@ Deno.test('/steal', async (test) => {
         {
           embeds: [{
             type: 'rich',
-            description: 'You can\'t steal from yourself!',
+            description: "You can't steal from yourself!",
           }],
           components: [],
           attachments: [],
@@ -2838,7 +2838,7 @@ Deno.test('/steal', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'full name hasn\'t been found by anyone yet',
+              description: "full name hasn't been found by anyone yet",
             },
             {
               type: 'rich',

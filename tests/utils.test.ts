@@ -45,7 +45,7 @@ Deno.test('rng with percentages', async (test) => {
       assertSpyCalls(randomStub, 100);
     });
 
-    await test.step('fail if doesn\'t sum up to 100', () => {
+    await test.step("fail if doesn't sum up to 100", () => {
       assertThrows(
         () =>
           utils.rng({
@@ -146,9 +146,9 @@ Deno.test('decode description', async (test) => {
   await test.step('decode simple html', () => {
     assertEquals(utils.decodeDescription('&amp;'), '&');
     assertEquals(utils.decodeDescription('&quot;'), '"');
-    assertEquals(utils.decodeDescription('&apos;'), '\'');
-    assertEquals(utils.decodeDescription('&rsquo;'), '\'');
-    assertEquals(utils.decodeDescription('&#039;'), '\'');
+    assertEquals(utils.decodeDescription('&apos;'), "'");
+    assertEquals(utils.decodeDescription('&rsquo;'), "'");
+    assertEquals(utils.decodeDescription('&#039;'), "'");
     assertEquals(utils.decodeDescription('&lt;'), '<');
     assertEquals(utils.decodeDescription('&gt;'), '>');
     assertEquals(utils.decodeDescription('&mdash;'), '-');
@@ -166,12 +166,12 @@ Deno.test('decode description', async (test) => {
     );
 
     assertEquals(
-      utils.decodeDescription('<a href=\'https://goolge/com/page\'>page</a>'),
+      utils.decodeDescription("<a href='https://goolge/com/page'>page</a>"),
       '[page](https://goolge/com/page)',
     );
 
     assertEquals(
-      utils.decodeDescription('<a href=\'https://goolge/com/page\'>page<a>'),
+      utils.decodeDescription("<a href='https://goolge/com/page'>page<a>"),
       '[page](https://goolge/com/page)',
     );
 

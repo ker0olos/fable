@@ -22,12 +22,12 @@ jobs:
           deno-version: v1.x
       - run: deno run -A packs/anilist/pool.ts
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: anilist-pool
           path: packs/anilist/pool.json
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: anilist-searching-directories
           path: packs/anilist/*_directory.json

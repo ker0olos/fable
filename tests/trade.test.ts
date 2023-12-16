@@ -1780,7 +1780,7 @@ Deno.test('/give', async (test) => {
         components: [],
         embeds: [{
           type: 'rich',
-          description: 'You can\'t gift yourself!',
+          description: "You can't gift yourself!",
         }],
       },
     });
@@ -1929,7 +1929,7 @@ Deno.test('/give', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'You don\'t have full name',
+              description: "You don't have full name",
             },
             {
               type: 'rich',
@@ -1947,7 +1947,7 @@ Deno.test('/give', async (test) => {
             },
             {
               type: 'rich',
-              description: 'You don\'t have full name 2',
+              description: "You don't have full name 2",
             },
             {
               type: 'rich',
@@ -2146,7 +2146,7 @@ Deno.test('/give', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'full name is in your party and can\'t be traded',
+              description: "full name is in your party and can't be traded",
             },
             {
               type: 'rich',
@@ -2164,7 +2164,7 @@ Deno.test('/give', async (test) => {
             },
             {
               type: 'rich',
-              description: 'full name 2 is in your party and can\'t be traded',
+              description: "full name 2 is in your party and can't be traded",
             },
             {
               type: 'rich',
@@ -2844,7 +2844,7 @@ Deno.test('/trade', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: '<@another_user_id> doesn\'t have full name',
+              description: "<@another_user_id> doesn't have full name",
             },
             {
               type: 'rich',
@@ -3033,7 +3033,7 @@ Deno.test('/trade', async (test) => {
             {
               type: 'rich',
               description:
-                'full name is in <@another_user_id>\'s party and can\'t be traded',
+                "full name is in <@another_user_id>'s party and can't be traded",
             },
             {
               type: 'rich',
@@ -3089,7 +3089,7 @@ Deno.test('/trade', async (test) => {
         components: [],
         embeds: [{
           type: 'rich',
-          description: 'You can\'t trade with yourself!',
+          description: "You can't trade with yourself!",
         }],
       },
     });

@@ -13,8 +13,6 @@ import { handler } from '../src/interactions.ts';
 
 import packs from '../src/packs.ts';
 
-import { MediaFormat } from '../src/types.ts';
-
 config.global = true;
 
 Deno.test('media suggestions', async (test) => {
@@ -42,15 +40,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -87,7 +83,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -106,7 +101,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -144,15 +139,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -189,7 +182,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -208,7 +200,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -246,15 +238,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -291,7 +281,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -310,7 +299,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -348,15 +337,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -393,7 +380,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -412,7 +398,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -450,15 +436,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -495,7 +479,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -514,7 +497,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -552,15 +535,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -597,7 +578,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -616,7 +596,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -654,15 +634,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -699,7 +677,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -718,7 +695,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -756,15 +733,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -801,7 +776,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -820,7 +794,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -858,15 +832,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -903,7 +875,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -922,7 +893,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -964,15 +935,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -1009,7 +978,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -1028,7 +996,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -1070,15 +1038,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -1115,7 +1081,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -1134,7 +1099,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -1176,15 +1141,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        format: MediaFormat.TV,
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -1221,7 +1184,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -1240,7 +1202,7 @@ Deno.test('media suggestions', async (test) => {
         type: 8,
         data: {
           choices: [{
-            name: 'english title (Anime)',
+            name: 'english title',
             value: 'id=packId:id',
           }],
         },
@@ -1278,14 +1240,13 @@ Deno.test('media suggestions', async (test) => {
       body,
     } as any));
 
-    const searchStub = stub(packs, 'searchManyMedia', () =>
-      Promise.resolve([{
-        id: 'id',
-        packId: 'packId',
-        title: {
-          english: 'english title',
+    const searchStub = stub(packs, '_searchManyMedia', () =>
+      Promise.resolve({
+        ['packId:id']: {
+          title: 'english title',
+          popularity: 1,
         },
-      }] as any));
+      } as any));
 
     config.publicKey = 'publicKey';
 
@@ -1322,7 +1283,6 @@ Deno.test('media suggestions', async (test) => {
         args: [{
           search: 'title',
           guildId: 'guild_id',
-          threshold: 45,
         }],
       });
 
@@ -1382,25 +1342,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -1438,7 +1388,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -1497,25 +1446,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -1553,7 +1492,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -1612,25 +1550,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -1668,7 +1596,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'give',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -1729,25 +1656,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -1785,7 +1702,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'take',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -1843,25 +1759,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -1899,7 +1805,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'give',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -1957,25 +1862,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2013,7 +1908,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'give',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -2071,25 +1965,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2127,7 +2011,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'give',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -2185,25 +2068,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2241,7 +2114,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -2299,25 +2171,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2355,7 +2217,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -2414,25 +2275,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2470,7 +2321,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -2528,25 +2378,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2584,7 +2424,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -2642,15 +2481,14 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            popularity: 1,
           },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2688,7 +2526,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -2750,25 +2587,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2806,7 +2633,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -2868,25 +2694,15 @@ Deno.test('character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2924,7 +2740,6 @@ Deno.test('character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -2994,25 +2809,15 @@ Deno.test('party assign character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -3050,7 +2855,6 @@ Deno.test('party assign character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -3118,25 +2922,15 @@ Deno.test('party assign character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -3174,7 +2968,6 @@ Deno.test('party assign character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 
@@ -3242,25 +3035,15 @@ Deno.test('party assign character suggestions', async (test) => {
 
     const searchStub = stub(
       packs,
-      'searchManyCharacters',
+      '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          id: 'id',
-          packId: 'packId',
-          name: {
-            english: 'english name',
+        Promise.resolve({
+          ['packId:id']: {
+            name: 'english name',
+            mediaTitle: 'anime title',
+            popularity: 1,
           },
-          media: {
-            edges: [{
-              node: {
-                id: 'id',
-                title: {
-                  english: 'anime title',
-                },
-              },
-            }],
-          },
-        }] as any),
+        } as any),
     );
 
     config.publicKey = 'publicKey';
@@ -3298,7 +3081,6 @@ Deno.test('party assign character suggestions', async (test) => {
         args: [{
           search: 'name',
           guildId: 'guild_id',
-          threshold: 65,
         }],
       });
 

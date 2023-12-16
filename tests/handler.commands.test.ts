@@ -9230,7 +9230,7 @@ Deno.test('no permission error', async () => {
         embeds: [{
           type: 'rich',
           description:
-            'You don\'t have permission to complete this interaction!',
+            "You don't have permission to complete this interaction!",
         }],
         attachments: [],
         components: [],

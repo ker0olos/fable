@@ -1818,7 +1818,7 @@ Deno.test('/party assign', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'name 1 hasn\'t been found by anyone yet',
+              description: "name 1 hasn't been found by anyone yet",
             },
           ],
           components: [{

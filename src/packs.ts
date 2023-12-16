@@ -43,8 +43,6 @@ import {
 
 import { NonFetalError } from './errors.ts';
 
-import type { AniListMedia } from '../packs/anilist/types.ts';
-
 import type { Pack } from '../db/schema.ts';
 
 const anilistManifest = _anilistManifest as Manifest;
@@ -490,7 +488,7 @@ async function searchOneCharacter(
     search: string;
     guildId: string;
   },
-): Promise<Character | DisaggregatedCharacter> {
+): Promise<Character | DisaggregatedCharacter | undefined> {
   const possibilities = await _searchManyCharacters({
     search,
     guildId,
@@ -549,7 +547,7 @@ async function _searchManyMedia(
 }
 
 async function searchManyMedia(
-  { search, guildId,  }: {
+  { search, guildId }: {
     search: string;
     guildId: string;
   },
@@ -569,7 +567,7 @@ async function searchManyMedia(
 }
 
 async function searchOneMedia(
-  { search, guildId,  }: {
+  { search, guildId }: {
     search: string;
     guildId: string;
   },
@@ -603,7 +601,7 @@ async function media({ ids, search, guildId, anilistOptions }: {
 
     return Object.values(results);
   } else if (search) {
-    const match = await searchOneMedia(
+    const match = await packs.searchOneMedia(
       { search, guildId },
     );
 
@@ -632,7 +630,7 @@ async function characters({ ids, search, guildId }: {
 
     return Object.values(results);
   } else if (search) {
-    const match = await searchOneCharacter(
+    const match = await packs.searchOneCharacter(
       { search, guildId },
     );
 
@@ -681,34 +679,22 @@ async function mediaCharacters({ id, search, guildId, index }: {
     throw new Error('404');
   }
 
-  if (results[0].packId === 'anilist') {
-    return {
-      next: Boolean(
-        (results[0] as AniListMedia).characters?.pageInfo.hasNextPage,
-      ),
-      media: results[0] as AniListMedia,
-      role: (results[0] as AniListMedia).characters?.edges?.[0].role,
-      character: (results[0] as AniListMedia).characters?.edges?.[0]
-        ?.node as DisaggregatedCharacter,
-    };
-  } else {
-    const total = (results[0] as DisaggregatedMedia).characters?.length || 0;
+  const total = (results[0] as DisaggregatedMedia).characters?.length || 0;
 
-    const media = await aggregate<Media>({
-      media: results[0],
-      start: index,
-      end: 1,
-      guildId,
-    });
+  const media = await aggregate<Media>({
+    media: results[0],
+    start: index,
+    end: 1,
+    guildId,
+  });
 
-    return {
-      total,
-      media,
-      role: media.characters?.edges?.[0]?.role,
-      character: media.characters?.edges?.[0]?.node as DisaggregatedCharacter,
-      next: index + 1 < total,
-    };
-  }
+  return {
+    total,
+    media,
+    role: media.characters?.edges?.[0]?.role,
+    character: media.characters?.edges?.[0]?.node as DisaggregatedCharacter,
+    next: index + 1 < total,
+  };
 }
 
 async function aggregate<T>({ media, character, start, end, guildId }: {
