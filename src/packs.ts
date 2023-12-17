@@ -13,6 +13,8 @@ import anilistMediaDirectory from '../packs/anilist/media_directory.json' assert
   type: 'json',
 };
 
+import jarowinkler from 'jarowinkler';
+
 import * as _anilist from '../packs/anilist/index.ts';
 
 import * as discord from './discord.ts';
@@ -451,11 +453,11 @@ async function _searchManyCharacters(
     }
   }
 
-  // substring search
+  // fuzzy search
   for (const [id, { name, mediaTitle }] of Object.entries(directory)) {
-    const str = mediaTitle ? `${name} (${mediaTitle})` : name;
+    const str = (mediaTitle ? `${name} (${mediaTitle})` : name).toLowerCase();
 
-    if (!str.toLowerCase().includes(search)) {
+    if (jarowinkler.Distance(str, search) < 0.65) {
       delete directory[id];
     }
   }
@@ -534,11 +536,11 @@ async function _searchManyMedia(
     }
   }
 
-  // substring search
+  // fuzzy search
   for (const [id, { title }] of Object.entries(directory)) {
-    const str = title;
+    const str = title.toLowerCase();
 
-    if (!str.toLowerCase().includes(search)) {
+    if (jarowinkler.Distance(str, search) < 0.65) {
       delete directory[id];
     }
   }

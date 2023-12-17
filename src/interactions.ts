@@ -2,6 +2,8 @@ import * as discord from './discord.ts';
 
 import search, { idPrefix } from './search.ts';
 
+import jarowinkler from 'jarowinkler';
+
 import i18n from './i18n.ts';
 import user from './user.ts';
 import party from './party.ts';
@@ -250,10 +252,10 @@ export const handler = async (r: Request) => {
 
           // sort suggestion based on distance
           list.forEach(({ manifest }) => {
-            const d = utils.distance(manifest.id, id);
+            const d = jarowinkler.Distance(manifest.id, id);
 
             if (manifest.title) {
-              const d2 = utils.distance(manifest.title, id);
+              const d2 = jarowinkler.Distance(manifest.title, id);
 
               if (d > d2) {
                 distance[manifest.id] = d2;
@@ -299,8 +301,8 @@ export const handler = async (r: Request) => {
           _skills.forEach((skill) => {
             const skillName = i18n.get(skill.key, locale);
 
-            const d = utils.distance(skill.key, name);
-            const d2 = utils.distance(skillName, name);
+            const d = jarowinkler.Distance(skill.key, name);
+            const d2 = jarowinkler.Distance(skillName, name);
 
             if (d > d2) {
               distance[skill.key] = d2;
