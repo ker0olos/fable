@@ -811,7 +811,7 @@ export class Message {
 
         if (!this.#suggestions[name]) {
           this.#suggestions[name] = {
-            name: `${suggestion.name ?? suggestion.value}`,
+            name: utils.truncate(`${suggestion.name ?? suggestion.value}`, 80),
             value: suggestion.value,
           } as Suggestion;
         }

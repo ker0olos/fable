@@ -1726,7 +1726,7 @@ Deno.test('/sweep', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'You don\'t have any more sweeps!',
+              description: "You don't have any more sweeps!",
             },
             {
               type: 'rich',

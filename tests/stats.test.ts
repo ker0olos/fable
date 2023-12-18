@@ -564,7 +564,7 @@ Deno.test('update stats', async (test) => {
             distribution: '9-9-9',
           }),
         NonFetalError,
-        'Character doesn\'t have enough unclaimed points left',
+        "Character doesn't have enough unclaimed points left",
       );
     } finally {
       getUserStub.restore();
@@ -709,7 +709,7 @@ Deno.test('update stats', async (test) => {
             type: 'reset',
           }),
         NonFetalError,
-        'You don\'t have permission to complete this interaction!',
+        "You don't have permission to complete this interaction!",
       );
     } finally {
       getUserStub.restore();
@@ -778,7 +778,7 @@ Deno.test('update stats', async (test) => {
             type: 'str',
           }),
         NonFetalError,
-        'Character doesn\'t have enough unclaimed points left',
+        "Character doesn't have enough unclaimed points left",
       );
     } finally {
       getUserStub.restore();
@@ -1448,7 +1448,7 @@ Deno.test('/stats', async (test) => {
                 },
               ],
               footer: {
-                text: 'Character is yet to be found and isn\'t combat ready',
+                text: "Character is yet to be found and isn't combat ready",
               },
             },
           ],

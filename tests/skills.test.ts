@@ -827,7 +827,7 @@ Deno.test('/skills acquire', async (test) => {
                 },
               ],
               footer: {
-                text: 'Character is yet to be found and isn\'t combat ready',
+                text: "Character is yet to be found and isn't combat ready",
               },
               thumbnail: {
                 url: 'http://localhost:8000/external/image_url?size=thumbnail',
@@ -1091,7 +1091,7 @@ Deno.test('/skills acquire', async (test) => {
     }
   });
 
-  await test.step('skill doesn\'t exist', () => {
+  await test.step("skill doesn't exist", () => {
     assertThrows(
       () =>
         skills.preAcquire({
@@ -1363,7 +1363,7 @@ Deno.test('acquire skill', async (test) => {
             skillKey: 'crit',
           }),
         NonFetalError,
-        'Character doesn\'t have enough skill points left',
+        "Character doesn't have enough skill points left",
       );
     } finally {
       getUserStub.restore();
@@ -1417,7 +1417,7 @@ Deno.test('acquire skill', async (test) => {
             skillKey: 'crit',
           }),
         NonFetalError,
-        'Character hasn\'t been found by anyone yet',
+        "Character hasn't been found by anyone yet",
       );
     } finally {
       getUserStub.restore();
@@ -1471,7 +1471,7 @@ Deno.test('acquire skill', async (test) => {
             skillKey: 'crit',
           }),
         NonFetalError,
-        'You don\'t have permission to complete this interaction!',
+        "You don't have permission to complete this interaction!",
       );
     } finally {
       getUserStub.restore();

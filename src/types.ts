@@ -4,6 +4,10 @@ import type { AcquiredCharacterSkill } from '../db/schema.ts';
 
 export type Modify<T, R> = Omit<T, keyof R> & R;
 
+export type Entries<T> = {
+  [K in keyof T]: [K, T[K]];
+}[keyof T][];
+
 export enum MediaType {
   Anime = 'ANIME',
   Manga = 'MANGA',

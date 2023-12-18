@@ -26,8 +26,6 @@ import config, { initConfig } from './config.ts';
 
 import { NonFetalError, NoPermissionError } from './errors.ts';
 
-import type { Character, Media } from './types.ts';
-
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
 
@@ -149,34 +147,27 @@ export const handler = async (r: Request) => {
           )
         ) {
           // deno-lint-ignore no-non-null-assertion
-          const title = options[focused!] as string;
+          const search = options[focused!] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
           );
 
-          const results = await packs.searchMany<Media>({
-            guildId,
-            key: 'media',
-            search: title,
-            threshold: 45,
-          });
-
-          results
-            ?.forEach((media) => {
-              const format = packs.formatToString(media.format);
-
-              if (packs.isDisabled(`${media.packId}:${media.id}`, guildId)) {
-                return;
-              }
-
-              message.addSuggestions({
-                name: `${packs.aliasToArray(media.title)[0]}${
-                  format ? ` (${format})` : ''
-                }`,
-                value: `${idPrefix}${media.packId}:${media.id}`,
-              });
+          if (search) {
+            const results = await packs._searchManyMedia({
+              search,
+              guildId,
             });
+
+            results
+              .slice(0, 25)
+              .forEach(([id, { title }]) => {
+                message.addSuggestions({
+                  name: title[0],
+                  value: `${idPrefix}${id}`,
+                });
+              });
+          }
 
           return message.send();
         }
@@ -207,52 +198,29 @@ export const handler = async (r: Request) => {
           )
         ) {
           // deno-lint-ignore no-non-null-assertion
-          const name = options[focused!] as string;
+          const search = options[focused!] as string;
 
           const message = new discord.Message(
             discord.MessageType.Suggestions,
           );
 
-          const results = await packs.searchMany<Character>({
-            guildId,
-            threshold: 65,
-            key: 'characters',
-            search: name,
-          }).then((characters) =>
-            Promise.all(
-              characters.map((character) =>
-                packs.aggregate<Character>({ character, guildId })
-              ),
-            )
-          );
-
-          results?.sort((a, b) => {
-            const aP = a.popularity ?? a.media?.edges[0]?.node.popularity ?? 0;
-            const bP = b.popularity ?? b.media?.edges[0]?.node.popularity ?? 0;
-
-            return bP - aP;
-          }).forEach((char) => {
-            const media = char.media?.edges?.[0]?.node;
-
-            const mediaTitle = media
-              ? `(${packs.aliasToArray(media.title)[0]})`
-              : '';
-
-            if (
-              packs.isDisabled(`${char.packId}:${char.id}`, guildId) ||
-              (
-                media &&
-                packs.isDisabled(`${media.packId}:${media.id}`, guildId)
-              )
-            ) {
-              return;
-            }
-
-            message.addSuggestions({
-              name: `${packs.aliasToArray(char.name)[0]} ${mediaTitle}`.trim(),
-              value: `${idPrefix}${char.packId}:${char.id}`,
+          if (search) {
+            const results = await packs._searchManyCharacters({
+              search,
+              guildId,
             });
-          });
+
+            results
+              .slice(0, 25)
+              .forEach(([id, { name, mediaTitle }]) => {
+                message.addSuggestions({
+                  name: mediaTitle?.length
+                    ? `${name[0]} (${mediaTitle[0]})`
+                    : name[0],
+                  value: `${idPrefix}${id}`,
+                });
+              });
+          }
 
           return message.send();
         }

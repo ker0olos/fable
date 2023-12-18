@@ -221,7 +221,8 @@ function comma(n: number): string {
 
 function distance(a: string, b: string): number {
   return 100 -
-    100 * _distance(a.toLowerCase(), b.toLowerCase()) / (a.length + b.length);
+    (100 * _distance(a.toLowerCase(), b.toLowerCase())) /
+      (a.length + b.length);
 }
 
 function _parseInt(query?: string): number | undefined {
@@ -243,10 +244,10 @@ function decodeDescription(s?: string): string | undefined {
 
   s = s.replaceAll('&lt;', '<');
   s = s.replaceAll('&gt;', '>');
-  s = s.replaceAll('&#039;', '\'');
+  s = s.replaceAll('&#039;', "'");
   s = s.replaceAll('&quot;', '"');
-  s = s.replaceAll('&apos;', '\'');
-  s = s.replaceAll('&rsquo;', '\'');
+  s = s.replaceAll('&apos;', "'");
+  s = s.replaceAll('&rsquo;', "'");
   s = s.replaceAll('&mdash;', '-');
   s = s.replaceAll('&amp;', '&');
 

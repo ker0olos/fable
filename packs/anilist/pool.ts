@@ -12,13 +12,22 @@ import { gql, request } from './graphql.ts';
 
 import { AniListCharacter, AniListMedia, Pool } from './types.ts';
 
-const filepath = './pool.json';
+import type { CharactersDirectory, MediaDirectory } from '../../src/packs.ts';
+
+const poolPath = './pool.json';
+
+const charactersDirectoryPath = './characters_directory.json';
+const mediaDirectoryPath = './media_directory.json';
 
 const url = 'https://graphql.anilist.co';
 
 const dirname = new URL('.', import.meta.url).pathname;
 
 const ranges = Object.values(gacha.variables.ranges);
+
+const charactersDirectory: CharactersDirectory = {};
+
+const mediaDirectory: MediaDirectory = {};
 
 // (see https://github.com/ker0olos/fable/issues/9)
 // (see https://github.com/ker0olos/fable/issues/45)
@@ -65,6 +74,10 @@ async function queryMedia(
             }
             nodes {
               id # character id
+              name {
+                full
+                native
+              }
               media(sort: POPULARITY_DESC) {
                 edges {
                   characterRole # actual role
@@ -73,6 +86,11 @@ async function queryMedia(
                     id
                     popularity
                     isAdult
+                    title {
+                      english
+                      native
+                      romaji
+                    }
                   }
                 }
               }
@@ -113,6 +131,10 @@ async function queryCharacters(
           }
           nodes {
             id # character id
+            name {
+              full
+              native
+            }
             media(sort: POPULARITY_DESC) {
               edges {
                 characterRole # actual role
@@ -121,6 +143,11 @@ async function queryCharacters(
                   id
                   popularity
                   isAdult
+                  title {
+                      english
+                      native
+                      romaji
+                    }
                 }
               }
             }
@@ -190,12 +217,18 @@ for (const range of ranges) {
               });
 
             nodes.forEach((character) => {
+              const name = [
+                character.name?.full,
+                character.name?.native,
+                ...(character.name?.alternative ?? []),
+              ].filter(Boolean) as string[];
+
               const media = character.media?.edges[0];
 
-              const mediaId = `anilist:${media?.node.id}`;
+              const id = `anilist:${character.id}`;
 
               if (media && !media.node.isAdult) {
-                const id = `anilist:${character.id}`;
+                const mediaId = `anilist:${media.node.id}`;
 
                 const rating = new Rating({
                   role: media.characterRole,
@@ -207,8 +240,30 @@ for (const range of ranges) {
                   media.node.popularity >= range[0] &&
                   (isNaN(range[1]) || media.node.popularity <= range[1])
                 ) {
+                  const mediaTitle = [
+                    media.node.title.english,
+                    media.node.title.romaji,
+                    media.node.title.native,
+                    ...(media.node.synonyms ?? []),
+                  ].filter(Boolean) as string[];
+
                   characters.ALL.push({ id, mediaId, rating });
                   characters[media.characterRole].push({ id, mediaId, rating });
+
+                  if (media?.node?.id && mediaTitle?.length) {
+                    mediaDirectory[mediaId] = {
+                      title: mediaTitle,
+                      popularity: media?.node.popularity,
+                    };
+                  }
+
+                  if (name.length) {
+                    charactersDirectory[id] = {
+                      name,
+                      mediaTitle,
+                      popularity: media?.node.popularity,
+                    };
+                  }
                 }
               }
             });
@@ -268,8 +323,18 @@ for (const range of ranges) {
 }
 
 await Deno.writeTextFile(
-  join(dirname, filepath),
+  join(dirname, poolPath),
   JSON.stringify(cache),
+);
+
+await Deno.writeTextFile(
+  join(dirname, charactersDirectoryPath),
+  JSON.stringify(charactersDirectory),
+);
+
+await Deno.writeTextFile(
+  join(dirname, mediaDirectoryPath),
+  JSON.stringify(mediaDirectory),
 );
 
 let totalCharacters = 0;

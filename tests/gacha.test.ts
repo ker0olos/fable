@@ -4298,7 +4298,7 @@ Deno.test('/gacha', async (test) => {
           embeds: [
             {
               type: 'rich',
-              description: 'You don\'t have any more pulls!',
+              description: "You don't have any more pulls!",
             },
             { type: 'rich', description: '_+1 pull <t:1675732989:R>_' },
           ],

@@ -269,7 +269,7 @@ Deno.test('/publish', async (test) => {
           {
             instancePath: '',
             keyword: 'required',
-            message: 'must have required property \'id\'',
+            message: "must have required property 'id'",
             params: {
               missingProperty: 'id',
             },
