@@ -221,7 +221,7 @@ function comma(n: number): string {
 
 function distance(a: string, b: string): number {
   return 100 -
-    100 * _distance(a.toLowerCase(), b.toLowerCase()) / (a.length + b.length);
+    (100 * _distance(a, b)) / (a.length + b.length);
 }
 
 function _parseInt(query?: string): number | undefined {

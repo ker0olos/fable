@@ -427,6 +427,8 @@ async function _searchManyCharacters(
     guildId: string;
   },
 ): Promise<CharactersDirectory> {
+  search = search.toLowerCase();
+
   const list = await packs.all({ guildId });
 
   const directory = { ...anilistCharactersDirectory } as CharactersDirectory;
@@ -461,10 +463,18 @@ async function _searchManyCharacters(
   // fuzzy search
   for (const [id, entry] of Object.entries(directory)) {
     const match = entry.name.every((n) => {
-      // const str =
+      const str1 = n.toLowerCase();
+
+      // const str2 =
       //   (entry.mediaTitle?.length ? `${n} (${entry.mediaTitle[0]})` : n)
       //     .toLowerCase();
-      return (entry.match = utils.distance(n, search)) < 65;
+
+      if (str1.includes(search)) {
+        entry.match = 100;
+        return false;
+      }
+
+      return (entry.match = utils.distance(str1, search)) < 65;
     });
 
     if (match) {
@@ -549,7 +559,14 @@ async function _searchManyMedia(
   // fuzzy search
   for (const [id, entry] of Object.entries(directory)) {
     const match = entry.title.every((t) => {
-      return (entry.match = utils.distance(t, search)) < 65;
+      const str = t.toLowerCase();
+
+      if (str.includes(search)) {
+        entry.match = 100;
+        return false;
+      }
+
+      return (entry.match = utils.distance(str, search)) < 65;
     });
 
     if (match) {
