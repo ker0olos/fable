@@ -13,8 +13,6 @@ import anilistMediaDirectory from '../packs/anilist/media_directory.json' assert
   type: 'json',
 };
 
-import jarowinkler from 'jarowinkler';
-
 import * as _anilist from '../packs/anilist/index.ts';
 
 import * as discord from './discord.ts';
@@ -55,14 +53,23 @@ type AnilistSearchOptions = {
   perPage: number;
 };
 
-type CharactersDirectory = Record<
+export type CharactersDirectory = Record<
   string,
-  { name: string; mediaTitle?: string; popularity?: number }
+  {
+    name: string[];
+    mediaTitle?: string[];
+    popularity?: number;
+    match?: number;
+  }
 >;
 
-type MediaDirectory = Record<
+export type MediaDirectory = Record<
   string,
-  { title: string; popularity?: number }
+  {
+    title: string[];
+    popularity?: number;
+    match?: number;
+  }
 >;
 
 const cachedGuilds: Record<string, {
@@ -420,11 +427,9 @@ async function _searchManyCharacters(
     guildId: string;
   },
 ): Promise<CharactersDirectory> {
-  search = search.toLowerCase();
-
   const list = await packs.all({ guildId });
 
-  const directory = anilistCharactersDirectory as CharactersDirectory;
+  const directory = { ...anilistCharactersDirectory } as CharactersDirectory;
 
   // add community packs content
   for (
@@ -439,11 +444,11 @@ async function _searchManyCharacters(
     );
 
     for (const char of characters) {
-      const name = packs.aliasToArray(char.name)[0];
+      const name = packs.aliasToArray(char.name);
 
       const mediaTitle = char.media?.edges?.length
-        ? packs.aliasToArray(char.media.edges[0].node.title)[0]
-        : '';
+        ? packs.aliasToArray(char.media.edges[0].node.title)
+        : [];
 
       directory[`${char.packId}:${char.id}`] = {
         name,
@@ -454,10 +459,15 @@ async function _searchManyCharacters(
   }
 
   // fuzzy search
-  for (const [id, { name, mediaTitle }] of Object.entries(directory)) {
-    const str = (mediaTitle ? `${name} (${mediaTitle})` : name).toLowerCase();
+  for (const [id, entry] of Object.entries(directory)) {
+    const match = entry.name.every((n) => {
+      // const str =
+      //   (entry.mediaTitle?.length ? `${n} (${entry.mediaTitle[0]})` : n)
+      //     .toLowerCase();
+      return (entry.match = utils.distance(n, search)) < 65;
+    });
 
-    if (jarowinkler.Distance(str, search) < 0.65) {
+    if (match) {
       delete directory[id];
     }
   }
@@ -515,7 +525,7 @@ async function _searchManyMedia(
 
   const list = await packs.all({ guildId });
 
-  const directory = anilistMediaDirectory as MediaDirectory;
+  const directory = { ...anilistMediaDirectory } as MediaDirectory;
 
   // add community packs content
   for (
@@ -527,7 +537,7 @@ async function _searchManyMedia(
     );
 
     for (const _media of media) {
-      const title = packs.aliasToArray(_media.title)[0];
+      const title = packs.aliasToArray(_media.title);
 
       directory[`${_media.packId}:${_media.id}`] = {
         title,
@@ -537,10 +547,12 @@ async function _searchManyMedia(
   }
 
   // fuzzy search
-  for (const [id, { title }] of Object.entries(directory)) {
-    const str = title.toLowerCase();
+  for (const [id, entry] of Object.entries(directory)) {
+    const match = entry.title.every((t) => {
+      return (entry.match = utils.distance(t, search)) < 65;
+    });
 
-    if (jarowinkler.Distance(str, search) < 0.65) {
+    if (match) {
       delete directory[id];
     }
   }

@@ -43,7 +43,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -142,7 +142,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -241,7 +241,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -340,7 +340,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -439,7 +439,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -538,7 +538,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -637,7 +637,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -736,7 +736,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -835,7 +835,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -938,7 +938,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -1041,7 +1041,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -1144,7 +1144,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -1243,7 +1243,7 @@ Deno.test('media suggestions', async (test) => {
     const searchStub = stub(packs, '_searchManyMedia', () =>
       Promise.resolve({
         ['packId:id']: {
-          title: 'english title',
+          title: ['english title'],
           popularity: 1,
         },
       } as any));
@@ -1346,8 +1346,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -1450,8 +1450,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -1554,8 +1554,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -1660,8 +1660,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -1763,8 +1763,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -1866,8 +1866,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -1969,8 +1969,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -2072,8 +2072,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -2175,8 +2175,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -2279,8 +2279,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -2382,8 +2382,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -2485,7 +2485,7 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
+            name: ['english name'],
             popularity: 1,
           },
         } as any),
@@ -2591,8 +2591,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -2698,8 +2698,8 @@ Deno.test('character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -2813,8 +2813,8 @@ Deno.test('party assign character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -2926,8 +2926,8 @@ Deno.test('party assign character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),
@@ -3039,8 +3039,8 @@ Deno.test('party assign character suggestions', async (test) => {
       () =>
         Promise.resolve({
           ['packId:id']: {
-            name: 'english name',
-            mediaTitle: 'anime title',
+            name: ['english name'],
+            mediaTitle: ['anime title'],
             popularity: 1,
           },
         } as any),

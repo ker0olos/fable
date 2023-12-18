@@ -2,8 +2,6 @@ import * as discord from './discord.ts';
 
 import search, { idPrefix } from './search.ts';
 
-import jarowinkler from 'jarowinkler';
-
 import i18n from './i18n.ts';
 import user from './user.ts';
 import party from './party.ts';
@@ -162,13 +160,17 @@ export const handler = async (r: Request) => {
             });
 
             Object.entries(results)
-              .toSorted((a, b) =>
-                (b[1].popularity ?? 0) - (a[1].popularity ?? 0)
-              )
+              .toSorted((a, b) => {
+                const diff = (b[1].match || 0) - (a[1].match || 0);
+
+                return diff !== 0
+                  ? diff
+                  : (b[1].popularity || 0) - (a[1].popularity || 0);
+              })
               .slice(0, 25)
               .forEach(([id, { title }]) => {
                 message.addSuggestions({
-                  name: title,
+                  name: title[0],
                   value: `${idPrefix}${id}`,
                 });
               });
@@ -216,13 +218,19 @@ export const handler = async (r: Request) => {
             });
 
             Object.entries(results)
-              .toSorted((a, b) =>
-                (b[1].popularity ?? 0) - (a[1].popularity ?? 0)
-              )
+              .toSorted((a, b) => {
+                const diff = (b[1].match || 0) - (a[1].match || 0);
+
+                return diff !== 0
+                  ? diff
+                  : (b[1].popularity || 0) - (a[1].popularity || 0);
+              })
               .slice(0, 25)
               .forEach(([id, { name, mediaTitle }]) => {
                 message.addSuggestions({
-                  name: mediaTitle ? `${name} (${mediaTitle})` : name,
+                  name: mediaTitle?.length
+                    ? `${name[0]} (${mediaTitle[0]})`
+                    : name[0],
                   value: `${idPrefix}${id}`,
                 });
               });
@@ -252,10 +260,10 @@ export const handler = async (r: Request) => {
 
           // sort suggestion based on distance
           list.forEach(({ manifest }) => {
-            const d = jarowinkler.Distance(manifest.id, id);
+            const d = utils.distance(manifest.id, id);
 
             if (manifest.title) {
-              const d2 = jarowinkler.Distance(manifest.title, id);
+              const d2 = utils.distance(manifest.title, id);
 
               if (d > d2) {
                 distance[manifest.id] = d2;
@@ -301,8 +309,8 @@ export const handler = async (r: Request) => {
           _skills.forEach((skill) => {
             const skillName = i18n.get(skill.key, locale);
 
-            const d = jarowinkler.Distance(skill.key, name);
-            const d2 = jarowinkler.Distance(skillName, name);
+            const d = utils.distance(skill.key, name);
+            const d2 = utils.distance(skillName, name);
 
             if (d > d2) {
               distance[skill.key] = d2;
