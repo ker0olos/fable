@@ -12,6 +12,8 @@ import { gql, request } from './graphql.ts';
 
 import { AniListCharacter, AniListMedia, Pool } from './types.ts';
 
+import type { CharactersDirectory, MediaDirectory } from '../../src/packs.ts';
+
 const poolPath = './pool.json';
 
 const charactersDirectoryPath = './characters_directory.json';
@@ -23,15 +25,9 @@ const dirname = new URL('.', import.meta.url).pathname;
 
 const ranges = Object.values(gacha.variables.ranges);
 
-const charactersDirectory: Record<
-  string,
-  { name: string; mediaTitle?: string; popularity?: number }
-> = {};
+const charactersDirectory: CharactersDirectory = {};
 
-const mediaDirectory: Record<
-  string,
-  { title: string; popularity?: number }
-> = {};
+const mediaDirectory: MediaDirectory = {};
 
 // (see https://github.com/ker0olos/fable/issues/9)
 // (see https://github.com/ker0olos/fable/issues/45)
@@ -221,7 +217,11 @@ for (const range of ranges) {
               });
 
             nodes.forEach((character) => {
-              const name = character.name?.full ?? character.name?.native;
+              const name = [
+                character.name?.full,
+                character.name?.native,
+                ...(character.name?.alternative ?? []),
+              ].filter(Boolean) as string[];
 
               const media = character.media?.edges[0];
 
@@ -240,21 +240,24 @@ for (const range of ranges) {
                   media.node.popularity >= range[0] &&
                   (isNaN(range[1]) || media.node.popularity <= range[1])
                 ) {
-                  const mediaTitle = media.node.title.english ??
-                    media.node.title.romaji ??
-                    media.node.title.native;
+                  const mediaTitle = [
+                    media.node.title.english,
+                    media.node.title.romaji,
+                    media.node.title.native,
+                    ...(media.node.synonyms ?? []),
+                  ].filter(Boolean) as string[];
 
                   characters.ALL.push({ id, mediaId, rating });
                   characters[media.characterRole].push({ id, mediaId, rating });
 
-                  if (media?.node?.id && mediaTitle) {
+                  if (media?.node?.id && mediaTitle?.length) {
                     mediaDirectory[media.node.id] = {
                       title: mediaTitle,
                       popularity: media?.node.popularity,
                     };
                   }
 
-                  if (name) {
+                  if (name.length) {
                     charactersDirectory[id] = {
                       name,
                       mediaTitle,
