@@ -470,12 +470,14 @@ async function _searchManyCharacters(
       //   (entry.mediaTitle?.length ? `${n} (${entry.mediaTitle[0]})` : n)
       //     .toLowerCase();
 
-      if (str1.includes(search)) {
-        entry.match = 100;
+      entry.match = utils.distance(str1, search);
+
+      if (entry.match < 65 && str1.includes(search)) {
+        entry.match = 90;
         return false;
       }
 
-      return (entry.match = utils.distance(str1, search)) < 65;
+      return false;
     });
 
     if (match) {
@@ -570,12 +572,14 @@ async function _searchManyMedia(
     const match = entry.title.every((t) => {
       const str = t.toLowerCase();
 
-      if (str.includes(search)) {
-        entry.match = 100;
+      entry.match = utils.distance(str, search);
+
+      if (entry.match < 65 && str.includes(search)) {
+        entry.match = 90;
         return false;
       }
 
-      return (entry.match = utils.distance(str, search)) < 65;
+      return false;
     });
 
     if (match) {
