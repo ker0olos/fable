@@ -178,7 +178,7 @@ Deno.test('media character', async (test) => {
       });
 
       assertEquals(result, {
-        total: 0,
+        total: 1,
         next: false,
         media: {
           id: '1',
@@ -266,7 +266,7 @@ Deno.test('media character', async (test) => {
       });
 
       assertEquals(result, {
-        total: 0,
+        total: 1,
         next: false,
         media: {
           id: '1',

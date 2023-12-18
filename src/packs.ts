@@ -363,11 +363,10 @@ function parseId(
 }
 
 async function findById<T>(
-  { key, ids, guildId, anilistOptions, defaultPackId }: {
+  { key, ids, guildId, defaultPackId }: {
     key: 'media' | 'characters';
     ids: string[];
     guildId: string;
-    anilistOptions?: AnilistSearchOptions;
     defaultPackId?: string;
   },
 ): Promise<{ [key: string]: T }> {
@@ -406,7 +405,7 @@ async function findById<T>(
 
   // request the ids from anilist
   const anilistResults = await _anilist[key](
-    { ids: anilistIds, ...anilistOptions },
+    { ids: anilistIds },
   );
 
   anilistIds.forEach((n) => {
@@ -638,11 +637,10 @@ async function searchOneMedia(
   )[0];
 }
 
-async function media({ ids, search, guildId, anilistOptions }: {
+async function media({ ids, search, guildId }: {
   ids?: string[];
   search?: string;
   guildId: string;
-  anilistOptions?: AnilistSearchOptions;
 }): Promise<(Media | DisaggregatedMedia)[]> {
   if (ids?.length) {
     // remove duplicates
@@ -653,7 +651,6 @@ async function media({ ids, search, guildId, anilistOptions }: {
         ids,
         guildId,
         key: 'media',
-        anilistOptions,
       },
     );
 
@@ -713,44 +710,23 @@ async function mediaCharacters({ id, search, guildId, index }: {
   }
 > {
   const results: (Media | DisaggregatedMedia)[] = await packs
-    .media(
-      id
-        ? {
-          guildId,
-          ids: [id],
-          anilistOptions: {
-            perPage: 1,
-            page: index + 1,
-          },
-        }
-        : {
-          search,
-          guildId,
-          anilistOptions: {
-            perPage: 1,
-            page: index + 1,
-          },
-        },
-    );
+    .media(id ? { guildId, ids: [id] } : { search, guildId });
 
   if (!results.length) {
     throw new Error('404');
   }
 
-  const total = (results[0] as DisaggregatedMedia).characters?.length || 0;
+  const media = await aggregate<Media>({ guildId, media: results[0] });
 
-  const media = await aggregate<Media>({
-    media: results[0],
-    start: index,
-    end: 1,
-    guildId,
-  });
+  const total = media.characters?.edges?.length || 0;
+
+  const character = media.characters?.edges?.[index || 0];
 
   return {
     total,
     media,
-    role: media.characters?.edges?.[0]?.role,
-    character: media.characters?.edges?.[0]?.node as DisaggregatedCharacter,
+    role: character?.role,
+    character: character?.node as DisaggregatedCharacter,
     next: index + 1 < total,
   };
 }
