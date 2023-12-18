@@ -1816,41 +1816,18 @@ Deno.test('/media', async (test) => {
   });
 
   await test.step('not found', async () => {
-    const media: AniListMedia = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      description: 'long description',
-      popularity: 0,
-      title: {
-        english: 'english title',
-        romaji: 'romaji title',
-        native: 'native title',
-      },
-    };
-
     const timeStub = new FakeTime();
 
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
-      () => ({
-        ok: true,
-        text: (() =>
-          Promise.resolve(JSON.stringify({
-            data: {
-              Page: {
-                media: [media],
-              },
-            },
-          }))),
-      } as any),
+      () => (undefined as any),
     );
 
     const listStub = stub(
       packs,
-      'all',
-      () => Promise.resolve([]),
+      'searchOneMedia',
+      () => Promise.resolve(undefined),
     );
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
@@ -1880,8 +1857,6 @@ Deno.test('/media', async (test) => {
       });
 
       await timeStub.runMicrotasks();
-
-      assertSpyCalls(fetchStub, 1);
 
       assertEquals(
         fetchStub.calls[0].args[0],
