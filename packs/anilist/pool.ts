@@ -251,7 +251,7 @@ for (const range of ranges) {
                   characters[media.characterRole].push({ id, mediaId, rating });
 
                   if (media?.node?.id && mediaTitle?.length) {
-                    mediaDirectory[media.node.id] = {
+                    mediaDirectory[mediaId] = {
                       title: mediaTitle,
                       popularity: media?.node.popularity,
                     };
