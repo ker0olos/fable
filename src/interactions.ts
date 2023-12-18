@@ -159,14 +159,7 @@ export const handler = async (r: Request) => {
               guildId,
             });
 
-            Object.entries(results)
-              .toSorted((a, b) => {
-                const diff = (b[1].match || 0) - (a[1].match || 0);
-
-                return diff !== 0
-                  ? diff
-                  : (b[1].popularity || 0) - (a[1].popularity || 0);
-              })
+            results
               .slice(0, 25)
               .forEach(([id, { title }]) => {
                 message.addSuggestions({
@@ -217,14 +210,7 @@ export const handler = async (r: Request) => {
               guildId,
             });
 
-            Object.entries(results)
-              .toSorted((a, b) => {
-                const diff = (b[1].match || 0) - (a[1].match || 0);
-
-                return diff !== 0
-                  ? diff
-                  : (b[1].popularity || 0) - (a[1].popularity || 0);
-              })
+            results
               .slice(0, 25)
               .forEach(([id, { name, mediaTitle }]) => {
                 message.addSuggestions({

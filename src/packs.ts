@@ -34,6 +34,7 @@ import {
   CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
+  Entries,
   Manifest,
   Media,
   MediaFormat,
@@ -426,7 +427,7 @@ async function _searchManyCharacters(
     search: string;
     guildId: string;
   },
-): Promise<CharactersDirectory> {
+): Promise<Entries<CharactersDirectory>> {
   search = search.toLowerCase();
 
   const list = await packs.all({ guildId });
@@ -482,7 +483,15 @@ async function _searchManyCharacters(
     }
   }
 
-  return directory;
+  return Object
+    .entries(directory)
+    .toSorted((a, b) => {
+      const diff = (b[1].match || 0) - (a[1].match || 0);
+
+      return diff !== 0
+        ? diff
+        : (b[1].popularity || 0) - (a[1].popularity || 0);
+    });
 }
 
 async function searchManyCharacters(
@@ -491,14 +500,14 @@ async function searchManyCharacters(
     guildId: string;
   },
 ): Promise<(Character | DisaggregatedCharacter)[]> {
-  const possibilities = await _searchManyCharacters({
+  const results = await _searchManyCharacters({
     search,
     guildId,
   });
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: Object.keys(possibilities),
+      ids: results.map((r) => r[0]),
       key: 'characters',
       guildId,
     }),
@@ -511,14 +520,14 @@ async function searchOneCharacter(
     guildId: string;
   },
 ): Promise<Character | DisaggregatedCharacter | undefined> {
-  const possibilities = await _searchManyCharacters({
+  const results = await _searchManyCharacters({
     search,
     guildId,
   });
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: [Object.keys(possibilities)[0]],
+      ids: [results[0][0]],
       key: 'characters',
       guildId,
     }),
@@ -530,7 +539,7 @@ async function _searchManyMedia(
     search: string;
     guildId: string;
   },
-): Promise<MediaDirectory> {
+): Promise<Entries<MediaDirectory>> {
   search = search.toLowerCase();
 
   const list = await packs.all({ guildId });
@@ -574,7 +583,15 @@ async function _searchManyMedia(
     }
   }
 
-  return directory;
+  return Object
+    .entries(directory)
+    .toSorted((a, b) => {
+      const diff = (b[1].match || 0) - (a[1].match || 0);
+
+      return diff !== 0
+        ? diff
+        : (b[1].popularity || 0) - (a[1].popularity || 0);
+    });
 }
 
 async function searchManyMedia(
@@ -583,14 +600,14 @@ async function searchManyMedia(
     guildId: string;
   },
 ): Promise<(Media | DisaggregatedMedia)[]> {
-  const possibilities = await _searchManyMedia({
+  const results = await _searchManyMedia({
     search,
     guildId,
   });
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: Object.keys(possibilities),
+      ids: results.map((r) => r[0]),
       key: 'media',
       guildId,
     }),
@@ -603,12 +620,18 @@ async function searchOneMedia(
     guildId: string;
   },
 ): Promise<Media | DisaggregatedMedia | undefined> {
-  const possibilities = await searchManyMedia({
+  const results = await _searchManyMedia({
     search,
     guildId,
   });
 
-  return possibilities?.[0];
+  return Object.values(
+    await findById<Media | DisaggregatedMedia>({
+      ids: [results[0][0]],
+      key: 'media',
+      guildId,
+    }),
+  )[0];
 }
 
 async function media({ ids, search, guildId, anilistOptions }: {
