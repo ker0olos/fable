@@ -11,7 +11,7 @@ import { LRU } from 'lru';
 
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
-import { distance as _distance } from 'levenshtein';
+import { levenshtein } from 'levenshtein';
 
 import { proxy } from '../images-proxy/mod.ts';
 
@@ -221,7 +221,7 @@ function comma(n: number): string {
 
 function distance(a: string, b: string): number {
   return 100 -
-    (100 * _distance(a.toLowerCase(), b.toLowerCase())) /
+    (100 * levenshtein(a.toLowerCase(), b.toLowerCase())) /
       (a.length + b.length);
 }
 
