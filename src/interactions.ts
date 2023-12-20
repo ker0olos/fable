@@ -240,15 +240,15 @@ export const handler = async (r: Request) => {
           );
 
           const list = await packs.all({
-            filter: true,
+            filter: true, // ignore builtin packs
             guildId,
           });
 
-          const fused = new Fuse(list, {
-            keys: ['manifest.name', 'manifest.title'],
+          const index = new Fuse(list, {
+            keys: ['manifest.id', 'manifest.title'],
           });
 
-          const result = fused.search(id);
+          const result = index.search(id);
 
           result.forEach(({ item }) => {
             message.addSuggestions({
@@ -273,13 +273,11 @@ export const handler = async (r: Request) => {
             discord.MessageType.Suggestions,
           );
 
-          const _skills = Object.values(skills.skills);
-
-          const fused = new Fuse(_skills, {
+          const index = new Fuse(Object.values(skills.skills), {
             keys: ['key'],
           });
 
-          const result = fused.search(name);
+          const result = index.search(name);
 
           result.forEach(({ item }) => {
             const skillName = i18n.get(item.key, locale);
