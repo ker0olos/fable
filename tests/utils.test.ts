@@ -329,3 +329,9 @@ Deno.test('is within last 14 days', () => {
   assertEquals(utils.isWithin14Days(thirteenDaysAgo), true);
   assertEquals(utils.isWithin14Days(fifteenDaysAgo), false);
 });
+
+Deno.test('distance', () => {
+  assertEquals(utils.distance('AQUA', 'aqua'), 100);
+
+  assertEquals(utils.distance('cat', 'cow'), 66.66666666666666);
+});

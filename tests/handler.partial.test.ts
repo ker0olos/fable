@@ -41,13 +41,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -141,13 +141,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -241,13 +241,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -341,13 +341,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -441,13 +441,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -541,13 +541,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -641,13 +641,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -741,13 +741,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -841,13 +841,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -945,13 +945,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -1049,13 +1049,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -1153,13 +1153,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -1252,13 +1252,13 @@ Deno.test('media suggestions', async (test) => {
     } as any));
 
     const searchStub = stub(packs, '_searchManyMedia', () =>
-      Promise.resolve([{
-        item: {
-          id: 'packId:id',
+      Promise.resolve([[
+        'packId:id',
+        {
           title: ['english title'],
           popularity: 1,
         },
-      }] as any));
+      ]] as any));
 
     config.publicKey = 'publicKey';
 
@@ -1356,14 +1356,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -1461,14 +1461,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -1566,14 +1566,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -1673,14 +1673,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -1777,14 +1777,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -1881,14 +1881,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -1985,14 +1985,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2089,14 +2089,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2193,14 +2193,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2298,14 +2298,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2402,14 +2402,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2506,13 +2506,13 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2613,14 +2613,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2721,14 +2721,14 @@ Deno.test('character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2837,14 +2837,14 @@ Deno.test('party assign character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -2951,14 +2951,14 @@ Deno.test('party assign character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -3065,14 +3065,14 @@ Deno.test('party assign character suggestions', async (test) => {
       packs,
       '_searchManyCharacters',
       () =>
-        Promise.resolve([{
-          item: {
-            id: 'packId:id',
+        Promise.resolve([[
+          'packId:id',
+          {
             name: ['english name'],
             mediaTitle: ['anime title'],
             popularity: 1,
           },
-        }] as any),
+        ]] as any),
     );
 
     config.publicKey = 'publicKey';
@@ -3144,7 +3144,116 @@ Deno.test('party assign character suggestions', async (test) => {
 });
 
 Deno.test('community packs', async (test) => {
-  await test.step('uninstall (title)', async () => {
+  await test.step('uninstall', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Partial,
+      guild_id: 'guild_id',
+
+      data: {
+        name: 'community',
+        options: [{
+          type: 1,
+          name: 'uninstall',
+          options: [{
+            name: 'id',
+            value: 'id',
+            focused: true,
+          }],
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const listStub = stub(
+      packs,
+      'all',
+      () =>
+        Promise.resolve([
+          {
+            manifest: {
+              id: 'id',
+              title: 'title',
+            },
+          } as any,
+        ]),
+    );
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(listStub, 0, {
+        args: [{
+          guildId: 'guild_id',
+          filter: true,
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals(json, {
+        type: 8,
+        data: {
+          choices: [{
+            name: 'title',
+            value: 'id',
+          }],
+        },
+      });
+    } finally {
+      delete config.publicKey;
+
+      listStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('sort by title', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -3179,20 +3288,20 @@ Deno.test('community packs', async (test) => {
         Promise.resolve([
           {
             manifest: {
-              id: 'abc',
+              id: 'id535245',
               title: 'title',
             },
           } as any,
           {
             manifest: {
-              id: 'xcv',
-              title: 'alias',
+              id: 'id998943894',
+              title: 'name',
             },
           } as any,
           {
             manifest: {
-              id: 'tyu',
-              title: 'media',
+              id: 'id424535',
+              title: 'alias',
             },
           } as any,
         ]),
@@ -3250,10 +3359,20 @@ Deno.test('community packs', async (test) => {
       assertEquals(json, {
         type: 8,
         data: {
-          choices: [{
-            name: 'title',
-            value: 'abc',
-          }],
+          choices: [
+            {
+              name: 'title',
+              value: 'id535245',
+            },
+            {
+              name: 'alias',
+              value: 'id424535',
+            },
+            {
+              name: 'name',
+              value: 'id998943894',
+            },
+          ],
         },
       });
     } finally {
@@ -3265,7 +3384,7 @@ Deno.test('community packs', async (test) => {
     }
   });
 
-  await test.step('uninstall (id)', async () => {
+  await test.step('sort by id', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -3279,7 +3398,7 @@ Deno.test('community packs', async (test) => {
           name: 'uninstall',
           options: [{
             name: 'id',
-            value: 'abc',
+            value: 'titl',
             focused: true,
           }],
         }],
@@ -3299,22 +3418,13 @@ Deno.test('community packs', async (test) => {
       () =>
         Promise.resolve([
           {
-            manifest: {
-              id: 'abc',
-              title: 'title',
-            },
+            manifest: { id: 'name' },
           } as any,
           {
-            manifest: {
-              id: 'xcv',
-              title: 'alias',
-            },
+            manifest: { id: 'title' },
           } as any,
           {
-            manifest: {
-              id: 'tyu',
-              title: 'media',
-            },
+            manifest: { id: 'alias' },
           } as any,
         ]),
     );
@@ -3371,10 +3481,20 @@ Deno.test('community packs', async (test) => {
       assertEquals(json, {
         type: 8,
         data: {
-          choices: [{
-            name: 'title',
-            value: 'abc',
-          }],
+          choices: [
+            {
+              name: 'title',
+              value: 'title',
+            },
+            {
+              name: 'alias',
+              value: 'alias',
+            },
+            {
+              name: 'name',
+              value: 'name',
+            },
+          ],
         },
       });
     } finally {
@@ -3463,6 +3583,9 @@ Deno.test('skills', async (test) => {
           choices: [{
             name: 'Critical Hit',
             value: 'crit',
+          }, {
+            name: 'Dodge',
+            value: 'dodge',
           }],
         },
       });
@@ -3549,6 +3672,9 @@ Deno.test('skills', async (test) => {
           choices: [{
             name: 'Critical Hit',
             value: 'crit',
+          }, {
+            name: 'Dodge',
+            value: 'dodge',
           }],
         },
       });
