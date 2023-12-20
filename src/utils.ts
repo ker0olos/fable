@@ -11,8 +11,6 @@ import { LRU } from 'lru';
 
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
-import { levenshtein } from 'levenshtein';
-
 import { proxy } from '../images-proxy/mod.ts';
 
 import { RECHARGE_MINS, RECHARGE_SWEEPS_MINS } from '../db/mod.ts';
@@ -218,12 +216,6 @@ function comma(n: number): string {
 //     (_, i) => a.slice(i * size, i * size + size),
 //   );
 // }
-
-function distance(a: string, b: string): number {
-  return 100 -
-    (100 * levenshtein(a.toLowerCase(), b.toLowerCase())) /
-      (a.length + b.length);
-}
 
 function _parseInt(query?: string): number | undefined {
   if (query === undefined) {
@@ -449,7 +441,6 @@ const utils = {
   decodeDescription,
   diffInDays,
   diffInMinutes,
-  distance,
   fetchWithRetry,
   getRandomFloat,
   handleProxy,
