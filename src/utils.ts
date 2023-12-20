@@ -11,7 +11,7 @@ import { LRU } from 'lru';
 
 import { json, serve, serveStatic, validateRequest } from 'sift';
 
-import { levenshtein } from 'levenshtein';
+import { levenshtein } from '../search-index/mod.ts';
 
 import { proxy } from '../images-proxy/mod.ts';
 
