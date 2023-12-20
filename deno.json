@@ -43,7 +43,6 @@
     "ajv": "https://esm.sh/ajv@8.12.0",
     "awesome-ajv": "https://esm.sh/awesome-ajv-errors@5.1.0",
     "dax": "https://deno.land/x/dax@0.36.0/mod.ts",
-    "levenshtein": "npm:levenshtein-wasm",
     "sentry": "https://raw.githubusercontent.com/timfish/sentry-deno/fb3c482d4e7ad6c4cf4e7ec657be28768f0e729f/src/mod.ts",
     "sift": "https://raw.githubusercontent.com/ker0olos/sift/62110006c2d070fa6f00d5007a3a19dea6cd1d4d/mod.ts",
     "lru": "https://deno.land/x/lru@1.0.2/mod.ts",
