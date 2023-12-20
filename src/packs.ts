@@ -8,23 +8,6 @@ import _vtubersManifest from '../packs/vtubers/manifest.json' assert {
   type: 'json',
 };
 
-import anilistCharactersDirectory from '../packs/anilist/characters_directory.json' assert {
-  type: 'json',
-};
-
-import anilistMediaDirectory from '../packs/anilist/media_directory.json' assert {
-  type: 'json',
-};
-
-
-import anilistCharactersIndex from '../packs/anilist/characters_directory_index.json' assert {
-  type: 'json',
-};
-
-import anilistMediaIndex from '../packs/anilist/media_directory_index.json' assert {
-  type: 'json',
-};
-
 import * as _anilist from '../packs/anilist/index.ts';
 
 import * as discord from './discord.ts';
@@ -59,6 +42,9 @@ import type { Pack } from '../db/schema.ts';
 
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
+
+// const anilistCharactersIndex = Fuse.parseIndex(_anilistCharactersIndex);
+// const anilistMediaIndex = Fuse.parseIndex(_anilistMediaIndex);
 
 export type CharactersDirectory = {
   id: string;
@@ -434,18 +420,30 @@ async function _searchManyCharacters(
 
   const list = await packs.all({ guildId });
 
-  const characterIndex = new Fuse(anilistCharactersDirectory, {
-    keys: ['name'],
-    shouldSort: true,
-    sortFn: (a, b) => {
-      const diff = a.score - b.score;
+  const anilistCharactersDirectory: CharactersDirectory = JSON.parse(
+    await Deno.readTextFile('./packs/anilist/characters_directory.json'),
+  );
 
-      return diff !== 0
-        ? diff
-        : ((a.item as unknown as CharactersDirectory[0]).popularity || 0) -
-          ((b.item as unknown as CharactersDirectory[0]).popularity || 0);
+  const anilistCharactersIndex = JSON.parse(
+    await Deno.readTextFile('./packs/anilist/characters_directory_index.json'),
+  );
+
+  const characterIndex = new Fuse(
+    anilistCharactersDirectory,
+    {
+      keys: ['name'],
+      shouldSort: true,
+      sortFn: (a, b) => {
+        const diff = a.score - b.score;
+
+        return diff !== 0
+          ? diff
+          : ((a.item as unknown as CharactersDirectory[0]).popularity || 0) -
+            ((b.item as unknown as CharactersDirectory[0]).popularity || 0);
+      },
     },
-  }, Fuse.parseIndex(anilistCharactersIndex));
+    Fuse.parseIndex(anilistCharactersIndex),
+  );
 
   // add community packs content
   for (
@@ -466,7 +464,7 @@ async function _searchManyCharacters(
         ? packs.aliasToArray(char.media.edges[0].node.title)
         : [];
 
-        characterIndex.add({
+      characterIndex.add({
         name,
         mediaTitle,
         popularity: char.popularity ?? char.media?.edges?.[0]?.node.popularity,
@@ -527,6 +525,14 @@ async function _searchManyMedia(
   search = search.toLowerCase();
 
   const list = await packs.all({ guildId });
+
+  const anilistMediaDirectory: MediaDirectory = JSON.parse(
+    await Deno.readTextFile('./packs/anilist/media_directory.json'),
+  );
+
+  const anilistMediaIndex = JSON.parse(
+    await Deno.readTextFile('./packs/anilist/media_directory_index.json'),
+  );
 
   const mediaIndex = new Fuse(anilistMediaDirectory, {
     keys: ['title'],
