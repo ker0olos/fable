@@ -1,5 +1,3 @@
-import Fuse from 'fuse';
-
 import * as discord from './discord.ts';
 
 import search, { idPrefix } from './search.ts';
@@ -163,10 +161,10 @@ export const handler = async (r: Request) => {
 
             results
               .slice(0, 25)
-              .forEach(({ item }) => {
+              .forEach(([id, { title }]) => {
                 message.addSuggestions({
-                  name: item.title[0],
-                  value: `${idPrefix}${item.id}`,
+                  name: title[0],
+                  value: `${idPrefix}${id}`,
                 });
               });
           }
@@ -214,12 +212,12 @@ export const handler = async (r: Request) => {
 
             results
               .slice(0, 25)
-              .forEach(({ item }) => {
+              .forEach(([id, { name, mediaTitle }]) => {
                 message.addSuggestions({
-                  name: item.mediaTitle?.length
-                    ? `${item.name[0]} (${item.mediaTitle[0]})`
-                    : item.name[0],
-                  value: `${idPrefix}${item.id}`,
+                  name: mediaTitle?.length
+                    ? `${name[0]} (${mediaTitle[0]})`
+                    : name[0],
+                  value: `${idPrefix}${id}`,
                 });
               });
           }
@@ -239,21 +237,37 @@ export const handler = async (r: Request) => {
             discord.MessageType.Suggestions,
           );
 
-          const list = await packs.all({
-            filter: true, // ignore builtin packs
+          let list = await packs.all({
+            filter: true,
             guildId,
           });
 
-          const index = new Fuse(list, {
-            keys: ['manifest.id', 'manifest.title'],
+          const distance: Record<string, number> = {};
+
+          // sort suggestion based on distance
+          list.forEach(({ manifest }) => {
+            const d = utils.distance(manifest.id, id);
+
+            if (manifest.title) {
+              const d2 = utils.distance(manifest.title, id);
+
+              if (d > d2) {
+                distance[manifest.id] = d2;
+                return;
+              }
+            }
+
+            distance[manifest.id] = d;
           });
 
-          const result = index.search(id);
+          list = list.sort((a, b) =>
+            distance[b.manifest.id] - distance[a.manifest.id]
+          );
 
-          result.forEach(({ item }) => {
+          list?.forEach(({ manifest }) => {
             message.addSuggestions({
-              name: `${item.manifest.title ?? item.manifest.id}`,
-              value: item.manifest.id,
+              name: `${manifest.title ?? manifest.id}`,
+              value: manifest.id,
             });
           });
 
@@ -273,18 +287,32 @@ export const handler = async (r: Request) => {
             discord.MessageType.Suggestions,
           );
 
-          const index = new Fuse(Object.values(skills.skills), {
-            keys: ['key'],
+          const distance: Record<string, number> = {};
+
+          let _skills = Object.values(skills.skills);
+
+          // sort suggestion based on distance
+          _skills.forEach((skill) => {
+            const skillName = i18n.get(skill.key, locale);
+
+            const d = utils.distance(skill.key, name);
+            const d2 = utils.distance(skillName, name);
+
+            if (d > d2) {
+              distance[skill.key] = d2;
+            } else {
+              distance[skill.key] = d;
+            }
           });
 
-          const result = index.search(name);
+          _skills = _skills.sort((a, b) => distance[b.key] - distance[a.key]);
 
-          result.forEach(({ item }) => {
-            const skillName = i18n.get(item.key, locale);
+          _skills?.forEach((skill) => {
+            const skillName = i18n.get(skill.key, locale);
 
             message.addSuggestions({
               name: skillName,
-              value: item.key,
+              value: skill.key,
             });
           });
 

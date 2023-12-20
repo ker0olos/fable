@@ -1,10 +1,15 @@
-import Fuse, { type FuseResult } from 'fuse';
-
 import _anilistManifest from '../packs/anilist/manifest.json' assert {
   type: 'json',
 };
 
 import _vtubersManifest from '../packs/vtubers/manifest.json' assert {
+  type: 'json',
+};
+
+import anilistCharactersDirectory from '../packs/anilist/characters_directory.json' assert {
+  type: 'json',
+};
+import anilistMediaDirectory from '../packs/anilist/media_directory.json' assert {
   type: 'json',
 };
 
@@ -29,6 +34,7 @@ import {
   CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
+  Entries,
   Manifest,
   Media,
   MediaFormat,
@@ -43,23 +49,29 @@ import type { Pack } from '../db/schema.ts';
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
 
-// const anilistCharactersIndex = Fuse.parseIndex(_anilistCharactersIndex);
-// const anilistMediaIndex = Fuse.parseIndex(_anilistMediaIndex);
+type AnilistSearchOptions = {
+  page: number;
+  perPage: number;
+};
 
-export type CharactersDirectory = {
-  id: string;
-  name: string[];
-  mediaTitle?: string[];
-  popularity?: number;
-  match?: number;
-}[];
+export type CharactersDirectory = Record<
+  string,
+  {
+    name: string[];
+    mediaTitle?: string[];
+    popularity?: number;
+    match?: number;
+  }
+>;
 
-export type MediaDirectory = {
-  id: string;
-  title: string[];
-  popularity?: number;
-  match?: number;
-}[];
+export type MediaDirectory = Record<
+  string,
+  {
+    title: string[];
+    popularity?: number;
+    match?: number;
+  }
+>;
 
 const cachedGuilds: Record<string, {
   packs: Pack[];
@@ -91,7 +103,6 @@ const packs = {
   uninstallDialog,
 };
 
-// filter: ignores builtin packs
 async function all(
   { guildId, filter }: { guildId?: string; filter?: boolean },
 ): Promise<(Pack[])> {
@@ -415,35 +426,12 @@ async function _searchManyCharacters(
     search: string;
     guildId: string;
   },
-): Promise<FuseResult<CharactersDirectory[0]>[]> {
+): Promise<Entries<CharactersDirectory>> {
   search = search.toLowerCase();
 
   const list = await packs.all({ guildId });
 
-  const anilistCharactersDirectory: CharactersDirectory = JSON.parse(
-    await Deno.readTextFile('./packs/anilist/characters_directory.json'),
-  );
-
-  const anilistCharactersIndex = JSON.parse(
-    await Deno.readTextFile('./packs/anilist/characters_directory_index.json'),
-  );
-
-  const characterIndex = new Fuse(
-    anilistCharactersDirectory,
-    {
-      keys: ['name'],
-      shouldSort: true,
-      sortFn: (a, b) => {
-        const diff = a.score - b.score;
-
-        return diff !== 0
-          ? diff
-          : ((a.item as unknown as CharactersDirectory[0]).popularity || 0) -
-            ((b.item as unknown as CharactersDirectory[0]).popularity || 0);
-      },
-    },
-    Fuse.parseIndex(anilistCharactersIndex),
-  );
+  const directory = { ...anilistCharactersDirectory } as CharactersDirectory;
 
   // add community packs content
   for (
@@ -464,16 +452,47 @@ async function _searchManyCharacters(
         ? packs.aliasToArray(char.media.edges[0].node.title)
         : [];
 
-      characterIndex.add({
+      directory[`${char.packId}:${char.id}`] = {
         name,
         mediaTitle,
         popularity: char.popularity ?? char.media?.edges?.[0]?.node.popularity,
-        id: `${char.packId}:${char.id}`,
-      });
+      };
     }
   }
 
-  return characterIndex.search(search);
+  // fuzzy search
+  for (const [id, entry] of Object.entries(directory)) {
+    const match = entry.name.every((n) => {
+      const str1 = n.toLowerCase();
+
+      // const str2 =
+      //   (entry.mediaTitle?.length ? `${n} (${entry.mediaTitle[0]})` : n)
+      //     .toLowerCase();
+
+      entry.match = utils.distance(str1, search);
+
+      if (entry.match < 65 && str1.includes(search)) {
+        entry.match = 90;
+        return false;
+      }
+
+      return false;
+    });
+
+    if (match) {
+      delete directory[id];
+    }
+  }
+
+  return Object
+    .entries(directory)
+    .toSorted((a, b) => {
+      const diff = (b[1].match || 0) - (a[1].match || 0);
+
+      return diff !== 0
+        ? diff
+        : (b[1].popularity || 0) - (a[1].popularity || 0);
+    });
 }
 
 async function searchManyCharacters(
@@ -489,7 +508,7 @@ async function searchManyCharacters(
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: results.map(({ item }) => item.id),
+      ids: results.map((r) => r[0]),
       key: 'characters',
       guildId,
     }),
@@ -509,7 +528,7 @@ async function searchOneCharacter(
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: [results[0].item.id],
+      ids: [results[0][0]],
       key: 'characters',
       guildId,
     }),
@@ -521,31 +540,12 @@ async function _searchManyMedia(
     search: string;
     guildId: string;
   },
-): Promise<FuseResult<MediaDirectory[0]>[]> {
+): Promise<Entries<MediaDirectory>> {
   search = search.toLowerCase();
 
   const list = await packs.all({ guildId });
 
-  const anilistMediaDirectory: MediaDirectory = JSON.parse(
-    await Deno.readTextFile('./packs/anilist/media_directory.json'),
-  );
-
-  const anilistMediaIndex = JSON.parse(
-    await Deno.readTextFile('./packs/anilist/media_directory_index.json'),
-  );
-
-  const mediaIndex = new Fuse(anilistMediaDirectory, {
-    keys: ['title'],
-    shouldSort: true,
-    sortFn: (a, b) => {
-      const diff = a.score - b.score;
-
-      return diff !== 0
-        ? diff
-        : ((a.item as unknown as MediaDirectory[0]).popularity || 0) -
-          ((b.item as unknown as MediaDirectory[0]).popularity || 0);
-    },
-  }, Fuse.parseIndex(anilistMediaIndex));
+  const directory = { ...anilistMediaDirectory } as MediaDirectory;
 
   // add community packs content
   for (
@@ -559,15 +559,42 @@ async function _searchManyMedia(
     for (const _media of media) {
       const title = packs.aliasToArray(_media.title);
 
-      mediaIndex.add({
+      directory[`${_media.packId}:${_media.id}`] = {
         title,
         popularity: _media.popularity,
-        id: `${_media.packId}:${_media.id}`,
-      });
+      };
     }
   }
 
-  return mediaIndex.search(search);
+  // fuzzy search
+  for (const [id, entry] of Object.entries(directory)) {
+    const match = entry.title.every((t) => {
+      const str = t.toLowerCase();
+
+      entry.match = utils.distance(str, search);
+
+      if (entry.match < 65 && str.includes(search)) {
+        entry.match = 90;
+        return false;
+      }
+
+      return false;
+    });
+
+    if (match) {
+      delete directory[id];
+    }
+  }
+
+  return Object
+    .entries(directory)
+    .toSorted((a, b) => {
+      const diff = (b[1].match || 0) - (a[1].match || 0);
+
+      return diff !== 0
+        ? diff
+        : (b[1].popularity || 0) - (a[1].popularity || 0);
+    });
 }
 
 async function searchManyMedia(
@@ -583,7 +610,7 @@ async function searchManyMedia(
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: results.map(({ item }) => item.id),
+      ids: results.map((r) => r[0]),
       key: 'media',
       guildId,
     }),
@@ -603,7 +630,7 @@ async function searchOneMedia(
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: [results[0].item.id],
+      ids: [results[0][0]],
       key: 'media',
       guildId,
     }),
