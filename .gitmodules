@@ -6,3 +6,7 @@
 	path = images-proxy
 	url = https://github.com/fable-community/images-proxy
 	branch = main
+[submodule "search-index"]
+	path = search-index
+	url = https://github.com/fable-community/search-index
+	branch = main
