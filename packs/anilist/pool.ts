@@ -1,3 +1,5 @@
+import Fuse from 'fuse';
+
 import { join } from '$std/path/mod.ts';
 
 import utils from '../../src/utils.ts';
@@ -16,8 +18,8 @@ import type { CharactersDirectory, MediaDirectory } from '../../src/packs.ts';
 
 const poolPath = './pool.json';
 
-const charactersDirectoryPath = './characters_directory.json';
-const mediaDirectoryPath = './media_directory.json';
+const charactersDirectoryPath = './characters_directory';
+const mediaDirectoryPath = './media_directory';
 
 const url = 'https://graphql.anilist.co';
 
@@ -26,7 +28,6 @@ const dirname = new URL('.', import.meta.url).pathname;
 const ranges = Object.values(gacha.variables.ranges);
 
 const charactersDirectory: CharactersDirectory = [];
-
 const mediaDirectory: MediaDirectory = [];
 
 // (see https://github.com/ker0olos/fable/issues/9)
@@ -329,15 +330,35 @@ await Deno.writeTextFile(
   JSON.stringify(cache),
 );
 
+//
+
+const charactersIndex = Fuse.createIndex(['name'], charactersDirectory);
+
 await Deno.writeTextFile(
-  join(dirname, charactersDirectoryPath),
+  join(dirname, `${charactersDirectoryPath}.json`),
   JSON.stringify(charactersDirectory),
 );
 
 await Deno.writeTextFile(
-  join(dirname, mediaDirectoryPath),
-  JSON.stringify(mediaDirectory),
+  join(dirname, `${charactersDirectoryPath}_index.json`),
+  JSON.stringify(charactersIndex.toJSON()),
 );
+
+//
+
+const mediaIndex = Fuse.createIndex(['title'], mediaDirectory);
+
+await Deno.writeTextFile(
+  join(dirname, `${mediaDirectoryPath}.json`),
+  JSON.stringify(charactersDirectory),
+);
+
+await Deno.writeTextFile(
+  join(dirname, `${mediaDirectoryPath}_index.json`),
+  JSON.stringify(mediaIndex.toJSON()),
+);
+
+//
 
 let totalCharacters = 0;
 

@@ -11,7 +11,17 @@ import _vtubersManifest from '../packs/vtubers/manifest.json' assert {
 import anilistCharactersDirectory from '../packs/anilist/characters_directory.json' assert {
   type: 'json',
 };
+
 import anilistMediaDirectory from '../packs/anilist/media_directory.json' assert {
+  type: 'json',
+};
+
+
+import anilistCharactersIndex from '../packs/anilist/characters_directory_index.json' assert {
+  type: 'json',
+};
+
+import anilistMediaIndex from '../packs/anilist/media_directory_index.json' assert {
   type: 'json',
 };
 
@@ -95,6 +105,7 @@ const packs = {
   uninstallDialog,
 };
 
+// filter: ignores builtin packs
 async function all(
   { guildId, filter }: { guildId?: string; filter?: boolean },
 ): Promise<(Pack[])> {
@@ -423,7 +434,18 @@ async function _searchManyCharacters(
 
   const list = await packs.all({ guildId });
 
-  const searchDirectory: CharactersDirectory = [...anilistCharactersDirectory];
+  const characterIndex = new Fuse(anilistCharactersDirectory, {
+    keys: ['name'],
+    shouldSort: true,
+    sortFn: (a, b) => {
+      const diff = a.score - b.score;
+
+      return diff !== 0
+        ? diff
+        : ((a.item as unknown as CharactersDirectory[0]).popularity || 0) -
+          ((b.item as unknown as CharactersDirectory[0]).popularity || 0);
+    },
+  }, Fuse.parseIndex(anilistCharactersIndex));
 
   // add community packs content
   for (
@@ -444,7 +466,7 @@ async function _searchManyCharacters(
         ? packs.aliasToArray(char.media.edges[0].node.title)
         : [];
 
-      searchDirectory.push({
+        characterIndex.add({
         name,
         mediaTitle,
         popularity: char.popularity ?? char.media?.edges?.[0]?.node.popularity,
@@ -453,22 +475,7 @@ async function _searchManyCharacters(
     }
   }
 
-  const fused = new Fuse(searchDirectory, {
-    keys: ['name'],
-    shouldSort: true,
-    sortFn: (a, b) => {
-      const diff = a.score - b.score;
-
-      return diff !== 0
-        ? diff
-        : ((a.item as unknown as CharactersDirectory[0]).popularity || 0) -
-          ((b.item as unknown as CharactersDirectory[0]).popularity || 0);
-    },
-  });
-
-  const result = fused.search(search);
-
-  return result;
+  return characterIndex.search(search);
 }
 
 async function searchManyCharacters(
@@ -521,7 +528,18 @@ async function _searchManyMedia(
 
   const list = await packs.all({ guildId });
 
-  const searchDirectory: MediaDirectory = [...anilistMediaDirectory];
+  const mediaIndex = new Fuse(anilistMediaDirectory, {
+    keys: ['title'],
+    shouldSort: true,
+    sortFn: (a, b) => {
+      const diff = a.score - b.score;
+
+      return diff !== 0
+        ? diff
+        : ((a.item as unknown as MediaDirectory[0]).popularity || 0) -
+          ((b.item as unknown as MediaDirectory[0]).popularity || 0);
+    },
+  }, Fuse.parseIndex(anilistMediaIndex));
 
   // add community packs content
   for (
@@ -535,7 +553,7 @@ async function _searchManyMedia(
     for (const _media of media) {
       const title = packs.aliasToArray(_media.title);
 
-      searchDirectory.push({
+      mediaIndex.add({
         title,
         popularity: _media.popularity,
         id: `${_media.packId}:${_media.id}`,
@@ -543,22 +561,7 @@ async function _searchManyMedia(
     }
   }
 
-  const fused = new Fuse(searchDirectory, {
-    keys: ['title'],
-    shouldSort: true,
-    sortFn: (a, b) => {
-      const diff = a.score - b.score;
-
-      return diff !== 0
-        ? diff
-        : ((a.item as unknown as MediaDirectory[0]).popularity || 0) -
-          ((b.item as unknown as MediaDirectory[0]).popularity || 0);
-    },
-  });
-
-  const result = fused.search(search);
-
-  return result;
+  return mediaIndex.search(search);
 }
 
 async function searchManyMedia(
