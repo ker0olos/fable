@@ -34,7 +34,6 @@ import {
   CharacterRole,
   DisaggregatedCharacter,
   DisaggregatedMedia,
-  Entries,
   Manifest,
   Media,
   MediaFormat,
@@ -49,29 +48,20 @@ import type { Pack } from '../db/schema.ts';
 const anilistManifest = _anilistManifest as Manifest;
 const vtubersManifest = _vtubersManifest as Manifest;
 
-type AnilistSearchOptions = {
-  page: number;
-  perPage: number;
-};
+export type CharactersDirectory = {
+  id: string;
+  name: string[];
+  mediaTitle?: string[];
+  popularity?: number;
+  score?: number;
+}[];
 
-export type CharactersDirectory = Record<
-  string,
-  {
-    name: string[];
-    mediaTitle?: string[];
-    popularity?: number;
-    match?: number;
-  }
->;
-
-export type MediaDirectory = Record<
-  string,
-  {
-    title: string[];
-    popularity?: number;
-    match?: number;
-  }
->;
+export type MediaDirectory = {
+  id: string;
+  title: string[];
+  popularity?: number;
+  score?: number;
+}[];
 
 const cachedGuilds: Record<string, {
   packs: Pack[];
@@ -426,12 +416,13 @@ async function _searchManyCharacters(
     search: string;
     guildId: string;
   },
-): Promise<Entries<CharactersDirectory>> {
+): Promise<CharactersDirectory> {
   search = search.toLowerCase();
 
   const list = await packs.all({ guildId });
 
-  const directory = { ...anilistCharactersDirectory } as CharactersDirectory;
+  const searchDirectory: CharactersDirectory = [...anilistCharactersDirectory];
+  const outputDirectory: CharactersDirectory = [];
 
   // add community packs content
   for (
@@ -452,46 +443,43 @@ async function _searchManyCharacters(
         ? packs.aliasToArray(char.media.edges[0].node.title)
         : [];
 
-      directory[`${char.packId}:${char.id}`] = {
+      searchDirectory.push({
         name,
         mediaTitle,
         popularity: char.popularity ?? char.media?.edges?.[0]?.node.popularity,
-      };
+        id: `${char.packId}:${char.id}`,
+      });
     }
   }
 
   // fuzzy search
-  for (const [id, entry] of Object.entries(directory)) {
-    const match = entry.name.every((n) => {
+  for (const entry of searchDirectory) {
+    const mismatch = entry.name.every((n) => {
       const str1 = n.toLowerCase();
 
       // const str2 =
       //   (entry.mediaTitle?.length ? `${n} (${entry.mediaTitle[0]})` : n)
       //     .toLowerCase();
 
-      entry.match = utils.distance(str1, search);
+      entry.score = utils.distance(str1, search);
 
-      if (entry.match < 65 && str1.includes(search)) {
-        entry.match = 90;
+      if (entry.score < 65 && str1.includes(search)) {
+        entry.score = 90;
         return false;
       }
 
       return false;
     });
 
-    if (match) {
-      delete directory[id];
+    if (!mismatch) {
+      outputDirectory.push(entry);
     }
   }
 
-  return Object
-    .entries(directory)
+  return outputDirectory
     .toSorted((a, b) => {
-      const diff = (b[1].match || 0) - (a[1].match || 0);
-
-      return diff !== 0
-        ? diff
-        : (b[1].popularity || 0) - (a[1].popularity || 0);
+      const diff = (b.score || 0) - (a.score || 0);
+      return diff !== 0 ? diff : (b.popularity || 0) - (a.popularity || 0);
     });
 }
 
@@ -508,7 +496,7 @@ async function searchManyCharacters(
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: results.map((r) => r[0]),
+      ids: results.map((r) => r.id),
       key: 'characters',
       guildId,
     }),
@@ -528,7 +516,7 @@ async function searchOneCharacter(
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: [results[0][0]],
+      ids: [results[0].id],
       key: 'characters',
       guildId,
     }),
@@ -540,12 +528,13 @@ async function _searchManyMedia(
     search: string;
     guildId: string;
   },
-): Promise<Entries<MediaDirectory>> {
+): Promise<MediaDirectory> {
   search = search.toLowerCase();
 
   const list = await packs.all({ guildId });
 
-  const directory = { ...anilistMediaDirectory } as MediaDirectory;
+  const searchDirectory: MediaDirectory = [...anilistMediaDirectory];
+  const outputDirectory: MediaDirectory = [];
 
   // add community packs content
   for (
@@ -559,41 +548,38 @@ async function _searchManyMedia(
     for (const _media of media) {
       const title = packs.aliasToArray(_media.title);
 
-      directory[`${_media.packId}:${_media.id}`] = {
+      searchDirectory.push({
         title,
         popularity: _media.popularity,
-      };
+        id: `${_media.packId}:${_media.id}`,
+      });
     }
   }
 
   // fuzzy search
-  for (const [id, entry] of Object.entries(directory)) {
-    const match = entry.title.every((t) => {
+  for (const entry of searchDirectory) {
+    const mismatch = entry.title.every((t) => {
       const str = t.toLowerCase();
 
-      entry.match = utils.distance(str, search);
+      entry.score = utils.distance(str, search);
 
-      if (entry.match < 65 && str.includes(search)) {
-        entry.match = 90;
+      if (entry.score < 65 && str.includes(search)) {
+        entry.score = 90;
         return false;
       }
 
       return false;
     });
 
-    if (match) {
-      delete directory[id];
+    if (!mismatch) {
+      outputDirectory.push(entry);
     }
   }
 
-  return Object
-    .entries(directory)
+  return outputDirectory
     .toSorted((a, b) => {
-      const diff = (b[1].match || 0) - (a[1].match || 0);
-
-      return diff !== 0
-        ? diff
-        : (b[1].popularity || 0) - (a[1].popularity || 0);
+      const diff = (b.score || 0) - (a.score || 0);
+      return diff !== 0 ? diff : (b.popularity || 0) - (a.popularity || 0);
     });
 }
 
@@ -610,7 +596,7 @@ async function searchManyMedia(
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: results.map((r) => r[0]),
+      ids: results.map((r) => r.id),
       key: 'media',
       guildId,
     }),
@@ -630,7 +616,7 @@ async function searchOneMedia(
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: [results[0][0]],
+      ids: [results[0].id],
       key: 'media',
       guildId,
     }),

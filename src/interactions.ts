@@ -161,7 +161,7 @@ export const handler = async (r: Request) => {
 
             results
               .slice(0, 25)
-              .forEach(([id, { title }]) => {
+              .forEach(({ id, title }) => {
                 message.addSuggestions({
                   name: title[0],
                   value: `${idPrefix}${id}`,
@@ -212,7 +212,7 @@ export const handler = async (r: Request) => {
 
             results
               .slice(0, 25)
-              .forEach(([id, { name, mediaTitle }]) => {
+              .forEach(({ id, name, mediaTitle }) => {
                 message.addSuggestions({
                   name: mediaTitle?.length
                     ? `${name[0]} (${mediaTitle[0]})`
