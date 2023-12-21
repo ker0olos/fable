@@ -25,9 +25,9 @@ const dirname = new URL('.', import.meta.url).pathname;
 
 const ranges = Object.values(gacha.variables.ranges);
 
-const charactersDirectory: CharactersDirectory = {};
+const charactersDirectory: CharactersDirectory = [];
 
-const mediaDirectory: MediaDirectory = {};
+const mediaDirectory: MediaDirectory = [];
 
 // (see https://github.com/ker0olos/fable/issues/9)
 // (see https://github.com/ker0olos/fable/issues/45)
@@ -251,18 +251,20 @@ for (const range of ranges) {
                   characters[media.characterRole].push({ id, mediaId, rating });
 
                   if (media?.node?.id && mediaTitle?.length) {
-                    mediaDirectory[mediaId] = {
+                    mediaDirectory.push({
+                      id: mediaId,
                       title: mediaTitle,
                       popularity: media?.node.popularity,
-                    };
+                    });
                   }
 
                   if (name.length) {
-                    charactersDirectory[id] = {
+                    charactersDirectory.push({
+                      id,
                       name,
                       mediaTitle,
                       popularity: media?.node.popularity,
-                    };
+                    });
                   }
                 }
               }
