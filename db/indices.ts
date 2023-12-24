@@ -2,6 +2,10 @@ export const usersByDiscordId = (
   discordId: string,
 ) => ['users_by_discord_id', discordId];
 
+export const usersLikesByDiscordId = (
+  discordId: string,
+) => ['users_likes_by_discord_id', discordId];
+
 export const guildsByDiscordId = (
   discordId: string,
 ) => ['guilds_by_discord_id', discordId];

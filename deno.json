@@ -15,7 +15,7 @@
         "no-external-import"
       ]
     },
-    "exclude": ["images-proxy", "dyn-images"]
+    "exclude": ["images-proxy", "dyn-images", "search-index"]
   },
   "lock": false,
   "unstable": ["kv"],
@@ -48,6 +48,7 @@
     "sift": "https://raw.githubusercontent.com/ker0olos/sift/62110006c2d070fa6f00d5007a3a19dea6cd1d4d/mod.ts",
     "lru": "https://deno.land/x/lru@1.0.2/mod.ts",
     "tweetnacl": "https://esm.sh/tweetnacl@1.0.3",
-    "ulid": "https://deno.land/x/ulid@v0.3.0/mod.ts"
+    "ulid": "https://deno.land/x/ulid@v0.3.0/mod.ts",
+    "kv-toolbox/": "https://raw.githubusercontent.com/ker0olos/kv-toolbox/main/"
   }
 }
