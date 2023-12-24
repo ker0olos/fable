@@ -38,7 +38,7 @@ export async function addCharacter(
   let retries = 0;
 
   while (retries < 5) {
-    const ops: Deno.AtomicOperation[] = [];
+    const op = kv.atomic();
 
     const guild = await db.getGuild(guildId);
     const instance = await db.getInstance(guild);
@@ -73,26 +73,24 @@ export async function addCharacter(
 
     if (sacrifices?.length) {
       for (const { key, value: char, versionstamp } of sacrifices) {
-        ops.push(
-          kv.atomic()
-            .check({ key, versionstamp })
-            .delete(['characters', char._id])
-            .delete([
-              ...charactersByInstancePrefix(inventory.instance),
-              char.id,
-            ])
-            .delete([
-              ...charactersByInventoryPrefix(inventory._id),
-              char._id,
-            ])
-            .delete([
-              ...charactersByMediaIdPrefix(
-                inventory.instance,
-                newCharacter.mediaId,
-              ),
-              char._id,
-            ]),
-        );
+        op
+          .check({ key, versionstamp })
+          .delete(['characters', char._id])
+          .delete([
+            ...charactersByInstancePrefix(inventory.instance),
+            char.id,
+          ])
+          .delete([
+            ...charactersByInventoryPrefix(inventory._id),
+            char._id,
+          ])
+          .delete([
+            ...charactersByMediaIdPrefix(
+              inventory.instance,
+              newCharacter.mediaId,
+            ),
+            char._id,
+          ]);
       }
     } else if (guaranteed) {
       // deno-lint-ignore no-non-null-assertion
@@ -109,9 +107,7 @@ export async function addCharacter(
     inventory.lastPull = new Date().toISOString();
     inventory.rechargeTimestamp ??= new Date().toISOString();
 
-    const _res = await Promise.all(ops.map((op) => op.commit()));
-
-    const res2 = await kv.atomic()
+    const res = await op
       .check(inventoryCheck)
       .check({
         versionstamp: null,
@@ -154,11 +150,7 @@ export async function addCharacter(
       .set(inventoriesByUser(inventory.instance, user._id), inventory)
       .commit();
 
-    // if (res.every(({ ok }) => ok)) {
-    //   return { ok: true };
-    // }
-
-    if (res2.ok) {
+    if (res.ok) {
       return { ok: true };
     }
 

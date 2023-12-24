@@ -1,8 +1,8 @@
 /// <reference lib="deno.unstable" />
 
-import { usersByDiscordId } from './indices.ts';
+import { usersLikesByDiscordId } from './indices.ts';
 
-import { kv } from './mod.ts';
+import db from './mod.ts';
 
 import { KvError } from '../src/errors.ts';
 
@@ -16,12 +16,7 @@ export async function likeCharacter(
 
   user.likes.push({ characterId });
 
-  const update = await kv.atomic()
-    .set(['users', user._id], user)
-    .set(usersByDiscordId(user.id), user)
-    .commit();
-
-  if (update.ok) {
+  if (await db.setBlobValue(usersLikesByDiscordId(user.id), user.likes)) {
     return user;
   }
 
@@ -40,12 +35,7 @@ export async function unlikeCharacter(
     user.likes.splice(i, 1);
   }
 
-  const update = await kv.atomic()
-    .set(['users', user._id], user)
-    .set(usersByDiscordId(user.id), user)
-    .commit();
-
-  if (update.ok) {
+  if (await db.setBlobValue(usersLikesByDiscordId(user.id), user.likes)) {
     return user;
   }
 
@@ -60,12 +50,7 @@ export async function likeMedia(
 
   user.likes.push({ mediaId });
 
-  const update = await kv.atomic()
-    .set(['users', user._id], user)
-    .set(usersByDiscordId(user.id), user)
-    .commit();
-
-  if (update.ok) {
+  if (await db.setBlobValue(usersLikesByDiscordId(user.id), user.likes)) {
     return user;
   }
 
@@ -84,12 +69,7 @@ export async function unlikeMedia(
     user.likes.splice(i, 1);
   }
 
-  const update = await kv.atomic()
-    .set(['users', user._id], user)
-    .set(usersByDiscordId(user.id), user)
-    .commit();
-
-  if (update.ok) {
+  if (await db.setBlobValue(usersLikesByDiscordId(user.id), user.likes)) {
     return user;
   }
 
