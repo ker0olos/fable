@@ -74,6 +74,8 @@ import {
 
 import { createVoteRef, resolveVoteRef } from './voteRef.ts';
 
+import { getFromBlob, setAsBlob } from './blob.ts';
+
 export const kv = await Deno.openKv(
   // 'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect',
 );
@@ -94,6 +96,20 @@ async function getValue<T>(key: Deno.KvKey): Promise<T | undefined> {
   const res = await kv.get<T>(key);
 
   return res.value ?? undefined;
+}
+
+async function getBlobValue<T>(key: Deno.KvKey): Promise<T | undefined> {
+  return await getFromBlob<T>(kv, key);
+}
+
+async function setBlobValue<T>(key: Deno.KvKey, value: T): Promise<boolean> {
+  const op = kv.atomic();
+
+  await setAsBlob(kv, key, op, value);
+
+  const res = await op.commit();
+
+  return res.ok;
 }
 
 async function getValueAndTimestamp<T>(
@@ -155,6 +171,9 @@ const db = {
   getValueAndTimestamp,
   getValuesAndTimestamps,
   getManyValues,
+  //
+  getBlobValue,
+  setBlobValue,
   //
   getGuild,
   getInstance,

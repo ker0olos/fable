@@ -8,6 +8,7 @@ import {
   inventoriesByInstance,
   inventoriesByUser,
   usersByDiscordId,
+  usersLikesByDiscordId,
 } from './indices.ts';
 
 import db, { kv } from './mod.ts';
@@ -41,10 +42,15 @@ export function checkDailyTimestamp(user: Schema.User): void {
 }
 
 export async function getUser(userId: string): Promise<Schema.User> {
-  const response = await db.getValue<Schema.User>(usersByDiscordId(userId));
+  const response = await Promise.all([
+    db.getValue<Schema.User>(usersByDiscordId(userId)),
+    db.getBlobValue<Schema.Like[]>(
+      usersLikesByDiscordId(userId),
+    ),
+  ]);
 
-  if (response) {
-    return response;
+  if (response[0]) {
+    return (response[0].likes = response[1] ?? [], response[0]);
   }
 
   const newUser: Schema.User = {
