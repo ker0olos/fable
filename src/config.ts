@@ -14,6 +14,9 @@ const config: {
   synthesis?: boolean;
   communityPacks?: boolean;
   combat?: boolean;
+  //
+  xmas?: boolean;
+  fools?: boolean;
 } = {
   deploy: false,
   appId: undefined,
@@ -30,6 +33,8 @@ const config: {
   synthesis: undefined,
   communityPacks: undefined,
   combat: undefined,
+  xmas: undefined,
+  fools: undefined,
 };
 
 export async function initConfig(): Promise<void> {
@@ -70,6 +75,10 @@ export async function initConfig(): Promise<void> {
 
     config.combat = !Deno.env.has('COMBAT') ||
       Deno.env.get('COMBAT') === '1';
+
+    // holidays flags
+    config.xmas = Deno.env.has('XMAS');
+    config.fools = Deno.env.has('FOOLS');
 
     config.origin = undefined;
   }

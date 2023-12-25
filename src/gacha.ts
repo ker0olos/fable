@@ -27,6 +27,11 @@ import {
 
 import { KvError, NonFetalError, NoPullsError, PoolError } from './errors.ts';
 
+type Variables = {
+  roles: { [chance: number]: CharacterRole };
+  ranges: { [chance: number]: [number, number] };
+};
+
 export type Pull = {
   index?: number;
   character: Character;
@@ -45,7 +50,7 @@ export const relationFilter = [
   // MediaRelation.SpinOff,
 ];
 
-const variables = {
+const variables: Variables = {
   roles: {
     10: CharacterRole.Main, // 10% for Main
     70: CharacterRole.Supporting, // 70% for Supporting
@@ -62,17 +67,39 @@ const variables = {
   },
 };
 
+// for special events like christmas
+const boostedVariables: Variables = {
+  roles: {
+    35: CharacterRole.Main,
+    65: CharacterRole.Supporting,
+    0: CharacterRole.Background,
+  },
+  ranges: {
+    20: [lowest, 50_000],
+    40: [50_000, 100_000],
+    25: [100_000, 200_000],
+    10: [200_000, 400_000],
+    5: [400_000, NaN],
+  },
+};
+
 async function rangePool({ guildId }: { guildId: string }): Promise<{
   pool: Awaited<ReturnType<typeof packs.pool>>;
   validate: (character: Character | DisaggregatedCharacter) => boolean;
 }> {
-  const { value: range } = utils.rng(gacha.variables.ranges);
+  let variables: Variables = gacha.variables;
+
+  if (config.xmas) {
+    variables = gacha.boostedVariables;
+  }
+
+  const { value: range } = utils.rng(variables.ranges);
 
   const { value: role } = range[0] <= lowest
     // include all roles in the pool
     ? { value: undefined }
     // one specific role for the whole pool
-    : utils.rng(gacha.variables.roles);
+    : utils.rng(variables.roles);
 
   const pool = await packs.pool({
     role,
@@ -276,9 +303,10 @@ async function rngPull(
 }
 
 async function pullAnimation(
-  { token, userId, guildId, quiet, mention, components, pull }: {
+  { token, userId, guildId, quiet, mention, components, pull, fakePull }: {
     token: string;
     pull: Pull;
+    fakePull?: Pull;
     userId?: string;
     guildId?: string;
     quiet?: boolean;
@@ -288,19 +316,21 @@ async function pullAnimation(
 ): Promise<void> {
   components ??= true;
 
-  const characterId = `${pull.character.packId}:${pull.character.id}`;
+  const _pull = fakePull ?? pull;
+
+  const characterId = `${_pull.character.packId}:${_pull.character.id}`;
 
   const mediaIds = [
-    pull.media,
-    ...pull.media.relations?.edges?.filter(({ relation }) =>
+    _pull.media,
+    ..._pull.media.relations?.edges?.filter(({ relation }) =>
       // deno-lint-ignore no-non-null-assertion
       relationFilter.includes(relation!)
     ).map(({ node }) => node) ?? [],
   ].map(({ packId, id }) => `${packId}:${id}`);
 
-  const mediaTitles = packs.aliasToArray(pull.media.title);
+  const mediaTitles = packs.aliasToArray(_pull.media.title);
 
-  const mediaImage = pull.media.images?.[0];
+  const mediaImage = _pull.media.images?.[0];
 
   let message = new discord.Message()
     .addEmbed(
@@ -318,6 +348,8 @@ async function pullAnimation(
       .setPing();
   }
 
+  // animate pull by shown media
+  // then showing the star rating
   if (!quiet) {
     await message.patch(token);
 
@@ -327,7 +359,7 @@ async function pullAnimation(
       .addEmbed(
         new discord.Embed()
           .setImage({
-            url: `${config.origin}/assets/stars/${pull.rating.stars}.gif`,
+            url: `${config.origin}/assets/stars/${_pull.rating.stars}.gif`,
           }),
       );
 
@@ -339,8 +371,9 @@ async function pullAnimation(
 
     await message.patch(token);
 
-    await utils.sleep(pull.rating.stars + 3);
+    await utils.sleep(_pull.rating.stars + 3);
   }
+  //
 
   message = search.characterMessage(pull.character, {
     relations: false,
@@ -453,16 +486,23 @@ function start(
   }
 
   gacha.rngPull({ userId, guildId, guarantee })
-    .then((pull) =>
-      pullAnimation({
+    .then(async (pull) => {
+      let fakePull: Pull | undefined = undefined;
+
+      if (config.fools) {
+        fakePull = await gacha.rngPull({ guildId, guarantee: 5 });
+      }
+
+      return pullAnimation({
         token,
         userId,
         guildId,
         mention,
         quiet,
         pull,
-      })
-    )
+        fakePull,
+      });
+    })
     .catch(async (err) => {
       if (err instanceof NoPullsError) {
         return await new discord.Message()
@@ -542,6 +582,7 @@ function start(
 const gacha = {
   lowest,
   variables,
+  boostedVariables,
   rngPull,
   pullAnimation,
   guaranteedPool,
