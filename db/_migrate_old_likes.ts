@@ -1,13 +1,14 @@
-import { setAsBlob } from './blob.ts';
+// import { setAsBlob } from './blob.ts';
 
-import db from './mod.ts';
+// import db from './mod.ts';
 
 // deno-lint-ignore no-external-import
 import {
   batchedAtomic,
 } from 'https://raw.githubusercontent.com/ker0olos/kv-toolbox/patch-1/batchedAtomic.ts';
 
-import { usersByDiscordId, usersLikesByDiscordId } from './indices.ts';
+import { usersByDiscordId } from './indices.ts';
+// import { usersByDiscordId, usersLikesByDiscordId } from './indices.ts';
 
 import type * as Schema from './schema.ts';
 
