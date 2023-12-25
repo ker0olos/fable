@@ -7,7 +7,7 @@ import { returnsNext, stub } from '$std/testing/mock.ts';
 import config, { clearConfig, initConfig } from '../src/config.ts';
 
 Deno.test('init', async (test) => {
-  await test.step('stable', async () => {
+  await test.step('1', async () => {
     const permissionsStub = stub(
       Deno.permissions,
       'query',
@@ -29,6 +29,9 @@ Deno.test('init', async (test) => {
         false,
         false,
         false,
+        false,
+        false,
+        //
         false,
         false,
       ]),
@@ -67,6 +70,9 @@ Deno.test('init', async (test) => {
         communityPacks: true,
         combat: true,
         origin: undefined,
+        //
+        xmas: false,
+        fools: false,
       });
     } finally {
       clearConfig();
@@ -77,7 +83,7 @@ Deno.test('init', async (test) => {
     }
   });
 
-  await test.step('deploy', async () => {
+  await test.step('2', async () => {
     const permissionsStub = stub(
       Deno.permissions,
       'query',
@@ -99,6 +105,9 @@ Deno.test('init', async (test) => {
         true,
         true,
         true,
+        true,
+        true,
+        //
         true,
         true,
       ]),
@@ -144,6 +153,9 @@ Deno.test('init', async (test) => {
         communityPacks: false,
         combat: false,
         origin: undefined,
+        //
+        xmas: true,
+        fools: true,
       });
     } finally {
       clearConfig();
