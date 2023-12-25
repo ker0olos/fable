@@ -6,13 +6,6 @@ import _vtubersManifest from '../packs/vtubers/manifest.json' assert {
   type: 'json',
 };
 
-import anilistCharactersDirectory from '../packs/anilist/characters_directory.json' assert {
-  type: 'json',
-};
-import anilistMediaDirectory from '../packs/anilist/media_directory.json' assert {
-  type: 'json',
-};
-
 import * as _anilist from '../packs/anilist/index.ts';
 
 import * as discord from './discord.ts';
@@ -421,6 +414,12 @@ async function _searchManyCharacters(
 
   const list = await packs.all({ guildId });
 
+  const anilistCharactersDirectory = JSON.parse(
+    await Deno.readTextFile(
+      './packs/anilist/characters_directory.json',
+    ),
+  );
+
   const searchDirectory: CharactersDirectory = [...anilistCharactersDirectory];
   const outputDirectory: CharactersDirectory = [];
 
@@ -532,6 +531,12 @@ async function _searchManyMedia(
   search = search.toLowerCase();
 
   const list = await packs.all({ guildId });
+
+  const anilistMediaDirectory = JSON.parse(
+    await Deno.readTextFile(
+      './packs/anilist/media_directory.json',
+    ),
+  );
 
   const searchDirectory: MediaDirectory = [...anilistMediaDirectory];
   const outputDirectory: MediaDirectory = [];
