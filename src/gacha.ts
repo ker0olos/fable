@@ -27,6 +27,11 @@ import {
 
 import { KvError, NonFetalError, NoPullsError, PoolError } from './errors.ts';
 
+type Variables = {
+  roles: { [chance: number]: CharacterRole };
+  ranges: { [chance: number]: [number, number] };
+};
+
 export type Pull = {
   index?: number;
   character: Character;
@@ -45,7 +50,7 @@ export const relationFilter = [
   // MediaRelation.SpinOff,
 ];
 
-const variables = {
+const variables: Variables = {
   roles: {
     10: CharacterRole.Main, // 10% for Main
     70: CharacterRole.Supporting, // 70% for Supporting
@@ -62,17 +67,39 @@ const variables = {
   },
 };
 
+// for special events like christmas
+const boostedVariables: Variables = {
+  roles: {
+    35: CharacterRole.Main,
+    65: CharacterRole.Supporting,
+    0: CharacterRole.Background,
+  },
+  ranges: {
+    20: [lowest, 50_000],
+    40: [50_000, 100_000],
+    25: [100_000, 200_000],
+    10: [200_000, 400_000],
+    5: [400_000, NaN],
+  },
+};
+
 async function rangePool({ guildId }: { guildId: string }): Promise<{
   pool: Awaited<ReturnType<typeof packs.pool>>;
   validate: (character: Character | DisaggregatedCharacter) => boolean;
 }> {
-  const { value: range } = utils.rng(gacha.variables.ranges);
+  let variables: Variables = gacha.variables;
+
+  if (config.xmas) {
+    variables = gacha.boostedVariables;
+  }
+
+  const { value: range } = utils.rng(variables.ranges);
 
   const { value: role } = range[0] <= lowest
     // include all roles in the pool
     ? { value: undefined }
     // one specific role for the whole pool
-    : utils.rng(gacha.variables.roles);
+    : utils.rng(variables.roles);
 
   const pool = await packs.pool({
     role,
@@ -555,6 +582,7 @@ function start(
 const gacha = {
   lowest,
   variables,
+  boostedVariables,
   rngPull,
   pullAnimation,
   guaranteedPool,
