@@ -1,8 +1,8 @@
 // deno-lint-ignore-file no-non-null-assertion
 
-import db from './db/mod.ts';
+import db from './mod.ts';
 
-import type * as Schema from './db/schema.ts';
+import type * as Schema from './schema.ts';
 
 const url =
   'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect';

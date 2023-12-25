@@ -235,16 +235,7 @@ export async function rechargeConsumables(
         ),
       ),
     );
-    // const newSweeps = Math.max(
-    //   0,
-    //   Math.min(
-    //     MAX_SWEEPS - currentSweeps,
-    //     Math.trunc(
-    //       utils.diffInMinutes(sweepsTimestamp, new Date()) /
-    //         RECHARGE_SWEEPS_MINS,
-    //     ),
-    //   ),
-    // );
+
     const newSweeps = Math.min(
       MAX_SWEEPS - currentSweeps,
       utils.diffInMinutes(sweepsTimestamp, new Date()) >= RECHARGE_SWEEPS_MINS
