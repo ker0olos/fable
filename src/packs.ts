@@ -21,6 +21,12 @@ import db from '../db/mod.ts';
 
 import Rating from './rating.ts';
 
+let _loadedAnilistCharactersDirectory: CharactersDirectory | undefined =
+  undefined;
+
+let _loadedAnilistMediaDirectory: MediaDirectory | undefined = undefined;
+undefined;
+
 import {
   Alias,
   Character,
@@ -414,13 +420,14 @@ async function _searchManyCharacters(
 
   const list = await packs.all({ guildId });
 
-  const anilistCharactersDirectory = JSON.parse(
-    await Deno.readTextFile(
-      './packs/anilist/characters_directory.json',
-    ),
-  );
+  _loadedAnilistCharactersDirectory ??= await utils.readJson<
+    CharactersDirectory
+  >('./packs/anilist/characters_directory.json');
 
-  const searchDirectory: CharactersDirectory = [...anilistCharactersDirectory];
+  const searchDirectory: CharactersDirectory = [
+    ..._loadedAnilistCharactersDirectory,
+  ];
+
   const outputDirectory: CharactersDirectory = [];
 
   // add community packs content
@@ -532,13 +539,11 @@ async function _searchManyMedia(
 
   const list = await packs.all({ guildId });
 
-  const anilistMediaDirectory = JSON.parse(
-    await Deno.readTextFile(
-      './packs/anilist/media_directory.json',
-    ),
+  _loadedAnilistMediaDirectory ??= await utils.readJson<MediaDirectory>(
+    './packs/anilist/media_directory.json',
   );
 
-  const searchDirectory: MediaDirectory = [...anilistMediaDirectory];
+  const searchDirectory: MediaDirectory = [..._loadedAnilistMediaDirectory];
   const outputDirectory: MediaDirectory = [];
 
   // add community packs content
