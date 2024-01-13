@@ -41,6 +41,9 @@ export function consumeSweep(
 
   db.checkDailyTimestamp(user);
 
+  // don't save likes on the user object
+  user.likes = undefined;
+
   op
     .check(inventoryCheck)
     //

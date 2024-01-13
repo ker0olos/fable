@@ -1,8 +1,8 @@
-import _anilistManifest from '../packs/anilist/manifest.json' assert {
+import _anilistManifest from '../packs/anilist/manifest.json' with {
   type: 'json',
 };
 
-import _vtubersManifest from '../packs/vtubers/manifest.json' assert {
+import _vtubersManifest from '../packs/vtubers/manifest.json' with {
   type: 'json',
 };
 
