@@ -107,6 +107,9 @@ export async function addCharacter(
     inventory.lastPull = new Date().toISOString();
     inventory.rechargeTimestamp ??= new Date().toISOString();
 
+    // don't save likes on the user object
+    user.likes = undefined;
+
     const res = await op
       .check(inventoryCheck)
       .check({

@@ -30,6 +30,9 @@ export async function addTokens(
   let res = { ok: false }, retries = 0;
 
   while (!res.ok && retries < 5) {
+    // don't save likes on the user object
+    user.likes = undefined;
+
     res = await kv.atomic()
       .set(['users', user._id], user)
       .set(usersByDiscordId(user.id), user)
@@ -73,6 +76,8 @@ export async function addPulls(
       inventory.rechargeTimestamp = undefined;
     }
 
+    user.likes = undefined;
+
     res = await kv.atomic()
       .check(inventoryCheck)
       //
@@ -114,6 +119,8 @@ export async function addGuarantee(
   user.availableTokens = user.availableTokens - cost;
 
   user.guarantees.push(guarantee);
+
+  user.likes = undefined;
 
   const update = await kv.atomic()
     .set(['users', user._id], user)
@@ -159,7 +166,7 @@ export async function addSweeps(
       inventory.sweepsTimestamp = undefined;
     }
 
-    console.log(inventory.sweepsTimestamp);
+    user.likes = undefined;
 
     res = await kv.atomic()
       .check(inventoryCheck)
