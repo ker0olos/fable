@@ -6,23 +6,23 @@ import { prettify } from 'awesome-ajv';
 
 import { AssertionError } from '$std/assert/mod.ts';
 
-import alias from '../json/alias.json' assert {
+import alias from '../json/alias.json' with {
   type: 'json',
 };
 
-import image from '../json/image.json' assert {
+import image from '../json/image.json' with {
   type: 'json',
 };
 
-import media from '../json/media.json' assert {
+import media from '../json/media.json' with {
   type: 'json',
 };
 
-import character from '../json/character.json' assert {
+import character from '../json/character.json' with {
   type: 'json',
 };
 
-import index from '../json/schema.json' assert {
+import index from '../json/schema.json' with {
   type: 'json',
 };
 

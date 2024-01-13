@@ -4,8 +4,8 @@ import { green } from '$std/fmt/colors.ts';
 
 import { AvailableLocales } from './src/discord.ts';
 
-import EN from './i18n/en-US.json' assert { type: 'json' };
-import ES from './i18n/es-ES.json' assert { type: 'json' };
+import EN from './i18n/en-US.json' with { type: 'json' };
+import ES from './i18n/es-ES.json' with { type: 'json' };
 
 enum CommandType {
   'CHAT' = 1,
