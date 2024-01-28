@@ -7427,7 +7427,6 @@ Deno.test('packs', async () => {
       args: [{
         userId: 'user_id',
         guildId: 'guild_id',
-        index: 0,
       }],
     });
 

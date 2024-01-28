@@ -184,11 +184,7 @@ function uninstallDialog(
 }
 
 async function pages(
-  { index, userId, guildId }: {
-    index: number;
-    guildId: string;
-    userId: string;
-  },
+  { userId, guildId }: { guildId: string; userId: string },
 ): Promise<discord.Message> {
   const locale = user.cachedUsers[userId]?.locale;
 
@@ -200,33 +196,21 @@ async function pages(
 
   const list = (await packs.all({ guildId })).toReversed();
 
-  const pack = list[index];
+  const embed = new discord.Embed();
 
-  if (!pack) {
-    throw new NonFetalError(i18n.get('pack-doesnt-exist', locale));
-  }
+  embed.setDescription(
+    list.map(({ manifest }, i) => {
+      let s = `\`${manifest.id}\``;
 
-  const embed = packEmbed(pack);
+      if (manifest.title) {
+        s = `${manifest.title} | ${s}`;
+      }
 
-  const message = new discord.Message()
-    .addEmbed(embed);
+      return `${i + 1}. ${s}`;
+    }).join('\n'),
+  );
 
-  if (pack.manifest.url) {
-    message.addComponents([
-      new discord.Component()
-        .setLabel(i18n.get('homepage', locale))
-        .setUrl(pack.manifest.url),
-    ]);
-  }
-
-  return discord.Message.page({
-    index,
-    type: 'packs',
-    total: list.length,
-    next: list.length > index + 1,
-    message,
-    locale,
-  });
+  return new discord.Message().addEmbed(embed);
 }
 
 async function install(

@@ -2181,7 +2181,7 @@ Deno.test('titles to array', async (test) => {
   });
 });
 
-Deno.test('/community', async (test) => {
+Deno.test('/packs', async (test) => {
   await test.step('normal', async () => {
     const pack: Schema.Pack = {
       _id: '_',
@@ -2205,47 +2205,16 @@ Deno.test('/community', async (test) => {
       const message = await packs.pages({
         userId: 'user_id',
         guildId: 'guild_id',
-        index: 1,
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'packs==0=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '2/2',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'packs==0=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
+          components: [],
           embeds: [{
             type: 'rich',
-            title: 'pack_id',
-            description: 'description',
-            footer: {
-              text: 'author',
-            },
-            thumbnail: {
-              url: 'image',
-            },
+            description: '1. `pack_id`\n2. `pack_id`',
           }],
         },
       });
@@ -2253,25 +2222,6 @@ Deno.test('/community', async (test) => {
       delete config.communityPacks;
 
       listStub.restore();
-    }
-  });
-
-  await test.step('under maintenance', async () => {
-    config.communityPacks = false;
-
-    try {
-      await assertRejects(
-        () =>
-          packs.pages({
-            userId: 'user_id',
-            guildId: 'guild_id',
-            index: 0,
-          }),
-        NonFetalError,
-        'Community Packs are under maintenance, try again later!',
-      );
-    } finally {
-      delete config.communityPacks;
     }
   });
 
@@ -2296,143 +2246,19 @@ Deno.test('/community', async (test) => {
       const message = await packs.pages({
         userId: 'user_id',
         guildId: 'guild_id',
-        index: 0,
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'packs==0=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '1/1',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'packs==0=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
+          components: [],
           embeds: [{
             type: 'rich',
-            description: undefined,
-            title: 'Title',
+            description: '1. Title | `pack-id`',
           }],
         },
       });
-    } finally {
-      delete config.communityPacks;
-
-      listStub.restore();
-    }
-  });
-
-  await test.step('homepage url', async () => {
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        url: 'https://example.org',
-      },
-    };
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
-
-    config.communityPacks = true;
-
-    try {
-      const message = await packs.pages({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        index: 0,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'packs==0=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '1/1',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'packs==0=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-              {
-                label: 'Homepage',
-                url: 'https://example.org',
-                style: 5,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description: undefined,
-            title: 'pack-id',
-          }],
-        },
-      });
-    } finally {
-      delete config.communityPacks;
-
-      listStub.restore();
-    }
-  });
-
-  await test.step('no manifest', async () => {
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
-    config.communityPacks = true;
-
-    try {
-      await assertRejects(
-        () =>
-          packs.pages({
-            userId: 'user_id',
-            guildId: 'guild_id',
-            index: 0,
-          }),
-        NonFetalError,
-        "This pack doesn't exist",
-      );
     } finally {
       delete config.communityPacks;
 
@@ -2449,7 +2275,6 @@ Deno.test('/community', async (test) => {
           packs.pages({
             userId: 'user_id',
             guildId: 'guild_id',
-            index: 0,
           }),
         NonFetalError,
         'Community Packs are under maintenance, try again later!',

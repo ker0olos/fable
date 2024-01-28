@@ -690,7 +690,6 @@ export const handler = async (r: Request) => {
             return (await packs.pages({
               guildId,
               userId: member.user.id,
-              index: 0,
             })).send();
           }
           case 'community': {
@@ -1246,18 +1245,6 @@ export const handler = async (r: Request) => {
                   ? discord.MessageType.Update
                   : discord.MessageType.New,
               )
-              .send();
-          }
-          case 'packs': {
-            // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
-
-            return (await packs.pages({
-              userId: member.user.id,
-              guildId,
-              index,
-            }))
-              .setType(discord.MessageType.Update)
               .send();
           }
           case 'popular': {
