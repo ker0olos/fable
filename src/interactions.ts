@@ -686,11 +686,16 @@ export const handler = async (r: Request) => {
             }
             break;
           }
-          case 'packs': {
-            return (await packs.pages({
-              guildId,
-              userId: member.user.id,
-            })).send();
+          case 'installed': {
+            //deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'packs':
+                return (await packs.pages({
+                  guildId,
+                  userId: member.user.id,
+                })).send();
+            }
+            break;
           }
           case 'community': {
             //deno-lint-ignore no-non-null-assertion
@@ -1245,18 +1250,6 @@ export const handler = async (r: Request) => {
                   ? discord.MessageType.Update
                   : discord.MessageType.New,
               )
-              .send();
-          }
-          case 'popular': {
-            // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
-
-            return (await community.popularPacks({
-              userId: member.user.id,
-              guildId,
-              index,
-            }))
-              .setType(discord.MessageType.Update)
               .send();
           }
           case 'install': {

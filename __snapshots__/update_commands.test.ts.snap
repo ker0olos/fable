@@ -3284,13 +3284,28 @@ snapshot[`commands 1`] = `
   },
   {
     default_member_permissions: undefined,
-    description: "list all the packs on a server",
+    description: "community packs management commands",
     description_localizations: {
-      "es-ES": "muestra todos los packs del servidor",
+      "es-ES": undefined,
     },
     dm_permission: false,
-    name: "packs",
-    options: undefined,
+    name: "installed",
+    options: [
+      {
+        autocomplete: undefined,
+        choices: undefined,
+        description: "list all the installed packs on a server",
+        description_localizations: {
+          "es-ES": "muestra todos los packs del servidor",
+        },
+        max_value: undefined,
+        min_value: undefined,
+        name: "packs",
+        options: undefined,
+        required: false,
+        type: 1,
+      },
+    ],
     type: undefined,
   },
   {

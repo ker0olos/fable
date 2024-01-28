@@ -790,8 +790,16 @@ export const commands = [
   }),
   // pack viewing
   ...Command({
-    name: 'packs',
-    description: '/packs',
+    name: 'installed',
+    description: 'community packs management commands',
+    options: [
+      Option({
+        name: 'packs',
+        description: '/installed packs',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+    ],
   }),
   // community packs management commands
   ...Command({

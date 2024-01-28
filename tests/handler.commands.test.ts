@@ -7361,7 +7361,7 @@ Deno.test('merge/automerge command handlers', async (test) => {
   });
 });
 
-Deno.test('packs', async () => {
+Deno.test('installed packs', async () => {
   const body = JSON.stringify({
     id: 'id',
     token: 'token',
@@ -7373,7 +7373,13 @@ Deno.test('packs', async () => {
       },
     },
     data: {
-      name: 'packs',
+      name: 'installed',
+      options: [
+        {
+          type: 1,
+          name: 'packs',
+        },
+      ],
     },
   });
 

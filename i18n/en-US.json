@@ -292,7 +292,7 @@
   "/buy guaranteed": "use tokens to buy pulls with a specific guaranteed rating",
   "/buy sweeps": "use tokens to buy tower sweeps",
 
-  "/packs": "list all the packs on a server",
+  "/installed packs": "list all the installed packs on a server",
   "/logs": "list user last few found characters",
 
   "/community popular": "browse the most popular community packs",

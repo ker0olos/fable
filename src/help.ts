@@ -319,7 +319,7 @@ function pages(
             `- \`/automerge min\`: _${i18n.get('/automerge min', locale)}_`,
             `- \`/automerge max\`: _${i18n.get('/automerge max', locale)}_`,
             '',
-            `- \`/packs\`: _${i18n.get('/packs', locale)}_`,
+            `- \`/installed packs\`: _${i18n.get('/installed packs', locale)}_`,
             '',
             `- \`/logs\`: _${i18n.get('/logs', locale)}_`,
           ].join('\n')),
