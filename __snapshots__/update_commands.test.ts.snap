@@ -3320,20 +3320,6 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
-        description: "browse the most popular community packs",
-        description_localizations: {
-          "es-ES": "explora los packs de la comunidad más populares",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "popular",
-        options: undefined,
-        required: false,
-        type: 1,
-      },
-      {
-        autocomplete: undefined,
-        choices: undefined,
         description: "install a community pack",
         description_localizations: {
           "es-ES": "instala un pack de la comunidad",

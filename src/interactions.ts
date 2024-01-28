@@ -700,15 +700,15 @@ export const handler = async (r: Request) => {
           case 'community': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'popular': {
-                return (await community.popularPacks({
-                  guildId,
-                  userId: member.user.id,
-                  index: 0,
-                }))
-                  .setFlags(discord.MessageFlags.Ephemeral)
-                  .send();
-              }
+              // case 'popular': {
+              //   return (await community.popularPacks({
+              //     guildId,
+              //     userId: member.user.id,
+              //     index: 0,
+              //   }))
+              //     .setFlags(discord.MessageFlags.Ephemeral)
+              //     .send();
+              // }
               case 'install': {
                 const id = options['id'] as string;
 
