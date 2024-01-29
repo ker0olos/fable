@@ -27,8 +27,6 @@ import skills from '../src/skills.ts';
 
 import merge from '../src/merge.ts';
 
-import community from '../src/community.ts';
-
 import { NonFetalError, NoPermissionError } from '../src/errors.ts';
 
 import type { Manifest } from '../src/types.ts';

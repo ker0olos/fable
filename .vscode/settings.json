@@ -28,7 +28,8 @@
     "./tests",
     "./update_commands.ts",
     "./update_commands.test.ts",
-    "./update_topgg_stats.ts"
+    "./update_topgg_stats.ts",
+    "./setup.ts"
   ],
   //
   "[typescript]": {

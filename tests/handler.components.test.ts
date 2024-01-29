@@ -20,7 +20,6 @@ import trade from '../src/trade.ts';
 import shop from '../src/shop.ts';
 
 import merge from '../src/merge.ts';
-import community from '../src/community.ts';
 
 import steal from '../src/steal.ts';
 import stats from '../src/stats.ts';

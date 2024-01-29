@@ -9,15 +9,10 @@ import {
   stub,
 } from '$std/testing/mock.ts';
 
-import config from '../src/config.ts';
-
 import utils from '../src/utils.ts';
-import packs from '../src/packs.ts';
 import community from '../src/community.ts';
 
 import db from '../db/mod.ts';
-
-import type { DisaggregatedCharacter } from '../src/types.ts';
 
 Deno.test('/', async (test) => {
   await test.step('normal', async () => {
