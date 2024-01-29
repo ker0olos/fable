@@ -71,8 +71,10 @@ const packs = {
   aggregate,
   aliasToArray,
   all,
+  confirmDisableBuiltins,
   cachedGuilds,
   characters,
+  disableBuiltins,
   formatToString,
   install,
   isDisabled,
@@ -209,6 +211,54 @@ async function pages(
       return `${i + 1}. ${s}`;
     }).join('\n'),
   );
+
+  return new discord.Message().addEmbed(embed);
+}
+
+async function disableBuiltins(
+  { userId, guildId }: { userId: string; guildId: string },
+): Promise<discord.Message> {
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
+
+  const guild = await db.getGuild(guildId);
+  const instance = await db.getInstance(guild);
+
+  const embed = new discord.Embed();
+
+  if (instance.builtinsDisabled) {
+    embed
+      .setDescription(i18n.get('disable-builtins-confirmed', locale));
+    return new discord.Message().addEmbed(embed);
+  }
+
+  embed
+    .setTitle(i18n.get('danger', locale))
+    .setDescription(i18n.get('disable-builtins-confirmation', locale));
+
+  return discord.Message.dialog({
+    userId,
+    message: new discord.Message().addEmbed(embed),
+    confirm: ['disable-builtins', userId],
+    locale,
+  });
+}
+
+async function confirmDisableBuiltins(
+  { userId, guildId }: { userId: string; guildId: string },
+): Promise<discord.Message> {
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
+
+  const guild = await db.getGuild(guildId);
+  const instance = await db.getInstance(guild);
+
+  const embed = new discord.Embed();
+
+  await db.disableBuiltins(instance);
+
+  embed
+    .setDescription(i18n.get('disable-builtins-confirmed', locale));
 
   return new discord.Message().addEmbed(embed);
 }

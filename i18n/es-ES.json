@@ -10,6 +10,7 @@
   "vote": "Votar",
   "prev": "Anterior",
   "next": "Siguiente",
+  "danger": "DANGER",
   "confirm": "Confirmar",
   "cancel": "Cancelar",
   "accept": "Aceptar",
@@ -139,6 +140,8 @@
   "combat-no-more-sweeps": "You don't have any more sweeps!",
 
   "uninstall-pack-confirmation": "**¿Seguro que quieres desinstalar este pack?**\n\nDesinstalar un pack desactivará cualquier personaje del pack que los miembros de tu servidor posean, lo que puede generar descontento.",
+  "disable-builtins-confirmation": "**Once you disable builtin packs, you can never enable them again.**\n\n1. __Disabling builtin packs might negatively impact your gacha pulls,__ possibly resulting in a lot of empty pulls that don't give any characters.\n2. __Your server will be permanently excluded from across-servers activities and events.__",
+  "disable-builtins-confirmed": "**Builtin packs have been disabled, this action is irreversible.**\n\n __Your server is permanently excluded from across-servers activities and events.__",
 
   "pack-doesnt-exist": "Este pack no existe",
   "pack-is-private": "Este pack es privado y no puedes instalarlo",
@@ -298,6 +301,7 @@
 
   "/packs install": "instala un pack de la comunidad",
   "/packs uninstall": "desinstala un pack de la comunidad",
+  "/packs disable builtins": "permanently disable the builtin packs",
 
   "/stats": "administra las estadísticas y habilidades de tus personajes",
 

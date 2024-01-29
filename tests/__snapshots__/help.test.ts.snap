@@ -637,6 +637,7 @@ snapshot[`/help 10`] = `
         description: "_> \`/community\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we never recommend that._
 - \`/packs install\`: _install a community pack_
 - \`/packs uninstall\`: _uninstall a community pack_
+- \`/packs disable builtins\`: _permanently disable the builtin packs_
 
 > To create your own community pack visit <https://packs.deno.dev>",
         type: "rich",

@@ -11,6 +11,8 @@ export interface Guild extends Collection {
 
 export interface Instance extends Collection {
   main: boolean;
+  excluded?: boolean;
+  builtinsDisabled?: boolean;
   inventories: string[];
   guild: string;
   packs: PackInstall[];

@@ -72,6 +72,8 @@ import {
   removePack,
 } from './addPack.ts';
 
+import { disableBuiltins } from './manageInstance.ts';
+
 import { createVoteRef, resolveVoteRef } from './voteRef.ts';
 
 import { getFromBlob, setAsBlob } from './blob.ts';
@@ -126,7 +128,9 @@ async function getValues<T>(
 ): Promise<T[]> {
   const values = [];
 
-  const iter = (_kv ?? kv).list<T>(selector);
+  const iter = (_kv ?? kv).list<T>(selector, {
+    batchSize: 100,
+  });
 
   for await (const { value } of iter) {
     values.push(value);
@@ -140,7 +144,9 @@ async function getValuesAndTimestamps<T>(
 ): Promise<Deno.KvEntry<T>[]> {
   const values = [];
 
-  const iter = kv.list<T>(selector);
+  const iter = kv.list<T>(selector, {
+    batchSize: 100,
+  });
 
   for await (const value of iter) {
     values.push(value);
@@ -224,6 +230,8 @@ const db = {
   popularPacks,
   publishPack,
   removePack,
+  //
+  disableBuiltins,
   //
   createVoteRef,
   resolveVoteRef,

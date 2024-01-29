@@ -3320,6 +3320,35 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
+        description: "community packs disable commands",
+        description_localizations: {
+          "es-ES": undefined,
+        },
+        max_value: undefined,
+        min_value: undefined,
+        name: "disable",
+        options: [
+          {
+            autocomplete: undefined,
+            choices: undefined,
+            description: "permanently disable the builtin packs",
+            description_localizations: {
+              "es-ES": "permanently disable the builtin packs",
+            },
+            max_value: undefined,
+            min_value: undefined,
+            name: "builtins",
+            options: undefined,
+            required: false,
+            type: 1,
+          },
+        ],
+        required: false,
+        type: 2,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
         description: "install a community pack",
         description_localizations: {
           "es-ES": "instala un pack de la comunidad",
