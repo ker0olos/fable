@@ -295,9 +295,8 @@
   "/installed packs": "list all the installed packs on a server",
   "/logs": "list user last few found characters",
 
-  "/community popular": "browse the most popular community packs",
-  "/community install": "install a community pack",
-  "/community uninstall": "uninstall a community pack",
+  "/packs install": "install a community pack",
+  "/packs uninstall": "uninstall a community pack",
 
   "/stats": "manage your characters stat points and skills",
 

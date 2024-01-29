@@ -331,15 +331,8 @@ function pages(
         })
           .setDescription([
             i18n.get('community-packs-permission', locale),
-            `- \`/community popular\`: _${
-              i18n.get('/community popular', locale)
-            }_`,
-            `- \`/community install\`: _${
-              i18n.get('/community install', locale)
-            }_`,
-            `- \`/community uninstall\`: _${
-              i18n.get('/community uninstall', locale)
-            }_`,
+            `- \`/packs install\`: _${i18n.get('/packs install', locale)}_`,
+            `- \`/packs uninstall\`: _${i18n.get('/packs uninstall', locale)}_`,
             '',
             i18n.get('make-your-own-pack', locale),
           ].join('\n')),

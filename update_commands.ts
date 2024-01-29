@@ -803,7 +803,7 @@ export const commands = [
   }),
   // community packs management commands
   ...Command({
-    name: 'community',
+    name: 'packs',
     description: 'community packs management commands',
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
@@ -815,7 +815,7 @@ export const commands = [
       // }),
       Option({
         name: 'install',
-        description: '/community install',
+        description: '/packs install',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -828,7 +828,7 @@ export const commands = [
       }),
       Option({
         name: 'uninstall',
-        description: '/community uninstall',
+        description: '/packs uninstall',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [

@@ -296,9 +296,8 @@
   "/installed packs": "muestra todos los packs del servidor",
   "/logs": "muestra los últimos personajes obtenidos",
 
-  "/community popular": "explora los packs de la comunidad más populares",
-  "/community install": "instala un pack de la comunidad",
-  "/community uninstall": "desinstala un pack de la comunidad",
+  "/packs install": "instala un pack de la comunidad",
+  "/packs uninstall": "desinstala un pack de la comunidad",
 
   "/stats": "administra las estadísticas y habilidades de tus personajes",
 

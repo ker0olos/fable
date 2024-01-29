@@ -7447,7 +7447,7 @@ Deno.test('installed packs', async () => {
 });
 
 Deno.test('community packs command handlers', async (test) => {
-  await test.step('community install', async () => {
+  await test.step('packs install', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -7459,7 +7459,7 @@ Deno.test('community packs command handlers', async (test) => {
         },
       },
       data: {
-        name: 'community',
+        name: 'packs',
         options: [{
           type: 1,
           name: `install`,
@@ -7548,7 +7548,7 @@ Deno.test('community packs command handlers', async (test) => {
         },
       },
       data: {
-        name: 'community',
+        name: 'packs',
         options: [{
           type: 1,
           name: `uninstall`,
@@ -7670,7 +7670,7 @@ Deno.test('community packs command handlers', async (test) => {
       guild_id: 'guild_id',
 
       data: {
-        name: 'community',
+        name: 'packs',
         options: [{
           type: 1,
           name: `uninstall`,

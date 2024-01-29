@@ -228,7 +228,7 @@ export const handler = async (r: Request) => {
         // suggest installed community packs
         if (
           // deno-lint-ignore no-non-null-assertion
-          name === 'community' && ['uninstall'].includes(subcommand!)
+          name === 'packs' && ['uninstall'].includes(subcommand!)
         ) {
           // deno-lint-ignore no-non-null-assertion
           const id = options[focused!] as string;
@@ -697,7 +697,7 @@ export const handler = async (r: Request) => {
             }
             break;
           }
-          case 'community': {
+          case 'packs': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
               // case 'popular': {
