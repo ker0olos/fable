@@ -137,7 +137,11 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
+    );
 
     try {
       await assertRejects(
@@ -201,7 +205,11 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
+    );
 
     try {
       await assertRejects(
@@ -269,7 +277,11 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
+    );
 
     try {
       await assertRejects(
@@ -338,7 +350,11 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
+    );
 
     try {
       await assertRejects(
@@ -408,7 +424,11 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
+    );
 
     try {
       await assertRejects(
@@ -477,7 +497,11 @@ Deno.test('filter invalid pools', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
+    );
 
     try {
       await assertRejects(
@@ -649,7 +673,7 @@ Deno.test('filter invalid pools', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
     );
 
     try {
@@ -728,7 +752,11 @@ Deno.test('disabled', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ _id: '_', manifest }]),
+      () =>
+        Promise.resolve([
+          { manifest: { id: 'anilist' } },
+          { _id: '_', manifest },
+        ] as any),
     );
 
     packs.cachedGuilds = {
@@ -815,7 +843,11 @@ Deno.test('disabled', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ _id: '_', manifest }]),
+      () =>
+        Promise.resolve([{ manifest: { id: 'anilist' } }, {
+          _id: '_',
+          manifest,
+        }] as any),
     );
 
     packs.cachedGuilds = {
@@ -896,7 +928,7 @@ Deno.test('valid pool', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
     );
 
     try {
@@ -1004,7 +1036,7 @@ Deno.test('valid pool', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
     );
 
     try {
@@ -1113,7 +1145,7 @@ Deno.test('valid pool', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
     );
 
     try {
@@ -1352,7 +1384,11 @@ Deno.test('valid pool', async (test) => {
 
     const randomStub = stub(Math, 'random', () => 0);
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
+    );
 
     try {
       assertEquals(
@@ -1480,7 +1516,7 @@ Deno.test('valid pool', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
     );
 
     try {
@@ -1592,7 +1628,7 @@ Deno.test('valid rng pools', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
     );
 
     try {
@@ -1691,7 +1727,7 @@ Deno.test('valid rng pools', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
     );
 
     try {
@@ -1795,7 +1831,7 @@ Deno.test('valid rng pools', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
     );
 
     try {
@@ -1972,7 +2008,11 @@ Deno.test('valid guaranteed pools', async (test) => {
       },
     );
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
+    );
 
     const randomStub = stub(Math, 'random', () => 0);
 
@@ -2065,7 +2105,7 @@ Deno.test('valid guaranteed pools', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([]),
+      () => Promise.resolve([{ manifest: { id: 'anilist' } }] as any),
     );
 
     const randomStub = stub(Math, 'random', () => 0);
@@ -2200,7 +2240,10 @@ Deno.test('adding character to inventory', async (test) => {
       () => ({ ok: true }) as any,
     );
 
-    const listStub = stub(packs, 'all', () => Promise.resolve([]));
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     try {
       assertObjectMatch(
@@ -2339,11 +2382,10 @@ Deno.test('adding character to inventory', async (test) => {
       },
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     try {
       await assertRejects(
@@ -2459,11 +2501,10 @@ Deno.test('adding character to inventory', async (test) => {
       },
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     try {
       await assertRejects(
@@ -2579,11 +2620,10 @@ Deno.test('adding character to inventory', async (test) => {
       },
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     try {
       await assertRejects(

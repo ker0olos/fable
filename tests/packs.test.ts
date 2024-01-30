@@ -35,44 +35,176 @@ import { NonFetalError } from '../src/errors.ts';
 
 Deno.test('list', async (test) => {
   await test.step('anilist', async (test) => {
-    const list = await packs.all({});
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => ({}) as any,
+    );
 
-    const pack = list[0];
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => ({}) as any,
+    );
 
-    assertEquals(list.length, 2);
+    const getInstancePacksStub = stub(
+      db,
+      'getInstancePacks',
+      () => Promise.resolve([]),
+    );
 
-    assertValidManifest(pack.manifest);
+    try {
+      const list = await packs.all({ guildId: '0' });
 
-    await assertSnapshot(test, pack);
+      const pack = list[0];
+
+      assertEquals(list.length, 2);
+
+      assertValidManifest(pack.manifest);
+
+      await assertSnapshot(test, pack);
+    } finally {
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInstancePacksStub.restore();
+    }
   });
 
   await test.step('vtubers', async (test) => {
-    const list = await packs.all({});
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => ({}) as any,
+    );
 
-    const pack = list[1];
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => ({}) as any,
+    );
 
-    assertEquals(list.length, 2);
+    const getInstancePacksStub = stub(
+      db,
+      'getInstancePacks',
+      () => Promise.resolve([]),
+    );
 
-    assertValidManifest(pack.manifest);
+    try {
+      const list = await packs.all({ guildId: '0' });
 
-    await assertSnapshot(test, pack);
+      const pack = list[1];
+
+      assertEquals(list.length, 2);
+
+      assertValidManifest(pack.manifest);
+
+      await assertSnapshot(test, pack);
+    } finally {
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInstancePacksStub.restore();
+    }
   });
 
-  await test.step('filter', async () => {
-    const list = await packs.all({ filter: true });
+  await test.step('filter builtins (only community)', async () => {
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => ({}) as any,
+    );
 
-    assertEquals(list.length, 0);
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => ({}) as any,
+    );
+
+    const getInstancePacksStub = stub(
+      db,
+      'getInstancePacks',
+      () => Promise.resolve([]),
+    );
+
+    try {
+      const list = await packs.all({ guildId: '0', filter: true });
+
+      assertEquals(list.length, 0);
+    } finally {
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInstancePacksStub.restore();
+    }
+  });
+
+  await test.step('disable builtins (only community)', async () => {
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => ({}) as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () =>
+        ({
+          builtinsDisabled: true,
+        }) as any,
+    );
+
+    const getInstancePacksStub = stub(
+      db,
+      'getInstancePacks',
+      () => Promise.resolve([]),
+    );
+
+    try {
+      const list = await packs.all({ guildId: '0' });
+
+      assertEquals(list.length, 0);
+    } finally {
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInstancePacksStub.restore();
+    }
   });
 });
 
 Deno.test('reserved ids', async () => {
-  const list = await packs.all({});
+  const getGuildStub = stub(
+    db,
+    'getGuild',
+    () => ({}) as any,
+  );
 
-  list.forEach(({ manifest }) => {
-    assertEquals(validate(manifest), {
-      errors: [`${manifest.id} is a reserved id`],
+  const getInstanceStub = stub(
+    db,
+    'getInstance',
+    () =>
+      ({
+        builtinsDisabled: true,
+      }) as any,
+  );
+
+  const getInstancePacksStub = stub(
+    db,
+    'getInstancePacks',
+    () => Promise.resolve([]),
+  );
+
+  try {
+    const list = await packs.all({ guildId: '0' });
+
+    list.forEach(({ manifest }) => {
+      assertEquals(validate(manifest), {
+        errors: [`${manifest.id} is a reserved id`],
+      });
     });
-  });
+  } finally {
+    getGuildStub.restore();
+    getInstanceStub.restore();
+    getInstancePacksStub.restore();
+  }
 });
 
 Deno.test('disabled', async (test) => {
@@ -162,11 +294,10 @@ Deno.test('media character', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -527,11 +658,10 @@ Deno.test('aggregate media', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -744,11 +874,10 @@ Deno.test('aggregate media', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1036,11 +1165,10 @@ Deno.test('aggregate media', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     packs.cachedGuilds = {
       'guild_id': { packs: [pack], disables: [] },
@@ -1448,11 +1576,10 @@ Deno.test('aggregate characters', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1619,11 +1746,10 @@ Deno.test('aggregate characters', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1820,12 +1946,10 @@ Deno.test('aggregate characters', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
-
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
     packs.cachedGuilds = {
       'guild_id': { packs: [pack], disables: [] },
     };
@@ -2181,7 +2305,7 @@ Deno.test('titles to array', async (test) => {
   });
 });
 
-Deno.test('/packs', async (test) => {
+Deno.test('/installed packs', async (test) => {
   await test.step('normal', async () => {
     const pack: Schema.Pack = {
       _id: '_',
@@ -2256,6 +2380,39 @@ Deno.test('/packs', async (test) => {
           embeds: [{
             type: 'rich',
             description: '1. Title | `pack-id`',
+          }],
+        },
+      });
+    } finally {
+      delete config.communityPacks;
+
+      listStub.restore();
+    }
+  });
+
+  await test.step('no packs installed', async () => {
+    const listStub = stub(
+      packs,
+      'all',
+      () => Promise.resolve([]),
+    );
+
+    config.communityPacks = true;
+
+    try {
+      const message = await packs.pages({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            description: "Server doesn't have any installed packs",
           }],
         },
       });

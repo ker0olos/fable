@@ -95,14 +95,21 @@ const packs = {
 };
 
 async function all(
-  { guildId, filter }: { guildId?: string; filter?: boolean },
+  { guildId, filter }: { guildId: string; filter?: boolean },
 ): Promise<(Pack[])> {
-  const builtins: Pack[] = [
+  let builtins: Pack[] = [
     { manifest: anilistManifest, _id: '_' },
     { manifest: vtubersManifest, _id: '_' },
   ];
 
-  if (!guildId || !config.communityPacks) {
+  const guild = await db.getGuild(guildId);
+  const instance = await db.getInstance(guild);
+
+  if (instance.builtinsDisabled) {
+    builtins = [];
+  }
+
+  if (!config.communityPacks) {
     if (filter) {
       return [];
     }
@@ -117,9 +124,6 @@ async function all(
 
     return [...builtins, ...packs.cachedGuilds[guildId].packs];
   }
-
-  const guild = await db.getGuild(guildId);
-  const instance = await db.getInstance(guild);
 
   const _packs = await db.getInstancePacks(instance);
 
@@ -188,7 +192,8 @@ function uninstallDialog(
 async function pages(
   { userId, guildId }: { guildId: string; userId: string },
 ): Promise<discord.Message> {
-  const locale = user.cachedUsers[userId]?.locale;
+  const locale = user.cachedUsers[userId]?.locale ??
+    user.cachedGuilds[guildId]?.locale;
 
   if (!config.communityPacks) {
     throw new NonFetalError(
@@ -200,17 +205,21 @@ async function pages(
 
   const embed = new discord.Embed();
 
-  embed.setDescription(
-    list.map(({ manifest }, i) => {
-      let s = `\`${manifest.id}\``;
+  if (list.length) {
+    embed.setDescription(
+      list.map(({ manifest }, i) => {
+        let s = `\`${manifest.id}\``;
 
-      if (manifest.title) {
-        s = `${manifest.title} | ${s}`;
-      }
+        if (manifest.title) {
+          s = `${manifest.title} | ${s}`;
+        }
 
-      return `${i + 1}. ${s}`;
-    }).join('\n'),
-  );
+        return `${i + 1}. ${s}`;
+      }).join('\n'),
+    );
+  } else {
+    embed.setDescription(i18n.get('no-packs-installed', locale));
+  }
 
   return new discord.Message().addEmbed(embed);
 }
@@ -426,20 +435,23 @@ async function findById<T>(
     }
   }
 
+  // if anilist pack is enabled
   // request the ids from anilist
-  const anilistResults = await _anilist[key](
-    { ids: anilistIds },
-  );
+  if (list.length && list[0].manifest.id === 'anilist') {
+    const anilistResults = await _anilist[key](
+      { ids: anilistIds },
+    );
 
-  anilistIds.forEach((n) => {
-    const i = anilistResults.findIndex((r) => `${r.id}` === `${n}`);
+    anilistIds.forEach((n) => {
+      const i = anilistResults.findIndex((r) => `${r.id}` === `${n}`);
 
-    if (i > -1) {
-      results[`anilist:${n}`] = _anilist.transform<T>({
-        item: anilistResults[i],
-      });
-    }
-  });
+      if (i > -1) {
+        results[`anilist:${n}`] = _anilist.transform<T>({
+          item: anilistResults[i],
+        });
+      }
+    });
+  }
 
   return results;
 }
@@ -454,12 +466,15 @@ async function _searchManyCharacters(
 
   const list = await packs.all({ guildId });
 
-  _loadedAnilistCharactersDirectory ??= await utils.readJson<
-    CharactersDirectory
-  >('./packs/anilist/characters_directory.json');
+  // if anilist pack is enabled
+  if (list.length && list[0].manifest.id === 'anilist') {
+    _loadedAnilistCharactersDirectory ??= await utils.readJson<
+      CharactersDirectory
+    >('./packs/anilist/characters_directory.json');
+  }
 
   const searchDirectory: CharactersDirectory = [
-    ..._loadedAnilistCharactersDirectory,
+    ...(_loadedAnilistCharactersDirectory ?? []),
   ];
 
   const outputDirectory: CharactersDirectory = [];
@@ -556,7 +571,7 @@ async function searchOneCharacter(
 
   return Object.values(
     await findById<Character | DisaggregatedCharacter>({
-      ids: [results[0].id],
+      ids: [results[0]?.id],
       key: 'characters',
       guildId,
     }),
@@ -573,11 +588,17 @@ async function _searchManyMedia(
 
   const list = await packs.all({ guildId });
 
-  _loadedAnilistMediaDirectory ??= await utils.readJson<MediaDirectory>(
-    './packs/anilist/media_directory.json',
-  );
+  // if anilist pack is enabled
+  if (list.length && list[0].manifest.id === 'anilist') {
+    _loadedAnilistMediaDirectory ??= await utils.readJson<MediaDirectory>(
+      './packs/anilist/media_directory.json',
+    );
+  }
 
-  const searchDirectory: MediaDirectory = [..._loadedAnilistMediaDirectory];
+  const searchDirectory: MediaDirectory = [
+    ...(_loadedAnilistMediaDirectory ?? []),
+  ];
+
   const outputDirectory: MediaDirectory = [];
 
   // add community packs content
@@ -660,7 +681,7 @@ async function searchOneMedia(
 
   return Object.values(
     await findById<Media | DisaggregatedMedia>({
-      ids: [results[0].id],
+      ids: [results[0]?.id],
       key: 'media',
       guildId,
     }),
@@ -885,19 +906,21 @@ async function pool({ guildId, seed, range, role, stars }: {
   role?: CharacterRole;
   stars?: number;
 }): Promise<Pool['']['ALL']> {
-  const [list, anilist] = await Promise.all([
-    await packs.all({ guildId }),
-    utils.readJson<Pool>('packs/anilist/pool.json'),
-  ]);
-
   let pool: Pool[0]['ALL'] = [];
 
-  if (typeof stars === 'number') {
-    Object.values(anilist).forEach((range) => {
-      pool = pool.concat(range.ALL);
-    });
-  } else {
-    pool = anilist[JSON.stringify(range)][role ?? 'ALL'];
+  const list = await packs.all({ guildId });
+
+  // if anilist pack is enabled
+  if (list.length && list[0].manifest.id === 'anilist') {
+    const anilist = await utils.readJson<Pool>('packs/anilist/pool.json');
+
+    if (typeof stars === 'number') {
+      Object.values(anilist).forEach((range) => {
+        pool = pool.concat(range.ALL);
+      });
+    } else {
+      pool = anilist[JSON.stringify(range)][role ?? 'ALL'];
+    }
   }
 
   await Promise.all(list.map(async ({ manifest }) => {

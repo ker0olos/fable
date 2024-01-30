@@ -43,7 +43,8 @@
     "webhookUrl": {
       "title": "webhookUrl",
       "type": "string",
-      "description": "A discord webhook url that can be used to publish changes to a server"
+      "description": "A discord webhook url that can be used to publish changes to a server",
+      "$comment": "this is a meta parameter, functionality is not handled by fable itself"
     },
     "private": {
       "title": "private",
