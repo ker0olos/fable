@@ -3349,6 +3349,20 @@ snapshot[`commands 1`] = `
       {
         autocomplete: undefined,
         choices: undefined,
+        description: "list all the installed packs on a server",
+        description_localizations: {
+          "es-ES": "muestra todos los packs del servidor",
+        },
+        max_value: undefined,
+        min_value: undefined,
+        name: "installed",
+        options: undefined,
+        required: false,
+        type: 1,
+      },
+      {
+        autocomplete: undefined,
+        choices: undefined,
         description: "install a community pack",
         description_localizations: {
           "es-ES": "instala un pack de la comunidad",

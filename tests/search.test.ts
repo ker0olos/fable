@@ -2,7 +2,7 @@
 
 import { assertEquals, assertRejects, assertThrows } from '$std/assert/mod.ts';
 
-import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
+import { returnsNext, stub } from '$std/testing/mock.ts';
 
 import { FakeTime } from '$std/testing/time.ts';
 
@@ -2267,7 +2267,7 @@ Deno.test('/media debug', async (test) => {
     }
   });
 
-  await test.step('no titles', async () => {
+  await test.step('no titles', () => {
     const getGuildStub = stub(
       db,
       'getGuild',

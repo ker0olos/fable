@@ -828,6 +828,12 @@ export const commands = [
         ],
       }),
       Option({
+        name: 'installed',
+        description: '/installed packs',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+      Option({
         name: 'install',
         description: '/packs install',
         type: Type.SUB_COMMAND,

@@ -700,6 +700,12 @@ export const handler = async (r: Request) => {
           case 'packs': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
+              case 'installed': {
+                return (await packs.pages({
+                  guildId,
+                  userId: member.user.id,
+                })).send();
+              }
               case 'install': {
                 const id = options['id'] as string;
 
