@@ -3126,7 +3126,7 @@ Deno.test('community packs', async (test) => {
       guild_id: 'guild_id',
 
       data: {
-        name: 'community',
+        name: 'packs',
         options: [{
           type: 1,
           name: 'uninstall',
@@ -3235,7 +3235,7 @@ Deno.test('community packs', async (test) => {
       guild_id: 'guild_id',
 
       data: {
-        name: 'community',
+        name: 'packs',
         options: [{
           type: 1,
           name: 'uninstall',
@@ -3366,7 +3366,7 @@ Deno.test('community packs', async (test) => {
       guild_id: 'guild_id',
 
       data: {
-        name: 'community',
+        name: 'packs',
         options: [{
           type: 1,
           name: 'uninstall',

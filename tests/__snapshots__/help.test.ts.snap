@@ -588,7 +588,7 @@ snapshot[`/help 9`] = `
 - \`/automerge min\`: _merge your characters together to pull the lowest rating possible_
 - \`/automerge max\`: _merge your characters together to pull the highest rating possible_
 
-- \`/packs\`: _list all the packs on a server_
+- \`/installed packs\`: _list all the installed packs on a server_
 
 - \`/logs\`: _list user last few found characters_",
         type: "rich",
@@ -635,9 +635,9 @@ snapshot[`/help 10`] = `
           name: "Admin Commands",
         },
         description: "_> \`/community\` requires \`Manage Server\` permission by default, but that can be changed in the \`Integrations\` section of your server settings, although we never recommend that._
-- \`/community popular\`: _browse the most popular community packs_
-- \`/community install\`: _install a community pack_
-- \`/community uninstall\`: _uninstall a community pack_
+- \`/packs install\`: _install a community pack_
+- \`/packs uninstall\`: _uninstall a community pack_
+- \`/packs disable builtins\`: _permanently disable the builtin packs_
 
 > To create your own community pack visit <https://packs.deno.dev>",
         type: "rich",

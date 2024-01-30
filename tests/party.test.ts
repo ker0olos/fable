@@ -195,11 +195,10 @@ Deno.test('/party view', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -486,11 +485,10 @@ Deno.test('/party view', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -758,11 +756,10 @@ Deno.test('/party view', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1016,11 +1013,10 @@ Deno.test('/party view', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(
       packs,
@@ -1289,11 +1285,10 @@ Deno.test('/party view', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(
       packs,
@@ -1446,11 +1441,10 @@ Deno.test('/party assign', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1608,11 +1602,10 @@ Deno.test('/party assign', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1765,11 +1758,10 @@ Deno.test('/party assign', async (test) => {
       },
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1908,11 +1900,10 @@ Deno.test('/party assign', async (test) => {
       },
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2125,11 +2116,10 @@ Deno.test('/party swap', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2411,11 +2401,10 @@ Deno.test('/party swap', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2620,11 +2609,10 @@ Deno.test('/party remove', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2781,11 +2769,10 @@ Deno.test('/party remove', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -2940,11 +2927,10 @@ Deno.test('/party remove', async (test) => {
         }) as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(
       packs,
@@ -3078,11 +3064,10 @@ Deno.test('/party remove', async (test) => {
       () => undefined as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 

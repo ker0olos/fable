@@ -76,6 +76,14 @@ export enum MessageFlags {
   SuppressEmbeds = 1 << 2,
 }
 
+type CommandOption = {
+  type: number;
+  name: string;
+  value: unknown;
+  focused?: boolean;
+  options?: CommandOption[];
+};
+
 export enum MessageType {
   Pong = 1,
   New = 4,
@@ -292,18 +300,7 @@ export class Interaction<Options> {
       resolved?: Resolved;
       target_id?: string;
       values?: string[];
-      options?: {
-        type: number;
-        name: string;
-        value: unknown;
-        focused?: boolean;
-        options?: {
-          type: number;
-          name: string;
-          focused?: boolean;
-          value: unknown;
-        }[];
-      }[];
+      options?: CommandOption[];
     } & { // Message Component
       custom_id: string;
       component_type: ComponentType;
@@ -356,6 +353,18 @@ export class Interaction<Options> {
           this.subcommand = data.options?.[0].name;
 
           data.options?.[0].options?.forEach((option) => {
+            this.options[option.name] = option.value as Options;
+
+            if (option.focused) {
+              this.focused = option.name;
+            }
+          });
+        } else if (data.options?.[0].type === 2) {
+          this.subcommand = `${data.options?.[0].name} ${
+            data.options?.[0].options?.[0]?.name
+          }`;
+
+          data.options?.[0].options?.[0]?.options?.forEach((option) => {
             this.options[option.name] = option.value as Options;
 
             if (option.focused) {

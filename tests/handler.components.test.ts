@@ -20,7 +20,6 @@ import trade from '../src/trade.ts';
 import shop from '../src/shop.ts';
 
 import merge from '../src/merge.ts';
-import community from '../src/community.ts';
 
 import steal from '../src/steal.ts';
 import stats from '../src/stats.ts';
@@ -2921,177 +2920,6 @@ Deno.test('steal components', async (test) => {
   });
 });
 
-Deno.test('packs pages', async (test) => {
-  await test.step('community', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Component,
-      guild_id: 'guild_id',
-      member: {
-        user: {
-          id: 'user_id',
-        },
-      },
-      data: {
-        custom_id: 'packs==1',
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const setTypeSpy = spy(() => ({
-      send: () => true,
-    }));
-
-    const packsStub = stub(packs, 'pages', () =>
-      ({
-        setType: setTypeSpy,
-      }) as any);
-
-    config.publicKey = 'publicKey';
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(setTypeSpy, 0, {
-        args: [discord.MessageType.Update],
-      });
-
-      assertSpyCall(packsStub, 0, {
-        args: [{
-          userId: 'user_id',
-          guildId: 'guild_id',
-          index: 1,
-        }],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      packsStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-});
-
-Deno.test('community packs popular', async (test) => {
-  await test.step('normal', async () => {
-    const body = JSON.stringify({
-      id: 'id',
-      token: 'token',
-      type: discord.InteractionType.Component,
-      guild_id: 'guild_id',
-      member: {
-        user: {
-          id: 'user_id',
-        },
-      },
-      data: {
-        custom_id: 'popular==1',
-      },
-    });
-
-    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
-
-    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
-      valid: true,
-      body,
-    } as any));
-
-    const setTypeSpy = spy(() => ({
-      send: () => true,
-    }));
-
-    const packsStub = stub(community, 'popularPacks', () =>
-      ({
-        setType: setTypeSpy,
-      }) as any);
-
-    config.publicKey = 'publicKey';
-    config.communityPacks = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        body,
-        method: 'POST',
-        headers: {
-          'X-Signature-Ed25519': 'ed25519',
-          'X-Signature-Timestamp': 'timestamp',
-        },
-      });
-
-      const response = await handler(request);
-
-      assertSpyCall(validateStub, 0, {
-        args: [request, {
-          POST: {
-            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
-          },
-        }],
-      });
-
-      assertSpyCall(signatureStub, 0, {
-        args: [{
-          body,
-          signature: 'ed25519',
-          timestamp: 'timestamp',
-          publicKey: 'publicKey',
-        }],
-      });
-
-      assertSpyCall(packsStub, 0, {
-        args: [{
-          index: 1,
-          userId: 'user_id',
-          guildId: 'guild_id',
-        }],
-      });
-
-      assertEquals(response, true as any);
-    } finally {
-      delete config.publicKey;
-
-      packsStub.restore();
-      validateStub.restore();
-      signatureStub.restore();
-    }
-  });
-});
-
 Deno.test('community packs install', async (test) => {
   await test.step('normal', async () => {
     const pack = {
@@ -3301,16 +3129,7 @@ Deno.test('community packs uninstall', async (test) => {
       body,
     } as any));
 
-    const setTypeSpy = spy(() => ({
-      send: () => true,
-    }));
-
     const listStub = stub(packs, 'all', () => Promise.resolve([pack as any]));
-
-    const packsStub = stub(packs, 'uninstall', () =>
-      ({
-        setType: setTypeSpy,
-      }) as any);
 
     config.publicKey = 'publicKey';
     config.communityPacks = true;
@@ -3376,7 +3195,180 @@ Deno.test('community packs uninstall', async (test) => {
       delete config.communityPacks;
 
       listStub.restore();
-      packsStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+});
+
+Deno.test('disable builtin packs', async (test) => {
+  await test.step('normal', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'disable-builtins=user_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const setTypeSpy = spy(() => ({
+      send: () => true,
+    }));
+
+    const packsStub = stub(packs, 'confirmDisableBuiltins', () =>
+      ({
+        setType: setTypeSpy,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+    config.communityPacks = true;
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(packsStub, 0, {
+        args: [{
+          userId: 'user_id',
+          guildId: 'guild_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+      delete config.communityPacks;
+
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('no permission', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Component,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        custom_id: 'disable-builtins=another_user_id',
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    config.publicKey = 'publicKey';
+    config.communityPacks = true;
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [request, {
+          POST: {
+            headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+          },
+        }],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertEquals(response?.ok, true);
+      assertEquals(response?.redirected, false);
+
+      assertEquals(response?.status, 200);
+      assertEquals(response?.statusText, 'OK');
+
+      const json = JSON.parse(
+        // deno-lint-ignore no-non-null-assertion
+        (await response?.formData()).get('payload_json')!.toString(),
+      );
+
+      assertEquals({
+        type: 4,
+        data: {
+          flags: 64,
+          content: '',
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                "You don't have permission to complete this interaction!",
+            },
+          ],
+        },
+      }, json);
+    } finally {
+      delete config.publicKey;
+      delete config.communityPacks;
+
       validateStub.restore();
       signatureStub.restore();
     }

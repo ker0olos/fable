@@ -27,8 +27,6 @@ import skills from '../src/skills.ts';
 
 import merge from '../src/merge.ts';
 
-import community from '../src/community.ts';
-
 import { NonFetalError, NoPermissionError } from '../src/errors.ts';
 
 import type { Manifest } from '../src/types.ts';
@@ -7361,7 +7359,7 @@ Deno.test('merge/automerge command handlers', async (test) => {
   });
 });
 
-Deno.test('packs', async () => {
+Deno.test('installed packs', async () => {
   const body = JSON.stringify({
     id: 'id',
     token: 'token',
@@ -7373,7 +7371,13 @@ Deno.test('packs', async () => {
       },
     },
     data: {
-      name: 'packs',
+      name: 'installed',
+      options: [
+        {
+          type: 1,
+          name: 'packs',
+        },
+      ],
     },
   });
 
@@ -7427,7 +7431,6 @@ Deno.test('packs', async () => {
       args: [{
         userId: 'user_id',
         guildId: 'guild_id',
-        index: 0,
       }],
     });
 
@@ -7442,7 +7445,7 @@ Deno.test('packs', async () => {
 });
 
 Deno.test('community packs command handlers', async (test) => {
-  await test.step('community popular', async () => {
+  await test.step('test', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -7454,11 +7457,13 @@ Deno.test('community packs command handlers', async (test) => {
         },
       },
       data: {
-        name: 'community',
-        options: [{
-          type: 1,
-          name: `popular`,
-        }],
+        name: 'packs',
+        options: [
+          {
+            type: 1,
+            name: 'installed',
+          },
+        ],
       },
     });
 
@@ -7469,13 +7474,9 @@ Deno.test('community packs command handlers', async (test) => {
       body,
     } as any));
 
-    const setFlagsSpy = spy(() => ({
-      send: () => true,
-    }));
-
-    const communityStub = stub(community, 'popularPacks', () =>
+    const packsStub = stub(packs, 'pages', () =>
       ({
-        setFlags: setFlagsSpy,
+        send: () => true,
       }) as any);
 
     config.publicKey = 'publicKey';
@@ -7512,13 +7513,8 @@ Deno.test('community packs command handlers', async (test) => {
         }],
       });
 
-      assertSpyCall(setFlagsSpy, 0, {
-        args: [64],
-      });
-
-      assertSpyCall(communityStub, 0, {
+      assertSpyCall(packsStub, 0, {
         args: [{
-          index: 0,
           userId: 'user_id',
           guildId: 'guild_id',
         }],
@@ -7528,13 +7524,13 @@ Deno.test('community packs command handlers', async (test) => {
     } finally {
       delete config.publicKey;
 
-      communityStub.restore();
+      packsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }
   });
 
-  await test.step('community install', async () => {
+  await test.step('packs install', async () => {
     const body = JSON.stringify({
       id: 'id',
       token: 'token',
@@ -7546,7 +7542,7 @@ Deno.test('community packs command handlers', async (test) => {
         },
       },
       data: {
-        name: 'community',
+        name: 'packs',
         options: [{
           type: 1,
           name: `install`,
@@ -7635,7 +7631,7 @@ Deno.test('community packs command handlers', async (test) => {
         },
       },
       data: {
-        name: 'community',
+        name: 'packs',
         options: [{
           type: 1,
           name: `uninstall`,
@@ -7757,7 +7753,7 @@ Deno.test('community packs command handlers', async (test) => {
       guild_id: 'guild_id',
 
       data: {
-        name: 'community',
+        name: 'packs',
         options: [{
           type: 1,
           name: `uninstall`,
@@ -7846,6 +7842,93 @@ Deno.test('community packs command handlers', async (test) => {
       delete config.publicKey;
 
       listStub.restore();
+      validateStub.restore();
+      signatureStub.restore();
+    }
+  });
+
+  await test.step('packs disable builtins', async () => {
+    const body = JSON.stringify({
+      id: 'id',
+      token: 'token',
+      type: discord.InteractionType.Command,
+      guild_id: 'guild_id',
+      member: {
+        user: {
+          id: 'user_id',
+        },
+      },
+      data: {
+        name: 'packs',
+        options: [{
+          type: 2,
+          name: `disable`,
+          options: [{
+            type: 1,
+            name: `builtins`,
+          }],
+        }],
+      },
+    });
+
+    const validateStub = stub(utils, 'validateRequest', () => ({} as any));
+
+    const signatureStub = stub(utils, 'verifySignature', ({ body }) => ({
+      valid: true,
+      body,
+    } as any));
+
+    const packsStub = stub(packs, 'disableBuiltins', () =>
+      ({
+        send: () => true,
+      }) as any);
+
+    config.publicKey = 'publicKey';
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        body,
+        method: 'POST',
+        headers: {
+          'X-Signature-Ed25519': 'ed25519',
+          'X-Signature-Timestamp': 'timestamp',
+        },
+      });
+
+      const response = await handler(request);
+
+      assertSpyCall(validateStub, 0, {
+        args: [
+          request,
+          {
+            POST: {
+              headers: ['X-Signature-Ed25519', 'X-Signature-Timestamp'],
+            },
+          },
+        ],
+      });
+
+      assertSpyCall(signatureStub, 0, {
+        args: [{
+          body,
+          signature: 'ed25519',
+          timestamp: 'timestamp',
+          publicKey: 'publicKey',
+        }],
+      });
+
+      assertSpyCall(packsStub, 0, {
+        args: [{
+          userId: 'user_id',
+          guildId: 'guild_id',
+        }],
+      });
+
+      assertEquals(response, true as any);
+    } finally {
+      delete config.publicKey;
+
+      packsStub.restore();
       validateStub.restore();
       signatureStub.restore();
     }

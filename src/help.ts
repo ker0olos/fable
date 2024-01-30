@@ -319,7 +319,7 @@ function pages(
             `- \`/automerge min\`: _${i18n.get('/automerge min', locale)}_`,
             `- \`/automerge max\`: _${i18n.get('/automerge max', locale)}_`,
             '',
-            `- \`/packs\`: _${i18n.get('/packs', locale)}_`,
+            `- \`/installed packs\`: _${i18n.get('/installed packs', locale)}_`,
             '',
             `- \`/logs\`: _${i18n.get('/logs', locale)}_`,
           ].join('\n')),
@@ -331,14 +331,10 @@ function pages(
         })
           .setDescription([
             i18n.get('community-packs-permission', locale),
-            `- \`/community popular\`: _${
-              i18n.get('/community popular', locale)
-            }_`,
-            `- \`/community install\`: _${
-              i18n.get('/community install', locale)
-            }_`,
-            `- \`/community uninstall\`: _${
-              i18n.get('/community uninstall', locale)
+            `- \`/packs install\`: _${i18n.get('/packs install', locale)}_`,
+            `- \`/packs uninstall\`: _${i18n.get('/packs uninstall', locale)}_`,
+            `- \`/packs disable builtins\`: _${
+              i18n.get('/packs disable builtins', locale)
             }_`,
             '',
             i18n.get('make-your-own-pack', locale),

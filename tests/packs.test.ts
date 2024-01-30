@@ -35,44 +35,176 @@ import { NonFetalError } from '../src/errors.ts';
 
 Deno.test('list', async (test) => {
   await test.step('anilist', async (test) => {
-    const list = await packs.all({});
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => ({}) as any,
+    );
 
-    const pack = list[0];
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => ({}) as any,
+    );
 
-    assertEquals(list.length, 2);
+    const getInstancePacksStub = stub(
+      db,
+      'getInstancePacks',
+      () => Promise.resolve([]),
+    );
 
-    assertValidManifest(pack.manifest);
+    try {
+      const list = await packs.all({ guildId: '0' });
 
-    await assertSnapshot(test, pack);
+      const pack = list[0];
+
+      assertEquals(list.length, 2);
+
+      assertValidManifest(pack.manifest);
+
+      await assertSnapshot(test, pack);
+    } finally {
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInstancePacksStub.restore();
+    }
   });
 
   await test.step('vtubers', async (test) => {
-    const list = await packs.all({});
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => ({}) as any,
+    );
 
-    const pack = list[1];
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => ({}) as any,
+    );
 
-    assertEquals(list.length, 2);
+    const getInstancePacksStub = stub(
+      db,
+      'getInstancePacks',
+      () => Promise.resolve([]),
+    );
 
-    assertValidManifest(pack.manifest);
+    try {
+      const list = await packs.all({ guildId: '0' });
 
-    await assertSnapshot(test, pack);
+      const pack = list[1];
+
+      assertEquals(list.length, 2);
+
+      assertValidManifest(pack.manifest);
+
+      await assertSnapshot(test, pack);
+    } finally {
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInstancePacksStub.restore();
+    }
   });
 
-  await test.step('filter', async () => {
-    const list = await packs.all({ filter: true });
+  await test.step('filter builtins (only community)', async () => {
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => ({}) as any,
+    );
 
-    assertEquals(list.length, 0);
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => ({}) as any,
+    );
+
+    const getInstancePacksStub = stub(
+      db,
+      'getInstancePacks',
+      () => Promise.resolve([]),
+    );
+
+    try {
+      const list = await packs.all({ guildId: '0', filter: true });
+
+      assertEquals(list.length, 0);
+    } finally {
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInstancePacksStub.restore();
+    }
+  });
+
+  await test.step('disable builtins (only community)', async () => {
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => ({}) as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () =>
+        ({
+          builtinsDisabled: true,
+        }) as any,
+    );
+
+    const getInstancePacksStub = stub(
+      db,
+      'getInstancePacks',
+      () => Promise.resolve([]),
+    );
+
+    try {
+      const list = await packs.all({ guildId: '0' });
+
+      assertEquals(list.length, 0);
+    } finally {
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      getInstancePacksStub.restore();
+    }
   });
 });
 
 Deno.test('reserved ids', async () => {
-  const list = await packs.all({});
+  const getGuildStub = stub(
+    db,
+    'getGuild',
+    () => ({}) as any,
+  );
 
-  list.forEach(({ manifest }) => {
-    assertEquals(validate(manifest), {
-      errors: [`${manifest.id} is a reserved id`],
+  const getInstanceStub = stub(
+    db,
+    'getInstance',
+    () =>
+      ({
+        builtinsDisabled: true,
+      }) as any,
+  );
+
+  const getInstancePacksStub = stub(
+    db,
+    'getInstancePacks',
+    () => Promise.resolve([]),
+  );
+
+  try {
+    const list = await packs.all({ guildId: '0' });
+
+    list.forEach(({ manifest }) => {
+      assertEquals(validate(manifest), {
+        errors: [`${manifest.id} is a reserved id`],
+      });
     });
-  });
+  } finally {
+    getGuildStub.restore();
+    getInstanceStub.restore();
+    getInstancePacksStub.restore();
+  }
 });
 
 Deno.test('disabled', async (test) => {
@@ -162,11 +294,10 @@ Deno.test('media character', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -527,11 +658,10 @@ Deno.test('aggregate media', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -744,11 +874,10 @@ Deno.test('aggregate media', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1036,11 +1165,10 @@ Deno.test('aggregate media', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     packs.cachedGuilds = {
       'guild_id': { packs: [pack], disables: [] },
@@ -1448,11 +1576,10 @@ Deno.test('aggregate characters', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1619,11 +1746,10 @@ Deno.test('aggregate characters', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -1820,12 +1946,10 @@ Deno.test('aggregate characters', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
-
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
     packs.cachedGuilds = {
       'guild_id': { packs: [pack], disables: [] },
     };
@@ -2181,7 +2305,7 @@ Deno.test('titles to array', async (test) => {
   });
 });
 
-Deno.test('/community', async (test) => {
+Deno.test('/installed packs', async (test) => {
   await test.step('normal', async () => {
     const pack: Schema.Pack = {
       _id: '_',
@@ -2205,47 +2329,16 @@ Deno.test('/community', async (test) => {
       const message = await packs.pages({
         userId: 'user_id',
         guildId: 'guild_id',
-        index: 1,
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'packs==0=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '2/2',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'packs==0=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
+          components: [],
           embeds: [{
             type: 'rich',
-            title: 'pack_id',
-            description: 'description',
-            footer: {
-              text: 'author',
-            },
-            thumbnail: {
-              url: 'image',
-            },
+            description: '1. `pack_id`\n2. `pack_id`',
           }],
         },
       });
@@ -2253,25 +2346,6 @@ Deno.test('/community', async (test) => {
       delete config.communityPacks;
 
       listStub.restore();
-    }
-  });
-
-  await test.step('under maintenance', async () => {
-    config.communityPacks = false;
-
-    try {
-      await assertRejects(
-        () =>
-          packs.pages({
-            userId: 'user_id',
-            guildId: 'guild_id',
-            index: 0,
-          }),
-        NonFetalError,
-        'Community Packs are under maintenance, try again later!',
-      );
-    } finally {
-      delete config.communityPacks;
     }
   });
 
@@ -2296,41 +2370,16 @@ Deno.test('/community', async (test) => {
       const message = await packs.pages({
         userId: 'user_id',
         guildId: 'guild_id',
-        index: 0,
       });
 
       assertEquals(message.json(), {
         type: 4,
         data: {
           attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'packs==0=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '1/1',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'packs==0=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-            ],
-          }],
+          components: [],
           embeds: [{
             type: 'rich',
-            description: undefined,
-            title: 'Title',
+            description: '1. Title | `pack-id`',
           }],
         },
       });
@@ -2341,79 +2390,7 @@ Deno.test('/community', async (test) => {
     }
   });
 
-  await test.step('homepage url', async () => {
-    const pack: Schema.Pack = {
-      _id: '_',
-      manifest: {
-        id: 'pack-id',
-        url: 'https://example.org',
-      },
-    };
-
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([pack]),
-    );
-
-    config.communityPacks = true;
-
-    try {
-      const message = await packs.pages({
-        userId: 'user_id',
-        guildId: 'guild_id',
-        index: 0,
-      });
-
-      assertEquals(message.json(), {
-        type: 4,
-        data: {
-          attachments: [],
-          components: [{
-            type: 1,
-            components: [
-              {
-                custom_id: 'packs==0=prev',
-                label: 'Prev',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: '_',
-                disabled: true,
-                label: '1/1',
-                style: 2,
-                type: 2,
-              },
-              {
-                custom_id: 'packs==0=next',
-                label: 'Next',
-                style: 2,
-                type: 2,
-              },
-              {
-                label: 'Homepage',
-                url: 'https://example.org',
-                style: 5,
-                type: 2,
-              },
-            ],
-          }],
-          embeds: [{
-            type: 'rich',
-            description: undefined,
-            title: 'pack-id',
-          }],
-        },
-      });
-    } finally {
-      delete config.communityPacks;
-
-      listStub.restore();
-    }
-  });
-
-  await test.step('no manifest', async () => {
+  await test.step('no packs installed', async () => {
     const listStub = stub(
       packs,
       'all',
@@ -2423,16 +2400,22 @@ Deno.test('/community', async (test) => {
     config.communityPacks = true;
 
     try {
-      await assertRejects(
-        () =>
-          packs.pages({
-            userId: 'user_id',
-            guildId: 'guild_id',
-            index: 0,
-          }),
-        NonFetalError,
-        "This pack doesn't exist",
-      );
+      const message = await packs.pages({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [{
+            type: 'rich',
+            description: "Server doesn't have any installed packs",
+          }],
+        },
+      });
     } finally {
       delete config.communityPacks;
 
@@ -2449,7 +2432,6 @@ Deno.test('/community', async (test) => {
           packs.pages({
             userId: 'user_id',
             guildId: 'guild_id',
-            index: 0,
           }),
         NonFetalError,
         'Community Packs are under maintenance, try again later!',
@@ -2834,6 +2816,176 @@ Deno.test('/packs uninstall', async (test) => {
       getGuildStub.restore();
       getInstanceStub.restore();
       removePackStub.restore();
+    }
+  });
+});
+
+Deno.test('/packs disable builtins', async (test) => {
+  await test.step('normal', async () => {
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await packs.disableBuiltins({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  custom_id: 'disable-builtins=user_id',
+                  label: 'Confirm',
+                  style: 2,
+                  type: 2,
+                },
+                {
+                  custom_id: 'cancel=user_id',
+                  label: 'Cancel',
+                  style: 4,
+                  type: 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              type: 'rich',
+              title: 'DANGER',
+              description:
+                `**Once you disable builtin packs, you can never enable them again.**\n
+1. __Disabling builtin packs might negatively impact your gacha pulls,__ possibly resulting in a lot of empty pulls that don't give any characters.
+2. __Your server will be permanently excluded from across-servers activities and events.__`,
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+    }
+  });
+
+  await test.step('already disabled', async () => {
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () =>
+        ({
+          builtinsDisabled: true,
+        }) as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await packs.disableBuiltins({
+        userId: 'user_id',
+        guildId: 'guild_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                `**Builtin packs have been disabled, this action is irreversible.**\n
+ __Your server is permanently excluded from across-servers activities and events.__`,
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+    }
+  });
+
+  await test.step('confirmed', async () => {
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => 'guild' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => 'instance' as any,
+    );
+
+    const disableBuiltinsStub = stub(
+      db,
+      'disableBuiltins',
+      () => 'instance' as any,
+    );
+
+    config.appId = 'app_id';
+    config.origin = 'http://localhost:8000';
+
+    try {
+      const message = await packs.confirmDisableBuiltins({
+        guildId: 'guild_id',
+        userId: 'user_id',
+      });
+
+      assertEquals(message.json(), {
+        type: 4,
+        data: {
+          attachments: [],
+          components: [],
+          embeds: [
+            {
+              type: 'rich',
+              description:
+                `**Builtin packs have been disabled, this action is irreversible.**\n
+ __Your server is permanently excluded from across-servers activities and events.__`,
+            },
+          ],
+        },
+      });
+    } finally {
+      delete config.appId;
+      delete config.origin;
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
+      disableBuiltinsStub.restore();
     }
   });
 });

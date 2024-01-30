@@ -2,7 +2,7 @@
 
 import { assertEquals, assertRejects, assertThrows } from '$std/assert/mod.ts';
 
-import { assertSpyCalls, returnsNext, stub } from '$std/testing/mock.ts';
+import { returnsNext, stub } from '$std/testing/mock.ts';
 
 import { FakeTime } from '$std/testing/time.ts';
 
@@ -51,6 +51,18 @@ Deno.test('/media', async (test) => {
 
     const timeStub = new FakeTime();
 
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => '' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => '' as any,
+    );
+
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
@@ -91,8 +103,6 @@ Deno.test('/media', async (test) => {
 
       await timeStub.runMicrotasks();
 
-      assertSpyCalls(fetchStub, 1);
-
       assertEquals(
         fetchStub.calls[0].args[0],
         'https://discord.com/api/v10/webhooks/app_id/test_token/messages/@original',
@@ -130,6 +140,9 @@ Deno.test('/media', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
     }
   });
 
@@ -155,6 +168,18 @@ Deno.test('/media', async (test) => {
       utils,
       'fetchWithRetry',
       () => (undefined as any),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => '' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => '' as any,
     );
 
     const listStub = stub(
@@ -229,6 +254,9 @@ Deno.test('/media', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
     }
   });
 
@@ -254,6 +282,18 @@ Deno.test('/media', async (test) => {
       utils,
       'fetchWithRetry',
       () => (undefined as any),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => '' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => '' as any,
     );
 
     const listStub = stub(
@@ -328,6 +368,9 @@ Deno.test('/media', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
     }
   });
 
@@ -359,6 +402,18 @@ Deno.test('/media', async (test) => {
       utils,
       'fetchWithRetry',
       () => (undefined as any),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => '' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => '' as any,
     );
 
     const listStub = stub(
@@ -457,6 +512,9 @@ Deno.test('/media', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
     }
   });
 
@@ -477,6 +535,18 @@ Deno.test('/media', async (test) => {
       utils,
       'fetchWithRetry',
       () => (undefined as any),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => '' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => '' as any,
     );
 
     const listStub = stub(
@@ -549,6 +619,9 @@ Deno.test('/media', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
     }
   });
 
@@ -578,6 +651,18 @@ Deno.test('/media', async (test) => {
       utils,
       'fetchWithRetry',
       () => (undefined as any),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => '' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => '' as any,
     );
 
     const listStub = stub(
@@ -663,6 +748,9 @@ Deno.test('/media', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
     }
   });
 
@@ -732,6 +820,18 @@ Deno.test('/media', async (test) => {
       utils,
       'fetchWithRetry',
       () => (undefined as any),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => '' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => '' as any,
     );
 
     const listStub = stub(
@@ -836,6 +936,9 @@ Deno.test('/media', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
     }
   });
 
@@ -1930,6 +2033,18 @@ Deno.test('/media debug', async (test) => {
       () => (undefined as any),
     );
 
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => '' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => '' as any,
+    );
+
     const listStub = stub(
       packs,
       'searchOneMedia',
@@ -2020,6 +2135,9 @@ Deno.test('/media debug', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
     }
   });
 
@@ -2040,6 +2158,18 @@ Deno.test('/media debug', async (test) => {
       utils,
       'fetchWithRetry',
       () => (undefined as any),
+    );
+
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => '' as any,
+    );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => '' as any,
     );
 
     const listStub = stub(
@@ -2131,22 +2261,41 @@ Deno.test('/media debug', async (test) => {
       listStub.restore();
       isDisabledStub.restore();
       timeStub.restore();
+
+      getGuildStub.restore();
+      getInstanceStub.restore();
     }
   });
 
   await test.step('no titles', () => {
-    const media: Media = {
-      id: '1',
-      type: MediaType.Anime,
-      format: MediaFormat.TV,
-      title: {},
-    };
-
-    assertThrows(
-      () => search.mediaDebugMessage(media),
-      Error,
-      '404',
+    const getGuildStub = stub(
+      db,
+      'getGuild',
+      () => '' as any,
     );
+
+    const getInstanceStub = stub(
+      db,
+      'getInstance',
+      () => '' as any,
+    );
+    try {
+      const media: Media = {
+        id: '1',
+        type: MediaType.Anime,
+        format: MediaFormat.TV,
+        title: {},
+      };
+
+      assertThrows(
+        () => search.mediaDebugMessage(media),
+        Error,
+        '404',
+      );
+    } finally {
+      getGuildStub.restore();
+      getInstanceStub.restore();
+    }
   });
 });
 
@@ -4578,11 +4727,10 @@ Deno.test('/found', async (test) => {
         ]] as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -4834,11 +4982,10 @@ Deno.test('/found', async (test) => {
         ]] as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 
@@ -4970,11 +5117,10 @@ Deno.test('/found', async (test) => {
       } as any),
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => true);
 
@@ -5111,12 +5257,10 @@ Deno.test('/found', async (test) => {
         ]] as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
-
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
     const isDisabledStub = stub(
       packs,
       'isDisabled',
@@ -5242,11 +5386,10 @@ Deno.test('/found', async (test) => {
       () => [] as any,
     );
 
-    const listStub = stub(
-      packs,
-      'all',
-      () => Promise.resolve([]),
-    );
+    const listStub = stub(packs, 'all', () =>
+      Promise.resolve([
+        { manifest: { id: 'anilist' } },
+      ] as any));
 
     const isDisabledStub = stub(packs, 'isDisabled', () => false);
 

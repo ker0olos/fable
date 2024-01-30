@@ -790,24 +790,52 @@ export const commands = [
   }),
   // pack viewing
   ...Command({
-    name: 'packs',
-    description: '/packs',
+    name: 'installed',
+    description: 'community packs management commands',
+    options: [
+      Option({
+        name: 'packs',
+        description: '/installed packs',
+        type: Type.SUB_COMMAND,
+        optional: true,
+      }),
+    ],
   }),
   // community packs management commands
   ...Command({
-    name: 'community',
+    name: 'packs',
     description: 'community packs management commands',
     defaultPermission: Permission.MANAGE_GUILD,
     options: [
+      // Option({
+      //   name: 'popular',
+      //   description: '/community popular',
+      //   type: Type.SUB_COMMAND,
+      //   optional: true,
+      // }),
       Option({
-        name: 'popular',
-        description: '/community popular',
+        name: 'disable',
+        description: 'community packs disable commands',
+        type: Type.SUB_COMMAND_GROUP,
+        optional: true,
+        options: [
+          Option({
+            name: 'builtins',
+            description: '/packs disable builtins',
+            type: Type.SUB_COMMAND,
+            optional: true,
+          }),
+        ],
+      }),
+      Option({
+        name: 'installed',
+        description: '/installed packs',
         type: Type.SUB_COMMAND,
         optional: true,
       }),
       Option({
         name: 'install',
-        description: '/community install',
+        description: '/packs install',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [
@@ -820,7 +848,7 @@ export const commands = [
       }),
       Option({
         name: 'uninstall',
-        description: '/community uninstall',
+        description: '/packs uninstall',
         type: Type.SUB_COMMAND,
         optional: true,
         options: [

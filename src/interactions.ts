@@ -228,7 +228,7 @@ export const handler = async (r: Request) => {
         // suggest installed community packs
         if (
           // deno-lint-ignore no-non-null-assertion
-          name === 'community' && ['uninstall'].includes(subcommand!)
+          name === 'packs' && ['uninstall'].includes(subcommand!)
         ) {
           // deno-lint-ignore no-non-null-assertion
           const id = options[focused!] as string;
@@ -686,24 +686,25 @@ export const handler = async (r: Request) => {
             }
             break;
           }
-          case 'packs': {
-            return (await packs.pages({
-              guildId,
-              userId: member.user.id,
-              index: 0,
-            })).send();
-          }
-          case 'community': {
+          case 'installed': {
             //deno-lint-ignore no-non-null-assertion
             switch (subcommand!) {
-              case 'popular': {
-                return (await community.popularPacks({
+              case 'packs':
+                return (await packs.pages({
                   guildId,
                   userId: member.user.id,
-                  index: 0,
-                }))
-                  .setFlags(discord.MessageFlags.Ephemeral)
-                  .send();
+                })).send();
+            }
+            break;
+          }
+          case 'packs': {
+            //deno-lint-ignore no-non-null-assertion
+            switch (subcommand!) {
+              case 'installed': {
+                return (await packs.pages({
+                  guildId,
+                  userId: member.user.id,
+                })).send();
               }
               case 'install': {
                 const id = options['id'] as string;
@@ -734,6 +735,21 @@ export const handler = async (r: Request) => {
                   pack,
                 })
                   .send();
+              }
+              // case 'popular': {
+              //   return (await community.popularPacks({
+              //     guildId,
+              //     userId: member.user.id,
+              //     index: 0,
+              //   }))
+              //     .setFlags(discord.MessageFlags.Ephemeral)
+              //     .send();
+              // }
+              case 'disable builtins': {
+                return (await packs.disableBuiltins({
+                  userId: member.user.id,
+                  guildId,
+                })).send();
               }
               default:
                 break;
@@ -1248,30 +1264,6 @@ export const handler = async (r: Request) => {
               )
               .send();
           }
-          case 'packs': {
-            // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
-
-            return (await packs.pages({
-              userId: member.user.id,
-              guildId,
-              index,
-            }))
-              .setType(discord.MessageType.Update)
-              .send();
-          }
-          case 'popular': {
-            // deno-lint-ignore no-non-null-assertion
-            const index = parseInt(customValues![1]);
-
-            return (await community.popularPacks({
-              userId: member.user.id,
-              guildId,
-              index,
-            }))
-              .setType(discord.MessageType.Update)
-              .send();
-          }
           case 'install': {
             // deno-lint-ignore no-non-null-assertion
             const id = customValues![0];
@@ -1282,6 +1274,21 @@ export const handler = async (r: Request) => {
               userId: member.user.id,
             }))
               .send();
+          }
+          case 'disable-builtins': {
+            // deno-lint-ignore no-non-null-assertion
+            const userId = customValues![0];
+
+            if (userId === member.user.id) {
+              return (await packs.confirmDisableBuiltins({
+                guildId,
+                userId: member.user.id,
+              }))
+                .setType(discord.MessageType.Update)
+                .send();
+            }
+
+            throw new NoPermissionError();
           }
           case 'uninstall': {
             // deno-lint-ignore no-non-null-assertion

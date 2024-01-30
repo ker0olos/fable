@@ -25,7 +25,11 @@
   "deno.enablePaths": [
     "./src",
     "./db",
-    "./tests"
+    "./tests",
+    "./update_commands.ts",
+    "./update_commands.test.ts",
+    "./update_topgg_stats.ts",
+    "./setup.ts"
   ],
   //
   "[typescript]": {
