@@ -1,5 +1,3 @@
-/// <reference lib="deno.unstable" />
-
 import { charactersByInstancePrefix, inventoriesByUser } from './indices.ts';
 
 import db, { kv } from './mod.ts';

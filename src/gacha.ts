@@ -1,3 +1,5 @@
+/// <reference lib="deno.unstable" />
+
 import utils, { ImageSize } from './utils.ts';
 
 import Rating from './rating.ts';

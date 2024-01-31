@@ -1,5 +1,3 @@
-/// <reference lib="deno.unstable" />
-
 import { usersLikesByDiscordId } from './indices.ts';
 
 import db from './mod.ts';
