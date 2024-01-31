@@ -1,5 +1,3 @@
-/// <reference lib="deno.unstable" />
-
 import { ulid } from 'ulid';
 
 import db, { kv } from './mod.ts';
@@ -8,9 +6,11 @@ import { packsByManifestId } from './indices.ts';
 
 import { KvError } from '../src/errors.ts';
 
-import type * as Schema from './schema.ts';
+import config from '../src/config.ts';
 
-import { Manifest } from '../src/types.ts';
+import type { Manifest } from '../src/types.ts';
+
+import type * as Schema from './schema.ts';
 
 export async function popularPacks(): Promise<Schema.Pack[]> {
   const packs = await db.getValues<Schema.Pack>({ prefix: ['packs'] });
@@ -36,6 +36,10 @@ export async function publishPack(
   userDiscordId: string,
   manifest: Manifest,
 ): Promise<Schema.Pack> {
+  if (!config.publishPacks) {
+    throw new Error('UNDER_MAINTENANCE');
+  }
+
   let pack = await db.getValue<Schema.Pack>(packsByManifestId(manifest.id));
 
   if (

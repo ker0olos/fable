@@ -14,6 +14,8 @@ import community from '../src/community.ts';
 
 import db from '../db/mod.ts';
 
+import config from '../src/config.ts';
+
 Deno.test('/', async (test) => {
   await test.step('normal', async () => {
     const fetchStub = stub(
@@ -35,6 +37,8 @@ Deno.test('/', async (test) => {
       'getPacksByUserId',
       () => [] as any,
     );
+
+    config.publishPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -63,6 +67,8 @@ Deno.test('/', async (test) => {
       assertEquals(response.status, 200);
       assertEquals(response.statusText, 'OK');
     } finally {
+      delete config.publishPacks;
+
       fetchStub.restore();
       getPacksByUserIdStub.restore();
     }
@@ -84,6 +90,8 @@ Deno.test('/', async (test) => {
         } as any,
       ]),
     );
+
+    config.publishPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -113,8 +121,23 @@ Deno.test('/', async (test) => {
         error: 'invalid access token',
       });
     } finally {
+      delete config.publishPacks;
+
       fetchStub.restore();
     }
+  });
+
+  await test.step('under maintenance', async () => {
+    const request = new Request('http://localhost:8000', {
+      method: 'GET',
+      headers: { 'authorization': 'Bearer token' },
+    });
+
+    const response = await community.query(request);
+
+    assertEquals(response.ok, false);
+    assertEquals(response.status, 500);
+    assertEquals(response.statusText, 'Under Maintenance');
   });
 });
 
@@ -139,6 +162,8 @@ Deno.test('/publish', async (test) => {
       'publishPack',
       () => [] as any,
     );
+
+    config.publishPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -170,6 +195,8 @@ Deno.test('/publish', async (test) => {
       assertEquals(response.status, 200);
       assertEquals(response.statusText, 'OK');
     } finally {
+      delete config.publishPacks;
+
       fetchStub.restore();
       publishPackStub.restore();
     }
@@ -191,6 +218,8 @@ Deno.test('/publish', async (test) => {
         } as any,
       ]),
     );
+
+    config.publishPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -225,6 +254,8 @@ Deno.test('/publish', async (test) => {
         error: 'invalid access token',
       });
     } finally {
+      delete config.publishPacks;
+
       fetchStub.restore();
     }
   });
@@ -243,6 +274,8 @@ Deno.test('/publish', async (test) => {
         } as any,
       ]),
     );
+
+    config.publishPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -273,6 +306,8 @@ Deno.test('/publish', async (test) => {
         ],
       });
     } finally {
+      delete config.publishPacks;
+
       fetchStub.restore();
     }
   });
@@ -299,6 +334,8 @@ Deno.test('/publish', async (test) => {
         throw new Error('PERMISSION_DENIED');
       },
     );
+
+    config.publishPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -338,6 +375,8 @@ Deno.test('/publish', async (test) => {
         error: 'No permission to edit this pack',
       });
     } finally {
+      delete config.publishPacks;
+
       fetchStub.restore();
       publishPackStub.restore();
     }
@@ -365,6 +404,8 @@ Deno.test('/publish', async (test) => {
         throw new Error();
       },
     );
+
+    config.publishPacks = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -400,8 +441,24 @@ Deno.test('/publish', async (test) => {
         error: 'Internal Server Error',
       });
     } finally {
+      delete config.publishPacks;
+
       fetchStub.restore();
       publishPackStub.restore();
     }
+  });
+
+  await test.step('under maintenance', async () => {
+    const request = new Request('http://localhost:8000', {
+      method: 'POST',
+      headers: { 'authorization': 'Bearer token' },
+      body: JSON.stringify({ manifest: { id: 'pack_id' } }),
+    });
+
+    const response = await community.publish(request);
+
+    assertEquals(response.ok, false);
+    assertEquals(response.status, 500);
+    assertEquals(response.statusText, 'Under Maintenance');
   });
 });

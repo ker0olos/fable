@@ -1,5 +1,3 @@
-/// <reference lib="deno.unstable" />
-
 import { inventoriesByUser, usersByDiscordId } from './indices.ts';
 
 import db, { kv, MAX_PULLS, MAX_SWEEPS } from './mod.ts';

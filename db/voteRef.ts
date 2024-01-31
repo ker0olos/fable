@@ -1,5 +1,3 @@
-/// <reference lib="deno.unstable" />
-
 import { kv } from './mod.ts';
 
 import utils from '../src/utils.ts';

@@ -1,5 +1,3 @@
-/// <reference lib="deno.unstable" />
-
 import { inventoriesByUser, usersByDiscordId } from './indices.ts';
 
 import type * as Schema from './schema.ts';

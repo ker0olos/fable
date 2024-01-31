@@ -1,3 +1,5 @@
+/// <reference lib="deno.unstable" />
+
 import config from './config.ts';
 
 import * as discord from './discord.ts';

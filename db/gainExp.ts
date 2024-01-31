@@ -1,7 +1,5 @@
 // deno-lint-ignore-file
 
-/// <reference lib="deno.unstable" />
-
 import {
   charactersByInstancePrefix,
   charactersByInventoryPrefix,

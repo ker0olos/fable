@@ -1,5 +1,3 @@
-/// <reference lib="deno.unstable" />
-
 import { ulid } from 'ulid';
 
 import {

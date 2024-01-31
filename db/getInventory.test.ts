@@ -1,6 +1,6 @@
 // // deno-lint-ignore-file no-explicit-any
 
-// /// <reference lib="deno.unstable" />
+//
 
 // import { assertSpyCall, spy, stub } from '$std/testing/mock.ts';
 
