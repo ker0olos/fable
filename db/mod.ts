@@ -160,13 +160,26 @@ async function getManyValues<T>(
 ): Promise<(T | undefined)[]> {
   const promises = [];
 
-  for (const batch of utils.chunks(keys, 10)) {
+  for (const batch of utils.chunks(keys, 100)) {
     promises.push(kv.getMany<T[]>(batch));
   }
 
   return (await Promise.all(promises))
     .flat()
     .map((entry) => entry?.value ?? undefined);
+}
+
+async function getManyBlobValues<T>(
+  keys: Deno.KvKey[],
+): Promise<(T | undefined)[]> {
+  const promises = [];
+
+  for (const key of keys) {
+    promises.push(getBlobValue<T>(key));
+  }
+
+  return (await Promise.all(promises))
+    .map((entry) => entry ?? undefined);
 }
 
 const db = {
@@ -179,6 +192,7 @@ const db = {
   getManyValues,
   //
   getBlobValue,
+  getManyBlobValues,
   setBlobValue,
   //
   getGuild,

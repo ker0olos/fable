@@ -310,9 +310,18 @@ export async function getInstanceInventories(
     return true;
   });
 
-  const users = await db.getManyValues<Schema.User>(
+  const users = (await db.getManyValues<Schema.User>(
     inventories.map(({ user }) => ['users', user]),
+  )).filter(Boolean) as Schema.User[];
+
+  const likes = await db.getManyBlobValues<Schema.Like[]>(
+    users.map(({ id }) => usersLikesByDiscordId(id)),
   );
+
+  for (let i = 0; i < users.length; i++) {
+    const user = users[i];
+    user.likes = likes[i];
+  }
 
   // deno-lint-ignore no-non-null-assertion
   return inventories.map((inventory, i) => [inventory, users[i]!]);
