@@ -160,7 +160,8 @@ async function getManyValues<T>(
 ): Promise<(T | undefined)[]> {
   const promises = [];
 
-  for (const batch of utils.chunks(keys, 100)) {
+  // getMany max range is 10 keys
+  for (const batch of utils.chunks(keys, 10)) {
     promises.push(kv.getMany<T[]>(batch));
   }
 
