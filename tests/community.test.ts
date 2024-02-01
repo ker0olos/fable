@@ -137,7 +137,7 @@ Deno.test('/user', async (test) => {
     const response = await community.user(request);
 
     assertEquals(response.ok, false);
-    assertEquals(response.status, 500);
+    assertEquals(response.status, 503);
     assertEquals(response.statusText, 'Under Maintenance');
   });
 });
@@ -193,8 +193,8 @@ Deno.test('/publish', async (test) => {
       assertEquals(publishPackStub.calls[0].args[1], { id: 'pack_id' });
 
       assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
+      assertEquals(response.status, 201);
+      assertEquals(response.statusText, 'Created');
     } finally {
       delete config.communityPacksMaintainerAPI;
 
@@ -459,7 +459,7 @@ Deno.test('/publish', async (test) => {
     const response = await community.publish(request);
 
     assertEquals(response.ok, false);
-    assertEquals(response.status, 500);
+    assertEquals(response.status, 503);
     assertEquals(response.statusText, 'Under Maintenance');
   });
 });

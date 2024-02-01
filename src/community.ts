@@ -15,19 +15,19 @@ import config from './config.ts';
 import type { Manifest } from './types.ts';
 
 export async function user(req: Request): Promise<Response> {
-  if (!config.communityPacksMaintainerAPI) {
-    return utils.json(
-      { error: 'Server is possibly under maintenance' },
-      { status: 503, statusText: 'Under Maintenance' },
-    );
-  }
-
   const { error } = await utils.validateRequest(req, {
     GET: { headers: ['authorization'] },
   });
 
   if (error) {
     return utils.json({ error: error.message }, { status: error.status });
+  }
+
+  if (!config.communityPacksMaintainerAPI) {
+    return utils.json(
+      { error: 'Server is possibly under maintenance' },
+      { status: 503, statusText: 'Under Maintenance' },
+    );
   }
 
   const auth = await utils.fetchWithRetry('https://discord.com/api/users/@me', {
@@ -50,19 +50,19 @@ export async function user(req: Request): Promise<Response> {
 }
 
 export async function publish(req: Request): Promise<Response> {
-  if (!config.communityPacksMaintainerAPI) {
-    return utils.json(
-      { error: 'Server is possibly under maintenance' },
-      { status: 503, statusText: 'Under Maintenance' },
-    );
-  }
-
   const { error, body } = await utils.validateRequest(req, {
     POST: { body: ['manifest'], headers: ['authorization'] },
   });
 
   if (error) {
     return utils.json({ error: error.message }, { status: error.status });
+  }
+
+  if (!config.communityPacksMaintainerAPI) {
+    return utils.json(
+      { error: 'Server is possibly under maintenance' },
+      { status: 503, statusText: 'Under Maintenance' },
+    );
   }
 
   const auth = await utils.fetchWithRetry('https://discord.com/api/users/@me', {
@@ -105,7 +105,7 @@ export async function publish(req: Request): Promise<Response> {
           statusText: 'Forbidden',
         });
       default:
-        return utils.json({ error: 'INTERNAL_SERVER_ERROR' }, {
+        return utils.json({ error: 'Internal Server Error' }, {
           status: 501,
           statusText: 'Internal Server Error',
         });

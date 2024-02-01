@@ -64,13 +64,9 @@ import { gainExp, MAX_LEVEL } from './gainExp.ts';
 
 import { clearFloor, consumeSweep } from './consumeSweep.ts';
 
-import {
-  addPack,
-  getPacksByMaintainerId,
-  // popularPacks,
-  publishPack,
-  removePack,
-} from './addPack.ts';
+import { getPacksByMaintainerId } from './getPack.ts';
+
+import { addPack, publishPack, removePack } from './addPack.ts';
 
 import { disableBuiltins } from './manageInstance.ts';
 
