@@ -20,7 +20,7 @@ import type * as Schema from './schema.ts';
 //     .toSorted((a, b) => (b.servers ?? 0) - (a.servers ?? 0));
 // }
 
-export async function getPacksByDiscordId(
+export async function getPacksByMaintainerId(
   userDiscordId: string,
 ): Promise<Schema.Pack[]> {
   const keys = await db.getKeys({

@@ -98,8 +98,10 @@ async function all(
   { guildId, filter }: { guildId: string; filter?: boolean },
 ): Promise<(Pack[])> {
   let builtins: Pack[] = [
-    { manifest: anilistManifest, _id: '_' },
-    { manifest: vtubersManifest, _id: '_' },
+    // deno-lint-ignore no-explicit-any
+    { manifest: anilistManifest, _id: '_' } as any,
+    // deno-lint-ignore no-explicit-any
+    { manifest: vtubersManifest, _id: '_' } as any,
   ];
 
   const guild = await db.getGuild(guildId);

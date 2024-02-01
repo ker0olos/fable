@@ -66,7 +66,7 @@ import { clearFloor, consumeSweep } from './consumeSweep.ts';
 
 import {
   addPack,
-  getPacksByDiscordId,
+  getPacksByMaintainerId,
   // popularPacks,
   publishPack,
   removePack,
@@ -128,7 +128,7 @@ async function getKeys(
 ): Promise<Deno.KvKey[]> {
   const keys = [];
 
-  const iter = (_kv ?? kv).list<T>(selector, {
+  const iter = (_kv ?? kv).list(selector, {
     batchSize: 100,
   });
 
@@ -259,7 +259,7 @@ const db = {
   clearFloor,
   //
   addPack,
-  getPacksByDiscordId,
+  getPacksByMaintainerId,
   // popularPacks,
   publishPack,
   removePack,
