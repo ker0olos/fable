@@ -14,11 +14,11 @@ import config from './config.ts';
 
 import type { Manifest } from './types.ts';
 
-async function query(req: Request): Promise<Response> {
+export async function user(req: Request): Promise<Response> {
   if (!config.publishPacks) {
     return utils.json(
-      { error: 'Under Maintenance' },
-      { status: 500, statusText: 'Under Maintenance' },
+      { error: 'Server is possibly under maintenance' },
+      { status: 503, statusText: 'Under Maintenance' },
     );
   }
 
@@ -27,10 +27,7 @@ async function query(req: Request): Promise<Response> {
   });
 
   if (error) {
-    return utils.json(
-      { error: error.message },
-      { status: error.status },
-    );
+    return utils.json({ error: error.message }, { status: error.status });
   }
 
   const auth = await utils.fetchWithRetry('https://discord.com/api/users/@me', {
@@ -52,11 +49,11 @@ async function query(req: Request): Promise<Response> {
   return utils.json({ data: response });
 }
 
-async function publish(req: Request): Promise<Response> {
+export async function publish(req: Request): Promise<Response> {
   if (!config.publishPacks) {
     return utils.json(
-      { error: 'Under Maintenance' },
-      { status: 500, statusText: 'Under Maintenance' },
+      { error: 'Server is possibly under maintenance' },
+      { status: 503, statusText: 'Under Maintenance' },
     );
   }
 
@@ -65,10 +62,7 @@ async function publish(req: Request): Promise<Response> {
   });
 
   if (error) {
-    return utils.json(
-      { error: error.message },
-      { status: error.status },
-    );
+    return utils.json({ error: error.message }, { status: error.status });
   }
 
   const auth = await utils.fetchWithRetry('https://discord.com/api/users/@me', {
@@ -85,16 +79,12 @@ async function publish(req: Request): Promise<Response> {
 
   const { id: userId } = await auth.json();
 
-  const { manifest } = body as {
-    manifest: Manifest;
-  };
+  const { manifest } = body as { manifest: Manifest };
 
   const valid = validate(manifest);
 
   if (valid.errors?.length) {
-    return utils.json({
-      errors: valid.errors,
-    }, {
+    return utils.json({ errors: valid.errors }, {
       status: 400,
       statusText: 'Bad Request',
     });
@@ -104,22 +94,18 @@ async function publish(req: Request): Promise<Response> {
     const _ = await db.publishPack(userId, purgeReservedProps(manifest));
 
     return new Response(undefined, {
-      status: 200,
-      statusText: 'OK',
+      status: 201,
+      statusText: 'Created',
     });
   } catch (err) {
     switch (err.message) {
       case 'PERMISSION_DENIED':
-        return utils.json({
-          error: 'No permission to edit this pack',
-        }, {
+        return utils.json({ error: 'No permission to edit this pack' }, {
           status: 403,
           statusText: 'Forbidden',
         });
       default:
-        return utils.json({
-          error: 'Internal Server Error',
-        }, {
+        return utils.json({ error: 'INTERNAL_SERVER_ERROR' }, {
           status: 501,
           statusText: 'Internal Server Error',
         });
@@ -195,11 +181,3 @@ async function publish(req: Request): Promise<Response> {
 //     locale,
 //   });
 // }
-
-const community = {
-  query,
-  publish,
-  // popularPacks,
-};
-
-export default community;

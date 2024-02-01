@@ -27,7 +27,9 @@ export async function getPacksByMaintainerId(
     prefix: packsByMaintainerId(userDiscordId),
   });
 
-  keys = keys.map((k) => ['packs', k[2]]);
+  // the object value is useless
+  // the 3 part of the object key is the pack id which is what's needed
+  keys = keys.map(([, , pack_id]) => ['packs', pack_id]);
 
   return (await db.getManyValues(keys))
     .filter(Boolean) as Schema.Pack[];

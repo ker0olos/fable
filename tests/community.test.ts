@@ -10,7 +10,8 @@ import {
 } from '$std/testing/mock.ts';
 
 import utils from '../src/utils.ts';
-import community from '../src/community.ts';
+
+import * as community from '../src/community.ts';
 
 import db from '../db/mod.ts';
 
@@ -46,7 +47,7 @@ Deno.test('/', async (test) => {
         headers: { 'authorization': 'Bearer token' },
       });
 
-      const response = await community.query(request);
+      const response = await community.user(request);
 
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
@@ -99,7 +100,7 @@ Deno.test('/', async (test) => {
         headers: { 'authorization': 'Bearer token' },
       });
 
-      const response = await community.query(request);
+      const response = await community.user(request);
 
       assertSpyCalls(fetchStub, 1);
 
@@ -133,7 +134,7 @@ Deno.test('/', async (test) => {
       headers: { 'authorization': 'Bearer token' },
     });
 
-    const response = await community.query(request);
+    const response = await community.user(request);
 
     assertEquals(response.ok, false);
     assertEquals(response.status, 500);
