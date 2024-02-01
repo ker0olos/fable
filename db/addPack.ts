@@ -23,9 +23,11 @@ import type * as Schema from './schema.ts';
 export async function getPacksByMaintainerId(
   userDiscordId: string,
 ): Promise<Schema.Pack[]> {
-  const keys = await db.getKeys({
+  let keys = await db.getKeys({
     prefix: packsByMaintainerId(userDiscordId),
   });
+
+  keys = keys.map((k) => ['packs', k[2]]);
 
   return (await db.getManyValues(keys))
     .filter(Boolean) as Schema.Pack[];
