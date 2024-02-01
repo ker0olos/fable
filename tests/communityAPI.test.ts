@@ -11,7 +11,7 @@ import {
 
 import utils from '../src/utils.ts';
 
-import * as community from '../src/community.ts';
+import * as communityAPI from '../src/communityAPI.ts';
 
 import db from '../db/mod.ts';
 
@@ -47,7 +47,7 @@ Deno.test('/user', async (test) => {
         headers: { 'authorization': 'Bearer token' },
       });
 
-      const response = await community.user(request);
+      const response = await communityAPI.user(request);
 
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
@@ -100,7 +100,7 @@ Deno.test('/user', async (test) => {
         headers: { 'authorization': 'Bearer token' },
       });
 
-      const response = await community.user(request);
+      const response = await communityAPI.user(request);
 
       assertSpyCalls(fetchStub, 1);
 
@@ -134,7 +134,7 @@ Deno.test('/user', async (test) => {
       headers: { 'authorization': 'Bearer token' },
     });
 
-    const response = await community.user(request);
+    const response = await communityAPI.user(request);
 
     assertEquals(response.ok, false);
     assertEquals(response.status, 503);
@@ -173,7 +173,7 @@ Deno.test('/publish', async (test) => {
         body: JSON.stringify({ manifest: { id: 'pack_id' } }),
       });
 
-      const response = await community.publish(request);
+      const response = await communityAPI.publish(request);
 
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
@@ -233,7 +233,7 @@ Deno.test('/publish', async (test) => {
         }),
       });
 
-      const response = await community.publish(request);
+      const response = await communityAPI.publish(request);
 
       assertSpyCalls(fetchStub, 1);
 
@@ -287,7 +287,7 @@ Deno.test('/publish', async (test) => {
         }),
       });
 
-      const response = await community.publish(request);
+      const response = await communityAPI.publish(request);
 
       assertEquals(response.ok, false);
       assertEquals(response.status, 400);
@@ -349,7 +349,7 @@ Deno.test('/publish', async (test) => {
         }),
       });
 
-      const response = await community.publish(request);
+      const response = await communityAPI.publish(request);
 
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
@@ -415,7 +415,7 @@ Deno.test('/publish', async (test) => {
         body: JSON.stringify({ manifest: { id: 'pack_id' } }),
       });
 
-      const response = await community.publish(request);
+      const response = await communityAPI.publish(request);
 
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
@@ -456,7 +456,7 @@ Deno.test('/publish', async (test) => {
       body: JSON.stringify({ manifest: { id: 'pack_id' } }),
     });
 
-    const response = await community.publish(request);
+    const response = await communityAPI.publish(request);
 
     assertEquals(response.ok, false);
     assertEquals(response.status, 503);
@@ -486,7 +486,7 @@ Deno.test('/pack', async (test) => {
         method: 'GET',
       });
 
-      const response = await community.pack(request, {
+      const response = await communityAPI.pack(request, {
         packId: 'pack-id',
       });
 
@@ -533,7 +533,7 @@ Deno.test('/pack', async (test) => {
         headers: { 'authorization': 'Bearer token' },
       });
 
-      const response = await community.pack(request, {
+      const response = await communityAPI.pack(request, {
         packId: 'pack-id',
       });
 
@@ -592,7 +592,7 @@ Deno.test('/pack', async (test) => {
         headers: { 'authorization': 'Bearer token' },
       });
 
-      const response = await community.pack(request, {
+      const response = await communityAPI.pack(request, {
         packId: 'pack-id',
       });
 
@@ -651,7 +651,7 @@ Deno.test('/pack', async (test) => {
         headers: { 'authorization': 'Bearer token' },
       });
 
-      const response = await community.pack(request, {
+      const response = await communityAPI.pack(request, {
         packId: 'pack-id',
       });
 
@@ -700,7 +700,7 @@ Deno.test('/pack', async (test) => {
         method: 'GET',
       });
 
-      const response = await community.pack(request, {
+      const response = await communityAPI.pack(request, {
         packId: 'pack-id',
       });
 
@@ -732,7 +732,7 @@ Deno.test('/pack', async (test) => {
         method: 'GET',
       });
 
-      const response = await community.pack(request, {
+      const response = await communityAPI.pack(request, {
         packId: 'pack-id',
       });
 
@@ -775,7 +775,7 @@ Deno.test('/pack', async (test) => {
         headers: { 'authorization': 'Bearer token' },
       });
 
-      const response = await community.pack(request, {
+      const response = await communityAPI.pack(request, {
         packId: 'pack-id',
       });
 
@@ -815,7 +815,7 @@ Deno.test('/pack', async (test) => {
         method: 'GET',
       });
 
-      const response = await community.pack(request, {});
+      const response = await communityAPI.pack(request, {});
 
       assertEquals(response.ok, false);
       assertEquals(response.status, 400);
@@ -835,7 +835,7 @@ Deno.test('/pack', async (test) => {
         method: 'GET',
       });
 
-      const response = await community.pack(request, {});
+      const response = await communityAPI.pack(request, {});
 
       assertEquals(response.ok, false);
       assertEquals(response.status, 503);
@@ -856,7 +856,7 @@ Deno.test('/pack', async (test) => {
         headers: { 'authorization': 'Bearer token' },
       });
 
-      const response = await community.pack(request, {});
+      const response = await communityAPI.pack(request, {});
 
       assertEquals(response.ok, false);
       assertEquals(response.status, 503);

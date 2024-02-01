@@ -20,7 +20,7 @@ import help from './help.ts';
 import merge from './merge.ts';
 
 import * as webhooks from './webhooks.ts';
-import * as community from './community.ts';
+import * as communityAPI from './communityAPI.ts';
 
 import config, { initConfig } from './config.ts';
 
@@ -1403,9 +1403,9 @@ if (import.meta.main) {
 
   utils.serve({
     '/': handler,
-    '/community/user': community.user,
-    '/community/publish': community.publish,
-    '/community/pack/:packId+': community.pack,
+    '/api/user': communityAPI.user,
+    '/api/publish': communityAPI.publish,
+    '/api/pack/:packId+': communityAPI.pack,
     '/webhooks/topgg': webhooks.topgg,
     '/external/*': utils.handleProxy,
     '/assets/:filename+': utils.serveStatic('../assets/public', {
