@@ -32,9 +32,9 @@ Deno.test('/', async (test) => {
       ]),
     );
 
-    const getPacksByUserIdStub = stub(
+    const getPacksByMaintainerIdStub = stub(
       db,
-      'getPacksByUserId',
+      'getPacksByMaintainerId',
       () => [] as any,
     );
 
@@ -59,7 +59,7 @@ Deno.test('/', async (test) => {
       });
 
       assertEquals(
-        getPacksByUserIdStub.calls[0].args[0],
+        getPacksByMaintainerIdStub.calls[0].args[0],
         'user_id',
       );
 
@@ -70,7 +70,7 @@ Deno.test('/', async (test) => {
       delete config.publishPacks;
 
       fetchStub.restore();
-      getPacksByUserIdStub.restore();
+      getPacksByMaintainerIdStub.restore();
     }
   });
 

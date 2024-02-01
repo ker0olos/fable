@@ -239,7 +239,7 @@ Deno.test('disabled', async (test) => {
   });
 
   await test.step('none', () => {
-    const pack: Schema.Pack = { _id: '_', manifest: { id: 'pack-id' } };
+    const pack: Schema.Pack = { _id: '_', manifest: { id: 'pack-id' } } as any;
 
     packs.cachedGuilds = {
       'guild_id': { packs: [pack], disables: [] },
@@ -464,7 +464,7 @@ Deno.test('media character', async (test) => {
           }],
         },
       },
-    };
+    } as any;
 
     const fetchStub = stub(
       utils,
@@ -551,7 +551,7 @@ Deno.test('media character', async (test) => {
           }],
         },
       },
-    };
+    } as any;
 
     const fetchStub = stub(
       utils,
@@ -762,7 +762,7 @@ Deno.test('aggregate media', async (test) => {
           new: [character],
         },
       },
-    };
+    } as any;
 
     const fetchStub = stub(
       utils,
@@ -952,7 +952,7 @@ Deno.test('aggregate media', async (test) => {
           new: [media],
         },
       },
-    };
+    } as any;
 
     const child: DisaggregatedMedia = {
       id: '1',
@@ -1067,7 +1067,7 @@ Deno.test('aggregate media', async (test) => {
           }],
         },
       },
-    };
+    } as any;
 
     const fetchStub = stub(
       utils,
@@ -1146,7 +1146,7 @@ Deno.test('aggregate media', async (test) => {
           new: [],
         },
       },
-    };
+    } as any;
 
     const fetchStub = stub(
       utils,
@@ -1232,7 +1232,7 @@ Deno.test('aggregate media', async (test) => {
           new: [parent, spinoff],
         },
       },
-    };
+    } as any;
 
     const child: DisaggregatedMedia = {
       id: '3',
@@ -1342,7 +1342,7 @@ Deno.test('aggregate media', async (test) => {
           new: [spinoff],
         },
       },
-    };
+    } as any;
 
     const adaptation: DisaggregatedMedia = {
       id: '1',
@@ -1650,7 +1650,7 @@ Deno.test('aggregate characters', async (test) => {
           new: [media],
         },
       },
-    };
+    } as any;
 
     const fetchStub = stub(
       utils,
@@ -1834,7 +1834,7 @@ Deno.test('aggregate characters', async (test) => {
           new: [media],
         },
       },
-    };
+    } as any;
 
     const fetchStub = stub(
       utils,
@@ -1927,7 +1927,7 @@ Deno.test('aggregate characters', async (test) => {
           new: [],
         },
       },
-    };
+    } as any;
 
     const fetchStub = stub(
       utils,
@@ -2018,7 +2018,7 @@ Deno.test('aggregate characters', async (test) => {
           }],
         },
       },
-    };
+    } as any;
 
     const fetchStub = stub(
       utils,
@@ -2118,7 +2118,7 @@ Deno.test('aggregate characters', async (test) => {
           new: [media],
         },
       },
-    };
+    } as any;
 
     const fetchStub = stub(
       utils,
@@ -2315,7 +2315,7 @@ Deno.test('/installed packs', async (test) => {
         description: 'description',
         image: 'image',
       },
-    };
+    } as any;
 
     const listStub = stub(
       packs,
@@ -2356,7 +2356,7 @@ Deno.test('/installed packs', async (test) => {
         id: 'pack-id',
         title: 'Title',
       },
-    };
+    } as any;
 
     const listStub = stub(
       packs,
@@ -2469,7 +2469,7 @@ Deno.test('/packs install', async (test) => {
             url: 'url',
             image: 'image',
           },
-        }),
+        } as any),
     );
 
     config.appId = 'app_id';
@@ -2653,7 +2653,7 @@ Deno.test('/packs uninstall', async (test) => {
             url: 'url',
             image: 'image',
           },
-        }),
+        } as any),
     );
 
     config.appId = 'app_id';

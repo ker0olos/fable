@@ -47,7 +47,7 @@ async function query(req: Request): Promise<Response> {
 
   const { id: userId } = await auth.json();
 
-  const response = await db.getPacksByUserId(userId);
+  const response = await db.getPacksByMaintainerId(userId);
 
   return utils.json({ data: response });
 }

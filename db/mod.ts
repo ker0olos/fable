@@ -66,8 +66,8 @@ import { clearFloor, consumeSweep } from './consumeSweep.ts';
 
 import {
   addPack,
-  getPacksByUserId,
-  popularPacks,
+  getPacksByMaintainerId,
+  // popularPacks,
   publishPack,
   removePack,
 } from './addPack.ts';
@@ -120,6 +120,23 @@ async function getValueAndTimestamp<T>(
   const res = await kv.get<T>(key);
 
   return res.value === null ? undefined : res;
+}
+
+async function getKeys(
+  selector: Deno.KvListSelector,
+  _kv?: Deno.Kv,
+): Promise<Deno.KvKey[]> {
+  const keys = [];
+
+  const iter = (_kv ?? kv).list(selector, {
+    batchSize: 100,
+  });
+
+  for await (const { key } of iter) {
+    keys.push(key);
+  }
+
+  return keys;
 }
 
 async function getValues<T>(
@@ -187,6 +204,7 @@ const db = {
   kv,
   setValue,
   getValue,
+  getKeys,
   getValues,
   getValueAndTimestamp,
   getValuesAndTimestamps,
@@ -241,8 +259,8 @@ const db = {
   clearFloor,
   //
   addPack,
-  getPacksByUserId,
-  popularPacks,
+  getPacksByMaintainerId,
+  // popularPacks,
   publishPack,
   removePack,
   //

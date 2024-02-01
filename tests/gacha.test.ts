@@ -578,11 +578,14 @@ Deno.test('filter invalid pools', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ _id: '_', manifest }]),
+      () => Promise.resolve([{ _id: '_', manifest }] as any as any),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ _id: '_', manifest }], disables: [] },
+      'guild_id': {
+        packs: [{ _id: '_', manifest }] as any as any,
+        disables: [],
+      },
     };
 
     try {
@@ -761,7 +764,7 @@ Deno.test('disabled', async (test) => {
 
     packs.cachedGuilds = {
       'guild_id': {
-        packs: [{ _id: '_', manifest }],
+        packs: [{ _id: '_', manifest }] as any,
         disables: ['anilist:anime'],
       },
     };
@@ -851,7 +854,7 @@ Deno.test('disabled', async (test) => {
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ _id: '_', manifest }], disables: [] },
+      'guild_id': { packs: [{ _id: '_', manifest }] as any, disables: [] },
     };
 
     try {
@@ -1259,11 +1262,11 @@ Deno.test('valid pool', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ _id: '_', manifest }]),
+      () => Promise.resolve([{ _id: '_', manifest }] as any),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ _id: '_', manifest }], disables: [] },
+      'guild_id': { packs: [{ _id: '_', manifest }] as any, disables: [] },
     };
 
     try {
@@ -1917,11 +1920,11 @@ Deno.test('valid rng pools', async (test) => {
     const listStub = stub(
       packs,
       'all',
-      () => Promise.resolve([{ _id: '_', manifest }]),
+      () => Promise.resolve([{ _id: '_', manifest }] as any),
     );
 
     packs.cachedGuilds = {
-      'guild_id': { packs: [{ _id: '_', manifest }], disables: [] },
+      'guild_id': { packs: [{ _id: '_', manifest }] as any, disables: [] },
     };
 
     try {

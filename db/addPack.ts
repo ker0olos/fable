@@ -2,7 +2,7 @@ import { ulid } from 'ulid';
 
 import db, { kv } from './mod.ts';
 
-import { packsByManifestId } from './indices.ts';
+import { packsByMaintainerId, packsByManifestId } from './indices.ts';
 
 import { KvError } from '../src/errors.ts';
 
@@ -12,24 +12,23 @@ import type { Manifest } from '../src/types.ts';
 
 import type * as Schema from './schema.ts';
 
-export async function popularPacks(): Promise<Schema.Pack[]> {
-  const packs = await db.getValues<Schema.Pack>({ prefix: ['packs'] });
+// export async function popularPacks(): Promise<Schema.Pack[]> {
+//   const packs = await db.getValues<Schema.Pack>({ prefix: ['packs'] });
 
-  return packs
-    .filter(({ manifest }) => !manifest.private)
-    .toSorted((a, b) => (b.servers ?? 0) - (a.servers ?? 0));
-}
+//   return packs
+//     .filter(({ manifest }) => !manifest.private)
+//     .toSorted((a, b) => (b.servers ?? 0) - (a.servers ?? 0));
+// }
 
-export async function getPacksByUserId(
+export async function getPacksByMaintainerId(
   userDiscordId: string,
 ): Promise<Schema.Pack[]> {
-  const packs = await db.getValues<Schema.Pack>({ prefix: ['packs'] });
-
-  return packs.filter((pack) => {
-    if (pack.owner === userDiscordId) return true;
-    if (pack.manifest.maintainers?.includes(userDiscordId)) return true;
-    return false;
+  const keys = await db.getKeys({
+    prefix: packsByMaintainerId(userDiscordId),
   });
+
+  return (await db.getManyValues(keys))
+    .filter(Boolean) as Schema.Pack[];
 }
 
 export async function publishPack(
@@ -40,36 +39,61 @@ export async function publishPack(
     throw new Error('UNDER_MAINTENANCE');
   }
 
-  let pack = await db.getValue<Schema.Pack>(packsByManifestId(manifest.id));
+  const existingPack = await db.getValue<Schema.Pack>(
+    packsByManifestId(manifest.id),
+  );
 
   if (
-    pack &&
-    userDiscordId !== pack.owner &&
-    !pack.manifest.maintainers?.includes(userDiscordId)
+    existingPack &&
+    existingPack.owner !== userDiscordId &&
+    !existingPack.manifest.maintainers?.includes(userDiscordId)
   ) {
     throw new Error('PERMISSION_DENIED');
   }
 
-  pack ??= {
-    manifest,
+  const oldMaintainers = existingPack?.manifest.maintainers ?? [];
+  const newMaintainers = manifest.maintainers ?? [];
+
+  const removedMaintainers = oldMaintainers.filter((oldMaintainer) =>
+    !newMaintainers.includes(oldMaintainer)
+  );
+
+  const pack: Schema.Pack = existingPack ?? {
     _id: ulid(),
+    version: 0,
     added: new Date().toISOString(),
+    updated: new Date().toISOString(),
     owner: userDiscordId,
-  };
+    manifest,
+  } satisfies Schema.Pack;
 
-  pack.version = (pack.version ?? 0) + 1;
-  pack.updated = new Date().toISOString();
   pack.manifest = manifest;
+  pack.version = pack.version + 1;
+  pack.updated = new Date().toISOString();
 
-  const insert = await kv.atomic()
-    //
+  const op = kv.atomic();
+
+  // update the indices used to query packs by the maintainer/owner id
+  // they only refer to the pack id instead of the entire pack object
+  // this is to avoid updating all the indices every time the pack is installed or uninstalled
+  op.set(packsByMaintainerId(pack.owner, pack._id), 1);
+
+  newMaintainers.forEach((discordId) => {
+    op.set(packsByMaintainerId(discordId, pack._id), 1);
+  });
+
+  removedMaintainers.forEach((discordId) => {
+    op.delete(packsByMaintainerId(discordId, pack._id));
+  });
+  //
+
+  const insert = await op
     .set(['packs', pack._id], pack)
     .set(packsByManifestId(pack.manifest.id), pack)
-    //
     .commit();
 
   if (!insert.ok) {
-    throw new KvError('failed to insert pack');
+    throw new KvError('failed to insert/update pack');
   }
 
   return pack;
