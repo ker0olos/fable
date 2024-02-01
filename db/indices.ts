@@ -35,3 +35,11 @@ export const charactersByMediaIdPrefix = (
 export const packsByManifestId = (
   manifestId: string,
 ) => ['packs_by_manifest_id', manifestId];
+
+export const packsByMaintainerId = (
+  discordId: string,
+  packId?: string,
+) =>
+  packId
+    ? ['packs_by_maintainer_id', discordId, packId]
+    : ['packs_by_maintainer_id', discordId];

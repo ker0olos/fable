@@ -63,11 +63,11 @@ export interface Character extends Collection {
 }
 
 export interface Pack extends Collection {
+  owner: string;
+  added: string;
+  updated: string;
+  version: number;
   manifest: Manifest;
-  added?: string;
-  updated?: string;
-  version?: number;
-  owner?: string;
   servers?: number;
   approved?: boolean;
 }
