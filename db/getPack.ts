@@ -1,6 +1,6 @@
 import db from './mod.ts';
 
-import { packsByMaintainerId } from './indices.ts';
+import { packByManifestId, packsByMaintainerId } from './indices.ts';
 
 import type * as Schema from './schema.ts';
 
@@ -25,4 +25,10 @@ export async function getPacksByMaintainerId(
 
   return (await db.getManyValues(keys))
     .filter(Boolean) as Schema.Pack[];
+}
+
+export function getPack(
+  manifestId: string,
+): Promise<Schema.Pack | undefined> {
+  return db.getValue<Schema.Pack>(packByManifestId(manifestId));
 }

@@ -64,7 +64,7 @@ import { gainExp, MAX_LEVEL } from './gainExp.ts';
 
 import { clearFloor, consumeSweep } from './consumeSweep.ts';
 
-import { getPacksByMaintainerId } from './getPack.ts';
+import { getPack, getPacksByMaintainerId } from './getPack.ts';
 
 import { addPack, publishPack, removePack } from './addPack.ts';
 
@@ -259,6 +259,7 @@ const db = {
   // popularPacks,
   publishPack,
   removePack,
+  getPack,
   //
   disableBuiltins,
   //

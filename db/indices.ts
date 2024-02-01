@@ -32,7 +32,7 @@ export const charactersByMediaIdPrefix = (
   mediaId: string,
 ) => ['characters_by_media_instance', instanceId, mediaId];
 
-export const packsByManifestId = (
+export const packByManifestId = (
   manifestId: string,
 ) => ['packs_by_manifest_id', manifestId];
 

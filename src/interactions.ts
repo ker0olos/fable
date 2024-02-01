@@ -1405,6 +1405,7 @@ if (import.meta.main) {
     '/': handler,
     '/community/user': community.user,
     '/community/publish': community.publish,
+    '/community/pack/:packId+': community.pack,
     '/webhooks/topgg': webhooks.topgg,
     '/external/*': utils.handleProxy,
     '/assets/:filename+': utils.serveStatic('../assets/public', {
