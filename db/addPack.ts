@@ -39,10 +39,6 @@ export async function publishPack(
   userDiscordId: string,
   manifest: Manifest,
 ): Promise<Schema.Pack> {
-  if (!config.publishPacks) {
-    throw new Error('UNDER_MAINTENANCE');
-  }
-
   const existingPack = await db.getValue<Schema.Pack>(
     packsByManifestId(manifest.id),
   );

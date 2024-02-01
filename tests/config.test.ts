@@ -32,6 +32,7 @@ Deno.test('init', async (test) => {
         false,
         false,
         false,
+        false,
         //
         false,
         false,
@@ -69,7 +70,8 @@ Deno.test('init', async (test) => {
         stealing: true,
         synthesis: true,
         communityPacks: true,
-        publishPacks: true,
+        communityPacksMaintainerAPI: true,
+        communityPacksBrowseAPI: true,
         combat: true,
         origin: undefined,
         //
@@ -110,6 +112,7 @@ Deno.test('init', async (test) => {
         true,
         true,
         true,
+        true,
         //
         true,
         true,
@@ -127,6 +130,7 @@ Deno.test('init', async (test) => {
         'public_key',
         'topgg_secret',
         'notice_message',
+        '0',
         '0',
         '0',
         '0',
@@ -155,7 +159,8 @@ Deno.test('init', async (test) => {
         stealing: false,
         synthesis: false,
         communityPacks: false,
-        publishPacks: false,
+        communityPacksMaintainerAPI: false,
+        communityPacksBrowseAPI: false,
         combat: false,
         origin: undefined,
         //

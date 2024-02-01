@@ -15,7 +15,7 @@ import config from './config.ts';
 import type { Manifest } from './types.ts';
 
 export async function user(req: Request): Promise<Response> {
-  if (!config.publishPacks) {
+  if (!config.communityPacksMaintainerAPI) {
     return utils.json(
       { error: 'Server is possibly under maintenance' },
       { status: 503, statusText: 'Under Maintenance' },
@@ -50,7 +50,7 @@ export async function user(req: Request): Promise<Response> {
 }
 
 export async function publish(req: Request): Promise<Response> {
-  if (!config.publishPacks) {
+  if (!config.communityPacksMaintainerAPI) {
     return utils.json(
       { error: 'Server is possibly under maintenance' },
       { status: 503, statusText: 'Under Maintenance' },

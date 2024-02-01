@@ -17,7 +17,7 @@ import db from '../db/mod.ts';
 
 import config from '../src/config.ts';
 
-Deno.test('/', async (test) => {
+Deno.test('/user', async (test) => {
   await test.step('normal', async () => {
     const fetchStub = stub(
       utils,
@@ -39,7 +39,7 @@ Deno.test('/', async (test) => {
       () => [] as any,
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -68,7 +68,7 @@ Deno.test('/', async (test) => {
       assertEquals(response.status, 200);
       assertEquals(response.statusText, 'OK');
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
       getPacksByMaintainerIdStub.restore();
@@ -92,7 +92,7 @@ Deno.test('/', async (test) => {
       ]),
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -122,7 +122,7 @@ Deno.test('/', async (test) => {
         error: 'invalid access token',
       });
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
     }
@@ -164,7 +164,7 @@ Deno.test('/publish', async (test) => {
       () => [] as any,
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -196,7 +196,7 @@ Deno.test('/publish', async (test) => {
       assertEquals(response.status, 200);
       assertEquals(response.statusText, 'OK');
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
       publishPackStub.restore();
@@ -220,7 +220,7 @@ Deno.test('/publish', async (test) => {
       ]),
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -255,7 +255,7 @@ Deno.test('/publish', async (test) => {
         error: 'invalid access token',
       });
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
     }
@@ -276,7 +276,7 @@ Deno.test('/publish', async (test) => {
       ]),
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -307,7 +307,7 @@ Deno.test('/publish', async (test) => {
         ],
       });
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
     }
@@ -336,7 +336,7 @@ Deno.test('/publish', async (test) => {
       },
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -376,7 +376,7 @@ Deno.test('/publish', async (test) => {
         error: 'No permission to edit this pack',
       });
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
       publishPackStub.restore();
@@ -406,7 +406,7 @@ Deno.test('/publish', async (test) => {
       },
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -442,7 +442,7 @@ Deno.test('/publish', async (test) => {
         error: 'Internal Server Error',
       });
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
       publishPackStub.restore();
