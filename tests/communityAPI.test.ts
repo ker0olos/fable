@@ -160,7 +160,7 @@ Deno.test('/popular', async (test) => {
 
       assertEquals(data.length, 3);
       assertEquals(data.data.length, 3);
-      assertEquals(data.limit, 6);
+      assertEquals(data.limit, 20);
       assertEquals(data.offset, 0);
 
       assertEquals(data.data[0].id, 'pack-3');

@@ -337,7 +337,25 @@ Deno.test('distance', () => {
 });
 
 Deno.test('pagination', async (test) => {
-  await test.step('pagination 1', () => {
+  await test.step('default limit', () => {
+    const url = new URL('http://localhost:8000?offset=2');
+
+    const pages = utils.pagination(
+      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
+      url,
+    );
+
+    assertEquals(pages.data.length, 6);
+    assertEquals(pages.length, 10);
+    assertEquals(pages.limit, 6);
+    assertEquals(pages.offset, 2);
+
+    assertEquals(pages.data[0], 'item-3');
+    assertEquals(pages.data[1], 'item-4');
+    assertEquals(pages.data[2], 'item-5');
+  });
+
+  await test.step('custom limit', () => {
     const url = new URL('http://localhost:8000?limit=3&offset=2');
 
     const pages = utils.pagination(
@@ -355,7 +373,7 @@ Deno.test('pagination', async (test) => {
     assertEquals(pages.data[2], 'item-5');
   });
 
-  await test.step('pagination 2', () => {
+  await test.step('limit equal to the length of data', () => {
     const url = new URL('http://localhost:8000?limit=10&offset=0');
 
     const pages = utils.pagination(
@@ -374,7 +392,7 @@ Deno.test('pagination', async (test) => {
     assertEquals(pages.data[9], 'item-10');
   });
 
-  await test.step('pagination 3', () => {
+  await test.step('offset is higher than length of data', () => {
     const url = new URL('http://localhost:8000?limit=10&offset=11');
 
     const pages = utils.pagination(

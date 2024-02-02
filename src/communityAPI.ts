@@ -139,7 +139,7 @@ export async function popular(req: Request): Promise<Response> {
   // sort by most used
   packs.sort((a, b) => (b.servers ?? 0) - (a.servers ?? 0));
 
-  const paginationResult = utils.pagination(packs, url);
+  const paginationResult = utils.pagination(packs, url, 20);
 
   return utils.json(paginationResult);
 }
