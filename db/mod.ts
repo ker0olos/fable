@@ -75,7 +75,7 @@ import { createVoteRef, resolveVoteRef } from './voteRef.ts';
 import { getFromBlob, setAsBlob } from './blob.ts';
 
 export const kv = await Deno.openKv(
-  'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect',
+  // 'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect',
 );
 
 async function setValue<T>(

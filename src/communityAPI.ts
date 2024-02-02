@@ -40,9 +40,24 @@ export async function user(req: Request): Promise<Response> {
 
   const { id: userId } = await auth.json();
 
-  const response = await db.getPacksByMaintainerId(userId);
+  const packs = await db.getPacksByMaintainerId(userId);
 
-  return utils.json({ data: response });
+  const limit = +(url.searchParams.get('limit') ?? 6);
+  const offset = +(url.searchParams.get('offset') ?? 0);
+
+  // sort by recently updated
+  packs.sort((a, b) =>
+    new Date(b.updated).getTime() - new Date(a.updated).getTime()
+  );
+
+  const paginatedPacks = packs.slice(offset, offset + limit);
+
+  return utils.json({
+    data: paginatedPacks,
+    length: packs.length,
+    offset,
+    limit,
+  });
 }
 
 export async function publish(req: Request): Promise<Response> {
