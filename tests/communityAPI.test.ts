@@ -28,64 +28,6 @@ Deno.test('/user', async (test) => {
     const getPacksByMaintainerIdStub = stub(
       db,
       'getPacksByMaintainerId',
-      () => [{ id: 'pack-id' }] as any,
-    );
-
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
-      });
-
-      const response = await communityAPI.user(request);
-
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
-          method: 'GET',
-          headers: {
-            'content-type': 'application/json',
-            'authorization': `Bearer token`,
-          },
-        }],
-      });
-
-      assertEquals(
-        getPacksByMaintainerIdStub.calls[0].args[0],
-        'user_id',
-      );
-
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
-
-      const data = await response.json();
-
-      assertEquals(data.length, 1);
-      assertEquals(data.limit, 6);
-      assertEquals(data.offset, 0);
-      assertEquals(data.data.length, 1);
-
-      assertEquals(data.data[0].id, 'pack-id');
-    } finally {
-      delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-      getPacksByMaintainerIdStub.restore();
-    }
-  });
-
-  await test.step('sorting', async () => {
-    const fetchStub = stub(utils, 'fetchWithRetry', () =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 'user_id' }),
-      } as any));
-
-    const getPacksByMaintainerIdStub = stub(
-      db,
-      'getPacksByMaintainerId',
       () =>
         [
           { id: 'pack-1', updated: '2023-03-25T00:00:00Z' },
@@ -115,147 +57,6 @@ Deno.test('/user', async (test) => {
       assertEquals(data.data[0].id, 'pack-2');
       assertEquals(data.data[1].id, 'pack-3');
       assertEquals(data.data[2].id, 'pack-1');
-    } finally {
-      delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-      getPacksByMaintainerIdStub.restore();
-    }
-  });
-
-  await test.step('pagination', async () => {
-    const fetchStub = stub(utils, 'fetchWithRetry', () =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 'user_id' }),
-      } as any));
-
-    const getPacksByMaintainerIdStub = stub(
-      db,
-      'getPacksByMaintainerId',
-      () =>
-        new Array(10)
-          .fill({})
-          .map((_, i) => ({ id: `pack-${i + 1}` })) as any,
-    );
-
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000?limit=3&offset=2', {
-        method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
-      });
-
-      const response = await communityAPI.user(request);
-
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
-
-      const data = await response.json();
-
-      assertEquals(data.data.length, 3);
-      assertEquals(data.length, 10);
-      assertEquals(data.limit, 3);
-      assertEquals(data.offset, 2);
-
-      assertEquals(data.data[0].id, 'pack-3');
-      assertEquals(data.data[1].id, 'pack-4');
-      assertEquals(data.data[2].id, 'pack-5');
-    } finally {
-      delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-      getPacksByMaintainerIdStub.restore();
-    }
-  });
-
-  await test.step('pagination 2', async () => {
-    const fetchStub = stub(utils, 'fetchWithRetry', () =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 'user_id' }),
-      } as any));
-
-    const getPacksByMaintainerIdStub = stub(
-      db,
-      'getPacksByMaintainerId',
-      () =>
-        new Array(10)
-          .fill({})
-          .map((_, i) => ({ id: `pack-${i + 1}` })) as any,
-    );
-
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000?limit=10&offset=0', {
-        method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
-      });
-
-      const response = await communityAPI.user(request);
-
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
-
-      const data = await response.json();
-
-      assertEquals(data.data.length, 10);
-      assertEquals(data.length, 10);
-      assertEquals(data.limit, 10);
-      assertEquals(data.offset, 0);
-
-      assertEquals(data.data[0].id, 'pack-1');
-      assertEquals(data.data[1].id, 'pack-2');
-      assertEquals(data.data[2].id, 'pack-3');
-      assertEquals(data.data[9].id, 'pack-10');
-    } finally {
-      delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-      getPacksByMaintainerIdStub.restore();
-    }
-  });
-
-  await test.step('pagination 3', async () => {
-    const fetchStub = stub(utils, 'fetchWithRetry', () =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 'user_id' }),
-      } as any));
-
-    const getPacksByMaintainerIdStub = stub(
-      db,
-      'getPacksByMaintainerId',
-      () =>
-        new Array(10)
-          .fill({})
-          .map((_, i) => ({ id: `pack-${i + 1}` })) as any,
-    );
-
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000?limit=10&offset=11', {
-        method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
-      });
-
-      const response = await communityAPI.user(request);
-
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
-
-      const data = await response.json();
-
-      assertEquals(data.data.length, 0);
-      assertEquals(data.length, 10);
-      assertEquals(data.limit, 10);
-      assertEquals(data.offset, 11);
     } finally {
       delete config.communityPacksMaintainerAPI;
 
@@ -324,6 +125,58 @@ Deno.test('/user', async (test) => {
     });
 
     const response = await communityAPI.user(request);
+
+    assertEquals(response.ok, false);
+    assertEquals(response.status, 503);
+    assertEquals(response.statusText, 'Under Maintenance');
+  });
+});
+
+Deno.test('/popular', async (test) => {
+  await test.step('normal', async () => {
+    const getAllPublicPacksStub = stub(
+      db,
+      'getAllPublicPacks',
+      () =>
+        [
+          { id: 'pack-1', servers: 5 },
+          { id: 'pack-2', servers: 0 },
+          { id: 'pack-3', servers: 20 },
+        ] as any,
+    );
+
+    config.communityPacksBrowseAPI = true;
+
+    try {
+      const request = new Request('http://localhost:8000', { method: 'GET' });
+
+      const response = await communityAPI.popular(request);
+
+      assertEquals(response.ok, true);
+      assertEquals(response.status, 200);
+      assertEquals(response.statusText, 'OK');
+
+      const data = await response.json();
+
+      assertEquals(data.length, 3);
+      assertEquals(data.data.length, 3);
+      assertEquals(data.limit, 6);
+      assertEquals(data.offset, 0);
+
+      assertEquals(data.data[0].id, 'pack-3');
+      assertEquals(data.data[1].id, 'pack-1');
+      assertEquals(data.data[2].id, 'pack-2');
+    } finally {
+      delete config.communityPacksBrowseAPI;
+
+      getAllPublicPacksStub.restore();
+    }
+  });
+
+  await test.step('under maintenance', async () => {
+    const request = new Request('http://localhost:8000', { method: 'GET' });
+
+    const response = await communityAPI.popular(request);
 
     assertEquals(response.ok, false);
     assertEquals(response.status, 503);

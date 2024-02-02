@@ -42,22 +42,14 @@ export async function user(req: Request): Promise<Response> {
 
   const packs = await db.getPacksByMaintainerId(userId);
 
-  const limit = +(url.searchParams.get('limit') ?? 6);
-  const offset = +(url.searchParams.get('offset') ?? 0);
-
   // sort by recently updated
   packs.sort((a, b) =>
     new Date(b.updated).getTime() - new Date(a.updated).getTime()
   );
 
-  const paginatedPacks = packs.slice(offset, offset + limit);
+  const paginationResult = utils.pagination(packs, url);
 
-  return utils.json({
-    data: paginatedPacks,
-    length: packs.length,
-    offset,
-    limit,
-  });
+  return utils.json(paginationResult);
 }
 
 export async function publish(req: Request): Promise<Response> {
@@ -122,6 +114,34 @@ export async function publish(req: Request): Promise<Response> {
         });
     }
   }
+}
+
+export async function popular(req: Request): Promise<Response> {
+  const url = new URL(req.url);
+
+  const { error } = await utils.validateRequest(req, {
+    GET: {},
+  });
+
+  if (error) {
+    return utils.json({ error: error.message }, { status: error.status });
+  }
+
+  if (!config.communityPacksBrowseAPI) {
+    return utils.json(
+      { error: 'Server is possibly under maintenance' },
+      { status: 503, statusText: 'Under Maintenance' },
+    );
+  }
+
+  const packs = await db.getAllPublicPacks();
+
+  // sort by most used
+  packs.sort((a, b) => (b.servers ?? 0) - (a.servers ?? 0));
+
+  const paginationResult = utils.pagination(packs, url);
+
+  return utils.json(paginationResult);
 }
 
 // export async function pack(

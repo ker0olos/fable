@@ -4,13 +4,12 @@ import { packsByMaintainerId } from './indices.ts';
 
 import type * as Schema from './schema.ts';
 
-// export async function popularPacks(): Promise<Schema.Pack[]> {
-//   const packs = await db.getValues<Schema.Pack>({ prefix: ['packs'] });
+export async function getAllPublicPacks(): Promise<Schema.Pack[]> {
+  const packs = await db.getValues<Schema.Pack>({ prefix: ['packs'] });
 
-//   return packs
-//     .filter(({ manifest }) => !manifest.private)
-//     .toSorted((a, b) => (b.servers ?? 0) - (a.servers ?? 0));
-// }
+  return packs
+    .filter(({ manifest }) => !manifest.private);
+}
 
 export async function getPacksByMaintainerId(
   userDiscordId: string,
