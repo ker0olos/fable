@@ -464,406 +464,406 @@ Deno.test('/publish', async (test) => {
   });
 });
 
-Deno.test('/pack', async (test) => {
-  await test.step('normal', async () => {
-    const getPack = stub(
-      db,
-      'getPack',
-      () =>
-        ({
-          owner: 'user_id',
-          manifest: {
-            private: false,
-          },
-        }) as any,
-    );
-
-    config.communityPacksBrowseAPI = true;
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-      });
-
-      const response = await communityAPI.pack(request, {
-        packId: 'pack-id',
-      });
-
-      assertEquals(getPack.calls[0].args[0], 'pack-id');
-
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
-    } finally {
-      delete config.communityPacksBrowseAPI;
-      delete config.communityPacksMaintainerAPI;
-
-      getPack.restore();
-    }
-  });
-
-  await test.step('private pack with authorization as owner', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        { ok: true, json: (() => Promise.resolve({ id: 'user_id' })) } as any,
-      ]),
-    );
-
-    const getPack = stub(
-      db,
-      'getPack',
-      () =>
-        ({
-          owner: 'user_id',
-          manifest: {
-            private: true,
-          },
-        }) as any,
-    );
-
-    config.communityPacksBrowseAPI = true;
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
-      });
-
-      const response = await communityAPI.pack(request, {
-        packId: 'pack-id',
-      });
-
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
-          method: 'GET',
-          headers: {
-            'content-type': 'application/json',
-            'authorization': `Bearer token`,
-          },
-        }],
-      });
-
-      assertEquals(getPack.calls[0].args[0], 'pack-id');
-
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
-    } finally {
-      delete config.communityPacksBrowseAPI;
-      delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-      getPack.restore();
-    }
-  });
-
-  await test.step('private pack with authorization as maintainer', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        { ok: true, json: (() => Promise.resolve({ id: 'user_id' })) } as any,
-      ]),
-    );
-
-    const getPack = stub(
-      db,
-      'getPack',
-      () =>
-        ({
-          owner: 'another_user_id',
-          manifest: {
-            private: true,
-            maintainers: ['user_id'],
-          },
-        }) as any,
-    );
-
-    config.communityPacksBrowseAPI = true;
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
-      });
-
-      const response = await communityAPI.pack(request, {
-        packId: 'pack-id',
-      });
-
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
-          method: 'GET',
-          headers: {
-            'content-type': 'application/json',
-            'authorization': `Bearer token`,
-          },
-        }],
-      });
-
-      assertEquals(getPack.calls[0].args[0], 'pack-id');
-
-      assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
-    } finally {
-      delete config.communityPacksBrowseAPI;
-      delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-      getPack.restore();
-    }
-  });
-
-  await test.step('private pack with wrong authorization', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        { ok: true, json: (() => Promise.resolve({ id: 'user_id' })) } as any,
-      ]),
-    );
-
-    const getPack = stub(
-      db,
-      'getPack',
-      () =>
-        ({
-          owner: 'another_user_id',
-          manifest: {
-            private: true,
-            maintainers: ['another_user_id_2'],
-          },
-        }) as any,
-    );
-
-    config.communityPacksBrowseAPI = true;
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
-      });
-
-      const response = await communityAPI.pack(request, {
-        packId: 'pack-id',
-      });
-
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
-          method: 'GET',
-          headers: {
-            'content-type': 'application/json',
-            'authorization': `Bearer token`,
-          },
-        }],
-      });
-
-      assertEquals(getPack.calls[0].args[0], 'pack-id');
-
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 403);
-      assertEquals(response.statusText, 'Forbidden');
-    } finally {
-      delete config.communityPacksBrowseAPI;
-      delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-      getPack.restore();
-    }
-  });
-
-  await test.step('private pack without authorization', async () => {
-    const getPack = stub(
-      db,
-      'getPack',
-      () =>
-        ({
-          owner: 'user_id',
-          manifest: {
-            private: true,
-          },
-        }) as any,
-    );
-
-    config.communityPacksBrowseAPI = true;
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-      });
-
-      const response = await communityAPI.pack(request, {
-        packId: 'pack-id',
-      });
-
-      assertEquals(getPack.calls[0].args[0], 'pack-id');
-
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 403);
-      assertEquals(response.statusText, 'Forbidden');
-    } finally {
-      delete config.communityPacksBrowseAPI;
-      delete config.communityPacksMaintainerAPI;
-
-      getPack.restore();
-    }
-  });
-
-  await test.step('not found', async () => {
-    const getPack = stub(
-      db,
-      'getPack',
-      () => undefined as any,
-    );
-
-    config.communityPacksBrowseAPI = true;
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-      });
-
-      const response = await communityAPI.pack(request, {
-        packId: 'pack-id',
-      });
-
-      assertEquals(getPack.calls[0].args[0], 'pack-id');
-
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 404);
-      assertEquals(response.statusText, 'Not Found');
-    } finally {
-      delete config.communityPacksBrowseAPI;
-      delete config.communityPacksMaintainerAPI;
-
-      getPack.restore();
-    }
-  });
-
-  await test.step('invalid access token', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: false,
-          status: 403,
-          statusText: 'Unauthorized',
-          json: (() =>
-            Promise.resolve({
-              error: 'invalid access token',
-            })),
-        } as any,
-      ]),
-    );
-
-    config.communityPacksBrowseAPI = true;
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
-      });
-
-      const response = await communityAPI.pack(request, {
-        packId: 'pack-id',
-      });
-
-      assertSpyCalls(fetchStub, 1);
-
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
-          method: 'GET',
-          headers: {
-            'content-type': 'application/json',
-            'authorization': `Bearer token`,
-          },
-        }],
-      });
-
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 403);
-      assertEquals(response.statusText, 'Unauthorized');
-
-      assertEquals(await response.json(), {
-        error: 'invalid access token',
-      });
-    } finally {
-      delete config.communityPacksBrowseAPI;
-      delete config.communityPacksMaintainerAPI;
-
-      fetchStub.restore();
-    }
-  });
-
-  await test.step('missing pack id parameter', async () => {
-    config.communityPacksBrowseAPI = true;
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-      });
-
-      const response = await communityAPI.pack(request, {});
-
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 400);
-      assertEquals(response.statusText, 'Bad Request');
-    } finally {
-      delete config.communityPacksBrowseAPI;
-      delete config.communityPacksMaintainerAPI;
-    }
-  });
-
-  await test.step('under maintenance', async () => {
-    config.communityPacksBrowseAPI = false;
-    config.communityPacksMaintainerAPI = true;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-      });
-
-      const response = await communityAPI.pack(request, {});
-
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 503);
-      assertEquals(response.statusText, 'Under Maintenance');
-    } finally {
-      delete config.communityPacksBrowseAPI;
-      delete config.communityPacksMaintainerAPI;
-    }
-  });
-
-  await test.step('under maintenance 2', async () => {
-    config.communityPacksBrowseAPI = true;
-    config.communityPacksMaintainerAPI = false;
-
-    try {
-      const request = new Request('http://localhost:8000', {
-        method: 'GET',
-        headers: { 'authorization': 'Bearer token' },
-      });
-
-      const response = await communityAPI.pack(request, {});
-
-      assertEquals(response.ok, false);
-      assertEquals(response.status, 503);
-      assertEquals(response.statusText, 'Under Maintenance');
-    } finally {
-      delete config.communityPacksBrowseAPI;
-      delete config.communityPacksMaintainerAPI;
-    }
-  });
-});
+// Deno.test('/pack', async (test) => {
+//   await test.step('normal', async () => {
+//     const getPack = stub(
+//       db,
+//       'getPack',
+//       () =>
+//         ({
+//           owner: 'user_id',
+//           manifest: {
+//             private: false,
+//           },
+//         }) as any,
+//     );
+
+//     config.communityPacksBrowseAPI = true;
+//     config.communityPacksMaintainerAPI = true;
+
+//     try {
+//       const request = new Request('http://localhost:8000', {
+//         method: 'GET',
+//       });
+
+//       const response = await communityAPI.pack(request, {
+//         packId: 'pack-id',
+//       });
+
+//       assertEquals(getPack.calls[0].args[0], 'pack-id');
+
+//       assertEquals(response.ok, true);
+//       assertEquals(response.status, 200);
+//       assertEquals(response.statusText, 'OK');
+//     } finally {
+//       delete config.communityPacksBrowseAPI;
+//       delete config.communityPacksMaintainerAPI;
+
+//       getPack.restore();
+//     }
+//   });
+
+//   await test.step('private pack with authorization as owner', async () => {
+//     const fetchStub = stub(
+//       utils,
+//       'fetchWithRetry',
+//       returnsNext([
+//         { ok: true, json: (() => Promise.resolve({ id: 'user_id' })) } as any,
+//       ]),
+//     );
+
+//     const getPack = stub(
+//       db,
+//       'getPack',
+//       () =>
+//         ({
+//           owner: 'user_id',
+//           manifest: {
+//             private: true,
+//           },
+//         }) as any,
+//     );
+
+//     config.communityPacksBrowseAPI = true;
+//     config.communityPacksMaintainerAPI = true;
+
+//     try {
+//       const request = new Request('http://localhost:8000', {
+//         method: 'GET',
+//         headers: { 'authorization': 'Bearer token' },
+//       });
+
+//       const response = await communityAPI.pack(request, {
+//         packId: 'pack-id',
+//       });
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: ['https://discord.com/api/users/@me', {
+//           method: 'GET',
+//           headers: {
+//             'content-type': 'application/json',
+//             'authorization': `Bearer token`,
+//           },
+//         }],
+//       });
+
+//       assertEquals(getPack.calls[0].args[0], 'pack-id');
+
+//       assertEquals(response.ok, true);
+//       assertEquals(response.status, 200);
+//       assertEquals(response.statusText, 'OK');
+//     } finally {
+//       delete config.communityPacksBrowseAPI;
+//       delete config.communityPacksMaintainerAPI;
+
+//       fetchStub.restore();
+//       getPack.restore();
+//     }
+//   });
+
+//   await test.step('private pack with authorization as maintainer', async () => {
+//     const fetchStub = stub(
+//       utils,
+//       'fetchWithRetry',
+//       returnsNext([
+//         { ok: true, json: (() => Promise.resolve({ id: 'user_id' })) } as any,
+//       ]),
+//     );
+
+//     const getPack = stub(
+//       db,
+//       'getPack',
+//       () =>
+//         ({
+//           owner: 'another_user_id',
+//           manifest: {
+//             private: true,
+//             maintainers: ['user_id'],
+//           },
+//         }) as any,
+//     );
+
+//     config.communityPacksBrowseAPI = true;
+//     config.communityPacksMaintainerAPI = true;
+
+//     try {
+//       const request = new Request('http://localhost:8000', {
+//         method: 'GET',
+//         headers: { 'authorization': 'Bearer token' },
+//       });
+
+//       const response = await communityAPI.pack(request, {
+//         packId: 'pack-id',
+//       });
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: ['https://discord.com/api/users/@me', {
+//           method: 'GET',
+//           headers: {
+//             'content-type': 'application/json',
+//             'authorization': `Bearer token`,
+//           },
+//         }],
+//       });
+
+//       assertEquals(getPack.calls[0].args[0], 'pack-id');
+
+//       assertEquals(response.ok, true);
+//       assertEquals(response.status, 200);
+//       assertEquals(response.statusText, 'OK');
+//     } finally {
+//       delete config.communityPacksBrowseAPI;
+//       delete config.communityPacksMaintainerAPI;
+
+//       fetchStub.restore();
+//       getPack.restore();
+//     }
+//   });
+
+//   await test.step('private pack with wrong authorization', async () => {
+//     const fetchStub = stub(
+//       utils,
+//       'fetchWithRetry',
+//       returnsNext([
+//         { ok: true, json: (() => Promise.resolve({ id: 'user_id' })) } as any,
+//       ]),
+//     );
+
+//     const getPack = stub(
+//       db,
+//       'getPack',
+//       () =>
+//         ({
+//           owner: 'another_user_id',
+//           manifest: {
+//             private: true,
+//             maintainers: ['another_user_id_2'],
+//           },
+//         }) as any,
+//     );
+
+//     config.communityPacksBrowseAPI = true;
+//     config.communityPacksMaintainerAPI = true;
+
+//     try {
+//       const request = new Request('http://localhost:8000', {
+//         method: 'GET',
+//         headers: { 'authorization': 'Bearer token' },
+//       });
+
+//       const response = await communityAPI.pack(request, {
+//         packId: 'pack-id',
+//       });
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: ['https://discord.com/api/users/@me', {
+//           method: 'GET',
+//           headers: {
+//             'content-type': 'application/json',
+//             'authorization': `Bearer token`,
+//           },
+//         }],
+//       });
+
+//       assertEquals(getPack.calls[0].args[0], 'pack-id');
+
+//       assertEquals(response.ok, false);
+//       assertEquals(response.status, 403);
+//       assertEquals(response.statusText, 'Forbidden');
+//     } finally {
+//       delete config.communityPacksBrowseAPI;
+//       delete config.communityPacksMaintainerAPI;
+
+//       fetchStub.restore();
+//       getPack.restore();
+//     }
+//   });
+
+//   await test.step('private pack without authorization', async () => {
+//     const getPack = stub(
+//       db,
+//       'getPack',
+//       () =>
+//         ({
+//           owner: 'user_id',
+//           manifest: {
+//             private: true,
+//           },
+//         }) as any,
+//     );
+
+//     config.communityPacksBrowseAPI = true;
+//     config.communityPacksMaintainerAPI = true;
+
+//     try {
+//       const request = new Request('http://localhost:8000', {
+//         method: 'GET',
+//       });
+
+//       const response = await communityAPI.pack(request, {
+//         packId: 'pack-id',
+//       });
+
+//       assertEquals(getPack.calls[0].args[0], 'pack-id');
+
+//       assertEquals(response.ok, false);
+//       assertEquals(response.status, 403);
+//       assertEquals(response.statusText, 'Forbidden');
+//     } finally {
+//       delete config.communityPacksBrowseAPI;
+//       delete config.communityPacksMaintainerAPI;
+
+//       getPack.restore();
+//     }
+//   });
+
+//   await test.step('not found', async () => {
+//     const getPack = stub(
+//       db,
+//       'getPack',
+//       () => undefined as any,
+//     );
+
+//     config.communityPacksBrowseAPI = true;
+//     config.communityPacksMaintainerAPI = true;
+
+//     try {
+//       const request = new Request('http://localhost:8000', {
+//         method: 'GET',
+//       });
+
+//       const response = await communityAPI.pack(request, {
+//         packId: 'pack-id',
+//       });
+
+//       assertEquals(getPack.calls[0].args[0], 'pack-id');
+
+//       assertEquals(response.ok, false);
+//       assertEquals(response.status, 404);
+//       assertEquals(response.statusText, 'Not Found');
+//     } finally {
+//       delete config.communityPacksBrowseAPI;
+//       delete config.communityPacksMaintainerAPI;
+
+//       getPack.restore();
+//     }
+//   });
+
+//   await test.step('invalid access token', async () => {
+//     const fetchStub = stub(
+//       utils,
+//       'fetchWithRetry',
+//       returnsNext([
+//         {
+//           ok: false,
+//           status: 403,
+//           statusText: 'Unauthorized',
+//           json: (() =>
+//             Promise.resolve({
+//               error: 'invalid access token',
+//             })),
+//         } as any,
+//       ]),
+//     );
+
+//     config.communityPacksBrowseAPI = true;
+//     config.communityPacksMaintainerAPI = true;
+
+//     try {
+//       const request = new Request('http://localhost:8000', {
+//         method: 'GET',
+//         headers: { 'authorization': 'Bearer token' },
+//       });
+
+//       const response = await communityAPI.pack(request, {
+//         packId: 'pack-id',
+//       });
+
+//       assertSpyCalls(fetchStub, 1);
+
+//       assertSpyCall(fetchStub, 0, {
+//         args: ['https://discord.com/api/users/@me', {
+//           method: 'GET',
+//           headers: {
+//             'content-type': 'application/json',
+//             'authorization': `Bearer token`,
+//           },
+//         }],
+//       });
+
+//       assertEquals(response.ok, false);
+//       assertEquals(response.status, 403);
+//       assertEquals(response.statusText, 'Unauthorized');
+
+//       assertEquals(await response.json(), {
+//         error: 'invalid access token',
+//       });
+//     } finally {
+//       delete config.communityPacksBrowseAPI;
+//       delete config.communityPacksMaintainerAPI;
+
+//       fetchStub.restore();
+//     }
+//   });
+
+//   await test.step('missing pack id parameter', async () => {
+//     config.communityPacksBrowseAPI = true;
+//     config.communityPacksMaintainerAPI = true;
+
+//     try {
+//       const request = new Request('http://localhost:8000', {
+//         method: 'GET',
+//       });
+
+//       const response = await communityAPI.pack(request, {});
+
+//       assertEquals(response.ok, false);
+//       assertEquals(response.status, 400);
+//       assertEquals(response.statusText, 'Bad Request');
+//     } finally {
+//       delete config.communityPacksBrowseAPI;
+//       delete config.communityPacksMaintainerAPI;
+//     }
+//   });
+
+//   await test.step('under maintenance', async () => {
+//     config.communityPacksBrowseAPI = false;
+//     config.communityPacksMaintainerAPI = true;
+
+//     try {
+//       const request = new Request('http://localhost:8000', {
+//         method: 'GET',
+//       });
+
+//       const response = await communityAPI.pack(request, {});
+
+//       assertEquals(response.ok, false);
+//       assertEquals(response.status, 503);
+//       assertEquals(response.statusText, 'Under Maintenance');
+//     } finally {
+//       delete config.communityPacksBrowseAPI;
+//       delete config.communityPacksMaintainerAPI;
+//     }
+//   });
+
+//   await test.step('under maintenance 2', async () => {
+//     config.communityPacksBrowseAPI = true;
+//     config.communityPacksMaintainerAPI = false;
+
+//     try {
+//       const request = new Request('http://localhost:8000', {
+//         method: 'GET',
+//         headers: { 'authorization': 'Bearer token' },
+//       });
+
+//       const response = await communityAPI.pack(request, {});
+
+//       assertEquals(response.ok, false);
+//       assertEquals(response.status, 503);
+//       assertEquals(response.statusText, 'Under Maintenance');
+//     } finally {
+//       delete config.communityPacksBrowseAPI;
+//       delete config.communityPacksMaintainerAPI;
+//     }
+//   });
+// });
