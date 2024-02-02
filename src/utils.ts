@@ -437,6 +437,24 @@ function isWithin14Days(date: Date): boolean {
   return date >= fourteenDaysAgo;
 }
 
+function pagination<T>(
+  packs: T[],
+  url: URL,
+  defaultLimit = 6,
+): { data: T[]; length: number; offset: number; limit: number } {
+  const limit = +(url.searchParams.get('limit') ?? defaultLimit);
+  const offset = +(url.searchParams.get('offset') ?? 0);
+
+  const paginatedPacks = packs.slice(offset, offset + limit);
+
+  return {
+    data: paginatedPacks,
+    length: packs.length,
+    offset,
+    limit,
+  };
+}
+
 const utils = {
   LehmerRNG,
   isWithin14Days,
@@ -472,6 +490,7 @@ const utils = {
   verifySignature,
   votingTimestamp,
   wrap,
+  pagination,
 };
 
 export default utils;

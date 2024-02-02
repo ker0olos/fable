@@ -9,7 +9,7 @@ import * as discord from './discord.ts';
 
 import db from '../db/mod.ts';
 
-async function topgg(r: Request): Promise<Response> {
+export async function topgg(r: Request): Promise<Response> {
   const { error } = await utils.validateRequest(r, {
     POST: {
       headers: ['Authorization'],
@@ -133,9 +133,3 @@ async function topgg(r: Request): Promise<Response> {
     );
   }
 }
-
-const webhooks = {
-  topgg,
-};
-
-export default webhooks;

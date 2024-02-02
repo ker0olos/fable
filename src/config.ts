@@ -13,7 +13,8 @@ const config: {
   stealing?: boolean;
   synthesis?: boolean;
   communityPacks?: boolean;
-  publishPacks?: boolean;
+  communityPacksMaintainerAPI?: boolean;
+  communityPacksBrowseAPI?: boolean;
   combat?: boolean;
   //
   xmas?: boolean;
@@ -33,7 +34,8 @@ const config: {
   stealing: undefined,
   synthesis: undefined,
   communityPacks: undefined,
-  publishPacks: undefined,
+  communityPacksMaintainerAPI: undefined,
+  communityPacksBrowseAPI: undefined,
   combat: undefined,
   xmas: undefined,
   fools: undefined,
@@ -75,8 +77,13 @@ export async function initConfig(): Promise<void> {
     config.communityPacks = !Deno.env.has('COMMUNITY_PACKS') ||
       Deno.env.get('COMMUNITY_PACKS') === '1';
 
-    config.publishPacks = !Deno.env.has('PUBLISH_COMMUNITY_PACKS') ||
-      Deno.env.get('PUBLISH_COMMUNITY_PACKS') === '1';
+    config.communityPacksMaintainerAPI =
+      !Deno.env.has('COMMUNITY_PACKS_MAINTAINER_API') ||
+      Deno.env.get('COMMUNITY_PACKS_MAINTAINER_API') === '1';
+
+    config.communityPacksBrowseAPI =
+      !Deno.env.has('COMMUNITY_PACKS_BROWSE_API') ||
+      Deno.env.get('COMMUNITY_PACKS_BROWSE_API') === '1';
 
     config.combat = !Deno.env.has('COMBAT') ||
       Deno.env.get('COMBAT') === '1';

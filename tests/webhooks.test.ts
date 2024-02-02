@@ -12,7 +12,7 @@ import user from '../src/user.ts';
 
 import config from '../src/config.ts';
 
-import webhooks from '../src/webhooks.ts';
+import * as webhooks from '../src/webhooks.ts';
 
 import db from '../db/mod.ts';
 

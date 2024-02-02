@@ -10,35 +10,33 @@ import {
 } from '$std/testing/mock.ts';
 
 import utils from '../src/utils.ts';
-import community from '../src/community.ts';
+
+import * as communityAPI from '../src/communityAPI.ts';
 
 import db from '../db/mod.ts';
 
 import config from '../src/config.ts';
 
-Deno.test('/', async (test) => {
+Deno.test('/user', async (test) => {
   await test.step('normal', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          json: (() =>
-            Promise.resolve({
-              id: 'user_id',
-            })),
-        } as any,
-      ]),
-    );
+    const fetchStub = stub(utils, 'fetchWithRetry', () =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ id: 'user_id' }),
+      } as any));
 
     const getPacksByMaintainerIdStub = stub(
       db,
       'getPacksByMaintainerId',
-      () => [] as any,
+      () =>
+        [
+          { id: 'pack-1', updated: '2023-03-25T00:00:00Z' },
+          { id: 'pack-2', updated: '2023-03-27T00:00:00Z' },
+          { id: 'pack-3', updated: '2023-03-26T00:00:00Z' },
+        ] as any,
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -46,28 +44,21 @@ Deno.test('/', async (test) => {
         headers: { 'authorization': 'Bearer token' },
       });
 
-      const response = await community.query(request);
-
-      assertSpyCall(fetchStub, 0, {
-        args: ['https://discord.com/api/users/@me', {
-          method: 'GET',
-          headers: {
-            'content-type': 'application/json',
-            'authorization': `Bearer token`,
-          },
-        }],
-      });
-
-      assertEquals(
-        getPacksByMaintainerIdStub.calls[0].args[0],
-        'user_id',
-      );
+      const response = await communityAPI.user(request);
 
       assertEquals(response.ok, true);
       assertEquals(response.status, 200);
       assertEquals(response.statusText, 'OK');
+
+      const data = await response.json();
+
+      assertEquals(data.data.length, 3);
+
+      assertEquals(data.data[0].id, 'pack-2');
+      assertEquals(data.data[1].id, 'pack-3');
+      assertEquals(data.data[2].id, 'pack-1');
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
       getPacksByMaintainerIdStub.restore();
@@ -91,7 +82,7 @@ Deno.test('/', async (test) => {
       ]),
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -99,7 +90,7 @@ Deno.test('/', async (test) => {
         headers: { 'authorization': 'Bearer token' },
       });
 
-      const response = await community.query(request);
+      const response = await communityAPI.user(request);
 
       assertSpyCalls(fetchStub, 1);
 
@@ -121,7 +112,7 @@ Deno.test('/', async (test) => {
         error: 'invalid access token',
       });
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
     }
@@ -133,29 +124,73 @@ Deno.test('/', async (test) => {
       headers: { 'authorization': 'Bearer token' },
     });
 
-    const response = await community.query(request);
+    const response = await communityAPI.user(request);
 
     assertEquals(response.ok, false);
-    assertEquals(response.status, 500);
+    assertEquals(response.status, 503);
+    assertEquals(response.statusText, 'Under Maintenance');
+  });
+});
+
+Deno.test('/popular', async (test) => {
+  await test.step('normal', async () => {
+    const getAllPublicPacksStub = stub(
+      db,
+      'getAllPublicPacks',
+      () =>
+        [
+          { id: 'pack-1', servers: 5 },
+          { id: 'pack-2', servers: 0 },
+          { id: 'pack-3', servers: 20 },
+        ] as any,
+    );
+
+    config.communityPacksBrowseAPI = true;
+
+    try {
+      const request = new Request('http://localhost:8000', { method: 'GET' });
+
+      const response = await communityAPI.popular(request);
+
+      assertEquals(response.ok, true);
+      assertEquals(response.status, 200);
+      assertEquals(response.statusText, 'OK');
+
+      const data = await response.json();
+
+      assertEquals(data.length, 3);
+      assertEquals(data.data.length, 3);
+      assertEquals(data.limit, 20);
+      assertEquals(data.offset, 0);
+
+      assertEquals(data.data[0].id, 'pack-3');
+      assertEquals(data.data[1].id, 'pack-1');
+      assertEquals(data.data[2].id, 'pack-2');
+    } finally {
+      delete config.communityPacksBrowseAPI;
+
+      getAllPublicPacksStub.restore();
+    }
+  });
+
+  await test.step('under maintenance', async () => {
+    const request = new Request('http://localhost:8000', { method: 'GET' });
+
+    const response = await communityAPI.popular(request);
+
+    assertEquals(response.ok, false);
+    assertEquals(response.status, 503);
     assertEquals(response.statusText, 'Under Maintenance');
   });
 });
 
 Deno.test('/publish', async (test) => {
   await test.step('normal', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          json: (() =>
-            Promise.resolve({
-              id: 'user_id',
-            })),
-        } as any,
-      ]),
-    );
+    const fetchStub = stub(utils, 'fetchWithRetry', () =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ id: 'user_id' }),
+      } as any));
 
     const publishPackStub = stub(
       db,
@@ -163,7 +198,7 @@ Deno.test('/publish', async (test) => {
       () => [] as any,
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -172,7 +207,7 @@ Deno.test('/publish', async (test) => {
         body: JSON.stringify({ manifest: { id: 'pack_id' } }),
       });
 
-      const response = await community.publish(request);
+      const response = await communityAPI.publish(request);
 
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
@@ -192,10 +227,10 @@ Deno.test('/publish', async (test) => {
       assertEquals(publishPackStub.calls[0].args[1], { id: 'pack_id' });
 
       assertEquals(response.ok, true);
-      assertEquals(response.status, 200);
-      assertEquals(response.statusText, 'OK');
+      assertEquals(response.status, 201);
+      assertEquals(response.statusText, 'Created');
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
       publishPackStub.restore();
@@ -219,7 +254,7 @@ Deno.test('/publish', async (test) => {
       ]),
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -232,7 +267,7 @@ Deno.test('/publish', async (test) => {
         }),
       });
 
-      const response = await community.publish(request);
+      const response = await communityAPI.publish(request);
 
       assertSpyCalls(fetchStub, 1);
 
@@ -254,28 +289,20 @@ Deno.test('/publish', async (test) => {
         error: 'invalid access token',
       });
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
     }
   });
 
   await test.step('invalid manifest', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          json: (() =>
-            Promise.resolve({
-              id: 'user_id',
-            })),
-        } as any,
-      ]),
-    );
+    const fetchStub = stub(utils, 'fetchWithRetry', () =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ id: 'user_id' }),
+      } as any));
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -286,7 +313,7 @@ Deno.test('/publish', async (test) => {
         }),
       });
 
-      const response = await community.publish(request);
+      const response = await communityAPI.publish(request);
 
       assertEquals(response.ok, false);
       assertEquals(response.status, 400);
@@ -306,26 +333,18 @@ Deno.test('/publish', async (test) => {
         ],
       });
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
     }
   });
 
   await test.step('permission denied', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          json: (() =>
-            Promise.resolve({
-              id: 'user_id',
-            })),
-        } as any,
-      ]),
-    );
+    const fetchStub = stub(utils, 'fetchWithRetry', () =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ id: 'user_id' }),
+      } as any));
 
     const publishPackStub = stub(
       db,
@@ -335,7 +354,7 @@ Deno.test('/publish', async (test) => {
       },
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -348,7 +367,7 @@ Deno.test('/publish', async (test) => {
         }),
       });
 
-      const response = await community.publish(request);
+      const response = await communityAPI.publish(request);
 
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
@@ -375,7 +394,7 @@ Deno.test('/publish', async (test) => {
         error: 'No permission to edit this pack',
       });
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
       publishPackStub.restore();
@@ -383,19 +402,11 @@ Deno.test('/publish', async (test) => {
   });
 
   await test.step('unknown server error', async () => {
-    const fetchStub = stub(
-      utils,
-      'fetchWithRetry',
-      returnsNext([
-        {
-          ok: true,
-          json: (() =>
-            Promise.resolve({
-              id: 'user_id',
-            })),
-        } as any,
-      ]),
-    );
+    const fetchStub = stub(utils, 'fetchWithRetry', () =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ id: 'user_id' }),
+      } as any));
 
     const publishPackStub = stub(
       db,
@@ -405,7 +416,7 @@ Deno.test('/publish', async (test) => {
       },
     );
 
-    config.publishPacks = true;
+    config.communityPacksMaintainerAPI = true;
 
     try {
       const request = new Request('http://localhost:8000', {
@@ -414,7 +425,7 @@ Deno.test('/publish', async (test) => {
         body: JSON.stringify({ manifest: { id: 'pack_id' } }),
       });
 
-      const response = await community.publish(request);
+      const response = await communityAPI.publish(request);
 
       assertSpyCall(fetchStub, 0, {
         args: ['https://discord.com/api/users/@me', {
@@ -441,7 +452,7 @@ Deno.test('/publish', async (test) => {
         error: 'Internal Server Error',
       });
     } finally {
-      delete config.publishPacks;
+      delete config.communityPacksMaintainerAPI;
 
       fetchStub.restore();
       publishPackStub.restore();
@@ -455,10 +466,10 @@ Deno.test('/publish', async (test) => {
       body: JSON.stringify({ manifest: { id: 'pack_id' } }),
     });
 
-    const response = await community.publish(request);
+    const response = await communityAPI.publish(request);
 
     assertEquals(response.ok, false);
-    assertEquals(response.status, 500);
+    assertEquals(response.status, 503);
     assertEquals(response.statusText, 'Under Maintenance');
   });
 });

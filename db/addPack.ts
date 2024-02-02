@@ -2,47 +2,20 @@ import { ulid } from 'ulid';
 
 import db, { kv } from './mod.ts';
 
-import { packsByMaintainerId, packsByManifestId } from './indices.ts';
+import { packByManifestId, packsByMaintainerId } from './indices.ts';
 
 import { KvError } from '../src/errors.ts';
-
-import config from '../src/config.ts';
 
 import type { Manifest } from '../src/types.ts';
 
 import type * as Schema from './schema.ts';
 
-// export async function popularPacks(): Promise<Schema.Pack[]> {
-//   const packs = await db.getValues<Schema.Pack>({ prefix: ['packs'] });
-
-//   return packs
-//     .filter(({ manifest }) => !manifest.private)
-//     .toSorted((a, b) => (b.servers ?? 0) - (a.servers ?? 0));
-// }
-
-export async function getPacksByMaintainerId(
-  userDiscordId: string,
-): Promise<Schema.Pack[]> {
-  let keys = await db.getKeys({
-    prefix: packsByMaintainerId(userDiscordId),
-  });
-
-  keys = keys.map((k) => ['packs', k[2]]);
-
-  return (await db.getManyValues(keys))
-    .filter(Boolean) as Schema.Pack[];
-}
-
 export async function publishPack(
   userDiscordId: string,
   manifest: Manifest,
 ): Promise<Schema.Pack> {
-  if (!config.publishPacks) {
-    throw new Error('UNDER_MAINTENANCE');
-  }
-
   const existingPack = await db.getValue<Schema.Pack>(
-    packsByManifestId(manifest.id),
+    packByManifestId(manifest.id),
   );
 
   if (
@@ -91,7 +64,7 @@ export async function publishPack(
 
   const insert = await op
     .set(['packs', pack._id], pack)
-    .set(packsByManifestId(pack.manifest.id), pack)
+    .set(packByManifestId(pack.manifest.id), pack)
     .commit();
 
   if (!insert.ok) {
@@ -107,7 +80,7 @@ export async function addPack(
   packManifestId: string,
 ): Promise<Schema.Pack> {
   const pack = await db.getValue<Schema.Pack>(
-    packsByManifestId(packManifestId),
+    packByManifestId(packManifestId),
   );
 
   if (!pack) {
@@ -140,7 +113,7 @@ export async function addPack(
   const update = await kv.atomic()
     //
     .set(['packs', pack._id], pack)
-    .set(packsByManifestId(packManifestId), pack)
+    .set(packByManifestId(packManifestId), pack)
     //
     .set(['instances', instance._id], instance)
     //
@@ -158,7 +131,7 @@ export async function removePack(
   packManifestId: string,
 ): Promise<Schema.Pack> {
   const pack = await db.getValue<Schema.Pack>(
-    packsByManifestId(packManifestId),
+    packByManifestId(packManifestId),
   );
 
   if (!pack) {
@@ -181,7 +154,7 @@ export async function removePack(
   const update = await kv.atomic()
     //
     .set(['packs', pack._id], pack)
-    .set(packsByManifestId(packManifestId), pack)
+    .set(packByManifestId(packManifestId), pack)
     //
     .set(['instances', instance._id], instance)
     //
