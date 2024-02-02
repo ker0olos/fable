@@ -1,12 +1,16 @@
-import db from '../db/mod.ts';
+import config from './config.ts';
 
 import utils from './utils.ts';
 
 import validate, { purgeReservedProps } from './validate.ts';
 
-import config from './config.ts';
+import db from '../db/mod.ts';
+
+import { packByManifestId } from '../db/indices.ts';
 
 import type { Manifest } from './types.ts';
+
+import type * as Schema from '../db/schema.ts';
 
 export async function user(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -142,4 +146,80 @@ export async function popular(req: Request): Promise<Response> {
   const paginationResult = utils.pagination(packs, url, 20);
 
   return utils.json(paginationResult);
+}
+
+export async function pack(
+  req: Request,
+  params: import('sift').PathParams,
+): Promise<Response> {
+  const { error } = await utils.validateRequest(req, { GET: {} });
+
+  if (error) {
+    return utils.json({ error: error.message }, { status: error.status });
+  }
+
+  let userId = '';
+
+  const packId = params?.packId;
+
+  const authKey = req.headers.get('authorization');
+
+  if (
+    (authKey && !config.communityPacksMaintainerAPI) ||
+    (!authKey && !config.communityPacksBrowseAPI)
+  ) {
+    return utils.json(
+      { error: 'Server is possibly under maintenance' },
+      { status: 503, statusText: 'Under Maintenance' },
+    );
+  }
+
+  if (!packId) {
+    return utils.json(
+      { error: 'Invalid Pack Id' },
+      { status: 400, statusText: 'Bad Request' },
+    );
+  }
+
+  if (authKey) {
+    const auth = await utils.fetchWithRetry(
+      'https://discord.com/api/users/@me',
+      {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json',
+          'authorization': req.headers.get('authorization') ?? '',
+        },
+      },
+    );
+
+    if (!auth.ok) {
+      return auth;
+    }
+
+    const { id } = await auth.json();
+
+    userId = id;
+  }
+
+  const pack = await db.getValue<Schema.Pack>(packByManifestId(packId));
+
+  if (!pack) {
+    return utils.json(
+      { error: 'Not Found' },
+      { status: 404, statusText: 'Not Found' },
+    );
+  }
+
+  if (
+    pack.manifest.private && pack.owner !== userId &&
+    !pack.manifest.maintainers?.includes(userId)
+  ) {
+    return utils.json(
+      { error: 'Forbidden' },
+      { status: 403, statusText: 'Forbidden' },
+    );
+  }
+
+  return utils.json(pack.manifest);
 }
