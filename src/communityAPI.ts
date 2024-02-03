@@ -51,9 +51,9 @@ export async function user(req: Request): Promise<Response> {
     new Date(b.updated).getTime() - new Date(a.updated).getTime()
   );
 
-  const paginationResult = utils.pagination(packs, url);
+  const data = utils.pagination(url, packs, 'packs');
 
-  paginationResult.data = packs.map((pack) => ({
+  data.packs = packs.map((pack) => ({
     ...pack,
     manifest: {
       id: pack.manifest.id,
@@ -63,7 +63,7 @@ export async function user(req: Request): Promise<Response> {
     },
   }));
 
-  return utils.json(paginationResult);
+  return utils.json(data);
 }
 
 export async function publish(req: Request): Promise<Response> {
@@ -153,9 +153,19 @@ export async function popular(req: Request): Promise<Response> {
   // sort by most used
   packs.sort((a, b) => (b.servers ?? 0) - (a.servers ?? 0));
 
-  const paginationResult = utils.pagination(packs, url);
+  const data = utils.pagination(url, packs, 'packs');
 
-  return utils.json(paginationResult);
+  data.packs = packs.map((pack) => ({
+    ...pack,
+    manifest: {
+      id: pack.manifest.id,
+      title: pack.manifest.title,
+      description: pack.manifest.description,
+      image: pack.manifest.image,
+    },
+  }));
+
+  return utils.json(data);
 }
 
 export async function pack(
