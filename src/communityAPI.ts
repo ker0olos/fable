@@ -221,5 +221,5 @@ export async function pack(
     );
   }
 
-  return utils.json(pack.manifest);
+  return utils.json(pack);
 }
