@@ -345,9 +345,9 @@ Deno.test('pagination', async (test) => {
       url,
     );
 
-    assertEquals(pages.data.length, 6);
+    assertEquals(pages.data.length, 8);
     assertEquals(pages.length, 10);
-    assertEquals(pages.limit, 6);
+    assertEquals(pages.limit, 20);
     assertEquals(pages.offset, 2);
 
     assertEquals(pages.data[0], 'item-3');

@@ -440,7 +440,7 @@ function isWithin14Days(date: Date): boolean {
 function pagination<T>(
   packs: T[],
   url: URL,
-  defaultLimit = 6,
+  defaultLimit = 20,
 ): { data: T[]; length: number; offset: number; limit: number } {
   const limit = +(url.searchParams.get('limit') ?? defaultLimit);
   const offset = +(url.searchParams.get('offset') ?? 0);

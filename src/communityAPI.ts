@@ -53,6 +53,16 @@ export async function user(req: Request): Promise<Response> {
 
   const paginationResult = utils.pagination(packs, url);
 
+  paginationResult.data = packs.map((pack) => ({
+    ...pack,
+    manifest: {
+      id: pack.manifest.id,
+      title: pack.manifest.title,
+      description: pack.manifest.description,
+      image: pack.manifest.image,
+    },
+  }));
+
   return utils.json(paginationResult);
 }
 
@@ -143,7 +153,7 @@ export async function popular(req: Request): Promise<Response> {
   // sort by most used
   packs.sort((a, b) => (b.servers ?? 0) - (a.servers ?? 0));
 
-  const paginationResult = utils.pagination(packs, url, 20);
+  const paginationResult = utils.pagination(packs, url);
 
   return utils.json(paginationResult);
 }
