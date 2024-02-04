@@ -79,9 +79,9 @@ Fable has no in-app purchases, no premiums, and no bullshit.
   <img align="right" width="250" src="https://user-images.githubusercontent.com/52022280/227321932-2ad8d36c-e56c-46e9-91da-161b79eeb029.gif" alt="Animated Pulls">
 </i>
 
-Fable is a free, open-source gacha bot — a greate alternative to bots like
-Mudae, Sofi, Karuta. Like those bots, you can pull anime characters, customize,
-and upgrade them.
+Fable is a free, open-source gacha bot — a great alternative to bots like Mudae,
+Sofi, Karuta. Like those bots, you can pull anime characters, customize, and
+upgrade them.
 
 Unlike those bots, Fable is NOT a cash-grab scam, everything in Fable is free,
 no players can pay to get ahead.
@@ -155,8 +155,7 @@ you can go tell discord to add custom prefixes to "slash" commands instead of
 <details><summary>How can I install a new pack on my server?</summary>
 <p>
 
-Check `/community popular` to browse the most popular packs or create your own
-pack at <https://packs.deno.dev>
+Check the most popular packs or create your own pack at <https://packs.deno.dev>
 
 > `Manage Server` permission is required to install packs on "your" server
 
@@ -166,8 +165,8 @@ pack at <https://packs.deno.dev>
 <details><summary>How can I create a new pack?</summary>
 <p>
 
-It's very easy to create and manage your community packs, No coding required. Go
-to <https://packs.deno.dev>
+It's very easy to create and update community packs, No coding required. Go to
+<https://packs.deno.dev>
 
 </p>
 </details>
@@ -175,7 +174,7 @@ to <https://packs.deno.dev>
 <details><summary>How to uninstall a pack from my server?</summary>
 <p>
 
-Use `/packs community` or `/packs uninstall id: pack-id`.
+Use `/packs uninstall id: pack-id`.
 
 </p>
 </details>
@@ -183,16 +182,12 @@ Use `/packs community` or `/packs uninstall id: pack-id`.
 <details><summary>How are you keeping Fable free?</summary>
 <p>
 
-We use serverless since it's cheaper and easier. Right now the bills are very
-small, but if it starts getting out of hand, we plan to rate limit servers on
-how much they can call Fable each month.
+We use serverless since it's cheaper and easier to maintain. Fable been getting
+bigger and bigger recently and it's hard for me to keep paying the bill out of
+my own pocket.
 
-We been very transparent from day one, if something happens we'll let known
-instantly.
-
-But we welcome any donations people are willing to throw us, since those the the
-final decider on how much control we have over our various bills, and how much
-time, and how many people are working on Fable at any giving moment.
+If you love Fable and want to keep it running forever, consider donating just a
+single dollar, it will help a lot.
 
 </p>
 </details>
