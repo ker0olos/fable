@@ -436,23 +436,23 @@ function isWithin14Days(date: Date): boolean {
   fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
   return date >= fourteenDaysAgo;
 }
-
-function pagination<T>(
-  packs: T[],
+function pagination<T, X extends string>(
   url: URL,
-  defaultLimit = 6,
-): { data: T[]; length: number; offset: number; limit: number } {
+  collection: T[],
+  collectionName: X,
+  defaultLimit = 20,
+): { [K in X]: T[] } & { length: number; offset: number; limit: number } {
   const limit = +(url.searchParams.get('limit') ?? defaultLimit);
   const offset = +(url.searchParams.get('offset') ?? 0);
 
-  const paginatedPacks = packs.slice(offset, offset + limit);
+  const paginatedCollection = collection.slice(offset, offset + limit);
 
   return {
-    data: paginatedPacks,
-    length: packs.length,
+    [collectionName]: paginatedCollection,
+    length: collection.length,
     offset,
     limit,
-  };
+  } as { [K in X]: T[] } & { length: number; offset: number; limit: number };
 }
 
 const utils = {
