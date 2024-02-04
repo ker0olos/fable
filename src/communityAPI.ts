@@ -53,7 +53,7 @@ export async function user(req: Request): Promise<Response> {
 
   const data = utils.pagination(url, packs, 'packs');
 
-  data.packs = packs.map((pack) => ({
+  data.packs = data.packs.map((pack) => ({
     ...pack,
     manifest: {
       id: pack.manifest.id,
@@ -155,7 +155,7 @@ export async function popular(req: Request): Promise<Response> {
 
   const data = utils.pagination(url, packs, 'packs');
 
-  data.packs = packs.map((pack) => ({
+  data.packs = data.packs.map((pack) => ({
     ...pack,
     manifest: {
       id: pack.manifest.id,
