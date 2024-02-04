@@ -30,9 +30,9 @@ Deno.test('/user', async (test) => {
       'getPacksByMaintainerId',
       () =>
         [
-          { id: 'pack-1', updated: '2023-03-25T00:00:00Z' },
-          { id: 'pack-2', updated: '2023-03-27T00:00:00Z' },
-          { id: 'pack-3', updated: '2023-03-26T00:00:00Z' },
+          { id: 'pack-1', updated: '2023-03-25T00:00:00Z', manifest: {} },
+          { id: 'pack-2', updated: '2023-03-27T00:00:00Z', manifest: {} },
+          { id: 'pack-3', updated: '2023-03-26T00:00:00Z', manifest: {} },
         ] as any,
     );
 
@@ -52,11 +52,11 @@ Deno.test('/user', async (test) => {
 
       const data = await response.json();
 
-      assertEquals(data.data.length, 3);
+      assertEquals(data.packs.length, 3);
 
-      assertEquals(data.data[0].id, 'pack-2');
-      assertEquals(data.data[1].id, 'pack-3');
-      assertEquals(data.data[2].id, 'pack-1');
+      assertEquals(data.packs[0].id, 'pack-2');
+      assertEquals(data.packs[1].id, 'pack-3');
+      assertEquals(data.packs[2].id, 'pack-1');
     } finally {
       delete config.communityPacksMaintainerAPI;
 
@@ -139,9 +139,9 @@ Deno.test('/popular', async (test) => {
       'getAllPublicPacks',
       () =>
         [
-          { id: 'pack-1', servers: 5 },
-          { id: 'pack-2', servers: 0 },
-          { id: 'pack-3', servers: 20 },
+          { id: 'pack-1', servers: 5, manifest: {} },
+          { id: 'pack-2', servers: 0, manifest: {} },
+          { id: 'pack-3', servers: 20, manifest: {} },
         ] as any,
     );
 
@@ -159,13 +159,13 @@ Deno.test('/popular', async (test) => {
       const data = await response.json();
 
       assertEquals(data.length, 3);
-      assertEquals(data.data.length, 3);
+      assertEquals(data.packs.length, 3);
       assertEquals(data.limit, 20);
       assertEquals(data.offset, 0);
 
-      assertEquals(data.data[0].id, 'pack-3');
-      assertEquals(data.data[1].id, 'pack-1');
-      assertEquals(data.data[2].id, 'pack-2');
+      assertEquals(data.packs[0].id, 'pack-3');
+      assertEquals(data.packs[1].id, 'pack-1');
+      assertEquals(data.packs[2].id, 'pack-2');
     } finally {
       delete config.communityPacksBrowseAPI;
 

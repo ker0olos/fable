@@ -341,8 +341,9 @@ Deno.test('pagination', async (test) => {
     const url = new URL('http://localhost:8000?offset=2');
 
     const pages = utils.pagination(
-      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
       url,
+      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
+      'data',
     );
 
     assertEquals(pages.data.length, 8);
@@ -359,8 +360,9 @@ Deno.test('pagination', async (test) => {
     const url = new URL('http://localhost:8000?limit=3&offset=2');
 
     const pages = utils.pagination(
-      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
       url,
+      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
+      'data',
     );
 
     assertEquals(pages.data.length, 3);
@@ -377,8 +379,9 @@ Deno.test('pagination', async (test) => {
     const url = new URL('http://localhost:8000?limit=10&offset=0');
 
     const pages = utils.pagination(
-      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
       url,
+      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
+      'data',
     );
 
     assertEquals(pages.data.length, 10);
@@ -396,8 +399,9 @@ Deno.test('pagination', async (test) => {
     const url = new URL('http://localhost:8000?limit=10&offset=11');
 
     const pages = utils.pagination(
-      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
       url,
+      Array(10).fill({}).map((_, i) => `item-${i + 1}`),
+      'data',
     );
 
     assertEquals(pages.data.length, 0);
