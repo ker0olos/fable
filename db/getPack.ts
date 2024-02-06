@@ -8,7 +8,9 @@ export async function getAllPublicPacks(): Promise<Schema.Pack[]> {
   const packs = await db.getValues<Schema.Pack>({ prefix: ['packs'] });
 
   return packs
-    .filter(({ manifest }) => !manifest.private);
+    .filter(({ hidden, manifest }) =>
+      !hidden || !manifest.private || !manifest.nsfw
+    );
 }
 
 export async function getPacksByMaintainerId(

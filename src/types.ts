@@ -154,6 +154,7 @@ export interface Manifest {
   author?: string;
   image?: string;
   url?: string;
+  nsfw?: boolean;
   webhookUrl?: string;
   private?: boolean;
   maintainers?: string[];
