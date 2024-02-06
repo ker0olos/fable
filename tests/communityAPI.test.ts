@@ -777,7 +777,19 @@ Deno.test('/pack', async (test) => {
     }
   });
 
-  await test.step('invalid access token', async () => {
+  await test.step('invalid access token (private)', async () => {
+    const getPack = stub(
+      db,
+      'getValue',
+      () =>
+        ({
+          owner: 'user_id',
+          manifest: {
+            private: true,
+          },
+        }) as any,
+    );
+
     const fetchStub = stub(
       utils,
       'fetchWithRetry',
@@ -821,15 +833,80 @@ Deno.test('/pack', async (test) => {
 
       assertEquals(response.ok, false);
       assertEquals(response.status, 403);
-      assertEquals(response.statusText, 'Unauthorized');
+      assertEquals(response.statusText, 'Forbidden');
 
       assertEquals(await response.json(), {
-        error: 'invalid access token',
+        error: 'Forbidden',
       });
     } finally {
       delete config.communityPacksBrowseAPI;
       delete config.communityPacksMaintainerAPI;
 
+      getPack.restore();
+      fetchStub.restore();
+    }
+  });
+
+  await test.step('invalid access token (public)', async () => {
+    const getPack = stub(
+      db,
+      'getValue',
+      () =>
+        ({
+          owner: 'user_id',
+          manifest: {},
+        }) as any,
+    );
+
+    const fetchStub = stub(
+      utils,
+      'fetchWithRetry',
+      returnsNext([
+        {
+          ok: false,
+          status: 403,
+          statusText: 'Unauthorized',
+          json: (() =>
+            Promise.resolve({
+              error: 'invalid access token',
+            })),
+        } as any,
+      ]),
+    );
+
+    config.communityPacksBrowseAPI = true;
+    config.communityPacksMaintainerAPI = true;
+
+    try {
+      const request = new Request('http://localhost:8000', {
+        method: 'GET',
+        headers: { 'authorization': 'Bearer token' },
+      });
+
+      const response = await communityAPI.pack(request, {
+        packId: 'pack-id',
+      });
+
+      assertSpyCalls(fetchStub, 1);
+
+      assertSpyCall(fetchStub, 0, {
+        args: ['https://discord.com/api/users/@me', {
+          method: 'GET',
+          headers: {
+            'content-type': 'application/json',
+            'authorization': `Bearer token`,
+          },
+        }],
+      });
+
+      assertEquals(response.ok, true);
+      assertEquals(response.status, 200);
+      assertEquals(response.statusText, 'OK');
+    } finally {
+      delete config.communityPacksBrowseAPI;
+      delete config.communityPacksMaintainerAPI;
+
+      getPack.restore();
       fetchStub.restore();
     }
   });
