@@ -11,6 +11,7 @@ import { packByManifestId } from '../db/indices.ts';
 import type { Manifest } from './types.ts';
 
 import type * as Schema from '../db/schema.ts';
+import { media } from '../packs/anilist/api.ts';
 
 export async function user(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -162,7 +163,10 @@ export async function popular(req: Request): Promise<Response> {
       title: pack.manifest.title,
       description: pack.manifest.description,
       image: pack.manifest.image,
-    },
+      media: pack.manifest.media?.new?.length ?? 0,
+      characters: pack.manifest.characters?.new?.length ?? 0,
+      // deno-lint-ignore no-explicit-any
+    } as any,
   }));
 
   return utils.json(data);
