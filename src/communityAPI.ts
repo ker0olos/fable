@@ -11,7 +11,6 @@ import { packByManifestId } from '../db/indices.ts';
 import type { Manifest } from './types.ts';
 
 import type * as Schema from '../db/schema.ts';
-import { media } from '../packs/anilist/api.ts';
 
 export async function user(req: Request): Promise<Response> {
   const url = new URL(req.url);
