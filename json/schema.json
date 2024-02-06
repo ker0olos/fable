@@ -46,6 +46,11 @@
       "description": "A discord webhook url that can be used to publish changes to a server",
       "$comment": "this is a meta parameter, functionality is not handled by fable itself"
     },
+    "nsfw": {
+      "title": "nsfw",
+      "type": "boolean",
+      "description": "Mark the pack as not safe for work, meaning it contains, ranchy, ecchi, or hentai characters"
+    },
     "private": {
       "title": "private",
       "type": "boolean",
