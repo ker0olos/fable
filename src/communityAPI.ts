@@ -213,13 +213,10 @@ export async function pack(
       },
     );
 
-    if (!auth.ok) {
-      return auth;
+    if (auth.ok) {
+      const { id } = await auth.json();
+      userId = id;
     }
-
-    const { id } = await auth.json();
-
-    userId = id;
   }
 
   const pack = await db.getValue<Schema.Pack>(packByManifestId(packId));
