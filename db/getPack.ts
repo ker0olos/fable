@@ -9,7 +9,7 @@ export async function getAllPublicPacks(): Promise<Schema.Pack[]> {
 
   return packs
     .filter(({ hidden, manifest }) =>
-      !hidden || !manifest.private || !manifest.nsfw
+      !(hidden || manifest.private || manifest.nsfw)
     );
 }
 
