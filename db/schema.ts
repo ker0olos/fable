@@ -70,6 +70,7 @@ export interface Pack extends Collection {
   manifest: Manifest;
   servers?: number;
   approved?: boolean;
+  hidden?: boolean;
 }
 
 export interface AcquiredCharacterSkill {
