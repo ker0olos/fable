@@ -40,6 +40,7 @@
     ]
   },
   "imports": {
+    "~/": "./",
     "$std/": "https://deno.land/std@0.213.0/",
     "ajv": "https://esm.sh/ajv@8.12.0",
     "awesome-ajv": "https://esm.sh/awesome-ajv-errors@5.1.0",

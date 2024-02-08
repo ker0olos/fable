@@ -157,19 +157,19 @@
 
   "battle-yourself": "You can't battle yourself",
 
-  "str": "STR",
-  "sta": "STA",
-  "agi": "AGI",
+  "atk": "ATK",
+  "def": "DEF",
+  "spd": "SPD",
 
   "stats": "Stats",
   "skills": "Skills",
   "skill-point": "Skill Point",
   "skill-points": "Skill Points",
   "stat-points": "Stat Points",
-  "strength": "Strength",
-  "stamina": "Stamina",
-  "agility": "Agility",
-  "reset": "Reset",
+
+  "attack": "Attack",
+  "defense": "Defense",
+  "speed": "Speed",
 
   "lvl": "LVL",
   "level": "Level",
