@@ -1470,11 +1470,11 @@ Deno.test('/sweep', async (test) => {
               type: 'rich',
               title: 'Floor 1',
               description:
-                '**name 1** leveled up 2x and gained 2 skill points.\n' +
-                '**name 2** leveled up and gained 1 skill point.\n' +
-                '**name 3** leveled up and gained 1 skill point.\n' +
-                '**name 4** leveled up and gained 1 skill point.\n' +
-                '**name 5** leveled up and gained 1 skill point.',
+                '**name 1** leveled up 2x and gained 6 stat points and 2 skill points.\n' +
+                '**name 2** leveled up and gained 3 stat points and 1 skill point.\n' +
+                '**name 3** leveled up and gained 3 stat points and 1 skill point.\n' +
+                '**name 4** leveled up and gained 3 stat points and 1 skill point.\n' +
+                '**name 5** leveled up and gained 3 stat points and 1 skill point.',
             },
           ],
           components: [

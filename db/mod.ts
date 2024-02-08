@@ -69,7 +69,7 @@ import {
 
 import { acquireSkill } from '~/db/acquireSkill.ts';
 
-import { gainExp, MAX_LEVEL } from '~/db/gainExp.ts';
+import { distributeNewStats, gainExp, MAX_LEVEL } from '~/db/gainExp.ts';
 
 import { clearFloor, consumeSweep } from '~/db/consumeSweep.ts';
 
@@ -264,6 +264,7 @@ const db = {
   acquireSkill,
   //
   gainExp,
+  distributeNewStats,
   consumeSweep,
   clearFloor,
   //

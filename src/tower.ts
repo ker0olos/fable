@@ -272,7 +272,7 @@ function sweep({ token, guildId, userId }: {
             ({
               levelUp,
               skillPoints,
-              // statPoints,
+              statPoints,
               exp,
               expToLevel,
             }, index) => {
@@ -284,8 +284,8 @@ function sweep({ token, guildId, userId }: {
                     // deno-lint-ignore no-non-null-assertion
                     packs.aliasToArray(characters[index]!.name)[0],
                   levelUp === 1 ? ' ' : ` ${levelUp}x `,
-                  // statPoints,
-                  // i18n.get('stat-points').toLowerCase(),
+                  statPoints,
+                  i18n.get('stat-points').toLowerCase(),
                   skillPoints,
                   i18n.get(skillPoints === 1 ? 'skill-point' : 'skill-points')
                     .toLowerCase(),
@@ -423,7 +423,8 @@ async function onSuccess(
   const statusText = status.map(
     ({
       levelUp,
-      skillPoints, //  statPoints
+      skillPoints,
+      statPoints,
     }, index) => {
       if (levelUp >= 1) {
         return i18n.get(
@@ -433,8 +434,8 @@ async function onSuccess(
             // deno-lint-ignore no-non-null-assertion
             packs.aliasToArray(characters[index]!.name)[0],
           levelUp === 1 ? ' ' : ` ${levelUp}x `,
-          // statPoints,
-          // i18n.get('stat-points').toLowerCase(),
+          statPoints,
+          i18n.get('stat-points').toLowerCase(),
           skillPoints,
           i18n.get(skillPoints === 1 ? 'skill-point' : 'skill-points')
             .toLowerCase(),
