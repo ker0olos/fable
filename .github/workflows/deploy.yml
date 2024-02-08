@@ -40,8 +40,6 @@ jobs:
       - run: deno test -A --coverage=cov_profile update_commands.test.ts tests db
       - run: deno coverage cov_profile --lcov --output=lcov.info
       - uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
 
   deploy:
     runs-on: ubuntu-latest
