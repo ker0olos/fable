@@ -98,11 +98,7 @@ async function embed({ guildId, party, locale }: {
     });
 
     embed.setFooter({
-      text: `${i18n.get('lvl', locale)} ${members[i]?.combat?.level ?? 1} (${
-        members[i]?.combat?.stats?.strength ?? 0
-      }-${members[i]?.combat?.stats?.stamina ?? 0}-${
-        members[i]?.combat?.stats?.agility ?? 0
-      })`,
+      text: `${i18n.get('lvl', locale)} ${members[i]?.combat?.level ?? 1}`,
     });
 
     message.addEmbed(embed);
