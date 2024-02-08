@@ -1,30 +1,30 @@
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import search, { idPrefix } from './search.ts';
+import search, { idPrefix } from '~/src/search.ts';
 
-import i18n from './i18n.ts';
-import user from './user.ts';
-import party from './party.ts';
-import packs from './packs.ts';
-import utils from './utils.ts';
-import gacha from './gacha.ts';
-import trade from './trade.ts';
-import steal from './steal.ts';
-import shop from './shop.ts';
-import stats from './stats.ts';
-import skills from './skills.ts';
-import battle from './battle.ts';
-import tower from './tower.ts';
-import help from './help.ts';
+import i18n from '~/src/i18n.ts';
+import user from '~/src/user.ts';
+import party from '~/src/party.ts';
+import packs from '~/src/packs.ts';
+import utils from '~/src/utils.ts';
+import gacha from '~/src/gacha.ts';
+import trade from '~/src/trade.ts';
+import steal from '~/src/steal.ts';
+import shop from '~/src/shop.ts';
+import stats from '~/src/stats.ts';
+import skills from '~/src/skills.ts';
+import battle from '~/src/battle.ts';
+import tower from '~/src/tower.ts';
+import help from '~/src/help.ts';
 
-import merge from './merge.ts';
+import merge from '~/src/merge.ts';
 
-import * as webhooks from './webhooks.ts';
-import * as communityAPI from './communityAPI.ts';
+import * as webhooks from '~/src/webhooks.ts';
+import * as communityAPI from '~/src/communityAPI.ts';
 
-import config, { initConfig } from './config.ts';
+import config, { initConfig } from '~/src/config.ts';
 
-import { NonFetalError, NoPermissionError } from './errors.ts';
+import { NonFetalError, NoPermissionError } from '~/src/errors.ts';
 
 export const handler = async (r: Request) => {
   const { origin } = new URL(r.url);
@@ -289,7 +289,7 @@ export const handler = async (r: Request) => {
 
           const distance: Record<string, number> = {};
 
-          let _skills = Object.values(skills.skills);
+          let _skills = Object.values(skills.pool);
 
           // sort suggestion based on distance
           _skills.forEach((skill) => {
@@ -768,13 +768,10 @@ export const handler = async (r: Request) => {
           case 'stats': {
             const character = options['name'] as string;
 
-            const distribution = options['distribution'] as string;
-
             return stats.view({
               token,
               guildId,
               character,
-              distribution,
               userId: member.user.id,
             }).send();
           }
@@ -1165,23 +1162,15 @@ export const handler = async (r: Request) => {
             const characterId = customValues![2];
 
             if (userId === member.user.id) {
-              switch (type) {
-                case 'str':
-                case 'sta':
-                case 'agi':
-                case 'reset':
-                  return (await stats.update({
-                    type,
-                    token,
-                    guildId,
-                    characterId,
-                    userId: member.user.id,
-                  }))
-                    .setType(discord.MessageType.Update)
-                    .send();
-                default:
-                  break;
-              }
+              return (await stats.update({
+                type,
+                token,
+                guildId,
+                characterId,
+                userId: member.user.id,
+              }))
+                .setType(discord.MessageType.Update)
+                .send();
             }
 
             throw new NoPermissionError();

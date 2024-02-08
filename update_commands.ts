@@ -431,7 +431,7 @@ export const commands = [
           {
             name: EN['$help-page-combat'],
             name_localizations: {
-              'es-ES': ES['$help-page-combat'],
+              // 'es-ES': ES['$help-page-combat'],
             },
             value: 4,
           },
@@ -871,12 +871,6 @@ export const commands = [
         description: '$character-name',
         autocomplete: true,
         type: Type.STRING,
-      }),
-      Option({
-        name: 'distribution',
-        description: '$distribution',
-        type: Type.STRING,
-        optional: true,
       }),
     ],
   }),

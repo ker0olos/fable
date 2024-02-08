@@ -1,25 +1,23 @@
-import _user from './user.ts';
-import packs from './packs.ts';
-import utils from './utils.ts';
-import i18n from './i18n.ts';
+import _user from '~/src/user.ts';
+import packs from '~/src/packs.ts';
+import utils from '~/src/utils.ts';
+import i18n from '~/src/i18n.ts';
 
-import db from '../db/mod.ts';
+import db from '~/db/mod.ts';
 
-import * as dynImages from '../dyn-images/mod.ts';
+import * as dynImages from '~/dyn-images/mod.ts';
 
-import * as discord from './discord.ts';
+import * as discord from '~/src/discord.ts';
 
-import config from './config.ts';
+import config from '~/src/config.ts';
 
-import gacha from './gacha.ts';
-import tower from './tower.ts';
-import skills from './skills.ts';
+import gacha from '~/src/gacha.ts';
+import tower from '~/src/tower.ts';
+import skills from '~/src/skills.ts';
 
-import * as Schema from '../db/schema.ts';
+import * as Schema from '~/db/schema.ts';
 
-import { newUnclaimed } from './stats.ts';
-
-import { NonFetalError, PoolError } from './errors.ts';
+import { NonFetalError, PoolError } from '~/src/errors.ts';
 
 import type {
   Character,
@@ -58,8 +56,21 @@ export const getEnemyRating = (floor: number): number => {
   }
 };
 
+const getStats = (char: Schema.Character): CharacterLive => {
+  return {
+    skills: char.combat?.skills ?? {},
+    //
+    attack: char.combat?.curStats?.attack ?? 0,
+    speed: char.combat?.curStats?.speed ?? 1,
+    defense: char.combat?.curStats?.defense ?? 1,
+    //
+    hp: char.combat?.curStats?.defense ?? 1,
+    maxHP: char.combat?.curStats?.defense ?? 1,
+  };
+};
+
 export const getEnemySkillSlots = (floor: number): number => {
-  const skillsPool = Object.keys(skills.skills);
+  const skillsPool = Object.keys(skills.pool);
   return Math.min(Math.floor(floor / 10), skillsPool.length);
 };
 
@@ -67,25 +78,16 @@ export const getEnemyMaxSkillLevel = (floor: number): number => {
   return Math.max(Math.floor(floor / 5), 1);
 };
 
-const getStats = (char: Schema.Character): CharacterLive => {
-  return {
-    skills: char.combat?.skills ?? {},
-    agility: char.combat?.stats?.agility ?? 0,
-    strength: char.combat?.stats?.strength ?? 1,
-    stamina: char.combat?.stats?.stamina ?? 1,
-    hp: char.combat?.stats?.stamina ?? 1,
-  };
-};
-
 const getEnemyStats = (floor: number, seed: string): CharacterLive => {
   const rng = new utils.LehmerRNG(seed);
   const skillRng = new utils.LehmerRNG(seed);
 
-  const totalStats = newUnclaimed(getEnemyRating(floor));
+  // same as player characters
+  const totalStats = 3 * getEnemyRating(floor);
 
   const _skills: CharacterLive['skills'] = {};
 
-  const skillsPool = Object.values(skills.skills);
+  const skillsPool = Object.values(skills.pool);
   const skillsSlots = getEnemySkillSlots(floor);
   const maxSkillLevel = getEnemyMaxSkillLevel(floor);
 
@@ -95,46 +97,50 @@ const getEnemyStats = (floor: number, seed: string): CharacterLive => {
     ];
 
     _skills[randomSkill.key] = {
-      level: Math.min(maxSkillLevel, randomSkill.stats[0].scale.length),
+      level: Math.min(
+        maxSkillLevel,
+        randomSkill.stats.slice(-1)[0].scale.length,
+      ),
     };
   }
 
   const stats: CharacterLive = {
     skills: _skills,
-    agility: 0,
-    strength: 0,
-    stamina: 0,
+    attack: 0,
+    defense: 0,
+    speed: 0,
     hp: 0,
+    maxHP: 0,
   };
 
   for (let i = 0; i < totalStats; i++) {
     const rand = Math.floor(rng.nextFloat() * 3);
 
     if (rand === 0) {
-      stats.agility += 1;
+      stats.attack += 1;
     } else if (rand === 1) {
-      stats.strength += 1;
+      stats.defense += 1;
     } else {
-      stats.stamina += 1;
+      stats.speed += 1;
     }
   }
 
   const multiplier = 0.5;
   const base = floor;
 
-  stats.stamina = stats.hp = Math.max(
+  stats.attack = Math.round(
+    stats.attack * Math.pow(base, multiplier),
+  );
+
+  stats.defense = stats.maxHP = stats.hp = Math.max(
     Math.round(
-      stats.stamina * Math.pow(base, multiplier),
+      stats.defense * Math.pow(base, multiplier),
     ),
     1,
   );
 
-  stats.strength = Math.round(
-    stats.strength * Math.pow(base, multiplier),
-  );
-
-  stats.agility = Math.round(
-    stats.agility * Math.pow(base, multiplier),
+  stats.speed = Math.round(
+    stats.speed * Math.pow(base, multiplier),
   );
 
   return stats;
@@ -172,11 +178,11 @@ const addEmbed = (message: discord.Message, {
     .setDescription(
       `## ${
         existing?.nickname ?? packs.aliasToArray(character.name)[0]
-      }\n_${_state}_\n${stats.hp}/${stats.stamina}`,
+      }\n_${_state}_\n${stats.hp}/${stats.maxHP}`,
     );
 
-  const percent = Math.round((stats.hp / stats.stamina) * 100);
-  const _damage = Math.round((damage / stats.stamina) * 100);
+  const percent = Math.round((stats.hp / stats.maxHP) * 100);
+  const _damage = Math.round((damage / stats.maxHP) * 100);
 
   message.addAttachment({
     type: 'image/png',
@@ -195,7 +201,7 @@ function attack(
 
   // activate character skills
   Object.entries(char.skills).map(([key, s]) => {
-    const skill = skills.skills[key];
+    const skill = skills.pool[key];
 
     if (skill.activationTurn === 'user') {
       const outcome = skill.activation(char, target, s.level);
@@ -206,11 +212,11 @@ function attack(
     }
   });
 
-  damage += Math.max(char.strength - target.agility, 1);
+  damage += Math.max(char.attack - target.defense, 1);
 
   // activate enemy/target skills
   Object.entries(target.skills).map(([key, s]) => {
-    const skill = skills.skills[key];
+    const skill = skills.pool[key];
 
     if (skill.activationTurn === 'enemy') {
       const outcome = skill.activation(char, target, s.level);
@@ -590,17 +596,17 @@ async function startCombat(
     const stateUX = [
       () =>
         addEmbed(message, {
+          character: defender,
+          existing: defenderExisting,
+          stats: defenderStats,
+        }),
+      () =>
+        addEmbed(message, {
           color: '#5d56c7',
           character: attacker,
           existing: attackerExisting,
           stats: attackerStats,
           state: i18n.get('attacking', locale),
-        }),
-      () =>
-        addEmbed(message, {
-          character: defender,
-          existing: defenderExisting,
-          stats: defenderStats,
         }),
     ];
 
@@ -628,16 +634,16 @@ async function startCombat(
     const damageUX = [
       () =>
         addEmbed(message, {
-          character: attacker,
-          existing: attackerExisting,
-          stats: attackerStats,
-        }),
-      () =>
-        addEmbed(message, {
           character: defender,
           existing: defenderExisting,
           stats: defenderStats,
           damage,
+        }),
+      () =>
+        addEmbed(message, {
+          character: attacker,
+          existing: attackerExisting,
+          stats: attackerStats,
         }),
     ];
 

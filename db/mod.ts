@@ -1,6 +1,6 @@
 /// <reference lib="deno.unstable" />
 
-import utils from '../src/utils.ts';
+import utils from '~/src/utils.ts';
 
 import {
   checkDailyTimestamp,
@@ -18,23 +18,23 @@ import {
   RECHARGE_MINS,
   RECHARGE_SWEEPS_MINS,
   rechargeConsumables,
-} from './getInventory.ts';
+} from '~/db/getInventory.ts';
 
-import { addCharacter } from './addCharacter.ts';
+import { addCharacter } from '~/db/addCharacter.ts';
 
 import {
   likeCharacter,
   likeMedia,
   unlikeCharacter,
   unlikeMedia,
-} from './likeCharacter.ts';
+} from '~/db/likeCharacter.ts';
 
 import {
   COOLDOWN_DAYS,
   failSteal,
   stealCharacter,
   tradeCharacters,
-} from './tradeCharacters.ts';
+} from '~/db/tradeCharacters.ts';
 
 import {
   addGuarantee,
@@ -42,37 +42,41 @@ import {
   addSweeps,
   addTokens,
   COSTS,
-} from './addTokens.ts';
+} from '~/db/addTokens.ts';
 
 import {
   setCharacterImage,
   setCharacterNickname,
-} from './customizeCharacter.ts';
+} from '~/db/customizeCharacter.ts';
 
-import { findCharacters, findMediaCharacters } from './findCharacters.ts';
+import {
+  findCharacter,
+  findCharacters,
+  findMediaCharacters,
+} from '~/db/findCharacters.ts';
 
 import {
   assignCharacter,
   swapSpots,
   unassignCharacter,
-} from './assignParty.ts';
+} from '~/db/assignParty.ts';
 
-import { assignStats } from './assignStats.ts';
-import { acquireSkill } from './acquireSkill.ts';
+import { initStats, upgradeStats } from '~/db/assignStats.ts';
+import { acquireSkill } from '~/db/acquireSkill.ts';
 
-import { gainExp, MAX_LEVEL } from './gainExp.ts';
+import { gainExp, MAX_LEVEL } from '~/db/gainExp.ts';
 
-import { clearFloor, consumeSweep } from './consumeSweep.ts';
+import { clearFloor, consumeSweep } from '~/db/consumeSweep.ts';
 
-import { getAllPublicPacks, getPacksByMaintainerId } from './getPack.ts';
+import { getAllPublicPacks, getPacksByMaintainerId } from '~/db/getPack.ts';
 
-import { addPack, publishPack, removePack } from './addPack.ts';
+import { addPack, publishPack, removePack } from '~/db/addPack.ts';
 
-import { disableBuiltins } from './manageInstance.ts';
+import { disableBuiltins } from '~/db/manageInstance.ts';
 
-import { createVoteRef, resolveVoteRef } from './voteRef.ts';
+import { createVoteRef, resolveVoteRef } from '~/db/voteRef.ts';
 
-import { getFromBlob, setAsBlob } from './blob.ts';
+import { getFromBlob, setAsBlob } from '~/db/blob.ts';
 
 export const kv = await Deno.openKv(
   // 'https://api.deno.com/databases/c0e82dfc-caeb-4059-877b-3e9134cf6e52/connect',
@@ -235,6 +239,7 @@ const db = {
   setCharacterImage,
   setCharacterNickname,
   //
+  findCharacter,
   findCharacters,
   findMediaCharacters,
   //
@@ -247,7 +252,8 @@ const db = {
   swapSpots,
   unassignCharacter,
   //
-  assignStats,
+  initStats,
+  upgradeStats,
   acquireSkill,
   //
   gainExp,
@@ -269,6 +275,7 @@ const db = {
 export {
   COOLDOWN_DAYS,
   COSTS,
+  findCharacter,
   MAX_LEVEL,
   MAX_NEW_PULLS,
   MAX_PULLS,

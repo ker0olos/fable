@@ -82,17 +82,17 @@ export interface CharacterCombat {
   level?: number;
 
   skillPoints?: number;
-  skillSlots?: number;
   skills?: Record<string, AcquiredCharacterSkill>;
 
-  stats?: CharacterStats;
+  unclaimedStatsPoints?: number;
+  curStats?: CharacterStats;
+  baseStats?: CharacterStats;
 }
 
 export interface CharacterStats {
-  unclaimed?: number;
-  strength?: number;
-  stamina?: number;
-  agility?: number;
+  attack: number;
+  defense: number;
+  speed: number;
 }
 
 export interface Like {

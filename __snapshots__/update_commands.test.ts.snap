@@ -1024,9 +1024,7 @@ snapshot[`commands 1`] = `
           },
           {
             name: "Combat",
-            name_localizations: {
-              "es-ES": "Combat",
-            },
+            name_localizations: {},
             value: 4,
           },
           {
@@ -1121,9 +1119,7 @@ snapshot[`commands 1`] = `
           },
           {
             name: "Combat",
-            name_localizations: {
-              "es-ES": "Combat",
-            },
+            name_localizations: {},
             value: 4,
           },
           {
@@ -1218,9 +1214,7 @@ snapshot[`commands 1`] = `
           },
           {
             name: "Combat",
-            name_localizations: {
-              "es-ES": "Combat",
-            },
+            name_localizations: {},
             value: 4,
           },
           {
@@ -1315,9 +1309,7 @@ snapshot[`commands 1`] = `
           },
           {
             name: "Combat",
-            name_localizations: {
-              "es-ES": "Combat",
-            },
+            name_localizations: {},
             value: 4,
           },
           {
@@ -1412,9 +1404,7 @@ snapshot[`commands 1`] = `
           },
           {
             name: "Combat",
-            name_localizations: {
-              "es-ES": "Combat",
-            },
+            name_localizations: {},
             value: 4,
           },
           {
@@ -1968,7 +1958,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "use tokens to buy tower sweeps",
         description_localizations: {
-          "es-ES": "use tokens to buy tower sweeps",
+          "es-ES": undefined,
         },
         max_value: undefined,
         min_value: undefined,
@@ -2080,7 +2070,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "use tokens to buy tower sweeps",
         description_localizations: {
-          "es-ES": "use tokens to buy tower sweeps",
+          "es-ES": undefined,
         },
         max_value: undefined,
         min_value: undefined,
@@ -3333,7 +3323,7 @@ snapshot[`commands 1`] = `
             choices: undefined,
             description: "permanently disable the builtin packs",
             description_localizations: {
-              "es-ES": "permanently disable the builtin packs",
+              "es-ES": undefined,
             },
             max_value: undefined,
             min_value: undefined,
@@ -3444,20 +3434,6 @@ snapshot[`commands 1`] = `
         required: true,
         type: 3,
       },
-      {
-        autocomplete: undefined,
-        choices: undefined,
-        description: "quickly set your character stats in one command (format: str-sta-agi)",
-        description_localizations: {
-          "es-ES": "establece las stats de tu personaje rápidamente (formato: FUE-RES-AGI)",
-        },
-        max_value: undefined,
-        min_value: undefined,
-        name: "distribution",
-        options: undefined,
-        required: false,
-        type: 3,
-      },
     ],
     type: undefined,
   },
@@ -3475,7 +3451,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "Show all available skills and their details",
         description_localizations: {
-          "es-ES": "Show all available skills and their details",
+          "es-ES": undefined,
         },
         max_value: undefined,
         min_value: undefined,
@@ -3489,7 +3465,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "Teach a character a skill",
         description_localizations: {
-          "es-ES": "Teach a character a skill",
+          "es-ES": undefined,
         },
         max_value: undefined,
         min_value: undefined,
@@ -3532,7 +3508,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "Upgrade a character's skill",
         description_localizations: {
-          "es-ES": "Upgrade a character's skill",
+          "es-ES": undefined,
         },
         max_value: undefined,
         min_value: undefined,
@@ -3598,7 +3574,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "Battle against another player to test your party",
         description_localizations: {
-          "es-ES": "Battle against another player to test your party",
+          "es-ES": undefined,
         },
         max_value: undefined,
         min_value: undefined,
@@ -3627,7 +3603,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "Climb the tower to glory and become a fable",
         description_localizations: {
-          "es-ES": "Climb the tower to glory and become a fable",
+          "es-ES": undefined,
         },
         max_value: undefined,
         min_value: undefined,
@@ -3653,7 +3629,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "Battle against another player to test your party",
         description_localizations: {
-          "es-ES": "Battle against another player to test your party",
+          "es-ES": undefined,
         },
         max_value: undefined,
         min_value: undefined,
@@ -3682,7 +3658,7 @@ snapshot[`commands 1`] = `
         choices: undefined,
         description: "Climb the tower to glory and become a fable",
         description_localizations: {
-          "es-ES": "Climb the tower to glory and become a fable",
+          "es-ES": undefined,
         },
         max_value: undefined,
         min_value: undefined,
@@ -3698,7 +3674,7 @@ snapshot[`commands 1`] = `
     default_member_permissions: undefined,
     description: "Sweep your current battle tower floor for exp",
     description_localizations: {
-      "es-ES": "Sweep your current battle tower floor for exp",
+      "es-ES": undefined,
     },
     dm_permission: false,
     name: "sweep",

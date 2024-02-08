@@ -1,6 +1,6 @@
 import type { Keys } from '../src/i18n.ts';
 
-import type { AcquiredCharacterSkill } from '../db/schema.ts';
+import type { AcquiredCharacterSkill, CharacterStats } from '../db/schema.ts';
 
 export type Modify<T, R> = Omit<T, keyof R> & R;
 
@@ -169,12 +169,10 @@ export interface Manifest {
 
 // Combat
 
-export type CharacterLive = {
+export type CharacterLive = CharacterStats & {
   skills: Record<string, AcquiredCharacterSkill>;
-  strength: Readonly<number>;
-  stamina: Readonly<number>;
-  agility: Readonly<number>;
   hp: number;
+  maxHP: number;
 };
 
 export interface SkillOutput {

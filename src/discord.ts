@@ -1,9 +1,9 @@
 import { json } from 'sift';
 
-import i18n from './i18n.ts';
-import utils, { ImageSize } from './utils.ts';
+import i18n from '~/src/i18n.ts';
+import utils, { ImageSize } from '~/src/utils.ts';
 
-import config from './config.ts';
+import config from '~/src/config.ts';
 
 const splitter = '=';
 

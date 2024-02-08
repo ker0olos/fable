@@ -16,7 +16,7 @@ import { NonFetalError } from './errors.ts';
 
 import type { CharacterSkill, SkillOutput } from './types.ts';
 
-const skills: Record<string, CharacterSkill> = {
+const pool: Record<string, CharacterSkill> = {
   'crit': {
     cost: 2,
     key: 'crit',
@@ -29,7 +29,7 @@ const skills: Record<string, CharacterSkill> = {
 
       if (isCrit) {
         return {
-          damage: char.strength * (critDamageMultiplier.scale[lvl - 1] / 100),
+          damage: char.attack * (critDamageMultiplier.scale[lvl - 1] / 100),
         };
       }
 
@@ -124,7 +124,7 @@ function preAcquire(
     userId: string;
   },
 ): discord.Message {
-  if (!skills[skillKey]) {
+  if (!pool[skillKey]) {
     throw new Error('404');
   }
 
@@ -213,7 +213,7 @@ function preAcquire(
 
       message.addEmbed(embed);
 
-      const skill = skills[skillKey];
+      const skill = pool[skillKey];
 
       const existingSkill = existing[0].combat?.skills?.[skill.key];
 
@@ -315,7 +315,7 @@ async function acquire(
   const locale = _user.cachedUsers[userId]?.locale ??
     _user.cachedGuilds[guildId]?.locale;
 
-  if (!skills[skillKey]) {
+  if (!pool[skillKey]) {
     throw new Error('404');
   }
 
@@ -327,7 +327,7 @@ async function acquire(
 
     const { inventory } = await db.getInventory(instance, __user);
 
-    const skill = skills[skillKey];
+    const skill = pool[skillKey];
 
     const existingSkill = await db.acquireSkill(
       inventory,
@@ -383,7 +383,7 @@ function all(
 ): discord.Message {
   const message = new discord.Message();
 
-  const pages = utils.chunks(Object.values(skills), 3);
+  const pages = utils.chunks(Object.values(pool), 3);
 
   const page = pages[index];
 
@@ -405,6 +405,6 @@ function all(
 export default {
   preAcquire,
   acquire,
-  skills,
+  pool,
   all,
 };

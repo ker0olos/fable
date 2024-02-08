@@ -17,12 +17,12 @@ import { NonFetalError } from '../src/errors.ts';
 
 Deno.test('all skills', async (test) => {
   await test.step('snapshot', async (test) => {
-    await assertSnapshot(test, skills.skills);
+    await assertSnapshot(test, skills.pool);
   });
 
   await test.step('crits', async (test) => {
     await test.step('hit', () => {
-      const critSkill = skills.skills['crit'];
+      const critSkill = skills.pool['crit'];
 
       const randomStub = stub(Math, 'random', () => 0);
 
@@ -30,16 +30,18 @@ Deno.test('all skills', async (test) => {
         const output = critSkill.activation(
           {
             hp: 1,
-            strength: 5,
-            agility: 1,
-            stamina: 1,
+            maxHP: 1,
+            attack: 5,
+            speed: 1,
+            defense: 1,
             skills: {},
           },
           {
             hp: 1,
-            strength: 1,
-            agility: 1,
-            stamina: 1,
+            maxHP: 1,
+            attack: 1,
+            speed: 1,
+            defense: 1,
             skills: {},
           },
           1,
@@ -52,7 +54,7 @@ Deno.test('all skills', async (test) => {
     });
 
     await test.step('miss', () => {
-      const critSkill = skills.skills['crit'];
+      const critSkill = skills.pool['crit'];
 
       const randomStub = stub(Math, 'random', () => 1);
 
@@ -60,16 +62,18 @@ Deno.test('all skills', async (test) => {
         const output = critSkill.activation(
           {
             hp: 1,
-            strength: 5,
-            agility: 1,
-            stamina: 1,
+            maxHP: 1,
+            attack: 5,
+            speed: 1,
+            defense: 1,
             skills: {},
           },
           {
             hp: 1,
-            strength: 1,
-            agility: 1,
-            stamina: 1,
+            maxHP: 1,
+            attack: 1,
+            speed: 1,
+            defense: 1,
             skills: {},
           },
           1,
@@ -84,7 +88,7 @@ Deno.test('all skills', async (test) => {
 
   await test.step('dodge', async (test) => {
     await test.step('hit', () => {
-      const critSkill = skills.skills['dodge'];
+      const critSkill = skills.pool['dodge'];
 
       const randomStub = stub(Math, 'random', () => 0);
 
@@ -92,16 +96,18 @@ Deno.test('all skills', async (test) => {
         const output = critSkill.activation(
           {
             hp: 1,
-            strength: 5,
-            agility: 1,
-            stamina: 1,
+            maxHP: 1,
+            attack: 5,
+            speed: 1,
+            defense: 1,
             skills: {},
           },
           {
             hp: 1,
-            strength: 1,
-            agility: 1,
-            stamina: 1,
+            maxHP: 1,
+            attack: 1,
+            speed: 1,
+            defense: 1,
             skills: {},
           },
           1,
@@ -114,7 +120,7 @@ Deno.test('all skills', async (test) => {
     });
 
     await test.step('miss', () => {
-      const critSkill = skills.skills['dodge'];
+      const critSkill = skills.pool['dodge'];
 
       const randomStub = stub(Math, 'random', () => 1);
 
@@ -122,16 +128,18 @@ Deno.test('all skills', async (test) => {
         const output = critSkill.activation(
           {
             hp: 1,
-            strength: 5,
-            agility: 1,
-            stamina: 1,
+            maxHP: 1,
+            attack: 5,
+            speed: 1,
+            defense: 1,
             skills: {},
           },
           {
             hp: 1,
-            strength: 1,
-            agility: 1,
-            stamina: 1,
+            maxHP: 1,
+            attack: 1,
+            speed: 1,
+            defense: 1,
             skills: {},
           },
           1,
@@ -1150,7 +1158,7 @@ Deno.test('acquire skill', async (test) => {
       assertSpyCallArgs(acquireSkillStub, 0, [
         'inventory',
         'character_id',
-        skills.skills['crit'],
+        skills.pool['crit'],
       ]);
 
       assertEquals(
@@ -1229,7 +1237,7 @@ Deno.test('acquire skill', async (test) => {
       assertSpyCallArgs(acquireSkillStub, 0, [
         'inventory',
         'character_id',
-        skills.skills['crit'],
+        skills.pool['crit'],
       ]);
 
       assertEquals(
