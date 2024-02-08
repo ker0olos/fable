@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-non-null-assertion
+
 import { usersByDiscordId } from '~/db/indices.ts';
 
 import type * as Schema from './schema.ts';
